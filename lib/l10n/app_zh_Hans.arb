@@ -4160,4 +4160,75 @@
 
   "dice_duel_result_saved": "对决结果已封存！",
 
-  "dice_duel_rolling": "宇宙能量汇聚中..."}
+  "dice_duel_rolling": "宇宙能量汇聚中...",
+  "butterfly_loading_connecting": "正在与时光连接...",
+  "character_block_login_required": "请先登录后再封锁角色",
+  "character_block_self_forbidden": "无法封锁自己创建的角色",
+  "character_block_title": "封锁角色",
+
+  "character_block_confirm_message": "确定要封锁“{characterName}”吗？\n\n封锁后，你将不会再在邂逅、瞬间等推荐内容中看到这个角色。",
+  "@character_block_confirm_message": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "character_block_confirm": "确认封锁",
+
+  "character_block_success": "已封锁“{characterName}”",
+  "@character_block_success": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "character_block_failed": "封锁失败，请稍后再试",
+  "character_unblock_success": "已解除封锁",
+  "character_unblock_failed": "解除封锁失败，请稍后再试",
+  "character_report_login_required": "请先登录后再举报角色",
+  "character_report_self_forbidden": "无法举报自己创建的角色",
+  "character_report_submitted": "举报已提交，我们会进行审核",
+  "character_report_open_failed": "无法打开举报页面，请稍后再试",
+  "chat_loader_error": "读取失败：{error}",
+  "@chat_loader_error": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "announcement_connection_failed": "连接失败，请稍后再试",
+  "announcement_latest": "最新",
+  "announcement_published_at": "发布时间：{date}",
+  "@announcement_published_at": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "announcement_operations_team": "恋恋拾光运营团队",
+  "legal_creator_guidelines": "创作者规范",
+  "legal_refresh": "刷新",
+  "legal_page_load_failed": "页面加载失败",
+  "legal_check_connection_retry": "请确认网络连接后再试一次。",
+  "legal_reload": "重新加载",
+  "chat_web_purchase_unavailable": "网页版目前不提供充值服务，请使用《恋恋拾光》App 购买花花或订阅。",
+  "chat_dont_show_again": "不再显示此提示",
+  "chat_menu_save_transcript": "保存对话记录",
+  "chat_menu_reply_model": "回复模型",
+  "chat_reply_model_menu_tip": "回复模型搬家啦！现在可以从右上角菜单找到它。",
+  "defaultProfileName": "默认档案",
+  "creator_social_links_manage": "管理社交链接",
+  "creator_social_links_title": "个人／社交链接",
+  "creator_social_links_hint": "填写想公开显示在创作者页面的链接，未填写的项目不会显示。",
+  "creator_social_links_website": "个人网站",
+  "creator_social_links_saved": "社交链接已保存",
+  "creator_social_links_load_failed": "读取社交链接失败，请稍后再试",
+  "creator_social_links_save_failed": "保存社交链接失败，请稍后再试",
+  "creator_social_links_open_failed": "无法打开此链接"
+}

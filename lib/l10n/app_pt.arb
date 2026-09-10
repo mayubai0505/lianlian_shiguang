@@ -4146,4 +4146,74 @@
 
    "dice_duel_result_saved": "Resultado do duelo salvo!",
 
-   "dice_duel_rolling": "Reunindo energia cósmica..."}
+   "dice_duel_rolling": "Reunindo energia cósmica...",
+   "butterfly_loading_connecting": "Conectando-se ao tempo...","character_block_login_required": "Entre na sua conta antes de bloquear um personagem",
+   "character_block_self_forbidden": "Você não pode bloquear um personagem que criou",
+   "character_block_title": "Bloquear personagem",
+
+   "character_block_confirm_message": "Tem certeza de que deseja bloquear “{characterName}”?\n\nApós o bloqueio, este personagem não aparecerá mais em conteúdos recomendados, como Encontros e Momentos.",
+   "@character_block_confirm_message": {
+      "placeholders": {
+         "characterName": {
+            "type": "String"
+         }
+      }
+   },
+
+   "character_block_confirm": "Confirmar bloqueio",
+
+   "character_block_success": "“{characterName}” foi bloqueado",
+   "@character_block_success": {
+      "placeholders": {
+         "characterName": {
+            "type": "String"
+         }
+      }
+   },
+
+   "character_block_failed": "Não foi possível bloquear o personagem. Tente novamente mais tarde",
+   "character_unblock_success": "Personagem desbloqueado",
+   "character_unblock_failed": "Não foi possível desbloquear o personagem. Tente novamente mais tarde",
+   "character_report_login_required": "Entre na sua conta antes de denunciar um personagem",
+   "character_report_self_forbidden": "Você não pode denunciar um personagem que criou",
+   "character_report_submitted": "Denúncia enviada. Faremos a análise",
+   "character_report_open_failed": "Não foi possível abrir a página de denúncia. Tente novamente mais tarde",
+   "chat_loader_error": "Falha ao carregar: {error}",
+   "@chat_loader_error": {
+      "placeholders": {
+         "error": {
+            "type": "String"
+         }
+      }
+   },
+   "announcement_connection_failed": "Falha na conexão. Tente novamente mais tarde",
+   "announcement_latest": "Mais recente",
+   "announcement_published_at": "Data de publicação: {date}",
+   "@announcement_published_at": {
+      "placeholders": {
+         "date": {
+            "type": "String"
+         }
+      }
+   },
+   "announcement_operations_team": "Equipe de Operações do LoveyDovey",
+   "legal_creator_guidelines": "Diretrizes para Criadores",
+   "legal_refresh": "Atualizar",
+   "legal_page_load_failed": "Falha ao carregar a página",
+   "legal_check_connection_retry": "Verifique sua conexão com a internet e tente novamente.",
+   "legal_reload": "Recarregar",
+   "chat_web_purchase_unavailable": "As compras não estão disponíveis na versão web no momento. Use o aplicativo LoveyDovey para comprar Pontos Flor ou uma assinatura.",
+   "chat_dont_show_again": "Não mostrar novamente",
+   "chat_menu_save_transcript": "Salvar histórico da conversa",
+   "chat_menu_reply_model": "Modelo de resposta",
+   "chat_reply_model_menu_tip": "O modelo de resposta mudou de lugar! Agora você pode encontrá-lo no menu no canto superior direito.",
+   "defaultProfileName": "Perfil padrão",
+   "creator_social_links_manage": "Gerenciar links sociais",
+   "creator_social_links_title": "Links pessoais e sociais",
+   "creator_social_links_hint": "Adicione os links que deseja exibir publicamente na sua página de criador. Os campos não preenchidos não serão exibidos.",
+   "creator_social_links_website": "Site pessoal",
+   "creator_social_links_saved": "Links sociais salvos",
+   "creator_social_links_load_failed": "Não foi possível carregar os links sociais. Tente novamente mais tarde",
+   "creator_social_links_save_failed": "Não foi possível salvar os links sociais. Tente novamente mais tarde",
+   "creator_social_links_open_failed": "Não foi possível abrir este link"
+}

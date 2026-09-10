@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 class ButterflyLoadingView extends StatefulWidget {
   const ButterflyLoadingView({super.key});
@@ -33,6 +34,7 @@ class _ButterflyLoadingViewState extends State<ButterflyLoadingView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -48,9 +50,9 @@ class _ButterflyLoadingViewState extends State<ButterflyLoadingView> {
               : const CircularProgressIndicator(color: Color(0xFF9C27B0)), // 影片還沒好之前先用舊的頂一下
         ),
         const SizedBox(height: 40),
-        const Text(
-          "正在與時光連結...",
-          style: TextStyle(
+        Text(
+          l10n.butterfly_loading_connecting,
+          style: const TextStyle(
             fontSize: 16,
             color: Color(0xFF7B1FA2),
             fontWeight: FontWeight.w400,

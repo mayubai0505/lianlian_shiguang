@@ -53,6 +53,7 @@ import 'feedback_page.dart';
 import 'chat_header.dart';
 import 'chat_side_menu.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:showcaseview/showcaseview.dart';
 import 'chat_input_bar.dart';
 import 'scene_page.dart';
 
@@ -129,8 +130,17 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+  final GlobalKey _replyModelMenuShowcaseKey = GlobalKey();
+  bool _hasScheduledReplyModelMenuTip = false;
+
   // 在 _ChatPageState 的變數宣告區加上這行：
   final Map<String, String> _imageDownloadUrlCache = {};
+
+  // 聊天室頭像共用 ImageProvider。
+  // 使用與聊天列表相同的 168px 解碼寬度，讓從聊天列表進聊天室時
+  // 可以直接命中同一份圖片快取，避免頭像先空白再閃一下。
+  static final Map<String, ImageProvider> _chatAvatarProviderCache =
+  <String, ImageProvider>{};
   bool _hasLoadedBirthdayFreeStatus = false;
   bool _hasPromptedProfileSetup = false; // 用來記住「已經問過玩家了」
   Map<String, dynamic>? _roomConfig;
@@ -158,6 +168,12 @@ class _ChatPageState extends State<ChatPage> {
   int _maxRegenerateCount = 3;
   bool _isMultiSelectMode = false;
   static Set<String> generatingRooms = {};
+
+  // 同一次 App 執行期間保留已看過的聊天室內容。
+  // 玩家離開聊天室再回來時，先直接畫上次的訊息，
+  // Firestore 再於背景接手同步，不需要每次都先看全螢幕轉圈。
+  static final Map<String, List<ChatMessage>> _sessionMessageCache =
+  <String, List<ChatMessage>>{};
   // 🌟 總裁的聊天室監控探針
   bool _isReferralTrackerActive = false; // 是否需要啟動邀請計數器
   int _currentReferralChatCount = 0; // 本次上線聊了幾句
@@ -181,6 +197,7 @@ class _ChatPageState extends State<ChatPage> {
   late AudioPlayer _audioPlayer;
   DocumentReference? _sessionDocRef;
   CollectionReference? _messagesCollection;
+  Stream<QuerySnapshot>? _messagesStream;
   late Character _currentCharacter;
   StreamSubscription? _recorderSub;
   StreamSubscription? _qixiProgressSubscription;
@@ -515,12 +532,34 @@ class _ChatPageState extends State<ChatPage> {
     );
     _isGenerating = generatingRooms.contains(_roomLockKey);
     _currentCharacter = widget.character;
+
+    final initialSessionId = widget.sessionId?.trim() ?? '';
+    final cachedMessages = _sessionMessageCache[initialSessionId];
+
+    if (initialSessionId.isNotEmpty &&
+        cachedMessages != null &&
+        cachedMessages.isNotEmpty) {
+      _localMessages = List<ChatMessage>.from(cachedMessages);
+
+      debugPrint(
+        '⚡ 聊天室先顯示快取內容：session=$initialSessionId，'
+            '訊息數=${_localMessages.length}',
+      );
+    }
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+
+    // 提早開始讀取角色背景，縮短預設背景切換到角色背景的時間差。
+    unawaited(
+      themeNotifier.loadCharacterBackground(
+        _currentCharacter.name,
+      ),
+    );
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
 
       precacheImage(
-        getAvatarImageProvider(_currentCharacter.avatarPath),
+        _getAvatarProvider(_currentCharacter.avatarPath),
         context,
       );
     });
@@ -1063,20 +1102,8 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   String get _webPurchaseUnavailableMessage {
-    final locale = Localizations.localeOf(context);
-
-    if (locale.languageCode == 'zh') {
-      final isSimplifiedChinese = locale.scriptCode == 'Hans' ||
-          locale.countryCode == 'CN' ||
-          locale.countryCode == 'SG';
-
-      return isSimplifiedChinese
-          ? '网页版目前不提供充值服务，请使用《恋恋拾光》App 购买花花或订阅。'
-          : '網頁版目前不提供儲值服務，請使用《戀戀拾光》App 購買花花或訂閱。';
-    }
-
-    return 'Purchases are currently unavailable on the web version. '
-        'Please use the LoveyDovey app to buy flowers or subscribe.';
+    final l10n = AppLocalizations.of(context)!;
+    return l10n.chat_web_purchase_unavailable;
   }
 
   void _showSubscriptionDialog() {
@@ -1261,16 +1288,6 @@ class _ChatPageState extends State<ChatPage> {
     // 送訊息時不用再次等待 Firestore。
     unawaited(_loadBirthdayFreeStatus());
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-
-      Provider.of<ThemeNotifier>(
-        context,
-        listen: false,
-      ).loadCharacterBackground(
-        _currentCharacter.name,
-      );
-    });
   }
 
   // 🌟 大合體版本：精準跳轉 ＋ 視覺回饋 ＋ 發光特效
@@ -1514,9 +1531,19 @@ class _ChatPageState extends State<ChatPage> {
 
         _sessionDocRef = sessionDocRef;
         _messagesCollection = sessionDocRef.collection('messages'); // 這裡確保賦值
+        _messagesStream = _messagesCollection!
+            .orderBy('timestamp', descending: true)
+            .snapshots();
         _listenToQixiProgress(sessionDocRef);
 
-        await sessionDocRef.update({'unreadCount': 0});
+        // 已讀狀態是背景工作，不要為了把 unreadCount 歸零而卡住聊天室畫面。
+        unawaited(
+          sessionDocRef
+              .update({'unreadCount': 0})
+              .catchError((error) {
+            debugPrint('⚠️ 更新聊天室未讀數失敗：$error');
+          }),
+        );
 
         if (mounted) {
           if (mounted)
@@ -1565,6 +1592,9 @@ class _ChatPageState extends State<ChatPage> {
         // 2. 乖乖把管線接好，絕對不讓 _messagesCollection 變成 Null！
         _sessionDocRef = sessionDocRef;
         _messagesCollection = sessionDocRef.collection('messages');
+        _messagesStream = _messagesCollection!
+            .orderBy('timestamp', descending: true)
+            .snapshots();
         _listenToQixiProgress(sessionDocRef);
 
         if (mounted) {
@@ -1666,6 +1696,9 @@ class _ChatPageState extends State<ChatPage> {
             _sessionId = newSessionRef.id;
             _sessionDocRef = newSessionRef;
             _messagesCollection = newSessionRef.collection('messages');
+            _messagesStream = _messagesCollection!
+                .orderBy('timestamp', descending: true)
+                .snapshots();
             _currentFriendship = 0;
             _isLoading = false;
           });
@@ -1712,7 +1745,7 @@ class _ChatPageState extends State<ChatPage> {
             CircleAvatar(
               radius: 40,
               backgroundColor: Colors.grey[300],
-              backgroundImage: getAvatarImageProvider(avatar),
+              backgroundImage: _getAvatarProvider(avatar),
               child: Container(
                   decoration: const BoxDecoration(
                       shape: BoxShape.circle, color: Colors.black38)),
@@ -2920,7 +2953,7 @@ class _ChatPageState extends State<ChatPage> {
                     controlAffinity: ListTileControlAffinity.leading,
                     activeColor: theme.colorScheme.primary,
                     value: dontShowAgain,
-                    title: const Text('不再顯示此提示'),
+                    title: Text(dialogL10n.chat_dont_show_again),
                     onChanged: (value) {
                       setDialogState(() {
                         dontShowAgain = value ?? false;
@@ -3452,9 +3485,7 @@ class _ChatPageState extends State<ChatPage> {
               radius: 25,
               backgroundColor: primary.withValues(alpha: 0.08),
               backgroundImage:
-              (_currentCharacter.avatarPath ?? '').trim().isNotEmpty
-                  ? NetworkImage(_currentCharacter.avatarPath!)
-                  : null,
+              _getAvatarProvider(_currentCharacter.avatarPath),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -7282,18 +7313,18 @@ class _ChatPageState extends State<ChatPage> {
                                   ].join('\n\n');
 
 // ① 先把劇場場景顯示在聊天室
-                                      if (sceneDisplayText.isNotEmpty) {
-                                        await _addSystemMessage(sceneDisplayText);
-                                      }
+                                  if (sceneDisplayText.isNotEmpty) {
+                                    await _addSystemMessage(sceneDisplayText);
+                                  }
 
 // ② 再出角色第一句
-                                      if (sceneType == 'creator') {
-                                        // 創作者劇場：直接使用創作者寫好的角色開場
-                                        await _insertCreatorSceneOpening(result);
-                                      } else if (sceneType == 'custom') {
-                                        // 自行創建：讓 AI 根據場景＋角色人設生成第一句
-                                        await _generateCustomSceneOpening();
-                                      }
+                                  if (sceneType == 'creator') {
+                                    // 創作者劇場：直接使用創作者寫好的角色開場
+                                    await _insertCreatorSceneOpening(result);
+                                  } else if (sceneType == 'custom') {
+                                    // 自行創建：讓 AI 根據場景＋角色人設生成第一句
+                                    await _generateCustomSceneOpening();
+                                  }
                                 },
                               ),
 
@@ -7401,28 +7432,31 @@ class _ChatPageState extends State<ChatPage> {
       );
     }
 
-    // 網路圖片使用快取
+    final cached = _chatAvatarProviderCache[path];
+    if (cached != null) {
+      return cached;
+    }
+
+    late final ImageProvider provider;
+
+    // 網路圖片：固定使用 168px，與聊天列表頭像快取尺寸一致。
     if (path.startsWith('http://') || path.startsWith('https://')) {
-      return CachedNetworkImageProvider(path);
+      provider = CachedNetworkImageProvider(
+        path,
+        maxWidth: 168,
+      );
+    } else if (path.startsWith('assets/')) {
+      provider = AssetImage(path);
+    } else if (!kIsWeb && File(path).existsSync()) {
+      provider = FileImage(File(path));
+    } else {
+      provider = const AssetImage(
+        'assets/images/avatar1.png',
+      );
     }
 
-    // App 內建圖片
-    if (path.startsWith('assets/')) {
-      return AssetImage(path);
-    }
-
-    // 手機本地檔案
-    if (!kIsWeb) {
-      final file = File(path);
-
-      if (file.existsSync()) {
-        return FileImage(file);
-      }
-    }
-
-    return const AssetImage(
-      'assets/images/avatar1.png',
-    );
+    _chatAvatarProviderCache[path] = provider;
+    return provider;
   }
 
   Widget _buildTypingIndicator() {
@@ -9261,7 +9295,7 @@ class _ChatPageState extends State<ChatPage> {
       context,
       menu: ChatSideMenu(
         searchLabel: l10n.chat_menu_search,
-        saveTranscriptLabel: '保存對話紀錄',
+        saveTranscriptLabel: l10n.chat_menu_save_transcript,
         galleryLabel: l10n.chat_menu_gallery,
         aboutMeLabel: l10n.chat_menu_aboutme,
         aboutUsLabel: l10n.chat_menu_aboutus,
@@ -9269,7 +9303,7 @@ class _ChatPageState extends State<ChatPage> {
         periodLabel: l10n.chat_menu_period,
         resetLabel: l10n.chat_menu_reset,
 
-        modelLabel: '回覆模型',
+        modelLabel: l10n.chat_menu_reply_model,
         dailyLabel: l10n.chatModeDaily,
         storyLabel: l10n.chatModeStory,
         immersiveLabel: l10n.chatModeImmersive,
@@ -9512,7 +9546,7 @@ class _ChatPageState extends State<ChatPage> {
                         controlAffinity: ListTileControlAffinity.leading,
                         activeColor: theme.colorScheme.primary,
                         value: dontShowAgain,
-                        title: const Text('不再顯示此提示'),
+                        title: Text(l10n.chat_dont_show_again),
                         onChanged: (value) {
                           setDialogState(() {
                             dontShowAgain = value ?? false;
@@ -9610,6 +9644,27 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  Future<void> _showReplyModelMenuTipOnce(
+      BuildContext showcaseContext,
+      ) async {
+    if (_hasScheduledReplyModelMenuTip || widget.isTestMode) return;
+    _hasScheduledReplyModelMenuTip = true;
+
+    final userId = FirebaseAuth.instance.currentUser?.uid ?? 'guest';
+    final prefs = await SharedPreferences.getInstance();
+    final prefKey = 'chat_reply_model_menu_tip_shown_$userId';
+
+    if (prefs.getBool(prefKey) == true) return;
+    if (!mounted) return;
+
+    await prefs.setBool(prefKey, true);
+    if (!mounted) return;
+
+    ShowCaseWidget.of(showcaseContext).startShowCase([
+      _replyModelMenuShowcaseKey,
+    ]);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -9620,36 +9675,33 @@ class _ChatPageState extends State<ChatPage> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
     final theme = Theme.of(context);
     final bool isKeyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
 
     final bool showInputExtras = _isInputFocused && isKeyboardVisible;
     final int nextStageThreshold = _getNextStageThreshold(_currentFriendship);
-    bool hasPhotoBackground = themeNotifier.activeCharacterBackground != null ||
-        (themeNotifier.currentThemeEnum == AppTheme.custom &&
-            themeNotifier.backgroundImagePath != null);
-    return GestureDetector(
+
+    // 聊天室本體不再監聽整個 ThemeNotifier。
+    // 背景更新時只重建背景殼，不重建 Header、訊息列與輸入框。
+    final Widget chatScaffold = GestureDetector(
       onTap: () {
-        FocusScope.of(context).unfocus(); // 👈 鍵盤消失術！
+        FocusScope.of(context).unfocus();
       },
-      // 👇 🌟 魔法 Container 包在最外面 👇
-      child: Container(
-        decoration: themeNotifier.characterChatBackground,
-        child: Stack(
-          children: [
-            // 🌟 總裁補丁 2：替換這裡！讓漸層色可以透出來
-            Positioned.fill(
-              child: Container(
-                color: hasPhotoBackground
-                    ? theme.colorScheme.surface
-                    .withValues(alpha: 0.6) // 有照片：蓋半透明底色
-                    : Colors.transparent, // ✨ 沒照片：完全透明！讓櫻花粉、湛藍海完美透出！
-              ),
-            ),
-            Scaffold(
-              backgroundColor: Colors.transparent, // 🚩 這裡必須透明，照片才透得過來
-              appBar: ChatHeader(
+      child: Scaffold(
+        backgroundColor: Colors.transparent, // 🚩 這裡必須透明，照片才透得過來
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(62),
+          child: ShowCaseWidget(
+            builder: (showcaseContext) {
+              if (!_hasScheduledReplyModelMenuTip &&
+                  !widget.isTestMode) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (!mounted) return;
+                  _showReplyModelMenuTipOnce(showcaseContext);
+                });
+              }
+
+              return ChatHeader(
                 characterName: _currentCharacter.name,
                 friendship: _currentFriendship,
                 nextThreshold: nextStageThreshold,
@@ -9673,295 +9725,345 @@ class _ChatPageState extends State<ChatPage> {
                 },
 
                 onMenuTap: _showChatSideMenu,
-              ),
-              // 👇 🌟 移除了原本擋在前面的內層背景，直接放 Column
-              body: Column(
-                children: [
-                  // 頂部資訊已移至 ChatHeader
-                  if (_isQixiRoom) _buildQixiProgressCard(theme),
-                  // ✨ 2. 中間訊息列表
-                  Expanded(
-                    child: _isLoading
-                        ? const Center(
+                menuShowcaseKey: _replyModelMenuShowcaseKey,
+                menuShowcaseDescription:
+                l10n.chat_reply_model_menu_tip,
+              );
+            },
+          ),
+        ),
+        // 👇 🌟 移除了原本擋在前面的內層背景，直接放 Column
+        body: Column(
+          children: [
+            // 頂部資訊已移至 ChatHeader
+            if (_isQixiRoom) _buildQixiProgressCard(theme),
+            // ✨ 2. 中間訊息列表
+            Expanded(
+              // 有舊訊息快取時，即使房間 metadata 還在背景初始化，
+              // 也先顯示聊天內容；只有完全沒有任何可顯示內容時才轉圈。
+              child: (_isLoading && _localMessages.isEmpty)
+                  ? const Center(
+                child: CircularProgressIndicator(),
+              )
+
+              // 測試模式必須先判斷，因為它本來就沒有正式 session
+                  : widget.isTestMode
+                  ? (_testMessages.isEmpty && !_isGenerating
+                  ? Center(
+                child: Text(
+                  l10n.chat_test_mode_msg,
+                ),
+              )
+                  : _buildMessageList(
+                _testMessages,
+              ))
+
+              // 只有正式聊天室才檢查這兩個資料。
+              // 若 session 管線尚未接好、但已有快取訊息，就先顯示快取。
+                  : (_sessionId == null ||
+                  _messagesCollection == null)
+                  ? (_localMessages.isNotEmpty
+                  ? _buildMessageList(_localMessages)
+                  : Center(
+                child: Text(
+                  l10n.chat_loading_failed,
+                ),
+              ))
+                  : StreamBuilder<QuerySnapshot>(
+                stream: _messagesStream,
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    if (_localMessages.isNotEmpty) {
+                      return _buildMessageList(_localMessages);
+                    }
+
+                    return const Center(
                       child: CircularProgressIndicator(),
-                    )
+                    );
+                  }
 
-                    // 測試模式必須先判斷，因為它本來就沒有正式 session
-                        : widget.isTestMode
-                        ? (_testMessages.isEmpty && !_isGenerating
-                        ? Center(
-                      child: Text(
-                        l10n.chat_test_mode_msg,
-                      ),
-                    )
-                        : _buildMessageList(
-                      _testMessages,
-                    ))
+                  if (snapshot.hasError)
+                    return Center(
+                        child: Text(
+                            l10n.chat_error_load_msg(
+                                snapshot.error
+                                    .toString())));
 
-                    // 只有正式聊天室才檢查這兩個資料
-                        : (_sessionId == null ||
-                        _messagesCollection == null)
-                        ? Center(
-                      child: Text(
-                        l10n.chat_loading_failed,
-                      ),
-                    )
-                        : StreamBuilder<QuerySnapshot>(
-                      stream: _messagesCollection!
-                          .orderBy('timestamp', descending: true)
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData)
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        if (snapshot.hasError)
-                          return Center(
-                              child: Text(
-                                  l10n.chat_error_load_msg(
-                                      snapshot.error
-                                          .toString())));
+                  final messages = snapshot.data!.docs
+                      .map((doc) =>
+                      ChatMessage.fromFirestore(doc))
+                      .toList();
+                  _localMessages = messages;
 
-                        final messages = snapshot.data!.docs
-                            .map((doc) =>
-                            ChatMessage.fromFirestore(doc))
-                            .toList();
-                        _localMessages = messages;
+                  final activeSessionId =
+                  (_sessionId ?? widget.sessionId ?? '').trim();
+                  if (activeSessionId.isNotEmpty) {
+                    _sessionMessageCache[activeSessionId] =
+                    List<ChatMessage>.from(messages);
+                  }
 
-                        // ✨✨✨ 靈魂出竅自動解鎖魔法 開始 ✨✨✨
-                        if (messages.isNotEmpty) {
-                          final latestMessage = messages.first;
+                  // ✨✨✨ 靈魂出竅自動解鎖魔法 開始 ✨✨✨
+                  if (messages.isNotEmpty) {
+                    final latestMessage = messages.first;
 
-                          if (_isGenerating &&
-                              _waitingForNewAiReply &&
-                              latestMessage.sender == 'ai') {
-                            final lastUserSendTime =
-                                _lastUserSendTime;
-                            final DateTime? aiMessageTime =
-                            latestMessage.timestamp?.toDate();
+                    if (_isGenerating &&
+                        _waitingForNewAiReply &&
+                        latestMessage.sender == 'ai') {
+                      final lastUserSendTime =
+                          _lastUserSendTime;
+                      final DateTime? aiMessageTime =
+                      latestMessage.timestamp?.toDate();
 
-                            final bool isNewAiReply =
-                                lastUserSendTime != null &&
-                                    aiMessageTime != null &&
-                                    aiMessageTime.isAfter(
-                                        lastUserSendTime);
+                      final bool isNewAiReply =
+                          lastUserSendTime != null &&
+                              aiMessageTime != null &&
+                              aiMessageTime.isAfter(
+                                  lastUserSendTime);
 
-                            if (isNewAiReply) {
-                              WidgetsBinding.instance
-                                  .addPostFrameCallback((_) {
-                                if (!mounted) return;
-
-                                setState(() {
-                                  _isGenerating = false;
-                                  _isLoading = false;
-                                  _waitingForNewAiReply = false;
-                                });
-
-                                generatingRooms
-                                    .remove(_roomLockKey);
-
-                                debugPrint(
-                                    "✨ 偵測到新的 AI 回覆，解除鎖定狀態！");
-                              });
-                            }
-                          }
-                        }
-                        // ✨✨✨ 靈魂出竅自動解鎖魔法 結束 ✨✨✨
-                        if (messages.isEmpty && !_isGenerating) {
-                          return Center(
-                              child: Text(l10n.chat_empty_msg));
-                        }
-                        return Column(
-                          children: [
-                            Expanded(
-                              child: _buildMessageList(messages),
-                            ),
-                            if (_isRegenerating)
-                              Padding(
-                                padding:
-                                const EdgeInsets.fromLTRB(
-                                  16,
-                                  8,
-                                  16,
-                                  12,
-                                ),
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Container(
-                                    padding: const EdgeInsets
-                                        .symmetric(
-                                      horizontal: 14,
-                                      vertical: 10,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .surfaceContainerHighest
-                                          .withValues(
-                                          alpha: 0.75),
-                                      borderRadius:
-                                      BorderRadius.circular(
-                                          18),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize:
-                                      MainAxisSize.min,
-                                      children: [
-                                        SizedBox(
-                                          width: 15,
-                                          height: 15,
-                                          child:
-                                          CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            color:
-                                            Theme.of(context)
-                                                .colorScheme
-                                                .primary,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Text(
-                                          l10n.chatPageRegenerating,
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            color:
-                                            Theme.of(context)
-                                                .colorScheme
-                                                .onSurface
-                                                .withValues(
-                                                alpha:
-                                                0.72),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
-                  if (_isScreenshotMode)
-                  // 如果是截圖模式，就顯示專屬操作列
-                    _buildScreenshotBottomBar()
-                  else ...[
-                    // ✨ 3. 底部（）快捷鍵區
-                    showInputExtras
-                        ? Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 3,
-                      ),
-                      color: theme.cardColor.withValues(alpha: 0.5),
-                      child: Row(
-                        children: [
-                          OutlinedButton(
-                            onPressed: (_isGenerating || _isLoading)
-                                ? null
-                                : () {
-                              final text = _textController.text;
-
-                              final selection =
-                                  _textController.selection;
-
-                              int cursorPosition =
-                                  selection.baseOffset;
-
-                              if (cursorPosition < 0 ||
-                                  cursorPosition > text.length) {
-                                cursorPosition = text.length;
-                              }
-
-                              final newText = text.substring(
-                                0,
-                                cursorPosition,
-                              ) +
-                                  '（）' +
-                                  text.substring(
-                                    cursorPosition,
-                                  );
-
-                              _textController.value =
-                                  TextEditingValue(
-                                    text: newText,
-                                    selection: TextSelection.collapsed(
-                                      offset: cursorPosition + 1,
-                                    ),
-                                  );
-
-                              _focusNode.requestFocus();
-                            },
-                            style: OutlinedButton.styleFrom(
-                              minimumSize: const Size(42, 30),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                              ),
-                              visualDensity: VisualDensity.compact,
-                              tapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                            ),
-                            child: const Text('（）'),
-                          ),
-                        ],
-                      ),
-                    )
-                        : const SizedBox.shrink(),
-
-                    // 🌟 多選模式 / 平常輸入框
-                    if (_isMultiSelectMode)
-                      _buildMultiSelectBottomBar()
-                    else
-                      ChatInputBar(
-                        controller: _textController,
-                        focusNode: _focusNode,
-                        isGenerating: _isGenerating,
-                        isLoading: _isLoading,
-                        showCounter: showInputExtras,
-                        hintText: _isGenerating
-                            ? (AppLocalizations.of(context)?.chat_ai_typing ??
-                            l10n.chatTypingIndicator)
-                            : (AppLocalizations.of(context)
-                            ?.chat_input_hint_default ??
-                            l10n.chatInputHint),
-                        regeneratingTooltip: l10n.regenerateButtonLabel(
-                          _freeRegenerateCount,
-                          _maxRegenerateCount,
-                        ),
-                        continueTooltip: l10n.continueButton,
-                        onChanged: _saveDraft,
-                        onToolbox: _showToolbox,
-                        onRegenerate: _handleRegenerateButton,
-                        onContinue: _handleContinueButton,
-                        onStop: _stopGenerating,
-                        onSend: () async {
-                          final text = _textController.text.trim();
-                          final imagePath = _selectedChatImagePath;
-
-                          if (text.isEmpty &&
-                              (imagePath == null || imagePath.isEmpty)) {
-                            return;
-                          }
+                      if (isNewAiReply) {
+                        WidgetsBinding.instance
+                            .addPostFrameCallback((_) {
+                          if (!mounted) return;
 
                           setState(() {
-                            _selectedChatImagePath = null;
+                            _isGenerating = false;
+                            _isLoading = false;
+                            _waitingForNewAiReply = false;
                           });
 
-                          await _sendMessage(
-                            text: text,
-                            imagePath: imagePath,
-                            showInChat: true,
-                          );
-                        },
+                          generatingRooms
+                              .remove(_roomLockKey);
+
+                          debugPrint(
+                              "✨ 偵測到新的 AI 回覆，解除鎖定狀態！");
+                        });
+                      }
+                    }
+                  }
+                  // ✨✨✨ 靈魂出竅自動解鎖魔法 結束 ✨✨✨
+                  if (messages.isEmpty && !_isGenerating) {
+                    return Center(
+                        child: Text(l10n.chat_empty_msg));
+                  }
+                  return Column(
+                    children: [
+                      Expanded(
+                        child: _buildMessageList(messages),
                       ),
-                  ],
-                ],
+                      if (_isRegenerating)
+                        Padding(
+                          padding:
+                          const EdgeInsets.fromLTRB(
+                            16,
+                            8,
+                            16,
+                            12,
+                          ),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Container(
+                              padding: const EdgeInsets
+                                  .symmetric(
+                                horizontal: 14,
+                                vertical: 10,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainerHighest
+                                    .withValues(
+                                    alpha: 0.75),
+                                borderRadius:
+                                BorderRadius.circular(
+                                    18),
+                              ),
+                              child: Row(
+                                mainAxisSize:
+                                MainAxisSize.min,
+                                children: [
+                                  SizedBox(
+                                    width: 15,
+                                    height: 15,
+                                    child:
+                                    CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color:
+                                      Theme.of(context)
+                                          .colorScheme
+                                          .primary,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    l10n.chatPageRegenerating,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color:
+                                      Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withValues(
+                                          alpha:
+                                          0.72),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                },
               ),
             ),
+            if (_isScreenshotMode)
+            // 如果是截圖模式，就顯示專屬操作列
+              _buildScreenshotBottomBar()
+            else ...[
+              // ✨ 3. 底部（）快捷鍵區
+              showInputExtras
+                  ? Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 3,
+                ),
+                color: theme.cardColor.withValues(alpha: 0.5),
+                child: Row(
+                  children: [
+                    OutlinedButton(
+                      onPressed: (_isGenerating || _isLoading)
+                          ? null
+                          : () {
+                        final text = _textController.text;
+
+                        final selection =
+                            _textController.selection;
+
+                        int cursorPosition =
+                            selection.baseOffset;
+
+                        if (cursorPosition < 0 ||
+                            cursorPosition > text.length) {
+                          cursorPosition = text.length;
+                        }
+
+                        final newText = text.substring(
+                          0,
+                          cursorPosition,
+                        ) +
+                            '（）' +
+                            text.substring(
+                              cursorPosition,
+                            );
+
+                        _textController.value =
+                            TextEditingValue(
+                              text: newText,
+                              selection: TextSelection.collapsed(
+                                offset: cursorPosition + 1,
+                              ),
+                            );
+
+                        _focusNode.requestFocus();
+                      },
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(42, 30),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                        ),
+                        visualDensity: VisualDensity.compact,
+                        tapTargetSize:
+                        MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: const Text('（）'),
+                    ),
+                  ],
+                ),
+              )
+                  : const SizedBox.shrink(),
+
+              // 🌟 多選模式 / 平常輸入框
+              if (_isMultiSelectMode)
+                _buildMultiSelectBottomBar()
+              else
+                ChatInputBar(
+                  controller: _textController,
+                  focusNode: _focusNode,
+                  isGenerating: _isGenerating,
+                  isLoading: _isLoading,
+                  showCounter: showInputExtras,
+                  hintText: _isGenerating
+                      ? (AppLocalizations.of(context)?.chat_ai_typing ??
+                      l10n.chatTypingIndicator)
+                      : (AppLocalizations.of(context)
+                      ?.chat_input_hint_default ??
+                      l10n.chatInputHint),
+                  regeneratingTooltip: l10n.regenerateButtonLabel(
+                    _freeRegenerateCount,
+                    _maxRegenerateCount,
+                  ),
+                  continueTooltip: l10n.continueButton,
+                  onChanged: _saveDraft,
+                  onToolbox: _showToolbox,
+                  onRegenerate: _handleRegenerateButton,
+                  onContinue: _handleContinueButton,
+                  onStop: _stopGenerating,
+                  onSend: () async {
+                    final text = _textController.text.trim();
+                    final imagePath = _selectedChatImagePath;
+
+                    if (text.isEmpty &&
+                        (imagePath == null || imagePath.isEmpty)) {
+                      return;
+                    }
+
+                    setState(() {
+                      _selectedChatImagePath = null;
+                    });
+
+                    await _sendMessage(
+                      text: text,
+                      imagePath: imagePath,
+                      showInChat: true,
+                    );
+                  },
+                ),
+            ],
           ],
         ),
       ),
+    );
+
+    return Consumer<ThemeNotifier>(
+      child: chatScaffold,
+      builder: (context, themeNotifier, child) {
+        final bool hasPhotoBackground =
+            themeNotifier.activeCharacterBackground != null ||
+                (themeNotifier.currentThemeEnum == AppTheme.custom &&
+                    themeNotifier.backgroundImagePath != null);
+
+        return Container(
+          decoration: themeNotifier.characterChatBackground,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Positioned.fill(
+                child: Container(
+                  color: hasPhotoBackground
+                      ? Theme.of(context)
+                      .colorScheme
+                      .surface
+                      .withValues(alpha: 0.6)
+                      : Colors.transparent,
+                ),
+              ),
+              child!,
+            ],
+          ),
+        );
+      },
     );
   }
 

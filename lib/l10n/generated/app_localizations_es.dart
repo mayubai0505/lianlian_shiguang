@@ -8363,4 +8363,141 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get dice_duel_rolling => 'Reuniendo energía cósmica...';
+
+  @override
+  String get butterfly_loading_connecting => 'Conectando con el tiempo...';
+
+  @override
+  String get character_block_login_required =>
+      'Inicia sesión antes de bloquear a un personaje';
+
+  @override
+  String get character_block_self_forbidden =>
+      'No puedes bloquear a un personaje que hayas creado';
+
+  @override
+  String get character_block_title => 'Bloquear personaje';
+
+  @override
+  String character_block_confirm_message(String characterName) {
+    return '¿Seguro que quieres bloquear a «$characterName»?\n\nDespués de bloquearlo, este personaje dejará de aparecer en contenido recomendado, como Encuentros y Momentos.';
+  }
+
+  @override
+  String get character_block_confirm => 'Confirmar bloqueo';
+
+  @override
+  String character_block_success(String characterName) {
+    return 'Se bloqueó a «$characterName»';
+  }
+
+  @override
+  String get character_block_failed =>
+      'No se pudo bloquear al personaje. Inténtalo de nuevo más tarde';
+
+  @override
+  String get character_unblock_success => 'Se desbloqueó al personaje';
+
+  @override
+  String get character_unblock_failed =>
+      'No se pudo desbloquear al personaje. Inténtalo de nuevo más tarde';
+
+  @override
+  String get character_report_login_required =>
+      'Inicia sesión antes de denunciar a un personaje';
+
+  @override
+  String get character_report_self_forbidden =>
+      'No puedes denunciar a un personaje que hayas creado';
+
+  @override
+  String get character_report_submitted => 'Denuncia enviada. La revisaremos';
+
+  @override
+  String get character_report_open_failed =>
+      'No se pudo abrir la página de denuncia. Inténtalo de nuevo más tarde';
+
+  @override
+  String chat_loader_error(String error) {
+    return 'Error al cargar: $error';
+  }
+
+  @override
+  String get announcement_connection_failed =>
+      'Error de conexión. Inténtalo de nuevo más tarde';
+
+  @override
+  String get announcement_latest => 'Más reciente';
+
+  @override
+  String announcement_published_at(String date) {
+    return 'Fecha de publicación: $date';
+  }
+
+  @override
+  String get announcement_operations_team =>
+      'Equipo de operaciones de LoveyDovey';
+
+  @override
+  String get legal_creator_guidelines => 'Normas para creadores';
+
+  @override
+  String get legal_refresh => 'Actualizar';
+
+  @override
+  String get legal_page_load_failed => 'No se pudo cargar la página';
+
+  @override
+  String get legal_check_connection_retry =>
+      'Comprueba tu conexión a internet e inténtalo de nuevo.';
+
+  @override
+  String get legal_reload => 'Volver a cargar';
+
+  @override
+  String get chat_web_purchase_unavailable =>
+      'Las compras no están disponibles actualmente en la versión web. Usa la aplicación LoveyDovey para comprar puntos Flor o una suscripción.';
+
+  @override
+  String get chat_dont_show_again => 'No volver a mostrar este aviso';
+
+  @override
+  String get chat_menu_save_transcript => 'Guardar historial del chat';
+
+  @override
+  String get chat_menu_reply_model => 'Modelo de respuesta';
+
+  @override
+  String get chat_reply_model_menu_tip =>
+      '¡El modelo de respuesta ha cambiado de lugar! Ahora puedes encontrarlo en el menú de la esquina superior derecha.';
+
+  @override
+  String get defaultProfileName => 'Perfil predeterminado';
+
+  @override
+  String get creator_social_links_manage => 'Administrar enlaces sociales';
+
+  @override
+  String get creator_social_links_title => 'Enlaces personales y sociales';
+
+  @override
+  String get creator_social_links_hint =>
+      'Añade los enlaces que quieras mostrar públicamente en tu página de creador. Los campos vacíos no se mostrarán.';
+
+  @override
+  String get creator_social_links_website => 'Sitio web personal';
+
+  @override
+  String get creator_social_links_saved => 'Enlaces sociales guardados';
+
+  @override
+  String get creator_social_links_load_failed =>
+      'No se pudieron cargar los enlaces sociales. Inténtalo de nuevo más tarde';
+
+  @override
+  String get creator_social_links_save_failed =>
+      'No se pudieron guardar los enlaces sociales. Inténtalo de nuevo más tarde';
+
+  @override
+  String get creator_social_links_open_failed => 'No se pudo abrir este enlace';
 }

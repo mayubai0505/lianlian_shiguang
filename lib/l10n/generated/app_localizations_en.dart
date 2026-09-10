@@ -8236,4 +8236,141 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dice_duel_rolling => 'Gathering cosmic energy...';
+
+  @override
+  String get butterfly_loading_connecting => 'Connecting with time...';
+
+  @override
+  String get character_block_login_required =>
+      'Please log in before blocking a character';
+
+  @override
+  String get character_block_self_forbidden =>
+      'You cannot block a character you created';
+
+  @override
+  String get character_block_title => 'Block Character';
+
+  @override
+  String character_block_confirm_message(String characterName) {
+    return 'Are you sure you want to block “$characterName”?\n\nAfter blocking, you will no longer see this character in recommended content such as Encounters and Moments.';
+  }
+
+  @override
+  String get character_block_confirm => 'Block';
+
+  @override
+  String character_block_success(String characterName) {
+    return 'Blocked “$characterName”';
+  }
+
+  @override
+  String get character_block_failed =>
+      'Failed to block the character. Please try again later';
+
+  @override
+  String get character_unblock_success => 'Character unblocked';
+
+  @override
+  String get character_unblock_failed =>
+      'Failed to unblock the character. Please try again later';
+
+  @override
+  String get character_report_login_required =>
+      'Please log in before reporting a character';
+
+  @override
+  String get character_report_self_forbidden =>
+      'You cannot report a character you created';
+
+  @override
+  String get character_report_submitted =>
+      'Report submitted. We will review it';
+
+  @override
+  String get character_report_open_failed =>
+      'Unable to open the report page. Please try again later';
+
+  @override
+  String chat_loader_error(String error) {
+    return 'Failed to load: $error';
+  }
+
+  @override
+  String get announcement_connection_failed =>
+      'Connection failed. Please try again later';
+
+  @override
+  String get announcement_latest => 'Latest';
+
+  @override
+  String announcement_published_at(String date) {
+    return 'Published: $date';
+  }
+
+  @override
+  String get announcement_operations_team => 'LoveyDovey Operations Team';
+
+  @override
+  String get legal_creator_guidelines => 'Creator Guidelines';
+
+  @override
+  String get legal_refresh => 'Refresh';
+
+  @override
+  String get legal_page_load_failed => 'Failed to load page';
+
+  @override
+  String get legal_check_connection_retry =>
+      'Please check your internet connection and try again.';
+
+  @override
+  String get legal_reload => 'Reload';
+
+  @override
+  String get chat_web_purchase_unavailable =>
+      'Purchases are currently unavailable on the web version. Please use the LoveyDovey app to purchase Flower Points or a subscription.';
+
+  @override
+  String get chat_dont_show_again => 'Don’t show this again';
+
+  @override
+  String get chat_menu_save_transcript => 'Save Chat History';
+
+  @override
+  String get chat_menu_reply_model => 'Response Model';
+
+  @override
+  String get chat_reply_model_menu_tip =>
+      'The response model has moved! You can now find it in the menu at the top right.';
+
+  @override
+  String get defaultProfileName => 'Default Profile';
+
+  @override
+  String get creator_social_links_manage => 'Manage Social Links';
+
+  @override
+  String get creator_social_links_title => 'Personal & Social Links';
+
+  @override
+  String get creator_social_links_hint =>
+      'Add the links you want to display publicly on your creator page. Blank fields will not be shown.';
+
+  @override
+  String get creator_social_links_website => 'Personal Website';
+
+  @override
+  String get creator_social_links_saved => 'Social links saved';
+
+  @override
+  String get creator_social_links_load_failed =>
+      'Failed to load social links. Please try again later';
+
+  @override
+  String get creator_social_links_save_failed =>
+      'Failed to save social links. Please try again later';
+
+  @override
+  String get creator_social_links_open_failed => 'Unable to open this link';
 }

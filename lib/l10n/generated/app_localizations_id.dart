@@ -8289,4 +8289,142 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get dice_duel_rolling => 'Mengumpulkan energi kosmik...';
+
+  @override
+  String get butterfly_loading_connecting => 'Terhubung dengan waktu...';
+
+  @override
+  String get character_block_login_required =>
+      'Silakan masuk sebelum memblokir karakter';
+
+  @override
+  String get character_block_self_forbidden =>
+      'Kamu tidak dapat memblokir karakter buatanmu sendiri';
+
+  @override
+  String get character_block_title => 'Blokir Karakter';
+
+  @override
+  String character_block_confirm_message(String characterName) {
+    return 'Yakin ingin memblokir “$characterName”?\n\nSetelah diblokir, karakter ini tidak akan muncul lagi dalam konten rekomendasi seperti Pertemuan dan Momen.';
+  }
+
+  @override
+  String get character_block_confirm => 'Konfirmasi Blokir';
+
+  @override
+  String character_block_success(String characterName) {
+    return '“$characterName” telah diblokir';
+  }
+
+  @override
+  String get character_block_failed =>
+      'Gagal memblokir karakter. Silakan coba lagi nanti';
+
+  @override
+  String get character_unblock_success => 'Karakter telah dibuka blokirnya';
+
+  @override
+  String get character_unblock_failed =>
+      'Gagal membuka blokir karakter. Silakan coba lagi nanti';
+
+  @override
+  String get character_report_login_required =>
+      'Silakan masuk sebelum melaporkan karakter';
+
+  @override
+  String get character_report_self_forbidden =>
+      'Kamu tidak dapat melaporkan karakter buatanmu sendiri';
+
+  @override
+  String get character_report_submitted =>
+      'Laporan telah dikirim. Kami akan meninjaunya';
+
+  @override
+  String get character_report_open_failed =>
+      'Tidak dapat membuka halaman pelaporan. Silakan coba lagi nanti';
+
+  @override
+  String chat_loader_error(String error) {
+    return 'Gagal memuat: $error';
+  }
+
+  @override
+  String get announcement_connection_failed =>
+      'Koneksi gagal. Silakan coba lagi nanti';
+
+  @override
+  String get announcement_latest => 'Terbaru';
+
+  @override
+  String announcement_published_at(String date) {
+    return 'Tanggal diterbitkan: $date';
+  }
+
+  @override
+  String get announcement_operations_team => 'Tim Operasional LoveyDovey';
+
+  @override
+  String get legal_creator_guidelines => 'Pedoman Kreator';
+
+  @override
+  String get legal_refresh => 'Segarkan';
+
+  @override
+  String get legal_page_load_failed => 'Gagal memuat halaman';
+
+  @override
+  String get legal_check_connection_retry =>
+      'Periksa koneksi internet Anda, lalu coba lagi.';
+
+  @override
+  String get legal_reload => 'Muat Ulang';
+
+  @override
+  String get chat_web_purchase_unavailable =>
+      'Pembelian saat ini tidak tersedia di versi web. Gunakan aplikasi LoveyDovey untuk membeli Poin Bunga atau berlangganan.';
+
+  @override
+  String get chat_dont_show_again => 'Jangan tampilkan lagi';
+
+  @override
+  String get chat_menu_save_transcript => 'Simpan Riwayat Obrolan';
+
+  @override
+  String get chat_menu_reply_model => 'Model Respons';
+
+  @override
+  String get chat_reply_model_menu_tip =>
+      'Model respons telah dipindahkan! Sekarang kamu dapat menemukannya di menu kanan atas.';
+
+  @override
+  String get defaultProfileName => 'Profil Default';
+
+  @override
+  String get creator_social_links_manage => 'Kelola Tautan Sosial';
+
+  @override
+  String get creator_social_links_title => 'Tautan Pribadi dan Sosial';
+
+  @override
+  String get creator_social_links_hint =>
+      'Tambahkan tautan yang ingin ditampilkan secara publik di halaman kreatormu. Kolom yang kosong tidak akan ditampilkan.';
+
+  @override
+  String get creator_social_links_website => 'Situs Web Pribadi';
+
+  @override
+  String get creator_social_links_saved => 'Tautan sosial telah disimpan';
+
+  @override
+  String get creator_social_links_load_failed =>
+      'Gagal memuat tautan sosial. Silakan coba lagi nanti';
+
+  @override
+  String get creator_social_links_save_failed =>
+      'Gagal menyimpan tautan sosial. Silakan coba lagi nanti';
+
+  @override
+  String get creator_social_links_open_failed =>
+      'Tidak dapat membuka tautan ini';
 }

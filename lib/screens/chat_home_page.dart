@@ -16,7 +16,6 @@ import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:showcaseview/showcaseview.dart'; // 🌟 記得加這行
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../services/reminder_notification_service.dart';
 //聊天室的名稱更改
 class ChatHomePage extends StatefulWidget {
@@ -34,6 +33,10 @@ class _ChatHomePageState extends State<ChatHomePage> {
   final String _appId = AppConfig.appId;
   final Map<String, Character> _characterCache = {};
   final Set<String> _preloadedAvatarUrls = {};
+
+  // 同一個頭像 URL 永遠重用同一個 ImageProvider。
+  // 這樣從聊天室返回列表時，不會因為 widget rebuild 又短暫出現 loading 圈。
+  final Map<String, CachedNetworkImageProvider> _avatarProviderCache = {};
   bool _hasHandledInitialNotification =
   false;
   bool _hasCheckedNotification = false;
@@ -419,8 +422,16 @@ class _ChatHomePageState extends State<ChatHomePage> {
 
       _preloadedAvatarUrls.add(imageUrl);
 
+      final provider = _avatarProviderCache.putIfAbsent(
+        imageUrl,
+            () => CachedNetworkImageProvider(
+          imageUrl,
+          maxWidth: 168,
+        ),
+      );
+
       precacheImage(
-        CachedNetworkImageProvider(imageUrl),
+        provider,
         context,
       ).catchError((error) {
         _preloadedAvatarUrls.remove(imageUrl);
@@ -717,81 +728,85 @@ class _ChatHomePageState extends State<ChatHomePage> {
   }) {
     final normalizedUrl = imageUrl.trim();
 
-    if (normalizedUrl.isEmpty) {
-      return CircleAvatar(
-        radius: 28,
-        backgroundColor:
-        theme.colorScheme.secondaryContainer,
+    Widget fallbackAvatar() {
+      return Container(
+        width: 56,
+        height: 56,
+        color: theme.colorScheme.secondaryContainer,
+        alignment: Alignment.center,
         child: Icon(
           Icons.person_rounded,
-          color:
-          theme.colorScheme.onSecondaryContainer,
+          color: theme.colorScheme.onSecondaryContainer,
         ),
       );
     }
+
+    if (normalizedUrl.isEmpty) {
+      return SizedBox(
+        width: 56,
+        height: 56,
+        child: ClipOval(
+          child: fallbackAvatar(),
+        ),
+      );
+    }
+
+    final provider = _avatarProviderCache.putIfAbsent(
+      normalizedUrl,
+          () => CachedNetworkImageProvider(
+        normalizedUrl,
+        maxWidth: 168,
+      ),
+    );
 
     return SizedBox(
       width: 56,
       height: 56,
       child: ClipOval(
-        child: CachedNetworkImage(
-          imageUrl: normalizedUrl,
+        child: Image(
+          key: ValueKey<String>('chat_avatar_$normalizedUrl'),
+          image: provider,
           width: 56,
           height: 56,
-
-          // 保持原圖比例，再從中央裁成正圓
           fit: BoxFit.cover,
           alignment: Alignment.center,
-
-          // 只限制寬度，不同時強制寬高，
-          // 避免非正方形原圖在解碼時看起來被壓扁。
-          memCacheWidth: 168,
-
           filterQuality: FilterQuality.medium,
 
-          placeholder: (context, url) {
-            return Container(
-              width: 56,
-              height: 56,
-              color:
-              theme.colorScheme.secondaryContainer,
-              alignment: Alignment.center,
-              child: const SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                ),
-              ),
-            );
+          // URL 沒變時保留上一幀，不要因為父層 rebuild 閃回空白／loading。
+          gaplessPlayback: true,
+
+          // 第一次真的還沒載到時顯示靜態預設頭像，不顯示轉圈圈。
+          frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+            if (wasSynchronouslyLoaded || frame != null) {
+              return child;
+            }
+            return fallbackAvatar();
           },
 
-          errorWidget: (context, url, error) {
-            return Container(
-              width: 56,
-              height: 56,
-              color:
-              theme.colorScheme.secondaryContainer,
-              alignment: Alignment.center,
-              child: Icon(
-                Icons.person_rounded,
-                color: theme
-                    .colorScheme
-                    .onSecondaryContainer,
-              ),
-            );
+          errorBuilder: (context, error, stackTrace) {
+            return fallbackAvatar();
           },
         ),
       ),
     );
   }
 
+
   Future<void> _precacheCharacterImage(String imageUrl) async {
     if (imageUrl.trim().isEmpty || !mounted) return;
 
     try {
+      final normalizedUrl = imageUrl.trim();
+      final provider = _avatarProviderCache.putIfAbsent(
+        normalizedUrl,
+            () => CachedNetworkImageProvider(
+          normalizedUrl,
+          maxWidth: 168,
+        ),
+      );
+
       await precacheImage(
-        CachedNetworkImageProvider(imageUrl),
+        provider,
         context,
       );
     } catch (e) {
@@ -833,14 +848,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
                   slivers: [
                     // ✨ 3. 會跟著滑動隱藏的 SliverAppBar
                     SliverAppBar(
-                      title: Text(
-                        l10n.chat_home_title,
-                        style: GoogleFonts.notoSerifTc(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w600,
-                          color: theme.colorScheme.onBackground,
-                        ),
-                      ),
+                      // 聊天主頁不顯示左上角「訊息」標題，只保留右側功能按鈕。
                       // 💡 關鍵：給 AppBar 一個微透明或實體底色，卡片往上滑才不會透字重疊！
                       backgroundColor: theme.scaffoldBackgroundColor.withOpacity(0.95),
                       elevation: 0.0,

@@ -8276,4 +8276,141 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get dice_duel_rolling => 'ब्रह्मांडीय ऊर्जा एकत्रित हो रही है...';
+
+  @override
+  String get butterfly_loading_connecting => 'समय से जुड़ रहे हैं...';
+
+  @override
+  String get character_block_login_required =>
+      'किसी पात्र को ब्लॉक करने से पहले लॉग इन करें';
+
+  @override
+  String get character_block_self_forbidden =>
+      'आप अपने बनाए हुए पात्र को ब्लॉक नहीं कर सकते';
+
+  @override
+  String get character_block_title => 'पात्र को ब्लॉक करें';
+
+  @override
+  String character_block_confirm_message(String characterName) {
+    return 'क्या आप वाकई “$characterName” को ब्लॉक करना चाहते हैं?\n\nब्लॉक करने के बाद यह पात्र मुलाकात और मोमेंट्स जैसी सुझाई गई सामग्री में दिखाई नहीं देगा।';
+  }
+
+  @override
+  String get character_block_confirm => 'ब्लॉक करने की पुष्टि करें';
+
+  @override
+  String character_block_success(String characterName) {
+    return '“$characterName” को ब्लॉक कर दिया गया है';
+  }
+
+  @override
+  String get character_block_failed =>
+      'पात्र को ब्लॉक नहीं किया जा सका। कृपया बाद में फिर प्रयास करें';
+
+  @override
+  String get character_unblock_success => 'पात्र को अनब्लॉक कर दिया गया है';
+
+  @override
+  String get character_unblock_failed =>
+      'पात्र को अनब्लॉक नहीं किया जा सका। कृपया बाद में फिर प्रयास करें';
+
+  @override
+  String get character_report_login_required =>
+      'किसी पात्र की रिपोर्ट करने से पहले लॉग इन करें';
+
+  @override
+  String get character_report_self_forbidden =>
+      'आप अपने बनाए हुए पात्र की रिपोर्ट नहीं कर सकते';
+
+  @override
+  String get character_report_submitted =>
+      'रिपोर्ट भेज दी गई है। हम इसकी समीक्षा करेंगे';
+
+  @override
+  String get character_report_open_failed =>
+      'रिपोर्ट पेज नहीं खोला जा सका। कृपया बाद में फिर प्रयास करें';
+
+  @override
+  String chat_loader_error(String error) {
+    return 'लोड नहीं हो सका: $error';
+  }
+
+  @override
+  String get announcement_connection_failed =>
+      'कनेक्शन विफल रहा। कृपया बाद में फिर प्रयास करें';
+
+  @override
+  String get announcement_latest => 'नवीनतम';
+
+  @override
+  String announcement_published_at(String date) {
+    return 'प्रकाशित होने की तारीख: $date';
+  }
+
+  @override
+  String get announcement_operations_team => 'LoveyDovey संचालन टीम';
+
+  @override
+  String get legal_creator_guidelines => 'क्रिएटर दिशानिर्देश';
+
+  @override
+  String get legal_refresh => 'रीफ़्रेश करें';
+
+  @override
+  String get legal_page_load_failed => 'पेज लोड नहीं हो सका';
+
+  @override
+  String get legal_check_connection_retry =>
+      'कृपया अपना इंटरनेट कनेक्शन जाँचें और फिर से प्रयास करें।';
+
+  @override
+  String get legal_reload => 'फिर से लोड करें';
+
+  @override
+  String get chat_web_purchase_unavailable =>
+      'वेब संस्करण पर फ़िलहाल खरीदारी उपलब्ध नहीं है। फ़्लावर पॉइंट्स या सदस्यता खरीदने के लिए कृपया LoveyDovey ऐप का उपयोग करें।';
+
+  @override
+  String get chat_dont_show_again => 'यह संदेश दोबारा न दिखाएँ';
+
+  @override
+  String get chat_menu_save_transcript => 'चैट इतिहास सहेजें';
+
+  @override
+  String get chat_menu_reply_model => 'जवाब देने वाला मॉडल';
+
+  @override
+  String get chat_reply_model_menu_tip =>
+      'जवाब देने वाला मॉडल अब दूसरी जगह मिल सकता है! इसे अब ऊपर दाईं ओर मौजूद मेन्यू में देखें।';
+
+  @override
+  String get defaultProfileName => 'डिफ़ॉल्ट प्रोफ़ाइल';
+
+  @override
+  String get creator_social_links_manage => 'सोशल लिंक प्रबंधित करें';
+
+  @override
+  String get creator_social_links_title => 'व्यक्तिगत और सोशल लिंक';
+
+  @override
+  String get creator_social_links_hint =>
+      'वे लिंक जोड़ें जिन्हें आप अपने क्रिएटर पेज पर सार्वजनिक रूप से दिखाना चाहते हैं। खाली छोड़े गए फ़ील्ड दिखाई नहीं देंगे।';
+
+  @override
+  String get creator_social_links_website => 'व्यक्तिगत वेबसाइट';
+
+  @override
+  String get creator_social_links_saved => 'सोशल लिंक सहेज लिए गए हैं';
+
+  @override
+  String get creator_social_links_load_failed =>
+      'सोशल लिंक लोड नहीं हो सके। कृपया बाद में फिर प्रयास करें';
+
+  @override
+  String get creator_social_links_save_failed =>
+      'सोशल लिंक सहेजे नहीं जा सके। कृपया बाद में फिर प्रयास करें';
+
+  @override
+  String get creator_social_links_open_failed => 'यह लिंक नहीं खोला जा सका';
 }

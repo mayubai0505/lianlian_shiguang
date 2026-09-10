@@ -8169,4 +8169,140 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dice_duel_rolling => 'تتجمع طاقة الكون...';
+
+  @override
+  String get butterfly_loading_connecting => 'جارٍ الاتصال بالزمن...';
+
+  @override
+  String get character_block_login_required =>
+      'يرجى تسجيل الدخول أولًا لحظر الشخصية';
+
+  @override
+  String get character_block_self_forbidden =>
+      'لا يمكنك حظر شخصية أنشأتها بنفسك';
+
+  @override
+  String get character_block_title => 'حظر الشخصية';
+
+  @override
+  String character_block_confirm_message(String characterName) {
+    return 'هل أنت متأكد من رغبتك في حظر «$characterName»؟\n\nبعد الحظر، لن تظهر لك هذه الشخصية مجددًا ضمن المحتوى المقترح، مثل اللقاءات والمنشورات.';
+  }
+
+  @override
+  String get character_block_confirm => 'تأكيد الحظر';
+
+  @override
+  String character_block_success(String characterName) {
+    return 'تم حظر «$characterName»';
+  }
+
+  @override
+  String get character_block_failed => 'فشل حظر الشخصية، يرجى المحاولة لاحقًا';
+
+  @override
+  String get character_unblock_success => 'تم إلغاء الحظر';
+
+  @override
+  String get character_unblock_failed =>
+      'فشل إلغاء الحظر، يرجى المحاولة لاحقًا';
+
+  @override
+  String get character_report_login_required =>
+      'يرجى تسجيل الدخول أولًا للإبلاغ عن الشخصية';
+
+  @override
+  String get character_report_self_forbidden =>
+      'لا يمكنك الإبلاغ عن شخصية أنشأتها بنفسك';
+
+  @override
+  String get character_report_submitted => 'تم إرسال البلاغ وسنقوم بمراجعته';
+
+  @override
+  String get character_report_open_failed =>
+      'تعذر فتح صفحة الإبلاغ، يرجى المحاولة لاحقًا';
+
+  @override
+  String chat_loader_error(String error) {
+    return 'فشل التحميل: $error';
+  }
+
+  @override
+  String get announcement_connection_failed =>
+      'فشل الاتصال، يرجى المحاولة لاحقًا';
+
+  @override
+  String get announcement_latest => 'الأحدث';
+
+  @override
+  String announcement_published_at(String date) {
+    return 'تاريخ النشر: $date';
+  }
+
+  @override
+  String get announcement_operations_team => 'فريق تشغيل LoveyDovey';
+
+  @override
+  String get legal_creator_guidelines => 'إرشادات المنشئين';
+
+  @override
+  String get legal_refresh => 'تحديث';
+
+  @override
+  String get legal_page_load_failed => 'فشل تحميل الصفحة';
+
+  @override
+  String get legal_check_connection_retry =>
+      'يرجى التحقق من اتصالك بالإنترنت والمحاولة مجددًا.';
+
+  @override
+  String get legal_reload => 'إعادة التحميل';
+
+  @override
+  String get chat_web_purchase_unavailable =>
+      'خدمة الشحن غير متاحة حاليًا على إصدار الويب. يرجى استخدام تطبيق «LoveyDovey» لشراء نقاط الزهور أو الاشتراك.';
+
+  @override
+  String get chat_dont_show_again => 'عدم إظهار هذا التنبيه مجددًا';
+
+  @override
+  String get chat_menu_save_transcript => 'حفظ سجل المحادثة';
+
+  @override
+  String get chat_menu_reply_model => 'نموذج الرد';
+
+  @override
+  String get chat_reply_model_menu_tip =>
+      'تم نقل نموذج الرد! يمكنك الآن العثور عليه في القائمة الموجودة أعلى اليسار.';
+
+  @override
+  String get defaultProfileName => 'الملف الافتراضي';
+
+  @override
+  String get creator_social_links_manage => 'إدارة روابط التواصل الاجتماعي';
+
+  @override
+  String get creator_social_links_title =>
+      'الروابط الشخصية وروابط التواصل الاجتماعي';
+
+  @override
+  String get creator_social_links_hint =>
+      'أضف الروابط التي تريد عرضها علنًا على صفحة المنشئ. لن تظهر الحقول التي تُترك فارغة.';
+
+  @override
+  String get creator_social_links_website => 'الموقع الشخصي';
+
+  @override
+  String get creator_social_links_saved => 'تم حفظ روابط التواصل الاجتماعي';
+
+  @override
+  String get creator_social_links_load_failed =>
+      'فشل تحميل روابط التواصل الاجتماعي، يرجى المحاولة لاحقًا';
+
+  @override
+  String get creator_social_links_save_failed =>
+      'فشل حفظ روابط التواصل الاجتماعي، يرجى المحاولة لاحقًا';
+
+  @override
+  String get creator_social_links_open_failed => 'تعذر فتح هذا الرابط';
 }

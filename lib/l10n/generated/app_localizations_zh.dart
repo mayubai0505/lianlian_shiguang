@@ -7682,6 +7682,129 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get dice_duel_rolling => '宇宙能量匯聚中...';
+
+  @override
+  String get butterfly_loading_connecting => '正在與時光連結...';
+
+  @override
+  String get character_block_login_required => '請先登入後再封鎖角色';
+
+  @override
+  String get character_block_self_forbidden => '無法封鎖自己建立的角色';
+
+  @override
+  String get character_block_title => '封鎖角色';
+
+  @override
+  String character_block_confirm_message(String characterName) {
+    return '確定要封鎖「$characterName」嗎？\n\n封鎖後，你將不會再於邂逅、瞬間等推薦內容中看到這個角色。';
+  }
+
+  @override
+  String get character_block_confirm => '確認封鎖';
+
+  @override
+  String character_block_success(String characterName) {
+    return '已封鎖「$characterName」';
+  }
+
+  @override
+  String get character_block_failed => '封鎖失敗，請稍後再試';
+
+  @override
+  String get character_unblock_success => '已解除封鎖';
+
+  @override
+  String get character_unblock_failed => '解除封鎖失敗，請稍後再試';
+
+  @override
+  String get character_report_login_required => '請先登入後再檢舉角色';
+
+  @override
+  String get character_report_self_forbidden => '無法檢舉自己建立的角色';
+
+  @override
+  String get character_report_submitted => '檢舉已送出，我們會進行審核';
+
+  @override
+  String get character_report_open_failed => '無法開啟檢舉頁面，請稍後再試';
+
+  @override
+  String chat_loader_error(String error) {
+    return '讀取失敗：$error';
+  }
+
+  @override
+  String get announcement_connection_failed => '連線失敗，請稍後再試';
+
+  @override
+  String get announcement_latest => '最新';
+
+  @override
+  String announcement_published_at(String date) {
+    return '發布時間：$date';
+  }
+
+  @override
+  String get announcement_operations_team => '戀戀拾光營運團隊';
+
+  @override
+  String get legal_creator_guidelines => '創作者規範';
+
+  @override
+  String get legal_refresh => '重新整理';
+
+  @override
+  String get legal_page_load_failed => '頁面載入失敗';
+
+  @override
+  String get legal_check_connection_retry => '請確認網路連線後再試一次。';
+
+  @override
+  String get legal_reload => '重新載入';
+
+  @override
+  String get chat_web_purchase_unavailable =>
+      '網頁版目前不提供儲值服務，請使用《戀戀拾光》App 購買花花或訂閱。';
+
+  @override
+  String get chat_dont_show_again => '不再顯示此提示';
+
+  @override
+  String get chat_menu_save_transcript => '保存對話紀錄';
+
+  @override
+  String get chat_menu_reply_model => '回覆模型';
+
+  @override
+  String get chat_reply_model_menu_tip => '回覆模型搬家囉！現在可以從右上角選單找到它。';
+
+  @override
+  String get defaultProfileName => '預設檔案';
+
+  @override
+  String get creator_social_links_manage => '管理社群連結';
+
+  @override
+  String get creator_social_links_title => '個人／社群連結';
+
+  @override
+  String get creator_social_links_hint => '填入想公開顯示在創作者頁面的連結，未填寫的項目不會顯示。';
+
+  @override
+  String get creator_social_links_website => '個人網站';
+
+  @override
+  String get creator_social_links_saved => '社群連結已儲存';
+
+  @override
+  String get creator_social_links_load_failed => '讀取社群連結失敗，請稍後再試';
+
+  @override
+  String get creator_social_links_save_failed => '儲存社群連結失敗，請稍後再試';
+
+  @override
+  String get creator_social_links_open_failed => '無法開啟此連結';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -15358,6 +15481,129 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get dice_duel_rolling => '宇宙能量汇聚中...';
+
+  @override
+  String get butterfly_loading_connecting => '正在与时光连接...';
+
+  @override
+  String get character_block_login_required => '请先登录后再封锁角色';
+
+  @override
+  String get character_block_self_forbidden => '无法封锁自己创建的角色';
+
+  @override
+  String get character_block_title => '封锁角色';
+
+  @override
+  String character_block_confirm_message(String characterName) {
+    return '确定要封锁“$characterName”吗？\n\n封锁后，你将不会再在邂逅、瞬间等推荐内容中看到这个角色。';
+  }
+
+  @override
+  String get character_block_confirm => '确认封锁';
+
+  @override
+  String character_block_success(String characterName) {
+    return '已封锁“$characterName”';
+  }
+
+  @override
+  String get character_block_failed => '封锁失败，请稍后再试';
+
+  @override
+  String get character_unblock_success => '已解除封锁';
+
+  @override
+  String get character_unblock_failed => '解除封锁失败，请稍后再试';
+
+  @override
+  String get character_report_login_required => '请先登录后再举报角色';
+
+  @override
+  String get character_report_self_forbidden => '无法举报自己创建的角色';
+
+  @override
+  String get character_report_submitted => '举报已提交，我们会进行审核';
+
+  @override
+  String get character_report_open_failed => '无法打开举报页面，请稍后再试';
+
+  @override
+  String chat_loader_error(String error) {
+    return '读取失败：$error';
+  }
+
+  @override
+  String get announcement_connection_failed => '连接失败，请稍后再试';
+
+  @override
+  String get announcement_latest => '最新';
+
+  @override
+  String announcement_published_at(String date) {
+    return '发布时间：$date';
+  }
+
+  @override
+  String get announcement_operations_team => '恋恋拾光运营团队';
+
+  @override
+  String get legal_creator_guidelines => '创作者规范';
+
+  @override
+  String get legal_refresh => '刷新';
+
+  @override
+  String get legal_page_load_failed => '页面加载失败';
+
+  @override
+  String get legal_check_connection_retry => '请确认网络连接后再试一次。';
+
+  @override
+  String get legal_reload => '重新加载';
+
+  @override
+  String get chat_web_purchase_unavailable =>
+      '网页版目前不提供充值服务，请使用《恋恋拾光》App 购买花花或订阅。';
+
+  @override
+  String get chat_dont_show_again => '不再显示此提示';
+
+  @override
+  String get chat_menu_save_transcript => '保存对话记录';
+
+  @override
+  String get chat_menu_reply_model => '回复模型';
+
+  @override
+  String get chat_reply_model_menu_tip => '回复模型搬家啦！现在可以从右上角菜单找到它。';
+
+  @override
+  String get defaultProfileName => '默认档案';
+
+  @override
+  String get creator_social_links_manage => '管理社交链接';
+
+  @override
+  String get creator_social_links_title => '个人／社交链接';
+
+  @override
+  String get creator_social_links_hint => '填写想公开显示在创作者页面的链接，未填写的项目不会显示。';
+
+  @override
+  String get creator_social_links_website => '个人网站';
+
+  @override
+  String get creator_social_links_saved => '社交链接已保存';
+
+  @override
+  String get creator_social_links_load_failed => '读取社交链接失败，请稍后再试';
+
+  @override
+  String get creator_social_links_save_failed => '保存社交链接失败，请稍后再试';
+
+  @override
+  String get creator_social_links_open_failed => '无法打开此链接';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -23038,4 +23284,127 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get dice_duel_rolling => '宇宙能量匯聚中...';
+
+  @override
+  String get butterfly_loading_connecting => '正在與時光連結...';
+
+  @override
+  String get character_block_login_required => '請先登入後再封鎖角色';
+
+  @override
+  String get character_block_self_forbidden => '無法封鎖自己建立的角色';
+
+  @override
+  String get character_block_title => '封鎖角色';
+
+  @override
+  String character_block_confirm_message(String characterName) {
+    return '確定要封鎖「$characterName」嗎？\n\n封鎖後，你將不會再於邂逅、瞬間等推薦內容中看到這個角色。';
+  }
+
+  @override
+  String get character_block_confirm => '確認封鎖';
+
+  @override
+  String character_block_success(String characterName) {
+    return '已封鎖「$characterName」';
+  }
+
+  @override
+  String get character_block_failed => '封鎖失敗，請稍後再試';
+
+  @override
+  String get character_unblock_success => '已解除封鎖';
+
+  @override
+  String get character_unblock_failed => '解除封鎖失敗，請稍後再試';
+
+  @override
+  String get character_report_login_required => '請先登入後再檢舉角色';
+
+  @override
+  String get character_report_self_forbidden => '無法檢舉自己建立的角色';
+
+  @override
+  String get character_report_submitted => '檢舉已送出，我們會進行審核';
+
+  @override
+  String get character_report_open_failed => '無法開啟檢舉頁面，請稍後再試';
+
+  @override
+  String chat_loader_error(String error) {
+    return '讀取失敗：$error';
+  }
+
+  @override
+  String get announcement_connection_failed => '連線失敗，請稍後再試';
+
+  @override
+  String get announcement_latest => '最新';
+
+  @override
+  String announcement_published_at(String date) {
+    return '發布時間：$date';
+  }
+
+  @override
+  String get announcement_operations_team => '戀戀拾光營運團隊';
+
+  @override
+  String get legal_creator_guidelines => '創作者規範';
+
+  @override
+  String get legal_refresh => '重新整理';
+
+  @override
+  String get legal_page_load_failed => '頁面載入失敗';
+
+  @override
+  String get legal_check_connection_retry => '請確認網路連線後再試一次。';
+
+  @override
+  String get legal_reload => '重新載入';
+
+  @override
+  String get chat_web_purchase_unavailable =>
+      '網頁版目前不提供儲值服務，請使用《戀戀拾光》App 購買花花或訂閱。';
+
+  @override
+  String get chat_dont_show_again => '不再顯示此提示';
+
+  @override
+  String get chat_menu_save_transcript => '保存對話紀錄';
+
+  @override
+  String get chat_menu_reply_model => '回覆模型';
+
+  @override
+  String get chat_reply_model_menu_tip => '回覆模型搬家囉！現在可以從右上角選單找到它。';
+
+  @override
+  String get defaultProfileName => '預設檔案';
+
+  @override
+  String get creator_social_links_manage => '管理社群連結';
+
+  @override
+  String get creator_social_links_title => '個人／社群連結';
+
+  @override
+  String get creator_social_links_hint => '填入想公開顯示在創作者頁面的連結，未填寫的項目不會顯示。';
+
+  @override
+  String get creator_social_links_website => '個人網站';
+
+  @override
+  String get creator_social_links_saved => '社群連結已儲存';
+
+  @override
+  String get creator_social_links_load_failed => '讀取社群連結失敗，請稍後再試';
+
+  @override
+  String get creator_social_links_save_failed => '儲存社群連結失敗，請稍後再試';
+
+  @override
+  String get creator_social_links_open_failed => '無法開啟此連結';
 }

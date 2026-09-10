@@ -11,7 +11,61 @@ import 'character_model.dart';
 import 'character_profile_page.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
+// =========================================================
+// 🖼️ 推薦頁圖片共用快取
+// 同一個 URL + 解碼寬度重用 ImageProvider。
+// =========================================================
+final Map<String, ImageProvider> _recommendationImageProviderCache =
+<String, ImageProvider>{};
 
+ImageProvider _recommendationImageProvider(
+    String imageUrl, {
+      required int cacheWidth,
+    }) {
+  final normalizedUrl = imageUrl.trim();
+  final cacheKey = '$cacheWidth::$normalizedUrl';
+
+  return _recommendationImageProviderCache.putIfAbsent(
+    cacheKey,
+        () => ResizeImage(
+      CachedNetworkImageProvider(normalizedUrl),
+      width: cacheWidth,
+    ),
+  );
+}
+
+Widget _buildRecommendationCachedImage(
+    BuildContext context, {
+      required String imageUrl,
+      required BoxFit fit,
+      required int cacheWidth,
+      AlignmentGeometry alignment = Alignment.center,
+      required Widget fallback,
+    }) {
+  final normalizedUrl = imageUrl.trim();
+  if (normalizedUrl.isEmpty) return fallback;
+
+  final provider = _recommendationImageProvider(
+    normalizedUrl,
+    cacheWidth: cacheWidth,
+  );
+
+  return Image(
+    key: ValueKey<String>('recommendation_img_${cacheWidth}_$normalizedUrl'),
+    image: provider,
+    fit: fit,
+    alignment: alignment,
+    filterQuality: FilterQuality.medium,
+    gaplessPlayback: true,
+    frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+      if (wasSynchronouslyLoaded || frame != null) return child;
+      return fallback;
+    },
+    errorBuilder: (context, error, stackTrace) => fallback,
+  );
+}
+
+//推薦頁面
 class RecommendationPage extends StatefulWidget {
   const RecommendationPage({super.key});
 
@@ -25,6 +79,7 @@ class RecommendationPageState extends State<RecommendationPage> {
 
   bool _isLoading = true;
   bool _isRefreshing = false;
+  bool _didScheduleFullRefresh = false;
   String? _errorMessage;
 
   List<String> _preferredTags = <String>[];
@@ -32,6 +87,7 @@ class RecommendationPageState extends State<RecommendationPage> {
   List<_RecommendationItem> _featuredItems = <_RecommendationItem>[];
   List<_RecommendationItem> _matchedItems = <_RecommendationItem>[];
   List<_RecommendationItem> _exploreItems = <_RecommendationItem>[];
+  final Set<String> _preloadedImageKeys = <String>{};
 
   _RecommendationPhaseInfo _phase = const _RecommendationPhaseInfo();
 
@@ -54,9 +110,21 @@ class RecommendationPageState extends State<RecommendationPage> {
     '非人': ['非人', '吸血鬼', '狼人', '妖', '魔', '神明', '精靈', '獸人', '人魚'],
   };
 
+  bool _didStartInitialLoad = false;
+
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // AppLocalizations.of(context) 需要等 inherited widgets 建立完成後才能使用。
+    // 只在第一次 didChangeDependencies 時啟動初始推薦載入，避免重複查詢。
+    if (_didStartInitialLoad) return;
+    _didStartInitialLoad = true;
     _loadRecommendations();
   }
 
@@ -64,7 +132,7 @@ class RecommendationPageState extends State<RecommendationPage> {
     return _loadRecommendations(refresh: true);
   }
 
-  Future<void> _loadRecommendations({bool refresh = false}) async {
+  Future<void> _loadRecommendations({bool refresh = false, bool full = false}) async {
     final l10n = AppLocalizations.of(context)!;
     if (refresh) {
       if (mounted) {
@@ -79,6 +147,8 @@ class RecommendationPageState extends State<RecommendationPage> {
       }
     }
 
+    final loadStopwatch = Stopwatch()..start();
+
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
@@ -91,13 +161,22 @@ class RecommendationPageState extends State<RecommendationPage> {
         userRef.get(),
         userRef.collection('blockedCharacters').get(),
         userRef.collection('blockedCreators').get(),
-        _db
-            .collection('artifacts')
-            .doc(AppConfig.appId)
-            .collection('public_characters')
-            .where('isPublic', isEqualTo: true)
-            .where('status', isEqualTo: 'published')
-            .get(),
+        (() {
+          Query<Map<String, dynamic>> query = _db
+              .collection('artifacts')
+              .doc(AppConfig.appId)
+              .collection('public_characters')
+              .where('isPublic', isEqualTo: true)
+              .where('status', isEqualTo: 'published');
+
+          // 首次進頁只抓足夠產生推薦區塊的角色，先讓畫面出來。
+          // 背景再補跑完整資料，不讓玩家一直盯著轉圈圈。
+          if (!full) {
+            query = query.limit(40);
+          }
+
+          return query.get();
+        })(),
       ]);
 
       final userDoc = results[0] as DocumentSnapshot<Map<String, dynamic>>;
@@ -125,11 +204,11 @@ class RecommendationPageState extends State<RecommendationPage> {
       final blockedCharacterIds = blockedCharacterSnapshot.docs.map((doc) => doc.id).toSet();
       final blockedCreatorIds = blockedCreatorSnapshot.docs.map((doc) => doc.id).toSet();
 
-      final characters = await Future.wait(
-        characterSnapshot.docs.map(
-              (doc) => Character.fromFirestoreAsync(doc),
-        ),
-      );
+      final characters = characterSnapshot.docs
+          .map(
+            (doc) => Character.fromFirestoreLite(doc),
+      )
+          .toList();
 
       characters.removeWhere(
             (character) =>
@@ -196,8 +275,49 @@ class RecommendationPageState extends State<RecommendationPage> {
         _isRefreshing = false;
         _errorMessage = null;
       });
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+
+        _precacheRecommendationImages(
+          context,
+          <_RecommendationItem>[
+            ...featured,
+            ...matchedPool,
+            ...exploreItems,
+          ],
+        );
+      });
+
+      loadStopwatch.stop();
+      debugPrint(
+        '⚡ 推薦頁載入完成：${loadStopwatch.elapsedMilliseconds} ms，'
+            '角色數：${characters.length}，full=$full',
+      );
+
+      // 首屏已經顯示後，再靜默補完整推薦池。
+      if (!full && !_didScheduleFullRefresh) {
+        _didScheduleFullRefresh = true;
+
+        Future<void>.delayed(const Duration(milliseconds: 350), () async {
+          if (!mounted) return;
+
+          try {
+            await _loadRecommendations(
+              refresh: true,
+              full: true,
+            );
+          } catch (_) {
+            // 完整背景更新失敗也不影響已經顯示的首屏推薦。
+          }
+        });
+      }
     } catch (e, stackTrace) {
-      debugPrint('❌ 載入推薦失敗：$e');
+      loadStopwatch.stop();
+      debugPrint(
+        '❌ 載入推薦失敗：$e '
+            '(${loadStopwatch.elapsedMilliseconds} ms)',
+      );
       debugPrint('$stackTrace');
 
       if (!mounted) return;
@@ -451,6 +571,32 @@ class RecommendationPageState extends State<RecommendationPage> {
     return character.avatarPath.trim();
   }
 
+  void _precacheRecommendationImages(
+      BuildContext context,
+      Iterable<_RecommendationItem> items,
+      ) {
+    for (final item in items) {
+      final imageUrl = _imageUrl(item.character).trim();
+      if (imageUrl.isEmpty) continue;
+
+      const cacheWidth = 720;
+      final cacheKey = '$cacheWidth::$imageUrl';
+      if (_preloadedImageKeys.contains(cacheKey)) continue;
+
+      _preloadedImageKeys.add(cacheKey);
+
+      final provider = _recommendationImageProvider(
+        imageUrl,
+        cacheWidth: cacheWidth,
+      );
+
+      precacheImage(provider, context).catchError((error) {
+        _preloadedImageKeys.remove(cacheKey);
+        debugPrint('預載推薦頁角色圖片失敗：$error');
+      });
+    }
+  }
+
   Future<void> _openCharacter(Character character) async {
     await _recordBehaviorInteraction(character);
 
@@ -576,7 +722,7 @@ class RecommendationPageState extends State<RecommendationPage> {
     if (_recommendations.isEmpty) {
       return RefreshIndicator(
         color: colors.primary,
-        onRefresh: () => _loadRecommendations(refresh: true),
+        onRefresh: () => _loadRecommendations(refresh: true, full: true),
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: EdgeInsets.fromLTRB(24, topInset + 48, 24, 40),
@@ -602,7 +748,7 @@ class RecommendationPageState extends State<RecommendationPage> {
 
     return RefreshIndicator(
       color: colors.primary,
-      onRefresh: () => _loadRecommendations(refresh: true),
+      onRefresh: () => _loadRecommendations(refresh: true, full: true),
       child: CustomScrollView(
         key: const PageStorageKey<String>('recommendation_page_scroll'),
         physics: const AlwaysScrollableScrollPhysics(),
@@ -922,11 +1068,13 @@ class _FeaturedRecommendationCard extends StatelessWidget {
                     fit: StackFit.expand,
                     children: [
                       if (imageUrl.isNotEmpty)
-                        CachedNetworkImage(
+                        _buildRecommendationCachedImage(
+                          context,
                           imageUrl: imageUrl,
                           fit: BoxFit.cover,
-                          placeholder: (_, __) => _ImageFallback.large(context),
-                          errorWidget: (_, __, ___) => _ImageFallback.large(context),
+                          alignment: Alignment.topCenter,
+                          cacheWidth: 720,
+                          fallback: _ImageFallback.large(context),
                         )
                       else
                         _ImageFallback.large(context),
@@ -1138,11 +1286,13 @@ class _CompactRecommendationCard extends StatelessWidget {
                   width: 92,
                   height: 116,
                   child: imageUrl.isNotEmpty
-                      ? CachedNetworkImage(
+                      ? _buildRecommendationCachedImage(
+                    context,
                     imageUrl: imageUrl,
                     fit: BoxFit.cover,
-                    placeholder: (_, __) => _ImageFallback.small(context),
-                    errorWidget: (_, __, ___) => _ImageFallback.small(context),
+                    alignment: Alignment.topCenter,
+                    cacheWidth: 360,
+                    fallback: _ImageFallback.small(context),
                   )
                       : _ImageFallback.small(context),
                 ),
@@ -1298,11 +1448,13 @@ class _ExploreRecommendationCard extends StatelessWidget {
                     fit: StackFit.expand,
                     children: [
                       if (imageUrl.isNotEmpty)
-                        CachedNetworkImage(
+                        _buildRecommendationCachedImage(
+                          context,
                           imageUrl: imageUrl,
                           fit: BoxFit.cover,
-                          placeholder: (_, __) => _ImageFallback.small(context),
-                          errorWidget: (_, __, ___) => _ImageFallback.small(context),
+                          alignment: Alignment.topCenter,
+                          cacheWidth: 480,
+                          fallback: _ImageFallback.small(context),
                         )
                       else
                         _ImageFallback.small(context),

@@ -333,7 +333,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   onFieldSubmitted: (_) => _changePassword(),
                   style: GoogleFonts.notoSerifTc(),
                   decoration: _fieldDecoration(
-                    label: '確認新密碼',
+                    label: l10n.change_password_confirm_label,
                     hidden: _hideConfirm,
                     onToggle: () {
                       setState(() => _hideConfirm = !_hideConfirm);

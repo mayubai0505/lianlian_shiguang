@@ -15,6 +15,7 @@ import 'moment_card.dart';
 import 'edit_moment_page.dart';
 import '../services/toast_utils.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 //創作者公開頁面
 class CreatorProfilePage extends StatelessWidget {
@@ -67,6 +68,7 @@ class CreatorProfilePage extends StatelessWidget {
         String? photoUrl;
         String? avatarPath;
         String creatorBio = '';
+        List<Map<String, String>> profileLinks = <Map<String, String>>[];
 
         if (userSnapshot.hasData &&
             userSnapshot.data!.exists) {
@@ -113,6 +115,20 @@ class CreatorProfilePage extends StatelessWidget {
               (userData['bio'] ?? '')
                   .toString()
                   .trim();
+
+          final rawProfileLinks = userData['profileLinks'];
+          profileLinks = rawProfileLinks is List
+              ? rawProfileLinks
+              .whereType<Map>()
+              .map(
+                (item) => <String, String>{
+              'name': (item['name'] ?? '').toString().trim(),
+              'url': (item['url'] ?? '').toString().trim(),
+            },
+          )
+              .where((item) => (item['url'] ?? '').isNotEmpty)
+              .toList()
+              : <Map<String, String>>[];
 
           debugPrint(
             '📝 creatorBio：$creatorBio',
@@ -387,6 +403,7 @@ class CreatorProfilePage extends StatelessWidget {
                                     context,
                                     theme,
                                     creatorBio,
+                                    profileLinks,
                                   ),
                                   _buildCreatorWorks(
                                     context,
@@ -498,7 +515,7 @@ class CreatorProfilePage extends StatelessWidget {
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
               child: Text(
-               l10n.cancelButton,
+                l10n.cancelButton,
                 style: GoogleFonts.notoSerifTc(),
               ),
             ),
@@ -770,12 +787,17 @@ class CreatorProfilePage extends StatelessWidget {
       BuildContext context,
       ThemeData theme,
       String creatorBio,
+      List<Map<String, String>> profileLinks,
       ) {
     final l10n = AppLocalizations.of(context)!;
     final primary = theme.colorScheme.primary;
     final textColor = theme.colorScheme.onSurface;
 
-    if (creatorBio.trim().isEmpty) {
+    final visibleLinks = profileLinks
+        .where((item) => (item['url'] ?? '').trim().isNotEmpty)
+        .toList();
+
+    if (creatorBio.trim().isEmpty && visibleLinks.isEmpty) {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(24, 34, 24, 40),
@@ -864,15 +886,98 @@ class CreatorProfilePage extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 14),
-                    Text(
-                      creatorBio,
-                      style: GoogleFonts.notoSerifTc(
-                        color: textColor.withValues(alpha: 0.78),
-                        fontSize: 13.5,
-                        height: 1.85,
+                    if (creatorBio.trim().isNotEmpty) ...[
+                      const SizedBox(height: 14),
+                      Text(
+                        creatorBio,
+                        style: GoogleFonts.notoSerifTc(
+                          color: textColor.withValues(alpha: 0.78),
+                          fontSize: 13.5,
+                          height: 1.85,
+                        ),
                       ),
-                    ),
+                    ],
+                    if (visibleLinks.isNotEmpty) ...[
+                      if (creatorBio.trim().isNotEmpty)
+                        const SizedBox(height: 20)
+                      else
+                        const SizedBox(height: 14),
+                      ...visibleLinks.map((item) {
+                        final name = (item['name'] ?? '').trim();
+                        final url = (item['url'] ?? '').trim();
+
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Flexible(
+                                flex: 0,
+                                child: Text(
+                                  name.isEmpty
+                                      ? l10n.profile_link_default_name
+                                      : name,
+                                  style: GoogleFonts.notoSerifTc(
+                                    fontSize: 13,
+                                    height: 1.55,
+                                    fontWeight: FontWeight.w600,
+                                    color: textColor.withValues(alpha: 0.78),
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                '：',
+                                style: GoogleFonts.notoSerifTc(
+                                  fontSize: 13,
+                                  height: 1.55,
+                                  color: textColor.withValues(alpha: 0.62),
+                                ),
+                              ),
+                              Expanded(
+                                child: InkWell(
+                                  onTap: () => _openCreatorProfileLink(
+                                    context,
+                                    url,
+                                  ),
+                                  borderRadius: BorderRadius.circular(6),
+                                  child: Padding(
+                                    padding:
+                                    const EdgeInsets.symmetric(vertical: 2),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            url,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: GoogleFonts.notoSerifTc(
+                                              fontSize: 13,
+                                              height: 1.55,
+                                              color: primary,
+                                              decoration:
+                                              TextDecoration.underline,
+                                              decorationColor: primary
+                                                  .withValues(alpha: 0.45),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Icon(
+                                          Icons.open_in_new_rounded,
+                                          size: 14,
+                                          color:
+                                          primary.withValues(alpha: 0.68),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                    ],
                   ],
                 ),
               ),
@@ -881,6 +986,61 @@ class CreatorProfilePage extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _openCreatorProfileLink(
+      BuildContext context,
+      String rawUrl,
+      ) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    String normalized = rawUrl.trim();
+    if (normalized.isEmpty) return;
+
+    if (!normalized.startsWith('http://') &&
+        !normalized.startsWith('https://')) {
+      normalized = 'https://$normalized';
+    }
+
+    final uri = Uri.tryParse(normalized);
+
+    if (uri == null ||
+        !(uri.scheme == 'http' || uri.scheme == 'https') ||
+        uri.host.isEmpty) {
+      if (!context.mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        l10n.profile_link_invalid,
+        isError: true,
+      );
+      return;
+    }
+
+    try {
+      final opened = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (!opened && context.mounted) {
+        ToastUtils.showCenterToast(
+          context,
+          l10n.profile_link_open_failed,
+          isError: true,
+        );
+      }
+    } catch (e) {
+      debugPrint('❌ 開啟創作者個人連結失敗：$e');
+
+      if (!context.mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        l10n.profile_link_open_failed,
+        isError: true,
+      );
+    }
   }
 
   Widget _buildCreatorMomentsTab(

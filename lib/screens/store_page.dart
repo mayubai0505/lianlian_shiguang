@@ -1685,39 +1685,100 @@ class MockProductDetails {
 
 void _showMonthlyPassManual(BuildContext context) {
   final l10n = AppLocalizations.of(context)!;
+
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (context) {
       final theme = Theme.of(context);
+      final primary = theme.colorScheme.primary;
+      final onSurface = theme.colorScheme.onSurface;
+
       return Container(
         padding: const EdgeInsets.all(24.0),
-        decoration: BoxDecoration(color: theme.scaffoldBackgroundColor, borderRadius: const BorderRadius.vertical(top: Radius.circular(24))),
+        decoration: BoxDecoration(
+          color: theme.scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(24),
+          ),
+        ),
         child: SafeArea(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Center(child: Container(width: 40, height: 4, margin: const EdgeInsets.only(bottom: 20), decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(2)))),
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    color: onSurface.withValues(alpha: 0.16),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
               Row(
                 children: [
-                  const Icon(Icons.auto_awesome, color: Colors.pinkAccent),
+                  Icon(
+                    Icons.auto_awesome,
+                    color: primary,
+                  ),
                   const SizedBox(width: 8),
-                  Text(l10n.passGuideTitle, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  Expanded(
+                    child: Text(
+                      l10n.passGuideTitle,
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: onSurface,
+                      ),
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 20),
-              _buildManualItem(icon: Icons.refresh, title: l10n.passGuideRegenerateTitle, content: l10n.passGuideRegenerateContent),
+              _buildManualItem(
+                context: context,
+                icon: Icons.refresh,
+                title: l10n.passGuideRegenerateTitle,
+                content: l10n.passGuideRegenerateContent,
+              ),
               const SizedBox(height: 16),
-              _buildManualItem(icon: Icons.favorite, title: l10n.passGuideAffectionTitle, content: l10n.passGuideAffectionContent),
+              _buildManualItem(
+                context: context,
+                icon: Icons.favorite,
+                title: l10n.passGuideAffectionTitle,
+                content: l10n.passGuideAffectionContent,
+              ),
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent, foregroundColor: Colors.white, shape: const StadiumBorder(), padding: const EdgeInsets.symmetric(vertical: 16)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primary,
+                    foregroundColor: theme.colorScheme.onPrimary,
+                    disabledBackgroundColor:
+                    primary.withValues(alpha: 0.28),
+                    elevation: 0,
+                    shape: const StadiumBorder(),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 16,
+                    ),
+                    textStyle: GoogleFonts.notoSerifTc(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   onPressed: () => Navigator.pop(context),
-                  child: Text(l10n.passGuideUnlockButton, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  child: Text(
+                    l10n.passGuideUnlockButton,
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -1728,13 +1789,72 @@ void _showMonthlyPassManual(BuildContext context) {
   );
 }
 
-Widget _buildManualItem({required IconData icon, required String title, required String content}) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-      const SizedBox(height: 4),
-      Padding(padding: const EdgeInsets.only(left: 4.0), child: Text(content, style: const TextStyle(color: Colors.grey, height: 1.5, fontSize: 13))),
-    ],
+Widget _buildManualItem({
+  required BuildContext context,
+  required IconData icon,
+  required String title,
+  required String content,
+}) {
+  final theme = Theme.of(context);
+  final primary = theme.colorScheme.primary;
+  final onSurface = theme.colorScheme.onSurface;
+
+  return Container(
+    width: double.infinity,
+    padding: const EdgeInsets.symmetric(
+      horizontal: 14,
+      vertical: 12,
+    ),
+    decoration: BoxDecoration(
+      color: primary.withValues(alpha: 0.035),
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(
+        color: primary.withValues(alpha: 0.10),
+      ),
+    ),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 34,
+          height: 34,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: primary.withValues(alpha: 0.08),
+          ),
+          child: Icon(
+            icon,
+            size: 19,
+            color: primary,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: GoogleFonts.notoSerifTc(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15.5,
+                  color: onSurface,
+                ),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                content,
+                style: GoogleFonts.notoSerifTc(
+                  color: onSurface.withValues(alpha: 0.58),
+                  height: 1.55,
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
   );
 }

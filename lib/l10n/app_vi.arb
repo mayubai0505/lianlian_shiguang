@@ -4146,5 +4146,75 @@
 
   "dice_duel_result_saved": "Đã lưu kết quả đối đầu!",
 
-  "dice_duel_rolling": "Đang hội tụ năng lượng vũ trụ..."
+  "dice_duel_rolling": "Đang hội tụ năng lượng vũ trụ...",
+  "butterfly_loading_connecting": "Đang kết nối với thời gian...",
+  "character_block_login_required": "Vui lòng đăng nhập trước khi chặn nhân vật",
+  "character_block_self_forbidden": "Bạn không thể chặn nhân vật do mình tạo",
+  "character_block_title": "Chặn nhân vật",
+
+  "character_block_confirm_message": "Bạn có chắc muốn chặn “{characterName}” không?\n\nSau khi chặn, nhân vật này sẽ không còn xuất hiện trong các nội dung đề xuất như Gặp gỡ và Khoảnh khắc.",
+  "@character_block_confirm_message": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "character_block_confirm": "Xác nhận chặn",
+
+  "character_block_success": "Đã chặn “{characterName}”",
+  "@character_block_success": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "character_block_failed": "Không thể chặn nhân vật, vui lòng thử lại sau",
+  "character_unblock_success": "Đã bỏ chặn nhân vật",
+  "character_unblock_failed": "Không thể bỏ chặn nhân vật, vui lòng thử lại sau",
+  "character_report_login_required": "Vui lòng đăng nhập trước khi báo cáo nhân vật",
+  "character_report_self_forbidden": "Bạn không thể báo cáo nhân vật do mình tạo",
+  "character_report_submitted": "Đã gửi báo cáo. Chúng tôi sẽ tiến hành xem xét",
+  "character_report_open_failed": "Không thể mở trang báo cáo, vui lòng thử lại sau",
+  "chat_loader_error": "Không thể tải: {error}",
+  "@chat_loader_error": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "announcement_connection_failed": "Kết nối thất bại, vui lòng thử lại sau",
+  "announcement_latest": "Mới nhất",
+  "announcement_published_at": "Ngày đăng: {date}",
+  "@announcement_published_at": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "announcement_operations_team": "Đội ngũ vận hành LoveyDovey",
+  "legal_creator_guidelines": "Quy định dành cho nhà sáng tạo",
+  "legal_refresh": "Làm mới",
+  "legal_page_load_failed": "Không thể tải trang",
+  "legal_check_connection_retry": "Vui lòng kiểm tra kết nối mạng rồi thử lại.",
+  "legal_reload": "Tải lại",
+  "chat_web_purchase_unavailable": "Phiên bản web hiện chưa hỗ trợ nạp tiền. Vui lòng sử dụng ứng dụng LoveyDovey để mua Điểm Hoa hoặc đăng ký gói thuê bao.",
+  "chat_dont_show_again": "Không hiển thị lại",
+  "chat_menu_save_transcript": "Lưu lịch sử trò chuyện",
+  "chat_menu_reply_model": "Mô hình phản hồi",
+  "chat_reply_model_menu_tip": "Mô hình phản hồi đã được chuyển sang vị trí mới! Giờ bạn có thể tìm thấy trong menu ở góc trên bên phải.",
+  "defaultProfileName": "Hồ sơ mặc định",
+  "creator_social_links_manage": "Quản lý liên kết mạng xã hội",
+  "creator_social_links_title": "Liên kết cá nhân và mạng xã hội",
+  "creator_social_links_hint": "Nhập các liên kết bạn muốn hiển thị công khai trên trang nhà sáng tạo. Những mục để trống sẽ không được hiển thị.",
+  "creator_social_links_website": "Trang web cá nhân",
+  "creator_social_links_saved": "Đã lưu các liên kết mạng xã hội",
+  "creator_social_links_load_failed": "Không thể tải các liên kết mạng xã hội, vui lòng thử lại sau",
+  "creator_social_links_save_failed": "Không thể lưu các liên kết mạng xã hội, vui lòng thử lại sau",
+  "creator_social_links_open_failed": "Không thể mở liên kết này"
 }

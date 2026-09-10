@@ -8293,4 +8293,143 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get dice_duel_rolling => 'Sedang mengumpulkan tenaga kosmik...';
+
+  @override
+  String get butterfly_loading_connecting =>
+      'Sedang menghubungkan dengan waktu...';
+
+  @override
+  String get character_block_login_required =>
+      'Sila log masuk sebelum menyekat watak';
+
+  @override
+  String get character_block_self_forbidden =>
+      'Anda tidak boleh menyekat watak yang anda cipta';
+
+  @override
+  String get character_block_title => 'Sekat Watak';
+
+  @override
+  String character_block_confirm_message(String characterName) {
+    return 'Adakah anda pasti mahu menyekat “$characterName”?\n\nSelepas disekat, watak ini tidak akan muncul lagi dalam kandungan cadangan seperti Pertemuan dan Momen.';
+  }
+
+  @override
+  String get character_block_confirm => 'Sahkan Sekatan';
+
+  @override
+  String character_block_success(String characterName) {
+    return '“$characterName” telah disekat';
+  }
+
+  @override
+  String get character_block_failed =>
+      'Gagal menyekat watak. Sila cuba lagi kemudian';
+
+  @override
+  String get character_unblock_success => 'Sekatan watak telah dibuka';
+
+  @override
+  String get character_unblock_failed =>
+      'Gagal membuka sekatan watak. Sila cuba lagi kemudian';
+
+  @override
+  String get character_report_login_required =>
+      'Sila log masuk sebelum melaporkan watak';
+
+  @override
+  String get character_report_self_forbidden =>
+      'Anda tidak boleh melaporkan watak yang anda cipta';
+
+  @override
+  String get character_report_submitted =>
+      'Laporan telah dihantar. Kami akan menyemaknya';
+
+  @override
+  String get character_report_open_failed =>
+      'Tidak dapat membuka halaman laporan. Sila cuba lagi kemudian';
+
+  @override
+  String chat_loader_error(String error) {
+    return 'Gagal memuatkan: $error';
+  }
+
+  @override
+  String get announcement_connection_failed =>
+      'Sambungan gagal. Sila cuba lagi kemudian';
+
+  @override
+  String get announcement_latest => 'Terkini';
+
+  @override
+  String announcement_published_at(String date) {
+    return 'Tarikh diterbitkan: $date';
+  }
+
+  @override
+  String get announcement_operations_team => 'Pasukan Operasi LoveyDovey';
+
+  @override
+  String get legal_creator_guidelines => 'Garis Panduan Pencipta';
+
+  @override
+  String get legal_refresh => 'Segar Semula';
+
+  @override
+  String get legal_page_load_failed => 'Gagal memuatkan halaman';
+
+  @override
+  String get legal_check_connection_retry =>
+      'Sila semak sambungan internet anda dan cuba lagi.';
+
+  @override
+  String get legal_reload => 'Muat Semula';
+
+  @override
+  String get chat_web_purchase_unavailable =>
+      'Pembelian tidak tersedia pada versi web buat masa ini. Sila gunakan aplikasi LoveyDovey untuk membeli Mata Bunga atau langganan.';
+
+  @override
+  String get chat_dont_show_again => 'Jangan tunjukkan lagi';
+
+  @override
+  String get chat_menu_save_transcript => 'Simpan Sejarah Perbualan';
+
+  @override
+  String get chat_menu_reply_model => 'Model Respons';
+
+  @override
+  String get chat_reply_model_menu_tip =>
+      'Model respons telah dipindahkan! Kini anda boleh menemuinya dalam menu di bahagian atas sebelah kanan.';
+
+  @override
+  String get defaultProfileName => 'Profil Lalai';
+
+  @override
+  String get creator_social_links_manage => 'Urus Pautan Sosial';
+
+  @override
+  String get creator_social_links_title => 'Pautan Peribadi dan Sosial';
+
+  @override
+  String get creator_social_links_hint =>
+      'Masukkan pautan yang ingin dipaparkan secara terbuka pada halaman pencipta anda. Ruangan yang tidak diisi tidak akan dipaparkan.';
+
+  @override
+  String get creator_social_links_website => 'Laman Web Peribadi';
+
+  @override
+  String get creator_social_links_saved => 'Pautan sosial telah disimpan';
+
+  @override
+  String get creator_social_links_load_failed =>
+      'Gagal memuatkan pautan sosial. Sila cuba lagi kemudian';
+
+  @override
+  String get creator_social_links_save_failed =>
+      'Gagal menyimpan pautan sosial. Sila cuba lagi kemudian';
+
+  @override
+  String get creator_social_links_open_failed =>
+      'Tidak dapat membuka pautan ini';
 }

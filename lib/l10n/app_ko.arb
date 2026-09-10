@@ -4144,5 +4144,75 @@
 
   "dice_duel_result_saved": "대결 결과를 저장했습니다!",
 
-  "dice_duel_rolling": "우주의 에너지를 모으는 중..."
+  "dice_duel_rolling": "우주의 에너지를 모으는 중...",
+  "butterfly_loading_connecting": "시간과 연결하는 중...",
+  "character_block_login_required": "캐릭터를 차단하려면 먼저 로그인해 주세요",
+  "character_block_self_forbidden": "직접 만든 캐릭터는 차단할 수 없습니다",
+  "character_block_title": "캐릭터 차단",
+
+  "character_block_confirm_message": "‘{characterName}’을(를) 차단하시겠습니까?\n\n차단하면 만남, 모먼트 등의 추천 콘텐츠에 이 캐릭터가 더 이상 표시되지 않습니다.",
+  "@character_block_confirm_message": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "character_block_confirm": "차단하기",
+
+  "character_block_success": "‘{characterName}’을(를) 차단했습니다",
+  "@character_block_success": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "character_block_failed": "차단하지 못했습니다. 잠시 후 다시 시도해 주세요",
+  "character_unblock_success": "차단을 해제했습니다",
+  "character_unblock_failed": "차단을 해제하지 못했습니다. 잠시 후 다시 시도해 주세요",
+  "character_report_login_required": "캐릭터를 신고하려면 먼저 로그인해 주세요",
+  "character_report_self_forbidden": "직접 만든 캐릭터는 신고할 수 없습니다",
+  "character_report_submitted": "신고가 접수되었습니다. 검토 후 조치하겠습니다",
+  "character_report_open_failed": "신고 페이지를 열 수 없습니다. 잠시 후 다시 시도해 주세요",
+  "chat_loader_error": "불러오지 못했습니다: {error}",
+  "@chat_loader_error": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "announcement_connection_failed": "연결에 실패했습니다. 잠시 후 다시 시도해 주세요",
+  "announcement_latest": "최신",
+  "announcement_published_at": "게시 일시: {date}",
+  "@announcement_published_at": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "announcement_operations_team": "LoveyDovey 운영팀",
+  "legal_creator_guidelines": "크리에이터 가이드라인",
+  "legal_refresh": "새로고침",
+  "legal_page_load_failed": "페이지를 불러오지 못했습니다",
+  "legal_check_connection_retry": "인터넷 연결을 확인한 후 다시 시도해 주세요.",
+  "legal_reload": "다시 불러오기",
+  "chat_web_purchase_unavailable": "웹 버전에서는 현재 충전 서비스를 이용할 수 없습니다. 꽃 포인트 구매 또는 구독은 ‘LoveyDovey’ 앱을 이용해 주세요.",
+  "chat_dont_show_again": "다시 표시하지 않기",
+  "chat_menu_save_transcript": "대화 기록 저장",
+  "chat_menu_reply_model": "응답 모델",
+  "chat_reply_model_menu_tip": "응답 모델의 위치가 변경되었어요! 이제 오른쪽 상단 메뉴에서 찾을 수 있습니다.",
+  "defaultProfileName": "기본 프로필",
+  "creator_social_links_manage": "소셜 링크 관리",
+  "creator_social_links_title": "개인 및 소셜 링크",
+  "creator_social_links_hint": "크리에이터 페이지에 공개할 링크를 입력해 주세요. 입력하지 않은 항목은 표시되지 않습니다.",
+  "creator_social_links_website": "개인 웹사이트",
+  "creator_social_links_saved": "소셜 링크를 저장했습니다",
+  "creator_social_links_load_failed": "소셜 링크를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요",
+  "creator_social_links_save_failed": "소셜 링크를 저장하지 못했습니다. 잠시 후 다시 시도해 주세요",
+  "creator_social_links_open_failed": "이 링크를 열 수 없습니다"
 }

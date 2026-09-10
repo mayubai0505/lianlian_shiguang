@@ -265,6 +265,155 @@ class Character {
     );
   }
 
+  /// 推薦／列表頁使用的輕量版解析器。
+  ///
+  /// 只讀取角色主文件，不查詢 photos 子集合，也不呼叫
+  /// Firebase Storage getDownloadURL()，避免角色清單產生 N+1 查詢。
+  /// 需要完整相簿資料的頁面請繼續使用 fromFirestoreAsync()。
+  static Character fromFirestoreLite(DocumentSnapshot doc) {
+    final data =
+        doc.data() as Map<String, dynamic>? ?? <String, dynamic>{};
+
+    final eggsData = data['easterEggs'] as List<dynamic>?;
+    final List<EasterEgg> eggs = eggsData == null
+        ? <EasterEgg>[]
+        : eggsData
+        .whereType<Map>()
+        .map(
+          (e) => EasterEgg.fromMap(
+        Map<String, dynamic>.from(e),
+      ),
+    )
+        .toList();
+
+    final List<CharacterPhoto> mainDocumentGallery = <CharacterPhoto>[];
+    final rawGallery = data['gallery'];
+
+    if (rawGallery is List) {
+      for (final item in rawGallery) {
+        if (item is Map) {
+          mainDocumentGallery.add(
+            CharacterPhoto.fromMap(
+              Map<String, dynamic>.from(item),
+            ),
+          );
+        }
+      }
+    }
+
+    final galleryPaths = data['galleryPaths'] is List
+        ? List<String>.from(
+      (data['galleryPaths'] as List).map((e) => e.toString()),
+    )
+        : <String>[];
+
+    String avatar = '';
+    String? firstGalleryPath;
+
+    for (final path in galleryPaths) {
+      final trimmed = path.trim();
+      if (trimmed.isNotEmpty) {
+        firstGalleryPath = trimmed;
+        break;
+      }
+    }
+
+    if (firstGalleryPath != null) {
+      avatar = firstGalleryPath;
+    } else if (mainDocumentGallery.isNotEmpty &&
+        mainDocumentGallery.first.imageUrl.trim().isNotEmpty) {
+      avatar = mainDocumentGallery.first.imageUrl.trim();
+    } else {
+      avatar =
+          (data['avatarPath'] ?? 'assets/images/blank_avatar.png').toString();
+    }
+
+    return Character(
+      id: doc.id,
+      name: data['name'] ?? '',
+      avatarPath: avatar,
+      bannerImagePath: data['bannerImagePath']?.toString() ?? '',
+      galleryPaths: galleryPaths,
+      gallery: mainDocumentGallery,
+      storyModeFirstLine:
+      data['storyModeFirstLine'] ?? data['firstLine'] ?? '',
+      createdBy: data['createdBy'] ?? '',
+      createdAt:
+      (data['createdAt'] as Timestamp? ?? Timestamp.now()).toDate(),
+      playCount: data['playCount'] ?? 0,
+      worldSetting:
+      data['worldSetting']?.toString().trim().isNotEmpty == true
+          ? data['worldSetting'].toString()
+          : data['background']?.toString() ?? '',
+      likesCount: data['likesCount'] ?? 0,
+      age: data['age'] ?? '',
+      occupation: data['occupation'] ?? '',
+      identities: data['identities'] != null
+          ? List<String>.from(data['identities'])
+          : <String>[],
+      birthday: data['birthday'] ?? '',
+      height: data['height'] ?? '',
+      personalityTags: data['personalityTags'] != null
+          ? List<String>.from(data['personalityTags'])
+          : <String>[],
+      storySummary: data['storySummary'] ?? '',
+      initialStory: data['story'] ?? '',
+      firstLine: data['storyModeFirstLine'] ?? '',
+      background: data['background'] ?? '',
+      coreCharacterSetting:
+      data['coreCharacterSetting']?.toString().trim().isNotEmpty == true
+          ? data['coreCharacterSetting'].toString()
+          : data['detailedPersonality']?.toString() ?? '',
+      detailedPersonality: data['detailedPersonality'] ?? '',
+      customOutputFormat: data['customOutputFormat']?.toString() ?? '',
+      appearance: data['appearance'] ?? '',
+      gender: data['gender'] ?? '未選擇',
+      isPublic: data['isPublic'] ?? true,
+      toneAndStyle: data['toneAndStyle'] ?? '',
+      likes: data['likes'] ?? '',
+      dislikes: data['dislikes'] ?? '',
+      likedGifts: data['likedGifts'] != null
+          ? List<String>.from(data['likedGifts'])
+          : <String>[],
+      dislikedGifts: data['dislikedGifts'] != null
+          ? List<String>.from(data['dislikedGifts'])
+          : <String>[],
+      secrets: data['secrets'] ?? '',
+      initialRelationship: data['initialRelationship'] ?? '',
+      dialogueExamples: data['dialogueExamples'] ?? '',
+      easterEggs: eggs,
+      creatorName: data['creatorName'] ?? '神祕創作者',
+      extraInfoItems: data['extraInfoItems'] != null
+          ? List<String>.from(data['extraInfoItems'])
+          : <String>[],
+      contentLanguage: data['content_language'],
+      stageStranger: data['stageStranger'] ?? '',
+      stageAcquaintance: data['stageAcquaintance'] ?? '',
+      stageIntimate: data['stageIntimate'] ?? '',
+      socialInteraction: data['socialInteraction'] ?? '',
+      playerIdentity: data['playerIdentity'] ?? '',
+      voiceId: data['voiceId'] ?? data['voice_id'],
+      voiceStability: (data['voiceStability'] as num?)?.toDouble(),
+      voiceStyle: (data['voiceStyle'] as num?)?.toDouble(),
+      voicePreviewUrl:
+      data['voice_preview_url'] ?? data['voicePreviewUrl'],
+      translations: data['translations'] as Map<String, dynamic>?,
+      relationships: data['relationships'] != null
+          ? Map<String, String>.from(data['relationships'])
+          : <String, String>{},
+      npcCharacters: (data['npcCharacters'] as List<dynamic>?)
+          ?.whereType<Map>()
+          .map(
+            (item) => Map<String, dynamic>.from(item),
+      )
+          .toList() ??
+          <Map<String, dynamic>>[],
+      lastChatTime: data['lastChatTime'] != null
+          ? (data['lastChatTime'] as Timestamp).toDate()
+          : null,
+    );
+  }
+
   static Future<Character> fromFirestoreAsync(DocumentSnapshot doc) async {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     // 1. 處理 EasterEggs

@@ -122,7 +122,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
     );
   }
 
-  Future<void> _deleteMemory(
+  Future<bool> _deleteMemory(
       String memoryId,
       AppLocalizations l10n,
       ) async {
@@ -130,15 +130,16 @@ class _AboutUsPageState extends State<AboutUsPage> {
       await _memoriesRef.doc(memoryId).delete();
       await _fetchMemories();
 
-      if (mounted) {
-        Navigator.pop(context);
-        ToastUtils.showCenterToast(
-          context,
-          l10n.about_us_delete_success,
-        );
-      }
+      if (!mounted) return true;
+
+      ToastUtils.showCenterToast(
+        context,
+        l10n.about_us_delete_success,
+      );
+      return true;
     } catch (e) {
       debugPrint('刪除回憶失敗: $e');
+      return false;
     }
   }
 
@@ -178,195 +179,28 @@ class _AboutUsPageState extends State<AboutUsPage> {
     }
   }
 
-  void _showMemoryDetail(
+  Future<void> _showMemoryDetail(
       SharedMemory memory,
       AppLocalizations l10n,
-      ) {
-    final theme = Theme.of(context);
-    final primary = theme.colorScheme.primary;
-
-    final currentTitle = memory.title;
-    final currentSubtitle = memory.subtitle;
-    final currentContent = memory.content;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (bottomSheetContext) {
-        return StatefulBuilder(
-          builder: (context, _) {
-            return Container(
-              height: MediaQuery.of(context).size.height * 0.72,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surface,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(28),
-                ),
-              ),
-              padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.onSurface
-                            .withValues(alpha: 0.14),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              currentTitle,
-                              style: GoogleFonts.notoSerifTc(
-                                fontSize: 23,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            if (currentSubtitle.isNotEmpty) ...[
-                              const SizedBox(height: 6),
-                              Text(
-                                currentSubtitle,
-                                style: GoogleFonts.notoSerifTc(
-                                  fontSize: 14,
-                                  color: primary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                      IconButton(
-                        tooltip: l10n.about_us_edit_title,
-                        onPressed: () async {
-                          // 先關閉詳細內容 BottomSheet，再進獨立編輯頁。
-                          Navigator.pop(bottomSheetContext);
-
-                          final bool? updated =
-                          await Navigator.push<bool>(
-                            this.context,
-                            MaterialPageRoute(
-                              builder: (_) => EditSharedMemoryPage(
-                                currentUserId: widget.currentUserId,
-                                characterId: widget.characterId,
-                                memoryId: memory.id,
-                                initialTitle: currentTitle,
-                                initialSubtitle: currentSubtitle,
-                                initialContent: currentContent,
-                              ),
-                            ),
-                          );
-
-                          if (updated == true && mounted) {
-                            await _fetchMemories();
-                          }
-                        },
-                        icon: Image.asset(
-                          'assets/images/chat/chat_msg_edit_mask.png',
-                          width: 32,
-                          height: 32,
-                          color: primary,
-                          colorBlendMode: BlendMode.srcIn,
-                        ),
-                      ),
-                      IconButton(
-                        icon: Image.asset(
-                          'assets/images/chat/chat_msg_delete_mask.png',
-                          width: 32,
-                          height: 32,
-                          color: Colors.redAccent,
-                          colorBlendMode: BlendMode.srcIn,
-                        ),
-                        tooltip: l10n.about_us_delete_tooltip,
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: Text(
-                                l10n.about_us_delete_title,
-                                style: GoogleFonts.notoSerifTc(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              content: Text(
-                                l10n.about_us_delete_confirm,
-                                style: GoogleFonts.notoSerifTc(),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () =>
-                                      Navigator.pop(context),
-                                  child: Text(l10n.cancel),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    _deleteMemory(
-                                      memory.id,
-                                      l10n,
-                                    );
-                                  },
-                                  child: Text(
-                                    l10n.action_confirm_delete,
-                                    style: const TextStyle(
-                                      color: Colors.red,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(
-                          Icons.close_rounded,
-                          color: theme.colorScheme.onSurface
-                              .withValues(alpha: 0.45),
-                        ),
-                        onPressed: () =>
-                            Navigator.pop(bottomSheetContext),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Divider(
-                    color: primary.withValues(alpha: 0.12),
-                  ),
-                  const SizedBox(height: 8),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      child: Text(
-                        currentContent,
-                        style: GoogleFonts.notoSerifTc(
-                          fontSize: 15.5,
-                          height: 1.85,
-                          color: theme.colorScheme.onSurface
-                              .withValues(alpha: 0.82),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
+      ) async {
+    final bool? changed = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => _SharedMemoryDetailPage(
+          currentUserId: widget.currentUserId,
+          characterId: widget.characterId,
+          memory: memory,
+          onDelete: () => _deleteMemory(
+            memory.id,
+            l10n,
+          ),
+        ),
+      ),
     );
+
+    if (changed == true && mounted) {
+      await _fetchMemories();
+    }
   }
 
   @override
@@ -543,6 +377,226 @@ class _AboutUsPageState extends State<AboutUsPage> {
           ),
         );
       },
+    );
+  }
+}
+
+class _SharedMemoryDetailPage extends StatefulWidget {
+  final String currentUserId;
+  final String characterId;
+  final SharedMemory memory;
+  final Future<bool> Function() onDelete;
+
+  const _SharedMemoryDetailPage({
+    required this.currentUserId,
+    required this.characterId,
+    required this.memory,
+    required this.onDelete,
+  });
+
+  @override
+  State<_SharedMemoryDetailPage> createState() =>
+      _SharedMemoryDetailPageState();
+}
+
+class _SharedMemoryDetailPageState extends State<_SharedMemoryDetailPage> {
+  late String _title;
+  late String _subtitle;
+  late String _content;
+
+  @override
+  void initState() {
+    super.initState();
+    _title = widget.memory.title;
+    _subtitle = widget.memory.subtitle;
+    _content = widget.memory.content;
+  }
+
+  Future<void> _openEditPage() async {
+    final bool? updated = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => EditSharedMemoryPage(
+          currentUserId: widget.currentUserId,
+          characterId: widget.characterId,
+          memoryId: widget.memory.id,
+          initialTitle: _title,
+          initialSubtitle: _subtitle,
+          initialContent: _content,
+        ),
+      ),
+    );
+
+    if (updated == true && mounted) {
+      // 編輯頁已完成 Firebase 更新；回到清單重新抓最新資料，
+      // 避免在詳情頁顯示舊文字。
+      Navigator.pop(context, true);
+    }
+  }
+
+  Future<void> _confirmDelete() async {
+    final l10n = AppLocalizations.of(context)!;
+
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(
+          l10n.about_us_delete_title,
+          style: GoogleFonts.notoSerifTc(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        content: Text(
+          l10n.about_us_delete_confirm,
+          style: GoogleFonts.notoSerifTc(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(
+              l10n.cancel,
+              style: GoogleFonts.notoSerifTc(),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(
+              l10n.action_confirm_delete,
+              style: GoogleFonts.notoSerifTc(
+                color: Colors.redAccent,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    final bool deleted = await widget.onDelete();
+    if (!mounted) return;
+
+    if (deleted) {
+      Navigator.pop(context, true);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    final onSurface = theme.colorScheme.onSurface;
+
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: theme.scaffoldBackgroundColor,
+        surfaceTintColor: Colors.transparent,
+        titleSpacing: 0,
+        title: Text(
+          _title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: GoogleFonts.notoSerifTc(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        actions: [
+          IconButton(
+            tooltip: l10n.about_us_edit_title,
+            onPressed: _openEditPage,
+            icon: Image.asset(
+              'assets/images/chat/chat_msg_edit_mask.png',
+              width: 30,
+              height: 30,
+              color: primary,
+              colorBlendMode: BlendMode.srcIn,
+            ),
+          ),
+          IconButton(
+            tooltip: l10n.about_us_delete_tooltip,
+            onPressed: _confirmDelete,
+            icon: Image.asset(
+              'assets/images/chat/chat_msg_delete_mask.png',
+              width: 30,
+              height: 30,
+              color: Colors.redAccent,
+              colorBlendMode: BlendMode.srcIn,
+            ),
+          ),
+          const SizedBox(width: 6),
+        ],
+      ),
+      body: Stack(
+        children: [
+          Positioned(
+            left: -18,
+            bottom: -14,
+            child: IgnorePointer(
+              child: Opacity(
+                opacity: 0.08,
+                child: Image.asset(
+                  'assets/images/contact/contact_bottom_left_botanical.png',
+                  width: 175,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) =>
+                  const SizedBox.shrink(),
+                ),
+              ),
+            ),
+          ),
+          SafeArea(
+            top: false,
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _title,
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 25,
+                      fontWeight: FontWeight.w600,
+                      color: onSurface.withValues(alpha: 0.92),
+                      height: 1.35,
+                    ),
+                  ),
+                  if (_subtitle.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      _subtitle,
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: primary,
+                        height: 1.5,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 18),
+                  Divider(
+                    color: primary.withValues(alpha: 0.12),
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    _content,
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 15.5,
+                      height: 1.9,
+                      color: onSurface.withValues(alpha: 0.82),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

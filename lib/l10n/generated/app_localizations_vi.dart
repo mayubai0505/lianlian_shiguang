@@ -8296,4 +8296,141 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get dice_duel_rolling => 'Đang hội tụ năng lượng vũ trụ...';
+
+  @override
+  String get butterfly_loading_connecting => 'Đang kết nối với thời gian...';
+
+  @override
+  String get character_block_login_required =>
+      'Vui lòng đăng nhập trước khi chặn nhân vật';
+
+  @override
+  String get character_block_self_forbidden =>
+      'Bạn không thể chặn nhân vật do mình tạo';
+
+  @override
+  String get character_block_title => 'Chặn nhân vật';
+
+  @override
+  String character_block_confirm_message(String characterName) {
+    return 'Bạn có chắc muốn chặn “$characterName” không?\n\nSau khi chặn, nhân vật này sẽ không còn xuất hiện trong các nội dung đề xuất như Gặp gỡ và Khoảnh khắc.';
+  }
+
+  @override
+  String get character_block_confirm => 'Xác nhận chặn';
+
+  @override
+  String character_block_success(String characterName) {
+    return 'Đã chặn “$characterName”';
+  }
+
+  @override
+  String get character_block_failed =>
+      'Không thể chặn nhân vật, vui lòng thử lại sau';
+
+  @override
+  String get character_unblock_success => 'Đã bỏ chặn nhân vật';
+
+  @override
+  String get character_unblock_failed =>
+      'Không thể bỏ chặn nhân vật, vui lòng thử lại sau';
+
+  @override
+  String get character_report_login_required =>
+      'Vui lòng đăng nhập trước khi báo cáo nhân vật';
+
+  @override
+  String get character_report_self_forbidden =>
+      'Bạn không thể báo cáo nhân vật do mình tạo';
+
+  @override
+  String get character_report_submitted =>
+      'Đã gửi báo cáo. Chúng tôi sẽ tiến hành xem xét';
+
+  @override
+  String get character_report_open_failed =>
+      'Không thể mở trang báo cáo, vui lòng thử lại sau';
+
+  @override
+  String chat_loader_error(String error) {
+    return 'Không thể tải: $error';
+  }
+
+  @override
+  String get announcement_connection_failed =>
+      'Kết nối thất bại, vui lòng thử lại sau';
+
+  @override
+  String get announcement_latest => 'Mới nhất';
+
+  @override
+  String announcement_published_at(String date) {
+    return 'Ngày đăng: $date';
+  }
+
+  @override
+  String get announcement_operations_team => 'Đội ngũ vận hành LoveyDovey';
+
+  @override
+  String get legal_creator_guidelines => 'Quy định dành cho nhà sáng tạo';
+
+  @override
+  String get legal_refresh => 'Làm mới';
+
+  @override
+  String get legal_page_load_failed => 'Không thể tải trang';
+
+  @override
+  String get legal_check_connection_retry =>
+      'Vui lòng kiểm tra kết nối mạng rồi thử lại.';
+
+  @override
+  String get legal_reload => 'Tải lại';
+
+  @override
+  String get chat_web_purchase_unavailable =>
+      'Phiên bản web hiện chưa hỗ trợ nạp tiền. Vui lòng sử dụng ứng dụng LoveyDovey để mua Điểm Hoa hoặc đăng ký gói thuê bao.';
+
+  @override
+  String get chat_dont_show_again => 'Không hiển thị lại';
+
+  @override
+  String get chat_menu_save_transcript => 'Lưu lịch sử trò chuyện';
+
+  @override
+  String get chat_menu_reply_model => 'Mô hình phản hồi';
+
+  @override
+  String get chat_reply_model_menu_tip =>
+      'Mô hình phản hồi đã được chuyển sang vị trí mới! Giờ bạn có thể tìm thấy trong menu ở góc trên bên phải.';
+
+  @override
+  String get defaultProfileName => 'Hồ sơ mặc định';
+
+  @override
+  String get creator_social_links_manage => 'Quản lý liên kết mạng xã hội';
+
+  @override
+  String get creator_social_links_title => 'Liên kết cá nhân và mạng xã hội';
+
+  @override
+  String get creator_social_links_hint =>
+      'Nhập các liên kết bạn muốn hiển thị công khai trên trang nhà sáng tạo. Những mục để trống sẽ không được hiển thị.';
+
+  @override
+  String get creator_social_links_website => 'Trang web cá nhân';
+
+  @override
+  String get creator_social_links_saved => 'Đã lưu các liên kết mạng xã hội';
+
+  @override
+  String get creator_social_links_load_failed =>
+      'Không thể tải các liên kết mạng xã hội, vui lòng thử lại sau';
+
+  @override
+  String get creator_social_links_save_failed =>
+      'Không thể lưu các liên kết mạng xã hội, vui lòng thử lại sau';
+
+  @override
+  String get creator_social_links_open_failed => 'Không thể mở liên kết này';
 }

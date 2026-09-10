@@ -71,6 +71,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
 
     // 2. 這是「冷啟動」時的檢查
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
       _checkDailyCheckIn();
       _checkAndTriggerBirthdayEvent();
 
@@ -90,7 +92,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    if (state == AppLifecycleState.resumed) {
+    if (state == AppLifecycleState.resumed && mounted) {
       _performDailyTasks();
     }
   }
@@ -179,6 +181,10 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
     if (user == null || !mounted) return;
     final userDocRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
     final doc = await userDocRef.get();
+
+    // Firestore 等待期間 MainPage 可能已被導頁移除。
+    // 回來後一定要重新確認 mounted，避免 setState() called after dispose。
+    if (!mounted) return;
     if (!doc.exists) return;
     final data = doc.data()!;
     final lastCheckInTimestamp = data['lastCheckInDate'] as Timestamp?;
@@ -230,7 +236,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                 ),
                 title: Row(
                   children: [
-                    const Text('✨', style: TextStyle(fontSize: 20)),
                     const SizedBox(width: 8),
                     Text(
                       l10n.daily_gift_title,
@@ -487,6 +492,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
 
       // 1. 抓取資料 (附帶 5 秒超時防卡死)
       final doc = await userDocRef.get().timeout(const Duration(seconds: 5));
+
+      if (!mounted) return;
       if (!doc.exists || doc.data()?['userBirthday'] == null) return;
 
       final data = doc.data()!;
@@ -514,6 +521,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
           // ✨ 利用 Dart 語法，如果是 null 才把這一行塞進 Map 裡
           if (birthdaySetTimestamp == null) 'birthdaySetTimestamp': FieldValue.serverTimestamp(),
         }).timeout(const Duration(seconds: 3));
+
+        if (!mounted) return;
 
       } else if (birthdaySetTimestamp != null) {
         // 狀態 B：非首次領取，檢查 30 天冷卻期

@@ -4148,5 +4148,76 @@
 
     "dice_duel_result_saved": "บันทึกผลการประลองแล้ว!",
 
-    "dice_duel_rolling": "กำลังรวบรวมพลังแห่งจักรวาล..."
+    "dice_duel_rolling": "กำลังรวบรวมพลังแห่งจักรวาล...",
+    "butterfly_loading_connecting": "กำลังเชื่อมโยงกับกาลเวลา...",
+    "character_block_login_required": "โปรดเข้าสู่ระบบก่อนบล็อกตัวละคร",
+    "character_block_self_forbidden": "ไม่สามารถบล็อกตัวละครที่คุณสร้างเองได้",
+    "character_block_title": "บล็อกตัวละคร",
+
+    "character_block_confirm_message": "ต้องการบล็อก “{characterName}” ใช่หรือไม่?\n\nหลังจากบล็อกแล้ว ตัวละครนี้จะไม่ปรากฏในเนื้อหาแนะนำ เช่น การพบเจอและโมเมนต์อีก",
+    "@character_block_confirm_message": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "character_block_confirm": "ยืนยันการบล็อก",
+
+    "character_block_success": "บล็อก “{characterName}” แล้ว",
+    "@character_block_success": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "character_block_failed": "บล็อกตัวละครไม่สำเร็จ โปรดลองอีกครั้งภายหลัง",
+    "character_unblock_success": "เลิกบล็อกตัวละครแล้ว",
+    "character_unblock_failed": "เลิกบล็อกตัวละครไม่สำเร็จ โปรดลองอีกครั้งภายหลัง",
+    "character_report_login_required": "โปรดเข้าสู่ระบบก่อนรายงานตัวละคร",
+    "character_report_self_forbidden": "ไม่สามารถรายงานตัวละครที่คุณสร้างเองได้",
+    "character_report_submitted": "ส่งรายงานแล้ว เราจะดำเนินการตรวจสอบ",
+    "character_report_open_failed": "ไม่สามารถเปิดหน้ารายงานได้ โปรดลองอีกครั้งภายหลัง",
+    "chat_loader_error": "โหลดไม่สำเร็จ: {error}",
+    "@chat_loader_error": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "announcement_connection_failed": "การเชื่อมต่อล้มเหลว โปรดลองอีกครั้งภายหลัง",
+    "announcement_latest": "ล่าสุด",
+    "announcement_published_at": "เผยแพร่เมื่อ: {date}",
+    "@announcement_published_at": {
+        "placeholders": {
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "announcement_operations_team": "ทีมงาน LoveyDovey",
+    "legal_creator_guidelines": "แนวทางสำหรับผู้สร้าง",
+    "legal_refresh": "รีเฟรช",
+    "legal_page_load_failed": "โหลดหน้าไม่สำเร็จ",
+    "legal_check_connection_retry": "โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง",
+    "legal_reload": "โหลดใหม่",
+    "chat_web_purchase_unavailable": "ขณะนี้เวอร์ชันเว็บยังไม่รองรับการเติมเงิน โปรดใช้แอป LoveyDovey เพื่อซื้อแต้มดอกไม้หรือสมัครสมาชิก",
+    "chat_dont_show_again": "ไม่ต้องแสดงข้อความนี้อีก",
+    "chat_menu_save_transcript": "บันทึกประวัติการสนทนา",
+    "chat_menu_reply_model": "โมเดลตอบกลับ",
+    "chat_reply_model_menu_tip": "ย้ายตำแหน่งโมเดลตอบกลับแล้ว! ตอนนี้คุณสามารถเลือกได้จากเมนูมุมขวาบน",
+
+    "creator_social_links_manage": "จัดการลิงก์โซเชียล",
+    "creator_social_links_title": "ลิงก์ส่วนตัวและโซเชียล",
+    "creator_social_links_hint": "กรอกลิงก์ที่ต้องการแสดงแบบสาธารณะบนหน้าครีเอเตอร์ รายการที่ไม่ได้กรอกจะไม่แสดง",
+    "creator_social_links_website": "เว็บไซต์ส่วนตัว",
+    "creator_social_links_saved": "บันทึกลิงก์โซเชียลแล้ว",
+    "creator_social_links_load_failed": "โหลดลิงก์โซเชียลไม่สำเร็จ โปรNFดลองอีกครั้งภายหลัง",
+    "creator_social_links_save_failed": "บันทึกลิงก์โซเชียลไม่สำเร็จ โปรดลองอีกครั้งภายหลัง",
+    "creator_social_links_open_failed": "ไม่สามารถเปิดลิงก์นี้ได้",
+    "defaultProfileName": "โปรไฟล์เริ่มต้น"
 }

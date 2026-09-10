@@ -4155,5 +4155,75 @@
 
     "dice_duel_result_saved": "Keputusan pertarungan telah disimpan!",
 
-    "dice_duel_rolling": "Sedang mengumpulkan tenaga kosmik..."
+    "dice_duel_rolling": "Sedang mengumpulkan tenaga kosmik...",
+    "butterfly_loading_connecting": "Sedang menghubungkan dengan waktu...",
+    "character_block_login_required": "Sila log masuk sebelum menyekat watak",
+    "character_block_self_forbidden": "Anda tidak boleh menyekat watak yang anda cipta",
+    "character_block_title": "Sekat Watak",
+
+    "character_block_confirm_message": "Adakah anda pasti mahu menyekat “{characterName}”?\n\nSelepas disekat, watak ini tidak akan muncul lagi dalam kandungan cadangan seperti Pertemuan dan Momen.",
+    "@character_block_confirm_message": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "character_block_confirm": "Sahkan Sekatan",
+
+    "character_block_success": "“{characterName}” telah disekat",
+    "@character_block_success": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "character_block_failed": "Gagal menyekat watak. Sila cuba lagi kemudian",
+    "character_unblock_success": "Sekatan watak telah dibuka",
+    "character_unblock_failed": "Gagal membuka sekatan watak. Sila cuba lagi kemudian",
+    "character_report_login_required": "Sila log masuk sebelum melaporkan watak",
+    "character_report_self_forbidden": "Anda tidak boleh melaporkan watak yang anda cipta",
+    "character_report_submitted": "Laporan telah dihantar. Kami akan menyemaknya",
+    "character_report_open_failed": "Tidak dapat membuka halaman laporan. Sila cuba lagi kemudian",
+    "chat_loader_error": "Gagal memuatkan: {error}",
+    "@chat_loader_error": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "announcement_connection_failed": "Sambungan gagal. Sila cuba lagi kemudian",
+    "announcement_latest": "Terkini",
+    "announcement_published_at": "Tarikh diterbitkan: {date}",
+    "@announcement_published_at": {
+        "placeholders": {
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "announcement_operations_team": "Pasukan Operasi LoveyDovey",
+    "legal_creator_guidelines": "Garis Panduan Pencipta",
+    "legal_refresh": "Segar Semula",
+    "legal_page_load_failed": "Gagal memuatkan halaman",
+    "legal_check_connection_retry": "Sila semak sambungan internet anda dan cuba lagi.",
+    "legal_reload": "Muat Semula",
+    "chat_web_purchase_unavailable": "Pembelian tidak tersedia pada versi web buat masa ini. Sila gunakan aplikasi LoveyDovey untuk membeli Mata Bunga atau langganan.",
+    "chat_dont_show_again": "Jangan tunjukkan lagi",
+    "chat_menu_save_transcript": "Simpan Sejarah Perbualan",
+    "chat_menu_reply_model": "Model Respons",
+    "chat_reply_model_menu_tip": "Model respons telah dipindahkan! Kini anda boleh menemuinya dalam menu di bahagian atas sebelah kanan.",
+    "defaultProfileName": "Profil Lalai",
+    "creator_social_links_manage": "Urus Pautan Sosial",
+    "creator_social_links_title": "Pautan Peribadi dan Sosial",
+    "creator_social_links_hint": "Masukkan pautan yang ingin dipaparkan secara terbuka pada halaman pencipta anda. Ruangan yang tidak diisi tidak akan dipaparkan.",
+    "creator_social_links_website": "Laman Web Peribadi",
+    "creator_social_links_saved": "Pautan sosial telah disimpan",
+    "creator_social_links_load_failed": "Gagal memuatkan pautan sosial. Sila cuba lagi kemudian",
+    "creator_social_links_save_failed": "Gagal menyimpan pautan sosial. Sila cuba lagi kemudian",
+    "creator_social_links_open_failed": "Tidak dapat membuka pautan ini"
 }

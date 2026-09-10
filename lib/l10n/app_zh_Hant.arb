@@ -4279,5 +4279,75 @@
 
   "dice_duel_result_saved": "對決結果已封存！",
 
-  "dice_duel_rolling": "宇宙能量匯聚中..."
+  "dice_duel_rolling": "宇宙能量匯聚中...",
+  "butterfly_loading_connecting": "正在與時光連結...",
+  "character_block_login_required": "請先登入後再封鎖角色",
+  "character_block_self_forbidden": "無法封鎖自己建立的角色",
+  "character_block_title": "封鎖角色",
+
+  "character_block_confirm_message": "確定要封鎖「{characterName}」嗎？\n\n封鎖後，你將不會再於邂逅、瞬間等推薦內容中看到這個角色。",
+  "@character_block_confirm_message": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "character_block_confirm": "確認封鎖",
+
+  "character_block_success": "已封鎖「{characterName}」",
+  "@character_block_success": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "character_block_failed": "封鎖失敗，請稍後再試",
+  "character_unblock_success": "已解除封鎖",
+  "character_unblock_failed": "解除封鎖失敗，請稍後再試",
+  "character_report_login_required": "請先登入後再檢舉角色",
+  "character_report_self_forbidden": "無法檢舉自己建立的角色",
+  "character_report_submitted": "檢舉已送出，我們會進行審核",
+  "character_report_open_failed": "無法開啟檢舉頁面，請稍後再試",
+  "chat_loader_error": "讀取失敗：{error}",
+  "@chat_loader_error": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "announcement_connection_failed": "連線失敗，請稍後再試",
+  "announcement_latest": "最新",
+  "announcement_published_at": "發布時間：{date}",
+  "@announcement_published_at": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "announcement_operations_team": "戀戀拾光營運團隊",
+  "legal_creator_guidelines": "創作者規範",
+  "legal_refresh": "重新整理",
+  "legal_page_load_failed": "頁面載入失敗",
+  "legal_check_connection_retry": "請確認網路連線後再試一次。",
+  "legal_reload": "重新載入",
+  "chat_web_purchase_unavailable": "網頁版目前不提供儲值服務，請使用《戀戀拾光》App 購買花花或訂閱。",
+  "chat_dont_show_again": "不再顯示此提示",
+  "chat_menu_save_transcript": "保存對話紀錄",
+  "chat_menu_reply_model": "回覆模型",
+  "chat_reply_model_menu_tip": "回覆模型搬家囉！現在可以從右上角選單找到它。",
+  "defaultProfileName": "預設檔案",
+  "creator_social_links_manage": "管理社群連結",
+  "creator_social_links_title": "個人／社群連結",
+  "creator_social_links_hint": "填入想公開顯示在創作者頁面的連結，未填寫的項目不會顯示。",
+  "creator_social_links_website": "個人網站",
+  "creator_social_links_saved": "社群連結已儲存",
+  "creator_social_links_load_failed": "讀取社群連結失敗，請稍後再試",
+  "creator_social_links_save_failed": "儲存社群連結失敗，請稍後再試",
+  "creator_social_links_open_failed": "無法開啟此連結"
 }

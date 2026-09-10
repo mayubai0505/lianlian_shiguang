@@ -43,7 +43,7 @@ class _LegalDocumentPageState
         return l10n?.termsOfService ?? '使用條款';
 
       case LegalPageType.creator:
-        return '創作者規範';
+        return l10n?.legal_creator_guidelines ?? '創作者規範';
     }
   }
 
@@ -101,6 +101,7 @@ class _LegalDocumentPageState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -113,7 +114,7 @@ class _LegalDocumentPageState
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            tooltip: "重新整理",
+            tooltip: l10n.legal_refresh,
             onPressed: () {
               _controller.reload();
             },
@@ -146,7 +147,7 @@ class _LegalDocumentPageState
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      "頁面載入失敗",
+                      l10n.legal_page_load_failed,
                       style: GoogleFonts.notoSerifTc(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
@@ -154,7 +155,7 @@ class _LegalDocumentPageState
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      "請確認網路連線後再試一次。",
+                      l10n.legal_check_connection_retry,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.notoSerifTc(
                         fontSize: 14,
@@ -174,7 +175,7 @@ class _LegalDocumentPageState
                       },
                       icon: const Icon(Icons.refresh),
                       label: Text(
-                        "重新載入",
+                        l10n.legal_reload,
                         style: GoogleFonts.notoSerifTc(
                           fontWeight: FontWeight.w600,
                         ),

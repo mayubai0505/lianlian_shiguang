@@ -8202,4 +8202,141 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get dice_duel_rolling => 'กำลังรวบรวมพลังแห่งจักรวาล...';
+
+  @override
+  String get butterfly_loading_connecting => 'กำลังเชื่อมโยงกับกาลเวลา...';
+
+  @override
+  String get character_block_login_required =>
+      'โปรดเข้าสู่ระบบก่อนบล็อกตัวละคร';
+
+  @override
+  String get character_block_self_forbidden =>
+      'ไม่สามารถบล็อกตัวละครที่คุณสร้างเองได้';
+
+  @override
+  String get character_block_title => 'บล็อกตัวละคร';
+
+  @override
+  String character_block_confirm_message(String characterName) {
+    return 'ต้องการบล็อก “$characterName” ใช่หรือไม่?\n\nหลังจากบล็อกแล้ว ตัวละครนี้จะไม่ปรากฏในเนื้อหาแนะนำ เช่น การพบเจอและโมเมนต์อีก';
+  }
+
+  @override
+  String get character_block_confirm => 'ยืนยันการบล็อก';
+
+  @override
+  String character_block_success(String characterName) {
+    return 'บล็อก “$characterName” แล้ว';
+  }
+
+  @override
+  String get character_block_failed =>
+      'บล็อกตัวละครไม่สำเร็จ โปรดลองอีกครั้งภายหลัง';
+
+  @override
+  String get character_unblock_success => 'เลิกบล็อกตัวละครแล้ว';
+
+  @override
+  String get character_unblock_failed =>
+      'เลิกบล็อกตัวละครไม่สำเร็จ โปรดลองอีกครั้งภายหลัง';
+
+  @override
+  String get character_report_login_required =>
+      'โปรดเข้าสู่ระบบก่อนรายงานตัวละคร';
+
+  @override
+  String get character_report_self_forbidden =>
+      'ไม่สามารถรายงานตัวละครที่คุณสร้างเองได้';
+
+  @override
+  String get character_report_submitted =>
+      'ส่งรายงานแล้ว เราจะดำเนินการตรวจสอบ';
+
+  @override
+  String get character_report_open_failed =>
+      'ไม่สามารถเปิดหน้ารายงานได้ โปรดลองอีกครั้งภายหลัง';
+
+  @override
+  String chat_loader_error(String error) {
+    return 'โหลดไม่สำเร็จ: $error';
+  }
+
+  @override
+  String get announcement_connection_failed =>
+      'การเชื่อมต่อล้มเหลว โปรดลองอีกครั้งภายหลัง';
+
+  @override
+  String get announcement_latest => 'ล่าสุด';
+
+  @override
+  String announcement_published_at(String date) {
+    return 'เผยแพร่เมื่อ: $date';
+  }
+
+  @override
+  String get announcement_operations_team => 'ทีมงาน LoveyDovey';
+
+  @override
+  String get legal_creator_guidelines => 'แนวทางสำหรับผู้สร้าง';
+
+  @override
+  String get legal_refresh => 'รีเฟรช';
+
+  @override
+  String get legal_page_load_failed => 'โหลดหน้าไม่สำเร็จ';
+
+  @override
+  String get legal_check_connection_retry =>
+      'โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง';
+
+  @override
+  String get legal_reload => 'โหลดใหม่';
+
+  @override
+  String get chat_web_purchase_unavailable =>
+      'ขณะนี้เวอร์ชันเว็บยังไม่รองรับการเติมเงิน โปรดใช้แอป LoveyDovey เพื่อซื้อแต้มดอกไม้หรือสมัครสมาชิก';
+
+  @override
+  String get chat_dont_show_again => 'ไม่ต้องแสดงข้อความนี้อีก';
+
+  @override
+  String get chat_menu_save_transcript => 'บันทึกประวัติการสนทนา';
+
+  @override
+  String get chat_menu_reply_model => 'โมเดลตอบกลับ';
+
+  @override
+  String get chat_reply_model_menu_tip =>
+      'ย้ายตำแหน่งโมเดลตอบกลับแล้ว! ตอนนี้คุณสามารถเลือกได้จากเมนูมุมขวาบน';
+
+  @override
+  String get defaultProfileName => 'โปรไฟล์เริ่มต้น';
+
+  @override
+  String get creator_social_links_manage => 'จัดการลิงก์โซเชียล';
+
+  @override
+  String get creator_social_links_title => 'ลิงก์ส่วนตัวและโซเชียล';
+
+  @override
+  String get creator_social_links_hint =>
+      'กรอกลิงก์ที่ต้องการแสดงแบบสาธารณะบนหน้าครีเอเตอร์ รายการที่ไม่ได้กรอกจะไม่แสดง';
+
+  @override
+  String get creator_social_links_website => 'เว็บไซต์ส่วนตัว';
+
+  @override
+  String get creator_social_links_saved => 'บันทึกลิงก์โซเชียลแล้ว';
+
+  @override
+  String get creator_social_links_load_failed =>
+      'โหลดลิงก์โซเชียลไม่สำเร็จ โปรNFดลองอีกครั้งภายหลัง';
+
+  @override
+  String get creator_social_links_save_failed =>
+      'บันทึกลิงก์โซเชียลไม่สำเร็จ โปรดลองอีกครั้งภายหลัง';
+
+  @override
+  String get creator_social_links_open_failed => 'ไม่สามารถเปิดลิงก์นี้ได้';
 }

@@ -47,55 +47,179 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 // ==========================================
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-
-  try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    ).timeout(
-      const Duration(seconds: 15),
-    );
-
-  } on TimeoutException {
-  } catch (e, stackTrace) {
-    debugPrintStack(stackTrace: stackTrace);
-  }
-
+  final binding = WidgetsFlutterBinding.ensureInitialized();
 
   FirebaseMessaging.onBackgroundMessage(
     _firebaseMessagingBackgroundHandler,
   );
 
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (_) {
-            return ThemeNotifier();
-          },
-        ),
-        ChangeNotifierProvider(
-          create: (_) {
-            return LocaleNotifier();
-          },
-        ),
-        ChangeNotifierProvider(
-          create: (_) {
-            return PurchaseService()..initialize();
-          },
-        ),
-      ],
-      child: const MyApp(),
-    ),
-  );
+  // Firebase 核心完成前先不要送出 Flutter 第一幀。
+  // 這樣原生 Logo 會持續停留，不會再插入
+  // 「戀戀拾光＋轉圈圈」的中間載入頁。
+  binding.deferFirstFrame();
 
-  unawaited(
-    _initializeBackgroundServices().then((_) {
-    }).catchError((e, stackTrace) {
+  runApp(const _BootstrapApp());
+}
+
+class _BootstrapApp extends StatefulWidget {
+  const _BootstrapApp();
+
+  @override
+  State<_BootstrapApp> createState() => _BootstrapAppState();
+}
+
+class _BootstrapAppState extends State<_BootstrapApp> {
+  late Future<void> _initializeFuture;
+  bool _hasAllowedFirstFrame = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeFuture = _initializeCore();
+  }
+
+  Future<void> _initializeCore() async {
+    final stopwatch = Stopwatch()..start();
+
+    try {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+
+      stopwatch.stop();
+      debugPrint(
+        '⚡ Firebase 核心初始化完成：${stopwatch.elapsedMilliseconds} ms',
+      );
+    } catch (e, stackTrace) {
+      stopwatch.stop();
+      debugPrint(
+        '❌ Firebase 核心初始化失敗：$e '
+            '(${stopwatch.elapsedMilliseconds} ms)',
+      );
       debugPrintStack(stackTrace: stackTrace);
-    }),
-  );
+      rethrow;
+    }
+  }
+
+  void _retryInitialization() {
+    setState(() {
+      _initializeFuture = _initializeCore();
+    });
+  }
+
+  void _allowFirstFrameOnce() {
+    if (_hasAllowedFirstFrame) return;
+    _hasAllowedFirstFrame = true;
+    WidgetsBinding.instance.allowFirstFrame();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<void>(
+      future: _initializeFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          // 第一幀目前仍被 deferFirstFrame() 擋住，
+          // 玩家實際看到的仍是原生啟動 Logo。
+          return const SizedBox.shrink();
+        }
+
+        if (snapshot.hasError) {
+          // 初始化失敗時才真正放行 Flutter，顯示可重試錯誤頁。
+          _allowFirstFrameOnce();
+
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('zh', 'TW'), Locale('zh', 'CN'), Locale('en', ''),
+              Locale('ja', ''), Locale('ko', ''), Locale('vi', ''),
+              Locale('id', ''), Locale('th', ''), Locale('ar', ''),
+              Locale('fr', ''), Locale('ms', ''), Locale('es', ''),
+              Locale('hi', ''), Locale('pt', ''),
+            ],
+            home: _StartupErrorPage(
+              onRetry: _retryInitialization,
+            ),
+          );
+        }
+
+        // Firebase 核心完成後，第一個真正送出的 Flutter 畫面
+        // 直接就是 MyApp（也就是登入頁或 MainPage）。
+        _allowFirstFrameOnce();
+
+        // Firebase 核心完成後，才建立所有可能使用 Firebase 的 Provider。
+        return MultiProvider(
+          providers: [
+            ChangeNotifierProvider(
+              create: (_) => ThemeNotifier(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => LocaleNotifier(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => PurchaseService()..initialize(),
+            ),
+          ],
+          child: const MyApp(),
+        );
+      },
+    );
+  }
+}
+
+class _StartupErrorPage extends StatelessWidget {
+  final VoidCallback onRetry;
+
+  const _StartupErrorPage({
+    required this.onRetry,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.cloud_off_rounded,
+                  size: 48,
+                  color: Color(0xFF8D7DB5),
+                ),
+                SizedBox(height: 18),
+                Text(
+                  AppLocalizations.of(context)!.recommendation_load_failed,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 15,
+                    height: 1.6,
+                    color: Color(0xFF5F596C),
+                  ),
+                ),
+                SizedBox(height: 18),
+                OutlinedButton(
+                  onPressed: onRetry,
+                  child: Text(
+                    AppLocalizations.of(context)!.recommendation_reload,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 Future<void> _initializeBackgroundServices() async {
@@ -159,8 +283,15 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-
+      // 這些都不是顯示首頁的必要條件，全部留在第一幀之後背景處理。
       unawaited(_initializeAfterAppStarted());
+
+      unawaited(
+        _initializeBackgroundServices().catchError((e, stackTrace) {
+          debugPrint('❌ 背景服務初始化失敗：$e');
+          debugPrintStack(stackTrace: stackTrace);
+        }),
+      );
     });
   }
 
@@ -227,40 +358,40 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     error,
     stackTrace
     ) {
-    // 統計失敗不能影響玩家正常使用 App
-    debugPrint(
-    '⚠️ 今日活躍埋點失敗：'
-    '${error.code} '
-    '${error.message}',
-    );
+      // 統計失敗不能影響玩家正常使用 App
+      debugPrint(
+        '⚠️ 今日活躍埋點失敗：'
+            '${error.code} '
+            '${error.message}',
+      );
 
-    debugPrintStack(
-    stackTrace: stackTrace,
-    );
+      debugPrintStack(
+        stackTrace: stackTrace,
+      );
     } catch (error, stackTrace) {
-    debugPrint(
-    '⚠️ 今日活躍埋點異常：'
-    '$error',
-    );
+      debugPrint(
+        '⚠️ 今日活躍埋點異常：'
+            '$error',
+      );
 
-    debugPrintStack(
-    stackTrace: stackTrace,
-    );
+      debugPrintStack(
+        stackTrace: stackTrace,
+      );
     }
   }
 
   Future<void> _initializeAfterAppStarted() async {
-    await _recordDailyAppActivity();
-    try {
-      await setupPushNotifications().timeout(
-        const Duration(seconds: 15),
-      );
+    // 啟動後工作彼此獨立，不要讓其中一項網路請求拖住下一項。
+    unawaited(_recordDailyAppActivity());
 
-    } on TimeoutException {
-    } catch (e, stackTrace) {
-      debugPrintStack(stackTrace: stackTrace);
-    }
-
+    unawaited(
+      setupPushNotifications()
+          .timeout(const Duration(seconds: 15))
+          .catchError((e, stackTrace) {
+        debugPrint('⚠️ 推播初始化失敗或逾時：$e');
+        debugPrintStack(stackTrace: stackTrace);
+      }),
+    );
 
     try {
       _updateUserStatus(true);
@@ -375,7 +506,7 @@ class _ChatLoaderWrapperState extends State<ChatLoaderWrapper> {
 
         if (snapshot.hasError || !snapshot.hasData) {
           return Scaffold(
-            body: Center(child: Text("讀取失敗：${snapshot.error}")),
+            body: Center(child: Text(AppLocalizations.of(context)!.chat_loader_error(snapshot.error.toString()))),
           );
         }
 

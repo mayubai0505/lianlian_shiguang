@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
   final String characterName;
@@ -9,6 +10,8 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback onBack;
   final VoidCallback onFlowerTap;
   final VoidCallback onMenuTap;
+  final GlobalKey? menuShowcaseKey;
+  final String? menuShowcaseDescription;
 
   const ChatHeader({
     super.key,
@@ -19,6 +22,8 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
     required this.onBack,
     required this.onFlowerTap,
     required this.onMenuTap,
+    this.menuShowcaseKey,
+    this.menuShowcaseDescription,
   });
 
   @override
@@ -194,19 +199,38 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
               Positioned(
                 top: 0,
                 right: 0,
-                child: IconButton(
-                  tooltip: 'Menu',
-                  onPressed: onMenuTap,
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(
-                    minWidth: 40,
-                    minHeight: 40,
-                  ),
-                  icon: Icon(
-                    Icons.menu_rounded,
-                    color: onSurface,
-                    size: 26,
-                  ),
+                child: Builder(
+                  builder: (context) {
+                    final menuButton = IconButton(
+                      tooltip: 'Menu',
+                      onPressed: onMenuTap,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(
+                        minWidth: 40,
+                        minHeight: 40,
+                      ),
+                      icon: Icon(
+                        Icons.menu_rounded,
+                        color: onSurface,
+                        size: 26,
+                      ),
+                    );
+
+                    final showcaseKey = menuShowcaseKey;
+                    final showcaseDescription = menuShowcaseDescription;
+
+                    if (showcaseKey == null ||
+                        showcaseDescription == null ||
+                        showcaseDescription.isEmpty) {
+                      return menuButton;
+                    }
+
+                    return Showcase(
+                      key: showcaseKey,
+                      description: showcaseDescription,
+                      child: menuButton,
+                    );
+                  },
                 ),
               ),
             ],

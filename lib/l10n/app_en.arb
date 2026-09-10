@@ -4362,5 +4362,75 @@
 
   "dice_duel_result_saved": "Duel result saved!",
 
-  "dice_duel_rolling": "Gathering cosmic energy..."
+  "dice_duel_rolling": "Gathering cosmic energy...",
+  "butterfly_loading_connecting": "Connecting with time...",
+  "character_block_login_required": "Please log in before blocking a character",
+  "character_block_self_forbidden": "You cannot block a character you created",
+  "character_block_title": "Block Character",
+
+  "character_block_confirm_message": "Are you sure you want to block “{characterName}”?\n\nAfter blocking, you will no longer see this character in recommended content such as Encounters and Moments.",
+  "@character_block_confirm_message": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "character_block_confirm": "Block",
+
+  "character_block_success": "Blocked “{characterName}”",
+  "@character_block_success": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "character_block_failed": "Failed to block the character. Please try again later",
+  "character_unblock_success": "Character unblocked",
+  "character_unblock_failed": "Failed to unblock the character. Please try again later",
+  "character_report_login_required": "Please log in before reporting a character",
+  "character_report_self_forbidden": "You cannot report a character you created",
+  "character_report_submitted": "Report submitted. We will review it",
+  "character_report_open_failed": "Unable to open the report page. Please try again later",
+  "chat_loader_error": "Failed to load: {error}",
+  "@chat_loader_error": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "announcement_connection_failed": "Connection failed. Please try again later",
+  "announcement_latest": "Latest",
+  "announcement_published_at": "Published: {date}",
+  "@announcement_published_at": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "announcement_operations_team": "LoveyDovey Operations Team",
+  "legal_creator_guidelines": "Creator Guidelines",
+  "legal_refresh": "Refresh",
+  "legal_page_load_failed": "Failed to load page",
+  "legal_check_connection_retry": "Please check your internet connection and try again.",
+  "legal_reload": "Reload",
+  "chat_web_purchase_unavailable": "Purchases are currently unavailable on the web version. Please use the LoveyDovey app to purchase Flower Points or a subscription.",
+  "chat_dont_show_again": "Don’t show this again",
+  "chat_menu_save_transcript": "Save Chat History",
+  "chat_menu_reply_model": "Response Model",
+  "chat_reply_model_menu_tip": "The response model has moved! You can now find it in the menu at the top right.",
+  "defaultProfileName": "Default Profile",
+  "creator_social_links_manage": "Manage Social Links",
+  "creator_social_links_title": "Personal & Social Links",
+  "creator_social_links_hint": "Add the links you want to display publicly on your creator page. Blank fields will not be shown.",
+  "creator_social_links_website": "Personal Website",
+  "creator_social_links_saved": "Social links saved",
+  "creator_social_links_load_failed": "Failed to load social links. Please try again later",
+  "creator_social_links_save_failed": "Failed to save social links. Please try again later",
+  "creator_social_links_open_failed": "Unable to open this link"
 }

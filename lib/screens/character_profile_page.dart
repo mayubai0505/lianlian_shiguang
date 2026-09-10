@@ -62,6 +62,14 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
   bool _isFollowing = false; // 放在 State 類別的最上方
   bool _isCharacterBookmarked = false;
   bool _isCharacterBookmarkLoading = false;
+
+  // 這些資料來源必須固定住。
+  // 否則收藏按鈕 setState 時，StreamBuilder / FutureBuilder 會拿到新的
+  // stream/future，短暫回到 waiting，造成「時空迴音又轉一次」的閃爍。
+  late final Stream<QuerySnapshot<Map<String, dynamic>>> _echoesStream;
+  late final Stream<QuerySnapshot<Map<String, dynamic>>> _loresStream;
+  late final Future<DocumentSnapshot<Map<String, dynamic>>> _creatorProfileFuture;
+
   int _currentHeaderPhotoIndex = 0;
   // 🌟 總裁指令：不管是大寫還是小寫，通通都要聽 AppConfig 的話！
   final String APP_ID = AppConfig.appId;
@@ -162,6 +170,29 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+
+    _echoesStream = FirebaseFirestore.instance
+        .collection('artifacts')
+        .doc(AppConfig.appId)
+        .collection('public_characters')
+        .doc(widget.character.id)
+        .collection('echoes')
+        .orderBy('timestamp', descending: true)
+        .snapshots();
+
+    _loresStream = FirebaseFirestore.instance
+        .collection('artifacts')
+        .doc(AppConfig.appId)
+        .collection('public_characters')
+        .doc(widget.character.id)
+        .collection('lores')
+        .orderBy('timestamp', descending: true)
+        .snapshots();
+
+    _creatorProfileFuture = FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.character.createdBy)
+        .get();
 // 🌟  去翻記事本，看看他以前看過迴音氣泡了沒
     _checkEchoTutorial();
     // 🌟 4. 魔法監聽器：當玩家切換分頁時觸發！
@@ -2802,19 +2833,10 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                         tooltip: _isCharacterBookmarked
                             ? l10n.character_profile_remove_bookmark
                             : l10n.character_profile_add_bookmark,
-                        onPressed: _isCharacterBookmarkLoading
-                            ? null
-                            : _toggleCharacterBookmark,
-                        icon: _isCharacterBookmarkLoading
-                            ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 1.8,
-                            color: Colors.white,
-                          ),
-                        )
-                            : Icon(
+                        // 收藏採 optimistic update：畫面立即切換圖示，
+                        // Firestore 在背景完成；不要為這個短暫操作顯示轉圈圈。
+                        onPressed: _toggleCharacterBookmark,
+                        icon: Icon(
                           _isCharacterBookmarked
                               ? Icons.bookmark_rounded
                               : Icons.bookmark_border_rounded,
@@ -4106,15 +4128,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
   // --- 1. 主頁籤 UI ---
   Widget _buildTabLore(ThemeData theme) {
     final l10n = AppLocalizations.of(context)!;
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('artifacts')
-          .doc(AppConfig.appId)
-          .collection('public_characters')
-          .doc(widget.character.id)
-          .collection('lores')
-          .orderBy('timestamp', descending: true)
-          .snapshots(),
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: _loresStream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting)
           return const Center(child: CircularProgressIndicator());
@@ -4542,15 +4557,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
     const String adminUid = 'B71k2kyooubYsOtIO1nkiBwyBXt2';
     final l10n = AppLocalizations.of(context)!;
 
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('artifacts')
-          .doc(AppConfig.appId)
-          .collection('public_characters')
-          .doc(widget.character.id)
-          .collection('echoes')
-          .orderBy('timestamp', descending: true)
-          .snapshots(),
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: _echoesStream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -4611,11 +4619,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                   child: Row(
                     children: [
                       Expanded(
-                        child: FutureBuilder<DocumentSnapshot>(
-                          future: FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(creatorId)
-                              .get(),
+                        child: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                          future: _creatorProfileFuture,
                           builder: (context, userSnapshot) {
                             String displayCreatorName =
                                 widget.character.creatorName;

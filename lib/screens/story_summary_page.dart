@@ -355,10 +355,13 @@ class _StorySummaryPageState extends State<StorySummaryPage> {
                               ),
                             ),
                             PopupMenuButton<String>(
-                              icon: Icon(
-                                Icons.edit_note,
-                                size: 20,
+                              icon: Image.asset(
+                                'assets/images/chat/chat_msg_edit_mask.png',
+                                width: 24,
+                                height: 24,
+                                fit: BoxFit.contain,
                                 color: colorScheme.outline,
+                                colorBlendMode: BlendMode.srcIn,
                               ),
                               onSelected: (value) async {
                                 if (value == 'edit') {
@@ -372,8 +375,15 @@ class _StorySummaryPageState extends State<StorySummaryPage> {
                                   value: 'edit',
                                   child: Row(
                                     children: [
-                                      Icon(Icons.edit_outlined, size: 18),
-                                      SizedBox(width: 8),
+                                      Image.asset(
+                                        'assets/images/chat/chat_msg_edit_mask.png',
+                                        width: 20,
+                                        height: 20,
+                                        fit: BoxFit.contain,
+                                        color: colorScheme.primary,
+                                        colorBlendMode: BlendMode.srcIn,
+                                      ),
+                                      const SizedBox(width: 8),
                                       Text(l10n.edit_btn),
                                     ],
                                   ),
@@ -382,8 +392,15 @@ class _StorySummaryPageState extends State<StorySummaryPage> {
                                   value: 'delete',
                                   child: Row(
                                     children: [
-                                      Icon(Icons.delete_outline, size: 18, color: Colors.redAccent),
-                                      SizedBox(width: 8),
+                                      Image.asset(
+                                        'assets/images/chat/chat_msg_delete_mask.png',
+                                        width: 20,
+                                        height: 20,
+                                        fit: BoxFit.contain,
+                                        color: Colors.redAccent,
+                                        colorBlendMode: BlendMode.srcIn,
+                                      ),
+                                      const SizedBox(width: 8),
                                       Text(
                                         l10n.delete_btn,
                                         style: TextStyle(color: Colors.redAccent),

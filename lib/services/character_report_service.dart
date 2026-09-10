@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 import '../screens/character_model.dart';
 import '../screens/feedback_page.dart';
@@ -13,13 +14,14 @@ class CharacterReportService {
     required Character character,
     String source = 'unknown',
   }) async {
+    final l10n = AppLocalizations.of(context)!;
     final currentUser =
         FirebaseAuth.instance.currentUser;
 
     if (currentUser == null) {
       ToastUtils.showCenterToast(
         context,
-        '請先登入後再檢舉角色',
+        l10n.character_report_login_required,
         isError: true,
       );
       return;
@@ -30,7 +32,7 @@ class CharacterReportService {
         character.createdBy) {
       ToastUtils.showCenterToast(
         context,
-        '無法檢舉自己建立的角色',
+        l10n.character_report_self_forbidden,
         isError: true,
       );
       return;
@@ -58,7 +60,7 @@ class CharacterReportService {
       if (result == true) {
         ToastUtils.showCenterToast(
           context,
-          '檢舉已送出，我們會進行審核',
+          l10n.character_report_submitted,
           customIcon:
           Icons.flag_outlined,
         );
@@ -76,7 +78,7 @@ class CharacterReportService {
 
       ToastUtils.showCenterToast(
         context,
-        '無法開啟檢舉頁面，請稍後再試',
+        l10n.character_report_open_failed,
         isError: true,
       );
     }

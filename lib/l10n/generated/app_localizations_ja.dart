@@ -7823,4 +7823,131 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get dice_duel_rolling => '宇宙のエネルギーを集めています...';
+
+  @override
+  String get butterfly_loading_connecting => '時をつないでいます...';
+
+  @override
+  String get character_block_login_required => 'キャラクターをブロックするには、先にログインしてください';
+
+  @override
+  String get character_block_self_forbidden => '自分が作成したキャラクターはブロックできません';
+
+  @override
+  String get character_block_title => 'キャラクターをブロック';
+
+  @override
+  String character_block_confirm_message(String characterName) {
+    return '「$characterName」をブロックしますか？\n\nブロックすると、出会いやモーメントなどのおすすめコンテンツにこのキャラクターが表示されなくなります。';
+  }
+
+  @override
+  String get character_block_confirm => 'ブロックする';
+
+  @override
+  String character_block_success(String characterName) {
+    return '「$characterName」をブロックしました';
+  }
+
+  @override
+  String get character_block_failed => 'ブロックに失敗しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get character_unblock_success => 'ブロックを解除しました';
+
+  @override
+  String get character_unblock_failed => 'ブロックの解除に失敗しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get character_report_login_required => 'キャラクターを通報するには、先にログインしてください';
+
+  @override
+  String get character_report_self_forbidden => '自分が作成したキャラクターは通報できません';
+
+  @override
+  String get character_report_submitted => '通報を送信しました。内容を確認いたします';
+
+  @override
+  String get character_report_open_failed =>
+      '通報ページを開けませんでした。しばらくしてからもう一度お試しください';
+
+  @override
+  String chat_loader_error(String error) {
+    return '読み込みに失敗しました：$error';
+  }
+
+  @override
+  String get announcement_connection_failed => '接続に失敗しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get announcement_latest => '最新';
+
+  @override
+  String announcement_published_at(String date) {
+    return '公開日時：$date';
+  }
+
+  @override
+  String get announcement_operations_team => 'LoveyDovey運営チーム';
+
+  @override
+  String get legal_creator_guidelines => 'クリエイターガイドライン';
+
+  @override
+  String get legal_refresh => '更新';
+
+  @override
+  String get legal_page_load_failed => 'ページの読み込みに失敗しました';
+
+  @override
+  String get legal_check_connection_retry => 'インターネット接続を確認して、もう一度お試しください。';
+
+  @override
+  String get legal_reload => '再読み込み';
+
+  @override
+  String get chat_web_purchase_unavailable =>
+      'Web版では現在、チャージをご利用いただけません。花ポイントの購入やサブスクリプションの登録には「LoveyDovey」アプリをご利用ください。';
+
+  @override
+  String get chat_dont_show_again => '今後このメッセージを表示しない';
+
+  @override
+  String get chat_menu_save_transcript => '会話履歴を保存';
+
+  @override
+  String get chat_menu_reply_model => '応答モデル';
+
+  @override
+  String get chat_reply_model_menu_tip => '応答モデルの場所が変わりました！右上のメニューから選択できます。';
+
+  @override
+  String get defaultProfileName => 'デフォルトプロフィール';
+
+  @override
+  String get creator_social_links_manage => 'ソーシャルリンクを管理';
+
+  @override
+  String get creator_social_links_title => '個人・ソーシャルリンク';
+
+  @override
+  String get creator_social_links_hint =>
+      'クリエイターページで公開したいリンクを入力してください。未入力の項目は表示されません。';
+
+  @override
+  String get creator_social_links_website => '個人ウェブサイト';
+
+  @override
+  String get creator_social_links_saved => 'ソーシャルリンクを保存しました';
+
+  @override
+  String get creator_social_links_load_failed =>
+      'ソーシャルリンクの読み込みに失敗しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get creator_social_links_save_failed =>
+      'ソーシャルリンクの保存に失敗しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get creator_social_links_open_failed => 'このリンクを開けませんでした';
 }

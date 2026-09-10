@@ -44,7 +44,7 @@ class AnnouncementListPage extends StatelessWidget {
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
                     debugPrint('公告頁載入失敗：${snapshot.error}');
-                    return const _Message('連線失敗，請稍後再試');
+                    return _Message(l10n.announcement_connection_failed);
                   }
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
@@ -213,6 +213,7 @@ class _AnnouncementCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final primary = theme.colorScheme.primary;
     final titleColor = _themeInk(theme, .30);
     final secondaryColor = _themeInk(theme, .48);
@@ -257,7 +258,7 @@ class _AnnouncementCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        '最新',
+                        l10n.announcement_latest,
                         style: GoogleFonts.notoSerifTc(
                           color: primary,
                           fontSize: 11.5,
@@ -328,6 +329,7 @@ class _DetailPaper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final primary = theme.colorScheme.primary;
     final titleColor = _themeInk(theme, .28);
     final bodyColor = _themeInk(theme, .40);
@@ -360,7 +362,7 @@ class _DetailPaper extends StatelessWidget {
         ),
         const SizedBox(height: 13),
         Text(
-          '發布時間：${DateFormat('yyyy/MM/dd HH:mm').format(date)}',
+          l10n.announcement_published_at(DateFormat('yyyy/MM/dd HH:mm').format(date)),
           style: GoogleFonts.notoSerifTc(
             color: bodyColor.withValues(alpha: .62),
             fontSize: 12.5,
@@ -400,7 +402,7 @@ class _DetailPaper extends StatelessWidget {
             ),
             const SizedBox(height: 7),
             Text(
-              '戀戀拾光營運團隊',
+              l10n.announcement_operations_team,
               style: GoogleFonts.notoSerifTc(
                 color: primary.withValues(alpha: .68),
                 fontSize: 13,

@@ -16,7 +16,83 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb, listEquals;
 import '../services/character_report_service.dart';
 import '../services/character_block_service.dart';
+
 import 'dart:async';
+
+// =========================================================
+// 🖼️ 邂逅頁圖片共用快取
+// 同一個 URL + 解碼寬度會重用同一個 ImageProvider。
+// 從角色頁返回、切分類、Swiper rebuild 時，都盡量沿用已載入圖片。
+// =========================================================
+final Map<String, ImageProvider> _encounterImageProviderCache =
+<String, ImageProvider>{};
+
+ImageProvider _encounterImageProvider(
+    String imageUrl, {
+      required int cacheWidth,
+    }) {
+  final String normalizedUrl = imageUrl.trim();
+  final String cacheKey = '$cacheWidth::$normalizedUrl';
+
+  return _encounterImageProviderCache.putIfAbsent(
+    cacheKey,
+        () => ResizeImage(
+      CachedNetworkImageProvider(normalizedUrl),
+      width: cacheWidth,
+    ),
+  );
+}
+
+Widget _buildEncounterCachedImage(
+    BuildContext context, {
+      required String imageUrl,
+      required BoxFit fit,
+      required AlignmentGeometry alignment,
+      required int cacheWidth,
+      Widget? placeholder,
+      Widget? errorWidget,
+    }) {
+  final String normalizedUrl = imageUrl.trim();
+
+  final Widget fallback = errorWidget ??
+      Image.asset(
+        'assets/images/blank_avatar.png',
+        fit: fit,
+        alignment: alignment,
+      );
+
+  if (normalizedUrl.isEmpty) {
+    return fallback;
+  }
+
+  final provider = _encounterImageProvider(
+    normalizedUrl,
+    cacheWidth: cacheWidth,
+  );
+
+  return Image(
+    key: ValueKey<String>('encounter_img_${cacheWidth}_$normalizedUrl'),
+    image: provider,
+    fit: fit,
+    alignment: alignment,
+    filterQuality: FilterQuality.medium,
+    gaplessPlayback: true,
+    frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+      if (wasSynchronouslyLoaded || frame != null) {
+        return child;
+      }
+
+      // 第一次真正尚未載入時只顯示靜態底圖，不顯示轉圈圈。
+      return placeholder ??
+          Image.asset(
+            'assets/images/blank_avatar.png',
+            fit: fit,
+            alignment: alignment,
+          );
+    },
+    errorBuilder: (context, error, stackTrace) => fallback,
+  );
+}
 
 // 邂逅頁面
 class SelectChatPage extends StatefulWidget {
@@ -70,20 +146,42 @@ class SelectChatPageState extends State<SelectChatPage> {
   }
 
   Future<List<Character>> _prepareCharacters() async {
-    if (_userId == null) {
-      _friendIds.clear();
-      _blockedCharacterIds.clear();
-      _blockedCreatorIds.clear();
-      return _loadCharacters();
+    final stopwatch = Stopwatch()..start();
+
+    try {
+      if (_userId == null) {
+        _friendIds.clear();
+        _blockedCharacterIds.clear();
+        _blockedCreatorIds.clear();
+
+        final characters = await _loadCharacters();
+
+        debugPrint(
+          '⚡ 邂逅頁載入完成：${stopwatch.elapsedMilliseconds} ms，'
+              '角色數：${characters.length}',
+        );
+
+        return characters;
+      }
+
+      // 好友／封鎖資料彼此無相依，維持平行讀取。
+      await Future.wait([
+        _loadFriendIds(),
+        _loadBlockedCharacterIds(),
+        _loadBlockedCreatorIds(),
+      ]);
+
+      final characters = await _loadCharacters();
+
+      debugPrint(
+        '⚡ 邂逅頁載入完成：${stopwatch.elapsedMilliseconds} ms，'
+            '角色數：${characters.length}',
+      );
+
+      return characters;
+    } finally {
+      stopwatch.stop();
     }
-
-    await Future.wait([
-      _loadFriendIds(),
-      _loadBlockedCharacterIds(),
-      _loadBlockedCreatorIds(),
-    ]);
-
-    return _loadCharacters();
   }
 
   Future<void> _refreshAllData() async {
@@ -130,9 +228,9 @@ class SelectChatPageState extends State<SelectChatPage> {
 
         _preloadedImageUrls.add(cacheKey);
 
-        final provider = ResizeImage(
-          CachedNetworkImageProvider(imageUrl),
-          width: 720,
+        final provider = _encounterImageProvider(
+          imageUrl,
+          cacheWidth: 720,
         );
 
         precacheImage(provider, context).catchError((error) {
@@ -201,6 +299,8 @@ class SelectChatPageState extends State<SelectChatPage> {
 
   Future<List<Character>> _loadCharacters() async {
     try {
+      // 邂逅頁需要完整公開角色池來隨機洗牌與分類，
+      // 所以保留完整 query；真正昂貴的 N+1 photos 查詢已由 Lite parser 移除。
       final querySnapshot = await _db
           .collection('artifacts')
           .doc(AppConfig.appId)
@@ -209,13 +309,14 @@ class SelectChatPageState extends State<SelectChatPage> {
           .where('status', isEqualTo: 'published')
           .get();
 
-      final List<Character> characters = await Future.wait(
-        querySnapshot.docs
-            .map(
-              (doc) => Character.fromFirestoreAsync(doc),
-        )
-            .toList(),
-      );
+      // 邂逅首頁只需要主文件上的角色資料。
+      // 不要在這裡對每一隻角色再查 photos 子集合／Storage，
+      // 否則會形成 N+1 查詢，角色越多首頁越慢。
+      final List<Character> characters = querySnapshot.docs
+          .map(
+            (doc) => Character.fromFirestoreLite(doc),
+      )
+          .toList();
 
       // 排除「單獨封鎖的角色」以及「被封鎖創作者建立的角色」。
       // 因為檢查 createdBy，所以創作者日後新增角色也不會重新出現。
@@ -250,12 +351,6 @@ class SelectChatPageState extends State<SelectChatPage> {
       }
 
       _lastFirstCharacterId = characters.first.id;
-
-      debugPrint(
-        '🎲 本次邂逅第一位角色：'
-            '${characters.first.name} '
-            '(${characters.first.id})',
-      );
 
       return characters;
     } catch (e) {
@@ -1376,19 +1471,16 @@ class _LatestTabState extends State<_LatestTab> {
                     fit: StackFit.expand,
                     children: [
                       if (imageUrl.isNotEmpty)
-                        CachedNetworkImage(
+                        _buildEncounterCachedImage(
+                          context,
                           imageUrl: imageUrl,
                           fit: BoxFit.cover,
                           alignment: Alignment.topCenter,
-                          memCacheWidth: useDesktopLayout ? 700 : 520,
-                          placeholder: (_, __) => Container(
+                          cacheWidth: useDesktopLayout ? 700 : 520,
+                          placeholder: Container(
                             color: Theme.of(context)
                                 .colorScheme
                                 .surfaceContainerHighest,
-                          ),
-                          errorWidget: (_, __, ___) => Image.asset(
-                            'assets/images/blank_avatar.png',
-                            fit: BoxFit.cover,
                           ),
                         )
                       else
@@ -1715,34 +1807,15 @@ class _LatestTabState extends State<_LatestTab> {
       );
     }
 
-    return CachedNetworkImage(
+    return _buildEncounterCachedImage(
+      context,
       imageUrl: bannerImg,
-      width: double.infinity,
-      height: double.infinity,
-
-      // 關鍵：直接把圖片填滿整個 Banner。
       fit: BoxFit.cover,
-
-      // 稍微往上取景，優先保留人物臉部。
       alignment: const Alignment(0, -0.18),
-
-      memCacheWidth: 720,
-      fadeInDuration: Duration.zero,
-      fadeOutDuration: Duration.zero,
-      useOldImageOnUrlChange: true,
-      filterQuality: FilterQuality.medium,
-      placeholder: (context, url) => Container(
+      cacheWidth: 720,
+      placeholder: Container(
         color: Colors.black12,
-        alignment: Alignment.center,
-        child: const CircularProgressIndicator(
-          strokeWidth: 2,
-        ),
       ),
-      errorWidget: (context, url, error) =>
-          Image.asset(
-            'assets/images/blank_avatar.png',
-            fit: BoxFit.cover,
-          ),
     );
   }
   List<Widget> _buildDesktopBannerImage(
@@ -1758,21 +1831,18 @@ class _LatestTabState extends State<_LatestTab> {
     }
 
     return [
-      CachedNetworkImage(
+      _buildEncounterCachedImage(
+        context,
         imageUrl: bannerImg,
         fit: BoxFit.cover,
         alignment: Alignment.center,
-        memCacheWidth: 1600,
-        fadeInDuration: Duration.zero,
-        fadeOutDuration: Duration.zero,
-        useOldImageOnUrlChange: true,
-        placeholder: (context, url) => Container(
+        cacheWidth: 1600,
+        placeholder: Container(
           color: Colors.black12,
         ),
-        errorWidget: (context, url, error) =>
-            Container(
-              color: Colors.black12,
-            ),
+        errorWidget: Container(
+          color: Colors.black12,
+        ),
       ),
 
       BackdropFilter(
@@ -1788,21 +1858,17 @@ class _LatestTabState extends State<_LatestTab> {
       ),
 
       Center(
-        child: CachedNetworkImage(
+        child: _buildEncounterCachedImage(
+          context,
           imageUrl: bannerImg,
           fit: BoxFit.contain,
           alignment: Alignment.center,
-          memCacheWidth: 1400,
-          fadeInDuration: Duration.zero,
-          fadeOutDuration: Duration.zero,
-          useOldImageOnUrlChange: true,
-          placeholder: (context, url) =>
-          const SizedBox.shrink(),
-          errorWidget: (context, url, error) =>
-              Image.asset(
-                'assets/images/blank_avatar.png',
-                fit: BoxFit.contain,
-              ),
+          cacheWidth: 1400,
+          placeholder: const SizedBox.shrink(),
+          errorWidget: Image.asset(
+            'assets/images/blank_avatar.png',
+            fit: BoxFit.contain,
+          ),
         ),
       ),
     ];
@@ -1950,27 +2016,15 @@ class _LatestTabState extends State<_LatestTab> {
               fit: StackFit.expand,
               children: [
                 if (imageUrl.isNotEmpty)
-                  CachedNetworkImage(
+                  _buildEncounterCachedImage(
+                    context,
                     imageUrl: imageUrl,
                     fit: BoxFit.cover,
-                    alignment:
-                    Alignment.topCenter,
-                    memCacheWidth:
-                    isDesktop ? 900 : 720,
-                    fadeInDuration: Duration.zero,
-                    fadeOutDuration: Duration.zero,
-                    useOldImageOnUrlChange: true,
-                    placeholder:
-                        (context, url) =>
-                        Container(
-                          color: Colors.grey.shade200,
-                        ),
-                    errorWidget:
-                        (context, url, error) =>
-                        Image.asset(
-                          'assets/images/blank_avatar.png',
-                          fit: BoxFit.cover,
-                        ),
+                    alignment: Alignment.topCenter,
+                    cacheWidth: isDesktop ? 900 : 720,
+                    placeholder: Container(
+                      color: Colors.grey.shade200,
+                    ),
                   )
                 else
                   Image.asset(
@@ -2290,35 +2344,18 @@ class _AllLatestCharactersPageState
                       children: [
                         if (imageUrl
                             .isNotEmpty)
-                          CachedNetworkImage(
-                            imageUrl:
-                            imageUrl,
-                            fit: BoxFit
-                                .cover,
-                            alignment:
-                            Alignment
-                                .topCenter,
-                            memCacheWidth:
-                            useDesktopLayout
-                                ? 900
-                                : 720,
-                            placeholder:
-                                (_, __) =>
-                                Container(
-                                  color: Theme.of(
-                                      context)
-                                      .colorScheme
-                                      .surfaceContainerHighest,
-                                ),
-                            errorWidget:
-                                (_, __,
-                                ___) =>
-                                Image
-                                    .asset(
-                                  'assets/images/blank_avatar.png',
-                                  fit: BoxFit
-                                      .cover,
-                                ),
+                          _buildEncounterCachedImage(
+                            context,
+                            imageUrl: imageUrl,
+                            fit: BoxFit.cover,
+                            alignment: Alignment.topCenter,
+                            cacheWidth:
+                            useDesktopLayout ? 900 : 720,
+                            placeholder: Container(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHighest,
+                            ),
                           )
                         else
                           Image.asset(
@@ -2801,26 +2838,17 @@ class _CharacterCardState extends State<CharacterCard> {
       );
     }
 
-    return CachedNetworkImage(
+    return _buildEncounterCachedImage(
+      context,
       imageUrl: imageUrl,
       fit: BoxFit.cover,
       alignment: Alignment.topCenter,
-      memCacheWidth: 720,
-      placeholder: (context, url) => Container(
+      cacheWidth: 720,
+      placeholder: Container(
         color: Theme.of(context)
             .colorScheme
             .surfaceContainerHighest,
-        alignment: Alignment.center,
-        child: const CircularProgressIndicator(
-          strokeWidth: 2,
-        ),
       ),
-      errorWidget: (context, url, error) {
-        return Image.asset(
-          'assets/images/blank_avatar.png',
-          fit: BoxFit.cover,
-        );
-      },
     );
   }
 

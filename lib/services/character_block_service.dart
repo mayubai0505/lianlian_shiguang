@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 import '../screens/character_model.dart';
 import 'toast_utils.dart';
@@ -16,13 +17,14 @@ class CharacterBlockService {
     required BuildContext context,
     required Character character,
   }) async {
+    final l10n = AppLocalizations.of(context)!;
     final user =
         FirebaseAuth.instance.currentUser;
 
     if (user == null) {
       ToastUtils.showCenterToast(
         context,
-        '請先登入後再封鎖角色',
+        l10n.character_block_login_required,
         isError: true,
       );
       return false;
@@ -31,7 +33,7 @@ class CharacterBlockService {
     if (user.uid == character.createdBy) {
       ToastUtils.showCenterToast(
         context,
-        '無法封鎖自己建立的角色',
+        l10n.character_block_self_forbidden,
         isError: true,
       );
       return false;
@@ -46,19 +48,18 @@ class CharacterBlockService {
                 borderRadius:
                 BorderRadius.circular(20),
               ),
-              title: const Row(
+              title: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.block_rounded,
                     color: Colors.redAccent,
                   ),
-                  SizedBox(width: 8),
-                  Text('封鎖角色'),
+                  const SizedBox(width: 8),
+                  Text(l10n.character_block_title),
                 ],
               ),
               content: Text(
-                '確定要封鎖「${character.name}」嗎？\n\n'
-                    '封鎖後，你將不會再於邂逅、瞬間等推薦內容中看到這個角色。',
+                l10n.character_block_confirm_message(character.name),
               ),
               actions: [
                 TextButton(
@@ -68,7 +69,7 @@ class CharacterBlockService {
                       false,
                     );
                   },
-                  child: const Text('取消'),
+                  child: Text(l10n.cancelButton),
                 ),
                 FilledButton(
                   style:
@@ -82,7 +83,7 @@ class CharacterBlockService {
                       true,
                     );
                   },
-                  child: const Text('確認封鎖'),
+                  child: Text(l10n.character_block_confirm),
                 ),
               ],
             );
@@ -105,6 +106,7 @@ class CharacterBlockService {
     required BuildContext context,
     required Character character,
   }) async {
+    final l10n = AppLocalizations.of(context)!;
     final user =
         FirebaseAuth.instance.currentUser;
 
@@ -148,7 +150,7 @@ class CharacterBlockService {
 
       ToastUtils.showCenterToast(
         context,
-        '已封鎖「${character.name}」',
+        l10n.character_block_success(character.name),
         customIcon:
         Icons.person_off_outlined,
       );
@@ -166,7 +168,7 @@ class CharacterBlockService {
       if (context.mounted) {
         ToastUtils.showCenterToast(
           context,
-          '封鎖失敗，請稍後再試',
+          l10n.character_block_failed,
           isError: true,
         );
       }
@@ -180,6 +182,7 @@ class CharacterBlockService {
     required BuildContext context,
     required String characterId,
   }) async {
+    final l10n = AppLocalizations.of(context)!;
     final user =
         FirebaseAuth.instance.currentUser;
 
@@ -198,7 +201,7 @@ class CharacterBlockService {
       if (context.mounted) {
         ToastUtils.showCenterToast(
           context,
-          '已解除封鎖',
+          l10n.character_unblock_success,
           customIcon:
           Icons.person_outline_rounded,
         );
@@ -217,7 +220,7 @@ class CharacterBlockService {
       if (context.mounted) {
         ToastUtils.showCenterToast(
           context,
-          '解除封鎖失敗，請稍後再試',
+          l10n.character_unblock_failed,
           isError: true,
         );
       }

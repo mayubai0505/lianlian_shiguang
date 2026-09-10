@@ -4189,6 +4189,76 @@
 
     "dice_duel_result_saved": "تم حفظ نتيجة المواجهة!",
 
-    "dice_duel_rolling": "تتجمع طاقة الكون..."
+    "dice_duel_rolling": "تتجمع طاقة الكون...",
+    "butterfly_loading_connecting": "جارٍ الاتصال بالزمن...",
+    "character_block_login_required": "يرجى تسجيل الدخول أولًا لحظر الشخصية",
+    "character_block_self_forbidden": "لا يمكنك حظر شخصية أنشأتها بنفسك",
+    "character_block_title": "حظر الشخصية",
+
+    "character_block_confirm_message": "هل أنت متأكد من رغبتك في حظر «{characterName}»؟\n\nبعد الحظر، لن تظهر لك هذه الشخصية مجددًا ضمن المحتوى المقترح، مثل اللقاءات والمنشورات.",
+    "@character_block_confirm_message": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "character_block_confirm": "تأكيد الحظر",
+
+    "character_block_success": "تم حظر «{characterName}»",
+    "@character_block_success": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "character_block_failed": "فشل حظر الشخصية، يرجى المحاولة لاحقًا",
+    "character_unblock_success": "تم إلغاء الحظر",
+    "character_unblock_failed": "فشل إلغاء الحظر، يرجى المحاولة لاحقًا",
+    "character_report_login_required": "يرجى تسجيل الدخول أولًا للإبلاغ عن الشخصية",
+    "character_report_self_forbidden": "لا يمكنك الإبلاغ عن شخصية أنشأتها بنفسك",
+    "character_report_submitted": "تم إرسال البلاغ وسنقوم بمراجعته",
+    "character_report_open_failed": "تعذر فتح صفحة الإبلاغ، يرجى المحاولة لاحقًا",
+    "chat_loader_error": "فشل التحميل: {error}",
+    "@chat_loader_error": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "announcement_connection_failed": "فشل الاتصال، يرجى المحاولة لاحقًا",
+    "announcement_latest": "الأحدث",
+    "announcement_published_at": "تاريخ النشر: {date}",
+    "@announcement_published_at": {
+        "placeholders": {
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "announcement_operations_team": "فريق تشغيل LoveyDovey",
+    "legal_creator_guidelines": "إرشادات المنشئين",
+    "legal_refresh": "تحديث",
+    "legal_page_load_failed": "فشل تحميل الصفحة",
+    "legal_check_connection_retry": "يرجى التحقق من اتصالك بالإنترنت والمحاولة مجددًا.",
+    "legal_reload": "إعادة التحميل",
+    "chat_web_purchase_unavailable": "خدمة الشحن غير متاحة حاليًا على إصدار الويب. يرجى استخدام تطبيق «LoveyDovey» لشراء نقاط الزهور أو الاشتراك.",
+    "chat_dont_show_again": "عدم إظهار هذا التنبيه مجددًا",
+    "chat_menu_save_transcript": "حفظ سجل المحادثة",
+    "chat_menu_reply_model": "نموذج الرد",
+    "defaultProfileName": "الملف الافتراضي",
+    "creator_social_links_manage": "إدارة روابط التواصل الاجتماعي",
+    "creator_social_links_title": "الروابط الشخصية وروابط التواصل الاجتماعي",
+    "creator_social_links_hint": "أضف الروابط التي تريد عرضها علنًا على صفحة المنشئ. لن تظهر الحقول التي تُترك فارغة.",
+    "creator_social_links_website": "الموقع الشخصي",
+    "creator_social_links_saved": "تم حفظ روابط التواصل الاجتماعي",
+    "creator_social_links_load_failed": "فشل تحميل روابط التواصل الاجتماعي، يرجى المحاولة لاحقًا",
+    "creator_social_links_save_failed": "فشل حفظ روابط التواصل الاجتماعي، يرجى المحاولة لاحقًا",
+    "creator_social_links_open_failed": "تعذر فتح هذا الرابط",
+    "chat_reply_model_menu_tip": "تم نقل نموذج الرد! يمكنك الآن العثور عليه في القائمة الموجودة أعلى اليسار."
 
 }

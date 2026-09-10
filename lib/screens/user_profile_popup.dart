@@ -174,8 +174,11 @@ class _UserProfilePageState extends State<_UserProfilePage> {
   }
 
   void _startEdit(Map<String, dynamic> profile) {
+    final l10n = AppLocalizations.of(context)!;
     _editingProfileId = profile['id']?.toString();
-    _profileNameController.text = profile['profileName'] ?? '';
+    final rawProfileName = (profile['profileName'] ?? '').toString();
+    _profileNameController.text =
+    rawProfileName == '預設檔案' ? l10n.defaultProfileName : rawProfileName;
     _nameController.text = profile['name'] ?? '';
     _heightController.text = profile['height'] ?? '';
     _appearanceController.text = profile['appearance'] ?? '';
@@ -585,7 +588,11 @@ class _UserProfilePageState extends State<_UserProfilePage> {
                       children: [
                         Flexible(
                           child: Text(
-                            profile['profileName'] ?? l10n.unnamedProfile,
+                            (profile['profileName'] ?? '').toString() == '預設檔案'
+                                ? l10n.defaultProfileName
+                                : ((profile['profileName'] ?? '').toString().trim().isEmpty
+                                ? l10n.unnamedProfile
+                                : profile['profileName'].toString()),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.notoSerifTc(

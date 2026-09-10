@@ -14241,6 +14241,234 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'宇宙能量匯聚中...'**
   String get dice_duel_rolling;
+
+  /// No description provided for @butterfly_loading_connecting.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'正在與時光連結...'**
+  String get butterfly_loading_connecting;
+
+  /// No description provided for @character_block_login_required.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先登入後再封鎖角色'**
+  String get character_block_login_required;
+
+  /// No description provided for @character_block_self_forbidden.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'無法封鎖自己建立的角色'**
+  String get character_block_self_forbidden;
+
+  /// No description provided for @character_block_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'封鎖角色'**
+  String get character_block_title;
+
+  /// No description provided for @character_block_confirm_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確定要封鎖「{characterName}」嗎？\n\n封鎖後，你將不會再於邂逅、瞬間等推薦內容中看到這個角色。'**
+  String character_block_confirm_message(String characterName);
+
+  /// No description provided for @character_block_confirm.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確認封鎖'**
+  String get character_block_confirm;
+
+  /// No description provided for @character_block_success.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已封鎖「{characterName}」'**
+  String character_block_success(String characterName);
+
+  /// No description provided for @character_block_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'封鎖失敗，請稍後再試'**
+  String get character_block_failed;
+
+  /// No description provided for @character_unblock_success.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已解除封鎖'**
+  String get character_unblock_success;
+
+  /// No description provided for @character_unblock_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'解除封鎖失敗，請稍後再試'**
+  String get character_unblock_failed;
+
+  /// No description provided for @character_report_login_required.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先登入後再檢舉角色'**
+  String get character_report_login_required;
+
+  /// No description provided for @character_report_self_forbidden.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'無法檢舉自己建立的角色'**
+  String get character_report_self_forbidden;
+
+  /// No description provided for @character_report_submitted.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'檢舉已送出，我們會進行審核'**
+  String get character_report_submitted;
+
+  /// No description provided for @character_report_open_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'無法開啟檢舉頁面，請稍後再試'**
+  String get character_report_open_failed;
+
+  /// No description provided for @chat_loader_error.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'讀取失敗：{error}'**
+  String chat_loader_error(String error);
+
+  /// No description provided for @announcement_connection_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'連線失敗，請稍後再試'**
+  String get announcement_connection_failed;
+
+  /// No description provided for @announcement_latest.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'最新'**
+  String get announcement_latest;
+
+  /// No description provided for @announcement_published_at.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'發布時間：{date}'**
+  String announcement_published_at(String date);
+
+  /// No description provided for @announcement_operations_team.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'戀戀拾光營運團隊'**
+  String get announcement_operations_team;
+
+  /// No description provided for @legal_creator_guidelines.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'創作者規範'**
+  String get legal_creator_guidelines;
+
+  /// No description provided for @legal_refresh.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'重新整理'**
+  String get legal_refresh;
+
+  /// No description provided for @legal_page_load_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'頁面載入失敗'**
+  String get legal_page_load_failed;
+
+  /// No description provided for @legal_check_connection_retry.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請確認網路連線後再試一次。'**
+  String get legal_check_connection_retry;
+
+  /// No description provided for @legal_reload.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'重新載入'**
+  String get legal_reload;
+
+  /// No description provided for @chat_web_purchase_unavailable.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'網頁版目前不提供儲值服務，請使用《戀戀拾光》App 購買花花或訂閱。'**
+  String get chat_web_purchase_unavailable;
+
+  /// No description provided for @chat_dont_show_again.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'不再顯示此提示'**
+  String get chat_dont_show_again;
+
+  /// No description provided for @chat_menu_save_transcript.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'保存對話紀錄'**
+  String get chat_menu_save_transcript;
+
+  /// No description provided for @chat_menu_reply_model.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'回覆模型'**
+  String get chat_menu_reply_model;
+
+  /// No description provided for @chat_reply_model_menu_tip.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'回覆模型搬家囉！現在可以從右上角選單找到它。'**
+  String get chat_reply_model_menu_tip;
+
+  /// No description provided for @defaultProfileName.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'預設檔案'**
+  String get defaultProfileName;
+
+  /// No description provided for @creator_social_links_manage.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'管理社群連結'**
+  String get creator_social_links_manage;
+
+  /// No description provided for @creator_social_links_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'個人／社群連結'**
+  String get creator_social_links_title;
+
+  /// No description provided for @creator_social_links_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'填入想公開顯示在創作者頁面的連結，未填寫的項目不會顯示。'**
+  String get creator_social_links_hint;
+
+  /// No description provided for @creator_social_links_website.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'個人網站'**
+  String get creator_social_links_website;
+
+  /// No description provided for @creator_social_links_saved.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'社群連結已儲存'**
+  String get creator_social_links_saved;
+
+  /// No description provided for @creator_social_links_load_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'讀取社群連結失敗，請稍後再試'**
+  String get creator_social_links_load_failed;
+
+  /// No description provided for @creator_social_links_save_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'儲存社群連結失敗，請稍後再試'**
+  String get creator_social_links_save_failed;
+
+  /// No description provided for @creator_social_links_open_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'無法開啟此連結'**
+  String get creator_social_links_open_failed;
 }
 
 class _AppLocalizationsDelegate
