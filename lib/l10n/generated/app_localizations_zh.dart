@@ -303,7 +303,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get logoutDialogActionConfirm => '確認';
 
   @override
-  String get logoutSuccessSnackbar => '好的!那我等你回來♥(´∀` )';
+  String get logoutSuccessSnackbar => '好的!那我等你回來(´∀` )';
 
   @override
   String get deleteAccountButton => '刪除帳號';
@@ -1574,7 +1574,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String gallery_current_affection(String value) {
-    return '目前好感度: $value 💕';
+    return '目前好感度: $value';
   }
 
   @override
@@ -1587,7 +1587,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String gallery_lock_msg(String value) {
-    return '好感度達到 $value 即可解鎖喔！🍃';
+    return '好感度達到 $value 即可解鎖喔！';
   }
 
   @override
@@ -1601,11 +1601,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String followed_creator_msg(String creatorName) {
-    return '已關注 $creatorName 🦋';
+    return '已關注 $creatorName';
   }
 
   @override
-  String get mailbox_title => '專屬信箱 💌';
+  String get mailbox_title => '專屬信箱';
 
   @override
   String get mailbox_empty => '信箱空空的，快去發佈動態吸引他吧！';
@@ -1618,11 +1618,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String affection_upgrade_title(String charName) {
-    return '$charName 對妳的好感度提升了！ 💖';
+    return '$charName 對妳的好感度提升了！';
   }
 
   @override
-  String get flower_reward => '🌸 獲得 5 點花花';
+  String get flower_reward => '獲得 5 點花花';
 
   @override
   String get affection_quote_lv5 =>
@@ -1644,7 +1644,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get affection_quote_lv0 => '「原來妳也在這裡，這算是一種奇妙的緣分嗎？」';
 
   @override
-  String get lore_edit_success => '✨ 記憶碎片已成功更新！';
+  String get lore_edit_success => '記憶碎片已成功更新！';
 
   @override
   String get delete_failed_network => '刪除失敗，請檢查網路或權限。';
@@ -1739,13 +1739,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get chat_load_char_failed => '找不到角色資料，請返回重試或檢查網路。';
 
   @override
-  String get chat_jump_success => '已跳轉至該段回憶 🍃';
+  String get chat_jump_success => '已跳轉至該段回憶';
 
   @override
   String get chat_create_room_failed => '連線似乎有點不穩，建立聊天室失敗，請再試一次。';
 
   @override
-  String get chat_secret_file_title => '🔒 機密檔案';
+  String get chat_secret_file_title => '機密檔案';
 
   @override
   String get chat_secret_file_desc => '該角色的靈魂檔案已被封存或轉為私人權限，暫時無法查看詳細資料。';
@@ -1755,7 +1755,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String chat_egg_unlocked(String title) {
-    return '✨ 獲得新回憶：$title';
+    return '獲得新回憶：$title';
   }
 
   @override
@@ -1779,7 +1779,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get chat_call_rule_2 => '通話時間為一分鐘，若不方便說話可以透過文字傳達';
 
   @override
-  String get chat_call_rule_3 => '建議配戴耳機，更能聽清楚他的聲音 ✨';
+  String get chat_call_rule_3 => '建議配戴耳機，更能聽清楚他的聲音';
 
   @override
   String get chat_call_btn_cancel => '先不要';
@@ -1808,7 +1808,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get chat_room_not_ready => '聊天室尚未準備好，請重新進入。';
 
   @override
-  String get chat_stop_generating_msg => '已停止回覆，點數並沒有扣除 🍃';
+  String get chat_stop_generating_msg => '已停止回覆，點數並沒有扣除';
 
   @override
   String get chat_heartbeat_up => '他心跳加速了...';
@@ -1898,18 +1898,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get chat_poke_btn => '戳一下';
 
   @override
-  String get chat_poke_success => '✨ 已幫妳戳戳創作者囉！請期待他的聲音上線～';
+  String get chat_poke_success => '已幫妳戳戳創作者囉！請期待他的聲音上線～';
 
   @override
   String chat_gift_points_needed(String cost) {
-    return '花花點數不夠喔！需要 $cost 點 🌸';
+    return '花花點數不夠喔！需要 $cost 點';
   }
 
   @override
-  String get chat_levelup_soulmate => '✨ 命定之人 ✨';
+  String get chat_levelup_soulmate => '命定之人';
 
   @override
-  String get chat_levelup_normal => '關係晉升！💖';
+  String get chat_levelup_normal => '關係晉升！';
 
   @override
   String get chat_levelup_btn_soulmate => '刻入靈魂';
@@ -1918,7 +1918,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get chat_levelup_btn_normal => '心動收下';
 
   @override
-  String get chat_loc_title => '📍 傳送虛擬定位';
+  String get chat_loc_title => '傳送虛擬定位';
 
   @override
   String get chat_loc_custom_btn => '發送自訂定位';
@@ -1939,13 +1939,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get chat_loc_4 => '在便利商店';
 
   @override
-  String get chat_interact_title => '✨ 想對他做什麼呢？';
+  String get chat_interact_title => '想對他做什麼呢？';
 
   @override
   String get chat_interact_action => '戳一戳與小動作';
 
   @override
-  String get chat_interact_gift => '送他小禮物 (消耗花花 🌸)';
+  String get chat_interact_gift => '送他小禮物 (消耗花花 )';
 
   @override
   String get chat_action_poke => '戳戳臉頰';
@@ -1999,7 +1999,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get chat_search_hint => '想回味哪一段甜蜜對話呢？';
 
   @override
-  String get chat_search_empty => '找不到這段回憶喔 🥺';
+  String get chat_search_empty => '找不到這段回憶喔';
 
   @override
   String get chat_search_you => '妳說的';
@@ -2168,14 +2168,14 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String chat_egg_unlocked_dynamic(String memoryName) {
-    return '✨ 獲得新回憶：$memoryName';
+    return '獲得新回憶：$memoryName';
   }
 
   @override
   String get chat_egg_saved_his_backpack => '已自動收錄至他的專屬背包';
 
   @override
-  String get chat_profile_updated_msg => '拾光檔案已更新！他會記住妳的最新設定喔 🍃';
+  String get chat_profile_updated_msg => '拾光檔案已更新！他會記住妳的最新設定喔';
 
   @override
   String get comment_loading_author => '讀取中...';
@@ -2278,12 +2278,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String char_dislikes(String dislikes) {
-    return '🖤 討厭：$dislikes';
+    return '討厭：$dislikes';
   }
 
   @override
   String char_likes(String likes) {
-    return '🤍 喜歡：$likes';
+    return '喜歡：$likes';
   }
 
   @override
@@ -2303,7 +2303,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get char_exclusive_guardian => '專屬守護 💖';
+  String get char_exclusive_guardian => '專屬守護';
 
   @override
   String mailbox_like_body(String playerName, String charName) {
@@ -2341,7 +2341,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String chat_player_sent_location(String location) {
-    return '📍 (玩家發送了定位：$location)';
+    return '(玩家發送了定位：$location)';
   }
 
   @override
@@ -2393,12 +2393,12 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String chat_profile_full(String name, String identity, String birthday,
       String height, String appearance, String job, String intro) {
-    return '📜 【 專屬拾光檔案 - $name 】\n━━━━━━━━━━━━━━━━━━\n🔹 姓名：$identity\n🔹 生日：$birthday\n🔹 身高：$height\n🔹 外貌：$appearance\n🔹 職業：$job\n\n📖 【 關於她的靈魂碎片 】\n$intro\n━━━━━━━━━━━━━━━━━━';
+    return '【 專屬拾光檔案 - $name 】\n━━━━━━━━━━━━━━━━━━\n姓名：$identity\n生日：$birthday\n身高：$height\n外貌：$appearance\n職業：$job\n\n【 關於她的靈魂碎片 】\n$intro\n━━━━━━━━━━━━━━━━━━';
   }
 
   @override
   String chat_profile_locked(String nickname, String birthday) {
-    return '📜 【 專屬拾光檔案 】\n━━━━━━━━━━━━━━━━━━\n🔹 姓名：$nickname\n🔹 生日：$birthday\n\n🔒 其他人設資料尚未解鎖...\n(填寫完整檔案，讓他在平行時空更了解妳吧！✨)\n━━━━━━━━━━━━━━━━━━';
+    return '【 專屬拾光檔案 】\n━━━━━━━━━━━━━━━━━━\n姓名：$nickname\n生日：$birthday\n\n其他人設資料尚未解鎖...\n(填寫完整檔案，讓他在平行時空更了解妳吧！)\n━━━━━━━━━━━━━━━━━━';
   }
 
   @override
@@ -2421,7 +2421,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String chat_call_ended(String name, String time) {
-    return '📞 通話結束，與 $name 通話了 $time';
+    return '通話結束，與 $name 通話了 $time';
   }
 
   @override
@@ -2459,7 +2459,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get enter_secret_studio => '進入我的秘密工作室';
 
   @override
-  String get no_public_character_mine => '妳還沒有發布任何公開角色喔！\n快去工作室創作吧✨';
+  String get no_public_character_mine => '妳還沒有發布任何公開角色喔！\n快去工作室創作吧';
 
   @override
   String get no_public_character_other => '這位創作者還沒有發布角色喔...';
@@ -2471,13 +2471,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get confirm_delete_draft_msg => '確定要刪除這個未完成的角色嗎？\n(刪除後無法復原喔)';
 
   @override
-  String get draft_cleared_success => '草稿已清理完畢 🧹';
+  String get draft_cleared_success => '草稿已清理完畢';
 
   @override
   String get login_required_for_studio => '請先登入才能進入工作室喔！';
 
   @override
-  String get my_secret_studio_title => '我的秘密工作室 🛠️';
+  String get my_secret_studio_title => '我的秘密工作室';
 
   @override
   String get create_new_character_btn => '創造新角色';
@@ -2531,36 +2531,36 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String moment_like_yours(String nickname) {
-    return '$nickname覺得妳的動態很讚喔！💖';
+    return '$nickname覺得妳的動態很讚喔！';
   }
 
   @override
   String moment_like_others(String nickname, String authorName) {
-    return '$nickname覺得$authorName很有魅力，點了個讚！✨';
+    return '$nickname覺得$authorName很有魅力，點了個讚！';
   }
 
   @override
-  String get moment_like_success => '已傳遞妳的心動！✨';
+  String get moment_like_success => '已傳遞妳的心動！';
 
   @override
-  String get moment_notification_new_like => '新點讚！💖';
+  String get moment_notification_new_like => '新點讚！';
 
   @override
   String moment_mention_mail_body(String nickname, String name) {
-    return '$nickname 在動態中提到了 @$name 喔！✨';
+    return '$nickname 在動態中提到了 @$name 喔！';
   }
 
   @override
   String get moment_detail_title => '動態詳情';
 
   @override
-  String get moment_not_found => '這篇動態好像不見了... 😢';
+  String get moment_not_found => '這篇動態好像不見了...';
 
   @override
   String get moment_comment_title => '朋友圈留言';
 
   @override
-  String get moment_comment_empty => '還沒有人留言，快來搶沙發！🛋';
+  String get moment_comment_empty => '還沒有人留言，快來搶沙發！';
 
   @override
   String moment_replying_to(String name) {
@@ -2597,7 +2597,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String moment_go_to_chat_msg(String name) {
-    return '帶著動態去找 $name 聊天囉！ 💬';
+    return '帶著動態去找 $name 聊天囉！';
   }
 
   @override
@@ -2615,10 +2615,10 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get moment_forward_title => '轉發給正在聊天的角色 💌';
+  String get moment_forward_title => '轉發給正在聊天的角色';
 
   @override
-  String get moment_forward_empty_state => '妳目前還沒有開始聊天的角色喔！\n先去大廳找找心儀的他吧 🌿';
+  String get moment_forward_empty_state => '妳目前還沒有開始聊天的角色喔！\n先去大廳找找心儀的他吧';
 
   @override
   String moment_forward_template(String author, String content) {
@@ -2627,7 +2627,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String moment_forward_success(String name) {
-    return '✅ 已悄悄分享給 $name 囉！';
+    return '已悄悄分享給 $name 囉！';
   }
 
   @override
@@ -2674,7 +2674,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String daily_login_welcome(String appName, String amount) {
-    return '歡迎回到《$appName》！\n今日簽到可領取 $amount 點花語點數。🌸';
+    return '歡迎回到《$appName》！\n今日簽到可領取 $amount 點花語點數。';
   }
 
   @override
@@ -2682,7 +2682,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String success_claim_reward(String amount) {
-    return '成功領取 $amount 點花語！🌸';
+    return '成功領取 $amount 點花語！';
   }
 
   @override
@@ -2808,7 +2808,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get draft_saved_success_msg => '好的！先幫你保存在草稿裡，隨時可以回來編輯喔！✨';
+  String get draft_saved_success_msg => '好的！先幫你保存在草稿裡，隨時可以回來編輯喔！';
 
   @override
   String get dialog_reminder_title => '提醒';
@@ -2841,7 +2841,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get title_adjust_avatar => '調整您的時光頭像';
 
   @override
-  String get avatar_updated_success => '已為您換上頭像 🍃';
+  String get avatar_updated_success => '已為您換上頭像';
 
   @override
   String get title_create_profile => '建立你的檔案';
@@ -2870,7 +2870,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get msg_birthdate_immutable => '生日設定後不可更改 ✨';
+  String get msg_birthdate_immutable => '生日設定後不可更改';
 
   @override
   String get action_start_journey => '開啟時光旅程';
@@ -2880,25 +2880,25 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String moment_like_self(String nickname) {
-    return '$nickname覺得妳的動態很讚喔！💖';
+    return '$nickname覺得妳的動態很讚喔！';
   }
 
   @override
   String moment_like_other(String nickname, String authorName) {
-    return '$nickname覺得$authorName很有魅力，點了個讚！✨';
+    return '$nickname覺得$authorName很有魅力，點了個讚！';
   }
 
   @override
-  String get task_social_tour_complete => '✨ 達成社群巡禮任務！記得領取花花喔！🌸';
+  String get task_social_tour_complete => '達成社群巡禮任務！記得領取花花喔！';
 
   @override
   String get wall_title_shiguang => '拾光牆';
 
   @override
-  String get wall_tab_explore => '🌍 探索';
+  String get wall_tab_explore => '探索';
 
   @override
-  String get wall_tab_exclusive => '🔒 專屬';
+  String get wall_tab_exclusive => '專屬';
 
   @override
   String get more_options => '更多選項';
@@ -2910,7 +2910,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get delete_success => '刪除成功';
 
   @override
-  String get notification_new_comment => '新留言！💬';
+  String get notification_new_comment => '新留言！';
 
   @override
   String notification_like_from_sender(String senderName) {
@@ -2918,14 +2918,14 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get empty_public_moments_prompt => '目前空空如也，\n快去發布第一篇公開動態吧！🌍';
+  String get empty_public_moments_prompt => '目前空空如也，\n快去發布第一篇公開動態吧！';
 
   @override
-  String get empty_private_moments_prompt => '朋友圈還沒有留下的瞬間，\n快去與他創造回憶吧！✨';
+  String get empty_private_moments_prompt => '朋友圈還沒有留下的瞬間，\n快去與他創造回憶吧！';
 
   @override
   String get profile_archived_or_deleted_message =>
-      '這份靈魂檔案已被創作者封存、設為私人，或是已經消散在時空的洪流中...\n\n或許在某個平行宇宙，你們還有再次相遇的機會。✨';
+      '這份靈魂檔案已被創作者封存、設為私人，或是已經消散在時空的洪流中...\n\n或許在某個平行宇宙，你們還有再次相遇的機會。';
 
   @override
   String get leave_silently => '默默離開';
@@ -2940,7 +2940,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get post_identity_prompt => '今天要用誰的身分發文？';
 
   @override
-  String get identity_creator => '✨ 創作者身分';
+  String get identity_creator => '創作者身分';
 
   @override
   String get identity_character => '角色身分';
@@ -2950,7 +2950,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get auto_post_schedule_hint =>
-      '開啟後，將會在指定時間自動發布日常動態\n(💡 建議設定非整點，看起來更像真人喔！)';
+      '開啟後，將會在指定時間自動發布日常動態\n( 建議設定非整點，看起來更像真人喔！)';
 
   @override
   String get no_characters_created_yet => '妳還沒有創建任何角色喔！';
@@ -2966,10 +2966,10 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get empty_public_moments_short => '目前還沒有公開動態 🌍';
+  String get empty_public_moments_short => '目前還沒有公開動態';
 
   @override
-  String get empty_private_moments_short => '朋友圈還靜悄悄的 ✨';
+  String get empty_private_moments_short => '朋友圈還靜悄悄的';
 
   @override
   String get my_created_characters => '我創建的角色';
@@ -3002,10 +3002,10 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get daily_gift_success => '成功領取每日贈禮！🌸';
+  String get daily_gift_success => '成功領取每日贈禮！';
 
   @override
-  String get check_in_fail_network => '簽到失敗，請檢查網路連線 🍃';
+  String get check_in_fail_network => '簽到失敗，請檢查網路連線';
 
   @override
   String task_completed(String taskName) {
@@ -3053,7 +3053,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get btn_incomplete => '未完成';
 
   @override
-  String get network_unstable_retry => '網路連線不穩，請稍後再試🍃';
+  String get network_unstable_retry => '網路連線不穩，請稍後再試';
 
   @override
   String get title_time_travel => '時光旅行';
@@ -3116,7 +3116,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get search_name_placeholder => '輸入他的名字...';
 
   @override
-  String get search_no_match_hint => '找不到角色，試試其他名字？ ✨';
+  String get search_no_match_hint => '找不到角色，試試其他名字？';
 
   @override
   String character_info_full(String age, String occupation) {
@@ -3275,7 +3275,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get shop_tab_history => '收支明細';
 
   @override
-  String get shop_empty_history => '目前還沒有花花紀錄喔！🌸';
+  String get shop_empty_history => '目前還沒有花花紀錄喔！';
 
   @override
   String get shop_unknown_item => '未知項目';
@@ -3316,7 +3316,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reset_bg_content => '確定要取消專屬照片，恢復成預設的主題背景嗎？';
 
   @override
-  String get reset_bg_success => '已恢復為預設背景 ✨';
+  String get reset_bg_success => '已恢復為預設背景';
 
   @override
   String get confirm_reset => '確定恢復';
@@ -3338,7 +3338,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get downloadToUnlock => '下載《戀戀拾光》，解鎖專屬浪漫';
 
   @override
-  String get exclusiveMomentsGenerated => '專屬拾光已生成 ✨';
+  String get exclusiveMomentsGenerated => '專屬拾光已生成';
 
   @override
   String get selectAgain => '再選一次';
@@ -3352,11 +3352,11 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get shop_log_monthly_card => '啟動：星光契約 (月卡立即贈點) 🌙';
+  String get shop_log_monthly_card => '啟動：星光契約 (月卡立即贈點)';
 
   @override
   String shop_log_top_up_double(int points) {
-    return '儲值：$points 點 (含首購雙倍 🎁)';
+    return '儲值：$points 點 (含首購雙倍 )';
   }
 
   @override
@@ -3373,7 +3373,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get shop_purchase_success_double_bonus => '✨ 恭喜觸發首購雙倍獎勵！';
+  String get shop_purchase_success_double_bonus => '恭喜觸發首購雙倍獎勵！';
 
   @override
   String get shop_purchase_awesome => '太棒了';
@@ -3404,7 +3404,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get shop_monthly_card_promo_desc => '立即得 250 花花，每日領 10 花花';
 
   @override
-  String get task_monthly_title => '星之契約．每日特權 🌙';
+  String get task_monthly_title => '星之契約．每日特權';
 
   @override
   String get task_monthly_locked => '未解鎖';
@@ -3425,20 +3425,20 @@ class AppLocalizationsZh extends AppLocalizations {
   String get profile_copy_id => '點擊複製 ID';
 
   @override
-  String get referral_log_newbie_reward => '星之邀約：新手報到獎勵 ✨';
+  String get referral_log_newbie_reward => '星之邀約：新手報到獎勵';
 
   @override
-  String get referral_log_inviter_reward => '星之邀約：好友達標回饋 🎁';
+  String get referral_log_inviter_reward => '星之邀約：好友達標回饋';
 
   @override
   String get referral_success_title => '星之邀約解鎖！';
 
   @override
   String get referral_success_content =>
-      '恭喜您已成功與角色深度交流滿 15 句！\n\n「新手報到獎勵 50 點」已送達您的賬戶，您的好友也同步獲得了 50 點回饋！🎁';
+      '恭喜您已成功與角色深度交流滿 15 句！\n\n「新手報到獎勵 50 點」已送達您的賬戶，您的好友也同步獲得了 50 點回饋！';
 
   @override
-  String get profile_referral_title => '星之邀約 🌟';
+  String get profile_referral_title => '星之邀約';
 
   @override
   String get profile_referral_hint => '輸入好友邀請碼';
@@ -3468,11 +3468,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String profile_share_message(String character, String code) {
-    return '✨ 我在《戀戀拾光》與$character展開了心動旅程！快下載 App 並在個人主頁填寫我的星之邀約碼：【$code】，我們雙方都能免費獲得 50 點花花喔！🎁\n\n下載連結：\nhttps://lianlianshiguang.web.app/download/';
+    return '我在《戀戀拾光》與$character展開了心動旅程！快下載 App 並在個人主頁填寫我的星之邀約碼：【$code】，我們雙方都能免費獲得 50 點花花喔！\n\n下載連結：\nhttps://lianlianshiguang.web.app/download/';
   }
 
   @override
-  String get chat_levelup_share_btn => '向好友炫耀這份心動 ✨';
+  String get chat_levelup_share_btn => '向好友炫耀這份心動';
 
   @override
   String profile_my_invite_code_with_char(String character) {
@@ -3486,18 +3486,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get profile_fallback_character => '心動角色';
 
   @override
-  String get profile_copy_success => '✅ 邀請碼已複製到剪貼簿！';
+  String get profile_copy_success => '邀請碼已複製到剪貼簿！';
 
   @override
   String get profile_referral_rule_title => '星之契約規則';
 
   @override
   String get profile_referral_rule_receiver =>
-      '✨ 締結契約後，只要與任意心動角色聊天滿 15 句，你與邀請人就能同時獲得 50 朵花花獎勵喔！\n\n⚠️ 注意：請在註冊帳號後的 3 天內輸入邀請碼才有效。';
+      '締結契約後，只要與任意心動角色聊天滿 15 句，你與邀請人就能同時獲得 50 朵花花獎勵喔！\n\n注意：請在註冊帳號後的 3 天內輸入邀請碼才有效。';
 
   @override
   String get profile_referral_rule_inviter =>
-      '✨ 邀請新朋友下載並輸入你的邀約碼，當對方在註冊 3 天內完成綁定，並與任意角色聊天滿 15 句，你們雙方就能同時獲得 50 點花花獎勵喔！🎁';
+      '邀請新朋友下載並輸入你的邀約碼，當對方在註冊 3 天內完成綁定，並與任意角色聊天滿 15 句，你們雙方就能同時獲得 50 點花花獎勵喔！';
 
   @override
   String get error_user_not_found => '找不到使用者，請重新登入';
@@ -3509,13 +3509,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get error_id_taken_short => '此 ID 已被使用！';
 
   @override
-  String get shop_restocking => '商店正在補貨... 📦';
+  String get shop_restocking => '商店正在補貨...';
 
   @override
-  String get shop_preview_mode => '⚠️ 目前為商店預覽模式';
+  String get shop_preview_mode => '目前為商店預覽模式';
 
   @override
-  String get friendlyReminderTitle => '☁️ 溫馨提示';
+  String get friendlyReminderTitle => '溫馨提示';
 
   @override
   String get editProfileHint => '好的！如果要編輯身分，請點擊左下角雲朵裡面的「拾光檔案」做填寫喔！';
@@ -3544,7 +3544,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String continueChatCostWarning(int cost) {
-    return '讓他說下去，將會消耗 $cost 朵花花 🌸\n確定要繼續嗎？';
+    return '讓他說下去，將會消耗 $cost 朵花花\n確定要繼續嗎？';
   }
 
   @override
@@ -3576,7 +3576,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get continueButton => '繼續';
 
   @override
-  String get creatorExclusive => '🔒 創作者專屬';
+  String get creatorExclusive => '創作者專屬';
 
   @override
   String ageAndOccupation(String age, String occupation) {
@@ -3584,10 +3584,10 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get likesLabel => '💖 喜歡';
+  String get likesLabel => '喜歡';
 
   @override
-  String get dislikesLabel => '👎 不喜歡';
+  String get dislikesLabel => '不喜歡';
 
   @override
   String birthdayLabel(String birthday) {
@@ -3614,14 +3614,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get passGuideTitle => '戀戀月卡專屬指南';
 
   @override
-  String get passGuideRegenerateTitle => '🔄 為什麼需要「重新生成」？';
+  String get passGuideRegenerateTitle => '為什麼需要「重新生成」？';
 
   @override
   String get passGuideRegenerateContent =>
       'AI 有時候會像個笨蛋木頭，不解風情。遇到不滿意的回覆時，只要按下重新生成，就像時光倒流！妳可以讓他重新思考，直到他說出讓妳心跳加速的那句完美台詞。';
 
   @override
-  String get passGuideAffectionTitle => '💖 好感度加速有什麼用？';
+  String get passGuideAffectionTitle => '好感度加速有什麼用？';
 
   @override
   String get passGuideAffectionContent =>
@@ -3634,10 +3634,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get pleaseWait => '請稍候';
 
   @override
-  String get createNewProfileTitle => '📜 建立新拾光檔案';
+  String get createNewProfileTitle => '建立新拾光檔案';
 
   @override
-  String get editProfileTitle => '✏️ 編輯拾光檔案';
+  String get editProfileTitle => '編輯拾光檔案';
 
   @override
   String get profileEditDescription => '建立不同的人設，在平行的時空裡讓他認識不一樣的妳！';
@@ -3693,7 +3693,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get fillLaterButton => '稍後填寫';
 
   @override
-  String get exclusiveProfileTitle => '📜 專屬拾光檔案';
+  String get exclusiveProfileTitle => '專屬拾光檔案';
 
   @override
   String get profileSelectionDescription => '選擇你想用來和他互動的身分 (同角色共用清單，最多 10 個)';
@@ -3857,11 +3857,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get nav_moments => '瞬間';
 
   @override
-  String get birthday_dialog_title => '🎂 生日驚喜';
+  String get birthday_dialog_title => '生日驚喜';
 
   @override
-  String get birthday_dialog_content =>
-      '今天是您的專屬紀念日！\n\n這份禮物請收下：\n今天聊天全。部。免。費！✨';
+  String get birthday_dialog_content => '今天是您的專屬紀念日！\n\n這份禮物請收下：\n今天聊天全。部。免。費！';
 
   @override
   String get birthday_dialog_button => '開啟浪漫的一天';
@@ -3894,7 +3893,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get go_to_login => '前往登入';
 
   @override
-  String get easter_egg_title => '發現隱藏彩蛋 ✨';
+  String get easter_egg_title => '發現隱藏彩蛋';
 
   @override
   String easter_egg_content(String title) {
@@ -3932,7 +3931,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get status_published => '已發布';
 
   @override
-  String get monthly_card_success_title => '✨ 尊榮月卡解鎖成功！';
+  String get monthly_card_success_title => '尊榮月卡解鎖成功！';
 
   @override
   String get monthly_card_success_subtitle => '感謝您的訂閱！專屬特權已生效：';
@@ -4265,7 +4264,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get message_preview_voice => '[語音訊息]';
 
   @override
-  String get send_failed_retry => '送出失敗，請稍後再試 😢';
+  String get send_failed_retry => '送出失敗，請稍後再試';
 
   @override
   String get media_upload_failed_retry => '媒體上傳失敗，請再試一次';
@@ -4298,7 +4297,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get chat_input_hint => '請輸入...';
 
   @override
-  String get regenerate_sync_failed => '重新生成次數同步失敗，請再試一次 😢';
+  String get regenerate_sync_failed => '重新生成次數同步失敗，請再試一次';
 
   @override
   String get creator_public_works => '公開作品';
@@ -4748,7 +4747,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get mailCaseNumberCopied => '已複製案件編號';
 
   @override
-  String get profilePageAboutMe => '📝 關於我';
+  String get profilePageAboutMe => '關於我';
 
   @override
   String get profilePageTabBio => '自我介紹';
@@ -4993,7 +4992,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get periodPredictionDisclaimer => '依現有紀錄推估，日期僅供生活紀錄參考。';
 
   @override
-  String get periodStartedToday => '🩸 今天來了';
+  String get periodStartedToday => '今天來了';
 
   @override
   String get periodStillOngoing => '仍在生理期';
@@ -5213,7 +5212,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get privateProfileSave => '儲存';
 
   @override
-  String get editProfileBirthdayReminderTitle => '🎂 小提醒';
+  String get editProfileBirthdayReminderTitle => '小提醒';
 
   @override
   String get editProfileBirthdayReminderContent =>
@@ -5223,7 +5222,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get editProfileGotIt => '知道了';
 
   @override
-  String get editProfileBirthdayConfirmTitle => '🎂 確認生日';
+  String get editProfileBirthdayConfirmTitle => '確認生日';
 
   @override
   String get editProfileBirthdayConfirmContent =>
@@ -5300,13 +5299,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get editProfileAvatarEmpty => '頭像圖片資料是空的';
 
   @override
-  String get chatPageSendFailed => '送出失敗，請稍後再試 😢';
+  String get chatPageSendFailed => '送出失敗，請稍後再試';
 
   @override
   String get chatPageRegenerateFailed => '重新生成失敗，原本的訊息已保留，請再試一次。';
 
   @override
-  String get chatPageRegenerating => '💭 正在重新思考...';
+  String get chatPageRegenerating => '正在重新思考...';
 
   @override
   String get chatPageThinkingTooLong => '他似乎在沉思，請稍後再試……';
@@ -5322,7 +5321,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String chatPageMessagesDeleted(int count) {
-    return '✅ 已成功刪除 $count 則訊息';
+    return '已成功刪除 $count 則訊息';
   }
 
   @override
@@ -5541,11 +5540,11 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get characterProfileShareInvitation => '🦋 一封來自《戀戀拾光》的相遇邀請';
+  String get characterProfileShareInvitation => '一封來自《戀戀拾光》的相遇邀請';
 
   @override
   String characterProfileShareCreator(String creatorName) {
-    return '✦ 創作者：$creatorName';
+    return '創作者：$creatorName';
   }
 
   @override
@@ -5562,7 +5561,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get characterProfileCardSearchHint => '搜尋角色，開始相遇  🦋';
+  String get characterProfileCardSearchHint => '搜尋角色，開始相遇';
 
   @override
   String get characterProfileScanToDownload => '掃描下載';
@@ -5719,17 +5718,17 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String mailShareQixiMessage(String characterName) {
-    return '我收到了 $characterName 寫來的七夕限定信 💌';
+    return '我收到了 $characterName 寫來的七夕限定信';
   }
 
   @override
-  String get mailShareDefaultMessage => '來自《戀戀拾光》的信件 💌';
+  String get mailShareDefaultMessage => '來自《戀戀拾光》的信件';
 
   @override
   String get mailShareImageFailed => '分享圖片產生失敗，請稍後再試';
 
   @override
-  String get mailCollectedSuccess => '已收藏這封信 💌';
+  String get mailCollectedSuccess => '已收藏這封信';
 
   @override
   String get mailCollectedCancelled => '已取消收藏';
@@ -5784,11 +5783,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get qixiCompanionSlotsFull => '七夕同行名額已經選滿了';
 
   @override
-  String get qixiSingleRoomOpened => '七夕專屬聊天室已開啟 💕';
+  String get qixiSingleRoomOpened => '七夕專屬聊天室已開啟';
 
   @override
   String qixiMultipleRoomsOpened(int count) {
-    return '$count 間七夕專屬聊天室已開啟 💕';
+    return '$count 間七夕專屬聊天室已開啟';
   }
 
   @override
@@ -5876,10 +5875,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get encounterDailyQuote12 => '今天，別錯過悄悄靠近的緣分。';
 
   @override
-  String get encounterJoinedToday => '✨ 今天加入戀戀拾光';
+  String get encounterJoinedToday => '今天加入戀戀拾光';
 
   @override
-  String get encounterPopularChats => '❤️ 最近很多人在聊天';
+  String get encounterPopularChats => '最近很多人在聊天';
 
   @override
   String get qixiBannerActiveUntil => '限時開啟・8/26 23:59 截止';
@@ -5888,7 +5887,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get qixiBannerStartsAt => '8/19 限定開啟';
 
   @override
-  String get encounterRecentlyArrived => '✨ 最近來到戀戀拾光';
+  String get encounterRecentlyArrived => '最近來到戀戀拾光';
 
   @override
   String get encounterRecentlyArrivedPlain => '最近來到戀戀拾光';
@@ -5897,7 +5896,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get encounterViewMore => '查看更多';
 
   @override
-  String get encounterLovePrompt => '💕 今天想談什麼戀愛？';
+  String get encounterLovePrompt => '今天想談什麼戀愛？';
 
   @override
   String get encounterNoCharacters => '目前還沒有角色';
@@ -5906,7 +5905,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get encounterAllLoveTags => '全部戀愛標籤';
 
   @override
-  String get chatQixiLetterSent => '限定信件已寄出 💌';
+  String get chatQixiLetterSent => '限定信件已寄出';
 
   @override
   String get chatQixiLetterPendingTonight => '三日星光已點亮・今夜過後寄出信件';
@@ -6947,7 +6946,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String character_edit_over_limit_warning(String label, String count) {
-    return '⚠ $label 已超出 $count 字，請修正後再發布。';
+    return '$label 已超出 $count 字，請修正後再發布。';
   }
 
   @override
@@ -7522,7 +7521,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String shop_joined_days(int days) {
-    return '✦ 已來到戀戀拾光 $days 天 ✦';
+    return '已來到戀戀拾光 $days 天';
   }
 
   @override
@@ -7805,6 +7804,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get creator_social_links_open_failed => '無法開啟此連結';
+
+  @override
+  String get chat_regenerate_bottom_tip => '「重新生成」搬到這裡囉！想換一個回覆時，可以從這裡重新生成。';
+
+  @override
+  String get chat_continue_bottom_tip => '「繼續」搬到這裡囉！想讓角色接著說時，可以從這裡繼續。';
+
+  @override
+  String get languageSelectionSubtitle => '選擇你習慣的語言';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -8106,7 +8114,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get logoutDialogActionConfirm => '确认';
 
   @override
-  String get logoutSuccessSnackbar => '好的!那我等你回来♥(´∀` )';
+  String get logoutSuccessSnackbar => '好的!那我等你回来(´∀` )';
 
   @override
   String get deleteAccountButton => '删除帐号';
@@ -9187,7 +9195,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get report_confirm => '确定检举';
 
   @override
-  String get report_success => '检举成功，已收到通知！将尽快审核内容 🛡';
+  String get report_success => '检举成功，已收到通知！将尽快审核内容';
 
   @override
   String get report_failed => '检举失败，请检查网络连接。';
@@ -9208,7 +9216,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get lore_delete_success => '记忆碎片已彻底消除。';
 
   @override
-  String get lore_add_title => '撰写新记忆 ️';
+  String get lore_add_title => '撰写新记忆';
 
   @override
   String get lore_edit_title => '编辑记忆碎片';
@@ -9377,7 +9385,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String gallery_current_affection(String value) {
-    return '目前好感度: $value 💕';
+    return '目前好感度: $value';
   }
 
   @override
@@ -9390,7 +9398,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String gallery_lock_msg(String value) {
-    return '好感度达到 $value 即可解锁喔！🍃';
+    return '好感度达到 $value 即可解锁喔！';
   }
 
   @override
@@ -9404,11 +9412,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String followed_creator_msg(String creatorName) {
-    return '已关注 $creatorName 🦋';
+    return '已关注 $creatorName';
   }
 
   @override
-  String get mailbox_title => '专属信箱 💌';
+  String get mailbox_title => '专属信箱';
 
   @override
   String get mailbox_empty => '信箱空空的，快去发布动态吸引他吧！';
@@ -9421,11 +9429,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String affection_upgrade_title(String charName) {
-    return '$charName 对妳的好感度提升了！ 💖';
+    return '$charName 对妳的好感度提升了！';
   }
 
   @override
-  String get flower_reward => '🌸 获得 5 点花花';
+  String get flower_reward => '获得 5 点花花';
 
   @override
   String get affection_quote_lv5 =>
@@ -9447,7 +9455,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get affection_quote_lv0 => '「原来妳也在这里，這算是一种奇妙的缘分吗？」';
 
   @override
-  String get lore_edit_success => '✨ 记忆碎片已成功更新！';
+  String get lore_edit_success => '记忆碎片已成功更新！';
 
   @override
   String get delete_failed_network => '删除失败，请检查网络或权限。';
@@ -9542,13 +9550,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get chat_load_char_failed => '找不到角色资料，请返回重试或检查网络。';
 
   @override
-  String get chat_jump_success => '已跳转至该段回忆 🍃';
+  String get chat_jump_success => '已跳转至该段回忆';
 
   @override
   String get chat_create_room_failed => '连线似乎有点不稳，建立聊天室失败，请再试一次。';
 
   @override
-  String get chat_secret_file_title => '🔒 机密档案';
+  String get chat_secret_file_title => '机密档案';
 
   @override
   String get chat_secret_file_desc => '该角色的灵魂档案已被封存或转为私人权限，暂时无法查看详细资料。';
@@ -9558,7 +9566,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String chat_egg_unlocked(String title) {
-    return '✨ 获得新回忆：$title';
+    return '获得新回忆：$title';
   }
 
   @override
@@ -9582,7 +9590,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get chat_call_rule_2 => '通话时间为一分钟，若不方便说话可以透过文字传达';
 
   @override
-  String get chat_call_rule_3 => '建议佩戴耳机，更能听清楚他的声音 ✨';
+  String get chat_call_rule_3 => '建议佩戴耳机，更能听清楚他的声音';
 
   @override
   String get chat_call_btn_cancel => '先不要';
@@ -9611,7 +9619,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get chat_room_not_ready => '聊天室尚未准备好，请重新进入。';
 
   @override
-  String get chat_stop_generating_msg => '已停止回复，点数并没有扣除 🍃';
+  String get chat_stop_generating_msg => '已停止回复，点数并没有扣除';
 
   @override
   String get chat_heartbeat_up => '他心跳加速了...';
@@ -9701,18 +9709,18 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get chat_poke_btn => '戳一下';
 
   @override
-  String get chat_poke_success => '✨ 已帮妳戳戳创作者啰！请期待他的声音上线～';
+  String get chat_poke_success => '已帮妳戳戳创作者啰！请期待他的声音上线～';
 
   @override
   String chat_gift_points_needed(String cost) {
-    return '花花点数不够喔！需要 $cost 点 🌸';
+    return '花花点数不够喔！需要 $cost 点';
   }
 
   @override
-  String get chat_levelup_soulmate => '✨ 命定之人 ✨';
+  String get chat_levelup_soulmate => '命定之人';
 
   @override
-  String get chat_levelup_normal => '关系晋升！💖';
+  String get chat_levelup_normal => '关系晋升！';
 
   @override
   String get chat_levelup_btn_soulmate => '刻入灵魂';
@@ -9721,7 +9729,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get chat_levelup_btn_normal => '心动收下';
 
   @override
-  String get chat_loc_title => '📍 传送虚拟定位';
+  String get chat_loc_title => '传送虚拟定位';
 
   @override
   String get chat_loc_custom_btn => '发送自订定位';
@@ -9742,13 +9750,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get chat_loc_4 => '在便利商店';
 
   @override
-  String get chat_interact_title => '✨ 想对他做什么呢？';
+  String get chat_interact_title => '想对他做什么呢？';
 
   @override
   String get chat_interact_action => '戳一戳与小动作';
 
   @override
-  String get chat_interact_gift => '送他小礼物 (消耗花花 🌸)';
+  String get chat_interact_gift => '送他小礼物 (消耗花花 )';
 
   @override
   String get chat_action_poke => '戳戳脸颊';
@@ -9802,7 +9810,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get chat_search_hint => '想回味哪一段甜蜜对话呢？';
 
   @override
-  String get chat_search_empty => '找不到这段回忆喔 🥺';
+  String get chat_search_empty => '找不到这段回忆喔';
 
   @override
   String get chat_search_you => '妳说的';
@@ -9971,14 +9979,14 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String chat_egg_unlocked_dynamic(String memoryName) {
-    return '✨ 获得新回忆：$memoryName';
+    return '获得新回忆：$memoryName';
   }
 
   @override
   String get chat_egg_saved_his_backpack => '已自动收录至他的专属背包';
 
   @override
-  String get chat_profile_updated_msg => '拾光档案已更新！他会记住妳的最新设定喔 🍃';
+  String get chat_profile_updated_msg => '拾光档案已更新！他会记住妳的最新设定喔';
 
   @override
   String get comment_loading_author => '读取中...';
@@ -10008,7 +10016,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get comment_report_rules_desc =>
-      '初犯：系统警告并记录一次违规。\n2️⃣ 二犯：禁止留言 1 天。\n3️⃣ 累犯：禁用检舉功能 14 天，并降低留言能见度。\n\n🚨 严重恶意者：\n禁止与角色互动 1 天，ID 将公告于公布栏 3 天（期间禁止更改 ID）。\n\n💡 检举送出后，最终审核结果将通过【游戏内信箱】单独发送给您。\n请互相尊重，理性检举。';
+      '初犯：系统警告并记录一次违规。\n2⃣ 二犯：禁止留言 1 天。\n3⃣ 累犯：禁用检舉功能 14 天，并降低留言能见度。\n\n严重恶意者：\n禁止与角色互动 1 天，ID 将公告于公布栏 3 天（期间禁止更改 ID）。\n\n检举送出后，最终审核结果将通过【游戏内信箱】单独发送给您。\n请互相尊重，理性检举。';
 
   @override
   String get comment_report_understood => '我已了解';
@@ -10081,12 +10089,12 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String char_dislikes(String dislikes) {
-    return '🖤 讨厌：$dislikes';
+    return '讨厌：$dislikes';
   }
 
   @override
   String char_likes(String likes) {
-    return '🤍 喜欢：$likes';
+    return '喜欢：$likes';
   }
 
   @override
@@ -10106,7 +10114,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get char_exclusive_guardian => '专属守护 💖';
+  String get char_exclusive_guardian => '专属守护';
 
   @override
   String mailbox_like_body(String playerName, String charName) {
@@ -10144,7 +10152,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String chat_player_sent_location(String location) {
-    return '📍 (玩家发送了定位：$location)';
+    return '(玩家发送了定位：$location)';
   }
 
   @override
@@ -10196,12 +10204,12 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String chat_profile_full(String name, String identity, String birthday,
       String height, String appearance, String job, String intro) {
-    return '📜 【 专属拾光档案 - $name 】\n━━━━━━━━━━━━━━━━━━\n🔹 姓名：$identity\n🔹 生日：$birthday\n🔹 身高：$height\n🔹 外貌：$appearance\n🔹 职业：$job\n\n📖 【 关于她的灵魂碎片 】\n$intro\n━━━━━━━━━━━━━━━━━━';
+    return '【 专属拾光档案 - $name 】\n━━━━━━━━━━━━━━━━━━\n姓名：$identity\n生日：$birthday\n身高：$height\n外貌：$appearance\n职业：$job\n\n【 关于她的灵魂碎片 】\n$intro\n━━━━━━━━━━━━━━━━━━';
   }
 
   @override
   String chat_profile_locked(String nickname, String birthday) {
-    return '📜 【 专属拾光档案 】\n━━━━━━━━━━━━━━━━━━\n🔹 姓名：$nickname\n🔹 生日：$birthday\n\n🔒 其他人设资料尚未解锁...\n(填写完整档案，让他在平行时空更了解妳吧！✨)\n━━━━━━━━━━━━━━━━━━';
+    return '【 专属拾光档案 】\n━━━━━━━━━━━━━━━━━━\n姓名：$nickname\n生日：$birthday\n\n其他人设资料尚未解锁...\n(填写完整档案，让他在平行时空更了解妳吧！)\n━━━━━━━━━━━━━━━━━━';
   }
 
   @override
@@ -10224,7 +10232,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String chat_call_ended(String name, String time) {
-    return '📞 通话结束，与 $name 通话了 $time';
+    return '通话结束，与 $name 通话了 $time';
   }
 
   @override
@@ -10262,7 +10270,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get enter_secret_studio => '进入我的秘密工作室';
 
   @override
-  String get no_public_character_mine => '你还没有发布任何公开角色喔！\n快去工作室创作吧✨';
+  String get no_public_character_mine => '你还没有发布任何公开角色喔！\n快去工作室创作吧';
 
   @override
   String get no_public_character_other => '这位创作者还没有发布角色喔...';
@@ -10274,13 +10282,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get confirm_delete_draft_msg => '确定要删除这个未完成的角色吗？\n(删除后无法复原喔)';
 
   @override
-  String get draft_cleared_success => '草稿已清理完毕 🧹';
+  String get draft_cleared_success => '草稿已清理完毕';
 
   @override
   String get login_required_for_studio => '请先登录才能进入工作室喔！';
 
   @override
-  String get my_secret_studio_title => '我的秘密工作室 🛠️';
+  String get my_secret_studio_title => '我的秘密工作室';
 
   @override
   String get create_new_character_btn => '创造新角色';
@@ -10334,36 +10342,36 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String moment_like_yours(String nickname) {
-    return '$nickname觉得妳的动态很赞喔！💖';
+    return '$nickname觉得妳的动态很赞喔！';
   }
 
   @override
   String moment_like_others(String nickname, String authorName) {
-    return '$nickname觉得$authorName很有魅力，点了个赞！✨';
+    return '$nickname觉得$authorName很有魅力，点了个赞！';
   }
 
   @override
-  String get moment_like_success => '已传递妳的心动！✨';
+  String get moment_like_success => '已传递妳的心动！';
 
   @override
-  String get moment_notification_new_like => '新点赞！💖';
+  String get moment_notification_new_like => '新点赞！';
 
   @override
   String moment_mention_mail_body(String nickname, String name) {
-    return '$nickname 在动态中提到了 @$name 喔！✨';
+    return '$nickname 在动态中提到了 @$name 喔！';
   }
 
   @override
   String get moment_detail_title => '动态详情';
 
   @override
-  String get moment_not_found => '这篇动态好像不见了... 😢';
+  String get moment_not_found => '这篇动态好像不见了...';
 
   @override
   String get moment_comment_title => '朋友圈留言';
 
   @override
-  String get moment_comment_empty => '还没有人留言，快来抢沙发！🛋';
+  String get moment_comment_empty => '还没有人留言，快来抢沙发！';
 
   @override
   String moment_replying_to(String name) {
@@ -10400,7 +10408,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String moment_go_to_chat_msg(String name) {
-    return '带着动态去找 $name 聊天囉！ 💬';
+    return '带着动态去找 $name 聊天囉！';
   }
 
   @override
@@ -10418,10 +10426,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get moment_forward_title => '转发给正在聊天的角色 💌';
+  String get moment_forward_title => '转发给正在聊天的角色';
 
   @override
-  String get moment_forward_empty_state => '你目前还没有开始聊天的角色喔！\n先去大厅找找心仪的他吧 🌿';
+  String get moment_forward_empty_state => '你目前还没有开始聊天的角色喔！\n先去大厅找找心仪的他吧';
 
   @override
   String moment_forward_template(String author, String content) {
@@ -10430,7 +10438,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String moment_forward_success(String name) {
-    return '✅ 已悄悄分享给 $name 啰！';
+    return '已悄悄分享给 $name 啰！';
   }
 
   @override
@@ -10477,7 +10485,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String daily_login_welcome(String appName, String amount) {
-    return '欢迎回到《$appName》！\n今日签到可领取 $amount 点花语点数。🌸';
+    return '欢迎回到《$appName》！\n今日签到可领取 $amount 点花语点数。';
   }
 
   @override
@@ -10485,7 +10493,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String success_claim_reward(String amount) {
-    return '成功领取 $amount 点花语！🌸';
+    return '成功领取 $amount 点花语！';
   }
 
   @override
@@ -10611,7 +10619,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get draft_saved_success_msg => '好的！先帮你保存在草稿里，随时可以回来编辑喔！✨';
+  String get draft_saved_success_msg => '好的！先帮你保存在草稿里，随时可以回来编辑喔！';
 
   @override
   String get dialog_reminder_title => '提醒';
@@ -10644,7 +10652,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get title_adjust_avatar => '调整您的时光头像';
 
   @override
-  String get avatar_updated_success => '已为您换上头像 🍃';
+  String get avatar_updated_success => '已为您换上头像';
 
   @override
   String get title_create_profile => '建立你的档案';
@@ -10673,7 +10681,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get msg_birthdate_immutable => '生日设定后不可更改 ✨';
+  String get msg_birthdate_immutable => '生日设定后不可更改';
 
   @override
   String get action_start_journey => '开启时光旅程';
@@ -10683,25 +10691,25 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String moment_like_self(String nickname) {
-    return '$nickname觉得妳的动态很赞喔！💖';
+    return '$nickname觉得妳的动态很赞喔！';
   }
 
   @override
   String moment_like_other(String nickname, String authorName) {
-    return '$nickname觉得$authorName很有魅力，点了个赞！✨';
+    return '$nickname觉得$authorName很有魅力，点了个赞！';
   }
 
   @override
-  String get task_social_tour_complete => '✨ 达成社群巡礼任务！记得领取花花喔！🌸';
+  String get task_social_tour_complete => '达成社群巡礼任务！记得领取花花喔！';
 
   @override
   String get wall_title_shiguang => '拾光墙';
 
   @override
-  String get wall_tab_explore => '🌍 探索';
+  String get wall_tab_explore => '探索';
 
   @override
-  String get wall_tab_exclusive => '🔒 专属';
+  String get wall_tab_exclusive => '专属';
 
   @override
   String get more_options => '更多选项';
@@ -10713,7 +10721,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get delete_success => '删除成功';
 
   @override
-  String get notification_new_comment => '新留言！💬';
+  String get notification_new_comment => '新留言！';
 
   @override
   String notification_like_from_sender(String senderName) {
@@ -10721,14 +10729,14 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get empty_public_moments_prompt => '目前空空如也，\n快去发布第一篇公开动态吧！🌍';
+  String get empty_public_moments_prompt => '目前空空如也，\n快去发布第一篇公开动态吧！';
 
   @override
-  String get empty_private_moments_prompt => '朋友圈还没有留下的瞬间，\n快去与他创造回忆吧！✨';
+  String get empty_private_moments_prompt => '朋友圈还没有留下的瞬间，\n快去与他创造回忆吧！';
 
   @override
   String get profile_archived_or_deleted_message =>
-      '这份灵魂档案已被创作者封存、设为私人，或是已经消散在时空的洪流中...\n\n或许在某个平行宇宙，你们还有再次相遇的机会。✨';
+      '这份灵魂档案已被创作者封存、设为私人，或是已经消散在时空的洪流中...\n\n或许在某个平行宇宙，你们还有再次相遇的机会。';
 
   @override
   String get leave_silently => '默默离开';
@@ -10743,7 +10751,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get post_identity_prompt => '今天要用谁的身分发文？';
 
   @override
-  String get identity_creator => '✨ 创作者身分';
+  String get identity_creator => '创作者身分';
 
   @override
   String get identity_character => '角色身分';
@@ -10753,7 +10761,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get auto_post_schedule_hint =>
-      '开启后，将会在指定時間自动发布日常动态\n(💡 建议设定非整点，看起来更像真人喔！)';
+      '开启后，将会在指定時間自动发布日常动态\n( 建议设定非整点，看起来更像真人喔！)';
 
   @override
   String get no_characters_created_yet => '妳还没有创建任何角色喔！';
@@ -10769,10 +10777,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get empty_public_moments_short => '目前还没有公开动态 🌍';
+  String get empty_public_moments_short => '目前还没有公开动态';
 
   @override
-  String get empty_private_moments_short => '朋友圈还静悄悄的 ✨';
+  String get empty_private_moments_short => '朋友圈还静悄悄的';
 
   @override
   String get my_created_characters => '我创建的角色';
@@ -10805,10 +10813,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get daily_gift_success => '成功领取每日赠礼！🌸';
+  String get daily_gift_success => '成功领取每日赠礼！';
 
   @override
-  String get check_in_fail_network => '签到失败，请检查网络连线 🍃';
+  String get check_in_fail_network => '签到失败，请检查网络连线';
 
   @override
   String task_completed(String taskName) {
@@ -10856,7 +10864,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get btn_incomplete => '未完成';
 
   @override
-  String get network_unstable_retry => '网络连线不稳，请稍后再试🍃';
+  String get network_unstable_retry => '网络连线不稳，请稍后再试';
 
   @override
   String get title_time_travel => '时光旅行';
@@ -10919,7 +10927,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get search_name_placeholder => '输入他的名字...';
 
   @override
-  String get search_no_match_hint => '找不到角色，试试其他名字？ ✨';
+  String get search_no_match_hint => '找不到角色，试试其他名字？';
 
   @override
   String character_info_full(String age, String occupation) {
@@ -11078,7 +11086,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get shop_tab_history => '收支明细';
 
   @override
-  String get shop_empty_history => '目前还没有花花纪录喔！🌸';
+  String get shop_empty_history => '目前还没有花花纪录喔！';
 
   @override
   String get shop_unknown_item => '未知项目';
@@ -11097,7 +11105,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String story_summary_empty_list(String name) {
-    return '你们的故事还没有开始...\n多聊聊天，让 $name \n为你们写下第一篇回忆吧！ ✨';
+    return '你们的故事还没有开始...\n多聊聊天，让 $name\n为你们写下第一篇回忆吧！';
   }
 
   @override
@@ -11119,7 +11127,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get reset_bg_content => '确定要取消专属照片，恢复成默认的主题背景吗？';
 
   @override
-  String get reset_bg_success => '已恢复为默认背景 ✨';
+  String get reset_bg_success => '已恢复为默认背景';
 
   @override
   String get confirm_reset => '确定恢复';
@@ -11141,7 +11149,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get downloadToUnlock => '下载《恋恋拾光》，解锁专属浪漫';
 
   @override
-  String get exclusiveMomentsGenerated => '专属拾光已生成 ✨';
+  String get exclusiveMomentsGenerated => '专属拾光已生成';
 
   @override
   String get selectAgain => '再选一次';
@@ -11155,11 +11163,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get shop_log_monthly_card => '启动：星光契约 (月卡立即赠点) 🌙';
+  String get shop_log_monthly_card => '启动：星光契约 (月卡立即赠点)';
 
   @override
   String shop_log_top_up_double(int points) {
-    return '充值：$points 点 (含首购双倍 🎁)';
+    return '充值：$points 点 (含首购双倍 )';
   }
 
   @override
@@ -11176,7 +11184,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get shop_purchase_success_double_bonus => '✨ 恭喜触发首购双倍奖励！';
+  String get shop_purchase_success_double_bonus => '恭喜触发首购双倍奖励！';
 
   @override
   String get shop_purchase_awesome => '太棒了';
@@ -11207,7 +11215,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get shop_monthly_card_promo_desc => '立即得 250 花花，每日领 10 花花';
 
   @override
-  String get task_monthly_title => '星之契约．每日特权 🌙';
+  String get task_monthly_title => '星之契约．每日特权';
 
   @override
   String get task_monthly_locked => '未解锁';
@@ -11228,20 +11236,20 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get profile_copy_id => '点击复制 ID';
 
   @override
-  String get referral_log_newbie_reward => '星之邀约：新手报到奖励 ✨';
+  String get referral_log_newbie_reward => '星之邀约：新手报到奖励';
 
   @override
-  String get referral_log_inviter_reward => '星之邀约：好友达标回馈 🎁';
+  String get referral_log_inviter_reward => '星之邀约：好友达标回馈';
 
   @override
   String get referral_success_title => '星之邀约解锁！';
 
   @override
   String get referral_success_content =>
-      '恭喜您已成功与角色深度交流满 15 句！\n\n「新手报到奖励 50 点」已送达您的账户，您的好友也同步获得了 50 点回馈！🎁';
+      '恭喜您已成功与角色深度交流满 15 句！\n\n「新手报到奖励 50 点」已送达您的账户，您的好友也同步获得了 50 点回馈！';
 
   @override
-  String get profile_referral_title => '星之邀约 🌟';
+  String get profile_referral_title => '星之邀约';
 
   @override
   String get profile_referral_hint => '输入好友邀请码';
@@ -11271,11 +11279,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String profile_share_message(String character, String code) {
-    return '✨ 我在《恋恋拾光》与$character展开了心动旅程！快下载 App 并在个人主页填写我的星之邀请码：【$code】，我们双方都能免费获得 50 点花花喔！🎁\n\n 下载链接：\nhttps://lianlianshiguang.web.app/download/';
+    return '我在《恋恋拾光》与$character展开了心动旅程！快下载 App 并在个人主页填写我的星之邀请码：【$code】，我们双方都能免费获得 50 点花花喔！\n\n下载链接：\nhttps://lianlianshiguang.web.app/download/';
   }
 
   @override
-  String get chat_levelup_share_btn => '向好友炫耀这份心动 ✨';
+  String get chat_levelup_share_btn => '向好友炫耀这份心动';
 
   @override
   String profile_my_invite_code_with_char(String character) {
@@ -11289,18 +11297,18 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get profile_fallback_character => '心动角色';
 
   @override
-  String get profile_copy_success => '✅ 邀请码已复制到剪贴板！';
+  String get profile_copy_success => '邀请码已复制到剪贴板！';
 
   @override
   String get profile_referral_rule_title => '星之契约规则';
 
   @override
   String get profile_referral_rule_receiver =>
-      '✨ 缔结契约后，只要与任意心动角色聊天满 15 句，你与邀请人就能同时获得 50 朵花花奖励喔！\n\n⚠️ 注意：请在注册帐号后的 3 天内输入邀请码才有效。';
+      '缔结契约后，只要与任意心动角色聊天满 15 句，你与邀请人就能同时获得 50 朵花花奖励喔！\n\n注意：请在注册帐号后的 3 天内输入邀请码才有效。';
 
   @override
   String get profile_referral_rule_inviter =>
-      '✨ 邀请新朋友下载并输入你的邀约码，当对方在注册 3 天内完成绑定，并与任意角色聊天满 15 句，你们双方就能同时获得 50 点花花奖励喔！🎁';
+      '邀请新朋友下载并输入你的邀约码，当对方在注册 3 天内完成绑定，并与任意角色聊天满 15 句，你们双方就能同时获得 50 点花花奖励喔！';
 
   @override
   String get error_user_not_found => '找不到用户，请重新登录';
@@ -11312,13 +11320,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get error_id_taken_short => '此 ID 已被使用！';
 
   @override
-  String get shop_restocking => '商店正在补货... 📦';
+  String get shop_restocking => '商店正在补货...';
 
   @override
-  String get shop_preview_mode => '⚠️ 目前为商店预览模式';
+  String get shop_preview_mode => '目前为商店预览模式';
 
   @override
-  String get friendlyReminderTitle => '☁️ 温馨提示';
+  String get friendlyReminderTitle => '温馨提示';
 
   @override
   String get editProfileHint => '好的！如果要编辑身份，请点击左下角云朵 Inside 的「拾光档案」做填写喔！';
@@ -11347,7 +11355,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String continueChatCostWarning(int cost) {
-    return '让他说下去，将会消耗 $cost 朵花花 🌸\n确定要继续吗？';
+    return '让他说下去，将会消耗 $cost 朵花花\n确定要继续吗？';
   }
 
   @override
@@ -11379,7 +11387,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get continueButton => '继续';
 
   @override
-  String get creatorExclusive => '🔒 创作者专属';
+  String get creatorExclusive => '创作者专属';
 
   @override
   String ageAndOccupation(String age, String occupation) {
@@ -11387,10 +11395,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get likesLabel => '💖 喜欢';
+  String get likesLabel => '喜欢';
 
   @override
-  String get dislikesLabel => '👎 不喜欢';
+  String get dislikesLabel => '不喜欢';
 
   @override
   String birthdayLabel(String birthday) {
@@ -11417,14 +11425,14 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get passGuideTitle => '恋恋月卡专属指南';
 
   @override
-  String get passGuideRegenerateTitle => '🔄 为什么需要「重新生成」？';
+  String get passGuideRegenerateTitle => '为什么需要「重新生成」？';
 
   @override
   String get passGuideRegenerateContent =>
       'AI 有时候会像个笨蛋木头，不解风情。遇到不满意的回复时，只要按下重新生成，就像时光倒流！妳可以让他重新思考，直到他说出让妳心跳加速的那句完美台词。';
 
   @override
-  String get passGuideAffectionTitle => '💖 好感度加速有什么用？';
+  String get passGuideAffectionTitle => '好感度加速有什么用？';
 
   @override
   String get passGuideAffectionContent =>
@@ -11437,10 +11445,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get pleaseWait => '请稍候';
 
   @override
-  String get createNewProfileTitle => '📜 建立新拾光档案';
+  String get createNewProfileTitle => '建立新拾光档案';
 
   @override
-  String get editProfileTitle => '✏️ 编辑拾光档案';
+  String get editProfileTitle => '编辑拾光档案';
 
   @override
   String get profileEditDescription => '建立 different 的人设，在平行的时空里让他认识不一样的妳！';
@@ -11496,7 +11504,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get fillLaterButton => '稍后填写';
 
   @override
-  String get exclusiveProfileTitle => '📜 专属拾光档案';
+  String get exclusiveProfileTitle => '专属拾光档案';
 
   @override
   String get profileSelectionDescription => '选择你想用来和他互动的身分 (同角色共用清单，最多 10 个)';
@@ -11660,11 +11668,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get nav_moments => '瞬间';
 
   @override
-  String get birthday_dialog_title => '🎂 生日惊喜';
+  String get birthday_dialog_title => '生日惊喜';
 
   @override
-  String get birthday_dialog_content =>
-      '今天是您的专属纪念日！\n\n这份礼物请收下：\n今天聊天全。部。免。费！✨';
+  String get birthday_dialog_content => '今天是您的专属纪念日！\n\n这份礼物请收下：\n今天聊天全。部。免。费！';
 
   @override
   String get birthday_dialog_button => '开启浪漫的一天';
@@ -11697,7 +11704,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get go_to_login => '前往登录';
 
   @override
-  String get easter_egg_title => '发现隐藏彩蛋 ✨';
+  String get easter_egg_title => '发现隐藏彩蛋';
 
   @override
   String easter_egg_content(String title) {
@@ -11735,7 +11742,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get status_published => '已发布';
 
   @override
-  String get monthly_card_success_title => '✨ 尊荣月卡解锁成功！';
+  String get monthly_card_success_title => '尊荣月卡解锁成功！';
 
   @override
   String get monthly_card_success_subtitle => '感谢您的订阅！专属特权已生效：';
@@ -12068,7 +12075,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get message_preview_voice => '[语音讯息]';
 
   @override
-  String get send_failed_retry => '送出失败，请稍后再试 😢';
+  String get send_failed_retry => '送出失败，请稍后再试';
 
   @override
   String get media_upload_failed_retry => '媒体上传失败，请再试一次';
@@ -12101,7 +12108,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get chat_input_hint => '请输入...';
 
   @override
-  String get regenerate_sync_failed => '重新生成次数同步失败，请再试一次 😢';
+  String get regenerate_sync_failed => '重新生成次数同步失败，请再试一次';
 
   @override
   String get creator_public_works => '公开作品';
@@ -12551,7 +12558,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get mailCaseNumberCopied => '已复制案件编号';
 
   @override
-  String get profilePageAboutMe => '📝 关于我';
+  String get profilePageAboutMe => '关于我';
 
   @override
   String get profilePageTabBio => '自我介绍';
@@ -12796,7 +12803,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get periodPredictionDisclaimer => '根据现有记录估算，日期仅供生活记录参考。';
 
   @override
-  String get periodStartedToday => '🩸 今天来了';
+  String get periodStartedToday => '今天来了';
 
   @override
   String get periodStillOngoing => '仍在生理期';
@@ -13016,7 +13023,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get privateProfileSave => '保存';
 
   @override
-  String get editProfileBirthdayReminderTitle => '🎂 小提醒';
+  String get editProfileBirthdayReminderTitle => '小提醒';
 
   @override
   String get editProfileBirthdayReminderContent =>
@@ -13026,7 +13033,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get editProfileGotIt => '知道了';
 
   @override
-  String get editProfileBirthdayConfirmTitle => '🎂 确认生日';
+  String get editProfileBirthdayConfirmTitle => '确认生日';
 
   @override
   String get editProfileBirthdayConfirmContent =>
@@ -13103,13 +13110,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get editProfileAvatarEmpty => '头像图片数据为空';
 
   @override
-  String get chatPageSendFailed => '发送失败，请稍后再试 😢';
+  String get chatPageSendFailed => '发送失败，请稍后再试';
 
   @override
   String get chatPageRegenerateFailed => '重新生成失败，原来的消息已保留，请再试一次。';
 
   @override
-  String get chatPageRegenerating => '💭 正在重新思考...';
+  String get chatPageRegenerating => '正在重新思考...';
 
   @override
   String get chatPageThinkingTooLong => '他似乎在沉思，请稍后再试……';
@@ -13125,7 +13132,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String chatPageMessagesDeleted(int count) {
-    return '✅ 已成功删除 $count 条消息';
+    return '已成功删除 $count 条消息';
   }
 
   @override
@@ -13344,11 +13351,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get characterProfileShareInvitation => '🦋 一封来自《恋恋拾光》的相遇邀请';
+  String get characterProfileShareInvitation => '一封来自《恋恋拾光》的相遇邀请';
 
   @override
   String characterProfileShareCreator(String creatorName) {
-    return '✦ 创作者：$creatorName';
+    return '创作者：$creatorName';
   }
 
   @override
@@ -13365,7 +13372,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get characterProfileCardSearchHint => '搜索角色，开始相遇  🦋';
+  String get characterProfileCardSearchHint => '搜索角色，开始相遇';
 
   @override
   String get characterProfileScanToDownload => '扫描下载';
@@ -13522,17 +13529,17 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String mailShareQixiMessage(String characterName) {
-    return '我收到了 $characterName 写来的七夕限定信 💌';
+    return '我收到了 $characterName 写来的七夕限定信';
   }
 
   @override
-  String get mailShareDefaultMessage => '来自《恋恋拾光》的信件 💌';
+  String get mailShareDefaultMessage => '来自《恋恋拾光》的信件';
 
   @override
   String get mailShareImageFailed => '分享图片生成失败，请稍后再试';
 
   @override
-  String get mailCollectedSuccess => '已收藏这封信 💌';
+  String get mailCollectedSuccess => '已收藏这封信';
 
   @override
   String get mailCollectedCancelled => '已取消收藏';
@@ -13587,11 +13594,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get qixiCompanionSlotsFull => '七夕同行名额已经选满了';
 
   @override
-  String get qixiSingleRoomOpened => '七夕专属聊天室已开启 💕';
+  String get qixiSingleRoomOpened => '七夕专属聊天室已开启';
 
   @override
   String qixiMultipleRoomsOpened(int count) {
-    return '$count 间七夕专属聊天室已开启 💕';
+    return '$count 间七夕专属聊天室已开启';
   }
 
   @override
@@ -13679,10 +13686,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get encounterDailyQuote12 => '今天，别错过悄悄靠近的缘分。';
 
   @override
-  String get encounterJoinedToday => '✨ 今天加入恋恋拾光';
+  String get encounterJoinedToday => '今天加入恋恋拾光';
 
   @override
-  String get encounterPopularChats => '❤️ 最近很多人在聊天';
+  String get encounterPopularChats => '最近很多人在聊天';
 
   @override
   String get qixiBannerActiveUntil => '限时开启・8/26 23:59 截止';
@@ -13691,7 +13698,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get qixiBannerStartsAt => '8/19 限定开启';
 
   @override
-  String get encounterRecentlyArrived => '✨ 最近来到恋恋拾光';
+  String get encounterRecentlyArrived => '最近来到恋恋拾光';
 
   @override
   String get encounterRecentlyArrivedPlain => '最近来到恋恋拾光';
@@ -13700,7 +13707,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get encounterViewMore => '查看更多';
 
   @override
-  String get encounterLovePrompt => '💕 今天想谈什么恋爱？';
+  String get encounterLovePrompt => '今天想谈什么恋爱？';
 
   @override
   String get encounterNoCharacters => '目前还没有角色';
@@ -13709,7 +13716,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get encounterAllLoveTags => '全部恋爱标签';
 
   @override
-  String get chatQixiLetterSent => '限定信件已寄出 💌';
+  String get chatQixiLetterSent => '限定信件已寄出';
 
   @override
   String get chatQixiLetterPendingTonight => '三日星光已点亮・今夜过后寄出信件';
@@ -14749,7 +14756,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String character_edit_over_limit_warning(String label, String count) {
-    return '⚠ $label 已超出 $count 字，请修改后再发布。';
+    return '$label 已超出 $count 字，请修改后再发布。';
   }
 
   @override
@@ -15324,7 +15331,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String shop_joined_days(int days) {
-    return '✦ 已来到恋恋拾光 $days 天 ✦';
+    return '已来到恋恋拾光 $days 天';
   }
 
   @override
@@ -15604,6 +15611,15 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get creator_social_links_open_failed => '无法打开此链接';
+
+  @override
+  String get chat_regenerate_bottom_tip => '「重新生成」搬到这里啦！想换一个回复时，可以从这里重新生成。';
+
+  @override
+  String get chat_continue_bottom_tip => '「继续」搬到这里啦！想让角色接着说时，可以从这里继续。';
+
+  @override
+  String get languageSelectionSubtitle => '选择你习惯的语言';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -15905,7 +15921,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get logoutDialogActionConfirm => '確認';
 
   @override
-  String get logoutSuccessSnackbar => '好的!那我等你回來♥(´∀` )';
+  String get logoutSuccessSnackbar => '好的!那我等你回來(´∀` )';
 
   @override
   String get deleteAccountButton => '刪除帳號';
@@ -16722,7 +16738,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get visibility_private => '私人';
 
   @override
-  String get section_voice_gen => '🎙他專屬聲線生成';
+  String get section_voice_gen => '他專屬聲線生成';
 
   @override
   String get voice_gen_desc =>
@@ -17176,7 +17192,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String gallery_current_affection(String value) {
-    return '目前好感度: $value 💕';
+    return '目前好感度: $value';
   }
 
   @override
@@ -17189,7 +17205,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String gallery_lock_msg(String value) {
-    return '好感度達到 $value 即可解鎖喔！🍃';
+    return '好感度達到 $value 即可解鎖喔！';
   }
 
   @override
@@ -17203,11 +17219,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String followed_creator_msg(String creatorName) {
-    return '已關注 $creatorName 🦋';
+    return '已關注 $creatorName';
   }
 
   @override
-  String get mailbox_title => '專屬信箱 💌';
+  String get mailbox_title => '專屬信箱';
 
   @override
   String get mailbox_empty => '信箱空空的，快去發佈動態吸引他吧！';
@@ -17220,11 +17236,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String affection_upgrade_title(String charName) {
-    return '$charName 對妳的好感度提升了！ 💖';
+    return '$charName 對妳的好感度提升了！';
   }
 
   @override
-  String get flower_reward => '🌸 獲得 5 點花花';
+  String get flower_reward => '獲得 5 點花花';
 
   @override
   String get affection_quote_lv5 =>
@@ -17246,7 +17262,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get affection_quote_lv0 => '「原來妳也在這裡，這算是一種奇妙的緣分嗎？」';
 
   @override
-  String get lore_edit_success => '✨ 記憶碎片已成功更新！';
+  String get lore_edit_success => '記憶碎片已成功更新！';
 
   @override
   String get delete_failed_network => '刪除失敗，請檢查網路或權限。';
@@ -17341,13 +17357,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get chat_load_char_failed => '找不到角色資料，請返回重試或檢查網路。';
 
   @override
-  String get chat_jump_success => '已跳轉至該段回憶 🍃';
+  String get chat_jump_success => '已跳轉至該段回憶';
 
   @override
   String get chat_create_room_failed => '連線似乎有點不穩，建立聊天室失敗，請再試一次。';
 
   @override
-  String get chat_secret_file_title => '🔒 機密檔案';
+  String get chat_secret_file_title => '機密檔案';
 
   @override
   String get chat_secret_file_desc => '該角色的靈魂檔案已被封存或轉為私人權限，暫時無法查看詳細資料。';
@@ -17357,7 +17373,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String chat_egg_unlocked(String title) {
-    return '✨ 獲得新回憶：$title';
+    return '獲得新回憶：$title';
   }
 
   @override
@@ -17381,7 +17397,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get chat_call_rule_2 => '通話時間為一分鐘，若不方便說話可以透過文字傳達';
 
   @override
-  String get chat_call_rule_3 => '建議配戴耳機，更能聽清楚他的聲音 ✨';
+  String get chat_call_rule_3 => '建議配戴耳機，更能聽清楚他的聲音';
 
   @override
   String get chat_call_btn_cancel => '先不要';
@@ -17410,7 +17426,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get chat_room_not_ready => '聊天室尚未準備好，請重新進入。';
 
   @override
-  String get chat_stop_generating_msg => '已停止回覆，點數並沒有扣除 🍃';
+  String get chat_stop_generating_msg => '已停止回覆，點數並沒有扣除';
 
   @override
   String get chat_heartbeat_up => '他心跳加速了...';
@@ -17500,18 +17516,18 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get chat_poke_btn => '戳一下';
 
   @override
-  String get chat_poke_success => '✨ 已幫妳戳戳創作者囉！請期待他的聲音上線～';
+  String get chat_poke_success => '已幫妳戳戳創作者囉！請期待他的聲音上線～';
 
   @override
   String chat_gift_points_needed(String cost) {
-    return '花花點數不夠喔！需要 $cost 點 🌸';
+    return '花花點數不夠喔！需要 $cost 點';
   }
 
   @override
-  String get chat_levelup_soulmate => '✨ 命定之人 ✨';
+  String get chat_levelup_soulmate => '命定之人';
 
   @override
-  String get chat_levelup_normal => '關係晉升！💖';
+  String get chat_levelup_normal => '關係晉升！';
 
   @override
   String get chat_levelup_btn_soulmate => '刻入靈魂';
@@ -17520,7 +17536,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get chat_levelup_btn_normal => '心動收下';
 
   @override
-  String get chat_loc_title => '📍 傳送虛擬定位';
+  String get chat_loc_title => '傳送虛擬定位';
 
   @override
   String get chat_loc_custom_btn => '發送自訂定位';
@@ -17541,13 +17557,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get chat_loc_4 => '在便利商店';
 
   @override
-  String get chat_interact_title => '✨ 想對他做什麼呢？';
+  String get chat_interact_title => '想對他做什麼呢？';
 
   @override
   String get chat_interact_action => '戳一戳與小動作';
 
   @override
-  String get chat_interact_gift => '送他小禮物 (消耗花花 🌸)';
+  String get chat_interact_gift => '送他小禮物 (消耗花花 )';
 
   @override
   String get chat_action_poke => '戳戳臉頰';
@@ -17601,7 +17617,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get chat_search_hint => '想回味哪一段甜蜜對話呢？';
 
   @override
-  String get chat_search_empty => '找不到這段回憶喔 🥺';
+  String get chat_search_empty => '找不到這段回憶喔';
 
   @override
   String get chat_search_you => '妳說的';
@@ -17770,14 +17786,14 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String chat_egg_unlocked_dynamic(String memoryName) {
-    return '✨ 獲得新回憶：$memoryName';
+    return '獲得新回憶：$memoryName';
   }
 
   @override
   String get chat_egg_saved_his_backpack => '已自動收錄至他的專屬背包';
 
   @override
-  String get chat_profile_updated_msg => '拾光檔案已更新！他會記住妳的最新設定喔 🍃';
+  String get chat_profile_updated_msg => '拾光檔案已更新！他會記住妳的最新設定喔';
 
   @override
   String get comment_loading_author => '讀取中...';
@@ -17807,7 +17823,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get comment_report_rules_desc =>
-      '初犯：系統警告並記錄一次違規。\n2️⃣ 二犯：禁止留言 1 天。\n3️⃣ 累犯：禁用檢舉功能 14 天，並降低留言能見度。\n\n🚨 嚴重惡意者：\n禁止與角色互動 1 天，ID 將公告於公佈欄 3 天（期間禁止更改 ID）。\n\n💡 檢舉送出後，最終審核結果將透過【遊戲內信箱】單獨發送給您。\n請互相尊重，理性檢舉。';
+      '初犯：系統警告並記錄一次違規。\n2⃣ 二犯：禁止留言 1 天。\n3⃣ 累犯：禁用檢舉功能 14 天，並降低留言能見度。\n\n嚴重惡意者：\n禁止與角色互動 1 天，ID 將公告於公佈欄 3 天（期間禁止更改 ID）。\n\n檢舉送出後，最終審核結果將透過【遊戲內信箱】單獨發送給您。\n請互相尊重，理性檢舉。';
 
   @override
   String get comment_report_understood => '我已了解';
@@ -17880,12 +17896,12 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String char_dislikes(String dislikes) {
-    return '🖤 討厭：$dislikes';
+    return '討厭：$dislikes';
   }
 
   @override
   String char_likes(String likes) {
-    return '🤍 喜歡：$likes';
+    return '喜歡：$likes';
   }
 
   @override
@@ -17905,7 +17921,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get char_exclusive_guardian => '專屬守護 💖';
+  String get char_exclusive_guardian => '專屬守護';
 
   @override
   String mailbox_like_body(String playerName, String charName) {
@@ -17943,7 +17959,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String chat_player_sent_location(String location) {
-    return '📍 (玩家發送了定位：$location)';
+    return '(玩家發送了定位：$location)';
   }
 
   @override
@@ -17995,12 +18011,12 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String chat_profile_full(String name, String identity, String birthday,
       String height, String appearance, String job, String intro) {
-    return '📜 【 專屬拾光檔案 - $name 】\n━━━━━━━━━━━━━━━━━━\n🔹 姓名：$identity\n🔹 生日：$birthday\n🔹 身高：$height\n🔹 外貌：$appearance\n🔹 職業：$job\n\n📖 【 關於她的靈魂碎片 】\n$intro\n━━━━━━━━━━━━━━━━━━';
+    return '【 專屬拾光檔案 - $name 】\n━━━━━━━━━━━━━━━━━━\n姓名：$identity\n生日：$birthday\n身高：$height\n外貌：$appearance\n職業：$job\n\n【 關於她的靈魂碎片 】\n$intro\n━━━━━━━━━━━━━━━━━━';
   }
 
   @override
   String chat_profile_locked(String nickname, String birthday) {
-    return '📜 【 專屬拾光檔案 】\n━━━━━━━━━━━━━━━━━━\n🔹 姓名：$nickname\n🔹 生日：$birthday\n\n🔒 其他人設資料尚未解鎖...\n(填寫完整檔案，讓他在平行時空更了解妳吧！✨)\n━━━━━━━━━━━━━━━━━━';
+    return '【 專屬拾光檔案 】\n━━━━━━━━━━━━━━━━━━\n姓名：$nickname\n生日：$birthday\n\n其他人設資料尚未解鎖...\n(填寫完整檔案，讓他在平行時空更了解妳吧！)\n━━━━━━━━━━━━━━━━━━';
   }
 
   @override
@@ -18023,7 +18039,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String chat_call_ended(String name, String time) {
-    return '📞 通話結束，與 $name 通話了 $time';
+    return '通話結束，與 $name 通話了 $time';
   }
 
   @override
@@ -18061,7 +18077,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get enter_secret_studio => '進入我的秘密工作室';
 
   @override
-  String get no_public_character_mine => '妳還沒有發布任何公開角色喔！\n快去工作室創作吧✨';
+  String get no_public_character_mine => '妳還沒有發布任何公開角色喔！\n快去工作室創作吧';
 
   @override
   String get no_public_character_other => '這位創作者還沒有發布角色喔...';
@@ -18073,13 +18089,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get confirm_delete_draft_msg => '確定要刪除這個未完成的角色嗎？\n(刪除後無法復原喔)';
 
   @override
-  String get draft_cleared_success => '草稿已清理完畢 🧹';
+  String get draft_cleared_success => '草稿已清理完畢';
 
   @override
   String get login_required_for_studio => '請先登入才能進入工作室喔！';
 
   @override
-  String get my_secret_studio_title => '我的秘密工作室 🛠️';
+  String get my_secret_studio_title => '我的秘密工作室';
 
   @override
   String get create_new_character_btn => '創造新角色';
@@ -18133,36 +18149,36 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String moment_like_yours(String nickname) {
-    return '$nickname覺得妳的動態很讚喔！💖';
+    return '$nickname覺得妳的動態很讚喔！';
   }
 
   @override
   String moment_like_others(String nickname, String authorName) {
-    return '$nickname覺得$authorName很有魅力，點了個讚！✨';
+    return '$nickname覺得$authorName很有魅力，點了個讚！';
   }
 
   @override
-  String get moment_like_success => '已傳遞妳的心動！✨';
+  String get moment_like_success => '已傳遞妳的心動！';
 
   @override
-  String get moment_notification_new_like => '新點讚！💖';
+  String get moment_notification_new_like => '新點讚！';
 
   @override
   String moment_mention_mail_body(String nickname, String name) {
-    return '$nickname 在動態中提到了 @$name 喔！✨';
+    return '$nickname 在動態中提到了 @$name 喔！';
   }
 
   @override
   String get moment_detail_title => '動態詳情';
 
   @override
-  String get moment_not_found => '這篇動態好像不見了... 😢';
+  String get moment_not_found => '這篇動態好像不見了...';
 
   @override
   String get moment_comment_title => '朋友圈留言';
 
   @override
-  String get moment_comment_empty => '還沒有人留言，快來搶沙發！🛋';
+  String get moment_comment_empty => '還沒有人留言，快來搶沙發！';
 
   @override
   String moment_replying_to(String name) {
@@ -18199,7 +18215,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String moment_go_to_chat_msg(String name) {
-    return '帶著動態去找 $name 聊天囉！ 💬';
+    return '帶著動態去找 $name 聊天囉！';
   }
 
   @override
@@ -18217,10 +18233,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get moment_forward_title => '轉發給正在聊天的角色 💌';
+  String get moment_forward_title => '轉發給正在聊天的角色';
 
   @override
-  String get moment_forward_empty_state => '妳目前還沒有開始聊天的角色喔！\n先去大廳找找心儀的他吧 🌿';
+  String get moment_forward_empty_state => '妳目前還沒有開始聊天的角色喔！\n先去大廳找找心儀的他吧';
 
   @override
   String moment_forward_template(String author, String content) {
@@ -18229,7 +18245,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String moment_forward_success(String name) {
-    return '✅ 已悄悄分享給 $name 囉！';
+    return '已悄悄分享給 $name 囉！';
   }
 
   @override
@@ -18276,7 +18292,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String daily_login_welcome(String appName, String amount) {
-    return '歡迎回到《$appName》！\n今日簽到可領取 $amount 點花語點數。🌸';
+    return '歡迎回到《$appName》！\n今日簽到可領取 $amount 點花語點數。';
   }
 
   @override
@@ -18284,7 +18300,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String success_claim_reward(String amount) {
-    return '成功領取 $amount 點花語！🌸';
+    return '成功領取 $amount 點花語！';
   }
 
   @override
@@ -18410,7 +18426,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get draft_saved_success_msg => '好的！先幫你保存在草稿裡，隨時可以回來編輯喔！✨';
+  String get draft_saved_success_msg => '好的！先幫你保存在草稿裡，隨時可以回來編輯喔！';
 
   @override
   String get dialog_reminder_title => '提醒';
@@ -18443,7 +18459,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get title_adjust_avatar => '調整您的時光頭像';
 
   @override
-  String get avatar_updated_success => '已為您換上頭像 🍃';
+  String get avatar_updated_success => '已為您換上頭像';
 
   @override
   String get title_create_profile => '建立你的檔案';
@@ -18472,7 +18488,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get msg_birthdate_immutable => '生日設定後不可更改 ✨';
+  String get msg_birthdate_immutable => '生日設定後不可更改';
 
   @override
   String get action_start_journey => '開啟時光旅程';
@@ -18482,25 +18498,25 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String moment_like_self(String nickname) {
-    return '$nickname覺得妳的動態很讚喔！💖';
+    return '$nickname覺得妳的動態很讚喔！';
   }
 
   @override
   String moment_like_other(String nickname, String authorName) {
-    return '$nickname覺得$authorName很有魅力，點了個讚！✨';
+    return '$nickname覺得$authorName很有魅力，點了個讚！';
   }
 
   @override
-  String get task_social_tour_complete => '✨ 達成社群巡禮任務！記得領取花花喔！🌸';
+  String get task_social_tour_complete => '達成社群巡禮任務！記得領取花花喔！';
 
   @override
   String get wall_title_shiguang => '拾光牆';
 
   @override
-  String get wall_tab_explore => '🌍 探索';
+  String get wall_tab_explore => '探索';
 
   @override
-  String get wall_tab_exclusive => '🔒 專屬';
+  String get wall_tab_exclusive => '專屬';
 
   @override
   String get more_options => '更多選項';
@@ -18512,7 +18528,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get delete_success => '刪除成功';
 
   @override
-  String get notification_new_comment => '新留言！💬';
+  String get notification_new_comment => '新留言！';
 
   @override
   String notification_like_from_sender(String senderName) {
@@ -18520,14 +18536,14 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get empty_public_moments_prompt => '目前空空如也，\n快去發布第一篇公開動態吧！🌍';
+  String get empty_public_moments_prompt => '目前空空如也，\n快去發布第一篇公開動態吧！';
 
   @override
-  String get empty_private_moments_prompt => '朋友圈還沒有留下的瞬間，\n快去與他創造回憶吧！✨';
+  String get empty_private_moments_prompt => '朋友圈還沒有留下的瞬間，\n快去與他創造回憶吧！';
 
   @override
   String get profile_archived_or_deleted_message =>
-      '這份靈魂檔案已被創作者封存、設為私人，或是已經消散在時空的洪流中...\n\n或許在某個平行宇宙，你們還有再次相遇的機會。✨';
+      '這份靈魂檔案已被創作者封存、設為私人，或是已經消散在時空的洪流中...\n\n或許在某個平行宇宙，你們還有再次相遇的機會。';
 
   @override
   String get leave_silently => '默默離開';
@@ -18542,7 +18558,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get post_identity_prompt => '今天要用誰的身分發文？';
 
   @override
-  String get identity_creator => '✨ 創作者身分';
+  String get identity_creator => '創作者身分';
 
   @override
   String get identity_character => '角色身分';
@@ -18552,7 +18568,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get auto_post_schedule_hint =>
-      '開啟後，將會在指定時間自動發布日常動態\n(💡 建議設定非整點，看起來更像真人喔！)';
+      '開啟後，將會在指定時間自動發布日常動態\n( 建議設定非整點，看起來更像真人喔！)';
 
   @override
   String get no_characters_created_yet => '妳還沒有創建任何角色喔！';
@@ -18568,10 +18584,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get empty_public_moments_short => '目前還沒有公開動態 🌍';
+  String get empty_public_moments_short => '目前還沒有公開動態';
 
   @override
-  String get empty_private_moments_short => '朋友圈還靜悄悄的 ✨';
+  String get empty_private_moments_short => '朋友圈還靜悄悄的';
 
   @override
   String get my_created_characters => '我創建的角色';
@@ -18604,10 +18620,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get daily_gift_success => '成功領取每日贈禮！🌸';
+  String get daily_gift_success => '成功領取每日贈禮！';
 
   @override
-  String get check_in_fail_network => '簽到失敗，請檢查網路連線 🍃';
+  String get check_in_fail_network => '簽到失敗，請檢查網路連線';
 
   @override
   String task_completed(String taskName) {
@@ -18655,7 +18671,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get btn_incomplete => '未完成';
 
   @override
-  String get network_unstable_retry => '網路連線不穩，請稍後再試🍃';
+  String get network_unstable_retry => '網路連線不穩，請稍後再試';
 
   @override
   String get title_time_travel => '時光旅行';
@@ -18718,7 +18734,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get search_name_placeholder => '輸入他的名字...';
 
   @override
-  String get search_no_match_hint => '找不到角色，試試其他名字？ ✨';
+  String get search_no_match_hint => '找不到角色，試試其他名字？';
 
   @override
   String character_info_full(String age, String occupation) {
@@ -18877,7 +18893,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get shop_tab_history => '收支明細';
 
   @override
-  String get shop_empty_history => '目前還沒有花花紀錄喔！🌸';
+  String get shop_empty_history => '目前還沒有花花紀錄喔！';
 
   @override
   String get shop_unknown_item => '未知項目';
@@ -18918,7 +18934,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get reset_bg_content => '確定要取消專屬照片，恢復成預設的主題背景嗎？';
 
   @override
-  String get reset_bg_success => '已恢復為預設背景 ✨';
+  String get reset_bg_success => '已恢復為預設背景';
 
   @override
   String get confirm_reset => '確定恢復';
@@ -18940,7 +18956,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get downloadToUnlock => '下載《戀戀拾光》，解鎖專屬浪漫';
 
   @override
-  String get exclusiveMomentsGenerated => '專屬拾光已生成 ✨';
+  String get exclusiveMomentsGenerated => '專屬拾光已生成';
 
   @override
   String get selectAgain => '再選一次';
@@ -18954,11 +18970,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get shop_log_monthly_card => '啟動：星光契約 (月卡立即贈點) 🌙';
+  String get shop_log_monthly_card => '啟動：星光契約 (月卡立即贈點)';
 
   @override
   String shop_log_top_up_double(int points) {
-    return '儲值：$points 點 (含首購雙倍 🎁)';
+    return '儲值：$points 點 (含首購雙倍 )';
   }
 
   @override
@@ -18975,7 +18991,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get shop_purchase_success_double_bonus => '✨ 恭喜觸發首購雙倍獎勵！';
+  String get shop_purchase_success_double_bonus => '恭喜觸發首購雙倍獎勵！';
 
   @override
   String get shop_purchase_awesome => '太棒了';
@@ -19006,7 +19022,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get shop_monthly_card_promo_desc => '立即得 250 花花，每日領 10 花花';
 
   @override
-  String get task_monthly_title => '星之契約．每日特權 🌙';
+  String get task_monthly_title => '星之契約．每日特權';
 
   @override
   String get task_monthly_locked => '未解鎖';
@@ -19027,20 +19043,20 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get profile_copy_id => '點擊複製 ID';
 
   @override
-  String get referral_log_newbie_reward => '星之邀約：新手報到獎勵 ✨';
+  String get referral_log_newbie_reward => '星之邀約：新手報到獎勵';
 
   @override
-  String get referral_log_inviter_reward => '星之邀約：好友達標回饋 🎁';
+  String get referral_log_inviter_reward => '星之邀約：好友達標回饋';
 
   @override
   String get referral_success_title => '星之邀約解鎖！';
 
   @override
   String get referral_success_content =>
-      '恭喜您已成功與角色深度交流滿 15 句！\n\n「新手報到獎勵 50 點」已送達您的賬戶，您的好友也同步獲得了 50 點回饋！🎁';
+      '恭喜您已成功與角色深度交流滿 15 句！\n\n「新手報到獎勵 50 點」已送達您的賬戶，您的好友也同步獲得了 50 點回饋！';
 
   @override
-  String get profile_referral_title => '星之邀約 🌟';
+  String get profile_referral_title => '星之邀約';
 
   @override
   String get profile_referral_hint => '輸入好友邀請碼';
@@ -19070,11 +19086,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String profile_share_message(String character, String code) {
-    return '✨ 我在《戀戀拾光》與$character展開了心動旅程！快下載 App 並在個人主頁填寫我的星之邀約碼：【$code】，我們雙方都能免費獲得 50 點花花喔！🎁\n\n 下載連結：\nhttps://lianlianshiguang.web.app/download/';
+    return '我在《戀戀拾光》與$character展開了心動旅程！快下載 App 並在個人主頁填寫我的星之邀約碼：【$code】，我們雙方都能免費獲得 50 點花花喔！\n\n下載連結：\nhttps://lianlianshiguang.web.app/download/';
   }
 
   @override
-  String get chat_levelup_share_btn => '向好友炫耀這份心動 ✨';
+  String get chat_levelup_share_btn => '向好友炫耀這份心動';
 
   @override
   String profile_my_invite_code_with_char(String character) {
@@ -19088,18 +19104,18 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get profile_fallback_character => '心動角色';
 
   @override
-  String get profile_copy_success => '✅ 邀請碼已複製到剪貼簿！';
+  String get profile_copy_success => '邀請碼已複製到剪貼簿！';
 
   @override
   String get profile_referral_rule_title => '星之契約規則';
 
   @override
   String get profile_referral_rule_receiver =>
-      '✨ 締結契約後，只要與任意心動角色聊天滿 15 句，你與邀請人就能同時獲得 50 朵花花獎勵喔！\n\n⚠️ 注意：請在註冊帳號後的 3 天內輸入邀請碼才有效。';
+      '締結契約後，只要與任意心動角色聊天滿 15 句，你與邀請人就能同時獲得 50 朵花花獎勵喔！\n\n注意：請在註冊帳號後的 3 天內輸入邀請碼才有效。';
 
   @override
   String get profile_referral_rule_inviter =>
-      '✨ 邀請新朋友下載並輸入你的邀約碼，當對方在註冊 3 天內完成綁定，並與任意角色聊天滿 15 句，你們雙方就能同時獲得 50 點花花獎勵喔！🎁';
+      '邀請新朋友下載並輸入你的邀約碼，當對方在註冊 3 天內完成綁定，並與任意角色聊天滿 15 句，你們雙方就能同時獲得 50 點花花獎勵喔！';
 
   @override
   String get error_user_not_found => '找不到使用者，請重新登入';
@@ -19111,13 +19127,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get error_id_taken_short => '此 ID 已被使用！';
 
   @override
-  String get shop_restocking => '商店正在補貨... 📦';
+  String get shop_restocking => '商店正在補貨...';
 
   @override
-  String get shop_preview_mode => '⚠️ 目前為商店預覽模式';
+  String get shop_preview_mode => '目前為商店預覽模式';
 
   @override
-  String get friendlyReminderTitle => '☁️ 溫馨提示';
+  String get friendlyReminderTitle => '溫馨提示';
 
   @override
   String get editProfileHint => '好的！如果要編輯身分，請點擊左下角雲朵裡面的「拾光檔案」做填寫喔！';
@@ -19146,7 +19162,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String continueChatCostWarning(int cost) {
-    return '讓他說下去，將會消耗 $cost 朵花花 🌸\n確定要繼續嗎？';
+    return '讓他說下去，將會消耗 $cost 朵花花\n確定要繼續嗎？';
   }
 
   @override
@@ -19178,7 +19194,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get continueButton => '繼續';
 
   @override
-  String get creatorExclusive => '🔒 創作者專屬';
+  String get creatorExclusive => '創作者專屬';
 
   @override
   String ageAndOccupation(String age, String occupation) {
@@ -19186,10 +19202,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get likesLabel => '💖 喜歡';
+  String get likesLabel => '喜歡';
 
   @override
-  String get dislikesLabel => '👎 不喜歡';
+  String get dislikesLabel => '不喜歡';
 
   @override
   String birthdayLabel(String birthday) {
@@ -19216,14 +19232,14 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get passGuideTitle => '戀戀月卡專屬指南';
 
   @override
-  String get passGuideRegenerateTitle => '🔄 為什麼需要「重新生成」？';
+  String get passGuideRegenerateTitle => '為什麼需要「重新生成」？';
 
   @override
   String get passGuideRegenerateContent =>
       'AI 有時候會像個笨蛋木頭，不解風情。遇到不滿意的回覆時，只要按下重新生成，就像時光倒流！妳可以讓他重新思考，直到他說出讓妳心跳加速的那句完美台詞。';
 
   @override
-  String get passGuideAffectionTitle => '💖 好感度加速有什麼用？';
+  String get passGuideAffectionTitle => '好感度加速有什麼用？';
 
   @override
   String get passGuideAffectionContent =>
@@ -19236,10 +19252,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get pleaseWait => '請稍候';
 
   @override
-  String get createNewProfileTitle => '📜 建立新拾光檔案';
+  String get createNewProfileTitle => '建立新拾光檔案';
 
   @override
-  String get editProfileTitle => '✏️ 編輯拾光檔案';
+  String get editProfileTitle => '編輯拾光檔案';
 
   @override
   String get profileEditDescription => '建立不同的人設，在平行的時空裡讓他認識不一樣的妳！';
@@ -19295,7 +19311,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get fillLaterButton => '稍後填寫';
 
   @override
-  String get exclusiveProfileTitle => '📜 專屬拾光檔案';
+  String get exclusiveProfileTitle => '專屬拾光檔案';
 
   @override
   String get profileSelectionDescription => '選擇你想用來和他互動的身分 (同角色共用清單，最多 10 個)';
@@ -19459,11 +19475,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get nav_moments => '瞬間';
 
   @override
-  String get birthday_dialog_title => '🎂 生日驚喜';
+  String get birthday_dialog_title => '生日驚喜';
 
   @override
-  String get birthday_dialog_content =>
-      '今天是您的專屬紀念日！\n\n這份禮物請收下：\n今天聊天全。部。免。費！✨';
+  String get birthday_dialog_content => '今天是您的專屬紀念日！\n\n這份禮物請收下：\n今天聊天全。部。免。費！';
 
   @override
   String get birthday_dialog_button => '開啟浪漫的一天';
@@ -19496,7 +19511,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get go_to_login => '前往登入';
 
   @override
-  String get easter_egg_title => '發現隱藏彩蛋 ✨';
+  String get easter_egg_title => '發現隱藏彩蛋';
 
   @override
   String easter_egg_content(String title) {
@@ -19534,7 +19549,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get status_published => '已發布';
 
   @override
-  String get monthly_card_success_title => '✨ 尊榮月卡解鎖成功！';
+  String get monthly_card_success_title => '尊榮月卡解鎖成功！';
 
   @override
   String get monthly_card_success_subtitle => '感謝您的訂閱！專屬特權已生效：';
@@ -19867,7 +19882,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get message_preview_voice => '[語音訊息]';
 
   @override
-  String get send_failed_retry => '送出失敗，請稍後再試 😢';
+  String get send_failed_retry => '送出失敗，請稍後再試';
 
   @override
   String get media_upload_failed_retry => '媒體上傳失敗，請再試一次';
@@ -19900,7 +19915,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get chat_input_hint => '請輸入...';
 
   @override
-  String get regenerate_sync_failed => '重新生成次數同步失敗，請再試一次 😢';
+  String get regenerate_sync_failed => '重新生成次數同步失敗，請再試一次';
 
   @override
   String get creator_public_works => '公開作品';
@@ -20350,7 +20365,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get mailCaseNumberCopied => '已複製案件編號';
 
   @override
-  String get profilePageAboutMe => '📝 關於我';
+  String get profilePageAboutMe => '關於我';
 
   @override
   String get profilePageTabBio => '自我介紹';
@@ -20595,7 +20610,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get periodPredictionDisclaimer => '依現有紀錄推估，日期僅供生活紀錄參考。';
 
   @override
-  String get periodStartedToday => '🩸 今天來了';
+  String get periodStartedToday => '今天來了';
 
   @override
   String get periodStillOngoing => '仍在生理期';
@@ -20815,7 +20830,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get privateProfileSave => '儲存';
 
   @override
-  String get editProfileBirthdayReminderTitle => '🎂 小提醒';
+  String get editProfileBirthdayReminderTitle => '小提醒';
 
   @override
   String get editProfileBirthdayReminderContent =>
@@ -20825,7 +20840,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get editProfileGotIt => '知道了';
 
   @override
-  String get editProfileBirthdayConfirmTitle => '🎂 確認生日';
+  String get editProfileBirthdayConfirmTitle => '確認生日';
 
   @override
   String get editProfileBirthdayConfirmContent =>
@@ -20902,13 +20917,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get editProfileAvatarEmpty => '頭像圖片資料是空的';
 
   @override
-  String get chatPageSendFailed => '送出失敗，請稍後再試 😢';
+  String get chatPageSendFailed => '送出失敗，請稍後再試';
 
   @override
   String get chatPageRegenerateFailed => '重新生成失敗，原本的訊息已保留，請再試一次。';
 
   @override
-  String get chatPageRegenerating => '💭 正在重新思考...';
+  String get chatPageRegenerating => '正在重新思考...';
 
   @override
   String get chatPageThinkingTooLong => '他似乎在沉思，請稍後再試……';
@@ -20924,7 +20939,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String chatPageMessagesDeleted(int count) {
-    return '✅ 已成功刪除 $count 則訊息';
+    return '已成功刪除 $count 則訊息';
   }
 
   @override
@@ -21143,11 +21158,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get characterProfileShareInvitation => '🦋 一封來自《戀戀拾光》的相遇邀請';
+  String get characterProfileShareInvitation => '一封來自《戀戀拾光》的相遇邀請';
 
   @override
   String characterProfileShareCreator(String creatorName) {
-    return '✦ 創作者：$creatorName';
+    return '創作者：$creatorName';
   }
 
   @override
@@ -21164,7 +21179,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get characterProfileCardSearchHint => '搜尋角色，開始相遇  🦋';
+  String get characterProfileCardSearchHint => '搜尋角色，開始相遇';
 
   @override
   String get characterProfileScanToDownload => '掃描下載';
@@ -21321,17 +21336,17 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String mailShareQixiMessage(String characterName) {
-    return '我收到了 $characterName 寫來的七夕限定信 💌';
+    return '我收到了 $characterName 寫來的七夕限定信';
   }
 
   @override
-  String get mailShareDefaultMessage => '來自《戀戀拾光》的信件 💌';
+  String get mailShareDefaultMessage => '來自《戀戀拾光》的信件';
 
   @override
   String get mailShareImageFailed => '分享圖片產生失敗，請稍後再試';
 
   @override
-  String get mailCollectedSuccess => '已收藏這封信 💌';
+  String get mailCollectedSuccess => '已收藏這封信';
 
   @override
   String get mailCollectedCancelled => '已取消收藏';
@@ -21386,11 +21401,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get qixiCompanionSlotsFull => '七夕同行名額已經選滿了';
 
   @override
-  String get qixiSingleRoomOpened => '七夕專屬聊天室已開啟 💕';
+  String get qixiSingleRoomOpened => '七夕專屬聊天室已開啟';
 
   @override
   String qixiMultipleRoomsOpened(int count) {
-    return '$count 間七夕專屬聊天室已開啟 💕';
+    return '$count 間七夕專屬聊天室已開啟';
   }
 
   @override
@@ -21478,10 +21493,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get encounterDailyQuote12 => '今天，別錯過悄悄靠近的緣分。';
 
   @override
-  String get encounterJoinedToday => '✨ 今天加入戀戀拾光';
+  String get encounterJoinedToday => '今天加入戀戀拾光';
 
   @override
-  String get encounterPopularChats => '❤️ 最近很多人在聊天';
+  String get encounterPopularChats => '最近很多人在聊天';
 
   @override
   String get qixiBannerActiveUntil => '限時開啟・8/26 23:59 截止';
@@ -21490,7 +21505,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get qixiBannerStartsAt => '8/19 限定開啟';
 
   @override
-  String get encounterRecentlyArrived => '✨ 最近來到戀戀拾光';
+  String get encounterRecentlyArrived => '最近來到戀戀拾光';
 
   @override
   String get encounterRecentlyArrivedPlain => '最近來到戀戀拾光';
@@ -21499,7 +21514,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get encounterViewMore => '查看更多';
 
   @override
-  String get encounterLovePrompt => '💕 今天想談什麼戀愛？';
+  String get encounterLovePrompt => '今天想談什麼戀愛？';
 
   @override
   String get encounterNoCharacters => '目前還沒有角色';
@@ -21508,7 +21523,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get encounterAllLoveTags => '全部戀愛標籤';
 
   @override
-  String get chatQixiLetterSent => '限定信件已寄出 💌';
+  String get chatQixiLetterSent => '限定信件已寄出';
 
   @override
   String get chatQixiLetterPendingTonight => '三日星光已點亮・今夜過後寄出信件';
@@ -22549,7 +22564,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String character_edit_over_limit_warning(String label, String count) {
-    return '⚠ $label 已超出 $count 字，請修正後再發布。';
+    return '$label 已超出 $count 字，請修正後再發布。';
   }
 
   @override
@@ -23124,7 +23139,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String shop_joined_days(int days) {
-    return '✦ 已來到戀戀拾光 $days 天 ✦';
+    return '已來到戀戀拾光 $days 天';
   }
 
   @override
@@ -23407,4 +23422,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get creator_social_links_open_failed => '無法開啟此連結';
+
+  @override
+  String get chat_regenerate_bottom_tip => '「重新生成」搬到這裡囉！想換一個回覆時，可以從這裡重新生成。';
+
+  @override
+  String get chat_continue_bottom_tip => '「繼續」搬到這裡囉！想讓角色接著說時，可以從這裡繼續。';
+
+  @override
+  String get languageSelectionSubtitle => '選擇你習慣的語言';
 }

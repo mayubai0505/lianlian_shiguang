@@ -31,12 +31,29 @@ class _InteractionHistoryPageState extends State<InteractionHistoryPage> {
       initialIndex: widget.initialIndex, // 🌟 接收總裁的指令，決定起始分頁
       child: Scaffold(
         appBar: AppBar(
-          title:Text(l10n.interaction_records, style: TextStyle(fontWeight: FontWeight.bold)),
+          title: Text(
+            l10n.interaction_records,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           centerTitle: true,
-          bottom:TabBar(
+          bottom: TabBar(
             tabs: [
-              Tab(icon: Icon(Icons.favorite, color: Colors.redAccent), text: l10n.liked_content),
-              Tab(icon: Icon(Icons.bookmark, color: Colors.orangeAccent), text: l10n.my_favorites),
+              Tab(
+                icon: Icon(
+                  Icons.eco_rounded,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                text: l10n.liked_content,
+              ),
+              Tab(
+                icon: Icon(
+                  Icons.park_rounded,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                text: l10n.my_favorites,
+              ),
             ],
           ),
         ),
@@ -84,12 +101,20 @@ class _InteractionHistoryPageState extends State<InteractionHistoryPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                    filterField == 'likedBy' ? Icons.favorite_border : Icons.bookmark_border,
-                    size: 64, color: Colors.grey[400]
-                ), SizedBox(height: 16),
+                  filterField == 'likedBy'
+                      ? Icons.eco_outlined
+                      : Icons.park_outlined,
+                  size: 64,
+                  color: Colors.grey[400],
+                ),
+                const SizedBox(height: 16),
                 Text(
-                  filterField == 'likedBy' ? l10n.no_likes_yet: l10n.empty_favorites,
-                  style: TextStyle(color: Colors.grey[600]),
+                  filterField == 'likedBy'
+                      ? l10n.no_likes_yet
+                      : l10n.empty_favorites,
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                  ),
                 ),
               ],
             ),

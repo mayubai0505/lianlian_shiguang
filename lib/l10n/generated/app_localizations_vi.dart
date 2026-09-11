@@ -314,8 +314,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get logoutDialogActionConfirm => 'Xác nhận';
 
   @override
-  String get logoutSuccessSnackbar =>
-      'Được rồi! Tôi sẽ đợi bạn quay lại♥(´∀` )';
+  String get logoutSuccessSnackbar => 'Được rồi! Tôi sẽ đợi bạn quay lại(´∀` )';
 
   @override
   String get deleteAccountButton => 'Xóa tài khoản';
@@ -1657,7 +1656,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String gallery_current_affection(String value) {
-    return 'Mức độ thân thiết hiện tại: $value 💕';
+    return 'Mức độ thân thiết hiện tại: $value';
   }
 
   @override
@@ -1670,7 +1669,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String gallery_lock_msg(String value) {
-    return 'Đạt mức độ thân thiết $value để mở khóa nhé! 🍃';
+    return 'Đạt mức độ thân thiết $value để mở khóa nhé!';
   }
 
   @override
@@ -1685,11 +1684,11 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String followed_creator_msg(String creatorName) {
-    return 'Đã theo dõi $creatorName 🦋';
+    return 'Đã theo dõi $creatorName';
   }
 
   @override
-  String get mailbox_title => 'Hộp thư độc quyền 💌';
+  String get mailbox_title => 'Hộp thư độc quyền';
 
   @override
   String get mailbox_empty =>
@@ -1703,11 +1702,11 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String affection_upgrade_title(String charName) {
-    return 'Độ thân thiết của $charName dành cho bạn đã tăng lên! 💖';
+    return 'Độ thân thiết của $charName dành cho bạn đã tăng lên!';
   }
 
   @override
-  String get flower_reward => '🌸 Nhận được 5 điểm hoa';
+  String get flower_reward => 'Nhận được 5 điểm hoa';
 
   @override
   String get affection_quote_lv5 =>
@@ -1734,7 +1733,7 @@ class AppLocalizationsVi extends AppLocalizations {
       '「Hóa ra em cũng ở đây, đây có tính là một loại duyên phận kỳ diệu không nhỉ?」';
 
   @override
-  String get lore_edit_success => '✨ Mảnh ký ức đã được cập nhật thành công!';
+  String get lore_edit_success => 'Mảnh ký ức đã được cập nhật thành công!';
 
   @override
   String get delete_failed_network =>
@@ -1836,14 +1835,14 @@ class AppLocalizationsVi extends AppLocalizations {
       'Không tìm thấy dữ liệu nhân vật, vui lòng quay lại thử lại hoặc kiểm tra mạng.';
 
   @override
-  String get chat_jump_success => 'Đã chuyển đến phân đoạn ký ức này 🍃';
+  String get chat_jump_success => 'Đã chuyển đến phân đoạn ký ức này';
 
   @override
   String get chat_create_room_failed =>
       'Kết nối không ổn định, tạo phòng trò chuyện thất bại, vui lòng thử lại.';
 
   @override
-  String get chat_secret_file_title => '🔒 Hồ sơ tuyệt mật';
+  String get chat_secret_file_title => 'Hồ sơ tuyệt mật';
 
   @override
   String get chat_secret_file_desc =>
@@ -1854,7 +1853,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String chat_egg_unlocked(String title) {
-    return '✨ Nhận được ký ức mới: $title';
+    return 'Nhận được ký ức mới: $title';
   }
 
   @override
@@ -1881,7 +1880,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get chat_call_rule_3 =>
-      'Nên đeo tai nghe để nghe rõ giọng nói của anh ấy hơn ✨';
+      'Nên đeo tai nghe để nghe rõ giọng nói của anh ấy hơn';
 
   @override
   String get chat_call_btn_cancel => 'Để sau đi';
@@ -1913,7 +1912,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get chat_stop_generating_msg =>
-      'Đã dừng phản hồi, điểm hoa không bị trừ 🍃';
+      'Đã dừng phản hồi, điểm hoa không bị trừ';
 
   @override
   String get chat_heartbeat_up => 'Tim anh ấy đập nhanh hơn rồi...';
@@ -2008,18 +2007,18 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get chat_poke_success =>
-      '✨ Đã giúp em chọc nhà sáng tạo rồi nhé! Hãy chờ đợi giọng nói của anh ấy sớm ra mắt nha~';
+      'Đã giúp em chọc nhà sáng tạo rồi nhé! Hãy chờ đợi giọng nói của anh ấy sớm ra mắt nha~';
 
   @override
   String chat_gift_points_needed(String cost) {
-    return 'Điểm hoa không đủ! Cần $cost điểm 🌸';
+    return 'Điểm hoa không đủ! Cần $cost điểm';
   }
 
   @override
-  String get chat_levelup_soulmate => '✨ Người tình định mệnh ✨';
+  String get chat_levelup_soulmate => 'Người tình định mệnh';
 
   @override
-  String get chat_levelup_normal => 'Mối quan hệ thăng cấp! 💖';
+  String get chat_levelup_normal => 'Mối quan hệ thăng cấp!';
 
   @override
   String get chat_levelup_btn_soulmate => 'Khắc sâu vào linh hồn';
@@ -2028,7 +2027,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get chat_levelup_btn_normal => 'Rung động đón nhận';
 
   @override
-  String get chat_loc_title => '📍 Gửi định vị ảo';
+  String get chat_loc_title => 'Gửi định vị ảo';
 
   @override
   String get chat_loc_custom_btn => 'Gửi định vị tùy chỉnh';
@@ -2049,13 +2048,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get chat_loc_4 => 'Ở cửa hàng tiện lợi';
 
   @override
-  String get chat_interact_title => '✨ Bạn muốn làm gì với anh ấy?';
+  String get chat_interact_title => 'Bạn muốn làm gì với anh ấy?';
 
   @override
   String get chat_interact_action => 'Chọc ghẹo và hành động nhỏ';
 
   @override
-  String get chat_interact_gift => 'Tặng quà nhỏ cho anh ấy (tiêu tốn hoa 🌸)';
+  String get chat_interact_gift => 'Tặng quà nhỏ cho anh ấy (tiêu tốn hoa )';
 
   @override
   String get chat_action_poke => 'Chọc má';
@@ -2113,7 +2112,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Bạn muốn hồi tưởng đoạn hội thoại ngọt ngào nào?';
 
   @override
-  String get chat_search_empty => 'Không tìm thấy đoạn ký ức này 🥺';
+  String get chat_search_empty => 'Không tìm thấy đoạn ký ức này';
 
   @override
   String get chat_search_you => 'Bạn nói';
@@ -2294,7 +2293,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String chat_egg_unlocked_dynamic(String memoryName) {
-    return '✨ Nhận được ký ức mới: $memoryName';
+    return 'Nhận được ký ức mới: $memoryName';
   }
 
   @override
@@ -2303,7 +2302,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get chat_profile_updated_msg =>
-      'Hồ sơ Thập Quang đã cập nhật! Anh ấy sẽ nhớ những thiết lập mới nhất của bạn đó 🍃';
+      'Hồ sơ Thập Quang đã cập nhật! Anh ấy sẽ nhớ những thiết lập mới nhất của bạn đó';
 
   @override
   String get comment_loading_author => 'Đang tải...';
@@ -2335,7 +2334,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get comment_report_rules_desc =>
-      'Vi phạm lần đầu: Hệ thống cảnh cáo và ghi lại một lần vi phạm.\n2️⃣ Vi phạm lần hai: Cấm bình luận trong 1 ngày.\n3️⃣ Tái phạm: Vô hiệu hóa tính năng báo cáo trong 14 ngày và giảm khả năng hiển thị bình luận.\n\n🚨 Đối với hành vi ác ý nghiêm trọng:\nCấm tương tác với nhân vật trong 1 ngày, ID sẽ được thông báo trên bảng tin trong 3 ngày (trong thời gian này không được đổi ID).\n\n💡 Sau khi gửi báo cáo, kết quả xét duyệt cuối cùng sẽ được gửi cho bạn qua [Thư trong trò chơi].\nVui lòng tôn trọng lẫn nhau và báo cáo một cách lý trí.';
+      'Vi phạm lần đầu: Hệ thống cảnh cáo và ghi lại một lần vi phạm.\n2⃣ Vi phạm lần hai: Cấm bình luận trong 1 ngày.\n3⃣ Tái phạm: Vô hiệu hóa tính năng báo cáo trong 14 ngày và giảm khả năng hiển thị bình luận.\n\nĐối với hành vi ác ý nghiêm trọng:\nCấm tương tác với nhân vật trong 1 ngày, ID sẽ được thông báo trên bảng tin trong 3 ngày (trong thời gian này không được đổi ID).\n\nSau khi gửi báo cáo, kết quả xét duyệt cuối cùng sẽ được gửi cho bạn qua [Thư trong trò chơi].\nVui lòng tôn trọng lẫn nhau và báo cáo một cách lý trí.';
 
   @override
   String get comment_report_understood => 'Tôi đã hiểu';
@@ -2413,12 +2412,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String char_dislikes(String dislikes) {
-    return '🖤 Ghét: $dislikes';
+    return 'Ghét: $dislikes';
   }
 
   @override
   String char_likes(String likes) {
-    return '🤍 Thích: $likes';
+    return 'Thích: $likes';
   }
 
   @override
@@ -2438,7 +2437,7 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get char_exclusive_guardian => 'Người bảo vệ độc quyền 💖';
+  String get char_exclusive_guardian => 'Người bảo vệ độc quyền';
 
   @override
   String mailbox_like_body(String playerName, String charName) {
@@ -2480,7 +2479,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String chat_player_sent_location(String location) {
-    return '📍 (Người chơi đã gửi vị trí: $location)';
+    return '(Người chơi đã gửi vị trí: $location)';
   }
 
   @override
@@ -2532,12 +2531,12 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String chat_profile_full(String name, String identity, String birthday,
       String height, String appearance, String job, String intro) {
-    return '📜 【 Hồ sơ Thập Quang độc quyền - $name 】\n━━━━━━━━━━━━━━━━━━\n🔹 Tên: $identity\n🔹 Sinh nhật: $birthday\n🔹 Chiều cao: $height\n🔹 Ngoại hình: $appearance\n🔹 Nghề nghiệp: $job\n\n📖 【 Về mảnh ghép linh hồn của cô ấy 】\n$intro\n━━━━━━━━━━━━━━━━━━';
+    return '【 Hồ sơ Thập Quang độc quyền - $name 】\n━━━━━━━━━━━━━━━━━━\nTên: $identity\nSinh nhật: $birthday\nChiều cao: $height\nNgoại hình: $appearance\nNghề nghiệp: $job\n\n【 Về mảnh ghép linh hồn của cô ấy 】\n$intro\n━━━━━━━━━━━━━━━━━━';
   }
 
   @override
   String chat_profile_locked(String nickname, String birthday) {
-    return '📜 【 Hồ sơ Thập Quang độc quyền 】\n━━━━━━━━━━━━━━━━━━\n🔹 Biệt danh: $nickname\n🔹 Sinh nhật: $birthday\n\n🔒 Các dữ liệu nhân vật khác chưa được mở khóa...\n(Hãy điền đầy đủ hồ sơ để anh ấy hiểu bạn hơn trong vũ trụ song song nhé! ✨)\n━━━━━━━━━━━━━━━━━━';
+    return '【 Hồ sơ Thập Quang độc quyền 】\n━━━━━━━━━━━━━━━━━━\nBiệt danh: $nickname\nSinh nhật: $birthday\n\nCác dữ liệu nhân vật khác chưa được mở khóa...\n(Hãy điền đầy đủ hồ sơ để anh ấy hiểu bạn hơn trong vũ trụ song song nhé! )\n━━━━━━━━━━━━━━━━━━';
   }
 
   @override
@@ -2563,7 +2562,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String chat_call_ended(String name, String time) {
-    return '📞 Cuộc gọi kết thúc, đã trò chuyện với $name trong $time';
+    return 'Cuộc gọi kết thúc, đã trò chuyện với $name trong $time';
   }
 
   @override
@@ -2603,7 +2602,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get no_public_character_mine =>
-      'Bạn chưa phát hành bất kỳ nhân vật công khai nào!\nHãy đến phòng làm việc để sáng tạo nhé✨';
+      'Bạn chưa phát hành bất kỳ nhân vật công khai nào!\nHãy đến phòng làm việc để sáng tạo nhé';
 
   @override
   String get no_public_character_other =>
@@ -2617,14 +2616,14 @@ class AppLocalizationsVi extends AppLocalizations {
       'Bạn có chắc chắn muốn xóa nhân vật chưa hoàn thành này không?\n(Không thể khôi phục sau khi xóa)';
 
   @override
-  String get draft_cleared_success => 'Đã dọn sạch bản nháp 🧹';
+  String get draft_cleared_success => 'Đã dọn sạch bản nháp';
 
   @override
   String get login_required_for_studio =>
       'Vui lòng đăng nhập trước để vào phòng làm việc!';
 
   @override
-  String get my_secret_studio_title => 'Phòng làm việc bí mật của tôi 🛠️';
+  String get my_secret_studio_title => 'Phòng làm việc bí mật của tôi';
 
   @override
   String get create_new_character_btn => 'Tạo nhân vật mới';
@@ -2682,37 +2681,37 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String moment_like_yours(String nickname) {
-    return '$nickname cảm thấy bài viết của bạn rất tuyệt! 💖';
+    return '$nickname cảm thấy bài viết của bạn rất tuyệt!';
   }
 
   @override
   String moment_like_others(String nickname, String authorName) {
-    return '$nickname thấy $authorName rất quyến rũ nên đã nhấn thích! ✨';
+    return '$nickname thấy $authorName rất quyến rũ nên đã nhấn thích!';
   }
 
   @override
-  String get moment_like_success => 'Đã gửi đi sự rung động của bạn! ✨';
+  String get moment_like_success => 'Đã gửi đi sự rung động của bạn!';
 
   @override
-  String get moment_notification_new_like => 'Lượt thích mới! 💖';
+  String get moment_notification_new_like => 'Lượt thích mới!';
 
   @override
   String moment_mention_mail_body(String nickname, String name) {
-    return '$nickname đã nhắc đến @$name trong bài viết nhé! ✨';
+    return '$nickname đã nhắc đến @$name trong bài viết nhé!';
   }
 
   @override
   String get moment_detail_title => 'Chi tiết bài viết';
 
   @override
-  String get moment_not_found => 'Bài viết này hình như đã biến mất rồi... 😢';
+  String get moment_not_found => 'Bài viết này hình như đã biến mất rồi...';
 
   @override
   String get moment_comment_title => 'Bình luận khoảnh khắc';
 
   @override
   String get moment_comment_empty =>
-      'Chưa có ai bình luận, hãy là người đầu tiên nhé! 🛋';
+      'Chưa có ai bình luận, hãy là người đầu tiên nhé!';
 
   @override
   String moment_replying_to(String name) {
@@ -2750,7 +2749,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String moment_go_to_chat_msg(String name) {
-    return 'Hãy cùng trò chuyện với $name về bài viết này nào! 💬';
+    return 'Hãy cùng trò chuyện với $name về bài viết này nào!';
   }
 
   @override
@@ -2768,12 +2767,11 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get moment_forward_title =>
-      'Chuyển tiếp cho nhân vật đang trò chuyện 💌';
+  String get moment_forward_title => 'Chuyển tiếp cho nhân vật đang trò chuyện';
 
   @override
   String get moment_forward_empty_state =>
-      'Bạn hiện chưa có cuộc trò chuyện nào!\nHãy đến Sảnh để tìm người tâm đầu ý hợp nhé 🌿';
+      'Bạn hiện chưa có cuộc trò chuyện nào!\nHãy đến Sảnh để tìm người tâm đầu ý hợp nhé';
 
   @override
   String moment_forward_template(String author, String content) {
@@ -2782,7 +2780,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String moment_forward_success(String name) {
-    return '✅ Đã âm thầm chia sẻ với $name rồi nhé!';
+    return 'Đã âm thầm chia sẻ với $name rồi nhé!';
   }
 
   @override
@@ -2831,7 +2829,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String daily_login_welcome(String appName, String amount) {
-    return 'Chào mừng bạn quay lại với $appName!\nĐiểm danh hôm nay để nhận $amount điểm Ngôn ngữ hoa. 🌸';
+    return 'Chào mừng bạn quay lại với $appName!\nĐiểm danh hôm nay để nhận $amount điểm Ngôn ngữ hoa.';
   }
 
   @override
@@ -2839,7 +2837,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String success_claim_reward(String amount) {
-    return 'Nhận thành công $amount điểm Ngôn ngữ hoa! 🌸';
+    return 'Nhận thành công $amount điểm Ngôn ngữ hoa!';
   }
 
   @override
@@ -2977,7 +2975,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get draft_saved_success_msg =>
-      'Đã rõ! Đã lưu vào bản nháp cho bạn, bạn có thể quay lại chỉnh sửa bất cứ lúc nào! ✨';
+      'Đã rõ! Đã lưu vào bản nháp cho bạn, bạn có thể quay lại chỉnh sửa bất cứ lúc nào!';
 
   @override
   String get dialog_reminder_title => 'Nhắc nhở';
@@ -3012,7 +3010,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get title_adjust_avatar => 'Điều chỉnh ảnh đại diện của bạn';
 
   @override
-  String get avatar_updated_success => 'Đã đổi ảnh đại diện cho bạn 🍃';
+  String get avatar_updated_success => 'Đã đổi ảnh đại diện cho bạn';
 
   @override
   String get title_create_profile => 'Tạo hồ sơ của bạn';
@@ -3042,7 +3040,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get msg_birthdate_immutable =>
-      'Sinh nhật sau khi thiết lập sẽ không thể thay đổi ✨';
+      'Sinh nhật sau khi thiết lập sẽ không thể thay đổi';
 
   @override
   String get action_start_journey => 'Bắt đầu hành trình';
@@ -3052,26 +3050,26 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String moment_like_self(String nickname) {
-    return '$nickname cảm thấy bài viết của bạn rất tuyệt! 💖';
+    return '$nickname cảm thấy bài viết của bạn rất tuyệt!';
   }
 
   @override
   String moment_like_other(String nickname, String authorName) {
-    return '$nickname thấy $authorName rất quyến rũ nên đã nhấn thích! ✨';
+    return '$nickname thấy $authorName rất quyến rũ nên đã nhấn thích!';
   }
 
   @override
   String get task_social_tour_complete =>
-      '✨ Hoàn thành nhiệm vụ dạo quanh mạng xã hội! Đừng quên nhận hoa nhé! 🌸';
+      'Hoàn thành nhiệm vụ dạo quanh mạng xã hội! Đừng quên nhận hoa nhé!';
 
   @override
   String get wall_title_shiguang => 'Tường Thập Quang';
 
   @override
-  String get wall_tab_explore => '🌍 Khám phá';
+  String get wall_tab_explore => 'Khám phá';
 
   @override
-  String get wall_tab_exclusive => '🔒 Độc quyền';
+  String get wall_tab_exclusive => 'Độc quyền';
 
   @override
   String get more_options => 'Tùy chọn khác';
@@ -3084,7 +3082,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get delete_success => 'Xóa thành công';
 
   @override
-  String get notification_new_comment => 'Bình luận mới! 💬';
+  String get notification_new_comment => 'Bình luận mới!';
 
   @override
   String notification_like_from_sender(String senderName) {
@@ -3093,15 +3091,15 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get empty_public_moments_prompt =>
-      'Hiện tại đang trống rỗng,\nhãy đi đăng bài viết công khai đầu tiên nhé! 🌍';
+      'Hiện tại đang trống rỗng,\nhãy đi đăng bài viết công khai đầu tiên nhé!';
 
   @override
   String get empty_private_moments_prompt =>
-      'Vòng bạn bè vẫn chưa có khoảnh khắc nào,\nhãy đi tạo kỷ niệm cùng anh ấy nhé! ✨';
+      'Vòng bạn bè vẫn chưa có khoảnh khắc nào,\nhãy đi tạo kỷ niệm cùng anh ấy nhé!';
 
   @override
   String get profile_archived_or_deleted_message =>
-      'Hồ sơ linh hồn này đã được người sáng tạo lưu trữ, đặt ở chế độ riêng tư, hoặc đã tan biến trong dòng chảy thời gian...\n\nCó lẽ ở một vũ trụ song song nào đó, bạn vẫn có cơ hội gặp lại họ. ✨';
+      'Hồ sơ linh hồn này đã được người sáng tạo lưu trữ, đặt ở chế độ riêng tư, hoặc đã tan biến trong dòng chảy thời gian...\n\nCó lẽ ở một vũ trụ song song nào đó, bạn vẫn có cơ hội gặp lại họ.';
 
   @override
   String get leave_silently => 'Lặng lẽ rời đi';
@@ -3117,7 +3115,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Hôm nay bạn muốn đăng bài với tư cách ai?';
 
   @override
-  String get identity_creator => '✨ Tư cách Người sáng tạo';
+  String get identity_creator => 'Tư cách Người sáng tạo';
 
   @override
   String get identity_character => 'Tư cách Nhân vật';
@@ -3128,7 +3126,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get auto_post_schedule_hint =>
-      'Sau khi bật, các bài đăng hàng ngày sẽ được đăng tự động vào thời gian đã chỉ định\n(💡 Gợi ý: Hãy đặt thời gian lẻ để trông giống người thật hơn nhé!)';
+      'Sau khi bật, các bài đăng hàng ngày sẽ được đăng tự động vào thời gian đã chỉ định\n( Gợi ý: Hãy đặt thời gian lẻ để trông giống người thật hơn nhé!)';
 
   @override
   String get no_characters_created_yet =>
@@ -3145,10 +3143,10 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get empty_public_moments_short => 'Hiện chưa có bài đăng công khai 🌍';
+  String get empty_public_moments_short => 'Hiện chưa có bài đăng công khai';
 
   @override
-  String get empty_private_moments_short => 'Vòng bạn bè vẫn đang im lìm ✨';
+  String get empty_private_moments_short => 'Vòng bạn bè vẫn đang im lìm';
 
   @override
   String get my_created_characters => 'Nhân vật tôi đã tạo';
@@ -3182,11 +3180,11 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get daily_gift_success => 'Nhận quà tặng mỗi ngày thành công! 🌸';
+  String get daily_gift_success => 'Nhận quà tặng mỗi ngày thành công!';
 
   @override
   String get check_in_fail_network =>
-      'Điểm danh thất bại, vui lòng kiểm tra kết nối mạng 🍃';
+      'Điểm danh thất bại, vui lòng kiểm tra kết nối mạng';
 
   @override
   String task_completed(String taskName) {
@@ -3237,7 +3235,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get network_unstable_retry =>
-      'Kết nối mạng không ổn định, vui lòng thử lại sau 🍃';
+      'Kết nối mạng không ổn định, vui lòng thử lại sau';
 
   @override
   String get title_time_travel => 'Du hành thời gian';
@@ -3303,7 +3301,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get search_no_match_hint =>
-      'Không tìm thấy nhân vật, thử tên khác nhé? ✨';
+      'Không tìm thấy nhân vật, thử tên khác nhé?';
 
   @override
   String character_info_full(String age, String occupation) {
@@ -3474,7 +3472,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get shop_tab_history => 'Lịch sử giao dịch';
 
   @override
-  String get shop_empty_history => 'Hiện chưa có lịch sử nạp Hoa nào! 🌸';
+  String get shop_empty_history => 'Hiện chưa có lịch sử nạp Hoa nào!';
 
   @override
   String get shop_unknown_item => 'Mục không xác định';
@@ -3493,7 +3491,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String story_summary_empty_list(String name) {
-    return 'Câu chuyện của hai bạn vẫn chưa bắt đầu...\nHãy trò chuyện nhiều hơn để $name \nviết nên những hồi ức đầu tiên nhé! ✨';
+    return 'Câu chuyện của hai bạn vẫn chưa bắt đầu...\nHãy trò chuyện nhiều hơn để $name\nviết nên những hồi ức đầu tiên nhé!';
   }
 
   @override
@@ -3517,7 +3515,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Bạn có chắc chắn muốn hủy ảnh độc quyền và quay lại hình nền chủ đề mặc định không?';
 
   @override
-  String get reset_bg_success => 'Đã khôi phục về hình nền mặc định ✨';
+  String get reset_bg_success => 'Đã khôi phục về hình nền mặc định';
 
   @override
   String get confirm_reset => 'Xác nhận khôi phục';
@@ -3540,7 +3538,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Tải 《Luyến Luyến Thập Quang》 để mở khóa lãng mạn độc quyền';
 
   @override
-  String get exclusiveMomentsGenerated => 'Đã tạo khoảnh khắc độc quyền ✨';
+  String get exclusiveMomentsGenerated => 'Đã tạo khoảnh khắc độc quyền';
 
   @override
   String get selectAgain => 'Chọn lại lần nữa';
@@ -3555,11 +3553,11 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get shop_log_monthly_card =>
-      'Kích hoạt: Khế ước Tinh quang (Tặng điểm tức thì từ thẻ tháng) 🌙';
+      'Kích hoạt: Khế ước Tinh quang (Tặng điểm tức thì từ thẻ tháng)';
 
   @override
   String shop_log_top_up_double(int points) {
-    return 'Nạp: $points điểm (Bao gồm nhân đôi lần nạp đầu 🎁)';
+    return 'Nạp: $points điểm (Bao gồm nhân đôi lần nạp đầu )';
   }
 
   @override
@@ -3577,7 +3575,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get shop_purchase_success_double_bonus =>
-      '✨ Chúc mừng bạn đã kích hoạt phần thưởng nhân đôi lần mua đầu!';
+      'Chúc mừng bạn đã kích hoạt phần thưởng nhân đôi lần mua đầu!';
 
   @override
   String get shop_purchase_awesome => 'Tuyệt quá';
@@ -3611,7 +3609,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Nhận ngay 250 Hoa, mỗi ngày nhận 10 Hoa';
 
   @override
-  String get task_monthly_title => 'Tinh Chi Khế Ước · Đặc quyền mỗi ngày 🌙';
+  String get task_monthly_title => 'Tinh Chi Khế Ước · Đặc quyền mỗi ngày';
 
   @override
   String get task_monthly_locked => 'Chưa mở khóa';
@@ -3635,21 +3633,21 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get referral_log_newbie_reward =>
-      'Tinh Chi Mời Gọi: Phần thưởng người mới ✨';
+      'Tinh Chi Mời Gọi: Phần thưởng người mới';
 
   @override
   String get referral_log_inviter_reward =>
-      'Tinh Chi Mời Gọi: Phần thưởng bạn bè đạt mốc 🎁';
+      'Tinh Chi Mời Gọi: Phần thưởng bạn bè đạt mốc';
 
   @override
   String get referral_success_title => 'Đã mở khóa Tinh Chi Mời Gọi!';
 
   @override
   String get referral_success_content =>
-      'Chúc mừng bạn đã giao lưu sâu sắc với nhân vật đạt mốc 15 câu thành công!\n\n\'Phần thưởng người mới 50 điểm\' đã được gửi đến tài khoản của bạn, và bạn của bạn cũng đồng thời nhận được phần thưởng 50 điểm! 🎁';
+      'Chúc mừng bạn đã giao lưu sâu sắc với nhân vật đạt mốc 15 câu thành công!\n\n\'Phần thưởng người mới 50 điểm\' đã được gửi đến tài khoản của bạn, và bạn của bạn cũng đồng thời nhận được phần thưởng 50 điểm!';
 
   @override
-  String get profile_referral_title => 'Tinh Chi Mời Gọi 🌟';
+  String get profile_referral_title => 'Tinh Chi Mời Gọi';
 
   @override
   String get profile_referral_hint => 'Nhập mã mời của bạn bè';
@@ -3684,12 +3682,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String profile_share_message(String character, String code) {
-    return '✨ Mình đã bắt đầu hành trình rung động cùng $character trong 《Luyến Luyến Thập Quang》 rồi đấy! Hãy tải ngay App và nhập mã Tinh Chi Mời Gọi của mình: 【$code】 tại trang cá nhân nhé, cả hai chúng mình đều sẽ nhận được 50 điểm Hoa miễn phí đấy! 🎁\n\n Link tải:\n https://lianlianshiguang.web.app/download/';
+    return 'Mình đã bắt đầu hành trình rung động cùng $character trong 《Luyến Luyến Thập Quang》 rồi đấy! Hãy tải ngay App và nhập mã Tinh Chi Mời Gọi của mình: 【$code】 tại trang cá nhân nhé, cả hai chúng mình đều sẽ nhận được 50 điểm Hoa miễn phí đấy!\n\nLink tải:\nhttps://lianlianshiguang.web.app/download/';
   }
 
   @override
   String get chat_levelup_share_btn =>
-      'Khoe khoảnh khắc rung động này với bạn bè ✨';
+      'Khoe khoảnh khắc rung động này với bạn bè';
 
   @override
   String profile_my_invite_code_with_char(String character) {
@@ -3703,18 +3701,18 @@ class AppLocalizationsVi extends AppLocalizations {
   String get profile_fallback_character => 'Nhân vật yêu thích';
 
   @override
-  String get profile_copy_success => '✅ Đã sao chép mã mời vào khay nhớ tạm!';
+  String get profile_copy_success => 'Đã sao chép mã mời vào khay nhớ tạm!';
 
   @override
   String get profile_referral_rule_title => 'Quy tắc Tinh Chi Mời Gọi';
 
   @override
   String get profile_referral_rule_receiver =>
-      '✨ Sau khi liên kết mã mời, chỉ cần trò chuyện với bất kỳ nhân vật yêu thích nào đạt mốc 15 câu, bạn và người mời sẽ đồng thời nhận được phần thưởng 50 Hoa!\n\n⚠️ Lưu ý: Vui lòng nhập mã mời trong vòng 3 ngày sau khi đăng ký tài khoản để mã có hiệu lực.';
+      'Sau khi liên kết mã mời, chỉ cần trò chuyện với bất kỳ nhân vật yêu thích nào đạt mốc 15 câu, bạn và người mời sẽ đồng thời nhận được phần thưởng 50 Hoa!\n\nLưu ý: Vui lòng nhập mã mời trong vòng 3 ngày sau khi đăng ký tài khoản để mã có hiệu lực.';
 
   @override
   String get profile_referral_rule_inviter =>
-      '✨ Mời bạn mới tải App và nhập mã mời của bạn. Khi người đó hoàn thành liên kết trong vòng 3 ngày sau khi đăng ký và trò chuyện với bất kỳ nhân vật nào đạt 15 câu, cả hai bên sẽ đồng thời nhận được phần thưởng 50 điểm Hoa nhé! 🎁';
+      'Mời bạn mới tải App và nhập mã mời của bạn. Khi người đó hoàn thành liên kết trong vòng 3 ngày sau khi đăng ký và trò chuyện với bất kỳ nhân vật nào đạt 15 câu, cả hai bên sẽ đồng thời nhận được phần thưởng 50 điểm Hoa nhé!';
 
   @override
   String get error_user_not_found =>
@@ -3727,14 +3725,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get error_id_taken_short => 'ID này đã được sử dụng!';
 
   @override
-  String get shop_restocking => 'Cửa hàng đang bổ sung hàng hóa... 📦';
+  String get shop_restocking => 'Cửa hàng đang bổ sung hàng hóa...';
 
   @override
-  String get shop_preview_mode =>
-      '⚠️ Hiện tại đang ở chế độ xem trước cửa hàng';
+  String get shop_preview_mode => 'Hiện tại đang ở chế độ xem trước cửa hàng';
 
   @override
-  String get friendlyReminderTitle => '☁️ Nhắc nhở thân thiện';
+  String get friendlyReminderTitle => 'Nhắc nhở thân thiện';
 
   @override
   String get editProfileHint =>
@@ -3765,7 +3762,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String continueChatCostWarning(int cost) {
-    return 'Để anh ấy nói tiếp sẽ tiêu tốn $cost điểm Hoa 🌸\nBạn có chắc chắn muốn tiếp tục không?';
+    return 'Để anh ấy nói tiếp sẽ tiêu tốn $cost điểm Hoa\nBạn có chắc chắn muốn tiếp tục không?';
   }
 
   @override
@@ -3799,7 +3796,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get continueButton => 'Tiếp tục';
 
   @override
-  String get creatorExclusive => '🔒 Dành riêng cho nhà sáng tạo';
+  String get creatorExclusive => 'Dành riêng cho nhà sáng tạo';
 
   @override
   String ageAndOccupation(String age, String occupation) {
@@ -3807,10 +3804,10 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get likesLabel => '💖 Sở thích';
+  String get likesLabel => 'Sở thích';
 
   @override
-  String get dislikesLabel => '👎 Ghét';
+  String get dislikesLabel => 'Ghét';
 
   @override
   String birthdayLabel(String birthday) {
@@ -3838,7 +3835,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get passGuideRegenerateTitle =>
-      '🔄 Tại sao bạn lại cần chức năng \"Tạo lại\"?';
+      'Tại sao bạn lại cần chức năng \"Tạo lại\"?';
 
   @override
   String get passGuideRegenerateContent =>
@@ -3846,7 +3843,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get passGuideAffectionTitle =>
-      '💖 Tăng tốc độ hảo cảm thì có tác dụng gì?';
+      'Tăng tốc độ hảo cảm thì có tác dụng gì?';
 
   @override
   String get passGuideAffectionContent =>
@@ -3859,10 +3856,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get pleaseWait => 'Vui lòng chờ';
 
   @override
-  String get createNewProfileTitle => '📜 Tạo Hồ Sơ Thập Quang Mới';
+  String get createNewProfileTitle => 'Tạo Hồ Sơ Thập Quang Mới';
 
   @override
-  String get editProfileTitle => '✏️ Chỉnh Sửa Hồ Sơ Thập Quang';
+  String get editProfileTitle => 'Chỉnh Sửa Hồ Sơ Thập Quang';
 
   @override
   String get profileEditDescription =>
@@ -3920,7 +3917,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get fillLaterButton => 'Điền sau';
 
   @override
-  String get exclusiveProfileTitle => '📜 Hồ Sơ Thập Quang Độc Quyền';
+  String get exclusiveProfileTitle => 'Hồ Sơ Thập Quang Độc Quyền';
 
   @override
   String get profileSelectionDescription =>
@@ -4093,11 +4090,11 @@ class AppLocalizationsVi extends AppLocalizations {
   String get nav_moments => 'Khoảnh khắc';
 
   @override
-  String get birthday_dialog_title => '🎂 Bất ngờ sinh nhật';
+  String get birthday_dialog_title => 'Bất ngờ sinh nhật';
 
   @override
   String get birthday_dialog_content =>
-      'Hôm nay là ngày kỷ niệm dành riêng cho bạn!\n\nXin vui lòng nhận món quà này:\nHôm nay trò chuyện H.O.À.N T.O.À.N M.I.Ễ.N P.H.Í! ✨';
+      'Hôm nay là ngày kỷ niệm dành riêng cho bạn!\n\nXin vui lòng nhận món quà này:\nHôm nay trò chuyện H.O.À.N T.O.À.N M.I.Ễ.N P.H.Í!';
 
   @override
   String get birthday_dialog_button => 'Mở đầu một ngày lãng mạn';
@@ -4132,7 +4129,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get go_to_login => 'Đi đến đăng nhập';
 
   @override
-  String get easter_egg_title => 'Phát hiện Easter Egg ẩn ✨';
+  String get easter_egg_title => 'Phát hiện Easter Egg ẩn';
 
   @override
   String easter_egg_content(String title) {
@@ -4173,7 +4170,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get monthly_card_success_title =>
-      '✨ Mở khóa Thẻ Tháng Premium thành công!';
+      'Mở khóa Thẻ Tháng Premium thành công!';
 
   @override
   String get monthly_card_success_subtitle =>
@@ -4542,7 +4539,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get message_preview_voice => '[Tin nhắn thoại]';
 
   @override
-  String get send_failed_retry => 'Gửi thất bại. Vui lòng thử lại sau 😢';
+  String get send_failed_retry => 'Gửi thất bại. Vui lòng thử lại sau';
 
   @override
   String get media_upload_failed_retry =>
@@ -4581,7 +4578,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get regenerate_sync_failed =>
-      'Đồng bộ số lần tạo lại thất bại. Vui lòng thử lại 😢';
+      'Đồng bộ số lần tạo lại thất bại. Vui lòng thử lại';
 
   @override
   String get creator_public_works => 'Tác phẩm công khai';
@@ -5067,7 +5064,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get mailCaseNumberCopied => 'Đã sao chép mã vụ việc';
 
   @override
-  String get profilePageAboutMe => '📝 Giới thiệu về tôi';
+  String get profilePageAboutMe => 'Giới thiệu về tôi';
 
   @override
   String get profilePageTabBio => 'Giới thiệu';
@@ -5332,7 +5329,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Dự đoán dựa trên các ghi chép hiện có. Ngày chỉ dùng để tham khảo cho việc theo dõi cá nhân.';
 
   @override
-  String get periodStartedToday => '🩸 Bắt đầu hôm nay';
+  String get periodStartedToday => 'Bắt đầu hôm nay';
 
   @override
   String get periodStillOngoing => 'Vẫn đang có kinh';
@@ -5563,7 +5560,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get privateProfileSave => 'Lưu';
 
   @override
-  String get editProfileBirthdayReminderTitle => '🎂 Lời nhắc nhỏ';
+  String get editProfileBirthdayReminderTitle => 'Lời nhắc nhỏ';
 
   @override
   String get editProfileBirthdayReminderContent =>
@@ -5573,7 +5570,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get editProfileGotIt => 'Tôi hiểu rồi';
 
   @override
-  String get editProfileBirthdayConfirmTitle => '🎂 Xác nhận ngày sinh';
+  String get editProfileBirthdayConfirmTitle => 'Xác nhận ngày sinh';
 
   @override
   String get editProfileBirthdayConfirmContent =>
@@ -5656,15 +5653,14 @@ class AppLocalizationsVi extends AppLocalizations {
   String get editProfileAvatarEmpty => 'Dữ liệu ảnh đại diện trống';
 
   @override
-  String get chatPageSendFailed =>
-      'Gửi không thành công. Vui lòng thử lại sau 😢';
+  String get chatPageSendFailed => 'Gửi không thành công. Vui lòng thử lại sau';
 
   @override
   String get chatPageRegenerateFailed =>
       'Tạo lại không thành công. Tin nhắn ban đầu đã được giữ lại. Vui lòng thử lại.';
 
   @override
-  String get chatPageRegenerating => '💭 Đang suy nghĩ lại...';
+  String get chatPageRegenerating => 'Đang suy nghĩ lại...';
 
   @override
   String get chatPageThinkingTooLong =>
@@ -5684,7 +5680,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String chatPageMessagesDeleted(int count) {
-    return '✅ Đã xóa thành công $count tin nhắn';
+    return 'Đã xóa thành công $count tin nhắn';
   }
 
   @override
@@ -5926,12 +5922,11 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get characterProfileShareInvitation =>
-      '🦋 Lời mời gặp gỡ từ LoveyDovey';
+  String get characterProfileShareInvitation => 'Lời mời gặp gỡ từ LoveyDovey';
 
   @override
   String characterProfileShareCreator(String creatorName) {
-    return '✦ Nhà sáng tạo: $creatorName';
+    return 'Nhà sáng tạo: $creatorName';
   }
 
   @override
@@ -5949,7 +5944,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get characterProfileCardSearchHint =>
-      'Tìm kiếm nhân vật và bắt đầu cuộc gặp gỡ  🦋';
+      'Tìm kiếm nhân vật và bắt đầu cuộc gặp gỡ';
 
   @override
   String get characterProfileScanToDownload => 'Quét để Tải xuống';
@@ -6123,18 +6118,18 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String mailShareQixiMessage(String characterName) {
-    return 'Tôi đã nhận được thư Thất Tịch giới hạn từ $characterName 💌';
+    return 'Tôi đã nhận được thư Thất Tịch giới hạn từ $characterName';
   }
 
   @override
-  String get mailShareDefaultMessage => 'Một bức thư từ 「LoveyDovey」💌';
+  String get mailShareDefaultMessage => 'Một bức thư từ 「LoveyDovey」';
 
   @override
   String get mailShareImageFailed =>
       'Không thể tạo ảnh chia sẻ, vui lòng thử lại sau';
 
   @override
-  String get mailCollectedSuccess => 'Đã lưu bức thư này 💌';
+  String get mailCollectedSuccess => 'Đã lưu bức thư này';
 
   @override
   String get mailCollectedCancelled => 'Đã bỏ lưu';
@@ -6197,11 +6192,11 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get qixiSingleRoomOpened =>
-      'Phòng trò chuyện Thất Tịch riêng đã được mở 💕';
+      'Phòng trò chuyện Thất Tịch riêng đã được mở';
 
   @override
   String qixiMultipleRoomsOpened(int count) {
-    return 'Đã mở $count phòng trò chuyện Thất Tịch riêng 💕';
+    return 'Đã mở $count phòng trò chuyện Thất Tịch riêng';
   }
 
   @override
@@ -6307,11 +6302,11 @@ class AppLocalizationsVi extends AppLocalizations {
       'Hôm nay, đừng bỏ lỡ nhân duyên đang lặng lẽ đến gần.';
 
   @override
-  String get encounterJoinedToday => '✨ Tham gia Lovey Time hôm nay';
+  String get encounterJoinedToday => 'Tham gia Lovey Time hôm nay';
 
   @override
   String get encounterPopularChats =>
-      '❤️ Gần đây có rất nhiều người đang trò chuyện';
+      'Gần đây có rất nhiều người đang trò chuyện';
 
   @override
   String get qixiBannerActiveUntil =>
@@ -6321,7 +6316,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get qixiBannerStartsAt => 'Mở giới hạn từ 8/19';
 
   @override
-  String get encounterRecentlyArrived => '✨ Gần đây đã đến Lovey Time';
+  String get encounterRecentlyArrived => 'Gần đây đã đến Lovey Time';
 
   @override
   String get encounterRecentlyArrivedPlain => 'Gần đây đã đến Lovey Time';
@@ -6331,7 +6326,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get encounterLovePrompt =>
-      '💕 Hôm nay bạn muốn trải nghiệm kiểu tình yêu nào?';
+      'Hôm nay bạn muốn trải nghiệm kiểu tình yêu nào?';
 
   @override
   String get encounterNoCharacters => 'Hiện chưa có nhân vật nào';
@@ -6340,7 +6335,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get encounterAllLoveTags => 'Tất cả thẻ tình yêu';
 
   @override
-  String get chatQixiLetterSent => 'Thư giới hạn đã được gửi 💌';
+  String get chatQixiLetterSent => 'Thư giới hạn đã được gửi';
 
   @override
   String get chatQixiLetterPendingTonight =>
@@ -7499,7 +7494,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String character_edit_over_limit_warning(String label, String count) {
-    return '⚠ $label đã vượt quá giới hạn $count ký tự. Vui lòng chỉnh sửa trước khi đăng.';
+    return '$label đã vượt quá giới hạn $count ký tự. Vui lòng chỉnh sửa trước khi đăng.';
   }
 
   @override
@@ -8116,7 +8111,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String shop_joined_days(int days) {
-    return '✦ Bạn đã đến với LoveyDovey được $days ngày ✦';
+    return 'Bạn đã đến với LoveyDovey được $days ngày';
   }
 
   @override
@@ -8433,4 +8428,15 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get creator_social_links_open_failed => 'Không thể mở liên kết này';
+
+  @override
+  String get chat_regenerate_bottom_tip =>
+      '“Tạo lại” đã chuyển xuống đây! Hãy dùng nút này khi bạn muốn một câu trả lời khác.';
+
+  @override
+  String get chat_continue_bottom_tip =>
+      '“Tiếp tục” đã chuyển xuống đây! Hãy dùng nút này khi bạn muốn nhân vật nói tiếp.';
+
+  @override
+  String get languageSelectionSubtitle => 'Chọn ngôn ngữ bạn quen dùng';
 }

@@ -11,6 +11,7 @@ import 'services/purchase_service.dart';
 import 'screens/login_page.dart';
 import 'screens/main_page.dart';
 import 'screens/chat_page.dart';
+import 'page/announcement_page.dart';
 import 'services/theme_notifier.dart';
 import 'firebase_options.dart';
 import 'services/locale_notifier.dart';
@@ -137,7 +138,9 @@ class _BootstrapAppState extends State<_BootstrapApp> {
               GlobalCupertinoLocalizations.delegate,
             ],
             supportedLocales: const [
-              Locale('zh', 'TW'), Locale('zh', 'CN'), Locale('en', ''),
+              Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
+              Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
+              Locale('en', ''),
               Locale('ja', ''), Locale('ko', ''), Locale('vi', ''),
               Locale('id', ''), Locale('th', ''), Locale('ar', ''),
               Locale('fr', ''), Locale('ms', ''), Locale('es', ''),
@@ -273,6 +276,42 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  String? _lastSyncedNotificationLocale;
+
+  String _notificationLocaleCode(Locale locale) {
+    if (locale.languageCode == 'zh') {
+      if (locale.scriptCode?.toLowerCase() == 'hans' ||
+          locale.countryCode == 'CN' ||
+          locale.countryCode == 'SG') {
+        return 'zh_Hans';
+      }
+      return 'zh_Hant';
+    }
+    return locale.languageCode;
+  }
+
+  Future<void> _syncNotificationLocale(Locale locale) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final code = _notificationLocaleCode(locale);
+    if (_lastSyncedNotificationLocale == code) return;
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .set({
+        'notificationLocale': code,
+        'notificationLocaleUpdatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+      _lastSyncedNotificationLocale = code;
+      debugPrint('✅ 通知語系已同步：$code');
+    } catch (e) {
+      debugPrint('⚠️ 通知語系同步失敗：$e');
+    }
+  }
 
   @override
   void initState() {
@@ -404,6 +443,14 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return Consumer2<ThemeNotifier, LocaleNotifier>(
       builder: (context, themeNotifier, localeNotifier, child) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            unawaited(
+              _syncNotificationLocale(localeNotifier.locale),
+            );
+          }
+        });
+
         return MaterialApp(
           navigatorKey: navigatorKey,
           title: '戀戀拾光',
@@ -417,7 +464,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: const [
-            Locale('zh', 'TW'), Locale('zh', 'CN'), Locale('en', ''),
+            Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
+            Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
+            Locale('en', ''),
             Locale('ja', ''), Locale('ko', ''), Locale('vi', ''),
             Locale('id', ''), Locale('th', ''), Locale('ar', ''),
             Locale('fr', ''), Locale('ms', ''), Locale('es', ''),
@@ -550,12 +599,24 @@ void _handleNotificationClick(RemoteMessage message) {
       },
     );
   }
-  // ✨ 總裁新增：路線二！如果是萬能郵差送來的社交互動通知（按讚、留言、關注）
-  else if (data['type'] == 'like' || data['type'] == 'comment' || data['type'] == 'follow') {
+  // 路線二：社交互動 / 關注更新 → 私密信箱
+  else if (data['type'] == 'like' ||
+      data['type'] == 'comment' ||
+      data['type'] == 'follow' ||
+      data['type'] == 'creator_moment' ||
+      data['type'] == 'character_moment') {
     debugPrint("📫 玩家點擊了社交通知，準備導向私密信箱頁面");
 
     navigatorKey.currentState?.push(
       MaterialPageRoute(builder: (context) => const InboxPage()),
+    );
+  }
+  // 路線三：官方公告 → 公告列表
+  else if (data['type'] == 'global_announcement') {
+    navigatorKey.currentState?.push(
+      MaterialPageRoute(
+        builder: (context) => const AnnouncementListPage(),
+      ),
     );
   }
 }

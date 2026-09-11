@@ -761,7 +761,7 @@ class MomentsPageState extends State<MomentsPage> {
                   ),
                 ),
                 menuTile(
-                  icon: Icons.favorite_border_rounded,
+                  icon: Icons.eco_outlined,
                   title: l10n.liked_content,
                   showArrow: true,
                   onTap: () {
@@ -778,7 +778,7 @@ class MomentsPageState extends State<MomentsPage> {
                   },
                 ),
                 menuTile(
-                  icon: Icons.bookmark_border_rounded,
+                  icon: Icons.park_outlined,
                   title: l10n.my_favorites,
                   showArrow: true,
                   onTap: () {

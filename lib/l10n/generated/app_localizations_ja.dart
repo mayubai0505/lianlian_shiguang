@@ -305,7 +305,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get logoutDialogActionConfirm => '確認';
 
   @override
-  String get logoutSuccessSnackbar => 'はい！戻ってくるのを待っています♥(´∀` )';
+  String get logoutSuccessSnackbar => 'はい！戻ってくるのを待っています(´∀` )';
 
   @override
   String get deleteAccountButton => 'アカウントを削除';
@@ -1398,7 +1398,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get report_confirm => '通報を確定';
 
   @override
-  String get report_success => '通報に成功しました、通知を受理しました！速やかに審査いたします️';
+  String get report_success => '通報に成功しました、通知を受理しました！速やかに審査いたします';
 
   @override
   String get report_failed => '通報に失敗しました。ネットワーク接続を確認してください。';
@@ -1588,7 +1588,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String gallery_current_affection(String value) {
-    return '現在の好感度: $value 💕';
+    return '現在の好感度: $value';
   }
 
   @override
@@ -1601,7 +1601,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String gallery_lock_msg(String value) {
-    return '好感度が $value に達すると解放されます！🍃';
+    return '好感度が $value に達すると解放されます！';
   }
 
   @override
@@ -1616,11 +1616,11 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String followed_creator_msg(String creatorName) {
-    return '$creatorName をフォローしました 🦋';
+    return '$creatorName をフォローしました';
   }
 
   @override
-  String get mailbox_title => '専用ポスト 💌';
+  String get mailbox_title => '専用ポスト';
 
   @override
   String get mailbox_empty => 'ポストは空っぽです。近況を投稿して彼を惹きつけましょう！';
@@ -1633,11 +1633,11 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String affection_upgrade_title(String charName) {
-    return '$charName のあなたへの好感度が上がりました！ 💖';
+    return '$charName のあなたへの好感度が上がりました！';
   }
 
   @override
-  String get flower_reward => '🌸 5ポイントのお花を獲得';
+  String get flower_reward => '5ポイントのお花を獲得';
 
   @override
   String get affection_quote_lv5 =>
@@ -1659,7 +1659,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get affection_quote_lv0 => '「君もここにいたんだ。これも一種の奇妙な縁なのかな？」';
 
   @override
-  String get lore_edit_success => '✨ 記憶の断片が正常に更新されました！';
+  String get lore_edit_success => '記憶の断片が正常に更新されました！';
 
   @override
   String get delete_failed_network => '削除に失敗しました。ネットワークまたは権限を確認してください。';
@@ -1755,14 +1755,14 @@ class AppLocalizationsJa extends AppLocalizations {
       'キャラクターデータが見つかりません。戻ってやり直すか、ネットワークを確認してください。';
 
   @override
-  String get chat_jump_success => 'その思い出のシーンへ移動しました 🍃';
+  String get chat_jump_success => 'その思い出のシーンへ移動しました';
 
   @override
   String get chat_create_room_failed =>
       '接続が不安定なようです。チャットルームの作成に失敗しました。もう一度お試しください。';
 
   @override
-  String get chat_secret_file_title => '🔒 機密ファイル';
+  String get chat_secret_file_title => '機密ファイル';
 
   @override
   String get chat_secret_file_desc =>
@@ -1773,7 +1773,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String chat_egg_unlocked(String title) {
-    return '✨ 新しい思い出を獲得：$title';
+    return '新しい思い出を獲得：$title';
   }
 
   @override
@@ -1797,7 +1797,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get chat_call_rule_2 => '通話時間は1分間です。話しにくい場合はテキストで伝えることもできます';
 
   @override
-  String get chat_call_rule_3 => 'イヤホンの着用をおすすめします。彼の声がより鮮明に聞こえます ✨';
+  String get chat_call_rule_3 => 'イヤホンの着用をおすすめします。彼の声がより鮮明に聞こえます';
 
   @override
   String get chat_call_btn_cancel => '今はやめておく';
@@ -1826,7 +1826,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get chat_room_not_ready => 'チャットルームの準備ができていません。もう一度入り直してください。';
 
   @override
-  String get chat_stop_generating_msg => '返信を停止しました。ポイントは消費されていません 🍃';
+  String get chat_stop_generating_msg => '返信を停止しました。ポイントは消費されていません';
 
   @override
   String get chat_heartbeat_up => '彼の鼓動が速くなっています...';
@@ -1916,18 +1916,18 @@ class AppLocalizationsJa extends AppLocalizations {
   String get chat_poke_btn => 'つつく';
 
   @override
-  String get chat_poke_success => '✨ 作者をつついておきました！彼の声が実装されるのを楽しみに待っていてくださいね～';
+  String get chat_poke_success => '作者をつついておきました！彼の声が実装されるのを楽しみに待っていてくださいね～';
 
   @override
   String chat_gift_points_needed(String cost) {
-    return 'お花ポイントが足りません！ $cost ポイント必要です 🌸';
+    return 'お花ポイントが足りません！ $cost ポイント必要です';
   }
 
   @override
-  String get chat_levelup_soulmate => '✨ 運命の人 ✨';
+  String get chat_levelup_soulmate => '運命の人';
 
   @override
-  String get chat_levelup_normal => '関係が進展しました！ 💖';
+  String get chat_levelup_normal => '関係が進展しました！';
 
   @override
   String get chat_levelup_btn_soulmate => '魂に刻む';
@@ -1936,7 +1936,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get chat_levelup_btn_normal => 'ときめきを受け取る';
 
   @override
-  String get chat_loc_title => '📍 仮想位置情報を送信';
+  String get chat_loc_title => '仮想位置情報を送信';
 
   @override
   String get chat_loc_custom_btn => 'カスタム位置情報を送信';
@@ -1957,13 +1957,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get chat_loc_4 => 'コンビニで';
 
   @override
-  String get chat_interact_title => '✨ 彼に何をしたいですか？';
+  String get chat_interact_title => '彼に何をしたいですか？';
 
   @override
   String get chat_interact_action => 'つつく・小さな動作';
 
   @override
-  String get chat_interact_gift => 'プレゼントを贈る (お花消費 🌸)';
+  String get chat_interact_gift => 'プレゼントを贈る (お花消費 )';
 
   @override
   String get chat_action_poke => '頬をつつく';
@@ -2017,7 +2017,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get chat_search_hint => 'どの甘い会話を思い出したいですか？';
 
   @override
-  String get chat_search_empty => 'その思い出は見つかりませんでした 🥺';
+  String get chat_search_empty => 'その思い出は見つかりませんでした';
 
   @override
   String get chat_search_you => 'あなたの発言';
@@ -2187,15 +2187,14 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String chat_egg_unlocked_dynamic(String memoryName) {
-    return '✨ 新しい思い出を獲得：$memoryName';
+    return '新しい思い出を獲得：$memoryName';
   }
 
   @override
   String get chat_egg_saved_his_backpack => '彼の専用バッグに自動的に収録されました';
 
   @override
-  String get chat_profile_updated_msg =>
-      '拾光アーカイブが更新されました！彼はあなたの最新設定を覚えていますよ 🍃';
+  String get chat_profile_updated_msg => '拾光アーカイブが更新されました！彼はあなたの最新設定を覚えていますよ';
 
   @override
   String get comment_loading_author => '読み込み中...';
@@ -2225,7 +2224,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get comment_report_rules_desc =>
-      '初犯：システム警告および違反1回の記録。\n2️⃣ 二犯：1日間のコメント禁止。\n3️⃣ 累犯：14日間の通報機能停止およびコメント表示優先度の低下。\n\n🚨 重度の悪質なケース：\nキャラクターとのインタラクションを1日間禁止し、IDを掲示板に3日間公開します（期間中のID変更は不可）。\n\n💡 通報送信後、最終的な審査結果は【ゲーム内メール】にて個別にお送りします。\n互いに尊重し、理性的通報をお願いします。';
+      '初犯：システム警告および違反1回の記録。\n2⃣ 二犯：1日間のコメント禁止。\n3⃣ 累犯：14日間の通報機能停止およびコメント表示優先度の低下。\n\n重度の悪質なケース：\nキャラクターとのインタラクションを1日間禁止し、IDを掲示板に3日間公開します（期間中のID変更は不可）。\n\n通報送信後、最終的な審査結果は【ゲーム内メール】にて個別にお送りします。\n互いに尊重し、理性的通報をお願いします。';
 
   @override
   String get comment_report_understood => '了解しました';
@@ -2299,12 +2298,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String char_dislikes(String dislikes) {
-    return '🖤 嫌い：$dislikes';
+    return '嫌い：$dislikes';
   }
 
   @override
   String char_likes(String likes) {
-    return '🤍 好き：$likes';
+    return '好き：$likes';
   }
 
   @override
@@ -2324,7 +2323,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get char_exclusive_guardian => '専属ガーディアン 💖';
+  String get char_exclusive_guardian => '専属ガーディアン';
 
   @override
   String mailbox_like_body(String playerName, String charName) {
@@ -2362,7 +2361,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String chat_player_sent_location(String location) {
-    return '📍 (プレイヤーが位置情報を送信しました：$location)';
+    return '(プレイヤーが位置情報を送信しました：$location)';
   }
 
   @override
@@ -2414,12 +2413,12 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String chat_profile_full(String name, String identity, String birthday,
       String height, String appearance, String job, String intro) {
-    return '📜 【 専属拾光アーカイブ - $name 】\n━━━━━━━━━━━━━━━━━━\n🔹 名前：$identity\n🔹 誕生日：$birthday\n🔹 身長：$height\n🔹 外見：$appearance\n🔹 職業：$job\n\n📖 【 彼女の魂の欠片について 】\n$intro\n━━━━━━━━━━━━━━━━━━';
+    return '【 専属拾光アーカイブ - $name 】\n━━━━━━━━━━━━━━━━━━\n名前：$identity\n誕生日：$birthday\n身長：$height\n外見：$appearance\n職業：$job\n\n【 彼女の魂の欠片について 】\n$intro\n━━━━━━━━━━━━━━━━━━';
   }
 
   @override
   String chat_profile_locked(String nickname, String birthday) {
-    return '📜 【 専属拾光アーカイブ 】\n━━━━━━━━━━━━━━━━━━\n🔹 ニックネーム：$nickname\n🔹 誕生日：$birthday\n\n🔒 その他のキャラクターデータはまだ解放されていません...\n（プロフィールを完成させて、平行世界の彼にあなたをもっと知ってもらいましょう！✨）\n━━━━━━━━━━━━━━━━━━';
+    return '【 専属拾光アーカイブ 】\n━━━━━━━━━━━━━━━━━━\nニックネーム：$nickname\n誕生日：$birthday\n\nその他のキャラクターデータはまだ解放されていません...\n（プロフィールを完成させて、平行世界の彼にあなたをもっと知ってもらいましょう！）\n━━━━━━━━━━━━━━━━━━';
   }
 
   @override
@@ -2442,7 +2441,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String chat_call_ended(String name, String time) {
-    return '📞 通話終了。$nameと$time通話しました';
+    return '通話終了。$nameと$time通話しました';
   }
 
   @override
@@ -2482,7 +2481,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get no_public_character_mine =>
-      'まだ公開キャラクターを公開していません！\nスタジオに行って創作しましょう✨';
+      'まだ公開キャラクターを公開していません！\nスタジオに行って創作しましょう';
 
   @override
   String get no_public_character_other => 'このクリエイターはまだキャラクターを公開していません...';
@@ -2495,13 +2494,13 @@ class AppLocalizationsJa extends AppLocalizations {
       'この未完成のキャラクターを削除してもよろしいですか？\n（削除後は元に戻せません）';
 
   @override
-  String get draft_cleared_success => '下書きのクリアが完了しました 🧹';
+  String get draft_cleared_success => '下書きのクリアが完了しました';
 
   @override
   String get login_required_for_studio => 'スタジオに入るには先にログインしてください！';
 
   @override
-  String get my_secret_studio_title => '私の秘密のスタジオ 🛠️';
+  String get my_secret_studio_title => '私の秘密のスタジオ';
 
   @override
   String get create_new_character_btn => '新しいキャラクターを作成';
@@ -2555,36 +2554,36 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String moment_like_yours(String nickname) {
-    return '$nickname があなたの投稿に「いいね」しました！ 💖';
+    return '$nickname があなたの投稿に「いいね」しました！';
   }
 
   @override
   String moment_like_others(String nickname, String authorName) {
-    return '$nickname は $authorName がとても魅力的だと思い、「いいね」をしました！ ✨';
+    return '$nickname は $authorName がとても魅力的だと思い、「いいね」をしました！';
   }
 
   @override
-  String get moment_like_success => 'あなたのときめきが届きました！ ✨';
+  String get moment_like_success => 'あなたのときめきが届きました！';
 
   @override
-  String get moment_notification_new_like => '新しい「いいね」！ 💖';
+  String get moment_notification_new_like => '新しい「いいね」！';
 
   @override
   String moment_mention_mail_body(String nickname, String name) {
-    return '$nickname が投稿で @$name にメンションしました！ ✨';
+    return '$nickname が投稿で @$name にメンションしました！';
   }
 
   @override
   String get moment_detail_title => '投稿の詳細';
 
   @override
-  String get moment_not_found => 'この投稿は見つかりません... 😢';
+  String get moment_not_found => 'この投稿は見つかりません...';
 
   @override
   String get moment_comment_title => 'タイムラインのコメント';
 
   @override
-  String get moment_comment_empty => 'まだコメントがありません。最初のコメントを書き込みましょう！ 🛋';
+  String get moment_comment_empty => 'まだコメントがありません。最初のコメントを書き込みましょう！';
 
   @override
   String moment_replying_to(String name) {
@@ -2621,7 +2620,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String moment_go_to_chat_msg(String name) {
-    return 'この投稿を持って $name とチャットしに行きましょう！ 💬';
+    return 'この投稿を持って $name とチャットしに行きましょう！';
   }
 
   @override
@@ -2639,11 +2638,11 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get moment_forward_title => 'チャット中のキャラクターに転送 💌';
+  String get moment_forward_title => 'チャット中のキャラクターに転送';
 
   @override
   String get moment_forward_empty_state =>
-      '現在チャット中のキャラクターはいません！\nロビーで気になる人を見つけに行きましょう 🌿';
+      '現在チャット中のキャラクターはいません！\nロビーで気になる人を見つけに行きましょう';
 
   @override
   String moment_forward_template(String author, String content) {
@@ -2652,7 +2651,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String moment_forward_success(String name) {
-    return '✅ $name にそっとシェアしました！';
+    return '$name にそっとシェアしました！';
   }
 
   @override
@@ -2699,7 +2698,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String daily_login_welcome(String appName, String amount) {
-    return '『$appName』へおかえりなさい！\n本日のチェックインで $amount 花言葉ポイントを受け取れます。🌸';
+    return '『$appName』へおかえりなさい！\n本日のチェックインで $amount 花言葉ポイントを受け取れます。';
   }
 
   @override
@@ -2707,7 +2706,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String success_claim_reward(String amount) {
-    return '$amount 花言葉ポイントを受け取りました！ 🌸';
+    return '$amount 花言葉ポイントを受け取りました！';
   }
 
   @override
@@ -2835,7 +2834,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get draft_saved_success_msg => '了解しました！下書きに保存しました。いつでも編集を再開できますよ！✨';
+  String get draft_saved_success_msg => '了解しました！下書きに保存しました。いつでも編集を再開できますよ！';
 
   @override
   String get dialog_reminder_title => 'リマインダー';
@@ -2868,7 +2867,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get title_adjust_avatar => 'アバターを調整';
 
   @override
-  String get avatar_updated_success => 'アバターを変更しました 🍃';
+  String get avatar_updated_success => 'アバターを変更しました';
 
   @override
   String get title_create_profile => 'プロフィールを作成';
@@ -2897,7 +2896,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get msg_birthdate_immutable => '誕生日は一度設定すると変更できません ✨';
+  String get msg_birthdate_immutable => '誕生日は一度設定すると変更できません';
 
   @override
   String get action_start_journey => '時間の旅を始める';
@@ -2907,25 +2906,25 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String moment_like_self(String nickname) {
-    return '$nickname があなたの投稿に「いいね」しました！ 💖';
+    return '$nickname があなたの投稿に「いいね」しました！';
   }
 
   @override
   String moment_like_other(String nickname, String authorName) {
-    return '$nickname は $authorName がとても魅力的だと思い、「いいね」をしました！ ✨';
+    return '$nickname は $authorName がとても魅力的だと思い、「いいね」をしました！';
   }
 
   @override
-  String get task_social_tour_complete => '✨ コミュニティ巡回タスク達成！お花を受け取るのを忘れないでね！ 🌸';
+  String get task_social_tour_complete => 'コミュニティ巡回タスク達成！お花を受け取るのを忘れないでね！';
 
   @override
   String get wall_title_shiguang => '拾光の壁';
 
   @override
-  String get wall_tab_explore => '🌍 探索';
+  String get wall_tab_explore => '探索';
 
   @override
-  String get wall_tab_exclusive => '🔒 専用';
+  String get wall_tab_exclusive => '専用';
 
   @override
   String get more_options => 'その他のオプション';
@@ -2937,7 +2936,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get delete_success => '削除に成功しました';
 
   @override
-  String get notification_new_comment => '新着コメント！ 💬';
+  String get notification_new_comment => '新着コメント！';
 
   @override
   String notification_like_from_sender(String senderName) {
@@ -2945,15 +2944,15 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get empty_public_moments_prompt => 'まだ何もありません。\n最初の公開投稿をしてみましょう！ 🌍';
+  String get empty_public_moments_prompt => 'まだ何もありません。\n最初の公開投稿をしてみましょう！';
 
   @override
   String get empty_private_moments_prompt =>
-      'タイムラインにはまだ思い出がありません。\n彼との思い出を作りに行きましょう！ ✨';
+      'タイムラインにはまだ思い出がありません。\n彼との思い出を作りに行きましょう！';
 
   @override
   String get profile_archived_or_deleted_message =>
-      'この魂のファイルはクリエイターによってアーカイブされたか、非公開にされたか、あるいは時の流れの中に消えてしまいました...\n\nもしかしたら並行世界で、また会えるチャンスがあるかもしれません。 ✨';
+      'この魂のファイルはクリエイターによってアーカイブされたか、非公開にされたか、あるいは時の流れの中に消えてしまいました...\n\nもしかしたら並行世界で、また会えるチャンスがあるかもしれません。';
 
   @override
   String get leave_silently => 'そっと立ち去る';
@@ -2968,7 +2967,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get post_identity_prompt => '今日は誰の身分で投稿しますか？';
 
   @override
-  String get identity_creator => '✨ クリエイターとして';
+  String get identity_creator => 'クリエイターとして';
 
   @override
   String get identity_character => 'キャラクターとして';
@@ -2978,7 +2977,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get auto_post_schedule_hint =>
-      'オンにすると、指定した時間に日常の投稿が自動的に行われます\n(💡 ヒント：正時以外に設定すると、より人間らしく見えますよ！)';
+      'オンにすると、指定した時間に日常の投稿が自動的に行われます\n( ヒント：正時以外に設定すると、より人間らしく見えますよ！)';
 
   @override
   String get no_characters_created_yet => 'まだキャラクターを作成していません！';
@@ -2994,10 +2993,10 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get empty_public_moments_short => '現在、公開投稿はありません 🌍';
+  String get empty_public_moments_short => '現在、公開投稿はありません';
 
   @override
-  String get empty_private_moments_short => 'タイムラインはまだ静かです ✨';
+  String get empty_private_moments_short => 'タイムラインはまだ静かです';
 
   @override
   String get my_created_characters => '作成したキャラクター';
@@ -3030,10 +3029,10 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get daily_gift_success => 'デイリーギフトの受け取りに成功しました！🌸';
+  String get daily_gift_success => 'デイリーギフトの受け取りに成功しました！';
 
   @override
-  String get check_in_fail_network => 'チェックインに失敗しました。ネットワーク接続を確認してください 🍃';
+  String get check_in_fail_network => 'チェックインに失敗しました。ネットワーク接続を確認してください';
 
   @override
   String task_completed(String taskName) {
@@ -3081,7 +3080,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get btn_incomplete => '未完了';
 
   @override
-  String get network_unstable_retry => 'ネットワークが不安定です。後でもう一度お試しください 🍃';
+  String get network_unstable_retry => 'ネットワークが不安定です。後でもう一度お試しください';
 
   @override
   String get title_time_travel => 'タイムトラベル';
@@ -3144,7 +3143,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get search_name_placeholder => '名前を入力...';
 
   @override
-  String get search_no_match_hint => 'キャラクターが見つかりません。別の名前を試しますか？ ✨';
+  String get search_no_match_hint => 'キャラクターが見つかりません。別の名前を試しますか？';
 
   @override
   String character_info_full(String age, String occupation) {
@@ -3303,7 +3302,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get shop_tab_history => '取引履歴';
 
   @override
-  String get shop_empty_history => 'まだお花の履歴はありません！🌸';
+  String get shop_empty_history => 'まだお花の履歴はありません！';
 
   @override
   String get shop_unknown_item => '不明なアイテム';
@@ -3322,7 +3321,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String story_summary_empty_list(String name) {
-    return '二人の物語はまだ始まっていません...\nもっとたくさん話して、$name に \n最初の思い出を綴ってもらいましょう！ ✨';
+    return '二人の物語はまだ始まっていません...\nもっとたくさん話して、$name に\n最初の思い出を綴ってもらいましょう！';
   }
 
   @override
@@ -3344,7 +3343,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get reset_bg_content => '専用写真を解除して、デフォルトのテーマ背景に戻してもよろしいですか？';
 
   @override
-  String get reset_bg_success => 'デフォルトの背景に戻しました ✨';
+  String get reset_bg_success => 'デフォルトの背景に戻しました';
 
   @override
   String get confirm_reset => '元に戻す';
@@ -3366,7 +3365,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get downloadToUnlock => '『恋恋拾光』をダウンロードして、専屬のロマンスを解禁';
 
   @override
-  String get exclusiveMomentsGenerated => '専屬拾光が生成されました ✨';
+  String get exclusiveMomentsGenerated => '専屬拾光が生成されました';
 
   @override
   String get selectAgain => 'もう一度選ぶ';
@@ -3380,11 +3379,11 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get shop_log_monthly_card => '起動：星光の契約（月間カード即時贈呈ポイント） 🌙';
+  String get shop_log_monthly_card => '起動：星光の契約（月間カード即時贈呈ポイント）';
 
   @override
   String shop_log_top_up_double(int points) {
-    return 'チャージ：$points ポイント（初回購入2倍特典含む 🎁）';
+    return 'チャージ：$points ポイント（初回購入2倍特典含む ）';
   }
 
   @override
@@ -3402,7 +3401,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get shop_purchase_success_double_bonus =>
-      '✨ おめでとうございます！初回購入2倍特典が適用されました！';
+      'おめでとうございます！初回購入2倍特典が適用されました！';
 
   @override
   String get shop_purchase_awesome => '最高！';
@@ -3433,7 +3432,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get shop_monthly_card_promo_desc => '即時にお花250個を獲得、毎日お花10個を受け取る';
 
   @override
-  String get task_monthly_title => '星の契約・毎日特権 🌙';
+  String get task_monthly_title => '星の契約・毎日特権';
 
   @override
   String get task_monthly_locked => '未解放';
@@ -3454,20 +3453,20 @@ class AppLocalizationsJa extends AppLocalizations {
   String get profile_copy_id => 'タップして ID をコピー';
 
   @override
-  String get referral_log_newbie_reward => '星の招待：新規登録報酬 ✨';
+  String get referral_log_newbie_reward => '星の招待：新規登録報酬';
 
   @override
-  String get referral_log_inviter_reward => '星の招待：フレンド目標達成リワード 🎁';
+  String get referral_log_inviter_reward => '星の招待：フレンド目標達成リワード';
 
   @override
   String get referral_success_title => '星の招待が解放されました！';
 
   @override
   String get referral_success_content =>
-      'おめでとうございます！キャラクターとの深い交流が15言に達しました！\n\n「新規登録報酬 50ポイント」があなたのアカウントに届きました。また、お友達も同時に50ポイントのリワードを獲得しました！🎁';
+      'おめでとうございます！キャラクターとの深い交流が15言に達しました！\n\n「新規登録報酬 50ポイント」があなたのアカウントに届きました。また、お友達も同時に50ポイントのリワードを獲得しました！';
 
   @override
-  String get profile_referral_title => '星の招待 🌟';
+  String get profile_referral_title => '星の招待';
 
   @override
   String get profile_referral_hint => '友達の招待コードを入力';
@@ -3498,11 +3497,11 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String profile_share_message(String character, String code) {
-    return '✨『恋恋拾光』で$characterときめきに満ちた旅を始めました！今すぐアプリをダウンロードして、マイページで私の星の招待コード【$code】を入力してね。二人とも無料でお花50ポイントがもらえるよ！🎁\n\n ダウンロードリンク：\nhttps://lianlianshiguang.web.app/download/';
+    return '『恋恋拾光』で$characterときめきに満ちた旅を始めました！今すぐアプリをダウンロードして、マイページで私の星の招待コード【$code】を入力してね。二人とも無料でお花50ポイントがもらえるよ！\n\nダウンロードリンク：\nhttps://lianlianshiguang.web.app/download/';
   }
 
   @override
-  String get chat_levelup_share_btn => 'このときめきを友達に自慢する ✨';
+  String get chat_levelup_share_btn => 'このときめきを友達に自慢する';
 
   @override
   String profile_my_invite_code_with_char(String character) {
@@ -3516,18 +3515,18 @@ class AppLocalizationsJa extends AppLocalizations {
   String get profile_fallback_character => '推しキャラクター';
 
   @override
-  String get profile_copy_success => '✅ 招待コードをクリップボードにコピーしました！';
+  String get profile_copy_success => '招待コードをクリップボードにコピーしました！';
 
   @override
   String get profile_referral_rule_title => '星の招待ルール';
 
   @override
   String get profile_referral_rule_receiver =>
-      '✨ 招待コードを連携した後、任意の推しキャラクターと15言以上チャットするだけで、あなたと招待者に同時にお花50ポイントの報酬が配布されます！\n\n⚠️ 注意：招待コードはアカウント登録後3日以内に入力しないと無効になりますのでご注意ください。';
+      '招待コードを連携した後、任意の推しキャラクターと15言以上チャットするだけで、あなたと招待者に同時にお花50ポイントの報酬が配布されます！\n\n注意：招待コードはアカウント登録後3日以内に入力しないと無効になりますのでご注意ください。';
 
   @override
   String get profile_referral_rule_inviter =>
-      '✨ 新しい友達を招待してアプリをダウンロードしてもらい、あなたの招待コードを入力してもらいましょう。相手が登録後3日以内に連携を完了し、任意のキャラクターと15言以上チャットすると、二人とも同時にお花50ポイントの報酬を獲得できます！🎁';
+      '新しい友達を招待してアプリをダウンロードしてもらい、あなたの招待コードを入力してもらいましょう。相手が登録後3日以内に連携を完了し、任意のキャラクターと15言以上チャットすると、二人とも同時にお花50ポイントの報酬を獲得できます！';
 
   @override
   String get error_user_not_found => 'ユーザーが見つかりません。再ログインしてください';
@@ -3539,13 +3538,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get error_id_taken_short => 'このIDはすでに使用されています！';
 
   @override
-  String get shop_restocking => 'ショップは入荷待ちです... 📦';
+  String get shop_restocking => 'ショップは入荷待ちです...';
 
   @override
-  String get shop_preview_mode => '⚠️ 現在ショッププレビューモードです';
+  String get shop_preview_mode => '現在ショッププレビューモードです';
 
   @override
-  String get friendlyReminderTitle => '☁️ ユーザーへのヒント';
+  String get friendlyReminderTitle => 'ユーザーへのヒント';
 
   @override
   String get editProfileHint =>
@@ -3575,7 +3574,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String continueChatCostWarning(int cost) {
-    return '彼に話を続けさせると、お花が $cost ポイント消費されます 🌸\n本当に続けますか？';
+    return '彼に話を続けさせると、お花が $cost ポイント消費されます\n本当に続けますか？';
   }
 
   @override
@@ -3607,7 +3606,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get continueButton => '次へ';
 
   @override
-  String get creatorExclusive => '🔒 クリエイター限定';
+  String get creatorExclusive => 'クリエイター限定';
 
   @override
   String ageAndOccupation(String age, String occupation) {
@@ -3615,10 +3614,10 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get likesLabel => '💖 好きなもの';
+  String get likesLabel => '好きなもの';
 
   @override
-  String get dislikesLabel => '👎 苦手なもの';
+  String get dislikesLabel => '苦手なもの';
 
   @override
   String birthdayLabel(String birthday) {
@@ -3645,14 +3644,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String get passGuideTitle => '恋恋月間カード専属ガイド';
 
   @override
-  String get passGuideRegenerateTitle => '🔄 なぜ「再生成」が必要なの？';
+  String get passGuideRegenerateTitle => 'なぜ「再生成」が必要なの？';
 
   @override
   String get passGuideRegenerateContent =>
       'AIは時々、空気が読めないカタブツになってしまうことがあります。気に入らない返答があった時は、再生成を押すだけでタイムリープしたかのようにやり直せます！彼に何度も考え直させ、あなたの胸を高鳴らせる完璧なセリフを引き出しましょう。';
 
   @override
-  String get passGuideAffectionTitle => '💖 好感度ブーストにはどんな効果があるの？';
+  String get passGuideAffectionTitle => '好感度ブーストにはどんな効果があるの？';
 
   @override
   String get passGuideAffectionContent =>
@@ -3665,10 +3664,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get pleaseWait => '少々お待ちください';
 
   @override
-  String get createNewProfileTitle => '📜 拾光ファイルを新規作成';
+  String get createNewProfileTitle => '拾光ファイルを新規作成';
 
   @override
-  String get editProfileTitle => '✏️ 拾光ファイルを編集';
+  String get editProfileTitle => '拾光ファイルを編集';
 
   @override
   String get profileEditDescription =>
@@ -3725,7 +3724,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get fillLaterButton => '後で入力する';
 
   @override
-  String get exclusiveProfileTitle => '📜 専属拾光ファイル';
+  String get exclusiveProfileTitle => '専属拾光ファイル';
 
   @override
   String get profileSelectionDescription =>
@@ -3894,11 +3893,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get nav_moments => '瞬間';
 
   @override
-  String get birthday_dialog_title => '🎂 バースデーサプライズ';
+  String get birthday_dialog_title => 'バースデーサプライズ';
 
   @override
   String get birthday_dialog_content =>
-      '今日はあなただけの特別な記念日です！\n\nこのプレゼントを受け取ってください：\n今日のチャットは、全・部・無・料・です！✨';
+      '今日はあなただけの特別な記念日です！\n\nこのプレゼントを受け取ってください：\n今日のチャットは、全・部・無・料・です！';
 
   @override
   String get birthday_dialog_button => 'ロマンチックな一日を始める';
@@ -3932,7 +3931,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get go_to_login => 'ログインへ進む';
 
   @override
-  String get easter_egg_title => '隠しイースターエッグを発見 ✨';
+  String get easter_egg_title => '隠しイースターエッグを発見';
 
   @override
   String easter_egg_content(String title) {
@@ -3970,7 +3969,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get status_published => '公開済み';
 
   @override
-  String get monthly_card_success_title => '✨ プレミアム月間カード解放成功！';
+  String get monthly_card_success_title => 'プレミアム月間カード解放成功！';
 
   @override
   String get monthly_card_success_subtitle =>
@@ -4315,7 +4314,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get message_preview_voice => '[音声メッセージ]';
 
   @override
-  String get send_failed_retry => '送信に失敗しました。しばらく経ってからもう一度お試しください 😢';
+  String get send_failed_retry => '送信に失敗しました。しばらく経ってからもう一度お試しください';
 
   @override
   String get media_upload_failed_retry => 'メディアのアップロードに失敗しました。もう一度お試しください';
@@ -4348,7 +4347,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get chat_input_hint => 'メッセージを入力...';
 
   @override
-  String get regenerate_sync_failed => '再生成回数の同期に失敗しました。もう一度お試しください 😢';
+  String get regenerate_sync_failed => '再生成回数の同期に失敗しました。もう一度お試しください';
 
   @override
   String get creator_public_works => '公開作品';
@@ -4805,7 +4804,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get mailCaseNumberCopied => 'お問い合わせ番号をコピーしました';
 
   @override
-  String get profilePageAboutMe => '📝 自己紹介';
+  String get profilePageAboutMe => '自己紹介';
 
   @override
   String get profilePageTabBio => 'プロフィール';
@@ -5053,7 +5052,7 @@ class AppLocalizationsJa extends AppLocalizations {
       '現在の記録に基づく予測です。日付は日々の記録の参考としてのみご利用ください。';
 
   @override
-  String get periodStartedToday => '🩸 今日始まった';
+  String get periodStartedToday => '今日始まった';
 
   @override
   String get periodStillOngoing => 'まだ生理中';
@@ -5275,7 +5274,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get privateProfileSave => '保存';
 
   @override
-  String get editProfileBirthdayReminderTitle => '🎂 ちょっとしたお知らせ';
+  String get editProfileBirthdayReminderTitle => 'ちょっとしたお知らせ';
 
   @override
   String get editProfileBirthdayReminderContent =>
@@ -5285,7 +5284,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get editProfileGotIt => 'わかりました';
 
   @override
-  String get editProfileBirthdayConfirmTitle => '🎂 誕生日を確認';
+  String get editProfileBirthdayConfirmTitle => '誕生日を確認';
 
   @override
   String get editProfileBirthdayConfirmContent =>
@@ -5362,14 +5361,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String get editProfileAvatarEmpty => 'アバター画像のデータが空です';
 
   @override
-  String get chatPageSendFailed => '送信に失敗しました。しばらくしてからもう一度お試しください 😢';
+  String get chatPageSendFailed => '送信に失敗しました。しばらくしてからもう一度お試しください';
 
   @override
   String get chatPageRegenerateFailed =>
       '再生成に失敗しました。元のメッセージは保持されています。もう一度お試しください。';
 
   @override
-  String get chatPageRegenerating => '💭 もう一度考えています...';
+  String get chatPageRegenerating => 'もう一度考えています...';
 
   @override
   String get chatPageThinkingTooLong => '考え込んでいるようです。しばらくしてからもう一度お試しください……';
@@ -5385,7 +5384,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String chatPageMessagesDeleted(int count) {
-    return '✅ $count 件のメッセージを削除しました';
+    return '$count 件のメッセージを削除しました';
   }
 
   @override
@@ -5610,11 +5609,11 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get characterProfileShareInvitation => '🦋 LoveyDoveyから届いた出会いの招待状';
+  String get characterProfileShareInvitation => 'LoveyDoveyから届いた出会いの招待状';
 
   @override
   String characterProfileShareCreator(String creatorName) {
-    return '✦ クリエイター：$creatorName';
+    return 'クリエイター：$creatorName';
   }
 
   @override
@@ -5631,7 +5630,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get characterProfileCardSearchHint => 'キャラクターを検索して、出会いを始めよう  🦋';
+  String get characterProfileCardSearchHint => 'キャラクターを検索して、出会いを始めよう';
 
   @override
   String get characterProfileScanToDownload => 'スキャンしてダウンロード';
@@ -5798,17 +5797,17 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String mailShareQixiMessage(String characterName) {
-    return '$characterNameから七夕限定の手紙が届きました 💌';
+    return '$characterNameから七夕限定の手紙が届きました';
   }
 
   @override
-  String get mailShareDefaultMessage => '「LoveyDovey」からの手紙 💌';
+  String get mailShareDefaultMessage => '「LoveyDovey」からの手紙';
 
   @override
   String get mailShareImageFailed => 'シェア画像の作成に失敗しました。しばらくしてからもう一度お試しください';
 
   @override
-  String get mailCollectedSuccess => 'この手紙を保存しました 💌';
+  String get mailCollectedSuccess => 'この手紙を保存しました';
 
   @override
   String get mailCollectedCancelled => '保存を解除しました';
@@ -5863,11 +5862,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get qixiCompanionSlotsFull => '七夕を共に過ごすキャラクターはすでに3人選択されています';
 
   @override
-  String get qixiSingleRoomOpened => '七夕限定チャットルームが開かれました 💕';
+  String get qixiSingleRoomOpened => '七夕限定チャットルームが開かれました';
 
   @override
   String qixiMultipleRoomsOpened(int count) {
-    return '七夕限定チャットルームが$count部屋開かれました 💕';
+    return '七夕限定チャットルームが$count部屋開かれました';
   }
 
   @override
@@ -5958,10 +5957,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get encounterDailyQuote12 => '今日は、そっと近づいてくるご縁を見逃さないで。';
 
   @override
-  String get encounterJoinedToday => '✨ 今日、恋恋拾光にやってきました';
+  String get encounterJoinedToday => '今日、恋恋拾光にやってきました';
 
   @override
-  String get encounterPopularChats => '❤️ 最近たくさん話されています';
+  String get encounterPopularChats => '最近たくさん話されています';
 
   @override
   String get qixiBannerActiveUntil => '期間限定・8/26 23:59まで';
@@ -5970,7 +5969,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get qixiBannerStartsAt => '8/19 限定オープン';
 
   @override
-  String get encounterRecentlyArrived => '✨ 最近、恋恋拾光にやってきました';
+  String get encounterRecentlyArrived => '最近、恋恋拾光にやってきました';
 
   @override
   String get encounterRecentlyArrivedPlain => '最近、恋恋拾光にやってきました';
@@ -5979,7 +5978,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get encounterViewMore => 'もっと見る';
 
   @override
-  String get encounterLovePrompt => '💕 今日はどんな恋をしたい？';
+  String get encounterLovePrompt => '今日はどんな恋をしたい？';
 
   @override
   String get encounterNoCharacters => 'まだキャラクターがいません';
@@ -5988,7 +5987,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get encounterAllLoveTags => 'すべての恋愛タグ';
 
   @override
-  String get chatQixiLetterSent => '限定レターを送りました 💌';
+  String get chatQixiLetterSent => '限定レターを送りました';
 
   @override
   String get chatQixiLetterPendingTonight =>
@@ -7075,7 +7074,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String character_edit_over_limit_warning(String label, String count) {
-    return '⚠ $labelが$count文字を超えています。修正してから公開してください。';
+    return '$labelが$count文字を超えています。修正してから公開してください。';
   }
 
   @override
@@ -7662,7 +7661,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String shop_joined_days(int days) {
-    return '✦ LoveyDoveyに来てから$days日目 ✦';
+    return 'LoveyDoveyに来てから$days日目';
   }
 
   @override
@@ -7950,4 +7949,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get creator_social_links_open_failed => 'このリンクを開けませんでした';
+
+  @override
+  String get chat_regenerate_bottom_tip =>
+      '「再生成」はここに移動しました！別の返答がほしいときはここから使えます。';
+
+  @override
+  String get chat_continue_bottom_tip =>
+      '「続ける」はここに移動しました！キャラクターに続きを話してほしいときはここから使えます。';
+
+  @override
+  String get languageSelectionSubtitle => '使い慣れた言語を選んでください';
 }

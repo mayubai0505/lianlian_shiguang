@@ -10,9 +10,7 @@
   "errorLoadingFriends": "友達リストの読み込み中にエラーが発生しました: {error}",
   "@errorLoadingFriends": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "tagGentle": "優しい",
@@ -87,18 +85,14 @@
   "characterCreatedSuccess": "キャラクター「{charName}」が作成されました！",
   "@characterCreatedSuccess": {
     "placeholders": {
-      "charName": {
-        "type": "String"
-      }
+      "charName": { "type": "String" }
     }
   },
   "uploadImageTimeoutError": "キャラクター作成に失敗しました: 画像のアップロードがタイムアウトしました。インターネット接続を確認してください。",
   "createCharacterGenericError": "キャラクター作成に失敗しました: {error}",
   "@createCharacterGenericError": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "settingsSectionAppearance": "外観とコンテンツ",
@@ -117,44 +111,41 @@
   "logoutDialogTitle": "ログアウトしますか？(´;ω;`)",
   "logoutDialogActionCancel": "押し間違えました",
   "logoutDialogActionConfirm": "確認",
-  "logoutSuccessSnackbar": "はい！戻ってくるのを待っています(´∀` )",
+  "logoutSuccessSnackbar": "はい！戻ってくるのを待っています♥(´∀` )",
   "deleteAccountButton": "アカウントを削除",
   "deleteAccountDialogTitle": "このアカウントを削除してもよろしいですか？இдஇ",
   "deleteAccountDialogContent": "この操作は元に戻せません。すべてのデータが完全に削除されます！",
   "deleteAccountDialogActionCancel": "いいえ、削除しません",
   "deleteAccountDialogActionConfirm": "確認",
   "deleteAccountSuccessSnackbar": "アカウントが正常に削除されました。",
-  "appDisclaimer": "ゲーム内のキャラクターや舞台はすべてフィクションです。現実と混同しないようご注意ください！",
-  "appVersion": "アプリのバージョン: {version}",
+  "appDisclaimer": "ゲーム内のキャラクターや舞台はすべてフィクションです。現実と混同しないようご注意ください！",  "appVersion": "アプリのバージョン: {version}",
   "@appVersion": {
-    "description": "アプリのバージョン番号を表示",
-    "placeholders": {
-      "version": {
-        "type": "String",
-        "example": "1.0.0"
-      }
+  "description": "アプリのバージョン番号を表示",
+  "placeholders": {
+    "version": {
+      "type": "String",
+      "example": "1.0.0"
     }
-  },
-  "dialogTitleHint": "ヒント",
-  "completeProfilePrompt": "まずプロフィールを編集して情報を完成させてください！",
-  "goToEdit": "編集へ",
-  "later": "後で",
-  "chattingWith": "{friendName} とチャット中",
-  "@chattingWith": {
-    "placeholders": {
-      "friendName": {
-        "type": "String"
+  }
+            },
+    "dialogTitleHint": "ヒント",
+    "completeProfilePrompt": "まずプロフィールを編集して情報を完成させてください！",
+    "goToEdit": "編集へ",
+    "later": "後で",
+    "chattingWith": "{friendName} とチャット中",
+    "@chattingWith": {
+      "placeholders": {
+        "friendName": { "type": "String" }
       }
-    }
-  },
-  "chatContentWith": "{friendName} とのチャット内容",
-  "@chatContentWith": {
-    "placeholders": {
-      "friendName": {
-        "type": "String"
+    },
+    "chatContentWith": "{friendName} とのチャット内容",
+    "@chatContentWith": {
+      "placeholders": {
+        "friendName": {
+          "type": "String"
+        }
       }
-    }
-  },
+    },
   "chatInputHint": "メッセージを入力...",
   "characterNotFoundError": "キャラクターデータが見つかりません",
   "@characterNotFoundError": {
@@ -178,7 +169,7 @@
   "relationship_other": "その他 (手動で入力してください)",
   "chatModeDaily": "日常モード",
   "chatModeStory": "ストーリーモード",
-  "chatModeImmersive": "没入モード",
+  "chatModeImmersive" :"没入モード",
   "chatModeGemini": "生活のパートナー",
   "announcement_new": "新しいお知らせ",
   "mail_notification": "新しい「時の手紙」が届きました！今すぐ羊皮紙を確認しましょう！",
@@ -189,7 +180,7 @@
   "no_content": "内容なし",
   "privacy_policy_title": "「恋恋拾光」プライバシーポリシー",
   "privacy_policy_date": "最終更新日：2026年4月10日",
-  "terms_title": "利用規約",
+  "terms_title": "「恋恋拾光」サービス利用規約",
   "terms_date": "最終更新日：2026年4月10日",
   "privacy_policy_body": "「恋恋拾光」プライバシーポリシー\n最終更新日：2026年4月10日\n\n「恋恋拾光」（以下「本サービス」）をご利用いただきありがとうございます。当社はお客様のプライバシーを尊重し、個人情報の収集、使用、および保護について説明します。\n\n1. アカウント情報：\nサードパーティログイン：Google、Facebook、またはAppleアカウントでログインする際、Firebase UID、メールアドレス、公開ニックネームを収集します。\nメール登録：メールで登録する場合、メールアドレスを収集します。パスワードはFirebaseの暗号化技術で管理され、開発チームは元のパスワードを閲覧できません。\n\nインタラクションデータ：AIキャラに継続的な記憶を持たせるため、AIとの対話記録およびゲーム内でキャラのために作成した内容を保存します。\n\nデバイス情報：システム最適化のため、モデル名、OSバージョン、固有識別子を収集します。\n\n2. 情報の使用目的\nAI体験の向上：対話記録を利用してAIの回答品質と性格の一貫性を最適化します。\nサービスの運営：ポイントのチャージ、消費記録、ユーザー認証に使用します。\n安全保護：不正行為を監視し、サーバーを攻撃から保護します。\n\n3. サードパーティ技術協力\n本サービスは以下の技術を採用しています：\nGoogle Cloud / Firebase：データ保存と認証。\nOpenRouter / xAI / Meta：AIモデルの演算論理。\n備考：元の対話記録を広告主に販売することはありません。\n\n4. データの保存と削除\nデータはクラウドサーバーに安全に保存されます。いつでもアカウントおよび全データの永久削除をリクエストできます。",
   "terms_body": "「恋恋拾光」利用規約\n最終更新日：2026年4月10日\n\n本サービスを利用する前に、以下の規約をよくお読みください。利用を開始した時点で、以下の内容に同意したものとみなされます。\n\n1. サービスの性質と免責事項\n非人間との対話：すべての回答はAI（生成AI）によって生成されます。キャラの発言は制作者の立場を代表するものではありません。\n叙事のリスク：AIは架空、不正確、または不快な内容を生成する可能性があります。ユーザーは虚構と現実を区別する能力を持つ必要があります。\n\n2. 仮想ポイントと支払い\nポイントの性質：サービス内のポイントは仮想商品であり、消費後（ストーリー、没入モード、ギフト、通話など）は返金できません。\nコストの差異：各モードの消費基準はAI演算コストに基づいて設定され、当社はこれを調整する権利を留保します。\n\n3. ユーザー行動規範\n禁止事項：極端な暴力、犯罪誘導、または法律に違反する内容の生成を禁止します。\nシステム妨害：自動化ツールやリバースエンジニアリングによるデータ取得を厳禁します。\n\n4. 知的財産権\nオリジナルコンテンツ：「程安」などの公式キャラ、設定、脚本、対話、ゲームロジックの著作権は「恋恋拾光開発チーム」に帰属します。\nライセンス資源：アイコンやフォントは原権利者（Google、Apple等）に帰属し、規約に従い使用しています。\nAI生成コンテンツ：一部の画像はAIツール（Niji.journey等）で生成され、商用ライセンスを取得済みです。権利は本チームに帰属します。\n禁止行為：許可なく商用利用、二次配布、悪意あるモデル学習に使用することを禁じます。\n\n5. サービスの終了\n規約に違反した場合、事前の通知なくアカウントを停止または永久無効化する権利を有します。",
@@ -211,8 +202,7 @@
         "example": "チェン・アン"
       }
     }
-  },
-  "think_again": "もう少し考える",
+  },  "think_again": "もう少し考える",
   "confirm_block_btn": "ブロックを確定",
   "no_char_info": "このキャラクターの詳細情報はまだありません...",
   "private_mailbox": "専用メールボックス",
@@ -321,17 +311,13 @@
   "character_thinking": "（{name} が考えています...）",
   "@character_thinking": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "character_picking_up": "（{name} が電話に出ています...）",
   "@character_picking_up": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "call_interrupted_login": "（通話中断）先にログインしてください...",
@@ -346,53 +332,23 @@
   "not_save": "保存しない",
   "save_draft": "下書きを保存",
   "confirm_delete_char_content": "キャラクター「{name}」を削除してもよろしいですか？\n\nこの操作は取り消せません！",
-  "@confirm_delete_char_content": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@confirm_delete_char_content": { "placeholders": { "name": { "type": "String" } } },
   "char_deleted": "キャラクターを削除しました",
   "ok_button": "はい！",
   "cannot_save_title": "保存できません",
   "cannot_save_content": "キャラクター名を入力し、アバターを少なくとも1枚アップロードしてください！",
   "word_count_exceeded": "文字数制限を超えています",
   "word_count_error_detail": "「{field}」が{limit}文字を超えています。短くしてから保存してください。",
-  "@word_count_error_detail": {
-    "placeholders": {
-      "field": {
-        "type": "String"
-      },
-      "limit": {
-        "type": "int"
-      }
-    }
-  },
+  "@word_count_error_detail": { "placeholders": { "field": { "type": "String" }, "limit": { "type": "int" } } },
   "content_missing": "内容が不足しています",
   "content_missing_personality": "「詳細な性格」を入力してください！少なくとも10文字以上必要です。",
   "content_missing_bg": "「キャラクターの背景」が短すぎます！背景を説明するために少なくとも20文字以上入力してください。",
   "content_missing_tone": "「口調と習慣」を設定してください。そうしないと、キャラクター崩壊（OOC）しやすくなります！",
   "user_not_found": "エラー：ユーザーが見つかりません",
   "char_saved_success": "キャラクター「{name}」が{action}されました！",
-  "@char_saved_success": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      },
-      "action": {
-        "type": "String"
-      }
-    }
-  },
+  "@char_saved_success": { "placeholders": { "name": { "type": "String" }, "action": { "type": "String" } } },
   "save_error_detail": "保存失敗：{error}",
-  "@save_error_detail": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@save_error_detail": { "placeholders": { "error": { "type": "String" } } },
   "easter_egg_add_title": "隠しイースターエッグを追加",
   "easter_egg_edit_title": "イースターエッグを編集",
   "keyword_label": "トリガーキーワード（必須）",
@@ -413,40 +369,16 @@
   "voice_bind_first": "先に専用ボイスを選んで「バインド」してください！",
   "voice_test_failed": "試聴失敗：「君に決めた！」をクリックして正式にバインドしてから、微調整を行ってください！",
   "voice_name_default": "{name} の専用ボイス",
-  "@voice_name_default": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@voice_name_default": { "placeholders": { "name": { "type": "String" } } },
   "voice_description_default": "これは「恋恋拾光」の専用キャラクターのために作成された唯一無二のボイスです。プレイヤーが自ら選び生成したものです。",
   "voice_bind_failed": "ボイスのバインドに失敗しました。API残高やネットワーク状態を確認してください",
   "voice_bind_success": "「{name}」のソウルボイスが正式にバインドされました！",
-  "@voice_bind_success": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@voice_bind_success": { "placeholders": { "name": { "type": "String" } } },
   "voice_bind_success_draft": "ボイスのバインドに成功しました！スライダーを動かして感情をテストできます！",
   "sync_failed": "同期失敗、ネットワークを確認してください：{error}",
-  "@sync_failed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@sync_failed": { "placeholders": { "error": { "type": "String" } } },
   "edit_character_title": "{name} を編集",
-  "@edit_character_title": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@edit_character_title": { "placeholders": { "name": { "type": "String" } } },
   "test_mode_tooltip": "全機能テスト",
   "test_mode_notice": "テストモードは各モードの通常価格通りにポイントを消費し、正式な思い出には記録されません！",
   "delete_character_tooltip": "キャラクターを削除",
@@ -501,13 +433,7 @@
   "voice_generating_status": "ボイスを調合中...",
   "voice_select_prompt": "3つのボイスを用意しました。選んでください：",
   "voice_sample_name": "ボイスサンプル {index}",
-  "@voice_sample_name": {
-    "placeholders": {
-      "index": {
-        "type": "int"
-      }
-    }
-  },
+  "@voice_sample_name": { "placeholders": { "index": { "type": "int" } } },
   "voice_sample_desc": "カードをクリックして選択、右側をクリックして試聴",
   "voice_preparing": "ボイスを準備しています...",
   "voice_retry": "破棄して再試行",
@@ -519,23 +445,11 @@
   "voice_advanced_tuning": "詳細設定：話し方の感情を微調整",
   "voice_stability_low": "ワイルド/吐息",
   "voice_stability_value": "理性度: {value}",
-  "@voice_stability_value": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
+  "@voice_stability_value": { "placeholders": { "value": { "type": "String" } } },
   "voice_stability_high": "安定/冷静",
   "voice_style_low": "冷淡/抑圧",
   "voice_style_value": "ドラマチック度: {value}",
-  "@voice_style_value": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
+  "@voice_style_value": { "placeholders": { "value": { "type": "String" } } },
   "voice_style_high": "大げさ/情熱的",
   "voice_test_btn_testing": "感情を適用中...",
   "voice_test_btn": "現在の感情を試聴",
@@ -543,29 +457,11 @@
   "social_circle_desc": "他のキャラクターに対する彼の見方を設定します。プレイヤーがチャットで相手の名を出した際、ここでの設定に基づいて反応します（例：嫉妬、怒り）。",
   "social_no_drama": "今のところ、他の男神とのトラブルはありません...",
   "social_target": "対象：{name}",
-  "@social_target": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@social_target": { "placeholders": { "name": { "type": "String" } } },
   "social_attitude": "見解：{attitude}",
-  "@social_attitude": {
-    "placeholders": {
-      "attitude": {
-        "type": "String"
-      }
-    }
-  },
+  "@social_attitude": { "placeholders": { "attitude": { "type": "String" } } },
   "social_edit_title": "{name} に対する見解を編集",
-  "@social_edit_title": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@social_edit_title": { "placeholders": { "name": { "type": "String" } } },
   "social_attitude_label": "彼の見解 / 態度",
   "social_attitude_hint": "例：うるさい奴だと思っているが、実は頼りにしている...",
   "social_save_changes": "変更を保存",
@@ -576,13 +472,7 @@
   "social_add_confirm": "追加を確定",
   "gallery_load_failed": "画像の読み込みに失敗しました\nネットワークを確認してください。",
   "gallery_affection_req": "好感度 {level}",
-  "@gallery_affection_req": {
-    "placeholders": {
-      "level": {
-        "type": "int"
-      }
-    }
-  },
+  "@gallery_affection_req": { "placeholders": { "level": { "type": "int" } } },
   "gallery_upload_limit": "最大10枚までアップロード可能です",
   "gallery_photo_setup": "写真の解放条件を設定",
   "gallery_photo_desc_label": "この写真は何ですか？",
@@ -596,13 +486,7 @@
   "loading_text": "読み込み中...",
   "default_unnamed_character": "未命名キャラクター",
   "elevenlabs_error": "ElevenLabs エラー：{code}",
-  "@elevenlabs_error": {
-    "placeholders": {
-      "code": {
-        "type": "String"
-      }
-    }
-  },
+  "@elevenlabs_error": { "placeholders": { "code": { "type": "String" } } },
   "voice_sample_script": "（コホン）こんにちは。これは僕専用のボイステストです。これから先、僕はここで君と一緒にいます。嬉しい時も、悲しい時も、何でも僕に聞かせてください।。この話すリズムや音色は、聞き慣れましたか？もし気に入ってくれたなら、これを僕の専用ボイスとして決めましょう。これからの一日一日を楽しみにしています。",
   "voice_test_script": "君を見つめるたびに、僕が心の中で何を考えているか、本当に分かっているのかい？……本当に君には敵わないな。",
   "field_background": "キャラクターの背景",
@@ -613,13 +497,7 @@
   "translating_status": "翻訳中...",
   "translate_profile_btn": "プロフィール内容を翻訳",
   "translate_failed": "翻訳失敗: {error}",
-  "@translate_failed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@translate_failed": { "placeholders": { "error": { "type": "String" } } },
   "like_own_char_warning": "自分が作ったキャラクターに「いいね」はできません！",
   "like_success_msg": "「いいね」を送信しました！作者がとても喜びます",
   "unlike_success_msg": "「いいね」を取り消しました",
@@ -640,7 +518,7 @@
   "report_opt_4": "スパム、広告詐欺",
   "report_opt_5": "その他の不適切な内容",
   "report_confirm": "通報を確定",
-  "report_success": "通報に成功しました、通知を受理しました！速やかに審査いたします",
+  "report_success": "通報に成功しました、通知を受理しました！速やかに審査いたします️",
   "report_failed": "通報に失敗しました。ネットワーク接続を確認してください。",
   "lore_delete_title": "警告：記憶の消去",
   "lore_delete_content": "この記憶は一度削除すると完全に消えてしまいます。本当に消去しますか？",
@@ -717,7 +595,7 @@
   "start_story_btn": "ストーリー開始",
   "default_chat_initial": "何か用かな？",
   "gallery_title": "専用通話背景",
-  "gallery_current_affection": "現在の好感度: {value}",
+  "gallery_current_affection": "現在の好感度: {value} 💕",
   "@gallery_current_affection": {
     "placeholders": {
       "value": {
@@ -734,7 +612,7 @@
       }
     }
   },
-  "gallery_lock_msg": "好感度が {value} に達すると解放されます！",
+  "gallery_lock_msg": "好感度が {value} に達すると解放されます！🍃",
   "@gallery_lock_msg": {
     "placeholders": {
       "value": {
@@ -745,7 +623,7 @@
   "gallery_reset_bg": "デフォルトの通話背景に戻しました",
   "background_story_title": "最初の出会いの物語",
   "background_story_empty": "このキャラクターはとても謎めいていて、まだ最初の出会いの物語がありません...",
-  "followed_creator_msg": "{creatorName} をフォローしました",
+  "followed_creator_msg": "{creatorName} をフォローしました 🦋",
   "@followed_creator_msg": {
     "placeholders": {
       "creatorName": {
@@ -753,26 +631,24 @@
       }
     }
   },
-  "mailbox_title": "専用ポスト",
+  "mailbox_title": "専用ポスト 💌",
   "mailbox_empty": "ポストは空っぽです。近況を投稿して彼を惹きつけましょう！",
   "new_notification": "新着通知",
   "default_he": "彼",
-  "affection_upgrade_title": "{charName} のあなたへの好感度が上がりました！",
+  "affection_upgrade_title": "{charName} のあなたへの好感度が上がりました！ 💖",
   "@affection_upgrade_title": {
     "placeholders": {
-      "charName": {
-        "type": "String"
-      }
+      "charName": { "type": "String" }
     }
   },
-  "flower_reward": "5ポイントのお花を獲得",
+  "flower_reward": "🌸 5ポイントのお花を獲得",
   "affection_quote_lv5": "「思いもしなかった……君が僕にとって、こんなに大切な存在になるなんて。君のいない世界なんて、もう想像もできないくらいに」",
   "affection_quote_lv4": "「人生で一番幸運だったのは、たぶんあの日、振り返った先に君がいたことだと思う」",
   "affection_quote_lv3": "「最近……ぼーっとする時間が増えた気がする。頭の中が君のことでいっぱいなんだ」",
   "affection_quote_lv2": "「君からの誘いなら、少し時間を空けるくらい……別に構わないよ」",
   "affection_quote_lv1": "「最近よく君を見かけるね。……このくらいの頻度で会うのも、悪くない気がするよ」",
   "affection_quote_lv0": "「君もここにいたんだ。これも一種の奇妙な縁なのかな？」",
-  "lore_edit_success": "記憶の断片が正常に更新されました！",
+  "lore_edit_success": "✨ 記憶の断片が正常に更新されました！",
   "delete_failed_network": "削除に失敗しました。ネットワークまたは権限を確認してください。",
   "ai_chat_language_code": "ja-JP",
   "ai_chat_language": "日本語",
@@ -782,9 +658,7 @@
   "load_chat_failed": "チャットリストの読み込みに失敗しました: {error}",
   "@load_chat_failed": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "chat_list_empty": "チャットルームが空っぽです...",
@@ -792,17 +666,13 @@
   "confirm_delete_chat": "{charName} との会話を削除してもよろしいですか？",
   "@confirm_delete_chat": {
     "placeholders": {
-      "charName": {
-        "type": "String"
-      }
+      "charName": { "type": "String" }
     }
   },
   "affection_score_short": "好感度 {score}",
   "@affection_score_short": {
     "placeholders": {
-      "score": {
-        "type": "String"
-      }
+      "score": { "type": "String" }
     }
   },
   "character_not_found": "キャラクターデータを読み込めません。削除された可能性があります。",
@@ -814,9 +684,7 @@
   "update_failed": "更新失敗: {error}",
   "@update_failed": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "chat_mode_daily": "日常",
@@ -829,33 +697,21 @@
   "lang_en": "English",
   "lang_vi": "Tiếng Việt",
   "chat_load_char_failed": "キャラクターデータが見つかりません。戻ってやり直すか、ネットワークを確認してください。",
-  "chat_jump_success": "その思い出のシーンへ移動しました",
+  "chat_jump_success": "その思い出のシーンへ移動しました 🍃",
   "chat_create_room_failed": "接続が不安定なようです。チャットルームの作成に失敗しました。もう一度お試しください。",
-  "chat_secret_file_title": "機密ファイル",
+  "chat_secret_file_title": "🔒 機密ファイル",
   "chat_secret_file_desc": "このキャラクターのソウルファイルはアーカイブされているか、プライベート設定になっています。詳細は現在閲覧できません。",
   "chat_understood": "了解",
-  "chat_egg_unlocked": "新しい思い出を獲得：{title}",
-  "@chat_egg_unlocked": {
-    "placeholders": {
-      "title": {
-        "type": "String"
-      }
-    }
-  },
+  "chat_egg_unlocked": "✨ 新しい思い出を獲得：{title}",
+  "@chat_egg_unlocked": { "placeholders": { "title": { "type": "String" } } },
   "chat_egg_saved": "専用バッグに自動的に収録されました",
   "chat_points_not_enough_title": "お花が足りません",
   "chat_points_not_enough_desc": "お花が足りません！ショップへ行って補充してください。",
   "chat_call_confirm_title": "{name} に電話をかけますか？",
-  "@chat_call_confirm_title": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_call_confirm_title": { "placeholders": { "name": { "type": "String" } } },
   "chat_call_rule_1": "通話ごとに 20 お花が消費されます",
   "chat_call_rule_2": "通話時間は1分間です。話しにくい場合はテキストで伝えることもできます",
-  "chat_call_rule_3": "イヤホンの着用をおすすめします。彼の声がより鮮明に聞こえます",
+  "chat_call_rule_3": "イヤホンの着用をおすすめします。彼の声がより鮮明に聞こえます ✨",
   "chat_call_btn_cancel": "今はやめておく",
   "chat_call_pref_title": "通話設定",
   "chat_call_lang_select": "通話言語を選択",
@@ -863,15 +719,9 @@
   "chat_call_save_memory_desc": "通話終了後、繰り返し聞き直すことができます",
   "chat_call_btn_start": "通話を開始",
   "chat_points_shortage": "お花ポイントが足りません！現在 {points} ポイントです",
-  "@chat_points_shortage": {
-    "placeholders": {
-      "points": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_points_shortage": { "placeholders": { "points": { "type": "String" } } },
   "chat_room_not_ready": "チャットルームの準備ができていません。もう一度入り直してください。",
-  "chat_stop_generating_msg": "返信を停止しました。ポイントは消費されていません",
+  "chat_stop_generating_msg": "返信を停止しました。ポイントは消費されていません 🍃",
   "chat_heartbeat_up": "彼の鼓動が速くなっています...",
   "chat_heartbeat_down": "彼の視線が冷たくなっています...",
   "chat_msg_copy": "コピー",
@@ -899,37 +749,25 @@
   "chat_edit_ai_hint": "彼の返信を編集する...",
   "chat_edit_user_hint": "新しい内容を入力してください...",
   "chat_no_voice_msg": "現在 {name} の声はまだありません...",
-  "@chat_no_voice_msg": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_no_voice_msg": { "placeholders": { "name": { "type": "String" } } },
   "chat_poke_btn": "つつく",
-  "chat_poke_success": "作者をつついておきました！彼の声が実装されるのを楽しみに待っていてくださいね～",
-  "chat_gift_points_needed": "お花ポイントが足りません！ {cost} ポイント必要です",
-  "@chat_gift_points_needed": {
-    "placeholders": {
-      "cost": {
-        "type": "String"
-      }
-    }
-  },
-  "chat_levelup_soulmate": "運命の人",
-  "chat_levelup_normal": "関係が進展しました！",
+  "chat_poke_success": "✨ 作者をつついておきました！彼の声が実装されるのを楽しみに待っていてくださいね～",
+  "chat_gift_points_needed": "お花ポイントが足りません！ {cost} ポイント必要です 🌸",
+  "@chat_gift_points_needed": { "placeholders": { "cost": { "type": "String" } } },
+  "chat_levelup_soulmate": "✨ 運命の人 ✨",
+  "chat_levelup_normal": "関係が進展しました！ 💖",
   "chat_levelup_btn_soulmate": "魂に刻む",
   "chat_levelup_btn_normal": "ときめきを受け取る",
-  "chat_loc_title": "仮想位置情報を送信",
+  "chat_loc_title": "📍 仮想位置情報を送信",
   "chat_loc_custom_btn": "カスタム位置情報を送信",
   "chat_loc_hint": "他の場所を入力... (例：君の心の中)",
   "chat_loc_1": "君の家の前",
   "chat_loc_2": "学校で",
   "chat_loc_3": "さっき通りかかったカフェで",
   "chat_loc_4": "コンビニで",
-  "chat_interact_title": "彼に何をしたいですか？",
+  "chat_interact_title": "✨ 彼に何をしたいですか？",
   "chat_interact_action": "つつく・小さな動作",
-  "chat_interact_gift": "プレゼントを贈る (お花消費 )",
+  "chat_interact_gift": "プレゼントを贈る (お花消費 🌸)",
   "chat_action_poke": "頬をつつく",
   "chat_action_hug": "抱っこをねだる",
   "chat_action_hand": "こっそり手を繋ぐ",
@@ -947,7 +785,7 @@
   "chat_menu_period": "生理周期管理",
   "chat_menu_reset": "記憶のリセット",
   "chat_search_hint": "どの甘い会話を思い出したいですか？",
-  "chat_search_empty": "その思い出は見つかりませんでした",
+  "chat_search_empty": "その思い出は見つかりませんでした 🥺",
   "chat_search_you": "あなたの発言",
   "chat_search_him": "彼の発言",
   "chat_tool_backpack": "バッグ",
@@ -965,16 +803,7 @@
   "chat_switch_mode_title": "チャットモードを切り替える",
   "chat_voice_call": "音声通話",
   "chat_sys_gift": "【システムイベント】{playerName} が 【{giftName}】 を贈りました。",
-  "@chat_sys_gift": {
-    "placeholders": {
-      "playerName": {
-        "type": "String"
-      },
-      "giftName": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_sys_gift": { "placeholders": { "playerName": { "type": "String" }, "giftName": { "type": "String" } } },
   "rel_title_soulmate": "ソウルメイト/深い愛",
   "rel_title_lover": "熱愛期/専属の彼氏",
   "rel_title_ambiguous": "曖昧な関係/探り合い",
@@ -992,25 +821,10 @@
   "rel_msg_acquaintance": "「最近よく君を見かけるね。……このくらいの頻度で会うのも、悪くない気がするよ」",
   "rel_msg_stranger": "「君もここにいたんだ。これも一種の奇妙な縁なのかな？」",
   "chat_edit_char_count": "{count} 文字",
-  "@chat_edit_char_count": {
-    "placeholders": {
-      "count": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_edit_char_count": { "placeholders": { "count": { "type": "String" } } },
   "chat_mysterious_player": "謎のプレイヤー",
   "chat_poke_message": "プレイヤー {playerName} が {characterName} の声を聞けるのを楽しみに待っています。早く生成しましょう！",
-  "@chat_poke_message": {
-    "placeholders": {
-      "playerName": {
-        "type": "String"
-      },
-      "characterName": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_poke_message": { "placeholders": { "playerName": { "type": "String" }, "characterName": { "type": "String" } } },
   "gift_heart": "ハート",
   "gift_flower": "お花",
   "gift_sun": "太陽",
@@ -1028,32 +842,20 @@
   "weekday_fri": "(金)",
   "weekday_sat": "(土)",
   "weekday_sun": "(日)",
-  "chat_egg_unlocked_dynamic": "新しい思い出を獲得：{memoryName}",
-  "@chat_egg_unlocked_dynamic": {
-    "placeholders": {
-      "memoryName": {
-        "type": "String"
-      }
-    }
-  },
+  "chat_egg_unlocked_dynamic": "✨ 新しい思い出を獲得：{memoryName}",
+  "@chat_egg_unlocked_dynamic": { "placeholders": { "memoryName": { "type": "String" } } },
   "chat_egg_saved_his_backpack": "彼の専用バッグに自動的に収録されました",
-  "chat_profile_updated_msg": "拾光アーカイブが更新されました！彼はあなたの最新設定を覚えていますよ",
+  "chat_profile_updated_msg": "拾光アーカイブが更新されました！彼はあなたの最新設定を覚えていますよ 🍃",
   "comment_loading_author": "読み込み中...",
   "comment_post_failed": "コメントに失敗しました。接続を確認してください：{error}",
-  "@comment_post_failed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@comment_post_failed": { "placeholders": { "error": { "type": "String" } } },
   "comment_delete_confirm_desc": "このコメントを永久に削除してもよろしいですか？",
   "comment_delete_failed": "削除に失敗しました。ネットワーク接続を確認してください",
   "comment_identity_title": "表示名を選択",
   "comment_identity_myself": "自分自身",
   "comment_report_title": "通報の確認",
   "comment_report_rules_title": "コメント通報規約",
-  "comment_report_rules_desc": "初犯：システム警告および違反1回の記録。\n2⃣ 二犯：1日間のコメント禁止。\n3⃣ 累犯：14日間の通報機能停止およびコメント表示優先度の低下。\n\n重度の悪質なケース：\nキャラクターとのインタラクションを1日間禁止し、IDを掲示板に3日間公開します（期間中のID変更は不可）。\n\n通報送信後、最終的な審査結果は【ゲーム内メール】にて個別にお送りします。\n互いに尊重し、理性的通報をお願いします。",
+  "comment_report_rules_desc": "初犯：システム警告および違反1回の記録。\n2️⃣ 二犯：1日間のコメント禁止。\n3️⃣ 累犯：14日間の通報機能停止およびコメント表示優先度の低下。\n\n🚨 重度の悪質なケース：\nキャラクターとのインタラクションを1日間禁止し、IDを掲示板に3日間公開します（期間中のID変更は不可）。\n\n💡 通報送信後、最終的な審査結果は【ゲーム内メール】にて個別にお送りします。\n互いに尊重し、理性的通報をお願いします。",
   "comment_report_understood": "了解しました",
   "comment_report_confirm_desc": "このコメントを通報してもよろしいですか？\n悪質な虚偽通報は処罰の対象となる場合があります。",
   "comment_report_submit_btn": "通報を確定",
@@ -1062,49 +864,19 @@
   "comment_option_delete": "コメントを削除",
   "comment_option_report": "コメントを通報",
   "comment_time_days_ago": "{days}日前",
-  "@comment_time_days_ago": {
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
+  "@comment_time_days_ago": { "placeholders": { "days": { "type": "String" } } },
   "comment_time_hours_ago": "{hours}時間前",
-  "@comment_time_hours_ago": {
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
+  "@comment_time_hours_ago": { "placeholders": { "hours": { "type": "String" } } },
   "comment_time_mins_ago": "{mins}分前",
-  "@comment_time_mins_ago": {
-    "placeholders": {
-      "mins": {
-        "type": "String"
-      }
-    }
-  },
+  "@comment_time_mins_ago": { "placeholders": { "mins": { "type": "String" } } },
   "comment_time_just_now": "たった今",
   "comment_sheet_title": "コメント",
   "comment_empty_state": "まだコメントがありません。最初の投稿者になりましょう！",
   "comment_reply_btn": "返信",
   "comment_replying_to": "@{name} に返信中",
-  "@comment_replying_to": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@comment_replying_to": { "placeholders": { "name": { "type": "String" } } },
   "comment_input_hint": "{name} としてコメント...",
-  "@comment_input_hint": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@comment_input_hint": { "placeholders": { "name": { "type": "String" } } },
   "moment_create_title": "新規投稿を作成",
   "moment_create_post_btn": "投稿",
   "moment_create_hint": "新しい出来事をシェア...",
@@ -1113,74 +885,26 @@
   "moment_create_visibility_public": "公開 (全員が閲覧可能)",
   "moment_create_visibility_private": "非公開 (フレンドのみ閲覧可能)",
   "char_story_expect": "{pronoun}との物語が楽しみ...",
-  "@char_story_expect": {
-    "placeholders": {
-      "pronoun": {
-        "type": "String"
-      }
-    }
-  },
+  "@char_story_expect": { "placeholders": { "pronoun": { "type": "String" } } },
   "common_update_failed": "更新に失敗しました。ネットワークを確認してください",
   "char_edit_fragment": "欠片を編集",
-  "char_dislikes": "嫌い：{dislikes}",
-  "@char_dislikes": {
-    "placeholders": {
-      "dislikes": {
-        "type": "String"
-      }
-    }
-  },
-  "char_likes": "好き：{likes}",
-  "@char_likes": {
-    "placeholders": {
-      "likes": {
-        "type": "String"
-      }
-    }
-  },
+  "char_dislikes": "🖤 嫌い：{dislikes}",
+  "@char_dislikes": { "placeholders": { "dislikes": { "type": "String" } } },
+  "char_likes": "🤍 好き：{likes}",
+  "@char_likes": { "placeholders": { "likes": { "type": "String" } } },
   "char_age_occupation": "{age}歳 | {job}",
-  "@char_age_occupation": {
-    "placeholders": {
-      "age": {
-        "type": "String"
-      },
-      "job": {
-        "type": "String"
-      }
-    }
-  },
+  "@char_age_occupation": { "placeholders": { "age": { "type": "String" }, "job": { "type": "String" } } },
   "common_got_it": "了解しました",
   "common_add_failed": "追加に失敗しました。ネットワークを確認してください",
   "common_delete_failed_with_err": "削除に失敗しました。ネットワーク状況を確認してください：{error}",
-  "@common_delete_failed_with_err": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "char_exclusive_guardian": "専属ガーディアン",
+  "@common_delete_failed_with_err": { "placeholders": { "error": { "type": "String" } } },
+  "char_exclusive_guardian": "専属ガーディアン 💖",
   "mailbox_like_body": "{playerName}が{charName}に「いいね」しました！",
-  "@mailbox_like_body": {
-    "placeholders": {
-      "playerName": {
-        "type": "String"
-      },
-      "charName": {
-        "type": "String"
-      }
-    }
-  },
+  "@mailbox_like_body": { "placeholders": { "playerName": { "type": "String" }, "charName": { "type": "String" } } },
   "chat_translation_prefix": "【訳】{content} (これは翻訳された感情的なコンテンツです)",
-  "@chat_translation_prefix": {
-    "placeholders": {
-      "content": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_translation_prefix": { "placeholders": { "content": { "type": "String" } } },
   "player_default_nickname": "旅人",
-  "chat_player_sent_location": "(プレイヤーが位置情報を送信しました：{location})",
+  "chat_player_sent_location": "📍 (プレイヤーが位置情報を送信しました：{location})",
   "@chat_player_sent_location": {
     "placeholders": {
       "location": {
@@ -1188,149 +912,44 @@
       }
     }
   },
-  "@chat_player_sent_custom_location": {
-    "placeholders": {
-      "location": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_player_sent_custom_location": { "placeholders": { "location": { "type": "String" } } },
   "chat_you": "あなた",
   "chat_opponent": "相手",
   "chat_dice_duel_result": "【システムイベント】{name}とのサイコロ対決！結果は...",
-  "@chat_dice_duel_result": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_dice_duel_result": { "placeholders": { "name": { "type": "String" } } },
   "chat_loading_status": "読み込み中...",
   "chat_error_load_msg": "メッセージの読み込みに失敗しました: {error}",
-  "@chat_error_load_msg": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_error_load_msg": { "placeholders": { "error": { "type": "String" } } },
   "chat_voice_msg_label": "音声メッセージ",
   "chat_special_story_trigger": "【特殊ストーリー解放：{title}】",
-  "@chat_special_story_trigger": {
-    "placeholders": {
-      "title": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_special_story_trigger": { "placeholders": { "title": { "type": "String" } } },
   "common_edit_failed": "編集に失敗しました: {error}",
-  "@common_edit_failed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@common_edit_failed": { "placeholders": { "error": { "type": "String" } } },
   "common_reset_failed": "リセットに失敗しました: {error}",
-  "@common_reset_failed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@common_reset_failed": { "placeholders": { "error": { "type": "String" } } },
   "chat_default_greeting": "こんにちは...",
   "chat_memory_cleared": "記憶が完全に消去されました",
   "chat_history_reset": "会話がリセットされました",
-  "chat_profile_full": "【 専属拾光アーカイブ - {name} 】\n━━━━━━━━━━━━━━━━━━\n名前：{identity}\n誕生日：{birthday}\n身長：{height}\n外見：{appearance}\n職業：{job}\n\n【 彼女の魂の欠片について 】\n{intro}\n━━━━━━━━━━━━━━━━━━",
-  "@chat_profile_full": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      },
-      "identity": {
-        "type": "String"
-      },
-      "birthday": {
-        "type": "String"
-      },
-      "height": {
-        "type": "String"
-      },
-      "appearance": {
-        "type": "String"
-      },
-      "job": {
-        "type": "String"
-      },
-      "intro": {
-        "type": "String"
-      }
-    }
-  },
-  "chat_profile_locked": "【 専属拾光アーカイブ 】\n━━━━━━━━━━━━━━━━━━\nニックネーム：{nickname}\n誕生日：{birthday}\n\nその他のキャラクターデータはまだ解放されていません...\n（プロフィールを完成させて、平行世界の彼にあなたをもっと知ってもらいましょう！）\n━━━━━━━━━━━━━━━━━━",
-  "@chat_profile_locked": {
-    "placeholders": {
-      "nickname": {
-        "type": "String"
-      },
-      "birthday": {
-        "type": "String"
-      }
-    }
-  },
+  "chat_profile_full": "📜 【 専属拾光アーカイブ - {name} 】\n━━━━━━━━━━━━━━━━━━\n🔹 名前：{identity}\n🔹 誕生日：{birthday}\n🔹 身長：{height}\n🔹 外見：{appearance}\n🔹 職業：{job}\n\n📖 【 彼女の魂の欠片について 】\n{intro}\n━━━━━━━━━━━━━━━━━━",
+  "@chat_profile_full": { "placeholders": { "name": { "type": "String" }, "identity": { "type": "String" }, "birthday": { "type": "String" }, "height": { "type": "String" }, "appearance": { "type": "String" }, "job": { "type": "String" }, "intro": { "type": "String" } } },
+  "chat_profile_locked": "📜 【 専属拾光アーカイブ 】\n━━━━━━━━━━━━━━━━━━\n🔹 ニックネーム：{nickname}\n🔹 誕生日：{birthday}\n\n🔒 その他のキャラクターデータはまだ解放されていません...\n（プロフィールを完成させて、平行世界の彼にあなたをもっと知ってもらいましょう！✨）\n━━━━━━━━━━━━━━━━━━",
+  "@chat_profile_locked": { "placeholders": { "nickname": { "type": "String" }, "birthday": { "type": "String" } } },
   "profile_unnamed_file": "無題のファイル",
   "chat_default_player_name": "プレイヤー",
   "error_system_confusion": "システムに少し混乱が生じています。もう一度お試しください。",
   "error_msg_send_failed": "メッセージの送信に失敗しました。もう一度お試しください。",
   "error_system_busy": "システムが混み合っています。後でもう一度お試しください。",
   "error_network_unavailable": "現在接続できません。再試行してください。",
-  "chat_call_ended": "通話終了。{name}と{time}通話しました",
-  "@chat_call_ended": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      },
-      "time": {
-        "type": "String"
-      }
-    }
-  },
+  "chat_call_ended": "📞 通話終了。{name}と{time}通話しました",
+  "@chat_call_ended": { "placeholders": { "name": { "type": "String" }, "time": { "type": "String" } } },
   "chat_exclusive_story": "専属ストーリー：{title}",
-  "@chat_exclusive_story": {
-    "placeholders": {
-      "title": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_exclusive_story": { "placeholders": { "title": { "type": "String" } } },
   "chat_teaser_exclusive": "これはあなたと{name}だけの隠された思い出です...",
-  "@chat_teaser_exclusive": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_teaser_exclusive": { "placeholders": { "name": { "type": "String" } } },
   "chat_teaser_keyword": "「{keyword}」に関する専属の思い出が静かに解放されました...",
-  "@chat_teaser_keyword": {
-    "placeholders": {
-      "keyword": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_teaser_keyword": { "placeholders": { "keyword": { "type": "String" } } },
   "chat_hidden_event_trigger": "【隠しイベント発生：{title}】\n{scene}",
-  "@chat_hidden_event_trigger": {
-    "placeholders": {
-      "title": {
-        "type": "String"
-      },
-      "scene": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_hidden_event_trigger": { "placeholders": { "title": { "type": "String" }, "scene": { "type": "String" } } },
   "chat_first_line_fallback": "......（彼は静かにあなたを見つめ、あなたが先に話すのを待っているようだ）",
   "chat_new_room_created": "新しいチャットルームが作成されました",
   "portfolio_title": "{nickname}の作品集",
@@ -1342,13 +961,13 @@
     }
   },
   "enter_secret_studio": "私の秘密のスタジオに入る",
-  "no_public_character_mine": "まだ公開キャラクターを公開していません！\nスタジオに行って創作しましょう",
+  "no_public_character_mine": "まだ公開キャラクターを公開していません！\nスタジオに行って創作しましょう✨",
   "no_public_character_other": "このクリエイターはまだキャラクターを公開していません...",
   "delete_draft_title": "下書きを削除",
   "confirm_delete_draft_msg": "この未完成のキャラクターを削除してもよろしいですか？\n（削除後は元に戻せません）",
-  "draft_cleared_success": "下書きのクリアが完了しました",
+  "draft_cleared_success": "下書きのクリアが完了しました 🧹",
   "login_required_for_studio": "スタジオに入るには先にログインしてください！",
-  "my_secret_studio_title": "私の秘密のスタジオ",
+  "my_secret_studio_title": "私の秘密のスタジオ 🛠️",
   "create_new_character_btn": "新しいキャラクターを作成",
   "unnamed_draft": "無題の下書き",
   "click_to_edit_story": "クリックして彼のストーリーの編集を続ける...",
@@ -1373,56 +992,42 @@
   "moment_delete_confirm_content": "削除すると、このタイムラインの思い出は消えてしまいますよ！",
   "action_confirm_delete": "削除を確定",
   "friend_unknown": "ある友人",
-  "moment_like_yours": "{nickname} があなたの投稿に「いいね」しました！",
+  "moment_like_yours": "{nickname} があなたの投稿に「いいね」しました！ 💖",
   "@moment_like_yours": {
     "placeholders": {
-      "nickname": {
-        "type": "String"
-      }
+      "nickname": { "type": "String" }
     }
   },
-  "moment_like_others": "{nickname} は {authorName} がとても魅力的だと思い、「いいね」をしました！",
+  "moment_like_others": "{nickname} は {authorName} がとても魅力的だと思い、「いいね」をしました！ ✨",
   "@moment_like_others": {
     "placeholders": {
-      "nickname": {
-        "type": "String"
-      },
-      "authorName": {
-        "type": "String"
-      }
+      "nickname": { "type": "String" },
+      "authorName": { "type": "String" }
     }
   },
-  "moment_like_success": "あなたのときめきが届きました！",
-  "moment_notification_new_like": "新しい「いいね」！",
-  "moment_mention_mail_body": "{nickname} が投稿で @{name} にメンションしました！",
+  "moment_like_success": "あなたのときめきが届きました！ ✨",
+  "moment_notification_new_like": "新しい「いいね」！ 💖",
+  "moment_mention_mail_body": "{nickname} が投稿で @{name} にメンションしました！ ✨",
   "@moment_mention_mail_body": {
     "placeholders": {
-      "nickname": {
-        "type": "String"
-      },
-      "name": {
-        "type": "String"
-      }
+      "nickname": { "type": "String" },
+      "name": { "type": "String" }
     }
   },
   "moment_detail_title": "投稿の詳細",
-  "moment_not_found": "この投稿は見つかりません...",
+  "moment_not_found": "この投稿は見つかりません... 😢",
   "moment_comment_title": "タイムラインのコメント",
-  "moment_comment_empty": "まだコメントがありません。最初のコメントを書き込みましょう！",
+  "moment_comment_empty": "まだコメントがありません。最初のコメントを書き込みましょう！ 🛋",
   "moment_replying_to": "@{name} に返信中",
   "@moment_replying_to": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "moment_reply_hint": "@{name} に返信...",
   "@moment_reply_hint": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "moment_leave_comment_hint": "あなたの反応を残す...",
@@ -1434,64 +1039,44 @@
   "moment_reply_private": "{name} にDMで返信",
   "@moment_reply_private": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
-  "moment_go_to_chat_msg": "この投稿を持って {name} とチャットしに行きましょう！",
+  "moment_go_to_chat_msg": "この投稿を持って {name} とチャットしに行きましょう！ 💬",
   "@moment_go_to_chat_msg": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "moment_share_to_apps": "他のアプリで共有",
   "moment_likes_label": "{count} 枚の葉っぱ",
   "@moment_likes_label": {
     "placeholders": {
-      "count": {
-        "type": "String"
-      }
+      "count": { "type": "String" }
     }
   },
   "moment_external_share_content": "『{appName}』{author}の投稿をチェックしよう：{content}\n\n今すぐダウンロードして、あなただけの専属時間を始めよう：{appLink}",
   "@moment_external_share_content": {
     "placeholders": {
-      "appName": {
-        "type": "String"
-      },
-      "author": {
-        "type": "String"
-      },
-      "content": {
-        "type": "String"
-      },
-      "appLink": {
-        "type": "String"
-      }
+      "appName": { "type": "String" },
+      "author": { "type": "String" },
+      "content": { "type": "String" },
+      "appLink": { "type": "String" }
     }
   },
-  "moment_forward_title": "チャット中のキャラクターに転送",
-  "moment_forward_empty_state": "現在チャット中のキャラクターはいません！\nロビーで気になる人を見つけに行きましょう",
+  "moment_forward_title": "チャット中のキャラクターに転送 💌",
+  "moment_forward_empty_state": "現在チャット中のキャラクターはいません！\nロビーで気になる人を見つけに行きましょう 🌿",
   "moment_forward_template": "【ダイナミクスを転送しました】\n作者：{author}\n内容：{content}",
   "@moment_forward_template": {
     "placeholders": {
-      "author": {
-        "type": "String"
-      },
-      "content": {
-        "type": "String"
-      }
+      "author": { "type": "String" },
+      "content": { "type": "String" }
     }
   },
-  "moment_forward_success": "{name} にそっとシェアしました！",
+  "moment_forward_success": "✅ {name} にそっとシェアしました！",
   "@moment_forward_success": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "action_send": "送信",
@@ -1501,9 +1086,7 @@
   "memo_hint_text": "{name} について何を書き留めますか？",
   "@memo_hint_text": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "memo_label_reminder_date": "リマインダー日:",
@@ -1512,39 +1095,29 @@
   "memo_list_title": "{name} とのメモ",
   "@memo_list_title": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "memo_empty_state": "まだメモがありません！\n右上のボタンから新しく追加しましょう！",
   "memo_reminder_date_display": "リマインダー日：{date}",
   "@memo_reminder_date_display": {
     "placeholders": {
-      "date": {
-        "type": "String"
-      }
+      "date": { "type": "String" }
     }
   },
   "daily_gift_title": "時光デイリーギフト",
-  "daily_login_welcome": "『{appName}』へおかえりなさい！\n本日のチェックインで {amount} 花言葉ポイントを受け取れます。",
+  "daily_login_welcome": "『{appName}』へおかえりなさい！\n本日のチェックインで {amount} 花言葉ポイントを受け取れます。🌸",
   "@daily_login_welcome": {
     "placeholders": {
-      "appName": {
-        "type": "String"
-      },
-      "amount": {
-        "type": "String"
-      }
+      "appName": { "type": "String" },
+      "amount": { "type": "String" }
     }
   },
   "title_daily_check_in": "毎日サインイン",
-  "success_claim_reward": "{amount} 花言葉ポイントを受け取りました！",
+  "success_claim_reward": "{amount} 花言葉ポイントを受け取りました！ 🌸",
   "@success_claim_reward": {
     "placeholders": {
-      "amount": {
-        "type": "String"
-      }
+      "amount": { "type": "String" }
     }
   },
   "error_claim_failed": "受け取りに失敗しました。ネットワークを確認して再試行してください。",
@@ -1594,7 +1167,7 @@
       }
     }
   },
-  "draft_saved_success_msg": "了解しました！下書きに保存しました。いつでも編集を再開できますよ！",
+  "draft_saved_success_msg": "了解しました！下書きに保存しました。いつでも編集を再開できますよ！✨",
   "dialog_reminder_title": "リマインダー",
   "warning_id_not_edited": "専用IDがまだ編集されていませんが、今すぐ保存してもよろしいですか？",
   "action_continue_editing": "編集を続ける",
@@ -1605,7 +1178,7 @@
   "action_select_avatar": "アバターを選択",
   "action_choose_from_gallery": "ギャラリーから選択",
   "title_adjust_avatar": "アバターを調整",
-  "avatar_updated_success": "アバターを変更しました",
+  "avatar_updated_success": "アバターを変更しました 🍃",
   "title_create_profile": "プロフィールを作成",
   "title_edit_profile": "プロフィールを編集",
   "label_your_nickname": "あなたのニックネーム",
@@ -1621,73 +1194,61 @@
       }
     }
   },
-  "msg_birthdate_immutable": "誕生日は一度設定すると変更できません",
+  "msg_birthdate_immutable": "誕生日は一度設定すると変更できません ✨",
   "action_start_journey": "時間の旅を始める",
-  "moment_like_self": "{nickname} があなたの投稿に「いいね」しました！",
+  "moment_like_self": "{nickname} があなたの投稿に「いいね」しました！ 💖",
   "@moment_like_self": {
     "placeholders": {
-      "nickname": {
-        "type": "String"
-      }
+      "nickname": { "type": "String" }
     }
   },
-  "moment_like_other": "{nickname} は {authorName} がとても魅力的だと思い、「いいね」をしました！",
+  "moment_like_other": "{nickname} は {authorName} がとても魅力的だと思い、「いいね」をしました！ ✨",
   "@moment_like_other": {
     "placeholders": {
-      "nickname": {
-        "type": "String"
-      },
-      "authorName": {
-        "type": "String"
-      }
+      "nickname": { "type": "String" },
+      "authorName": { "type": "String" }
     }
   },
-  "task_social_tour_complete": "コミュニティ巡回タスク達成！お花を受け取るのを忘れないでね！",
+  "task_social_tour_complete": "✨ コミュニティ巡回タスク達成！お花を受け取るのを忘れないでね！ 🌸",
   "wall_title_shiguang": "拾光の壁",
-  "wall_tab_explore": "探索",
-  "wall_tab_exclusive": "専用",
+  "wall_tab_explore": "🌍 探索",
+  "wall_tab_exclusive": "🔒 専用",
   "more_options": "その他のオプション",
   "delete_warning": "削除すると、投稿は元に戻せません",
   "delete_success": "削除に成功しました",
-  "notification_new_comment": "新着コメント！",
+  "notification_new_comment": "新着コメント！ 💬",
   "notification_like_from_sender": "{senderName} があなたの投稿に「いいね」しました！",
   "@notification_like_from_sender": {
     "placeholders": {
-      "senderName": {
-        "type": "String"
-      }
+      "senderName": { "type": "String" }
     }
   },
-  "empty_public_moments_prompt": "まだ何もありません。\n最初の公開投稿をしてみましょう！",
-  "empty_private_moments_prompt": "タイムラインにはまだ思い出がありません。\n彼との思い出を作りに行きましょう！",
-  "profile_archived_or_deleted_message": "この魂のファイルはクリエイターによってアーカイブされたか、非公開にされたか、あるいは時の流れの中に消えてしまいました...\n\nもしかしたら並行世界で、また会えるチャンスがあるかもしれません。",
+  "empty_public_moments_prompt": "まだ何もありません。\n最初の公開投稿をしてみましょう！ 🌍",
+  "empty_private_moments_prompt": "タイムラインにはまだ思い出がありません。\n彼との思い出を作りに行きましょう！ ✨",
+  "profile_archived_or_deleted_message": "この魂のファイルはクリエイターによってアーカイブされたか、非公開にされたか、あるいは時の流れの中に消えてしまいました...\n\nもしかしたら並行世界で、また会えるチャンスがあるかもしれません。 ✨",
   "leave_silently": "そっと立ち去る",
   "character_post_schedule": "キャラクター投稿スケジュール",
   "creator_self": "クリエイター本人",
   "post_identity_prompt": "今日は誰の身分で投稿しますか？",
-  "identity_creator": "クリエイターとして",
+  "identity_creator": "✨ クリエイターとして",
   "identity_character": "キャラクターとして",
   "decide_post_time_prompt": "彼らの投稿時間を決めてあげましょう！",
-  "auto_post_schedule_hint": "オンにすると、指定した時間に日常の投稿が自動的に行われます\n( ヒント：正時以外に設定すると、より人間らしく見えますよ！)",
+  "auto_post_schedule_hint": "オンにすると、指定した時間に日常の投稿が自動的に行われます\n(💡 ヒント：正時以外に設定すると、より人間らしく見えますよ！)",
   "no_characters_created_yet": "まだキャラクターを作成していません！",
   "time_hour": "{hour} 時",
   "@time_hour": {
     "placeholders": {
-      "hour": {
-        "type": "String"
-      }
+      "hour": { "type": "String" }
     }
   },
   "time_minute": "{minute} 分",
   "@time_minute": {
     "placeholders": {
-      "minute": {
-        "type": "String"
-      }
+      "minute": { "type": "String" }
     }
   },
-  "empty_public_moments_short": "現在、公開投稿はありません",
-  "empty_private_moments_short": "タイムラインはまだ静かです",
+  "empty_public_moments_short": "現在、公開投稿はありません 🌍",
+  "empty_private_moments_short": "タイムラインはまだ静かです ✨",
   "my_created_characters": "作成したキャラクター",
   "no_characters_yet": "まだキャラクターが作成されていません",
   "play_count_display": "プレイ回数: {count}",
@@ -1702,9 +1263,7 @@
   "care_calendar_title": "{characterName}のケアカレンダー",
   "@care_calendar_title": {
     "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
+      "characterName": { "type": "String" }
     }
   },
   "care_calendar_greeting": "今日の気分はどう？",
@@ -1713,38 +1272,28 @@
   "care_calendar_save_success": "{characterName}：「全部メモしたよ。ここ数日辛かったね、俺はずっと君のそばにいるから。」",
   "@care_calendar_save_success": {
     "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
+      "characterName": { "type": "String" }
     }
   },
-  "daily_gift_success": "デイリーギフトの受け取りに成功しました！",
-  "check_in_fail_network": "チェックインに失敗しました。ネットワーク接続を確認してください",
+  "daily_gift_success": "デイリーギフトの受け取りに成功しました！🌸",
+  "check_in_fail_network": "チェックインに失敗しました。ネットワーク接続を確認してください 🍃",
   "task_completed": "タスク完了：{taskName}",
   "@task_completed": {
     "placeholders": {
-      "taskName": {
-        "type": "String"
-      }
+      "taskName": { "type": "String" }
     }
   },
   "task_reward_claimed": "「{taskName}」から {rewardAmount} 個のお花を受け取りました！",
   "@task_reward_claimed": {
     "placeholders": {
-      "taskName": {
-        "type": "String"
-      },
-      "rewardAmount": {
-        "type": "String"
-      }
+      "taskName": { "type": "String" },
+      "rewardAmount": { "type": "String" }
     }
   },
   "claim_failed_error": "受け取り失敗: {e}",
   "@claim_failed_error": {
     "placeholders": {
-      "e": {
-        "type": "String"
-      }
+      "e": { "type": "String" }
     }
   },
   "tab_heartbeat_diary": "ときめき日記",
@@ -1757,7 +1306,7 @@
   "btn_claimed": "受け取り済み",
   "btn_claim": "受け取る",
   "btn_incomplete": "未完了",
-  "network_unstable_retry": "ネットワークが不安定です。後でもう一度お試しください",
+  "network_unstable_retry": "ネットワークが不安定です。後でもう一度お試しください 🍃",
   "title_time_travel": "タイムトラベル",
   "select_chat_mode": "チャットモードを選択",
   "mode_chat": "チャット",
@@ -1781,24 +1330,18 @@
   },
   "search_companion_title": "拾光伴侶を検索",
   "search_name_placeholder": "名前を入力...",
-  "search_no_match_hint": "キャラクターが見つかりません。別の名前を試しますか？",
+  "search_no_match_hint": "キャラクターが見つかりません。別の名前を試しますか？ ✨",
   "character_info_full": "{age}歳 | {occupation}",
   "@character_info_full": {
     "placeholders": {
-      "age": {
-        "type": "String"
-      },
-      "occupation": {
-        "type": "String"
-      }
+      "age": { "type": "String" },
+      "occupation": { "type": "String" }
     }
   },
   "character_info_age_only": "{age}歳",
   "@character_info_age_only": {
     "placeholders": {
-      "age": {
-        "type": "String"
-      }
+      "age": { "type": "String" }
     }
   },
   "empty_state_warmth": "時空の余熱がまだここに残っています...",
@@ -1807,18 +1350,14 @@
   "dialog_msg_remove_friend": "本当に {characterName} をフレンドリストから削除しますか？",
   "@dialog_msg_remove_friend": {
     "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
+      "characterName": { "type": "String" }
     }
   },
   "action_remove": "削除",
   "snackbar_friend_removed": "{characterName} をフレンドから削除しました",
   "@snackbar_friend_removed": {
     "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
+      "characterName": { "type": "String" }
     }
   },
   "action_remove_friend": "フレンドを削除",
@@ -1826,26 +1365,20 @@
   "dialog_msg_block": "ブロックすると、{characterName} の情報はいっさい表示されなくなります。本当にブロックしますか？",
   "@dialog_msg_block": {
     "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
+      "characterName": { "type": "String" }
     }
   },
   "snackbar_blocked": "{characterName} をブロックしました",
   "@snackbar_blocked": {
     "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
+      "characterName": { "type": "String" }
     }
   },
   "action_block_character": "このキャラクターをブロック",
   "dialog_title_report": "{characterName} を報告",
   "@dialog_title_report": {
     "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
+      "characterName": { "type": "String" }
     }
   },
   "input_hint_report_reason": "報告の理由を入力してください...",
@@ -1857,9 +1390,7 @@
   "text_character_count": "キャラクター数: {count}",
   "@text_character_count": {
     "placeholders": {
-      "count": {
-        "type": "int"
-      }
+      "count": { "type": "int" }
     }
   },
   "msg_no_more_encounters_today": "今日の出会いはここまで！",
@@ -1870,12 +1401,8 @@
   "text_age_and_identities": "{age}歳 | {identities}",
   "@text_age_and_identities": {
     "placeholders": {
-      "age": {
-        "type": "String"
-      },
-      "identities": {
-        "type": "String"
-      }
+      "age": { "type": "String" },
+      "identities": { "type": "String" }
     }
   },
   "snackbar_operation_failed": "操作に失敗しました。後でもう一度お試しください",
@@ -1897,13 +1424,13 @@
   "shop_current_points_label": "現在所持しているお花ポイント",
   "shop_tab_top_up": "ポイントチャージ",
   "shop_tab_history": "取引履歴",
-  "shop_empty_history": "まだお花の履歴はありません！",
+  "shop_empty_history": "まだお花の履歴はありません！🌸",
   "shop_unknown_item": "不明なアイテム",
   "shop_first_purchase_bonus": "初回購入2倍！",
   "story_summary_title": "二人の物語",
   "story_summary_empty_content": "要約内容が空です。",
   "story_summary_deleted_toast": "この思い出を削除しました",
-  "story_summary_empty_list": "二人の物語はまだ始まっていません...\nもっとたくさん話して、{name} に\n最初の思い出を綴ってもらいましょう！",
+  "story_summary_empty_list": "二人の物語はまだ始まっていません...\nもっとたくさん話して、{name} に \n最初の思い出を綴ってもらいましょう！ ✨",
   "@story_summary_empty_list": {
     "placeholders": {
       "name": {
@@ -1917,39 +1444,33 @@
   "reset_to_default": "デフォルトに戻す",
   "reset_bg_title": "背景をデフォルトに戻す",
   "reset_bg_content": "専用写真を解除して、デフォルトのテーマ背景に戻してもよろしいですか？",
-  "reset_bg_success": "デフォルトの背景に戻しました",
+  "reset_bg_success": "デフォルトの背景に戻しました ✨",
   "confirm_reset": "元に戻す",
   "selectedMessagesCount": "{count}件選択済み",
   "@selectedMessagesCount": {
     "placeholders": {
-      "count": {
-        "type": "int"
-      }
+      "count": { "type": "int" }
     }
   },
   "screenshotShare": "スクリーンショット共有",
   "exclusiveMomentsWith": "{name}との専屬拾光",
   "@exclusiveMomentsWith": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "downloadToUnlock": "『恋恋拾光』をダウンロードして、専屬のロマンスを解禁",
-  "exclusiveMomentsGenerated": "専屬拾光が生成されました",
+  "exclusiveMomentsGenerated": "専屬拾光が生成されました ✨",
   "selectAgain": "もう一度選ぶ",
   "downloadAndShare": "保存して共有",
   "inviteToMeet": "『恋恋拾光』であなたの {name} に会いましょう！",
   "@inviteToMeet": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
-  "shop_log_monthly_card": "起動：星光の契約（月間カード即時贈呈ポイント）",
-  "shop_log_top_up_double": "チャージ：{points} ポイント（初回購入2倍特典含む ）",
+  "shop_log_monthly_card": "起動：星光の契約（月間カード即時贈呈ポイント） 🌙",
+  "shop_log_top_up_double": "チャージ：{points} ポイント（初回購入2倍特典含む 🎁）",
   "@shop_log_top_up_double": {
     "placeholders": {
       "points": {
@@ -1974,7 +1495,7 @@
       }
     }
   },
-  "shop_purchase_success_double_bonus": "おめでとうございます！初回購入2倍特典が適用されました！",
+  "shop_purchase_success_double_bonus": "✨ おめでとうございます！初回購入2倍特典が適用されました！",
   "shop_purchase_awesome": "最高！",
   "shop_purchase_failed_title": "購入キャンセルまたは失敗",
   "shop_purchase_failed_body": "支払いは発生していません。\n\n(エラーコード: {errorCode})",
@@ -1997,18 +1518,18 @@
   "shop_monthly_card_status_inactive": "今すぐ30日間の星光ボーナス特典を有効化",
   "shop_monthly_card_limit_reached": "上限に達しました",
   "shop_monthly_card_promo_desc": "即時にお花250個を獲得、毎日お花10個を受け取る",
-  "task_monthly_title": "星の契約・毎日特権",
+  "task_monthly_title": "星の契約・毎日特権 🌙",
   "task_monthly_locked": "未解放",
   "task_monthly_subtitle_active": "月間カード限定特典の配布 ",
   "task_monthly_subtitle_inactive": "月間カード【星の契約】を解放してこのタスクを開始 ",
   "task_monthly_log_name": "月間カード毎日特権",
   "profile_id_locked": "専用 ID がロックされました",
   "profile_copy_id": "タップして ID をコピー",
-  "referral_log_newbie_reward": "星の招待：新規登録報酬",
-  "referral_log_inviter_reward": "星の招待：フレンド目標達成リワード",
+  "referral_log_newbie_reward": "星の招待：新規登録報酬 ✨",
+  "referral_log_inviter_reward": "星の招待：フレンド目標達成リワード 🎁",
   "referral_success_title": "星の招待が解放されました！",
-  "referral_success_content": "おめでとうございます！キャラクターとの深い交流が15言に達しました！\n\n「新規登録報酬 50ポイント」があなたのアカウントに届きました。また、お友達も同時に50ポイントのリワードを獲得しました！",
-  "profile_referral_title": "星の招待",
+  "referral_success_content": "おめでとうございます！キャラクターとの深い交流が15言に達しました！\n\n「新規登録報酬 50ポイント」があなたのアカウントに届きました。また、お友達も同時に50ポイントのリワードを獲得しました！🎁",
+  "profile_referral_title": "星の招待 🌟",
   "profile_referral_hint": "友達の招待コードを入力",
   "profile_referral_bind_btn": "連携",
   "profile_referral_pending": "プレイヤー {id} の招待を承認しました\nキャラクターと15言話してお花50ポイントを解放しよう！",
@@ -2017,53 +1538,47 @@
   "profile_referral_err_not_found": "プレイヤーが見つかりません。招待コードを確認してください！",
   "profile_referral_success": "連携成功！さっそくキャラクターとチャットしましょう！",
   "profile_referral_err_expired": "申し訳ありません。新規招待コードは登録後3日以内に連携する必要があります！",
-  "profile_share_message": "『恋恋拾光』で{character}ときめきに満ちた旅を始めました！今すぐアプリをダウンロードして、マイページで私の星の招待コード【{code}】を入力してね。二人とも無料でお花50ポイントがもらえるよ！\n\nダウンロードリンク：\nhttps://lianlianshiguang.web.app/download/",
+  "profile_share_message": "✨『恋恋拾光』で{character}ときめきに満ちた旅を始めました！今すぐアプリをダウンロードして、マイページで私の星の招待コード【{code}】を入力してね。二人とも無料でお花50ポイントがもらえるよ！🎁\n\n ダウンロードリンク：\nhttps://lianlianshiguang.web.app/download/",
   "@profile_share_message": {
     "placeholders": {
-      "character": {
-        "type": "String"
-      },
-      "code": {
-        "type": "String"
-      }
+      "character": { "type": "String" },
+      "code": { "type": "String" }
     }
   },
-  "chat_levelup_share_btn": "このときめきを友達に自慢する",
+  "chat_levelup_share_btn": "このときめきを友達に自慢する ✨",
   "profile_my_invite_code_with_char": "私の専用招待コード (現在の推し：{character})",
   "@profile_my_invite_code_with_char": {
     "placeholders": {
-      "character": {
-        "type": "String"
-      }
+      "character": { "type": "String" }
     }
   },
   "profile_send_invite_btn": "星の招待を友達に送信",
   "profile_fallback_character": "推しキャラクター",
-  "profile_copy_success": "招待コードをクリップボードにコピーしました！",
+  "profile_copy_success": "✅ 招待コードをクリップボードにコピーしました！",
   "profile_referral_rule_title": "星の招待ルール",
-  "profile_referral_rule_receiver": "招待コードを連携した後、任意の推しキャラクターと15言以上チャットするだけで、あなたと招待者に同時にお花50ポイントの報酬が配布されます！\n\n注意：招待コードはアカウント登録後3日以内に入力しないと無効になりますのでご注意ください。",
-  "profile_referral_rule_inviter": "新しい友達を招待してアプリをダウンロードしてもらい、あなたの招待コードを入力してもらいましょう。相手が登録後3日以内に連携を完了し、任意のキャラクターと15言以上チャットすると、二人とも同時にお花50ポイントの報酬を獲得できます！",
+  "profile_referral_rule_receiver": "✨ 招待コードを連携した後、任意の推しキャラクターと15言以上チャットするだけで、あなたと招待者に同時にお花50ポイントの報酬が配布されます！\n\n⚠️ 注意：招待コードはアカウント登録後3日以内に入力しないと無効になりますのでご注意ください。",
+  "profile_referral_rule_inviter": "✨ 新しい友達を招待してアプリをダウンロードしてもらい、あなたの招待コードを入力してもらいましょう。相手が登録後3日以内に連携を完了し、任意のキャラクターと15言以上チャットすると、二人とも同時にお花50ポイントの報酬を獲得できます！🎁",
   "error_user_not_found": "ユーザーが見つかりません。再ログインしてください",
   "@error_user_not_found": {
-    "description": "找不到使用者時的錯誤提示"
+  "description": "找不到使用者時的錯誤提示"
   },
   "error_id_taken": "このIDはすでに使用されています。別のIDを選択してください！",
   "@error_id_taken": {
-    "description": "ID 重複時的錯誤提示 (長版)"
+  "description": "ID 重複時的錯誤提示 (長版)"
   },
   "error_id_taken_short": "このIDはすでに使用されています！",
   "@error_id_taken_short": {
-    "description": "ID 重複時的錯誤提示 (短版)"
+  "description": "ID 重複時的錯誤提示 (短版)"
   },
-  "shop_restocking": "ショップは入荷待ちです...",
+  "shop_restocking": "ショップは入荷待ちです... 📦",
   "@shop_restocking": {
-    "description": "商店載入中或商品為空時的提示"
+  "description": "商店載入中或商品為空時的提示"
   },
-  "shop_preview_mode": "現在ショッププレビューモードです",
+  "shop_preview_mode": "⚠️ 現在ショッププレビューモードです",
   "@shop_preview_mode": {
-    "description": "商店預覽模式的警告標語"
+  "description": "商店預覽模式的警告標語"
   },
-  "friendlyReminderTitle": "ユーザーへのヒント",
+  "friendlyReminderTitle": "☁️ ユーザーへのヒント",
   "editProfileHint": "わかりました！プロフィールを編集する場合は、左下の雲の中にある「拾光ファイル」をタップして入力してくださいね！",
   "starlightContractTitle": "星光契約発動",
   "dailyLimitReachedPrefix": "本日の上限に達しました！\n\n",
@@ -2072,7 +1587,7 @@
   "goToSubscribeButton": "購入へ進む",
   "profileUpdatedSuccess": "拾光ファイルが更新されました！",
   "continueChatTitle": "会話を続ける",
-  "continueChatCostWarning": "彼に話を続けさせると、お花が {cost} ポイント消費されます\n本当に続けますか？",
+  "continueChatCostWarning": "彼に話を続けさせると、お花が {cost} ポイント消費されます 🌸\n本当に続けますか？",
   "@continueChatCostWarning": {
     "placeholders": {
       "cost": {
@@ -2109,34 +1624,26 @@
   "systemPreparingWait": "システムを準備中です。少々お待ちください...",
   "noMessagesToRegenerate": "現在、再生成できるメッセージはありません！",
   "continueButton": "次へ",
-  "creatorExclusive": "クリエイター限定",
+  "creatorExclusive": "🔒 クリエイター限定",
   "ageAndOccupation": "{age}歳 | {occupation}",
   "@ageAndOccupation": {
     "placeholders": {
-      "age": {
-        "type": "String"
-      },
-      "occupation": {
-        "type": "String"
-      }
+      "age": { "type": "String" },
+      "occupation": { "type": "String" }
     }
   },
-  "likesLabel": "好きなもの",
-  "dislikesLabel": "苦手なもの",
+  "likesLabel": "💖 好きなもの",
+  "dislikesLabel": "👎 苦手なもの",
   "birthdayLabel": "誕生日: {birthday}",
   "@birthdayLabel": {
     "placeholders": {
-      "birthday": {
-        "type": "String"
-      }
+      "birthday": { "type": "String" }
     }
   },
   "heightLabel": "身長: {height} cm",
   "@heightLabel": {
     "placeholders": {
-      "height": {
-        "type": "String"
-      }
+      "height": { "type": "String" }
     }
   },
   "backgroundStoryLabel": "バックストーリー",
@@ -2151,14 +1658,14 @@
     }
   },
   "passGuideTitle": "恋恋月間カード専属ガイド",
-  "passGuideRegenerateTitle": "なぜ「再生成」が必要なの？",
+  "passGuideRegenerateTitle": "🔄 なぜ「再生成」が必要なの？",
   "passGuideRegenerateContent": "AIは時々、空気が読めないカタブツになってしまうことがあります。気に入らない返答があった時は、再生成を押すだけでタイムリープしたかのようにやり直せます！彼に何度も考え直させ、あなたの胸を高鳴らせる完璧なセリフを引き出しましょう。",
-  "passGuideAffectionTitle": "好感度ブーストにはどんな効果があるの？",
+  "passGuideAffectionTitle": "💖 好感度ブーストにはどんな効果があるの？",
   "passGuideAffectionContent": "ゲーム内において、好感度はキャラクターの「ディープな秘密」や「親密なプライベート写真」を解放するための唯一の鍵です。20%のボーナスがあれば、誰よりも早く彼の心の奥底に踏み込むことができます。",
   "passGuideUnlockButton": "わかりました、今すぐ解放！",
   "pleaseWait": "少々お待ちください",
-  "createNewProfileTitle": "拾光ファイルを新規作成",
-  "editProfileTitle": "拾光ファイルを編集",
+  "createNewProfileTitle": "📜 拾光ファイルを新規作成",
+  "editProfileTitle": "✏️ 拾光ファイルを編集",
   "profileEditDescription": "異なるキャラクター設定を作成して、パラレルワールドで彼に新しいあなたを魅せましょう！",
   "profileNameLabel": "ファイル名 (自分にのみ表示されます)",
   "profileNameHint": "例：学園の後輩設定、ツンデレ女社長",
@@ -2176,21 +1683,17 @@
   "profileSaveError": "保存失敗: {error}",
   "@profileSaveError": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "saveProfileButton": "ファイルを保存",
   "fillLaterButton": "後で入力する",
-  "exclusiveProfileTitle": "専属拾光ファイル",
+  "exclusiveProfileTitle": "📜 専属拾光ファイル",
   "profileSelectionDescription": "彼との交流に使用したい身分を選択してください (同キャラクターで共有、最大10個まで)",
   "profileSwitchError": "切り替え失敗: {error}",
   "@profileSwitchError": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "unnamedProfile": "未命名のファイル",
@@ -2207,207 +1710,165 @@
   },
   "reward_points_added": "お花 +{amount} 個",
   "@reward_points_added": {
-    "description": "獲得花花點數時的提示",
-    "placeholders": {
-      "amount": {
-        "type": "Object",
-        "example": "5"
-      }
-    }
+  "description": "獲得花花點數時的提示",
+  "placeholders": {
+  "amount": {
+  "type": "Object",
+  "example": "5"
+  }
+  }
   },
   "task_reward_already_claimed": "この任務報酬は本日すでに受け取り済みです",
   "@task_reward_already_claimed": {
-    "description": "任務已領取過的防呆提示"
+  "description": "任務已領取過的防呆提示"
   },
   "add_friend_success": "{characterName} をフレンドに登録しました！",
   "@add_friend_success": {
-    "description": "成功添加好友時的提示",
-    "placeholders": {
-      "characterName": {
-        "type": "String",
-        "example": "小明"
-      }
-    }
+  "description": "成功添加好友時的提示",
+  "placeholders": {
+  "characterName": {
+  "type": "String",
+  "example": "小明"
+  }
+  }
   },
   "do_not_show_again_today": "本日再非表示",
   "@do_not_show_again_today": {
-    "description": "彈窗或公告的今日不再顯示勾選框文字"
+  "description": "彈窗或公告的今日不再顯示勾選框文字"
   },
   "chat_menu_aboutus": "私たちについて",
   "@chat_menu_aboutus": {
-    "description": "聊天選單中的關於我們"
+  "description": "聊天選單中的關於我們"
   },
   "about_us_empty_hint": "右上角から大切な思い出／ストーリーを追加して\n二人の未来へ一緒に歩んでいきましょう",
   "@about_us_empty_hint": {
-    "description": "關於我們頁面空白時的提示語"
+  "description": "關於我們頁面空白時的提示語"
   },
   "about_us_limit_error": "専属の思い出は上限の10件に達しています。古い思い出を削除してから追加してください！",
   "@about_us_limit_error": {
-    "description": "回憶滿10則時的防呆提示"
+  "description": "回憶滿10則時的防呆提示"
   },
   "about_us_add_title": "専属の思い出を追加",
   "@about_us_add_title": {
-    "description": "新增回憶彈窗的標題"
+  "description": "新增回憶彈窗的標題"
   },
   "about_us_field_title": "タイトル",
   "@about_us_field_title": {
-    "description": "輸入框標籤：標題"
+  "description": "輸入框標籤：標題"
   },
   "about_us_hint_title": "例：初めての出会い",
   "@about_us_hint_title": {
-    "description": "輸入框提示：標題範例"
+  "description": "輸入框提示：標題範例"
   },
   "about_us_field_subtitle": "サブタイトル",
   "@about_us_field_subtitle": {
-    "description": "輸入框標籤：副標題"
+  "description": "輸入框標籤：副標題"
   },
   "about_us_hint_subtitle": "例：2025年 初夏",
   "@about_us_hint_subtitle": {
-    "description": "輸入框提示：副標題範例"
+  "description": "輸入框提示：副標題範例"
   },
   "about_us_field_content": "内容",
   "@about_us_field_content": {
-    "description": "輸入框標籤：內容"
+  "description": "輸入框標籤：內容"
   },
   "about_us_hint_content": "二人の大切なストーリーや約束を書き留めましょう...",
   "@about_us_hint_content": {
-    "description": "輸入框提示：內容範例"
+  "description": "輸入框提示：內容範例"
   },
   "about_us_add_button": "追加",
   "@about_us_add_button": {
-    "description": "新增按鈕文字"
+  "description": "新增按鈕文字"
   },
   "about_us_delete_tooltip": "この思い出を削除",
   "@about_us_delete_tooltip": {
-    "description": "垃圾桶按鈕的提示文字"
+  "description": "垃圾桶按鈕的提示文字"
   },
   "about_us_delete_title": "思い出を削除",
   "@about_us_delete_title": {
-    "description": "確認刪除對話框的標題"
+  "description": "確認刪除對話框的標題"
   },
   "about_us_delete_confirm": "本当にこの思い出を削除しますか？削除すると復元できません！",
   "@about_us_delete_confirm": {
-    "description": "確認刪除對話框的內文"
+  "description": "確認刪除對話框的內文"
   },
   "about_us_delete_success": "思い出を削除しました",
   "@about_us_delete_success": {
-    "description": "刪除成功後的提示"
+  "description": "刪除成功後的提示"
   },
   "pack_first_meet": "初対面パック",
-  "@pack_first_meet": {
-    "description": "90 禮包名稱"
-  },
+  "@pack_first_meet": {"description": "90 禮包名稱"},
   "pack_crush": "曖昧な関係パック",
-  "@pack_crush": {
-    "description": "215 禮包名稱"
-  },
+  "@pack_crush": {"description": "215 禮包名稱"},
   "pack_heartbeat": "胸キュンパック",
-  "@pack_heartbeat": {
-    "description": "370 禮包名稱"
-  },
+  "@pack_heartbeat": {"description": "370 禮包名稱"},
   "pack_passionate": "熱愛パック",
-  "@pack_passionate": {
-    "description": "590 禮包名稱"
-  },
+  "@pack_passionate": {"description": "590 禮包名稱"},
   "pack_soulmate": "知己パック",
-  "@pack_soulmate": {
-    "description": "780 禮包名稱"
-  },
+  "@pack_soulmate": {"description": "780 禮包名稱"},
   "pack_waiting": "見守りパック",
-  "@pack_waiting": {
-    "description": "1030 禮包名稱"
-  },
+  "@pack_waiting": {"description": "1030 禮包名稱"},
   "pack_trust": "信頼パック",
-  "@pack_trust": {
-    "description": "1420 禮包名稱"
-  },
+  "@pack_trust": {"description": "1420 禮包名稱"},
   "pack_iloveyou": "アイ・ラブ・ユーパック",
-  "@pack_iloveyou": {
-    "description": "1650 禮包名稱"
-  },
+  "@pack_iloveyou": {"description": "1650 禮包名稱"},
   "pack_honeymoon": "ハネムーンパック",
-  "@pack_honeymoon": {
-    "description": "2200 禮包名稱"
-  },
+  "@pack_honeymoon": {"description": "2200 禮包名稱"},
   "pack_promise": "約束パック",
-  "@pack_promise": {
-    "description": "2300 禮包名稱"
-  },
+  "@pack_promise": {"description": "2300 禮包名稱"},
   "pack_companion": "寄り添いパック",
-  "@pack_companion": {
-    "description": "2400 禮包名稱"
-  },
+  "@pack_companion": {"description": "2400 禮包名稱"},
   "pack_deep_love": "深愛パック",
-  "@pack_deep_love": {
-    "description": "2680 禮包名稱"
-  },
+  "@pack_deep_love": {"description": "2680 禮包名稱"},
   "pack_long_lasting": "末永くパック",
-  "@pack_long_lasting": {
-    "description": "3200 禮包名稱"
-  },
+  "@pack_long_lasting": {"description": "3200 禮包名稱"},
   "pack_the_one": "唯一無二パック",
-  "@pack_the_one": {
-    "description": "3400 禮包名稱"
-  },
+  "@pack_the_one": {"description": "3400 禮包名稱"},
   "pack_beloved": "最愛パック",
-  "@pack_beloved": {
-    "description": "4200 禮包名稱"
-  },
+  "@pack_beloved": {"description": "4200 禮包名稱"},
   "pack_lifetime": "一生一世パック",
-  "@pack_lifetime": {
-    "description": "4300 禮包名稱"
-  },
+  "@pack_lifetime": {"description": "4300 禮包名稱"},
   "pack_vow": "誓約パック",
-  "@pack_vow": {
-    "description": "6400 禮包名稱"
-  },
+  "@pack_vow": {"description": "6400 禮包名稱"},
   "pack_eternal": "永遠の恋人パック",
-  "@pack_eternal": {
-    "description": "10000 禮包名稱"
-  },
+  "@pack_eternal": {"description": "10000 禮包名稱"},
   "pack_exclusive": "専属パック",
-  "@pack_exclusive": {
-    "description": "防呆預設禮包名稱"
-  },
+  "@pack_exclusive": {"description": "防呆預設禮包名稱"},
   "monthly_privilege_reroll_title": "専属「再生成」を解放",
   "@monthly_privilege_reroll_title": {
-    "description": "月卡特權：重新生成標題"
+  "description": "月卡特權：重新生成標題"
   },
   "monthly_privilege_reroll_desc": "毎日最大20回の引き直しチャンス！彼があなたの一番聞きたい言葉を口にするまで試せます！",
   "@monthly_privilege_reroll_desc": {
-    "description": "月卡特權：重新生成說明"
+  "description": "月卡特權：重新生成說明"
   },
   "monthly_privilege_affinity_title": "好感度急上昇ブースト",
   "@monthly_privilege_affinity_title": {
-    "description": "月卡特權：好感度標題"
+  "description": "月卡特權：好感度標題"
   },
   "monthly_privilege_affinity_desc": "交流による好感度獲得が20%アップ！専属のプライベート写真やシークレット特典をより早く解放できます！",
   "@monthly_privilege_affinity_desc": {
-    "description": "月卡特權：好感度說明"
+  "description": "月卡特權：好感度說明"
   },
   "monthly_manual_button": "なぜ月間カードが必要なの？",
   "@monthly_manual_button": {
-    "description": "月卡說明書入口按鈕"
+  "description": "月卡說明書入口按鈕"
   },
   "nav_encounter": "出会い",
-  "@nav_encounter": {
-    "description": "底部導航欄：邂逅標籤"
-  },
+  "@nav_encounter": { "description": "底部導航欄：邂逅標籤" },
   "nav_moments": "瞬間",
-  "@nav_moments": {
-    "description": "底部導航欄：瞬間標籤"
-  },
-  "birthday_dialog_title": "バースデーサプライズ",
+  "@nav_moments": { "description": "底部導航欄：瞬間標籤" },
+  "birthday_dialog_title": "🎂 バースデーサプライズ",
   "@birthday_dialog_title": {
-    "description": "生日彈窗的標題"
+  "description": "生日彈窗的標題"
   },
-  "birthday_dialog_content": "今日はあなただけの特別な記念日です！\n\nこのプレゼントを受け取ってください：\n今日のチャットは、全・部・無・料・です！",
+  "birthday_dialog_content": "今日はあなただけの特別な記念日です！\n\nこのプレゼントを受け取ってください：\n今日のチャットは、全・部・無・料・です！✨",
   "@birthday_dialog_content": {
-    "description": "生日彈窗的驚喜內文"
+  "description": "生日彈窗的驚喜內文"
   },
   "birthday_dialog_button": "ロマンチックな一日を始める",
   "@birthday_dialog_button": {
-    "description": "生日彈窗的確認按鈕"
+  "description": "生日彈窗的確認按鈕"
   },
   "about_us_edit_title": "思い出を修正",
   "about_us_edit_confirm": "変更を確定",
@@ -2418,7 +1879,7 @@
   "call_login_content": "ログインすると、専属の音声通話機能が解放されます！",
   "cancel_later": "またあとで",
   "go_to_login": "ログインへ進む",
-  "easter_egg_title": "隠しイースターエッグを発見",
+  "easter_egg_title": "隠しイースターエッグを発見 ✨",
   "easter_egg_content": "「{title}」が解放されました。\n\nこの特殊ストーリーを使用しますか？",
   "@easter_egg_content": {
     "placeholders": {
@@ -2438,7 +1899,7 @@
   "not_now": "今はしない",
   "go_to_get": "補充しに進む",
   "status_published": "公開済み",
-  "monthly_card_success_title": "プレミアム月間カード解放成功！",
+  "monthly_card_success_title": "✨ プレミアム月間カード解放成功！",
   "monthly_card_success_subtitle": "サブスクリプションへのご登録ありがとうございます！専属特権が有効になりました：",
   "monthly_card_perk_1": "「時の花」を今すぐ250個獲得",
   "monthly_card_perk_2": "毎日のログインで「時の花」をさらに10個獲得",
@@ -2458,14 +1919,15 @@
   "forgot_password_error_user_not_found": "このメールアドレスのユーザーアカウントが見つかりません",
   "forgot_password_error_with_message": "パスワード再設定メールの送信に失敗しました：{error}",
   "@forgot_password_error_with_message": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "example": "Network error"
-      }
-    }
+  "placeholders": {
+  "error": {
+  "type": "String",
+  "example": "Network error"
+  }
+  }
   },
   "terms_not_accepted_toast": "利用規約とコミュニティガイドラインをお読みになり、同意してください",
+  "terms_title": "利用規約",
   "terms_content": "「恋恋拾光」へようこそ。\n\n本サービスをご利用になる前に、本利用規約およびコミュニティガイドラインに同意して遵守していただく必要があります。\n\n違法、権利侵害、わいせつ・裸露、暴力、ヘイト、嫌がらせ、罵倒、詐欺、スパム、その他不快感を与え、攻撃的で、他人の権利を害する可能性のあるコンテンツをアップロード、作成、公開、または送信することは固く禁じられています。\n\n「恋恋拾光」は、不適切なコンテンツや嫌がらせ行為に対して不寛容（ゼロ・トレランス）ポリシーを採用しています。ユーザーがガイドラインに違反した場合、関連コンテンツの削除、機能制限、またはアカウントの一時停止・強制退会処分を行うことがあります。\n\nユーザーは、アプリ内に組み込まれた通報およびブロック機能を通じて、不適切なコンテンツや迷惑ユーザーを通報することができます。",
   "community_rules_title": "コミュニティガイドライン",
   "community_rules_content": "「恋恋拾光」は、クリエイターとユーザーの皆様に、安全で友好的、かつお互いを尊重し合える交流環境を提供することを目指しています。\n\n以下のコンテンツや行為は一切許可されません：\n1. わいせつ、裸露、または不適切な性的暗示を含むコンテンツ\n2. 他人への嫌がらせ、罵倒、いじめ、または脅迫行為\n3. ヘイトスピーチ、差別、または暴力の扇動\n4. グロテスク、暴力、または危険な行為を含むコンテンツ\n5. 他人の著作権、肖像権、またはその他の権利を侵害する行為\n6. スパム、詐欺、または悪意のある行為\n7. その他、不快感を与える、または公に表示するのに不適切なコンテンツ\n\nユーザーは不適切なコンテンツを通報したり、迷惑ユーザーをブロックしたりできます。ブロックすると、該当ユーザーのコンテンツは画面に表示されなくなります。",
@@ -2488,21 +1950,21 @@
   "block_character_title": "このキャラクターをブロックしますか？",
   "block_character_content": "ブロックすると、「{authorName}」が投稿したタイムラインが表示されなくなります。また、該当コンテンツが規約に違反している場合、運営チームにも通知が届き審査が行われます。",
   "@block_character_content": {
-    "placeholders": {
-      "authorName": {
-        "type": "String",
-        "example": "程安"
-      }
-    }
+  "placeholders": {
+  "authorName": {
+  "type": "String",
+  "example": "程安"
+  }
+  }
   },
   "block_character_success": "「{authorName}」をブロックしました。関連する投稿は非表示になります",
   "@block_character_success": {
-    "placeholders": {
-      "authorName": {
-        "type": "String",
-        "example": "程安"
-      }
-    }
+  "placeholders": {
+  "authorName": {
+  "type": "String",
+  "example": "程安"
+  }
+  }
   },
   "block_character_failed": "ブロックに失敗しました。しばらく経ってからもう一度お試しください",
   "hidden_moments_title": "非表示の瞬間",
@@ -2544,6 +2006,7 @@
   },
   "voice_preview": "ボイスを再生",
   "voice_preview_failed": "ボイスの再生に失敗しました",
+  "voice_preview_failed": "ボイスの再生に失敗しました",
   "characterBannerSectionTitle": "キャラクターホームバナー",
   "characterBannerDescription": "バナーの説明",
   "characterBannerRemove": "削除",
@@ -2565,6 +2028,7 @@
   },
   "unlock_after_affection_increase": "好感度レベルを上げると解放",
   "first_meeting_empty": "初対面、まだ始まっていません……",
+  "follow_btn": "フォロー",
   "photo_load_failed": "写真の読み込みに失敗しました：{error}",
   "@photo_load_failed": {
     "placeholders": {
@@ -2600,7 +2064,7 @@
   "message_preview_image": "[画像]",
   "message_preview_recording": "[録音]",
   "message_preview_voice": "[音声メッセージ]",
-  "send_failed_retry": "送信に失敗しました。しばらく経ってからもう一度お試しください",
+  "send_failed_retry": "送信に失敗しました。しばらく経ってからもう一度お試しください 😢",
   "media_upload_failed_retry": "メディアのアップロードに失敗しました。もう一度お試しください",
   "ai_thinking_too_long": "彼は深く考え込んでいるようです。しばらく経ってからもう一度お試しください...",
   "ai_reply_in_progress": "返信中です。重複送信を避け、少々お待ちください",
@@ -2611,7 +2075,7 @@
   "change_watermark_color": "ウォーターマークの色を変更",
   "other_party_typing": "相手が入力中...",
   "chat_input_hint": "メッセージを入力...",
-  "regenerate_sync_failed": "再生成回数の同期に失敗しました。もう一度お試しください",
+  "regenerate_sync_failed": "再生成回数の同期に失敗しました。もう一度お試しください 😢",
   "creator_public_works": "公開作品",
   "creator_received_likes": "獲得したいいね",
   "about_me": "自己紹介",
@@ -2916,7 +2380,7 @@
   "mailCaseNumber": "お問い合わせ番号",
   "mailCopyCaseNumber": "お問い合わせ番号をコピー",
   "mailCaseNumberCopied": "お問い合わせ番号をコピーしました",
-  "profilePageAboutMe": "自己紹介",
+  "profilePageAboutMe": "📝 自己紹介",
   "profilePageTabBio": "プロフィール",
   "profilePageTabCharacters": "キャラクター",
   "profilePageTabMoments": "投稿",
@@ -2964,9 +2428,7 @@
   "profilePageInviter": "招待者：{inviterId}",
   "@profilePageInviter": {
     "placeholders": {
-      "inviterId": {
-        "type": "String"
-      }
+      "inviterId": { "type": "String" }
     }
   },
   "profilePageReferralRewardReceived": "双方に花を50個付与しました",
@@ -2974,9 +2436,7 @@
   "profilePageInviterBound": "招待者を登録しました：{inviterId}",
   "@profilePageInviterBound": {
     "placeholders": {
-      "inviterId": {
-        "type": "String"
-      }
+      "inviterId": { "type": "String" }
     }
   },
   "profilePageReferralProgressHint": "チャットを15通完了すると、双方に花が50個ずつ付与されます",
@@ -2993,13 +2453,7 @@
   "periodBeforeStartError": "今回の生理開始日より前の日付は選択できません。",
   "periodEndBeforeStartError": "終了日は開始日より前に設定できません。",
   "periodRecordSaved": "{date}の記録を保存しました",
-  "@periodRecordSaved": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
+  "@periodRecordSaved": { "placeholders": { "date": { "type": "String" } } },
   "periodSaveFailed": "保存に失敗しました。しばらくしてからもう一度お試しください",
   "periodDeleteTitle": "今回の生理記録を削除しますか？",
   "periodDeleteContent": "削除すると、平均周期と次回予測も再計算されます。",
@@ -3007,29 +2461,17 @@
   "periodDelete": "削除",
   "periodNoOngoing": "現在、進行中の生理記録はありません",
   "periodDayCount": "生理 {count} 日目",
-  "@periodDayCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "@periodDayCount": { "placeholders": { "count": { "type": "int" } } },
   "periodHelp": "使い方",
   "periodAverageCycle": "平均周期",
   "periodAverageDuration": "平均生理期間",
   "periodDays": "{count} 日",
-  "@periodDays": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "@periodDays": { "placeholders": { "count": { "type": "int" } } },
   "periodNextPrediction": "次回予測",
   "periodCalculatedAfterRecording": "記録後に計算",
   "periodInsufficientData": "現在はデータが不足しているため、暫定的に28日周期、生理期間5日として予測します。",
   "periodPredictionDisclaimer": "現在の記録に基づく予測です。日付は日々の記録の参考としてのみご利用ください。",
-  "periodStartedToday": "今日始まった",
+  "periodStartedToday": "🩸 今日始まった",
   "periodStillOngoing": "まだ生理中",
   "periodEndedToday": "今日終わった",
   "periodDateNotReached": "この日はまだ来ていません～",
@@ -3050,13 +2492,7 @@
   "periodSymptomIncreasedAppetite": "食欲増加",
   "periodSymptomDigestiveDiscomfort": "胃腸の不調",
   "periodDiaryTitle": "{characterName}の思いやり日記",
-  "@periodDiaryTitle": {
-    "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
-    }
-  },
+  "@periodDiaryTitle": { "placeholders": { "characterName": { "type": "String" } } },
   "periodLoadFailed": "記録の読み込みに失敗しました。しばらくしてからもう一度お試しください",
   "periodWeekdaySun": "日",
   "periodWeekdayMon": "月",
@@ -3074,45 +2510,27 @@
   "periodOtherSymptom": "その他の体調",
   "periodOtherSymptomHint": "例：寒気がする、食欲がない……",
   "periodNoteForCharacter": "{characterName}に伝えたいこと（任意）",
-  "@periodNoteForCharacter": {
-    "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
-    }
-  },
+  "@periodNoteForCharacter": { "placeholders": { "characterName": { "type": "String" } } },
   "periodNoteHint": "例：今日は静かに休みたいから、急かさないでほしい……",
   "periodSaving": "保存中…",
   "periodSaveToday": "今日の記録を保存",
   "periodHistory": "生理履歴",
   "periodOngoing": "進行中",
   "periodTotalDays": "合計 {count} 日",
-  "@periodTotalDays": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "@periodTotalDays": { "placeholders": { "count": { "type": "int" } } },
   "periodDeleteRecord": "記録を削除",
   "privateProfilePleaseSignIn": "先にログインしてください",
   "privateProfileLoreLoadFailed": "記憶の欠片の読み込みに失敗しました：{error}",
   "@privateProfileLoreLoadFailed": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "privateProfileWriteNewLore": "新しい記憶の欠片を書く（{count} / {limit}）",
   "@privateProfileWriteNewLore": {
     "placeholders": {
-      "count": {
-        "type": "int"
-      },
-      "limit": {
-        "type": "int"
-      }
+      "count": { "type": "int" },
+      "limit": { "type": "int" }
     }
   },
   "privateProfileNoLore": "記憶の欠片はまだありません",
@@ -3137,10 +2555,10 @@
   "privateProfileDeleteFailed": "削除に失敗しました。しばらくしてからもう一度お試しください",
   "privateProfileEditLore": "記憶の欠片を編集",
   "privateProfileSave": "保存",
-  "editProfileBirthdayReminderTitle": "ちょっとしたお知らせ",
+  "editProfileBirthdayReminderTitle": "🎂 ちょっとしたお知らせ",
   "editProfileBirthdayReminderContent": "誕生日は、キャラクターからの誕生日のお祝い、誕生日プレゼント、関連イベントに影響します。\n\n今後の誕生日報酬に影響しないよう、\n誕生日を確認してから設定を完了することをおすすめします。",
   "editProfileGotIt": "わかりました",
-  "editProfileBirthdayConfirmTitle": "誕生日を確認",
+  "editProfileBirthdayConfirmTitle": "🎂 誕生日を確認",
   "editProfileBirthdayConfirmContent": "誕生日が正しいことを確認してください。\n\n誕生日は、誕生日のお祝い、誕生日プレゼント、関連イベントに使用されます。\n\n誕生日報酬の重複受け取りを防ぐため、設定完了後は誕生日を変更できません。\n\nこの誕生日を使用しますか？",
   "editProfileReturnToEdit": "編集に戻る",
   "editProfileConfirmSetting": "設定を確定",
@@ -3149,17 +2567,13 @@
   "editProfileCreateFailed": "データの作成に失敗しました：{error}",
   "@editProfileCreateFailed": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "editProfileAvatarNumber": "アバター {number}",
   "@editProfileAvatarNumber": {
     "placeholders": {
-      "number": {
-        "type": "int"
-      }
+      "number": { "type": "int" }
     }
   },
   "editProfileImageSelectionFailed": "画像の選択に失敗しました。別の画像を選択してください",
@@ -3169,9 +2583,7 @@
   "editProfileLoadFailed": "データの読み込みに失敗しました：{error}",
   "@editProfileLoadFailed": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "editProfileBioLabel": "自己紹介",
@@ -3183,28 +2595,24 @@
   "editProfileAvatarReadFailed": "アバターの読み込みに失敗しました。ステータスコード：{statusCode}",
   "@editProfileAvatarReadFailed": {
     "placeholders": {
-      "statusCode": {
-        "type": "int"
-      }
+      "statusCode": { "type": "int" }
     }
   },
   "editProfileAvatarFileNotFound": "選択したアバターファイルが見つかりません：{path}",
   "@editProfileAvatarFileNotFound": {
     "placeholders": {
-      "path": {
-        "type": "String"
-      }
+      "path": { "type": "String" }
     }
   },
   "editProfileAvatarEmpty": "アバター画像のデータが空です",
-  "chatPageSendFailed": "送信に失敗しました。しばらくしてからもう一度お試しください",
+  "chatPageSendFailed": "送信に失敗しました。しばらくしてからもう一度お試しください 😢",
   "chatPageRegenerateFailed": "再生成に失敗しました。元のメッセージは保持されています。もう一度お試しください。",
-  "chatPageRegenerating": "もう一度考えています...",
+  "chatPageRegenerating": "💭 もう一度考えています...",
   "chatPageThinkingTooLong": "考え込んでいるようです。しばらくしてからもう一度お試しください……",
   "chatPageAlreadyReplying": "返信中です。少し待ってから、重複して送信しないでください",
   "chatPageMediaUploadFailed": "メディアのアップロードに失敗しました。もう一度お試しください",
   "chatPageReportReceived": "ご報告ありがとうございます。できるだけ早く確認いたします",
-  "chatPageMessagesDeleted": "{count} 件のメッセージを削除しました",
+  "chatPageMessagesDeleted": "✅ {count} 件のメッセージを削除しました",
   "@chatPageMessagesDeleted": {
     "placeholders": {
       "count": {
@@ -3343,8 +2751,8 @@
       }
     }
   },
-  "characterProfileShareInvitation": "LoveyDoveyから届いた出会いの招待状",
-  "characterProfileShareCreator": "クリエイター：{creatorName}",
+  "characterProfileShareInvitation": "🦋 LoveyDoveyから届いた出会いの招待状",
+  "characterProfileShareCreator": "✦ クリエイター：{creatorName}",
   "@characterProfileShareCreator": {
     "placeholders": {
       "creatorName": {
@@ -3369,7 +2777,7 @@
       }
     }
   },
-  "characterProfileCardSearchHint": "キャラクターを検索して、出会いを始めよう",
+  "characterProfileCardSearchHint": "キャラクターを検索して、出会いを始めよう  🦋",
   "characterProfileScanToDownload": "スキャンしてダウンロード",
   "characterProfileShareTitle": "キャラクター「{characterName}」をシェア",
   "@characterProfileShareTitle": {
@@ -3393,8 +2801,7 @@
   "characterProfileShareCharacter": "キャラクターをシェア",
   "characterProfileReportCharacter": "キャラクターを通報",
   "characterProfileTranslate": "翻訳",
-  "loginMethodInfoTooltip": "ログイン方法の説明",
-  "characterEditCoreSetting": "キャラクターの基本設定",
+  "loginMethodInfoTooltip": "ログイン方法の説明","characterEditCoreSetting": "キャラクターの基本設定",
   "characterEditCoreSettingHint": "キャラクターの性格、行動パターン、人との接し方、話し方について説明してください。\n\n例：一見すると冷淡で無口だが、実際はとても気配りができる。見知らぬ人とは距離を置き、好きな相手には行動で気遣いを示す。話し方は簡潔で率直であり、甘すぎる呼び方や軽薄な呼び方はしない。",
   "characterEditNameDescription": "キャラクターの公開表示名です。作成完了後、キャラクターのユーザー名はシステムによって自動的に生成されます。",
   "characterEditNameHint": "キャラクター名を入力してください",
@@ -3445,7 +2852,7 @@
   },
   "mailQixiCollectionLabel": "2026年七夕限定コレクション",
   "mailShareGenerating": "シェア画像を作成しています……",
-  "mailShareQixiMessage": "{characterName}から七夕限定の手紙が届きました",
+  "mailShareQixiMessage": "{characterName}から七夕限定の手紙が届きました 💌",
   "@mailShareQixiMessage": {
     "placeholders": {
       "characterName": {
@@ -3453,9 +2860,9 @@
       }
     }
   },
-  "mailShareDefaultMessage": "「LoveyDovey」からの手紙",
+  "mailShareDefaultMessage": "「LoveyDovey」からの手紙 💌",
   "mailShareImageFailed": "シェア画像の作成に失敗しました。しばらくしてからもう一度お試しください",
-  "mailCollectedSuccess": "この手紙を保存しました",
+  "mailCollectedSuccess": "この手紙を保存しました 💌",
   "mailCollectedCancelled": "保存を解除しました",
   "mailCollectedUpdateFailed": "保存状態の更新に失敗しました。しばらくしてからもう一度お試しください",
   "mailRemoveCollectionTooltip": "保存を解除",
@@ -3476,6 +2883,7 @@
   "qixiOutsideEventPeriod": "現在は七夕イベントの開催期間外です",
   "qixiSelectAtLeastOne": "フレンドキャラクターを1人以上選択してください",
   "qixiMysteryCharacter": "謎のキャラクター",
+
   "qixiOpeningStory": "（七夕が近づき、夜の奥深くで眠っていた天の川が静かに目を覚ます。散らばっていた星の光は空の彼方でゆっくりと集まり、約束を果たそうとする二人が互いの名前を書き記す瞬間を待っているかのようだった。）\n\n（言い伝えによれば、鵲橋は本当に会いたいと願う者たちのためにだけ輝くという。あなたと「{characterName}」の名前が同時に星の川へ浮かび上がったとき、一筋の淡い光が夜を越え、二人だけのこのチャットルームへと降り注いだ。）\n\n（この瞬間から、二人には「七夕・三日間の約束」が与えられる。3日間は連続していなくてもいい。大げさな告白を用意する必要もない。イベント期間中、異なる3日間にここへ戻り、ひと言の挨拶やその日の気持ち、今日あった小さな出来事を相手に伝えるだけでいい。）\n\n（無事に会えるたび、鵲橋の星がひとつずつ輝き始める。三日分の星明かりがすべて灯ったとき、会話の中に散りばめられた想いと記憶は、3日目の達成日が終わったあと、あなただけに宛てた七夕限定の手紙へと姿を変える。）\n\n（今、最初の星明かりが舞い降りた。鵲橋の向こう側では、「{characterName}」もこの約束を受け取ったようだ。）\n\n——七夕・三日間の約束、今ここから始まる。",
   "@qixiOpeningStory": {
     "placeholders": {
@@ -3484,10 +2892,12 @@
       }
     }
   },
+
   "qixiRoomOpenedLastMessage": "七夕・三日間の約束が始まりました",
   "qixiCompanionSlotsFull": "七夕を共に過ごすキャラクターはすでに3人選択されています",
-  "qixiSingleRoomOpened": "七夕限定チャットルームが開かれました",
-  "qixiMultipleRoomsOpened": "七夕限定チャットルームが{count}部屋開かれました",
+  "qixiSingleRoomOpened": "七夕限定チャットルームが開かれました 💕",
+
+  "qixiMultipleRoomsOpened": "七夕限定チャットルームが{count}部屋開かれました 💕",
   "@qixiMultipleRoomsOpened": {
     "placeholders": {
       "count": {
@@ -3495,6 +2905,7 @@
       }
     }
   },
+
   "qixiCreateRoomFailed": "七夕チャットルームを作成できませんでした。しばらくしてからもう一度お試しください",
   "qixiEventStartsAt": "イベントは8/19 00:00から開始します",
   "qixiEventActiveUntil": "イベント開催中・8/26 23:59まで",
@@ -3507,6 +2918,7 @@
   "qixiLoadingCharacter": "キャラクター情報を読み込んでいます……",
   "qixiEventPageTitle": "七夕限定イベント",
   "qixiEventRules": "イベント期間中、異なる3日間を選び、七夕限定チャットルームでメッセージを送り、キャラクターから返信を受け取ると、その日の星明かりが灯ります。限定レターは3日目の達成日が終了したあとに届きます。イベントの日付および毎日の進捗は台湾時間（UTC+8）を基準とします。",
+
   "qixiSelectCompanions": "一緒に過ごすキャラクターを選択（{count}/3）",
   "@qixiSelectCompanions": {
     "placeholders": {
@@ -3515,6 +2927,7 @@
       }
     }
   },
+
   "qixiSelectionLockedHint": "フレンドに追加済みのキャラクターから最大3人まで選択できます。選択後は変更できません。",
   "qixiConfirmCompanions": "同行キャラクターを確定",
   "encounterDailyQuote1": "今日は、新しい物語に出会えるかも。",
@@ -3529,21 +2942,23 @@
   "encounterDailyQuote10": "今日は、思わず足を止めたくなる誰かに出会えるかも。",
   "encounterDailyQuote11": "今日は、どんな人に会いたい？",
   "encounterDailyQuote12": "今日は、そっと近づいてくるご縁を見逃さないで。",
-  "encounterJoinedToday": "今日、恋恋拾光にやってきました",
-  "encounterPopularChats": "最近たくさん話されています",
+
+  "encounterJoinedToday": "✨ 今日、恋恋拾光にやってきました",
+  "encounterPopularChats": "❤️ 最近たくさん話されています",
   "qixiBannerActiveUntil": "期間限定・8/26 23:59まで",
   "qixiBannerStartsAt": "8/19 限定オープン",
-  "encounterRecentlyArrived": "最近、恋恋拾光にやってきました",
+  "encounterRecentlyArrived": "✨ 最近、恋恋拾光にやってきました",
   "encounterRecentlyArrivedPlain": "最近、恋恋拾光にやってきました",
   "encounterViewMore": "もっと見る",
-  "encounterLovePrompt": "今日はどんな恋をしたい？",
+  "encounterLovePrompt": "💕 今日はどんな恋をしたい？",
   "encounterNoCharacters": "まだキャラクターがいません",
   "encounterAllLoveTags": "すべての恋愛タグ",
-  "chatQixiLetterSent": "限定レターを送りました",
+  "chatQixiLetterSent": "限定レターを送りました 💌",
   "chatQixiLetterPendingTonight": "三日分の星明かりが灯りました・今夜が終わったあとにレターが届きます",
   "chatQixiTodayCompleted": "今日の星明かりが灯りました",
   "chatQixiTodayNotCompleted": "今日はまだ達成していません",
   "chatQixiPromiseTitle": "恋恋七夕・三日間の約束",
+
   "chatQixiStarProgress": "星明かり {count}/3",
   "@chatQixiStarProgress": {
     "placeholders": {
@@ -3552,7 +2967,9 @@
       }
     }
   },
+
   "chatQixiProgressRule": "異なる3日間にチャットを達成すると、星明かりが灯ります。限定レターは3日目の終了後に届きます。毎日の進捗は台湾時間（UTC+8）を基準に計算されます。",
+
   "chatQixiDayNumber": "{day}日目",
   "@chatQixiDayNumber": {
     "placeholders": {
@@ -3561,6 +2978,7 @@
       }
     }
   },
+
   "chatWebPurchaseUnavailable": "Web版では現在チャージサービスをご利用いただけません。花花の購入またはサブスクリプションには『恋恋拾光』アプリをご利用ください。",
   "chatAiThinkingTimeout": "彼は考え込んでいるようです。しばらくしてからもう一度お試しください……",
   "chatAiResponseBlocked": "彼の思考が少し乱れているようです。もう少しやさしい言い方に変えてお試しください。",
@@ -3574,6 +2992,7 @@
   "momentsCreatorNotFound": "このクリエイターの情報が見つかりません",
   "momentCommentLoadFailed": "コメントの読み込みに失敗しました。しばらくしてからもう一度お試しください",
   "momentCollapseReplies": "返信を閉じる",
+
   "momentViewOtherReplies": "他の{count}件の返信を見る",
   "@momentViewOtherReplies": {
     "placeholders": {
@@ -3582,6 +3001,7 @@
       }
     }
   },
+
   "momentSwitchCommentIdentity": "コメントする身分を切り替える",
   "momentSendCommentTooltip": "コメントを送信",
   "momentShareCharactersLoadFailed": "チャットしたキャラクターの読み込みに失敗しました。しばらくしてからもう一度お試しください",
@@ -3602,22 +3022,29 @@
   "auth_error_too_many_requests": "試行回数が多すぎます。しばらくしてからもう一度お試しください。",
   "auth_error_network_failed": "現在、ネットワーク接続が不安定です。しばらくしてからもう一度お試しください。",
   "change_password_failed": "パスワードの変更に失敗しました。しばらくしてからもう一度お試しください。",
+
   "change_password_account_not_found": "現在ログイン中のアカウントが見つかりません。もう一度ログインしてからお試しください。",
   "change_password_not_password_account": "このアカウントはメールアドレスとパスワードによるログインを使用していないため、ここではパスワードを変更できません。",
   "change_password_same_as_current": "新しいパスワードには現在のパスワードと異なるものを設定してください。",
+
   "change_password_success_title": "パスワードを更新しました",
   "change_password_success_message": "新しいパスワードを設定しました。次回からは新しいパスワードでログインしてください。",
+
   "change_password_title": "パスワードを変更",
   "change_password_security_title": "アカウントのセキュリティ",
   "change_password_description": "本人確認のために現在のパスワードを入力してから、新しいログインパスワードを設定してください。",
+
   "change_password_current_label": "現在のパスワード",
   "change_password_current_required": "現在のパスワードを入力してください",
+
   "change_password_new_label": "新しいパスワード",
   "change_password_new_required": "新しいパスワードを入力してください",
   "change_password_new_min_length": "新しいパスワードは6文字以上で入力してください",
+
   "change_password_confirm_label": "新しいパスワードを確認",
   "change_password_confirm_required": "新しいパスワードをもう一度入力してください",
   "change_password_mismatch": "新しいパスワードが一致しません",
+
   "change_password_hint": "パスワードは6文字以上で設定してください。変更後、ほかの端末で再度ログインする際は新しいパスワードを使用してください。",
   "character_npc_add": "＋ サブキャラクターを追加",
   "character_npc_added_count": "追加済みのサブキャラクター：{count}人",
@@ -3628,11 +3055,15 @@
       }
     }
   },
+
   "character_npc_unnamed": "名前未設定のサブキャラクター",
+
   "character_npc_title": "サブキャラクター設定",
   "character_npc_description": "物語に登場する重要な人物を作成して、キャラクターの世界をより豊かにしましょう。",
+
   "character_npc_empty_title": "サブキャラクターはまだ追加されていません",
   "character_npc_empty_description": "追加したサブキャラクターの設定は、ここで確認、編集、管理できます。",
+
   "character_npc_age": "{age}歳",
   "@character_npc_age": {
     "placeholders": {
@@ -3641,6 +3072,7 @@
       }
     }
   },
+
   "character_npc_relationship_with_main": "メインキャラクターとの関係：{relationship}",
   "@character_npc_relationship_with_main": {
     "placeholders": {
@@ -3650,15 +3082,21 @@
     }
   },
   "character_management_login_required": "先にログインしてください",
+
   "character_management_character_tab": "キャラクター",
   "character_management_creator_tab": "クリエイター",
+
   "character_management_blocked_characters_empty": "連絡を停止したキャラクターがここに表示されます。",
+
   "character_management_blocked_creators_load_failed": "ブロックしたクリエイターを読み込めませんでした",
   "character_management_blocked_creators_empty": "ブロックしたクリエイターがここに表示されます。",
   "character_management_creator_fallback": "クリエイター",
+
   "character_management_blocked_creator_status": "クリエイターをブロック中",
   "character_management_blocked_creator_description": "このクリエイターの公開キャラクターと今後追加されるキャラクターは、おすすめに表示されません。",
+
   "character_management_unblock_creator_title": "クリエイターのブロックを解除",
+
   "character_management_unblock_creator_confirm": "「{creatorName}」のブロックを解除しますか？\n\n解除すると、このクリエイターとそのキャラクターが再びおすすめに表示される場合があります。個別にブロックしたキャラクターは、引き続きブロックされます。",
   "@character_management_unblock_creator_confirm": {
     "placeholders": {
@@ -3667,6 +3105,7 @@
       }
     }
   },
+
   "character_management_unblock_creator_success": "「{creatorName}」のブロックを解除しました",
   "@character_management_unblock_creator_success": {
     "placeholders": {
@@ -3675,12 +3114,17 @@
       }
     }
   },
+
   "character_management_unblock_creator_failed": "ブロックの解除に失敗しました。しばらくしてからもう一度お試しください",
+
   "character_management_title": "キャラクター管理",
   "character_management_subtitle": "連絡を停止したキャラクターを管理します",
+
   "character_management_character_fallback": "キャラクター",
+
   "character_management_blocked_character_status": "連絡を停止中",
   "character_management_blocked_character_description": "関連データを削除せず、会話と通知のみを停止します。",
+
   "character_management_unblock_character_confirm": "「{charName}」のブロックを解除しますか？解除すると、関連コンテンツが再び表示される場合があります。",
   "@character_management_unblock_character_confirm": {
     "placeholders": {
@@ -3691,6 +3135,7 @@
   },
   "creator_follow_following_title": "フォロー中のクリエイター",
   "creator_follow_followers_title": "あなたをフォローしているプレイヤー",
+
   "creator_follow_load_failed": "読み込みに失敗しました：{error}",
   "@creator_follow_load_failed": {
     "placeholders": {
@@ -3699,11 +3144,15 @@
       }
     }
   },
+
   "creator_follow_empty_following_title": "フォロー中のクリエイターはいません",
   "creator_follow_empty_followers_title": "フォロワーはまだいません",
+
   "creator_follow_empty_following_description": "キャラクタープロフィールやクリエイターワークショップから、気になるクリエイターをフォローしてみましょう。",
   "creator_follow_empty_followers_description": "ほかのプレイヤーがあなたをフォローすると、ここに表示されます。",
+
   "creator_follow_unknown_player": "不明なプレイヤー",
+
   "creator_follow_player_id": "ID：{playerId}",
   "@creator_follow_player_id": {
     "placeholders": {
@@ -3712,8 +3161,11 @@
       }
     }
   },
+
   "creator_follow_no_player_id": "プレイヤーIDはまだ設定されていません",
+
   "creator_follow_following": "フォロー中",
+
   "creator_follow_unfollow_title": "フォローを解除",
   "creator_follow_unfollow_confirm": "このクリエイターのフォローを解除しますか？",
   "creator_follow_unfollow": "フォローを解除",
@@ -3727,8 +3179,10 @@
   },
   "creator_profile_report_creator": "クリエイターを通報",
   "creator_profile_block_creator": "クリエイターをブロック",
+
   "creator_profile_report_login_required": "クリエイターを通報するにはログインしてください",
   "creator_profile_report_self_not_allowed": "自分のクリエイターページを通報することはできません",
+
   "creator_profile_report_reason_prompt": "「{creatorName}」を通報する理由を選択してください：",
   "@creator_profile_report_reason_prompt": {
     "placeholders": {
@@ -3737,14 +3191,18 @@
       }
     }
   },
+
   "creator_profile_report_reason_inappropriate": "不適切または規約に違反するコンテンツ",
   "creator_profile_report_reason_harassment": "嫌がらせ、攻撃、またはヘイトコンテンツ",
   "creator_profile_report_reason_impersonation": "他人へのなりすまし、または身元の偽装",
   "creator_profile_report_reason_spam": "スパムまたは悪質な宣伝",
+
   "creator_profile_report_success": "通報を受け付けました。ご報告ありがとうございます",
   "creator_profile_report_failed": "通報を送信できませんでした。しばらくしてからもう一度お試しください",
+
   "creator_profile_block_login_required": "クリエイターをブロックするにはログインしてください",
   "creator_profile_block_self_not_allowed": "自分自身をブロックすることはできません",
+
   "creator_profile_block_confirm": "「{creatorName}」をブロックしますか？\n\nブロックすると、このクリエイターの公開ページは表示されなくなります。また、このクリエイターが現在公開しているキャラクターもブロックリストに追加されます。",
   "@creator_profile_block_confirm": {
     "placeholders": {
@@ -3753,7 +3211,9 @@
       }
     }
   },
+
   "creator_profile_block_confirm_button": "ブロックする",
+
   "creator_profile_block_success": "「{creatorName}」をブロックしました",
   "@creator_profile_block_success": {
     "placeholders": {
@@ -3762,26 +3222,36 @@
       }
     }
   },
+
   "creator_profile_block_failed": "ブロックに失敗しました。しばらくしてからもう一度お試しください",
   "creator_scene_edit_title_edit": "シーンを編集",
   "creator_scene_edit_title_add": "シーンを追加",
+
   "creator_scene_edit_heading_edit": "この物語の始まりを調整しましょう",
   "creator_scene_edit_heading_add": "新しい物語の始まりを書きましょう",
+
   "creator_scene_edit_scene_title_label": "シーンタイトル",
   "creator_scene_edit_scene_title_hint": "例：雨の夜の再会",
+
   "creator_scene_edit_description_label": "シーン説明",
   "creator_scene_edit_description_hint": "物語が始まる時間、場所、関係性、状況を説明してください。",
+
   "creator_scene_edit_opening_label": "キャラクターの導入",
   "creator_scene_edit_opening_hint": "キャラクターがこの物語に登場したときの最初の反応やセリフを書いてください。",
+
   "creator_scene_edit_opening_note": "キャラクターの導入が、このシーンの第一幕となります。その後の会話も、キャラクター本来の設定を軸に続いていきます。",
+
   "creator_scene_edit_save_changes": "変更を保存",
   "creator_scene_edit_save_scene": "シーンを保存",
+
   "creator_scene_edit_error_title_required": "シーンタイトルを入力してください。",
   "creator_scene_edit_error_description_required": "シーン説明を入力してください。",
   "creator_scene_edit_error_opening_required": "キャラクターの導入を入力してください。",
   "creator_scene_edit_save_failed": "保存に失敗しました。しばらくしてからもう一度お試しください。",
   "creator_scene_delete_title": "シーンを削除しますか？",
+
   "creator_scene_delete_target_fallback": "このシーン",
+
   "creator_scene_delete_confirm": "「{sceneTitle}」を削除しますか？削除すると元に戻せません。",
   "@creator_scene_delete_confirm": {
     "placeholders": {
@@ -3790,8 +3260,11 @@
       }
     }
   },
+
   "creator_scene_delete_failed": "削除に失敗しました。しばらくしてからもう一度お試しください。",
+
   "creator_scene_empty_title": "クリエイターシーンはまだありません",
+
   "creator_scene_empty_description": "{characterName}の異なる世界線を書いて、\nプレイヤーが別の物語から始められるようにしましょう。",
   "@creator_scene_empty_description": {
     "placeholders": {
@@ -3800,8 +3273,11 @@
       }
     }
   },
+
   "creator_scene_add": "シーンを追加",
+
   "creator_scene_unnamed": "タイトル未設定のシーン",
+
   "creator_scene_opening": "キャラクターの導入：{opening}",
   "@creator_scene_opening": {
     "placeholders": {
@@ -3810,29 +3286,43 @@
       }
     }
   },
+
   "creator_scene_edit": "編集",
   "creator_scene_delete": "削除",
+
   "creator_scene_title": "クリエイターシーン",
+
   "creator_scene_character_unavailable": "現在、キャラクター情報を読み込めません。",
+
   "creator_scene_load_failed": "シーンの読み込みに失敗しました。しばらくしてからもう一度お試しください。",
+
   "creator_scene_heading": "キャラクターに異なる物語の始まりを作成",
   "custom_scene_edit_heading_edit": "あなただけの物語を調整しましょう",
+
   "custom_scene_edit_heading_add": "このチャットだけの物語を書きましょう",
+
   "custom_scene_edit_description_hint": "物語が始まる時間、場所、関係性、そして始めたい状況を説明してください。",
+
   "custom_scene_edit_note": "自分で作成したシーンには、あらかじめ設定されたキャラクターの導入はありません。開始すると、キャラクターはシーン説明と本来の設定に沿って物語に登場します。",
   "moment_create_no_mentionable_characters": "現在、メンションできるキャラクターはいません。",
+
   "moment_create_mention_my_characters": "自分のキャラクターをメンション",
+
   "moment_create_no_matching_characters": "該当するキャラクターが見つかりません",
+
   "moment_create_my_character": "自分のキャラクター",
   "moment_create_friend_character": "フレンドのキャラクター",
+
   "moment_create_public_visibility_hint": "投稿はモーメントウォールに表示されます",
   "moment_create_private_visibility_hint": "指定された範囲内でのみ表示されます",
+
   "moment_create_add_image": "画像を追加",
   "moment_create_mention_character": "キャラクターをメンション",
   "moment_edit_content_hint": "今の気持ちをシェア...",
   "moment_forward_chat_preview": "【投稿をシェアしました】",
   "feedback_image_too_large": "画像サイズは10MB以下にしてください",
   "feedback_image_pick_failed": "画像を選択できませんでした。しばらくしてからもう一度お試しください",
+
   "feedback_category_general": "一般的な問題",
   "feedback_category_bug": "不具合の報告",
   "feedback_category_suggestion": "機能の提案",
@@ -3841,9 +3331,12 @@
   "feedback_category_ai_reply": "AIの返信に関する問題",
   "feedback_category_character_report": "キャラクターを通報",
   "feedback_category_moment_report": "投稿を通報",
+
   "feedback_screenshot_required_error": "状況を確認するため、この種類の問題には画面のスクリーンショットを添付してください",
   "feedback_login_required": "報告を送信するにはログインしてください",
+
   "feedback_mail_received_title": "【受付完了】ご報告を受け付けました",
+
   "feedback_mail_received_body": "ご報告を受け付けました。できるだけ早く状況を確認いたします。\n\n受付番号：{caseNumber}\n\nサポートから追加の回答がある場合は、LoveyDoveyのメールボックスを通じてお知らせします。",
   "@feedback_mail_received_body": {
     "placeholders": {
@@ -3852,22 +3345,30 @@
       }
     }
   },
+
   "feedback_submit_success": "報告を送信しました。ご意見ありがとうございます！",
   "feedback_submit_failed": "送信に失敗しました。ネットワーク接続を確認して、もう一度お試しください",
+
   "feedback_category_section_title": "問題の種類",
   "feedback_reported_content_title": "報告対象のコンテンツ",
+
   "feedback_screenshot_required_title": "問題のスクリーンショット（必須）",
   "feedback_image_optional_title": "追加画像（任意）",
+
   "feedback_screenshot_required_description": "実際の状況を確認するため、問題が発生したときのスクリーンショットを添付してください。",
   "feedback_image_optional_description": "関連する画像がある場合は、確認のために添付することもできます。",
+
   "feedback_footer_message": "皆さまのご意見は、ゲーム体験の継続的な改善に役立てられます。ありがとうございます！",
+
   "feedback_select_image_semantics": "報告用の画像を選択",
   "feedback_opening_gallery": "ギャラリーを開いています…",
   "feedback_select_image_upload": "ここをタップしてアップロードする画像を選択",
   "feedback_image_requirements": "JPG・PNG対応、1枚につき10MBまで",
+
   "feedback_submitting_semantics": "送信中",
   "feedback_submit_semantics": "報告を送信",
   "feedback_submit_button": "送信",
+
   "feedback_remove_image": "画像を削除",
   "feedback_selected_image": "画像を選択済み",
   "feedback_change_image": "変更",
@@ -3881,12 +3382,15 @@
       }
     }
   },
+
   "profile_backpack_physical_gift_status": "現物ギフトボックスの解放状況：",
   "profile_backpack_vip_gift_title": "【最愛ランク】VIP限定現物ギフトボックス",
   "profile_backpack_vip_gift_contents": "内容：限定手書きレター＋キャラクターモチーフのぬいぐるみ＋公式感謝状",
+
   "profile_backpack_edit_shipping_info": "配送先情報を変更",
   "profile_backpack_unlock_shipping_info": "解放済み！タップして配送先情報を入力",
   "profile_backpack_shipping_registered": "配送先住所を登録しました。できるだけ早く準備いたします！",
+
   "profile_backpack_amount_remaining": "あとNT$ {amount}で現物の豪華特典を解放できます！",
   "@profile_backpack_amount_remaining": {
     "placeholders": {
@@ -3895,35 +3399,46 @@
       }
     }
   },
+
   "profile_backpack_hint": "ヒント：その他の外観やアバターフレームはバッグから確認できます。",
   "profile_backpack_close": "閉じる",
+
   "profile_physical_gift_title": "【最愛ランク】現物ギフトボックス解放",
   "profile_physical_gift_description": "「LoveyDovey」への格別なご愛顧、誠にありがとうございます！\n以下の配送先情報をご入力ください。限定の手書きレターとキャラクターモチーフのぬいぐるみをお届けします：",
+
   "profile_physical_gift_recipient_name": "受取人の本名",
   "profile_physical_gift_phone": "電話番号",
   "profile_physical_gift_address": "配送先住所（郵便番号を含む）",
   "profile_physical_gift_character_name": "希望するキャラクターのぬいぐるみ名",
   "profile_physical_gift_character_hint": "例：希望するキャラクター名を入力",
+
   "profile_physical_gift_fill_later": "あとで入力",
   "profile_physical_gift_required_error": "配送先情報と希望するキャラクター名をすべて入力してください！",
   "profile_physical_gift_submit_success": "配送先情報を送信しました！現物のサプライズを楽しみにお待ちください！",
   "profile_physical_gift_confirm_submit": "送信する",
+
   "profile_tooltip_announcement": "お知らせ",
   "profile_tooltip_settings": "設定",
   "profile_tooltip_backpack": "マイバッグ",
   "profile_backpack_menu_title": "マイバッグ",
+
   "profile_about_me_title": "私について",
   "profile_tab_bio_title": "自己紹介",
+
   "profile_check_in_done": "チェックイン済み",
   "profile_check_in": "チェックイン",
   "profile_check_in_done_subtitle": "今日はもう足跡を残しました",
   "profile_check_in_not_done_subtitle": "今日はまだチェックインしていません",
+
   "profile_likes_label": "いいね",
   "profile_heartbeat_diary_subtitle": "ときめいた瞬間を記録",
+
   "profile_create_scene": "シーンを作成",
+
   "profile_link_invalid": "リンクの形式が正しくありません",
   "profile_link_open_failed": "このリンクを開けません",
   "profile_link_default_name": "マイリンク",
+
   "profile_publish_moment_short": "今をつづる",
   "edit_profile_default_link_name": "マイリンク {index}",
   "@edit_profile_default_link_name": {
@@ -3933,6 +3448,7 @@
       }
     }
   },
+
   "edit_profile_done": "完了",
   "edit_profile_social_links": "SNSとリンク",
   "edit_profile_add_link": "リンクを追加",
@@ -3945,12 +3461,15 @@
   "theme_name_mint": "フォレストミント",
   "theme_name_midnight": "ミッドナイトモード",
   "theme_name_custom": "カスタムカラー",
+
   "theme_selection_choose_theme": "テーマカラーを選択",
   "theme_selection_title": "雰囲気を変える",
   "theme_selection_description": "お気に入りのテーマカラーを選んで、LoveyDoveyをもっと自分らしく彩りましょう。",
   "theme_selection_preview": "プレビュー",
+
   "theme_selection_characters": "キャラクター",
   "theme_selection_posts": "投稿",
+
   "theme_selection_previewing": "現在のプレビュー：{themeName}",
   "@theme_selection_previewing": {
     "placeholders": {
@@ -3959,9 +3478,11 @@
       }
     }
   },
+
   "theme_selection_apply": "テーマを適用",
   "theme_selection_restore_default": "デフォルトに戻す",
   "theme_selection_choose_color": "自分だけのカラーを選択",
+
   "theme_selection_applied": "「{themeName}」を適用しました",
   "@theme_selection_applied": {
     "placeholders": {
@@ -3969,23 +3490,30 @@
         "type": "String"
       }
     }
-  },
-  "welcome_guide_help": "プレイガイド",
+  },"welcome_guide_help": "プレイガイド",
   "welcome_guide_start": "旅を始める",
   "welcome_guide_next": "次へ",
+
   "welcome_guide_welcome_title": "「LoveyDovey」へようこそ",
   "welcome_guide_welcome_description": "ここでは、ひとつひとつの出会いが、忘れられない物語になるかもしれません。「LoveyDovey」とともに、ふたりだけの素敵な思い出を紡いでいきましょう。",
+
   "welcome_guide_chat_title": "チャットモード",
   "welcome_guide_chat_description": "「LoveyDovey」には複数のチャットモードがあり、それぞれ異なる交流を楽しめます。",
+
   "welcome_guide_daily_title": "日常モード",
   "welcome_guide_daily_description": "お互いに寄り添い、日々の出来事を分かち合いながら、気軽な会話を楽しみましょう。",
+
   "welcome_guide_story_title": "ストーリーモード",
   "welcome_guide_story_description": "キャラクターの物語を進め、特別なストーリーや交流をさらに解放しましょう。",
+
   "welcome_guide_immersive_title": "没入モード",
   "welcome_guide_immersive_description": "より深く入り込める、臨場感あふれる会話を体験できます。",
+
   "welcome_guide_chat_more": "チャットモードの詳しい紹介は「ゲームヘルプ」から確認できます。",
+
   "welcome_guide_encounter_title": "出会い",
   "welcome_guide_encounter_description": "キャラクターには、それぞれ個性豊かな性格、物語、声があります。お気に入りのキャラクターに出会ったら、フレンドに追加して会話や交流を楽しみ、日常を分かち合いながら、ふたりだけの思い出を作りましょう。",
+
   "welcome_guide_more_title": "さらに楽しめるコンテンツ",
   "welcome_guide_more_description": "コレクション、クリエイター、ショップなど、多彩な機能も用意されています。詳しくは「ゲームヘルプ」をご覧ください。",
   "preference_selection_max_error": "選択できる好みは最大{count}個です。",
@@ -3996,15 +3524,19 @@
       }
     }
   },
+
   "preference_selection_save_failed": "現在、好みを保存できません。しばらくしてからもう一度お試しください。",
+
   "preference_selection_title": "どんな人と出会いたいですか？",
   "preference_selection_description": "好きなタイプを3～5個選んでください。LoveyDoveyがここからあなたのことを知っていきます。",
   "preference_selection_recommendation_note": "今後は実際の交流に合わせて、あなたにより合うおすすめへ少しずつ調整されます。",
   "preference_selection_selected": "選択済み",
   "preference_selection_start": "ここから始める",
+
   "preference_group_personality": "性格・雰囲気",
   "preference_group_relationship_age": "関係性・年齢差",
   "preference_group_story": "物語の雰囲気",
+
   "preference_tag_gentle": "優しい",
   "preference_tag_cold": "クール",
   "preference_tag_scheming": "腹黒",
@@ -4014,8 +3546,10 @@
   "preference_tag_mysterious": "ミステリアス",
   "preference_tag_healing": "癒やし系",
   "preference_tag_gap_moe": "ギャップ萌え",
+
   "preference_tag_older": "年上",
   "preference_tag_younger": "年下",
+
   "preference_tag_ceo": "俺様社長",
   "preference_tag_school": "学園",
   "preference_tag_workplace": "職場",
@@ -4024,6 +3558,7 @@
   "encounter_load_failed": "出会いのデータを読み込めませんでした。しばらくしてからもう一度お試しください。",
   "encounter_no_available_characters": "現在、出会えるキャラクターはいません",
   "encounter_category_empty": "現在、このカテゴリーにキャラクターはいません",
+
   "encounter_category_all": "すべて",
   "encounter_category_xianxia": "仙侠",
   "encounter_category_childhood_friend": "幼なじみ",
@@ -4032,14 +3567,17 @@
   "encounter_category_other": "その他",
   "character_edit_tab_character_settings": "キャラクター設定",
   "character_edit_test": "テスト",
+
   "character_edit_supporting_basic_info": "基本情報",
   "character_edit_supporting_main_setting": "メインキャラクターとの関係",
   "character_edit_supporting_main_description": "このサブキャラクターとメインキャラクターの関係や、物語での立ち位置を説明してください。",
+
   "character_edit_banner_preview_hint": "画像をタップすると拡大表示できます",
   "character_edit_main_photo_hint": "1枚目の画像がメインアイコンとして使用されます",
   "character_edit_other_photos": "その他のキャラクター画像",
   "character_edit_photo_action_hint": "画像をタップするとプレビューできます。鉛筆アイコンから画像設定を編集できます",
-  "character_edit_over_limit_warning": "{label}が{count}文字を超えています。修正してから公開してください。",
+
+  "character_edit_over_limit_warning": "⚠ {label}が{count}文字を超えています。修正してから公開してください。",
   "@character_edit_over_limit_warning": {
     "placeholders": {
       "label": {
@@ -4052,6 +3590,7 @@
   },
   "memo_notification_channel_name": "メモのリマインダー",
   "memo_notification_channel_description": "設定したメモをキャラクターがお知らせします",
+
   "memo_notification_title": "{characterName}からのリマインダー",
   "@memo_notification_title": {
     "placeholders": {
@@ -4060,6 +3599,7 @@
       }
     }
   },
+
   "memo_notification_tsundere": "べ、別に心配してるわけじゃない。ただ忘れられたら困るだけ。今日、忘れないで：{memoContent}",
   "@memo_notification_tsundere": {
     "placeholders": {
@@ -4068,6 +3608,7 @@
       }
     }
   },
+
   "memo_notification_dominant": "予定はもう覚えておいた。時間どおりに済ませろ。今日、忘れるな：{memoContent}",
   "@memo_notification_dominant": {
     "placeholders": {
@@ -4076,6 +3617,7 @@
       }
     }
   },
+
   "memo_notification_yandere": "忘れちゃだめだよ？　私はずっと覚えてるから。今日、忘れないで：{memoContent}",
   "@memo_notification_yandere": {
     "placeholders": {
@@ -4084,6 +3626,7 @@
       }
     }
   },
+
   "memo_notification_gentle": "忙しくて忘れてしまいそうだから、ちょっとだけお知らせに来たよ。今日、忘れないでね：{memoContent}",
   "@memo_notification_gentle": {
     "placeholders": {
@@ -4092,6 +3635,7 @@
       }
     }
   },
+
   "memo_notification_cold": "ひとつ伝えておく。今日、忘れないように：{memoContent}",
   "@memo_notification_cold": {
     "placeholders": {
@@ -4100,6 +3644,7 @@
       }
     }
   },
+
   "memo_notification_sunny": "ねえ、今日はまだ大事なことがあるよ！　忘れないでね：{memoContent}",
   "@memo_notification_sunny": {
     "placeholders": {
@@ -4108,6 +3653,7 @@
       }
     }
   },
+
   "memo_notification_lazy": "このまま寝転んでいたいけど、一応知らせておくね。今日、忘れないで：{memoContent}",
   "@memo_notification_lazy": {
     "placeholders": {
@@ -4116,6 +3662,7 @@
       }
     }
   },
+
   "memo_notification_older": "いい子だから、今日のことを忘れないようにね。覚えておいて：{memoContent}",
   "@memo_notification_older": {
     "placeholders": {
@@ -4124,6 +3671,7 @@
       }
     }
   },
+
   "memo_notification_younger": "ちゃんと代わりに覚えておいたよ！　今日、忘れないでね：{memoContent}",
   "@memo_notification_younger": {
     "placeholders": {
@@ -4132,6 +3680,7 @@
       }
     }
   },
+
   "memo_notification_mechanical": "リマインダーを起動しました。本日のタスク：{memoContent}",
   "@memo_notification_mechanical": {
     "placeholders": {
@@ -4140,6 +3689,7 @@
       }
     }
   },
+
   "memo_notification_default": "今日、忘れないで：{memoContent}",
   "@memo_notification_default": {
     "placeholders": {
@@ -4151,24 +3701,33 @@
   "recommendation_load_failed": "現在、おすすめを読み込めません。しばらくしてからもう一度お試しください。",
   "recommendation_reload": "再読み込み",
   "recommendation_empty": "現在、おすすめできるキャラクターはいません。",
+
   "recommendation_title": "あなたのために選んだ出会い",
+
   "recommendation_featured_title": "まずはこの人たちから",
   "recommendation_featured_subtitle": "あなたに特に合いそうな出会いを先にご紹介します。",
+
   "recommendation_matched_behavior_title": "あなたの好みに近づいています",
   "recommendation_matched_initial_title": "最初に選んだ好みに合わせて",
   "recommendation_matched_behavior_subtitle": "4日目以降は、最近の交流も表示順に反映されます。",
   "recommendation_matched_initial_subtitle": "今は最初に選んだタグを使って、候補を絞り込んでいます。",
+
   "recommendation_explore_title": "こんな人も好きかも",
   "recommendation_explore_subtitle": "ときには思いがけない相手と出会えるよう、ランダムなおすすめも少し残しています。",
+
   "recommendation_refreshing": "新しい出会いを探しています……",
+
   "recommendation_badge_for_you": "あなたへのおすすめ",
   "recommendation_badge_featured": "注目の出会い",
   "recommendation_badge_explore": "新しい発見",
+
   "recommendation_default_occupation_hint": "少し覗いてみませんか？　次に心ときめく相手かもしれません。",
   "recommendation_explore_fallback": "いつもと違う方向にも、思いがけないときめきがあるかもしれません。",
+
   "recommendation_behavior_hint_similar_type": "最近、このタイプのキャラクターをよく見ています",
   "recommendation_behavior_hint_forming": "最近の交流から好みが少しずつ見えてきました",
   "recommendation_behavior_hint_recent": "最近の交流をもとに選びました",
+
   "recommendation_reason_liked_tags": "「{tags}」が好きなあなたへ",
   "@recommendation_reason_liked_tags": {
     "placeholders": {
@@ -4177,9 +3736,11 @@
       }
     }
   },
+
   "recommendation_reason_popular": "最近、多くの人がこのキャラクターを見ています",
   "recommendation_reason_default": "次の運命の出会いになるかもしれません",
   "scene_delete_title": "シーンを削除しますか？",
+
   "scene_delete_content": "「{title}」を削除しますか？削除すると元に戻せません。",
   "@scene_delete_content": {
     "placeholders": {
@@ -4188,17 +3749,22 @@
       }
     }
   },
+
   "scene_unnamed": "タイトル未設定のシーン",
   "scene_cancel": "キャンセル",
   "scene_delete": "削除",
   "scene_delete_failed": "削除に失敗しました。しばらくしてからもう一度お試しください。",
+
   "scene_start_failed": "現在、シーンを開始できません。しばらくしてからもう一度お試しください。",
+
   "scene_end_title": "シーンを終了しますか？",
   "scene_end_content": "終了すると通常のチャットに戻ります。現在の会話履歴は削除されません。",
   "scene_end_action": "シーンを終了",
   "scene_ended": "シーンを終了しました",
   "scene_end_failed": "現在、シーンを終了できません。しばらくしてからもう一度お試しください。",
+
   "scene_active_label": "進行中",
+
   "scene_opening": "キャラクターの導入：{opening}",
   "@scene_opening": {
     "placeholders": {
@@ -4207,26 +3773,34 @@
       }
     }
   },
+
   "scene_edit": "編集",
   "scene_start": "シーンを開始",
+
   "scene_creator_load_failed": "クリエイターシーンを読み込めませんでした。",
   "scene_creator_empty_title": "クリエイターシーンはまだありません",
   "scene_creator_empty_body": "このキャラクターのクリエイターは、まだ追加の物語を作成していません。",
+
   "scene_custom_load_failed": "自作シーンを読み込めませんでした。",
   "scene_custom_empty_title": "自分のシーンはまだありません",
   "scene_custom_empty_body": "このチャットだけの、あなただけの物語を作りましょう。",
   "scene_add": "シーンを追加",
+
   "scene_title": "シーン",
   "scene_tab_creator": "クリエイターシーン",
   "scene_tab_custom": "自分で作成",
   "chat_book_player": "プレイヤー",
+
   "chat_book_title": "会話記録",
   "chat_book_export_pdf": "PDFを書き出す",
+
   "chat_book_brand": "— LoveyDovey",
   "chat_book_change_cover": "表紙を変更",
   "chat_book_cover_subtitle": "ふたりで過ごした時間 · 会話記念ブック",
   "chat_book_choose_cover": "記念ブックの表紙を選択",
+
   "chat_book_initial_story": "最初の物語",
+
   "chat_book_transcript_title": "{characterName} · 会話記録",
   "@chat_book_transcript_title": {
     "placeholders": {
@@ -4235,6 +3809,7 @@
       }
     }
   },
+
   "chat_book_continuation": "{name} · 続き",
   "@chat_book_continuation": {
     "placeholders": {
@@ -4243,11 +3818,14 @@
       }
     }
   },
+
   "chat_book_previous_page": "前のページ",
   "chat_book_next_page": "次のページ",
+
   "chat_book_photo_message": "〔写真〕",
   "chat_book_audio_message": "〔ボイスメッセージ〕",
   "chat_book_generic_message": "〔メッセージ〕",
+
   "chat_book_export_failed": "PDFの書き出しに失敗しました：{error}",
   "@chat_book_export_failed": {
     "placeholders": {
@@ -4264,6 +3842,7 @@
       }
     }
   },
+
   "email_policy_read_instruction": "最初に{title}を開き、全文をお読みください。読み終えたら「LoveyDovey」に戻ると、「確認して同意する」を押せるようになります。",
   "@email_policy_read_instruction": {
     "placeholders": {
@@ -4272,7 +3851,9 @@
       }
     }
   },
+
   "email_policy_opening": "開いています……",
+
   "email_policy_read_full": "{title}の全文を読む",
   "@email_policy_read_full": {
     "placeholders": {
@@ -4281,6 +3862,7 @@
       }
     }
   },
+
   "email_policy_opened_ready": "{title}を開きました。同意を確認できます。",
   "@email_policy_opened_ready": {
     "placeholders": {
@@ -4289,6 +3871,7 @@
       }
     }
   },
+
   "email_policy_not_opened": "{title}をまだ開いていません。",
   "@email_policy_not_opened": {
     "placeholders": {
@@ -4297,10 +3880,14 @@
       }
     }
   },
+
   "email_policy_cancel_login": "ログインをキャンセル",
   "email_policy_agree": "確認して同意する",
+
   "email_policy_status_check_failed": "現在、規約への同意状況を確認できません。しばらくしてからもう一度お試しください。",
+
   "email_policy_login_notice": "初回ログイン時または規約の更新時に、利用規約とプライバシーポリシーをお読みいただき、同意をお願いしています。",
+
   "email_policy_refresh": "更新",
   "email_policy_page_load_failed": "ページを読み込めませんでした",
   "email_policy_check_network": "ネットワーク接続を確認して、もう一度お試しください。",
@@ -4310,6 +3897,7 @@
   "login_method_info_facebook_title": "Facebookでログイン",
   "login_method_info_email_title": "LoveyDoveyアカウント（メール）",
   "login_method_info_email_provider": "LoveyDoveyアカウント（メール）",
+
   "login_method_info_content": "{providerName}を使用して「LoveyDovey」にログインします。\n\nご注意ください：\n\n• {providerName}とその他のログイン方法は、それぞれ異なるアカウントとして扱われます。\n\n• {providerName}でアカウントを作成した場合は、今後も同じ方法でログインしてください。\n\n• キャラクターデータ、チャット履歴、購入内容は、ほかのログイン方法で作成したアカウントとは共有されません。\n\n異なるアカウントが作成され、データを共有できなくなることを防ぐため、初回ログイン後も同じログイン方法を使用することをおすすめします。",
   "@login_method_info_content": {
     "placeholders": {
@@ -4318,6 +3906,7 @@
       }
     }
   },
+
   "login_method_info_got_it": "わかりました",
   "creator_studio_delete_failed": "削除に失敗しました：{error}",
   "@creator_studio_delete_failed": {
@@ -4327,7 +3916,9 @@
       }
     }
   },
+
   "creator_studio_subtitle": "ひらめきを集め、キャラクターを整理しながら、ゆっくり作品を仕上げましょう",
+
   "creator_studio_load_failed": "スタジオを読み込めませんでした：{error}",
   "@creator_studio_load_failed": {
     "placeholders": {
@@ -4336,23 +3927,32 @@
       }
     }
   },
+
   "creator_studio_add_character": "キャラクターを追加",
+
   "creator_studio_public_title": "公開キャラクター",
   "creator_studio_public_subtitle": "公開済みで、ほかのプレイヤーも見つけることができます",
   "creator_studio_public_empty": "現在、公開キャラクターはいません",
+
   "creator_studio_private_title": "非公開キャラクター",
   "creator_studio_private_subtitle": "自分だけが見ることができます",
   "creator_studio_private_empty": "現在、非公開キャラクターはいません",
+
   "creator_studio_draft_title": "下書き",
   "creator_studio_draft_subtitle": "まだ完成していない作品",
   "creator_studio_draft_empty": "現在、未完成の下書きはありません",
+
   "creator_studio_draft_empty_title": "下書きはまだありません",
   "creator_studio_draft_empty_hint": "ひらめいたら、まずはここに残しておきましょう",
+
   "creator_studio_status_public": "公開中",
   "creator_studio_status_private": "非公開",
   "creator_studio_status_draft": "下書き",
+
   "creator_studio_character_load_failed": "キャラクターデータを読み込めませんでした",
+
   "creator_studio_delete_draft_tooltip": "下書きを削除",
+
   "creator_studio_unnamed_creator": "名前未設定のクリエイター",
   "creator_studio_no_bio": "自己紹介はまだ入力されていません",
   "chat_input_tools": "機能",
@@ -4365,17 +3965,20 @@
   "character_navigator_confidential_title": "機密ファイル",
   "character_navigator_unavailable_message": "このキャラクターは非公開に変更されたか、公開停止、規約違反による保管、または削除された可能性があります。",
   "character_navigator_got_it": "わかりました",
+
   "character_navigator_load_failed_title": "読み込みに失敗しました",
   "character_navigator_load_failed_message": "現在、キャラクターデータを読み込めません。しばらくしてからもう一度お試しください。",
   "character_navigator_confirm": "OK",
   "character_profile_add_bookmark": "キャラクターを保存",
   "character_profile_remove_bookmark": "保存を解除",
+
   "character_profile_pronoun_female": "彼女",
   "character_profile_pronoun_male": "彼",
   "character_profile_pronoun_neutral": "そのキャラクター",
   "chat_home_pin_limit_reached": "固定できるチャットは3件までです。先にほかのチャットの固定を解除してください。",
   "chat_home_pinned_success": "チャットを固定しました",
   "chat_home_unpinned_success": "固定を解除しました",
+
   "chat_home_pin_update_failed": "固定状態を更新できませんでした：{error}",
   "@chat_home_pin_update_failed": {
     "placeholders": {
@@ -4384,8 +3987,10 @@
       }
     }
   },
+
   "chat_home_unpin": "固定を解除",
   "chat_home_pin": "チャットを固定",
+
   "chat_home_time_label": "時間：{time}",
   "@chat_home_time_label": {
     "placeholders": {
@@ -4398,13 +4003,13 @@
   "nav_recommend": "おすすめ",
   "moments_auto_reply_title": "AIによるプレイヤー投稿への自動返信を許可",
   "moments_auto_reply_description": "オンにすると、このキャラクターがプレイヤーの投稿に返信するようシステムから選ばれることがあります。",
+  "mailShareTooltip": "手紙をシェア",
   "mailOriginalQuestionLabel": "最初に尋ねたこと",
   "hidden_moments_empty_hint": "非表示にした投稿はまだありません",
   "moment_search_unavailable": "現在、検索を利用できません。しばらくしてからもう一度お試しください。",
   "moment_search_hint": "公開投稿、キャラクター、クリエイターを検索",
   "moment_search_instruction": "投稿内容、キャラクター名、またはクリエイター名を入力",
-  "moment_search_no_results": "関連する公開投稿が見つかりません",
-  "settingsErrorTitle": "エラーが発生しました",
+  "moment_search_no_results": "関連する公開投稿が見つかりません","settingsErrorTitle": "エラーが発生しました",
   "settingsChangePasswordSubtitle": "現在のパスワードを確認して、新しいログインパスワードを設定",
   "settingsCreatorGuidelines": "クリエイターガイドライン",
   "settingsPlayGuide": "プレイガイド",
@@ -4423,7 +4028,8 @@
     }
   },
   "shop_tab_monthly": "マンスリーパス",
-  "shop_joined_days": "LoveyDoveyに来てから{days}日目",
+
+  "shop_joined_days": "✦ LoveyDoveyに来てから{days}日目 ✦",
   "@shop_joined_days": {
     "placeholders": {
       "days": {
@@ -4431,28 +4037,41 @@
       }
     }
   },
+
   "shop_vip_tier_1_title": "ひと目惚れ",
   "shop_vip_tier_1_reward": "フラワー20ポイント＋初心者限定称号",
+
   "shop_vip_tier_2_title": "きらめく鼓動",
   "shop_vip_tier_2_reward": "限定アバターフレーム【きらめく鼓動】",
+
   "shop_vip_tier_3_title": "星空のささやき",
   "shop_vip_tier_3_reward": "限定チャットバブル＋フラワー50ポイント",
+
   "shop_vip_tier_4_title": "ロマンチックな夕暮れ",
   "shop_vip_tier_4_reward": "限定アプリアイコン",
+
   "shop_vip_tier_5_title": "胸のときめき",
   "shop_vip_tier_5_reward": "画面タップエフェクト（Lottie）＋フラワー100ポイント",
+
   "shop_vip_tier_6_title": "永遠の誓い",
   "shop_vip_tier_6_reward": "上級アニメーションアバターフレーム＋フラワー200ポイント",
+
   "shop_vip_tier_7_title": "魂の邂逅",
   "shop_vip_tier_7_reward": "アニメーションチャットバブル＋限定上級称号",
+
   "shop_vip_tier_8_title": "あなただけを想って",
   "shop_vip_tier_8_reward": "最高級アニメーションネームプレート＋フラワー500ポイント",
+
   "shop_vip_tier_9_title": "きらめく銀河",
   "shop_vip_tier_9_reward": "限定登場Lottieエフェクト＋専用カスタマーサポート",
+
   "shop_vip_tier_10_title": "最愛ランク",
   "shop_vip_tier_10_reward": "【VIP限定現物ギフトボックス】（手書きレター＋キャラクターぬいぐるみ）",
+
   "shop_vip_total_bond": "累計ロマンチックな絆",
+
   "shop_vip_all_unlocked": "すべての最高級特典を解放しました！",
+
   "shop_vip_next_unlock": "あとNT$ {amount}チャージすると次のランクを解放できます",
   "@shop_vip_next_unlock": {
     "placeholders": {
@@ -4462,8 +4081,11 @@
     }
   },
   "call_connecting": "通話に接続しています...",
+
   "call_listening_auto_send": "聞き取り中...（話し終えると自動で送信されます）",
+
   "call_listening_release_to_send": "聞き取り中...（指を離すと送信されます）",
+
   "call_sending_transcript": " {text}\n\n（送信中...）",
   "@call_sending_transcript": {
     "placeholders": {
@@ -4473,7 +4095,9 @@
     }
   },
   "help_translation_fallback": "この言語のプレイガイドはまだ提供されていないため、一時的に繁体字中国語で表示します。",
+
   "help_all_categories": "すべて",
+
   "help_subtitle_companion": "日常機能と便利なサポートツール",
   "help_subtitle_ai_chat": "チャット、音声、スマートインタラクション関連",
   "help_subtitle_creation": "キャラクター設定と創作機能関連",
@@ -4482,6 +4106,7 @@
   "help_subtitle_general": "一般的な機能と操作方法",
   "chat_interact_fun": "楽しい遊び",
   "memo_notification_permission_missing": "通知が許可されていません。メモは保存されますが、システムからのリマインダーは表示されません。",
+
   "memo_saved_with_reminder": "メモを保存しました。{characterName}がリマインドしてくれます！",
   "@memo_saved_with_reminder": {
     "placeholders": {
@@ -4490,7 +4115,9 @@
       }
     }
   },
+
   "memo_saved_without_notification": "メモを保存しましたが、通知はまだ許可されていません。",
+
   "memo_updated_with_reminder": "メモを更新しました。{characterName}がリマインドしてくれます！",
   "@memo_updated_with_reminder": {
     "placeholders": {
@@ -4499,7 +4126,9 @@
       }
     }
   },
+
   "memo_updated_without_notification": "メモを更新しましたが、現在は通知が許可されていません。",
+
   "memo_load_error": "データの読み込み中にエラーが発生しました：{error}",
   "@memo_load_error": {
     "placeholders": {
@@ -4509,16 +4138,20 @@
     }
   },
   "story_summary_content_required": "ストーリーの内容を入力してください",
+
   "story_summary_edit_hint": "二人の物語を書いてください...",
   "profile_section_basic_info": "基本情報",
   "profile_section_about_me": "私について",
   "dice_duel_you": "あなた",
+
   "dice_duel_result_saved": "対決結果を保存しました！",
+
   "dice_duel_rolling": "宇宙のエネルギーを集めています...",
   "butterfly_loading_connecting": "時をつないでいます...",
   "character_block_login_required": "キャラクターをブロックするには、先にログインしてください",
   "character_block_self_forbidden": "自分が作成したキャラクターはブロックできません",
   "character_block_title": "キャラクターをブロック",
+
   "character_block_confirm_message": "「{characterName}」をブロックしますか？\n\nブロックすると、出会いやモーメントなどのおすすめコンテンツにこのキャラクターが表示されなくなります。",
   "@character_block_confirm_message": {
     "placeholders": {
@@ -4527,7 +4160,9 @@
       }
     }
   },
+
   "character_block_confirm": "ブロックする",
+
   "character_block_success": "「{characterName}」をブロックしました",
   "@character_block_success": {
     "placeholders": {
@@ -4536,6 +4171,7 @@
       }
     }
   },
+
   "character_block_failed": "ブロックに失敗しました。しばらくしてからもう一度お試しください",
   "character_unblock_success": "ブロックを解除しました",
   "character_unblock_failed": "ブロックの解除に失敗しました。しばらくしてからもう一度お試しください",
@@ -4580,11 +4216,5 @@
   "creator_social_links_saved": "ソーシャルリンクを保存しました",
   "creator_social_links_load_failed": "ソーシャルリンクの読み込みに失敗しました。しばらくしてからもう一度お試しください",
   "creator_social_links_save_failed": "ソーシャルリンクの保存に失敗しました。しばらくしてからもう一度お試しください",
-  "creator_social_links_open_failed": "このリンクを開けませんでした",
-  "chat_regenerate_bottom_tip": "「再生成」はここに移動しました！別の返答がほしいときはここから使えます。",
-  "chat_continue_bottom_tip": "「続ける」はここに移動しました！キャラクターに続きを話してほしいときはここから使えます。",
-  "languageSelectionSubtitle": "使い慣れた言語を選んでください",
-  "@languageSelectionSubtitle": {
-    "description": "Subtitle shown below the language settings title."
-  }
+  "creator_social_links_open_failed": "このリンクを開けませんでした"
 }

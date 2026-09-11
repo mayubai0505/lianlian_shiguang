@@ -89,9 +89,9 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
       setState(() {
         _currentAuthorId = user.uid;
         _currentAuthorName =
-            nickname.isNotEmpty ? nickname : l10n.chat_mysterious_player;
+        nickname.isNotEmpty ? nickname : l10n.chat_mysterious_player;
         _currentAuthorAvatar =
-            avatarPath.isNotEmpty ? avatarPath : 'assets/images/avatar1.png';
+        avatarPath.isNotEmpty ? avatarPath : 'assets/images/avatar1.png';
       });
 
       final prefs = await SharedPreferences.getInstance();
@@ -138,13 +138,13 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
       final publicCharacters = await Future.wait(
         responses[0].docs.map(
               (doc) => Character.fromFirestoreAsync(doc),
-            ),
+        ),
       );
 
       final privateCharacters = await Future.wait(
         responses[1].docs.map(
               (doc) => Character.fromFirestoreAsync(doc),
-            ),
+        ),
       );
 
       final characters = <Character>[
@@ -153,7 +153,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
       ];
 
       characters.sort(
-        (a, b) => b.createdAt.compareTo(a.createdAt),
+            (a, b) => b.createdAt.compareTo(a.createdAt),
       );
 
       return characters;
@@ -251,21 +251,21 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
     final l10n = AppLocalizations.of(context)!;
     try {
       bool confirm = await showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text(l10n.moment_delete_confirm_title),
-              content: Text(l10n.moment_delete_confirm_content),
-              actions: [
-                TextButton(
-                    onPressed: () => Navigator.pop(context, false),
-                    child: Text(l10n.cancelButton)),
-                TextButton(
-                    onPressed: () => Navigator.pop(context, true),
-                    child: Text(l10n.action_confirm_delete,
-                        style: TextStyle(color: Colors.red))),
-              ],
-            ),
-          ) ??
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(l10n.moment_delete_confirm_title),
+          content: Text(l10n.moment_delete_confirm_content),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(l10n.cancelButton)),
+            TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(l10n.action_confirm_delete,
+                    style: TextStyle(color: Colors.red))),
+          ],
+        ),
+      ) ??
           false;
 
       if (confirm) {
@@ -327,7 +327,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
       ToastUtils.showCenterToast(
         context,
         l10n.moment_like_success,
-        customIcon: Icons.favorite_rounded,
+        customIcon: Icons.eco_rounded,
       );
     } catch (e) {
       debugPrint("按讚失敗: $e");
@@ -360,7 +360,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
       } else {
         // 其他通知保底
         notificationId =
-            '${type}_${postId}_${_userId}_${DateTime.now().millisecondsSinceEpoch}';
+        '${type}_${postId}_${_userId}_${DateTime.now().millisecondsSinceEpoch}';
       }
 
       await FirebaseFirestore.instance
@@ -558,7 +558,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
           if (motherUid.isNotEmpty && motherUid != _userId) {
             // 不是親媽！代表是其他玩家或角色 Tag 的，可以發送通知信！
             String mailBody =
-                l10n.moment_mention_mail_body(senderName, name);
+            l10n.moment_mention_mail_body(senderName, name);
             await _sendNotificationLetter(
               recipientId: motherUid, // 信件精準投遞給親媽的 UID
               postId: postId,
@@ -593,561 +593,561 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        // --- A. 動態主體卡片 ---
-                        MomentCard(
-                          moment: _moment!,
-                          currentUserId: _userId,
-                          onLikeTapped: () => _handleLikeTaskProgress(_moment!),
-                          onDeleteTapped: () {
-                            _deleteMoment(_moment!.id).then((success) {
-                              if (success && mounted) Navigator.pop(context);
-                            });
-                          },
-                        ),
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  // --- A. 動態主體卡片 ---
+                  MomentCard(
+                    moment: _moment!,
+                    currentUserId: _userId,
+                    onLikeTapped: () => _handleLikeTaskProgress(_moment!),
+                    onDeleteTapped: () {
+                      _deleteMoment(_moment!.id).then((success) {
+                        if (success && mounted) Navigator.pop(context);
+                      });
+                    },
+                  ),
 
-                        const Divider(thickness: 1, height: 1),
+                  const Divider(thickness: 1, height: 1),
 
-                        // --- B. 留言清單標題 ---
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
-                          child: Text(l10n.moment_comment_title,
-                              style: theme.textTheme.titleMedium
-                                  ?.copyWith(fontWeight: FontWeight.bold)),
-                        ),
+                  // --- B. 留言清單標題 ---
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
+                    child: Text(l10n.moment_comment_title,
+                        style: theme.textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold)),
+                  ),
 
-                        // --- C. 即時留言列表（主留言＋回覆分組）---
-                        StreamBuilder<QuerySnapshot>(
-                          stream: _db
-                              .collection('artifacts')
-                              .doc(AppConfig.appId)
-                              .collection('moments')
-                              .doc(widget.postId)
-                              .collection('comments')
-                              .orderBy(
-                                'createdAt',
-                                descending: false,
-                              )
-                              .snapshots(),
-                          builder: (context, commentSnapshot) {
-                            if (commentSnapshot.hasError) {
-                              return  Padding(
-                                padding: EdgeInsets.symmetric(vertical: 24),
-                                child: Center(
-                                  child: Text(
-                                    l10n.momentCommentLoadFailed,
-                                    style: TextStyle(color: Colors.grey),
+                  // --- C. 即時留言列表（主留言＋回覆分組）---
+                  StreamBuilder<QuerySnapshot>(
+                    stream: _db
+                        .collection('artifacts')
+                        .doc(AppConfig.appId)
+                        .collection('moments')
+                        .doc(widget.postId)
+                        .collection('comments')
+                        .orderBy(
+                      'createdAt',
+                      descending: false,
+                    )
+                        .snapshots(),
+                    builder: (context, commentSnapshot) {
+                      if (commentSnapshot.hasError) {
+                        return  Padding(
+                          padding: EdgeInsets.symmetric(vertical: 24),
+                          child: Center(
+                            child: Text(
+                              l10n.momentCommentLoadFailed,
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ),
+                        );
+                      }
+
+                      if (!commentSnapshot.hasData) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 24),
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      }
+
+                      final docs = commentSnapshot.data!.docs;
+
+                      if (docs.isEmpty) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 40,
+                          ),
+                          child: Center(
+                            child: Text(
+                              l10n.moment_comment_empty,
+                              style: const TextStyle(
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+
+                      // 建立留言ID對應表，用來處理舊資料中
+                      // 「回覆指向另一則回覆」的情況。
+                      final docsById = {
+                        for (final doc in docs) doc.id: doc,
+                      };
+
+                      String resolveRootCommentId(
+                          String initialParentId,
+                          ) {
+                        String currentId = initialParentId;
+                        final visitedIds = <String>{};
+
+                        while (currentId.isNotEmpty &&
+                            !visitedIds.contains(currentId)) {
+                          visitedIds.add(currentId);
+
+                          final parentDoc = docsById[currentId];
+
+                          // 找不到父留言時，保留目前找到的ID。
+                          if (parentDoc == null) {
+                            return currentId;
+                          }
+
+                          final parentData =
+                          parentDoc.data() as Map<String, dynamic>;
+
+                          final String? nextParentId =
+                          parentData['parentCommentId']
+                              ?.toString()
+                              .trim();
+
+                          // 目前這則已經是主留言。
+                          if (nextParentId == null ||
+                              nextParentId.isEmpty) {
+                            return currentId;
+                          }
+
+                          currentId = nextParentId;
+                        }
+
+                        return currentId;
+                      }
+
+                      final rootComments = <QueryDocumentSnapshot>[];
+
+                      final repliesByRoot =
+                      <String, List<QueryDocumentSnapshot>>{};
+
+                      // 將留言分成主留言與回覆。
+                      for (final doc in docs) {
+                        final data = doc.data() as Map<String, dynamic>;
+
+                        final String? parentCommentId =
+                        data['parentCommentId']?.toString().trim();
+
+                        if (parentCommentId == null ||
+                            parentCommentId.isEmpty) {
+                          rootComments.add(doc);
+                          continue;
+                        }
+
+                        final String rootCommentId = resolveRootCommentId(
+                          parentCommentId,
+                        );
+
+                        // 如果原本的父留言已被刪除，
+                        // 不讓這則留言整個消失，暫時當成主留言顯示。
+                        if (!docsById.containsKey(rootCommentId)) {
+                          rootComments.add(doc);
+                          continue;
+                        }
+
+                        repliesByRoot
+                            .putIfAbsent(
+                          rootCommentId,
+                              () => <QueryDocumentSnapshot>[],
+                        )
+                            .add(doc);
+                      }
+
+                      Widget buildCommentTile(
+                          QueryDocumentSnapshot commentDoc, {
+                            required bool isReply,
+                          }) {
+                        final data =
+                        commentDoc.data() as Map<String, dynamic>;
+
+                        final String commentId = commentDoc.id;
+
+                        final String authorName =
+                            data['authorName']?.toString() ?? l10n.someFriend;
+
+                        final String replyToName =
+                            data['replyToName']?.toString().trim() ?? '';
+
+                        return Padding(
+                          padding: EdgeInsets.only(
+                            left: isReply ? 40 : 0,
+                          ),
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              radius: isReply ? 15 : 18,
+                              backgroundColor: Colors.grey[200],
+                              backgroundImage: getAvatarImageProvider(
+                                data['authorAvatar']
+                                    ?.toString()
+                                    .trim()
+                                    .isNotEmpty ==
+                                    true
+                                    ? data['authorAvatar'].toString().trim()
+                                    : 'assets/images/avatar1.png',
+                              ),
+                            ),
+                            title: Wrap(
+                              crossAxisAlignment:
+                              WrapCrossAlignment.center,
+                              spacing: 4,
+                              children: [
+                                Text(
+                                  authorName,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                              );
-                            }
-
-                            if (!commentSnapshot.hasData) {
-                              return const Padding(
-                                padding: EdgeInsets.symmetric(vertical: 24),
-                                child: Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                              );
-                            }
-
-                            final docs = commentSnapshot.data!.docs;
-
-                            if (docs.isEmpty) {
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 40,
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    l10n.moment_comment_empty,
+                                if (isReply &&
+                                    replyToName.isNotEmpty) ...[
+                                  const Icon(
+                                    Icons.arrow_right,
+                                    size: 16,
+                                    color: Colors.grey,
+                                  ),
+                                  Text(
+                                    '@$replyToName',
                                     style: const TextStyle(
-                                      color: Colors.grey,
+                                      color: Colors.blueAccent,
+                                      fontSize: 12,
                                     ),
                                   ),
+                                ],
+                              ],
+                            ),
+                            subtitle: Padding(
+                              padding: const EdgeInsets.only(
+                                top: 4,
+                              ),
+                              child: Text(
+                                data['content']?.toString() ?? '',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: theme.colorScheme.onSurface,
                                 ),
-                              );
-                            }
+                              ),
+                            ),
+                            trailing: TextButton(
+                              style: TextButton.styleFrom(
+                                minimumSize: Size.zero,
+                                padding: EdgeInsets.zero,
+                                tapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              onPressed: () {
+                                final String? existingParentId =
+                                data['parentCommentId']
+                                    ?.toString()
+                                    .trim();
 
-                            // 建立留言ID對應表，用來處理舊資料中
-                            // 「回覆指向另一則回覆」的情況。
-                            final docsById = {
-                              for (final doc in docs) doc.id: doc,
-                            };
+                                final String rootCommentId =
+                                existingParentId != null &&
+                                    existingParentId.isNotEmpty
+                                    ? resolveRootCommentId(
+                                  existingParentId,
+                                )
+                                    : commentId;
 
-                            String resolveRootCommentId(
-                              String initialParentId,
-                            ) {
-                              String currentId = initialParentId;
-                              final visitedIds = <String>{};
-
-                              while (currentId.isNotEmpty &&
-                                  !visitedIds.contains(currentId)) {
-                                visitedIds.add(currentId);
-
-                                final parentDoc = docsById[currentId];
-
-                                // 找不到父留言時，保留目前找到的ID。
-                                if (parentDoc == null) {
-                                  return currentId;
-                                }
-
-                                final parentData =
-                                    parentDoc.data() as Map<String, dynamic>;
-
-                                final String? nextParentId =
-                                    parentData['parentCommentId']
-                                        ?.toString()
-                                        .trim();
-
-                                // 目前這則已經是主留言。
-                                if (nextParentId == null ||
-                                    nextParentId.isEmpty) {
-                                  return currentId;
-                                }
-
-                                currentId = nextParentId;
-                              }
-
-                              return currentId;
-                            }
-
-                            final rootComments = <QueryDocumentSnapshot>[];
-
-                            final repliesByRoot =
-                                <String, List<QueryDocumentSnapshot>>{};
-
-                            // 將留言分成主留言與回覆。
-                            for (final doc in docs) {
-                              final data = doc.data() as Map<String, dynamic>;
-
-                              final String? parentCommentId =
-                                  data['parentCommentId']?.toString().trim();
-
-                              if (parentCommentId == null ||
-                                  parentCommentId.isEmpty) {
-                                rootComments.add(doc);
-                                continue;
-                              }
-
-                              final String rootCommentId = resolveRootCommentId(
-                                parentCommentId,
-                              );
-
-                              // 如果原本的父留言已被刪除，
-                              // 不讓這則留言整個消失，暫時當成主留言顯示。
-                              if (!docsById.containsKey(rootCommentId)) {
-                                rootComments.add(doc);
-                                continue;
-                              }
-
-                              repliesByRoot
-                                  .putIfAbsent(
-                                    rootCommentId,
-                                    () => <QueryDocumentSnapshot>[],
-                                  )
-                                  .add(doc);
-                            }
-
-                            Widget buildCommentTile(
-                              QueryDocumentSnapshot commentDoc, {
-                              required bool isReply,
-                            }) {
-                              final data =
-                                  commentDoc.data() as Map<String, dynamic>;
-
-                              final String commentId = commentDoc.id;
-
-                              final String authorName =
-                                  data['authorName']?.toString() ?? l10n.someFriend;
-
-                              final String replyToName =
-                                  data['replyToName']?.toString().trim() ?? '';
-
-                              return Padding(
-                                padding: EdgeInsets.only(
-                                  left: isReply ? 40 : 0,
-                                ),
-                                child: ListTile(
-                                  leading: CircleAvatar(
-                                    radius: isReply ? 15 : 18,
-                                    backgroundColor: Colors.grey[200],
-                                    backgroundImage: getAvatarImageProvider(
-                                      data['authorAvatar']
-                                          ?.toString()
-                                          .trim()
-                                          .isNotEmpty ==
-                                          true
-                                          ? data['authorAvatar'].toString().trim()
-                                          : 'assets/images/avatar1.png',
-                                    ),
-                                  ),
-                                  title: Wrap(
-                                    crossAxisAlignment:
-                                        WrapCrossAlignment.center,
-                                    spacing: 4,
-                                    children: [
-                                      Text(
-                                        authorName,
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      if (isReply &&
-                                          replyToName.isNotEmpty) ...[
-                                        const Icon(
-                                          Icons.arrow_right,
-                                          size: 16,
-                                          color: Colors.grey,
-                                        ),
-                                        Text(
-                                          '@$replyToName',
-                                          style: const TextStyle(
-                                            color: Colors.blueAccent,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ],
-                                    ],
-                                  ),
-                                  subtitle: Padding(
-                                    padding: const EdgeInsets.only(
-                                      top: 4,
-                                    ),
-                                    child: Text(
-                                      data['content']?.toString() ?? '',
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        color: theme.colorScheme.onSurface,
-                                      ),
-                                    ),
-                                  ),
-                                  trailing: TextButton(
-                                    style: TextButton.styleFrom(
-                                      minimumSize: Size.zero,
-                                      padding: EdgeInsets.zero,
-                                      tapTargetSize:
-                                          MaterialTapTargetSize.shrinkWrap,
-                                    ),
-                                    onPressed: () {
-                                      final String? existingParentId =
-                                          data['parentCommentId']
-                                              ?.toString()
-                                              .trim();
-
-                                      final String rootCommentId =
-                                          existingParentId != null &&
-                                                  existingParentId.isNotEmpty
-                                              ? resolveRootCommentId(
-                                                  existingParentId,
-                                                )
-                                              : commentId;
-
-                                      setState(() {
-                                        _replyTarget = {
-                                          'commentId': commentId,
-                                          'rootCommentId': rootCommentId,
-                                          'authorName': authorName,
-                                        };
-                                      });
-                                    },
-                                    child: Text(
-                                      l10n.comment_reply_btn,
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.pinkAccent,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }
-
-                            return ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: rootComments.length,
-                              itemBuilder: (context, index) {
-                                final rootComment = rootComments[index];
-
-                                final replies = repliesByRoot[rootComment.id] ??
-                                    <QueryDocumentSnapshot>[];
-
-                                final bool isExpanded =
-                                    _expandedReplyThreads.contains(
-                                  rootComment.id,
-                                );
-
-                                // 預設顯示最新一則回覆。
-                                // 展開後才顯示全部回覆。
-                                final List<QueryDocumentSnapshot>
-                                    visibleReplies = isExpanded
-                                        ? replies
-                                        : replies.isEmpty
-                                            ? <QueryDocumentSnapshot>[]
-                                            : <QueryDocumentSnapshot>[
-                                                replies.last,
-                                              ];
-
-                                final int hiddenReplyCount =
-                                    replies.length - visibleReplies.length;
-
-                                return Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    // 主留言
-                                    buildCommentTile(
-                                      rootComment,
-                                      isReply: false,
-                                    ),
-
-                                    // 預設顯示最新一則，或展開後顯示全部
-                                    for (final reply in visibleReplies)
-                                      buildCommentTile(
-                                        reply,
-                                        isReply: true,
-                                      ),
-
-                                    // 有兩則以上回覆時，顯示展開／收合按鈕
-                                    if (replies.length > 1)
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                          left: 72,
-                                          right: 16,
-                                          bottom: 8,
-                                        ),
-                                        child: Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: TextButton(
-                                            style: TextButton.styleFrom(
-                                              minimumSize: Size.zero,
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                horizontal: 0,
-                                                vertical: 6,
-                                              ),
-                                              tapTargetSize:
-                                                  MaterialTapTargetSize
-                                                      .shrinkWrap,
-                                              foregroundColor: theme
-                                                  .colorScheme.onSurfaceVariant,
-                                            ),
-                                            onPressed: () {
-                                              setState(() {
-                                                if (isExpanded) {
-                                                  _expandedReplyThreads.remove(
-                                                    rootComment.id,
-                                                  );
-                                                } else {
-                                                  _expandedReplyThreads.add(
-                                                    rootComment.id,
-                                                  );
-                                                }
-                                              });
-                                            },
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Container(
-                                                  width: 28,
-                                                  height: 1,
-                                                  color: theme.colorScheme
-                                                      .onSurfaceVariant
-                                                      .withValues(alpha: 0.45),
-                                                ),
-                                                const SizedBox(width: 10),
-                                                Text(
-                                                  isExpanded
-                                                      ? l10n.momentCollapseReplies
-                                                      : l10n.momentViewOtherReplies(hiddenReplyCount),
-                                                  style: const TextStyle(
-                                                    fontSize: 13,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 4),
-                                                Icon(
-                                                  isExpanded
-                                                      ? Icons.keyboard_arrow_up
-                                                      : Icons
-                                                          .keyboard_arrow_down,
-                                                  size: 17,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                );
+                                setState(() {
+                                  _replyTarget = {
+                                    'commentId': commentId,
+                                    'rootCommentId': rootCommentId,
+                                    'authorName': authorName,
+                                  };
+                                });
                               },
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 50), // 給底部留點空間
-                      ],
-                    ),
+                              child: Text(
+                                l10n.comment_reply_btn,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.pinkAccent,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: rootComments.length,
+                        itemBuilder: (context, index) {
+                          final rootComment = rootComments[index];
+
+                          final replies = repliesByRoot[rootComment.id] ??
+                              <QueryDocumentSnapshot>[];
+
+                          final bool isExpanded =
+                          _expandedReplyThreads.contains(
+                            rootComment.id,
+                          );
+
+                          // 預設顯示最新一則回覆。
+                          // 展開後才顯示全部回覆。
+                          final List<QueryDocumentSnapshot>
+                          visibleReplies = isExpanded
+                              ? replies
+                              : replies.isEmpty
+                              ? <QueryDocumentSnapshot>[]
+                              : <QueryDocumentSnapshot>[
+                            replies.last,
+                          ];
+
+                          final int hiddenReplyCount =
+                              replies.length - visibleReplies.length;
+
+                          return Column(
+                            crossAxisAlignment:
+                            CrossAxisAlignment.stretch,
+                            children: [
+                              // 主留言
+                              buildCommentTile(
+                                rootComment,
+                                isReply: false,
+                              ),
+
+                              // 預設顯示最新一則，或展開後顯示全部
+                              for (final reply in visibleReplies)
+                                buildCommentTile(
+                                  reply,
+                                  isReply: true,
+                                ),
+
+                              // 有兩則以上回覆時，顯示展開／收合按鈕
+                              if (replies.length > 1)
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 72,
+                                    right: 16,
+                                    bottom: 8,
+                                  ),
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: TextButton(
+                                      style: TextButton.styleFrom(
+                                        minimumSize: Size.zero,
+                                        padding:
+                                        const EdgeInsets.symmetric(
+                                          horizontal: 0,
+                                          vertical: 6,
+                                        ),
+                                        tapTargetSize:
+                                        MaterialTapTargetSize
+                                            .shrinkWrap,
+                                        foregroundColor: theme
+                                            .colorScheme.onSurfaceVariant,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          if (isExpanded) {
+                                            _expandedReplyThreads.remove(
+                                              rootComment.id,
+                                            );
+                                          } else {
+                                            _expandedReplyThreads.add(
+                                              rootComment.id,
+                                            );
+                                          }
+                                        });
+                                      },
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Container(
+                                            width: 28,
+                                            height: 1,
+                                            color: theme.colorScheme
+                                                .onSurfaceVariant
+                                                .withValues(alpha: 0.45),
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Text(
+                                            isExpanded
+                                                ? l10n.momentCollapseReplies
+                                                : l10n.momentViewOtherReplies(hiddenReplyCount),
+                                            style: const TextStyle(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Icon(
+                                            isExpanded
+                                                ? Icons.keyboard_arrow_up
+                                                : Icons
+                                                .keyboard_arrow_down,
+                                            size: 17,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 50), // 給底部留點空間
+                ],
+              ),
+            ),
+          ),
+
+          // --- D. 底部留言輸入區 (包含總裁的回覆提示條) ---
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // ✨ 總裁指令：回覆提示條
+              if (_replyTarget != null)
+                Container(
+                  width: double.infinity,
+                  color: Colors.grey[200],
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 8),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.reply,
+                          size: 16, color: Colors.grey),
+                      const SizedBox(width: 8),
+                      Text(
+                        l10n.moment_replying_to(
+                            _replyTarget!['authorName']),
+                        style: const TextStyle(
+                            fontSize: 12, color: Colors.grey),
+                      ),
+                      const Spacer(),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _replyTarget = null; // 點擊叉叉取消回覆
+                          });
+                        },
+                        child: const Icon(Icons.close,
+                            size: 16, color: Colors.grey),
+                      ),
+                    ],
                   ),
                 ),
 
-                // --- D. 底部留言輸入區 (包含總裁的回覆提示條) ---
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // ✨ 總裁指令：回覆提示條
-                    if (_replyTarget != null)
-                      Container(
-                        width: double.infinity,
-                        color: Colors.grey[200],
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.reply,
-                                size: 16, color: Colors.grey),
-                            const SizedBox(width: 8),
-                            Text(
-                              l10n.moment_replying_to(
-                                  _replyTarget!['authorName']),
-                              style: const TextStyle(
-                                  fontSize: 12, color: Colors.grey),
-                            ),
-                            const Spacer(),
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _replyTarget = null; // 點擊叉叉取消回覆
-                                });
-                              },
-                              child: const Icon(Icons.close,
-                                  size: 16, color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                    // ⬇️ 原本的輸入框
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: theme.cardColor,
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 10,
-                              offset: const Offset(0, -5))
-                        ],
-                      ),
-                      child: SafeArea(
-                        child: Row(
-                          children: [
-                            Tooltip(
-                              message: l10n.momentSwitchCommentIdentity,
-                              child: GestureDetector(
-                                onTap: _showIdentitySwitcher,
-                                child: Stack(
-                                  clipBehavior: Clip.none,
-                                  children: [
-                                    CircleAvatar(
-                                      radius: 19,
-                                      backgroundColor: Colors.grey[200],
-                                      backgroundImage: getAvatarImageProvider(
-                                        _currentAuthorAvatar.isNotEmpty
-                                            ? _currentAuthorAvatar
-                                            : 'assets/images/avatar1.png',
-                                      ),
-                                    ),
-                                    Positioned(
-                                      right: -3,
-                                      bottom: -3,
-                                      child: Container(
-                                        width: 15,
-                                        height: 15,
-                                        decoration: BoxDecoration(
-                                          color: theme.colorScheme.primary,
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: theme.cardColor,
-                                            width: 1.5,
-                                          ),
-                                        ),
-                                        child: Icon(
-                                          Icons.swap_horiz_rounded,
-                                          size: 10,
-                                          color: theme.colorScheme.onPrimary,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: TextField(
-                                controller: _commentController,
-                                decoration: InputDecoration(
-                                  hintText: _replyTarget != null
-                                      ? l10n.moment_reply_hint(
-                                    _replyTarget!['authorName'],
-                                  )
-                                      : l10n.comment_input_hint(
-                                    safeAuthorName,
-                                  ),
-                                  filled: true,
-                                  fillColor: theme.colorScheme.surfaceContainerHighest
-                                      .withValues(alpha: 0.55),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 10,
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(24),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                ),
-                                minLines: 1,
-                                maxLines: 4,
-                                textInputAction: TextInputAction.newline,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            IconButton(
-                              tooltip: l10n.momentSendCommentTooltip,
-                              onPressed: _isPostingComment
-                                  ? null
-                                  : () => _saveCommentToDb(
-                                _commentController.text,
-                                _moment!,
-                              ),
-                              icon: _isPostingComment
-                                  ? const SizedBox(
-                                width: 19,
-                                height: 19,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                                  : Icon(
-                                Icons.send_rounded,
-                                color: theme.colorScheme.primary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+              // ⬇️ 原本的輸入框
+              Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: theme.cardColor,
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, -5))
                   ],
                 ),
-              ],
-            ),
+                child: SafeArea(
+                  child: Row(
+                    children: [
+                      Tooltip(
+                        message: l10n.momentSwitchCommentIdentity,
+                        child: GestureDetector(
+                          onTap: _showIdentitySwitcher,
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              CircleAvatar(
+                                radius: 19,
+                                backgroundColor: Colors.grey[200],
+                                backgroundImage: getAvatarImageProvider(
+                                  _currentAuthorAvatar.isNotEmpty
+                                      ? _currentAuthorAvatar
+                                      : 'assets/images/avatar1.png',
+                                ),
+                              ),
+                              Positioned(
+                                right: -3,
+                                bottom: -3,
+                                child: Container(
+                                  width: 15,
+                                  height: 15,
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.primary,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: theme.cardColor,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.swap_horiz_rounded,
+                                    size: 10,
+                                    color: theme.colorScheme.onPrimary,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: TextField(
+                          controller: _commentController,
+                          decoration: InputDecoration(
+                            hintText: _replyTarget != null
+                                ? l10n.moment_reply_hint(
+                              _replyTarget!['authorName'],
+                            )
+                                : l10n.comment_input_hint(
+                              safeAuthorName,
+                            ),
+                            filled: true,
+                            fillColor: theme.colorScheme.surfaceContainerHighest
+                                .withValues(alpha: 0.55),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 10,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(24),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          minLines: 1,
+                          maxLines: 4,
+                          textInputAction: TextInputAction.newline,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      IconButton(
+                        tooltip: l10n.momentSendCommentTooltip,
+                        onPressed: _isPostingComment
+                            ? null
+                            : () => _saveCommentToDb(
+                          _commentController.text,
+                          _moment!,
+                        ),
+                        icon: _isPostingComment
+                            ? const SizedBox(
+                          width: 19,
+                          height: 19,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        )
+                            : Icon(
+                          Icons.send_rounded,
+                          color: theme.colorScheme.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

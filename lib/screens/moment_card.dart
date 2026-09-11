@@ -1365,8 +1365,8 @@ class _MomentCardState extends State<MomentCard> {
                         visualDensity: VisualDensity.compact,
                         icon: Icon(
                           _isLiked
-                              ? Icons.favorite_rounded
-                              : Icons.favorite_border_rounded,
+                              ? Icons.eco_rounded
+                              : Icons.eco_outlined,
                           size: 21,
                           color: _isLiked ? primary : actionColor,
                         ),
@@ -1420,8 +1420,8 @@ class _MomentCardState extends State<MomentCard> {
                         visualDensity: VisualDensity.compact,
                         icon: Icon(
                           _isBookmarked
-                              ? Icons.bookmark_rounded
-                              : Icons.bookmark_border_rounded,
+                              ? Icons.park_rounded
+                              : Icons.park_outlined,
                           size: 22,
                           color: _isBookmarked
                               ? primary

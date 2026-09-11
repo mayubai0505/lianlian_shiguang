@@ -192,6 +192,56 @@ class Character {
     this.npcCharacters = const [],
   }) : this.lastChatTime = lastChatTime ?? DateTime.fromMillisecondsSinceEpoch(0);
 
+
+  Map<String, dynamic>? translationForLocale(String localeKey) {
+    final all = translations;
+    if (all == null || all.isEmpty) return null;
+
+    final direct = all[localeKey];
+    if (direct is Map) {
+      return Map<String, dynamic>.from(direct);
+    }
+
+    final normalized = localeKey.replaceAll('-', '_').toLowerCase();
+    for (final entry in all.entries) {
+      final key = entry.key.replaceAll('-', '_').toLowerCase();
+      if (key == normalized && entry.value is Map) {
+        return Map<String, dynamic>.from(entry.value as Map);
+      }
+    }
+
+    return null;
+  }
+
+  String localizedText(
+      String localeKey,
+      String field,
+      String originalValue,
+      ) {
+    final translated = translationForLocale(localeKey)?[field];
+    final value = translated?.toString().trim() ?? '';
+    return value.isNotEmpty ? value : originalValue;
+  }
+
+  List<String> localizedStringList(
+      String localeKey,
+      String field,
+      List<String> originalValue,
+      ) {
+    final translated = translationForLocale(localeKey)?[field];
+
+    if (translated is List) {
+      final values = translated
+          .map((item) => item.toString().trim())
+          .where((item) => item.isNotEmpty)
+          .toList();
+
+      if (values.isNotEmpty) return values;
+    }
+
+    return originalValue;
+  }
+
   Character copyWith({
     String? initialStory,
     String? firstLine,
@@ -592,6 +642,7 @@ class Character {
       'voiceStyle': voiceStyle,
       'relationships': relationships,
       'npcCharacters': npcCharacters,
+      'translations': translations,
     };
   }
 }

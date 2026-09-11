@@ -321,7 +321,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get logoutSuccessSnackbar =>
-      'D\'accord ! Je vous attends de retour♥(´∀` )';
+      'D\'accord ! Je vous attends de retour(´∀` )';
 
   @override
   String get deleteAccountButton => 'Supprimer le compte';
@@ -1678,7 +1678,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String gallery_current_affection(String value) {
-    return 'Niveau d\'affection actuel : $value 💕';
+    return 'Niveau d\'affection actuel : $value';
   }
 
   @override
@@ -1691,7 +1691,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String gallery_lock_msg(String value) {
-    return 'Atteignez un niveau d\'affection de $value pour débloquer ! 🍃';
+    return 'Atteignez un niveau d\'affection de $value pour débloquer !';
   }
 
   @override
@@ -1706,11 +1706,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String followed_creator_msg(String creatorName) {
-    return 'Vous suivez maintenant $creatorName 🦋';
+    return 'Vous suivez maintenant $creatorName';
   }
 
   @override
-  String get mailbox_title => 'Boîte aux lettres exclusive 💌';
+  String get mailbox_title => 'Boîte aux lettres exclusive';
 
   @override
   String get mailbox_empty =>
@@ -1724,11 +1724,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String affection_upgrade_title(String charName) {
-    return 'L\'affection de $charName pour vous a augmenté ! 💖';
+    return 'L\'affection de $charName pour vous a augmenté !';
   }
 
   @override
-  String get flower_reward => '🌸 5 points fleurs obtenus';
+  String get flower_reward => '5 points fleurs obtenus';
 
   @override
   String get affection_quote_lv5 =>
@@ -1756,7 +1756,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get lore_edit_success =>
-      '✨ Fragment de mémoire mis à jour avec succès !';
+      'Fragment de mémoire mis à jour avec succès !';
 
   @override
   String get delete_failed_network =>
@@ -1858,14 +1858,14 @@ class AppLocalizationsFr extends AppLocalizations {
       'Données du personnage introuvables. Veuillez revenir en arrière ou vérifier votre connexion.';
 
   @override
-  String get chat_jump_success => 'Passage à ce souvenir 🍃';
+  String get chat_jump_success => 'Passage à ce souvenir';
 
   @override
   String get chat_create_room_failed =>
       'La connexion semble instable. Échec de la création du salon, veuillez réessayer.';
 
   @override
-  String get chat_secret_file_title => '🔒 Fichier Confidentiel';
+  String get chat_secret_file_title => 'Fichier Confidentiel';
 
   @override
   String get chat_secret_file_desc =>
@@ -1876,7 +1876,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String chat_egg_unlocked(String title) {
-    return '✨ Nouveau souvenir obtenu : $title';
+    return 'Nouveau souvenir obtenu : $title';
   }
 
   @override
@@ -1904,7 +1904,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get chat_call_rule_3 =>
-      'Le port d\'un casque est recommandé pour mieux entendre sa voix ✨';
+      'Le port d\'un casque est recommandé pour mieux entendre sa voix';
 
   @override
   String get chat_call_btn_cancel => 'Pas maintenant';
@@ -1936,7 +1936,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get chat_stop_generating_msg =>
-      'Réponse arrêtée, aucun point n\'a été déduit 🍃';
+      'Réponse arrêtée, aucun point n\'a été déduit';
 
   @override
   String get chat_heartbeat_up => 'Son cœur s\'emballe...';
@@ -2032,18 +2032,18 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get chat_poke_success =>
-      '✨ Nous avons poussé le créateur pour vous ! Sa voix sera bientôt disponible~';
+      'Nous avons poussé le créateur pour vous ! Sa voix sera bientôt disponible~';
 
   @override
   String chat_gift_points_needed(String cost) {
-    return 'Points Fleurs insuffisants ! Besoin de $cost points 🌸';
+    return 'Points Fleurs insuffisants ! Besoin de $cost points';
   }
 
   @override
-  String get chat_levelup_soulmate => '✨ Âme Sœur ✨';
+  String get chat_levelup_soulmate => 'Âme Sœur';
 
   @override
-  String get chat_levelup_normal => 'Niveau de relation augmenté ! 💖';
+  String get chat_levelup_normal => 'Niveau de relation augmenté !';
 
   @override
   String get chat_levelup_btn_soulmate => 'Graver dans l\'âme';
@@ -2052,7 +2052,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get chat_levelup_btn_normal => 'Accepter avec émotion';
 
   @override
-  String get chat_loc_title => '📍 Envoyer une position virtuelle';
+  String get chat_loc_title => 'Envoyer une position virtuelle';
 
   @override
   String get chat_loc_custom_btn => 'Envoyer une position personnalisée';
@@ -2073,14 +2073,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get chat_loc_4 => 'Au magasin de proximité';
 
   @override
-  String get chat_interact_title => '✨ Que voulez-vous lui faire ?';
+  String get chat_interact_title => 'Que voulez-vous lui faire ?';
 
   @override
   String get chat_interact_action => 'Petites touches et gestes';
 
   @override
   String get chat_interact_gift =>
-      'Lui envoyer un cadeau (consomme des Fleurs 🌸)';
+      'Lui envoyer un cadeau (consomme des Fleurs )';
 
   @override
   String get chat_action_poke => 'Pincer les joues';
@@ -2137,7 +2137,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Quelle discussion douce voulez-vous revivre ?';
 
   @override
-  String get chat_search_empty => 'Souvenir introuvable 🥺';
+  String get chat_search_empty => 'Souvenir introuvable';
 
   @override
   String get chat_search_you => 'Vous avez dit';
@@ -2318,7 +2318,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String chat_egg_unlocked_dynamic(String memoryName) {
-    return '✨ Nouveau souvenir obtenu : $memoryName';
+    return 'Nouveau souvenir obtenu : $memoryName';
   }
 
   @override
@@ -2327,7 +2327,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get chat_profile_updated_msg =>
-      'Dossier ShiGuang mis à jour ! Il se souviendra de vos derniers réglages 🍃';
+      'Dossier ShiGuang mis à jour ! Il se souviendra de vos derniers réglages';
 
   @override
   String get comment_loading_author => 'Chargement...';
@@ -2360,7 +2360,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get comment_report_rules_desc =>
-      '1ère infraction : Avertissement du système et enregistrement d\'une infraction.\n2️⃣ 2ème infraction : Interdiction de commenter pendant 1 jour.\n3️⃣ Récidive : Fonction de signalement désactivée pendant 14 jours et visibilité réduite.\n\n🚨 Cas de malveillance grave :\nInteraction avec les personnages interdite pendant 1 jour, et l\'ID sera affiché sur le tableau pendant 3 jours (interdiction de changer d\'ID pendant cette période).\n\n💡 Une fois le signalement envoyé, le résultat final vous sera transmis via [Messagerie du jeu].\nMerci de vous respecter et de signaler de manière rationnelle.';
+      '1ère infraction : Avertissement du système et enregistrement d\'une infraction.\n2⃣ 2ème infraction : Interdiction de commenter pendant 1 jour.\n3⃣ Récidive : Fonction de signalement désactivée pendant 14 jours et visibilité réduite.\n\nCas de malveillance grave :\nInteraction avec les personnages interdite pendant 1 jour, et l\'ID sera affiché sur le tableau pendant 3 jours (interdiction de changer d\'ID pendant cette période).\n\nUne fois le signalement envoyé, le résultat final vous sera transmis via [Messagerie du jeu].\nMerci de vous respecter et de signaler de manière rationnelle.';
 
   @override
   String get comment_report_understood => 'J\'ai compris';
@@ -2438,12 +2438,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String char_dislikes(String dislikes) {
-    return '🖤 N\'aime pas : $dislikes';
+    return 'N\'aime pas : $dislikes';
   }
 
   @override
   String char_likes(String likes) {
-    return '🤍 Aime : $likes';
+    return 'Aime : $likes';
   }
 
   @override
@@ -2464,7 +2464,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get char_exclusive_guardian => 'Gardien exclusif 💖';
+  String get char_exclusive_guardian => 'Gardien exclusif';
 
   @override
   String mailbox_like_body(String playerName, String charName) {
@@ -2505,7 +2505,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String chat_player_sent_location(String location) {
-    return '📍 (Le joueur a envoyé une position : $location)';
+    return '(Le joueur a envoyé une position : $location)';
   }
 
   @override
@@ -2557,12 +2557,12 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String chat_profile_full(String name, String identity, String birthday,
       String height, String appearance, String job, String intro) {
-    return '📜 [ Dossier ShiGuang Exclusif - $name ]\n━━━━━━━━━━━━━━━━━━\n🔹 Nom : $identity\n🔹 Anniversaire : $birthday\n🔹 Taille : $height\n🔹 Apparence : $appearance\n🔹 Profession : $job\n\n📖 [ À propos des fragments de son âme ]\n$intro\n━━━━━━━━━━━━━━━━━━';
+    return '[ Dossier ShiGuang Exclusif - $name ]\n━━━━━━━━━━━━━━━━━━\nNom : $identity\nAnniversaire : $birthday\nTaille : $height\nApparence : $appearance\nProfession : $job\n\n[ À propos des fragments de son âme ]\n$intro\n━━━━━━━━━━━━━━━━━━';
   }
 
   @override
   String chat_profile_locked(String nickname, String birthday) {
-    return '📜 [ Dossier ShiGuang Exclusif ]\n━━━━━━━━━━━━━━━━━━\n🔹 Nom : $nickname\n🔹 Anniversaire : $birthday\n\n🔒 Les autres données du personnage ne sont pas encore débloquées...\n(Remplissez le profil complet pour qu\'il vous connaisse mieux dans l\'univers parallèle ! ✨)\n━━━━━━━━━━━━━━━━━━';
+    return '[ Dossier ShiGuang Exclusif ]\n━━━━━━━━━━━━━━━━━━\nNom : $nickname\nAnniversaire : $birthday\n\nLes autres données du personnage ne sont pas encore débloquées...\n(Remplissez le profil complet pour qu\'il vous connaisse mieux dans l\'univers parallèle ! )\n━━━━━━━━━━━━━━━━━━';
   }
 
   @override
@@ -2589,7 +2589,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String chat_call_ended(String name, String time) {
-    return '📞 Appel terminé, vous avez parlé avec $name pendant $time';
+    return 'Appel terminé, vous avez parlé avec $name pendant $time';
   }
 
   @override
@@ -2629,7 +2629,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get no_public_character_mine =>
-      'Vous n\'avez pas encore publié de personnage public !\nAllez au studio pour en créer un ✨';
+      'Vous n\'avez pas encore publié de personnage public !\nAllez au studio pour en créer un';
 
   @override
   String get no_public_character_other =>
@@ -2643,14 +2643,14 @@ class AppLocalizationsFr extends AppLocalizations {
       'Voulez-vous vraiment supprimer ce personnage inachevé ?\n(Action irréversible après suppression)';
 
   @override
-  String get draft_cleared_success => 'Brouillon effacé avec succès 🧹';
+  String get draft_cleared_success => 'Brouillon effacé avec succès';
 
   @override
   String get login_required_for_studio =>
       'Veuillez vous connecter pour entrer dans le studio !';
 
   @override
-  String get my_secret_studio_title => 'Mon studio secret 🛠️';
+  String get my_secret_studio_title => 'Mon studio secret';
 
   @override
   String get create_new_character_btn => 'Créer un nouveau personnage';
@@ -2708,37 +2708,37 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String moment_like_yours(String nickname) {
-    return '$nickname a adoré votre publication ! 💖';
+    return '$nickname a adoré votre publication !';
   }
 
   @override
   String moment_like_others(String nickname, String authorName) {
-    return '$nickname trouve que $authorName est charmant et a laissé un j\'aime ! ✨';
+    return '$nickname trouve que $authorName est charmant et a laissé un j\'aime !';
   }
 
   @override
-  String get moment_like_success => 'Votre coup de cœur a été transmis ! ✨';
+  String get moment_like_success => 'Votre coup de cœur a été transmis !';
 
   @override
-  String get moment_notification_new_like => 'Nouveau j\'aime ! 💖';
+  String get moment_notification_new_like => 'Nouveau j\'aime !';
 
   @override
   String moment_mention_mail_body(String nickname, String name) {
-    return '$nickname a mentionné @$name dans une publication ! ✨';
+    return '$nickname a mentionné @$name dans une publication !';
   }
 
   @override
   String get moment_detail_title => 'Détails de la publication';
 
   @override
-  String get moment_not_found => 'Cette publication semble avoir disparu... 😢';
+  String get moment_not_found => 'Cette publication semble avoir disparu...';
 
   @override
   String get moment_comment_title => 'Commentaires des Moments';
 
   @override
   String get moment_comment_empty =>
-      'Personne n\'a encore commenté, soyez la première ! 🛋';
+      'Personne n\'a encore commenté, soyez la première !';
 
   @override
   String moment_replying_to(String name) {
@@ -2777,7 +2777,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String moment_go_to_chat_msg(String name) {
-    return 'Allons discuter avec $name avec cette publication ! 💬';
+    return 'Allons discuter avec $name avec cette publication !';
   }
 
   @override
@@ -2796,11 +2796,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get moment_forward_title =>
-      'Transférer au personnage avec qui vous discutez 💌';
+      'Transférer au personnage avec qui vous discutez';
 
   @override
   String get moment_forward_empty_state =>
-      'Vous n\'avez pas encore de discussions actives !\nAllez au Hall pour trouver quelqu\'un de spécial 🌿';
+      'Vous n\'avez pas encore de discussions actives !\nAllez au Hall pour trouver quelqu\'un de spécial';
 
   @override
   String moment_forward_template(String author, String content) {
@@ -2809,7 +2809,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String moment_forward_success(String name) {
-    return '✅ Partagé discrètement avec $name !';
+    return 'Partagé discrètement avec $name !';
   }
 
   @override
@@ -2858,7 +2858,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String daily_login_welcome(String appName, String amount) {
-    return 'Bon retour sur $appName !\nConnectez-vous aujourd\'hui pour obtenir $amount points de Langage des Fleurs. 🌸';
+    return 'Bon retour sur $appName !\nConnectez-vous aujourd\'hui pour obtenir $amount points de Langage des Fleurs.';
   }
 
   @override
@@ -2866,7 +2866,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String success_claim_reward(String amount) {
-    return 'Vous avez reçu $amount points de Langage des Fleurs ! 🌸';
+    return 'Vous avez reçu $amount points de Langage des Fleurs !';
   }
 
   @override
@@ -3011,7 +3011,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get draft_saved_success_msg =>
-      'C\'est noté ! Sauvegardé dans les brouillons pour vous, vous pourrez revenir l\'éditer à tout moment ! ✨';
+      'C\'est noté ! Sauvegardé dans les brouillons pour vous, vous pourrez revenir l\'éditer à tout moment !';
 
   @override
   String get dialog_reminder_title => 'Rappel';
@@ -3046,7 +3046,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get title_adjust_avatar => 'Ajuster votre avatar';
 
   @override
-  String get avatar_updated_success => 'Avatar mis à jour pour vous 🍃';
+  String get avatar_updated_success => 'Avatar mis à jour pour vous';
 
   @override
   String get title_create_profile => 'Créer votre profil';
@@ -3079,7 +3079,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get msg_birthdate_immutable =>
-      'L\'anniversaire ne peut pas être modifié une fois défini ✨';
+      'L\'anniversaire ne peut pas être modifié une fois défini';
 
   @override
   String get action_start_journey => 'Commencer le voyage';
@@ -3089,26 +3089,26 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String moment_like_self(String nickname) {
-    return '$nickname a adoré votre publication ! 💖';
+    return '$nickname a adoré votre publication !';
   }
 
   @override
   String moment_like_other(String nickname, String authorName) {
-    return '$nickname trouve que $authorName est charmant et a laissé un j\'aime ! ✨';
+    return '$nickname trouve que $authorName est charmant et a laissé un j\'aime !';
   }
 
   @override
   String get task_social_tour_complete =>
-      '✨ Mission de Tournée Sociale terminée ! N\'oubliez pas de récupérer vos fleurs ! 🌸';
+      'Mission de Tournée Sociale terminée ! N\'oubliez pas de récupérer vos fleurs !';
 
   @override
   String get wall_title_shiguang => 'Mur ShiGuang';
 
   @override
-  String get wall_tab_explore => '🌍 Explorer';
+  String get wall_tab_explore => 'Explorer';
 
   @override
-  String get wall_tab_exclusive => '🔒 Exclusif';
+  String get wall_tab_exclusive => 'Exclusif';
 
   @override
   String get more_options => 'Plus d\'options';
@@ -3121,7 +3121,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get delete_success => 'Suppression réussie';
 
   @override
-  String get notification_new_comment => 'Nouveau commentaire ! 💬';
+  String get notification_new_comment => 'Nouveau commentaire !';
 
   @override
   String notification_like_from_sender(String senderName) {
@@ -3130,15 +3130,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get empty_public_moments_prompt =>
-      'C\'est actuellement vide,\nallez publier votre première publication publique ! 🌍';
+      'C\'est actuellement vide,\nallez publier votre première publication publique !';
 
   @override
   String get empty_private_moments_prompt =>
-      'Pas encore de moments dans le cercle,\nallez créer des souvenirs avec lui ! ✨';
+      'Pas encore de moments dans le cercle,\nallez créer des souvenirs avec lui !';
 
   @override
   String get profile_archived_or_deleted_message =>
-      'Ce dossier de l\'âme a été archivé par le créateur, rendu privé, ou s\'est évanoui dans le torrent du temps...\n\nPeut-être que dans un univers parallèle, vous aurez la chance de vous revoir. ✨';
+      'Ce dossier de l\'âme a été archivé par le créateur, rendu privé, ou s\'est évanoui dans le torrent du temps...\n\nPeut-être que dans un univers parallèle, vous aurez la chance de vous revoir.';
 
   @override
   String get leave_silently => 'Partir discrètement';
@@ -3155,7 +3155,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Sous quelle identité publiez-vous aujourd\'hui ?';
 
   @override
-  String get identity_creator => '✨ Identité du Créateur';
+  String get identity_creator => 'Identité du Créateur';
 
   @override
   String get identity_character => 'Identité du Personnage';
@@ -3166,7 +3166,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get auto_post_schedule_hint =>
-      'Une fois activé, les publications seront publiées automatiquement à l\'heure spécifiée\n(💡 Conseil : utilisez des heures non pile pour paraître plus humain !)';
+      'Une fois activé, les publications seront publiées automatiquement à l\'heure spécifiée\n( Conseil : utilisez des heures non pile pour paraître plus humain !)';
 
   @override
   String get no_characters_created_yet =>
@@ -3184,10 +3184,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get empty_public_moments_short =>
-      'Pas encore de publications publiques 🌍';
+      'Pas encore de publications publiques';
 
   @override
-  String get empty_private_moments_short => 'Le cercle est très calme ✨';
+  String get empty_private_moments_short => 'Le cercle est très calme';
 
   @override
   String get my_created_characters => 'Mes personnages créés';
@@ -3223,11 +3223,11 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get daily_gift_success => 'Cadeau quotidien récupéré avec succès ! 🌸';
+  String get daily_gift_success => 'Cadeau quotidien récupéré avec succès !';
 
   @override
   String get check_in_fail_network =>
-      'Échec de l\'enregistrement, veuillez vérifier votre connexion réseau 🍃';
+      'Échec de l\'enregistrement, veuillez vérifier votre connexion réseau';
 
   @override
   String task_completed(String taskName) {
@@ -3279,7 +3279,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get network_unstable_retry =>
-      'Connexion instable, veuillez réessayer plus tard 🍃';
+      'Connexion instable, veuillez réessayer plus tard';
 
   @override
   String get title_time_travel => 'Voyage dans le temps';
@@ -3346,7 +3346,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get search_no_match_hint =>
-      'Personnage introuvable, essayer un autre nom ? ✨';
+      'Personnage introuvable, essayer un autre nom ?';
 
   @override
   String character_info_full(String age, String occupation) {
@@ -3520,8 +3520,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get shop_tab_history => 'Historique des transactions';
 
   @override
-  String get shop_empty_history =>
-      'Aucun registre de fleurs pour l\'instant ! 🌸';
+  String get shop_empty_history => 'Aucun registre de fleurs pour l\'instant !';
 
   @override
   String get shop_unknown_item => 'Article inconnu';
@@ -3540,7 +3539,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String story_summary_empty_list(String name) {
-    return 'Votre histoire n\'a pas encore commencé...\nDiscutez plus et laissez $name \nécrire votre premier souvenir ! ✨';
+    return 'Votre histoire n\'a pas encore commencé...\nDiscutez plus et laissez $name\nécrire votre premier souvenir !';
   }
 
   @override
@@ -3564,7 +3563,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Êtes-vous sûre de vouloir annuler la photo exclusive et restaurer l\'arrière-plan par défaut ?';
 
   @override
-  String get reset_bg_success => 'Arrière-plan par défaut restauré ✨';
+  String get reset_bg_success => 'Arrière-plan par défaut restauré';
 
   @override
   String get confirm_reset => 'Confirmer';
@@ -3587,7 +3586,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Téléchargez \'Lianlian ShiGuang\' pour débloquer une romance exclusive';
 
   @override
-  String get exclusiveMomentsGenerated => 'Moments exclusifs générés ✨';
+  String get exclusiveMomentsGenerated => 'Moments exclusifs générés';
 
   @override
   String get selectAgain => 'Sélectionner à nouveau';
@@ -3602,11 +3601,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get shop_log_monthly_card =>
-      'Activé : Contrat Stellaire (Points immédiats de la carte mensuelle) 🌙';
+      'Activé : Contrat Stellaire (Points immédiats de la carte mensuelle)';
 
   @override
   String shop_log_top_up_double(int points) {
-    return 'Recharge : $points pts (Inclut le bonus double du premier achat 🎁)';
+    return 'Recharge : $points pts (Inclut le bonus double du premier achat )';
   }
 
   @override
@@ -3624,7 +3623,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get shop_purchase_success_double_bonus =>
-      '✨ Félicitations ! Bonus double du premier achat activé !';
+      'Félicitations ! Bonus double du premier achat activé !';
 
   @override
   String get shop_purchase_awesome => 'Génial';
@@ -3658,7 +3657,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Obtenez 250 fleurs instantanément, récupérez 10 fleurs par jour';
 
   @override
-  String get task_monthly_title => 'Contrat Stellaire : Privilège quotidien 🌙';
+  String get task_monthly_title => 'Contrat Stellaire : Privilège quotidien';
 
   @override
   String get task_monthly_locked => 'Verrouillé';
@@ -3683,21 +3682,21 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get referral_log_newbie_reward =>
-      'Invitation Stellaire : Récompense de nouveau joueur ✨';
+      'Invitation Stellaire : Récompense de nouveau joueur';
 
   @override
   String get referral_log_inviter_reward =>
-      'Invitation Stellaire : Récompense d\'objectif d\'ami 🎁';
+      'Invitation Stellaire : Récompense d\'objectif d\'ami';
 
   @override
   String get referral_success_title => 'Invitation Stellaire débloquée !';
 
   @override
   String get referral_success_content =>
-      'Félicitations ! Vous avez discuté en profondeur avec un personnage pendant 15 lignes !\n\nLa \'Récompense de nouveau joueur : 50 points\' a été créditée sur votre compte, et votre ami a également reçu une récompensée de 50 points en même temps ! 🎁';
+      'Félicitations ! Vous avez discuté en profondeur avec un personnage pendant 15 lignes !\n\nLa \'Récompense de nouveau joueur : 50 points\' a été créditée sur votre compte, et votre ami a également reçu une récompensée de 50 points en même temps !';
 
   @override
-  String get profile_referral_title => 'Invitation Stellaire 🌟';
+  String get profile_referral_title => 'Invitation Stellaire';
 
   @override
   String get profile_referral_hint => 'Entrez le code d\'invitation d\'un ami';
@@ -3732,12 +3731,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String profile_share_message(String character, String code) {
-    return '✨ Je viens de commencer une aventure palpitante avec $character sur \'Lianlian ShiGuang\' ! Télécharge l\'application dès maintenant et entre mon code d\'invitation stellaire : 【$code】 sur ta page de profil. Nous recevrons tous les deux 50 fleurs gratuites ! 🎁\n\n Lien de téléchargement :\n https://lianlianshiguang.web.app/download/';
+    return 'Je viens de commencer une aventure palpitante avec $character sur \'Lianlian ShiGuang\' ! Télécharge l\'application dès maintenant et entre mon code d\'invitation stellaire : 【$code】 sur ta page de profil. Nous recevrons tous les deux 50 fleurs gratuites !\n\nLien de téléchargement :\nhttps://lianlianshiguang.web.app/download/';
   }
 
   @override
-  String get chat_levelup_share_btn =>
-      'Montrez ce moment palpitant à vos amis ✨';
+  String get chat_levelup_share_btn => 'Montrez ce moment palpitant à vos amis';
 
   @override
   String profile_my_invite_code_with_char(String character) {
@@ -3753,18 +3751,18 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get profile_copy_success =>
-      '✅ Code d\'invitation copié dans le presse-papiers !';
+      'Code d\'invitation copié dans le presse-papiers !';
 
   @override
   String get profile_referral_rule_title => 'Règles de l\'Invitation Stellaire';
 
   @override
   String get profile_referral_rule_receiver =>
-      '✨ Après avoir lié le code, il vous suffit de discuter avec n\'importe quel personnage coup de cœur pendant 15 lignes pour que vous et votre parrain receviez simultanément une récompense de 50 fleurs !\n\n⚠️ Attention : Veuillez entrer le code d\'invitation dans les 3 jours suivant l\'inscription de votre compte pour qu\'il soit valide.';
+      'Après avoir lié le code, il vous suffit de discuter avec n\'importe quel personnage coup de cœur pendant 15 lignes pour que vous et votre parrain receviez simultanément une récompense de 50 fleurs !\n\nAttention : Veuillez entrer le code d\'invitation dans les 3 jours suivant l\'inscription de votre compte pour qu\'il soit valide.';
 
   @override
   String get profile_referral_rule_inviter =>
-      '✨ Invitez de nouveaux amis à télécharger l\'application et à entrer votre code d\'invitation. Lorsqu\'ils effectuent la liaison dans les 3 jours suivant leur inscription et discutent avec n\'importe quel personnage pendant 15 lignes, vous recevrez tous les deux une récompense de 50 fleurs simultanément ! 🎁';
+      'Invitez de nouveaux amis à télécharger l\'application et à entrer votre code d\'invitation. Lorsqu\'ils effectuent la liaison dans les 3 jours suivant leur inscription et discutent avec n\'importe quel personnage pendant 15 lignes, vous recevrez tous les deux une récompense de 50 fleurs simultanément !';
 
   @override
   String get error_user_not_found =>
@@ -3778,14 +3776,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get error_id_taken_short => 'Cet ID est déjà utilisé !';
 
   @override
-  String get shop_restocking => 'La boutique se réapprovisionne... 📦';
+  String get shop_restocking => 'La boutique se réapprovisionne...';
 
   @override
-  String get shop_preview_mode =>
-      '⚠️ Actuellement en mode aperçu de la boutique';
+  String get shop_preview_mode => 'Actuellement en mode aperçu de la boutique';
 
   @override
-  String get friendlyReminderTitle => '☁️ Rappel amical';
+  String get friendlyReminderTitle => 'Rappel amical';
 
   @override
   String get editProfileHint =>
@@ -3817,7 +3814,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String continueChatCostWarning(int cost) {
-    return 'Le laisser continuer à parler consommera $cost fleurs 🌸\nÊtes-vous sûre de vouloir continuer ?';
+    return 'Le laisser continuer à parler consommera $cost fleurs\nÊtes-vous sûre de vouloir continuer ?';
   }
 
   @override
@@ -3851,7 +3848,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get continueButton => 'Continuer';
 
   @override
-  String get creatorExclusive => '🔒 Exclusivité créateur';
+  String get creatorExclusive => 'Exclusivité créateur';
 
   @override
   String ageAndOccupation(String age, String occupation) {
@@ -3859,10 +3856,10 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get likesLabel => '💖 Aime';
+  String get likesLabel => 'Aime';
 
   @override
-  String get dislikesLabel => '👎 N\'aime pas';
+  String get dislikesLabel => 'N\'aime pas';
 
   @override
   String birthdayLabel(String birthday) {
@@ -3890,15 +3887,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get passGuideRegenerateTitle =>
-      '🔄 Pourquoi avez-vous besoin de « Régénérer » ?';
+      'Pourquoi avez-vous besoin de « Régénérer » ?';
 
   @override
   String get passGuideRegenerateContent =>
       'L\'IA peut parfois se comporter comme un vrai bloc de bois insensible. Face à une réponse insatisfaisante, il vous suffit d\'appuyer sur régénérer pour remonter le temps ! Vous pouvez le faire réfléchir à nouveau jusqu\'à ce qu\'il prononce la réplique parfaite qui fera battre votre cœur à cent à l\'heure.';
 
   @override
-  String get passGuideAffectionTitle =>
-      '💖 À quoi sert le boost d\'affection ?';
+  String get passGuideAffectionTitle => 'À quoi sert le boost d\'affection ?';
 
   @override
   String get passGuideAffectionContent =>
@@ -3912,10 +3908,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get pleaseWait => 'Veuillez patienter';
 
   @override
-  String get createNewProfileTitle => '📜 Créer un nouveau Profil Shiguang';
+  String get createNewProfileTitle => 'Créer un nouveau Profil Shiguang';
 
   @override
-  String get editProfileTitle => '✏️ Modifier le Profil Shiguang';
+  String get editProfileTitle => 'Modifier le Profil Shiguang';
 
   @override
   String get profileEditDescription =>
@@ -3975,7 +3971,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get fillLaterButton => 'Remplir plus tard';
 
   @override
-  String get exclusiveProfileTitle => '📜 Profil Shiguang exclusif';
+  String get exclusiveProfileTitle => 'Profil Shiguang exclusif';
 
   @override
   String get profileSelectionDescription =>
@@ -4149,11 +4145,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get nav_moments => 'Moments';
 
   @override
-  String get birthday_dialog_title => '🎂 Surprise d\'anniversaire';
+  String get birthday_dialog_title => 'Surprise d\'anniversaire';
 
   @override
   String get birthday_dialog_content =>
-      'Aujourd\'hui, c\'est votre anniversaire exclusif !\n\nVeuillez accepter ce cadeau :\nToutes les discussions d\'aujourd\'hui sont T.O.U.T.E.S G.R.A.T.U.I.T.E.S ! ✨';
+      'Aujourd\'hui, c\'est votre anniversaire exclusif !\n\nVeuillez accepter ce cadeau :\nToutes les discussions d\'aujourd\'hui sont T.O.U.T.E.S G.R.A.T.U.I.T.E.S !';
 
   @override
   String get birthday_dialog_button => 'Commencer une journée romantique';
@@ -4188,7 +4184,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get go_to_login => 'Se connecter';
 
   @override
-  String get easter_egg_title => 'Easter egg caché découvert ✨';
+  String get easter_egg_title => 'Easter egg caché découvert';
 
   @override
   String easter_egg_content(String title) {
@@ -4230,7 +4226,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get monthly_card_success_title =>
-      '✨ Carte Mensuelle Premium débloquée avec succès !';
+      'Carte Mensuelle Premium débloquée avec succès !';
 
   @override
   String get monthly_card_success_subtitle =>
@@ -4606,7 +4602,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get send_failed_retry =>
-      'Échec de l\'envoi. Veuillez réessayer plus tard 😢';
+      'Échec de l\'envoi. Veuillez réessayer plus tard';
 
   @override
   String get media_upload_failed_retry =>
@@ -4645,7 +4641,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get regenerate_sync_failed =>
-      'Échec de la synchronisation du nombre de régénérations. Veuillez réessayer 😢';
+      'Échec de la synchronisation du nombre de régénérations. Veuillez réessayer';
 
   @override
   String get creator_public_works => 'Œuvres publiques';
@@ -5132,7 +5128,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get mailCaseNumberCopied => 'Numéro de dossier copié';
 
   @override
-  String get profilePageAboutMe => '📝 À propos de moi';
+  String get profilePageAboutMe => 'À propos de moi';
 
   @override
   String get profilePageTabBio => 'Présentation';
@@ -5404,7 +5400,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Cette estimation repose sur les données existantes. Les dates sont fournies uniquement à titre indicatif pour votre suivi personnel.';
 
   @override
-  String get periodStartedToday => '🩸 Elles ont commencé aujourd’hui';
+  String get periodStartedToday => 'Elles ont commencé aujourd’hui';
 
   @override
   String get periodStillOngoing => 'J’ai toujours mes règles';
@@ -5639,7 +5635,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get privateProfileSave => 'Enregistrer';
 
   @override
-  String get editProfileBirthdayReminderTitle => '🎂 Petit rappel';
+  String get editProfileBirthdayReminderTitle => 'Petit rappel';
 
   @override
   String get editProfileBirthdayReminderContent =>
@@ -5650,7 +5646,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get editProfileBirthdayConfirmTitle =>
-      '🎂 Confirmer la date de naissance';
+      'Confirmer la date de naissance';
 
   @override
   String get editProfileBirthdayConfirmContent =>
@@ -5735,14 +5731,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get chatPageSendFailed =>
-      'Échec de l’envoi. Veuillez réessayer plus tard 😢';
+      'Échec de l’envoi. Veuillez réessayer plus tard';
 
   @override
   String get chatPageRegenerateFailed =>
       'Échec de la régénération. Le message d’origine a été conservé. Veuillez réessayer.';
 
   @override
-  String get chatPageRegenerating => '💭 Nouvelle réflexion en cours...';
+  String get chatPageRegenerating => 'Nouvelle réflexion en cours...';
 
   @override
   String get chatPageThinkingTooLong =>
@@ -5762,7 +5758,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String chatPageMessagesDeleted(int count) {
-    return '✅ $count messages supprimés avec succès';
+    return '$count messages supprimés avec succès';
   }
 
   @override
@@ -6012,11 +6008,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get characterProfileShareInvitation =>
-      '🦋 Une invitation à faire connaissance de LoveyDovey';
+      'Une invitation à faire connaissance de LoveyDovey';
 
   @override
   String characterProfileShareCreator(String creatorName) {
-    return '✦ Créateur : $creatorName';
+    return 'Créateur : $creatorName';
   }
 
   @override
@@ -6035,7 +6031,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get characterProfileCardSearchHint =>
-      'Recherchez le personnage et commencez votre rencontre  🦋';
+      'Recherchez le personnage et commencez votre rencontre';
 
   @override
   String get characterProfileScanToDownload => 'Scanner pour télécharger';
@@ -6213,18 +6209,18 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String mailShareQixiMessage(String characterName) {
-    return 'J’ai reçu une lettre limitée de Qixi écrite par $characterName 💌';
+    return 'J’ai reçu une lettre limitée de Qixi écrite par $characterName';
   }
 
   @override
-  String get mailShareDefaultMessage => 'Une lettre de « LoveyDovey » 💌';
+  String get mailShareDefaultMessage => 'Une lettre de « LoveyDovey »';
 
   @override
   String get mailShareImageFailed =>
       'Échec de la création de l’image à partager. Veuillez réessayer plus tard';
 
   @override
-  String get mailCollectedSuccess => 'Lettre conservée 💌';
+  String get mailCollectedSuccess => 'Lettre conservée';
 
   @override
   String get mailCollectedCancelled => 'Lettre retirée des éléments conservés';
@@ -6287,11 +6283,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get qixiSingleRoomOpened =>
-      'Votre salon de discussion exclusif de Qixi est ouvert 💕';
+      'Votre salon de discussion exclusif de Qixi est ouvert';
 
   @override
   String qixiMultipleRoomsOpened(int count) {
-    return '$count salons de discussion exclusifs de Qixi sont ouverts 💕';
+    return '$count salons de discussion exclusifs de Qixi sont ouverts';
   }
 
   @override
@@ -6398,11 +6394,11 @@ class AppLocalizationsFr extends AppLocalizations {
       'Aujourd\'hui, ne laisse pas passer ce lien qui se rapproche doucement.';
 
   @override
-  String get encounterJoinedToday => '✨ Arrivés aujourd\'hui sur Lovey Time';
+  String get encounterJoinedToday => 'Arrivés aujourd\'hui sur Lovey Time';
 
   @override
   String get encounterPopularChats =>
-      '❤️ Très populaires dans les discussions récemment';
+      'Très populaires dans les discussions récemment';
 
   @override
   String get qixiBannerActiveUntil =>
@@ -6412,7 +6408,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get qixiBannerStartsAt => 'Ouverture limitée le 8/19';
 
   @override
-  String get encounterRecentlyArrived => '✨ Récemment arrivés sur Lovey Time';
+  String get encounterRecentlyArrived => 'Récemment arrivés sur Lovey Time';
 
   @override
   String get encounterRecentlyArrivedPlain =>
@@ -6423,7 +6419,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get encounterLovePrompt =>
-      '💕 Quel genre d\'amour veux-tu vivre aujourd\'hui ?';
+      'Quel genre d\'amour veux-tu vivre aujourd\'hui ?';
 
   @override
   String get encounterNoCharacters => 'Aucun personnage pour le moment';
@@ -6432,7 +6428,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get encounterAllLoveTags => 'Tous les tags romantiques';
 
   @override
-  String get chatQixiLetterSent => 'La lettre limitée a été envoyée 💌';
+  String get chatQixiLetterSent => 'La lettre limitée a été envoyée';
 
   @override
   String get chatQixiLetterPendingTonight =>
@@ -7608,7 +7604,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String character_edit_over_limit_warning(String label, String count) {
-    return '⚠ $label dépasse la limite de $count caractères. Veuillez le corriger avant de publier.';
+    return '$label dépasse la limite de $count caractères. Veuillez le corriger avant de publier.';
   }
 
   @override
@@ -8236,7 +8232,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String shop_joined_days(int days) {
-    return '✦ Vous êtes dans LoveyDovey depuis $days jours ✦';
+    return 'Vous êtes dans LoveyDovey depuis $days jours';
   }
 
   @override
@@ -8557,4 +8553,16 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get creator_social_links_open_failed => 'Impossible d’ouvrir ce lien';
+
+  @override
+  String get chat_regenerate_bottom_tip =>
+      '« Régénérer » a été déplacé ici ! Utilisez ce bouton si vous souhaitez une autre réponse.';
+
+  @override
+  String get chat_continue_bottom_tip =>
+      '« Continuer » a été déplacé ici ! Utilisez ce bouton pour laisser le personnage poursuivre.';
+
+  @override
+  String get languageSelectionSubtitle =>
+      'Choisissez la langue que vous préférez utiliser';
 }

@@ -1046,11 +1046,14 @@ class _LatestTabState extends State<_LatestTab> {
   }
 
   bool _matchesCategory(Character character, String category) {
-    final l10n = AppLocalizations.of(context)!;
-    if (category == l10n.encounter_category_all) return true;
-    if (category == l10n.encounter_category_other) {
+    // 分類邏輯永遠使用固定內部 key，不使用翻譯後文字判斷。
+    // UI 顯示才交給 _categoryLabel() 翻譯，避免切換語言後「全部」失效，
+    // 導致所有角色都被篩掉。
+    if (category == '全部') return true;
+
+    if (category == '其他') {
       return !_discoveryCategories
-          .where((item) => item != l10n.encounter_category_all && item != l10n.encounter_category_other)
+          .where((item) => item != '全部' && item != '其他')
           .any((item) => _matchesCategory(character, item));
     }
 

@@ -4,16 +4,25 @@ import 'package:provider/provider.dart';
 import '../services/locale_notifier.dart'; // 引入我們的語言大腦
 import '../services/theme_notifier.dart';
 import 'package:flutter/services.dart'; // ✨ 為了震動回饋
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 //語言模型
 
 // ✨ 修正後的語言模型：乾淨俐落，只要三個參數
 class Language {
   final String code;
-  final String? countryCode;
+  final String? scriptCode;
   final String nativeName;
 
-  Language(this.code, this.countryCode, this.nativeName);
+  const Language(this.code, this.scriptCode, this.nativeName);
+
+  Locale get locale => scriptCode == null
+      ? Locale(code)
+      : Locale.fromSubtags(
+    languageCode: code,
+    scriptCode: scriptCode,
+  );
 }
 
 class LanguageSelectionPage extends StatelessWidget {
@@ -21,20 +30,20 @@ class LanguageSelectionPage extends StatelessWidget {
 
   // ✨ 修正後的清單：完全符合國際標準
   static final List<Language> supportedLanguages = [
-    Language('zh', 'TW', '繁體中文'),
-    Language('zh', 'CN', '简体中文'),
-    Language('en', null, 'English'),
-    Language('ja', null, '日本語'),
-    Language('ko', null, '한국어'),
-    Language('vi', null, 'Tiếng Việt'),
-    Language('id', null, 'Bahasa Indonesia'),
-    Language('th', null, 'ภาษาไทย'),
-    Language('ar', null, 'العربية'),
-    Language('fr', null, 'Français'),
-    Language('ms', null, 'Bahasa Melayu'),
-    Language('es', null, 'Español'),
-    Language('hi', null, 'हिन्दी'),
-    Language('pt', null, 'Português'),
+    const Language('zh', 'Hant', '繁體中文'),
+    const Language('zh', 'Hans', '简体中文'),
+    const Language('en', null, 'English'),
+    const Language('ja', null, '日本語'),
+    const Language('ko', null, '한국어'),
+    const Language('vi', null, 'Tiếng Việt'),
+    const Language('id', null, 'Bahasa Indonesia'),
+    const Language('th', null, 'ภาษาไทย'),
+    const Language('ar', null, 'العربية'),
+    const Language('fr', null, 'Français'),
+    const Language('ms', null, 'Bahasa Melayu'),
+    const Language('es', null, 'Español'),
+    const Language('hi', null, 'हिन्दी'),
+    const Language('pt', null, 'Português'),
   ];
 
   @override
@@ -139,7 +148,7 @@ class LanguageSelectionPage extends StatelessWidget {
                                         ),
                                         const SizedBox(height: 5),
                                         Text(
-                                          l10n.language_selection_subtitle,
+                                          l10n.languageSelectionSubtitle,
                                           style: GoogleFonts.notoSerifTc(
                                             color: textColor.withValues(
                                               alpha: 0.55,
@@ -169,10 +178,10 @@ class LanguageSelectionPage extends StatelessWidget {
                       const SizedBox(height: 12),
                       itemBuilder: (context, index) {
                         final lang = supportedLanguages[index];
+                        final currentLocale = localeNotifier.locale;
                         final isSelected =
-                            localeNotifier.locale.languageCode == lang.code &&
-                                localeNotifier.locale.countryCode ==
-                                    lang.countryCode;
+                            currentLocale.languageCode == lang.code &&
+                                currentLocale.scriptCode == lang.scriptCode;
 
                         return Center(
                           child: ConstrainedBox(
@@ -182,11 +191,40 @@ class LanguageSelectionPage extends StatelessWidget {
                               selected: isSelected,
                               label: lang.nativeName,
                               child: InkWell(
-                                onTap: () {
+                                onTap: () async {
                                   HapticFeedback.lightImpact();
-                                  localeNotifier.setLocale(
-                                    Locale(lang.code, lang.countryCode),
-                                  );
+
+                                  final selectedLocale = lang.locale;
+
+                                  localeNotifier.setLocale(selectedLocale);
+
+                                  final user =
+                                      FirebaseAuth.instance.currentUser;
+
+                                  if (user != null) {
+                                    final notificationLocale =
+                                    lang.code == 'zh'
+                                        ? (lang.scriptCode == 'Hans'
+                                        ? 'zh_Hans'
+                                        : 'zh_Hant')
+                                        : lang.code;
+
+                                    try {
+                                      await FirebaseFirestore.instance
+                                          .collection('users')
+                                          .doc(user.uid)
+                                          .set({
+                                        'notificationLocale':
+                                        notificationLocale,
+                                        'notificationLocaleUpdatedAt':
+                                        FieldValue.serverTimestamp(),
+                                      }, SetOptions(merge: true));
+                                    } catch (e) {
+                                      debugPrint(
+                                        '⚠️ 通知語系同步失敗：$e',
+                                      );
+                                    }
+                                  }
                                 },
                                 borderRadius: BorderRadius.circular(20),
                                 child: AnimatedContainer(

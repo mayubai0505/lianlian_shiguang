@@ -701,7 +701,7 @@ abstract class AppLocalizations {
   /// No description provided for @logoutSuccessSnackbar.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'好的!那我等你回來♥(´∀` )'**
+  /// **'好的!那我等你回來(´∀` )'**
   String get logoutSuccessSnackbar;
 
   /// No description provided for @deleteAccountButton.
@@ -2213,7 +2213,7 @@ abstract class AppLocalizations {
   /// No description provided for @section_voice_gen.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'🎙他專屬聲線生成'**
+  /// **'他專屬聲線生成'**
   String get section_voice_gen;
 
   /// No description provided for @voice_gen_desc.
@@ -3059,7 +3059,7 @@ abstract class AppLocalizations {
   /// No description provided for @gallery_current_affection.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'目前好感度: {value} 💕'**
+  /// **'目前好感度: {value}'**
   String gallery_current_affection(String value);
 
   /// No description provided for @gallery_empty.
@@ -3077,7 +3077,7 @@ abstract class AppLocalizations {
   /// No description provided for @gallery_lock_msg.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'好感度達到 {value} 即可解鎖喔！🍃'**
+  /// **'好感度達到 {value} 即可解鎖喔！'**
   String gallery_lock_msg(String value);
 
   /// No description provided for @gallery_reset_bg.
@@ -3101,13 +3101,13 @@ abstract class AppLocalizations {
   /// No description provided for @followed_creator_msg.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'已關注 {creatorName} 🦋'**
+  /// **'已關注 {creatorName}'**
   String followed_creator_msg(String creatorName);
 
   /// No description provided for @mailbox_title.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'專屬信箱 💌'**
+  /// **'專屬信箱'**
   String get mailbox_title;
 
   /// No description provided for @mailbox_empty.
@@ -3131,13 +3131,13 @@ abstract class AppLocalizations {
   /// No description provided for @affection_upgrade_title.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'{charName} 對妳的好感度提升了！ 💖'**
+  /// **'{charName} 對妳的好感度提升了！'**
   String affection_upgrade_title(String charName);
 
   /// No description provided for @flower_reward.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'🌸 獲得 5 點花花'**
+  /// **'獲得 5 點花花'**
   String get flower_reward;
 
   /// No description provided for @affection_quote_lv5.
@@ -3179,7 +3179,7 @@ abstract class AppLocalizations {
   /// No description provided for @lore_edit_success.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✨ 記憶碎片已成功更新！'**
+  /// **'記憶碎片已成功更新！'**
   String get lore_edit_success;
 
   /// No description provided for @delete_failed_network.
@@ -3353,7 +3353,7 @@ abstract class AppLocalizations {
   /// No description provided for @chat_jump_success.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'已跳轉至該段回憶 🍃'**
+  /// **'已跳轉至該段回憶'**
   String get chat_jump_success;
 
   /// No description provided for @chat_create_room_failed.
@@ -3365,7 +3365,7 @@ abstract class AppLocalizations {
   /// No description provided for @chat_secret_file_title.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'🔒 機密檔案'**
+  /// **'機密檔案'**
   String get chat_secret_file_title;
 
   /// No description provided for @chat_secret_file_desc.
@@ -3383,7 +3383,7 @@ abstract class AppLocalizations {
   /// No description provided for @chat_egg_unlocked.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✨ 獲得新回憶：{title}'**
+  /// **'獲得新回憶：{title}'**
   String chat_egg_unlocked(String title);
 
   /// No description provided for @chat_egg_saved.
@@ -3425,7 +3425,7 @@ abstract class AppLocalizations {
   /// No description provided for @chat_call_rule_3.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'建議配戴耳機，更能聽清楚他的聲音 ✨'**
+  /// **'建議配戴耳機，更能聽清楚他的聲音'**
   String get chat_call_rule_3;
 
   /// No description provided for @chat_call_btn_cancel.
@@ -3479,7 +3479,7 @@ abstract class AppLocalizations {
   /// No description provided for @chat_stop_generating_msg.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'已停止回覆，點數並沒有扣除 🍃'**
+  /// **'已停止回覆，點數並沒有扣除'**
   String get chat_stop_generating_msg;
 
   /// No description provided for @chat_heartbeat_up.
@@ -3653,25 +3653,25 @@ abstract class AppLocalizations {
   /// No description provided for @chat_poke_success.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✨ 已幫妳戳戳創作者囉！請期待他的聲音上線～'**
+  /// **'已幫妳戳戳創作者囉！請期待他的聲音上線～'**
   String get chat_poke_success;
 
   /// No description provided for @chat_gift_points_needed.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'花花點數不夠喔！需要 {cost} 點 🌸'**
+  /// **'花花點數不夠喔！需要 {cost} 點'**
   String chat_gift_points_needed(String cost);
 
   /// No description provided for @chat_levelup_soulmate.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✨ 命定之人 ✨'**
+  /// **'命定之人'**
   String get chat_levelup_soulmate;
 
   /// No description provided for @chat_levelup_normal.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'關係晉升！💖'**
+  /// **'關係晉升！'**
   String get chat_levelup_normal;
 
   /// No description provided for @chat_levelup_btn_soulmate.
@@ -3689,7 +3689,7 @@ abstract class AppLocalizations {
   /// No description provided for @chat_loc_title.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'📍 傳送虛擬定位'**
+  /// **'傳送虛擬定位'**
   String get chat_loc_title;
 
   /// No description provided for @chat_loc_custom_btn.
@@ -3731,7 +3731,7 @@ abstract class AppLocalizations {
   /// No description provided for @chat_interact_title.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✨ 想對他做什麼呢？'**
+  /// **'想對他做什麼呢？'**
   String get chat_interact_title;
 
   /// No description provided for @chat_interact_action.
@@ -3743,7 +3743,7 @@ abstract class AppLocalizations {
   /// No description provided for @chat_interact_gift.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'送他小禮物 (消耗花花 🌸)'**
+  /// **'送他小禮物 (消耗花花 )'**
   String get chat_interact_gift;
 
   /// No description provided for @chat_action_poke.
@@ -3851,7 +3851,7 @@ abstract class AppLocalizations {
   /// No description provided for @chat_search_empty.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'找不到這段回憶喔 🥺'**
+  /// **'找不到這段回憶喔'**
   String get chat_search_empty;
 
   /// No description provided for @chat_search_you.
@@ -4175,7 +4175,7 @@ abstract class AppLocalizations {
   /// No description provided for @chat_egg_unlocked_dynamic.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✨ 獲得新回憶：{memoryName}'**
+  /// **'獲得新回憶：{memoryName}'**
   String chat_egg_unlocked_dynamic(String memoryName);
 
   /// No description provided for @chat_egg_saved_his_backpack.
@@ -4187,7 +4187,7 @@ abstract class AppLocalizations {
   /// No description provided for @chat_profile_updated_msg.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'拾光檔案已更新！他會記住妳的最新設定喔 🍃'**
+  /// **'拾光檔案已更新！他會記住妳的最新設定喔'**
   String get chat_profile_updated_msg;
 
   /// No description provided for @comment_loading_author.
@@ -4241,7 +4241,7 @@ abstract class AppLocalizations {
   /// No description provided for @comment_report_rules_desc.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'初犯：系統警告並記錄一次違規。\n2️⃣ 二犯：禁止留言 1 天。\n3️⃣ 累犯：禁用檢舉功能 14 天，並降低留言能見度。\n\n🚨 嚴重惡意者：\n禁止與角色互動 1 天，ID 將公告於公佈欄 3 天（期間禁止更改 ID）。\n\n💡 檢舉送出後，最終審核結果將透過【遊戲內信箱】單獨發送給您。\n請互相尊重，理性檢舉。'**
+  /// **'初犯：系統警告並記錄一次違規。\n2⃣ 二犯：禁止留言 1 天。\n3⃣ 累犯：禁用檢舉功能 14 天，並降低留言能見度。\n\n嚴重惡意者：\n禁止與角色互動 1 天，ID 將公告於公佈欄 3 天（期間禁止更改 ID）。\n\n檢舉送出後，最終審核結果將透過【遊戲內信箱】單獨發送給您。\n請互相尊重，理性檢舉。'**
   String get comment_report_rules_desc;
 
   /// No description provided for @comment_report_understood.
@@ -4361,13 +4361,13 @@ abstract class AppLocalizations {
   /// No description provided for @char_dislikes.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'🖤 討厭：{dislikes}'**
+  /// **'討厭：{dislikes}'**
   String char_dislikes(String dislikes);
 
   /// No description provided for @char_likes.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'🤍 喜歡：{likes}'**
+  /// **'喜歡：{likes}'**
   String char_likes(String likes);
 
   /// No description provided for @char_age_occupation.
@@ -4397,7 +4397,7 @@ abstract class AppLocalizations {
   /// No description provided for @char_exclusive_guardian.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'專屬守護 💖'**
+  /// **'專屬守護'**
   String get char_exclusive_guardian;
 
   /// No description provided for @mailbox_like_body.
@@ -4463,7 +4463,7 @@ abstract class AppLocalizations {
   /// No description provided for @chat_player_sent_location.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'📍 (玩家發送了定位：{location})'**
+  /// **'(玩家發送了定位：{location})'**
   String chat_player_sent_location(String location);
 
   /// No description provided for @chat_you.
@@ -4541,14 +4541,14 @@ abstract class AppLocalizations {
   /// No description provided for @chat_profile_full.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'📜 【 專屬拾光檔案 - {name} 】\n━━━━━━━━━━━━━━━━━━\n🔹 姓名：{identity}\n🔹 生日：{birthday}\n🔹 身高：{height}\n🔹 外貌：{appearance}\n🔹 職業：{job}\n\n📖 【 關於她的靈魂碎片 】\n{intro}\n━━━━━━━━━━━━━━━━━━'**
+  /// **'【 專屬拾光檔案 - {name} 】\n━━━━━━━━━━━━━━━━━━\n姓名：{identity}\n生日：{birthday}\n身高：{height}\n外貌：{appearance}\n職業：{job}\n\n【 關於她的靈魂碎片 】\n{intro}\n━━━━━━━━━━━━━━━━━━'**
   String chat_profile_full(String name, String identity, String birthday,
       String height, String appearance, String job, String intro);
 
   /// No description provided for @chat_profile_locked.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'📜 【 專屬拾光檔案 】\n━━━━━━━━━━━━━━━━━━\n🔹 姓名：{nickname}\n🔹 生日：{birthday}\n\n🔒 其他人設資料尚未解鎖...\n(填寫完整檔案，讓他在平行時空更了解妳吧！✨)\n━━━━━━━━━━━━━━━━━━'**
+  /// **'【 專屬拾光檔案 】\n━━━━━━━━━━━━━━━━━━\n姓名：{nickname}\n生日：{birthday}\n\n其他人設資料尚未解鎖...\n(填寫完整檔案，讓他在平行時空更了解妳吧！)\n━━━━━━━━━━━━━━━━━━'**
   String chat_profile_locked(String nickname, String birthday);
 
   /// No description provided for @profile_unnamed_file.
@@ -4590,7 +4590,7 @@ abstract class AppLocalizations {
   /// No description provided for @chat_call_ended.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'📞 通話結束，與 {name} 通話了 {time}'**
+  /// **'通話結束，與 {name} 通話了 {time}'**
   String chat_call_ended(String name, String time);
 
   /// No description provided for @chat_exclusive_story.
@@ -4644,7 +4644,7 @@ abstract class AppLocalizations {
   /// No description provided for @no_public_character_mine.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'妳還沒有發布任何公開角色喔！\n快去工作室創作吧✨'**
+  /// **'妳還沒有發布任何公開角色喔！\n快去工作室創作吧'**
   String get no_public_character_mine;
 
   /// No description provided for @no_public_character_other.
@@ -4668,7 +4668,7 @@ abstract class AppLocalizations {
   /// No description provided for @draft_cleared_success.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'草稿已清理完畢 🧹'**
+  /// **'草稿已清理完畢'**
   String get draft_cleared_success;
 
   /// No description provided for @login_required_for_studio.
@@ -4680,7 +4680,7 @@ abstract class AppLocalizations {
   /// No description provided for @my_secret_studio_title.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'我的秘密工作室 🛠️'**
+  /// **'我的秘密工作室'**
   String get my_secret_studio_title;
 
   /// No description provided for @create_new_character_btn.
@@ -4782,31 +4782,31 @@ abstract class AppLocalizations {
   /// No description provided for @moment_like_yours.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'{nickname}覺得妳的動態很讚喔！💖'**
+  /// **'{nickname}覺得妳的動態很讚喔！'**
   String moment_like_yours(String nickname);
 
   /// No description provided for @moment_like_others.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'{nickname}覺得{authorName}很有魅力，點了個讚！✨'**
+  /// **'{nickname}覺得{authorName}很有魅力，點了個讚！'**
   String moment_like_others(String nickname, String authorName);
 
   /// No description provided for @moment_like_success.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'已傳遞妳的心動！✨'**
+  /// **'已傳遞妳的心動！'**
   String get moment_like_success;
 
   /// No description provided for @moment_notification_new_like.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'新點讚！💖'**
+  /// **'新點讚！'**
   String get moment_notification_new_like;
 
   /// No description provided for @moment_mention_mail_body.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'{nickname} 在動態中提到了 @{name} 喔！✨'**
+  /// **'{nickname} 在動態中提到了 @{name} 喔！'**
   String moment_mention_mail_body(String nickname, String name);
 
   /// No description provided for @moment_detail_title.
@@ -4818,7 +4818,7 @@ abstract class AppLocalizations {
   /// No description provided for @moment_not_found.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'這篇動態好像不見了... 😢'**
+  /// **'這篇動態好像不見了...'**
   String get moment_not_found;
 
   /// No description provided for @moment_comment_title.
@@ -4830,7 +4830,7 @@ abstract class AppLocalizations {
   /// No description provided for @moment_comment_empty.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'還沒有人留言，快來搶沙發！🛋'**
+  /// **'還沒有人留言，快來搶沙發！'**
   String get moment_comment_empty;
 
   /// No description provided for @moment_replying_to.
@@ -4890,7 +4890,7 @@ abstract class AppLocalizations {
   /// No description provided for @moment_go_to_chat_msg.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'帶著動態去找 {name} 聊天囉！ 💬'**
+  /// **'帶著動態去找 {name} 聊天囉！'**
   String moment_go_to_chat_msg(String name);
 
   /// No description provided for @moment_share_to_apps.
@@ -4915,13 +4915,13 @@ abstract class AppLocalizations {
   /// No description provided for @moment_forward_title.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'轉發給正在聊天的角色 💌'**
+  /// **'轉發給正在聊天的角色'**
   String get moment_forward_title;
 
   /// No description provided for @moment_forward_empty_state.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'妳目前還沒有開始聊天的角色喔！\n先去大廳找找心儀的他吧 🌿'**
+  /// **'妳目前還沒有開始聊天的角色喔！\n先去大廳找找心儀的他吧'**
   String get moment_forward_empty_state;
 
   /// No description provided for @moment_forward_template.
@@ -4933,7 +4933,7 @@ abstract class AppLocalizations {
   /// No description provided for @moment_forward_success.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✅ 已悄悄分享給 {name} 囉！'**
+  /// **'已悄悄分享給 {name} 囉！'**
   String moment_forward_success(String name);
 
   /// No description provided for @action_send.
@@ -5011,7 +5011,7 @@ abstract class AppLocalizations {
   /// No description provided for @daily_login_welcome.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'歡迎回到《{appName}》！\n今日簽到可領取 {amount} 點花語點數。🌸'**
+  /// **'歡迎回到《{appName}》！\n今日簽到可領取 {amount} 點花語點數。'**
   String daily_login_welcome(String appName, String amount);
 
   /// No description provided for @title_daily_check_in.
@@ -5023,7 +5023,7 @@ abstract class AppLocalizations {
   /// No description provided for @success_claim_reward.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'成功領取 {amount} 點花語！🌸'**
+  /// **'成功領取 {amount} 點花語！'**
   String success_claim_reward(String amount);
 
   /// No description provided for @error_claim_failed.
@@ -5269,7 +5269,7 @@ abstract class AppLocalizations {
   /// No description provided for @draft_saved_success_msg.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'好的！先幫你保存在草稿裡，隨時可以回來編輯喔！✨'**
+  /// **'好的！先幫你保存在草稿裡，隨時可以回來編輯喔！'**
   String get draft_saved_success_msg;
 
   /// No description provided for @dialog_reminder_title.
@@ -5335,7 +5335,7 @@ abstract class AppLocalizations {
   /// No description provided for @avatar_updated_success.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'已為您換上頭像 🍃'**
+  /// **'已為您換上頭像'**
   String get avatar_updated_success;
 
   /// No description provided for @title_create_profile.
@@ -5389,7 +5389,7 @@ abstract class AppLocalizations {
   /// No description provided for @msg_birthdate_immutable.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'生日設定後不可更改 ✨'**
+  /// **'生日設定後不可更改'**
   String get msg_birthdate_immutable;
 
   /// No description provided for @action_start_journey.
@@ -5407,19 +5407,19 @@ abstract class AppLocalizations {
   /// No description provided for @moment_like_self.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'{nickname}覺得妳的動態很讚喔！💖'**
+  /// **'{nickname}覺得妳的動態很讚喔！'**
   String moment_like_self(String nickname);
 
   /// No description provided for @moment_like_other.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'{nickname}覺得{authorName}很有魅力，點了個讚！✨'**
+  /// **'{nickname}覺得{authorName}很有魅力，點了個讚！'**
   String moment_like_other(String nickname, String authorName);
 
   /// No description provided for @task_social_tour_complete.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✨ 達成社群巡禮任務！記得領取花花喔！🌸'**
+  /// **'達成社群巡禮任務！記得領取花花喔！'**
   String get task_social_tour_complete;
 
   /// No description provided for @wall_title_shiguang.
@@ -5431,13 +5431,13 @@ abstract class AppLocalizations {
   /// No description provided for @wall_tab_explore.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'🌍 探索'**
+  /// **'探索'**
   String get wall_tab_explore;
 
   /// No description provided for @wall_tab_exclusive.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'🔒 專屬'**
+  /// **'專屬'**
   String get wall_tab_exclusive;
 
   /// No description provided for @more_options.
@@ -5461,7 +5461,7 @@ abstract class AppLocalizations {
   /// No description provided for @notification_new_comment.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'新留言！💬'**
+  /// **'新留言！'**
   String get notification_new_comment;
 
   /// No description provided for @notification_like_from_sender.
@@ -5473,19 +5473,19 @@ abstract class AppLocalizations {
   /// No description provided for @empty_public_moments_prompt.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'目前空空如也，\n快去發布第一篇公開動態吧！🌍'**
+  /// **'目前空空如也，\n快去發布第一篇公開動態吧！'**
   String get empty_public_moments_prompt;
 
   /// No description provided for @empty_private_moments_prompt.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'朋友圈還沒有留下的瞬間，\n快去與他創造回憶吧！✨'**
+  /// **'朋友圈還沒有留下的瞬間，\n快去與他創造回憶吧！'**
   String get empty_private_moments_prompt;
 
   /// No description provided for @profile_archived_or_deleted_message.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'這份靈魂檔案已被創作者封存、設為私人，或是已經消散在時空的洪流中...\n\n或許在某個平行宇宙，你們還有再次相遇的機會。✨'**
+  /// **'這份靈魂檔案已被創作者封存、設為私人，或是已經消散在時空的洪流中...\n\n或許在某個平行宇宙，你們還有再次相遇的機會。'**
   String get profile_archived_or_deleted_message;
 
   /// No description provided for @leave_silently.
@@ -5515,7 +5515,7 @@ abstract class AppLocalizations {
   /// No description provided for @identity_creator.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✨ 創作者身分'**
+  /// **'創作者身分'**
   String get identity_creator;
 
   /// No description provided for @identity_character.
@@ -5533,7 +5533,7 @@ abstract class AppLocalizations {
   /// No description provided for @auto_post_schedule_hint.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'開啟後，將會在指定時間自動發布日常動態\n(💡 建議設定非整點，看起來更像真人喔！)'**
+  /// **'開啟後，將會在指定時間自動發布日常動態\n( 建議設定非整點，看起來更像真人喔！)'**
   String get auto_post_schedule_hint;
 
   /// No description provided for @no_characters_created_yet.
@@ -5557,13 +5557,13 @@ abstract class AppLocalizations {
   /// No description provided for @empty_public_moments_short.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'目前還沒有公開動態 🌍'**
+  /// **'目前還沒有公開動態'**
   String get empty_public_moments_short;
 
   /// No description provided for @empty_private_moments_short.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'朋友圈還靜悄悄的 ✨'**
+  /// **'朋友圈還靜悄悄的'**
   String get empty_private_moments_short;
 
   /// No description provided for @my_created_characters.
@@ -5617,13 +5617,13 @@ abstract class AppLocalizations {
   /// No description provided for @daily_gift_success.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'成功領取每日贈禮！🌸'**
+  /// **'成功領取每日贈禮！'**
   String get daily_gift_success;
 
   /// No description provided for @check_in_fail_network.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'簽到失敗，請檢查網路連線 🍃'**
+  /// **'簽到失敗，請檢查網路連線'**
   String get check_in_fail_network;
 
   /// No description provided for @task_completed.
@@ -5707,7 +5707,7 @@ abstract class AppLocalizations {
   /// No description provided for @network_unstable_retry.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'網路連線不穩，請稍後再試🍃'**
+  /// **'網路連線不穩，請稍後再試'**
   String get network_unstable_retry;
 
   /// No description provided for @title_time_travel.
@@ -5833,7 +5833,7 @@ abstract class AppLocalizations {
   /// No description provided for @search_no_match_hint.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'找不到角色，試試其他名字？ ✨'**
+  /// **'找不到角色，試試其他名字？'**
   String get search_no_match_hint;
 
   /// No description provided for @character_info_full.
@@ -6115,7 +6115,7 @@ abstract class AppLocalizations {
   /// No description provided for @shop_empty_history.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'目前還沒有花花紀錄喔！🌸'**
+  /// **'目前還沒有花花紀錄喔！'**
   String get shop_empty_history;
 
   /// No description provided for @shop_unknown_item.
@@ -6193,7 +6193,7 @@ abstract class AppLocalizations {
   /// No description provided for @reset_bg_success.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'已恢復為預設背景 ✨'**
+  /// **'已恢復為預設背景'**
   String get reset_bg_success;
 
   /// No description provided for @confirm_reset.
@@ -6229,7 +6229,7 @@ abstract class AppLocalizations {
   /// No description provided for @exclusiveMomentsGenerated.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'專屬拾光已生成 ✨'**
+  /// **'專屬拾光已生成'**
   String get exclusiveMomentsGenerated;
 
   /// No description provided for @selectAgain.
@@ -6253,13 +6253,13 @@ abstract class AppLocalizations {
   /// No description provided for @shop_log_monthly_card.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'啟動：星光契約 (月卡立即贈點) 🌙'**
+  /// **'啟動：星光契約 (月卡立即贈點)'**
   String get shop_log_monthly_card;
 
   /// No description provided for @shop_log_top_up_double.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'儲值：{points} 點 (含首購雙倍 🎁)'**
+  /// **'儲值：{points} 點 (含首購雙倍 )'**
   String shop_log_top_up_double(int points);
 
   /// No description provided for @shop_log_top_up_normal.
@@ -6283,7 +6283,7 @@ abstract class AppLocalizations {
   /// No description provided for @shop_purchase_success_double_bonus.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✨ 恭喜觸發首購雙倍獎勵！'**
+  /// **'恭喜觸發首購雙倍獎勵！'**
   String get shop_purchase_success_double_bonus;
 
   /// No description provided for @shop_purchase_awesome.
@@ -6337,7 +6337,7 @@ abstract class AppLocalizations {
   /// No description provided for @task_monthly_title.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'星之契約．每日特權 🌙'**
+  /// **'星之契約．每日特權'**
   String get task_monthly_title;
 
   /// No description provided for @task_monthly_locked.
@@ -6379,13 +6379,13 @@ abstract class AppLocalizations {
   /// No description provided for @referral_log_newbie_reward.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'星之邀約：新手報到獎勵 ✨'**
+  /// **'星之邀約：新手報到獎勵'**
   String get referral_log_newbie_reward;
 
   /// No description provided for @referral_log_inviter_reward.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'星之邀約：好友達標回饋 🎁'**
+  /// **'星之邀約：好友達標回饋'**
   String get referral_log_inviter_reward;
 
   /// No description provided for @referral_success_title.
@@ -6397,13 +6397,13 @@ abstract class AppLocalizations {
   /// No description provided for @referral_success_content.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'恭喜您已成功與角色深度交流滿 15 句！\n\n「新手報到獎勵 50 點」已送達您的賬戶，您的好友也同步獲得了 50 點回饋！🎁'**
+  /// **'恭喜您已成功與角色深度交流滿 15 句！\n\n「新手報到獎勵 50 點」已送達您的賬戶，您的好友也同步獲得了 50 點回饋！'**
   String get referral_success_content;
 
   /// No description provided for @profile_referral_title.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'星之邀約 🌟'**
+  /// **'星之邀約'**
   String get profile_referral_title;
 
   /// No description provided for @profile_referral_hint.
@@ -6457,13 +6457,13 @@ abstract class AppLocalizations {
   /// No description provided for @profile_share_message.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✨ 我在《戀戀拾光》與{character}展開了心動旅程！快下載 App 並在個人主頁填寫我的星之邀約碼：【{code}】，我們雙方都能免費獲得 50 點花花喔！🎁\n\n 下載連結：\nhttps://lianlianshiguang.web.app/download/'**
+  /// **'我在《戀戀拾光》與{character}展開了心動旅程！快下載 App 並在個人主頁填寫我的星之邀約碼：【{code}】，我們雙方都能免費獲得 50 點花花喔！\n\n下載連結：\nhttps://lianlianshiguang.web.app/download/'**
   String profile_share_message(String character, String code);
 
   /// No description provided for @chat_levelup_share_btn.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'向好友炫耀這份心動 ✨'**
+  /// **'向好友炫耀這份心動'**
   String get chat_levelup_share_btn;
 
   /// No description provided for @profile_my_invite_code_with_char.
@@ -6487,7 +6487,7 @@ abstract class AppLocalizations {
   /// No description provided for @profile_copy_success.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✅ 邀請碼已複製到剪貼簿！'**
+  /// **'邀請碼已複製到剪貼簿！'**
   String get profile_copy_success;
 
   /// No description provided for @profile_referral_rule_title.
@@ -6499,13 +6499,13 @@ abstract class AppLocalizations {
   /// No description provided for @profile_referral_rule_receiver.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✨ 締結契約後，只要與任意心動角色聊天滿 15 句，你與邀請人就能同時獲得 50 朵花花獎勵喔！\n\n⚠️ 注意：請在註冊帳號後的 3 天內輸入邀請碼才有效。'**
+  /// **'締結契約後，只要與任意心動角色聊天滿 15 句，你與邀請人就能同時獲得 50 朵花花獎勵喔！\n\n注意：請在註冊帳號後的 3 天內輸入邀請碼才有效。'**
   String get profile_referral_rule_receiver;
 
   /// No description provided for @profile_referral_rule_inviter.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✨ 邀請新朋友下載並輸入你的邀約碼，當對方在註冊 3 天內完成綁定，並與任意角色聊天滿 15 句，你們雙方就能同時獲得 50 點花花獎勵喔！🎁'**
+  /// **'邀請新朋友下載並輸入你的邀約碼，當對方在註冊 3 天內完成綁定，並與任意角色聊天滿 15 句，你們雙方就能同時獲得 50 點花花獎勵喔！'**
   String get profile_referral_rule_inviter;
 
   /// 找不到使用者時的錯誤提示
@@ -6529,19 +6529,19 @@ abstract class AppLocalizations {
   /// 商店載入中或商品為空時的提示
   ///
   /// In zh_Hant, this message translates to:
-  /// **'商店正在補貨... 📦'**
+  /// **'商店正在補貨...'**
   String get shop_restocking;
 
   /// 商店預覽模式的警告標語
   ///
   /// In zh_Hant, this message translates to:
-  /// **'⚠️ 目前為商店預覽模式'**
+  /// **'目前為商店預覽模式'**
   String get shop_preview_mode;
 
   /// No description provided for @friendlyReminderTitle.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'☁️ 溫馨提示'**
+  /// **'溫馨提示'**
   String get friendlyReminderTitle;
 
   /// No description provided for @editProfileHint.
@@ -6595,7 +6595,7 @@ abstract class AppLocalizations {
   /// No description provided for @continueChatCostWarning.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'讓他說下去，將會消耗 {cost} 朵花花 🌸\n確定要繼續嗎？'**
+  /// **'讓他說下去，將會消耗 {cost} 朵花花\n確定要繼續嗎？'**
   String continueChatCostWarning(int cost);
 
   /// No description provided for @dontShowAgainToday.
@@ -6649,7 +6649,7 @@ abstract class AppLocalizations {
   /// No description provided for @creatorExclusive.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'🔒 創作者專屬'**
+  /// **'創作者專屬'**
   String get creatorExclusive;
 
   /// No description provided for @ageAndOccupation.
@@ -6661,13 +6661,13 @@ abstract class AppLocalizations {
   /// No description provided for @likesLabel.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'💖 喜歡'**
+  /// **'喜歡'**
   String get likesLabel;
 
   /// No description provided for @dislikesLabel.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'👎 不喜歡'**
+  /// **'不喜歡'**
   String get dislikesLabel;
 
   /// No description provided for @birthdayLabel.
@@ -6709,7 +6709,7 @@ abstract class AppLocalizations {
   /// No description provided for @passGuideRegenerateTitle.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'🔄 為什麼需要「重新生成」？'**
+  /// **'為什麼需要「重新生成」？'**
   String get passGuideRegenerateTitle;
 
   /// No description provided for @passGuideRegenerateContent.
@@ -6721,7 +6721,7 @@ abstract class AppLocalizations {
   /// No description provided for @passGuideAffectionTitle.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'💖 好感度加速有什麼用？'**
+  /// **'好感度加速有什麼用？'**
   String get passGuideAffectionTitle;
 
   /// No description provided for @passGuideAffectionContent.
@@ -6745,13 +6745,13 @@ abstract class AppLocalizations {
   /// No description provided for @createNewProfileTitle.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'📜 建立新拾光檔案'**
+  /// **'建立新拾光檔案'**
   String get createNewProfileTitle;
 
   /// No description provided for @editProfileTitle.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✏️ 編輯拾光檔案'**
+  /// **'編輯拾光檔案'**
   String get editProfileTitle;
 
   /// No description provided for @profileEditDescription.
@@ -6859,7 +6859,7 @@ abstract class AppLocalizations {
   /// No description provided for @exclusiveProfileTitle.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'📜 專屬拾光檔案'**
+  /// **'專屬拾光檔案'**
   String get exclusiveProfileTitle;
 
   /// No description provided for @profileSelectionDescription.
@@ -7171,13 +7171,13 @@ abstract class AppLocalizations {
   /// 生日彈窗的標題
   ///
   /// In zh_Hant, this message translates to:
-  /// **'🎂 生日驚喜'**
+  /// **'生日驚喜'**
   String get birthday_dialog_title;
 
   /// 生日彈窗的驚喜內文
   ///
   /// In zh_Hant, this message translates to:
-  /// **'今天是您的專屬紀念日！\n\n這份禮物請收下：\n今天聊天全。部。免。費！✨'**
+  /// **'今天是您的專屬紀念日！\n\n這份禮物請收下：\n今天聊天全。部。免。費！'**
   String get birthday_dialog_content;
 
   /// 生日彈窗的確認按鈕
@@ -7243,7 +7243,7 @@ abstract class AppLocalizations {
   /// No description provided for @easter_egg_title.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'發現隱藏彩蛋 ✨'**
+  /// **'發現隱藏彩蛋'**
   String get easter_egg_title;
 
   /// No description provided for @easter_egg_content.
@@ -7315,7 +7315,7 @@ abstract class AppLocalizations {
   /// No description provided for @monthly_card_success_title.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✨ 尊榮月卡解鎖成功！'**
+  /// **'尊榮月卡解鎖成功！'**
   String get monthly_card_success_title;
 
   /// No description provided for @monthly_card_success_subtitle.
@@ -7951,7 +7951,7 @@ abstract class AppLocalizations {
   /// No description provided for @send_failed_retry.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'送出失敗，請稍後再試 😢'**
+  /// **'送出失敗，請稍後再試'**
   String get send_failed_retry;
 
   /// No description provided for @media_upload_failed_retry.
@@ -8017,7 +8017,7 @@ abstract class AppLocalizations {
   /// No description provided for @regenerate_sync_failed.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'重新生成次數同步失敗，請再試一次 😢'**
+  /// **'重新生成次數同步失敗，請再試一次'**
   String get regenerate_sync_failed;
 
   /// No description provided for @creator_public_works.
@@ -8821,7 +8821,7 @@ abstract class AppLocalizations {
   /// No description provided for @profilePageAboutMe.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'📝 關於我'**
+  /// **'關於我'**
   String get profilePageAboutMe;
 
   /// No description provided for @profilePageTabBio.
@@ -9289,7 +9289,7 @@ abstract class AppLocalizations {
   /// No description provided for @periodStartedToday.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'🩸 今天來了'**
+  /// **'今天來了'**
   String get periodStartedToday;
 
   /// No description provided for @periodStillOngoing.
@@ -9709,7 +9709,7 @@ abstract class AppLocalizations {
   /// No description provided for @editProfileBirthdayReminderTitle.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'🎂 小提醒'**
+  /// **'小提醒'**
   String get editProfileBirthdayReminderTitle;
 
   /// No description provided for @editProfileBirthdayReminderContent.
@@ -9727,7 +9727,7 @@ abstract class AppLocalizations {
   /// No description provided for @editProfileBirthdayConfirmTitle.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'🎂 確認生日'**
+  /// **'確認生日'**
   String get editProfileBirthdayConfirmTitle;
 
   /// No description provided for @editProfileBirthdayConfirmContent.
@@ -9859,7 +9859,7 @@ abstract class AppLocalizations {
   /// No description provided for @chatPageSendFailed.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'送出失敗，請稍後再試 😢'**
+  /// **'送出失敗，請稍後再試'**
   String get chatPageSendFailed;
 
   /// No description provided for @chatPageRegenerateFailed.
@@ -9871,7 +9871,7 @@ abstract class AppLocalizations {
   /// No description provided for @chatPageRegenerating.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'💭 正在重新思考...'**
+  /// **'正在重新思考...'**
   String get chatPageRegenerating;
 
   /// No description provided for @chatPageThinkingTooLong.
@@ -9901,7 +9901,7 @@ abstract class AppLocalizations {
   /// No description provided for @chatPageMessagesDeleted.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✅ 已成功刪除 {count} 則訊息'**
+  /// **'已成功刪除 {count} 則訊息'**
   String chatPageMessagesDeleted(int count);
 
   /// No description provided for @chatPageSelectPhotoFailed.
@@ -10297,13 +10297,13 @@ abstract class AppLocalizations {
   /// No description provided for @characterProfileShareInvitation.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'🦋 一封來自《戀戀拾光》的相遇邀請'**
+  /// **'一封來自《戀戀拾光》的相遇邀請'**
   String get characterProfileShareInvitation;
 
   /// No description provided for @characterProfileShareCreator.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✦ 創作者：{creatorName}'**
+  /// **'創作者：{creatorName}'**
   String characterProfileShareCreator(String creatorName);
 
   /// No description provided for @characterProfileShareMessage.
@@ -10327,7 +10327,7 @@ abstract class AppLocalizations {
   /// No description provided for @characterProfileCardSearchHint.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'搜尋角色，開始相遇  🦋'**
+  /// **'搜尋角色，開始相遇'**
   String get characterProfileCardSearchHint;
 
   /// No description provided for @characterProfileScanToDownload.
@@ -10615,13 +10615,13 @@ abstract class AppLocalizations {
   /// No description provided for @mailShareQixiMessage.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'我收到了 {characterName} 寫來的七夕限定信 💌'**
+  /// **'我收到了 {characterName} 寫來的七夕限定信'**
   String mailShareQixiMessage(String characterName);
 
   /// No description provided for @mailShareDefaultMessage.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'來自《戀戀拾光》的信件 💌'**
+  /// **'來自《戀戀拾光》的信件'**
   String get mailShareDefaultMessage;
 
   /// No description provided for @mailShareImageFailed.
@@ -10633,7 +10633,7 @@ abstract class AppLocalizations {
   /// No description provided for @mailCollectedSuccess.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'已收藏這封信 💌'**
+  /// **'已收藏這封信'**
   String get mailCollectedSuccess;
 
   /// No description provided for @mailCollectedCancelled.
@@ -10735,13 +10735,13 @@ abstract class AppLocalizations {
   /// No description provided for @qixiSingleRoomOpened.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'七夕專屬聊天室已開啟 💕'**
+  /// **'七夕專屬聊天室已開啟'**
   String get qixiSingleRoomOpened;
 
   /// No description provided for @qixiMultipleRoomsOpened.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'{count} 間七夕專屬聊天室已開啟 💕'**
+  /// **'{count} 間七夕專屬聊天室已開啟'**
   String qixiMultipleRoomsOpened(int count);
 
   /// No description provided for @qixiCreateRoomFailed.
@@ -10909,13 +10909,13 @@ abstract class AppLocalizations {
   /// No description provided for @encounterJoinedToday.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✨ 今天加入戀戀拾光'**
+  /// **'今天加入戀戀拾光'**
   String get encounterJoinedToday;
 
   /// No description provided for @encounterPopularChats.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'❤️ 最近很多人在聊天'**
+  /// **'最近很多人在聊天'**
   String get encounterPopularChats;
 
   /// No description provided for @qixiBannerActiveUntil.
@@ -10933,7 +10933,7 @@ abstract class AppLocalizations {
   /// No description provided for @encounterRecentlyArrived.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✨ 最近來到戀戀拾光'**
+  /// **'最近來到戀戀拾光'**
   String get encounterRecentlyArrived;
 
   /// No description provided for @encounterRecentlyArrivedPlain.
@@ -10951,7 +10951,7 @@ abstract class AppLocalizations {
   /// No description provided for @encounterLovePrompt.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'💕 今天想談什麼戀愛？'**
+  /// **'今天想談什麼戀愛？'**
   String get encounterLovePrompt;
 
   /// No description provided for @encounterNoCharacters.
@@ -10969,7 +10969,7 @@ abstract class AppLocalizations {
   /// No description provided for @chatQixiLetterSent.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'限定信件已寄出 💌'**
+  /// **'限定信件已寄出'**
   String get chatQixiLetterSent;
 
   /// No description provided for @chatQixiLetterPendingTonight.
@@ -12919,7 +12919,7 @@ abstract class AppLocalizations {
   /// No description provided for @character_edit_over_limit_warning.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'⚠ {label} 已超出 {count} 字，請修正後再發布。'**
+  /// **'{label} 已超出 {count} 字，請修正後再發布。'**
   String character_edit_over_limit_warning(String label, String count);
 
   /// No description provided for @memo_notification_channel_name.
@@ -13945,7 +13945,7 @@ abstract class AppLocalizations {
   /// No description provided for @shop_joined_days.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✦ 已來到戀戀拾光 {days} 天 ✦'**
+  /// **'已來到戀戀拾光 {days} 天'**
   String shop_joined_days(int days);
 
   /// No description provided for @shop_vip_tier_1_title.
@@ -14469,6 +14469,24 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'無法開啟此連結'**
   String get creator_social_links_open_failed;
+
+  /// No description provided for @chat_regenerate_bottom_tip.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'「重新生成」搬到這裡囉！想換一個回覆時，可以從這裡重新生成。'**
+  String get chat_regenerate_bottom_tip;
+
+  /// No description provided for @chat_continue_bottom_tip.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'「繼續」搬到這裡囉！想讓角色接著說時，可以從這裡繼續。'**
+  String get chat_continue_bottom_tip;
+
+  /// Subtitle shown below the language settings title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選擇你習慣的語言'**
+  String get languageSelectionSubtitle;
 }
 
 class _AppLocalizationsDelegate

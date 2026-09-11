@@ -83,6 +83,11 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
   String _playerNickname = '旅人';
   String _currentUserId = "";
   bool _isWorldSettingExpanded = false;
+
+  Map<String, dynamic>? _autoCharacterTranslation;
+  String? _autoCharacterTranslationLocale;
+  String? _lastTranslationRequestLocale;
+  bool _translationRequestInFlight = false;
   String _getCharacterShareAppLink() {
     return 'https://lianlianshiguang.web.app/download/';
   }
@@ -165,6 +170,178 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
 
   // 💡 2. 新增：紀錄迴音氣泡彈過了沒 (預設 true，等翻記事本)
   bool _hasEchoTipShown = true;
+
+
+  String _characterLocaleKey() {
+    final locale = Localizations.localeOf(context);
+
+    if (locale.languageCode == 'zh') {
+      final script = locale.scriptCode?.toLowerCase();
+      final country = locale.countryCode?.toUpperCase();
+
+      if (script == 'hans' || country == 'CN' || country == 'SG') {
+        return 'zh_Hans';
+      }
+      return 'zh_Hant';
+    }
+
+    return locale.languageCode;
+  }
+
+  String _normalizedSourceLocale() {
+    final raw = (widget.character.contentLanguage ?? 'zh_Hant')
+        .trim()
+        .replaceAll('-', '_')
+        .toLowerCase();
+
+    if (raw == 'zh' ||
+        raw == 'zh_tw' ||
+        raw == 'zh_hant' ||
+        raw == 'zh_hk' ||
+        raw == 'zh_mo') {
+      return 'zh_Hant';
+    }
+
+    if (raw == 'zh_cn' || raw == 'zh_hans' || raw == 'zh_sg') {
+      return 'zh_Hans';
+    }
+
+    return raw.split('_').first;
+  }
+
+  Map<String, dynamic>? _activeCharacterTranslation() {
+    final localeKey = _characterLocaleKey();
+
+    if (_autoCharacterTranslationLocale == localeKey &&
+        _autoCharacterTranslation != null) {
+      return _autoCharacterTranslation;
+    }
+
+    return widget.character.translationForLocale(localeKey);
+  }
+
+  String _translatedText(
+      String field,
+      String originalValue,
+      ) {
+    final translated = _activeCharacterTranslation()?[field];
+    final value = translated?.toString().trim() ?? '';
+    return value.isNotEmpty ? value : originalValue;
+  }
+
+  List<String> _translatedList(
+      String field,
+      List<String> originalValue,
+      ) {
+    final translated = _activeCharacterTranslation()?[field];
+
+    if (translated is List) {
+      final values = translated
+          .map((item) => item.toString().trim())
+          .where((item) => item.isNotEmpty)
+          .toList();
+
+      if (values.isNotEmpty) return values;
+    }
+
+    return originalValue;
+  }
+
+  Future<void> _ensureCharacterTranslation({
+    bool force = false,
+  }) async {
+    if (!mounted) return;
+
+    final localeKey = _characterLocaleKey();
+    final sourceLocale = _normalizedSourceLocale();
+
+    if (localeKey == sourceLocale) {
+      if (_autoCharacterTranslation != null ||
+          _autoCharacterTranslationLocale != null) {
+        setState(() {
+          _autoCharacterTranslation = null;
+          _autoCharacterTranslationLocale = null;
+        });
+      }
+      _lastTranslationRequestLocale = localeKey;
+      return;
+    }
+
+    final cached = widget.character.translationForLocale(localeKey);
+    if (!force && cached != null && cached.isNotEmpty) {
+      if (mounted) {
+        setState(() {
+          _autoCharacterTranslation = cached;
+          _autoCharacterTranslationLocale = localeKey;
+        });
+      }
+      _lastTranslationRequestLocale = localeKey;
+      return;
+    }
+
+    if (_translationRequestInFlight &&
+        _lastTranslationRequestLocale == localeKey) {
+      return;
+    }
+
+    _translationRequestInFlight = true;
+    _lastTranslationRequestLocale = localeKey;
+
+    if (mounted) {
+      setState(() => _isTranslating = true);
+    }
+
+    try {
+      final callable = FirebaseFunctions.instanceFor(
+        region: 'asia-east1',
+      ).httpsCallable(
+        'getCharacterTranslation',
+        options: HttpsCallableOptions(
+          timeout: const Duration(seconds: 90),
+        ),
+      );
+
+      final result = await callable.call({
+        'characterId': widget.character.id,
+        'targetLocale': localeKey,
+        'force': force,
+      });
+
+      final data = result.data;
+      if (!mounted || data is! Map) return;
+
+      final rawTranslation = data['translation'];
+      if (rawTranslation is Map) {
+        setState(() {
+          _autoCharacterTranslation =
+          Map<String, dynamic>.from(rawTranslation);
+          _autoCharacterTranslationLocale = localeKey;
+        });
+      }
+    } catch (e) {
+      debugPrint('⚠️ 角色內容自動翻譯失敗，暫時顯示原文：$e');
+    } finally {
+      _translationRequestInFlight = false;
+
+      if (mounted) {
+        setState(() => _isTranslating = false);
+      }
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final localeKey = _characterLocaleKey();
+    if (_lastTranslationRequestLocale == localeKey) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _ensureCharacterTranslation();
+      }
+    });
+  }
 
   @override
   void initState() {
@@ -581,61 +758,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
   }
 
   Future<void> _translateProfile(String targetLang) async {
-    setState(() => _isTranslating = true);
-
-    try {
-      final String sourceBackground = widget.character.background;
-      final String sourceLikes = widget.character.likes;
-      final String sourceDislikes = widget.character.dislikes;
-
-      // 把要翻譯的東西打包
-      final results = await Future.wait([
-        FirebaseFunctions.instanceFor(region: 'asia-east1')
-            .httpsCallable('translateText')
-            .call({
-          'text': sourceBackground,
-          'targetLanguage': targetLang,
-        }),
-        FirebaseFunctions.instanceFor(region: 'asia-east1')
-            .httpsCallable('translateText')
-            .call({
-          'text': '$sourceLikes | $sourceDislikes', // 用特殊符號隔開一起翻比較省錢
-          'targetLanguage': targetLang,
-        }),
-      ]);
-
-      final String newBg = results[0].data['translatedText'];
-      final String likesAndDislikes = results[1].data['translatedText'];
-      final parts = likesAndDislikes.split('|');
-
-      // ✨【方案 B 核心】：寫回 Firestore
-      final charDocRef = FirebaseFirestore.instance
-          .collection('artifacts')
-          .doc(AppConfig.appId)
-          .collection('public_characters')
-          .doc(widget.character.id);
-
-      await charDocRef.set({
-        'translations': {
-          targetLang: {
-            'background': newBg,
-            'likes': parts[0].trim(),
-            'dislikes': parts.length > 1 ? parts[1].trim() : '',
-          }
-        }
-      }, SetOptions(merge: true));
-
-      if (mounted) {
-        setState(() {
-          _translatedBackground = newBg;
-          _translatedLikes = [parts[0].trim()];
-          _isTranslating = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) setState(() => _isTranslating = false);
-      print("翻譯詳情失敗: $e");
-    }
+    await _ensureCharacterTranslation(force: true);
   }
 
   // ✨ 2. 新增這個查詢函式 (把它放在 initState 下面)
@@ -3173,21 +3296,22 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
   // ==========================================
   Widget _buildTabProfile(ThemeData theme) {
     final l10n = AppLocalizations.of(context)!;
-    final String currentLang = Localizations.localeOf(context).languageCode;
+    final String currentLang = _characterLocaleKey();
+    final shared = _activeCharacterTranslation();
 
-    final shared = widget.character.translations?[currentLang];
+    final String displayOccupation =
+    _translatedText('occupation', widget.character.occupation);
+    final String displayLikes =
+    _translatedText('likes', widget.character.likes);
+    final String displayDislikes =
+    _translatedText('dislikes', widget.character.dislikes);
+    final List<String> displayTags =
+    _translatedList('personalityTags', widget.character.personalityTags);
+    final String displayStory =
+    _translatedText('story', widget.character.initialStory).trim();
 
-    final displayLikes = shared?['likes'] ?? widget.character.likes;
-    final displayDislikes = shared?['dislikes'] ?? widget.character.dislikes;
-    final displayTags = _translatedTags ??
-        (shared?['personalityTags'] as List?)?.cast<String>() ??
-        widget.character.personalityTags;
-
-    final displayStory = widget.character.initialStory.trim();
-
-    final bool showTranslateBtn =
-        (currentLang != (widget.character.contentLanguage ?? 'zh')) &&
-            (_translatedBackground == null && shared?['background'] == null);
+    // 切換語言後自動背景翻譯，不再要求玩家額外按翻譯。
+    final bool showTranslateBtn = false;
 
     final textColor = theme.colorScheme.onSurface;
 
@@ -3250,7 +3374,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
             Text(
               l10n.char_age_occupation(
                 widget.character.age.toString(),
-                widget.character.occupation,
+                displayOccupation,
               ),
               style: GoogleFonts.notoSerifTc(
                 color: theme.colorScheme.primary,
@@ -3649,7 +3773,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
 // ==========================================
   Widget _buildCharacterIntroTab(ThemeData theme) {
     final l10n = AppLocalizations.of(context)!;
-    final String worldSetting = widget.character.worldSetting.trim();
+    final String worldSetting =
+    _translatedText('worldSetting', widget.character.worldSetting).trim();
     final bool isLongContent = worldSetting.length > 200;
 
     final String displayedWorldSetting =

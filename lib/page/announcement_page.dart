@@ -16,6 +16,49 @@ const _envelopeFront =
 const _envelopeStars =
     'assets/images/announcement/announcement_stars.png';
 
+
+String _announcementLocaleKey(BuildContext context) {
+  final locale = Localizations.localeOf(context);
+  final languageCode = locale.languageCode.toLowerCase();
+
+  if (languageCode == 'zh') {
+    final countryCode = (locale.countryCode ?? '').toUpperCase();
+    if (countryCode == 'CN' || countryCode == 'SG') {
+      return 'zh_Hans';
+    }
+    return 'zh_Hant';
+  }
+
+  return languageCode;
+}
+
+Map<String, String> _localizedAnnouncement(
+    BuildContext context,
+    Map<String, dynamic> data,
+    ) {
+  final originalTitle = (data['title'] ?? '').toString().trim();
+  final originalContent = (data['content'] ?? '').toString().trim();
+  final localeKey = _announcementLocaleKey(context);
+
+  final rawTranslations = data['translations'];
+  Map<String, dynamic>? translated;
+
+  if (rawTranslations is Map) {
+    final rawEntry = rawTranslations[localeKey];
+    if (rawEntry is Map) {
+      translated = Map<String, dynamic>.from(rawEntry);
+    }
+  }
+
+  final translatedTitle = (translated?['title'] ?? '').toString().trim();
+  final translatedContent = (translated?['content'] ?? '').toString().trim();
+
+  return {
+    'title': translatedTitle.isNotEmpty ? translatedTitle : originalTitle,
+    'content': translatedContent.isNotEmpty ? translatedContent : originalContent,
+  };
+}
+
 Color _themeInk(ThemeData theme, [double blackMix = .30]) {
   return Color.lerp(theme.colorScheme.primary, Colors.black, blackMix)!;
 }
@@ -65,9 +108,10 @@ class AnnouncementListPage extends StatelessWidget {
                       final data = docs[index].data() as Map<String, dynamic>;
                       final date = (data['createdAt'] as Timestamp?)?.toDate() ??
                           DateTime.now();
-                      final rawTitle = (data['title'] as String?)?.trim() ?? '';
+                      final localized = _localizedAnnouncement(context, data);
+                      final rawTitle = localized['title'] ?? '';
                       final title = rawTitle.isEmpty ? l10n.untitled : rawTitle;
-                      final content = (data['content'] as String?)?.trim() ?? '';
+                      final content = localized['content'] ?? '';
                       return _AnnouncementCard(
                         title: title,
                         content: content,
@@ -142,7 +186,7 @@ class _Header extends StatelessWidget {
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
     return SizedBox(
-      height: 112,
+      height: 124,
       child: Stack(alignment: Alignment.center, children: [
         Positioned(
           left: 8,
@@ -157,27 +201,38 @@ class _Header extends StatelessWidget {
           ),
         ),
         Positioned(
-          top: 23,
-          child: Column(children: [
-            Text(
-              title,
-              style: GoogleFonts.notoSerifTc(
-                fontSize: 26,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 4,
-                color: _themeInk(theme, .28),
+          top: 38,
+          child: IgnorePointer(
+            child: Column(children: [
+              SizedBox(
+                width: MediaQuery.sizeOf(context).width - 120,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.center,
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    softWrap: false,
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 2,
+                      color: _themeInk(theme, .28),
+                    ),
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-            Row(children: [
-              _Line(color: primary),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 7),
-                child: Icon(Icons.auto_awesome, size: 10, color: primary),
-              ),
-              _Line(color: primary),
+              const SizedBox(height: 10),
+              Row(children: [
+                _Line(color: primary),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 7),
+                  child: Icon(Icons.auto_awesome, size: 10, color: primary),
+                ),
+                _Line(color: primary),
+              ]),
             ]),
-          ]),
+          ),
         ),
       ]),
     );

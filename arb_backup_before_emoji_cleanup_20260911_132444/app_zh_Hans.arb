@@ -1,140 +1,135 @@
 {
   "@@locale": "zh_Hans",
-  "settingsTitle": "设定",
-  "changeTheme": "更换主题颜色",
-  "feedback": "反馈建议",
-  "changeLanguage": "更换语言",
-  "allFriendsTitle": "所有好友",
-  "noFriendsMessage": "您还没有任何好友。",
+"settingsTitle": "设定",
+"changeTheme": "更换主题颜色",
+"feedback": "反馈建议",
+"changeLanguage": "更换语言",
+"allFriendsTitle": "所有好友",
+"noFriendsMessage": "您还没有任何好友。",
   "unknownCharacter": "未知角色",
   "errorLoadingFriends": "加载好友列表时发生错误: {error}",
   "@errorLoadingFriends": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
-  "tagGentle": "温柔",
-  "tagCheerful": "开朗",
-  "tagLively": "活泼",
-  "tagMischievous": "调皮",
-  "tagRichYoungLady": "千金",
-  "tagRichYoungMaster": "少爷",
-  "tagWealthyFamily": "豪门",
-  "tagScheming": "勾心斗角",
-  "tagPossessive": "占有",
-  "tagParanoid": "偏执",
-  "tagPersistent": "执着",
-  "tagUncle": "大叔",
-  "tagAuntie": "阿姨",
-  "tagSeniorSister": "学姐",
-  "tagJuniorBrother": "学弟",
-  "tagHandsome": "帅",
-  "tagStunning": "美艳动人",
-  "tagContrast": "反差",
-  "tagFlirty": "开车",
-  "tagAgeGap": "年龄差",
-  "userNotFoundError": "找不到使用者",
-  "imageDataMismatchError": "图片资料不一致，请重新选择图片。",
-  "createCharacterTitle": "创建角色",
-  "charAlbumTitle": "角色相册 (第一张为主要头像)",
-  "charNameLabel": "角色名称:",
-  "charDescSection": "角色描述:",
-  "charAgeLabel": "年龄:",
-  "charJobLabel": "职业:",
-  "charBirthdayLabel": "生日:(MMDD)",
-  "charGenderLabel": "性别",
-  "genderNotSelected": "未选择",
-  "genderMale": "男",
-  "genderFemale": "女",
-  "genderOther": "其他",
-  "charHeightLabel": "身高:(cm)",
-  "charAppearanceLabel": "外貌形容:",
-  "charPersonalityTagsSection": "个性标签",
-  "charOtherPersonalityTagsHint": "其他个性标签...",
-  "otherSectionTitle": "其他",
-  "charLikesLabel": "喜欢的东西:(例如：草莓蛋糕、猫咪、雨天)",
-  "charDislikesLabel": "讨厌的东西:(例如：苦瓜、吵闹的地方)",
-  "charSecretsLabel": "不为人知的小秘密: (例如：其实是个路痴)",
-  "charMannerismsSection": "言行举止",
-  "charToneLabel": "说话语气与风格: (例如：对陌生人冷淡)",
-  "charDialogueExampleLabel": "对话范例: (玩家：你真好！ 角色：...喔。)",
-  "charBackgroundSection": "角色背景:",
-  "charBackgroundHint": "输入角色的背景故事 (最多 2500 字)",
-  "charStoryStartSection": "剧情开头:",
-  "charStoryStartHint": "输入角色的剧情 (最多 2500 字)",
-  "charStorySummaryLabel": "故事简介 (最多 50 字，会显示在邂逅卡片上)",
-  "charExtraInfoSection": "角色其他补充:",
-  "charExtraInfoHint": "输入补充内容...",
-  "charPublicToggleLabel": "公开让其他玩家游玩吗？",
-  "yes": "是",
-  "no": "否",
-  "createButton": "创建",
-  "saveButton": "储存",
-  "cancelButton": "取消",
-  "exitCreationTitle": "您将退出创角画面",
-  "saveDraftPrompt": "需要储存为草稿吗？",
-  "draftNeeded": "需要",
-  "draftNotNeeded": "不需要",
-  "editExtraInfoTitle": "编辑补充内容",
-  "nameAndAvatarError": "请填写角色名称并至少上传一张头像！",
-  "savingStatus": "储存中...",
-  "uploadingImagesStatus": "正在上传图片...",
-  "maxImagesError": "最多只能上传 10 张图片。",
+"tagGentle": "温柔",
+"tagCheerful": "开朗",
+"tagLively": "活泼",
+"tagMischievous": "调皮",
+"tagRichYoungLady": "千金",
+"tagRichYoungMaster": "少爷",
+"tagWealthyFamily": "豪门",
+"tagScheming": "勾心斗角",
+"tagPossessive": "占有",
+"tagParanoid": "偏执",
+"tagPersistent": "执着",
+"tagUncle": "大叔",
+"tagAuntie": "阿姨",
+"tagSeniorSister": "学姐",
+"tagJuniorBrother": "学弟",
+"tagHandsome": "帅",
+"tagStunning": "美艳动人",
+"tagContrast": "反差",
+"tagFlirty": "开车",
+"tagAgeGap": "年龄差",
+"userNotFoundError": "找不到使用者",
+"imageDataMismatchError": "图片资料不一致，请重新选择图片。",
+"createCharacterTitle": "创建角色",
+"charAlbumTitle": "角色相册 (第一张为主要头像)",
+"charNameLabel": "角色名称:",
+"charDescSection": "角色描述:",
+"charAgeLabel": "年龄:",
+"charJobLabel": "职业:",
+"charBirthdayLabel": "生日:(MMDD)",
+"charGenderLabel": "性别",
+"genderNotSelected": "未选择",
+"genderMale": "男",
+"genderFemale": "女",
+"genderOther": "其他",
+"charHeightLabel": "身高:(cm)",
+"charAppearanceLabel": "外貌形容:",
+"charPersonalityTagsSection": "个性标签",
+"charOtherPersonalityTagsHint": "其他个性标签...",
+"otherSectionTitle": "其他",
+"charLikesLabel": "喜欢的东西:(例如：草莓蛋糕、猫咪、雨天)",
+"charDislikesLabel": "讨厌的东西:(例如：苦瓜、吵闹的地方)",
+"charSecretsLabel": "不为人知的小秘密: (例如：其实是个路痴)",
+"charMannerismsSection": "言行举止",
+"charToneLabel": "说话语气与风格: (例如：对陌生人冷淡)",
+"charDialogueExampleLabel": "对话范例: (玩家：你真好！ 角色：...喔。)",
+"charBackgroundSection": "角色背景:",
+"charBackgroundHint": "输入角色的背景故事 (最多 2500 字)",
+"charStoryStartSection": "剧情开头:",
+"charStoryStartHint": "输入角色的剧情 (最多 2500 字)",
+"charStorySummaryLabel": "故事简介 (最多 50 字，会显示在邂逅卡片上)",
+"charExtraInfoSection": "角色其他补充:",
+"charExtraInfoHint": "输入补充内容...",
+"charPublicToggleLabel": "公开让其他玩家游玩吗？",
+"yes": "是",
+"no": "否",
+"createButton": "创建",
+"saveButton": "储存",
+"cancelButton": "取消",
+"exitCreationTitle": "您将退出创角画面",
+"saveDraftPrompt": "需要储存为草稿吗？",
+"draftNeeded": "需要",
+"draftNotNeeded": "不需要",
+"editExtraInfoTitle": "编辑补充内容",
+"nameAndAvatarError": "请填写角色名称并至少上传一张头像！",
+"savingStatus": "储存中...",
+"uploadingImagesStatus": "正在上传图片...",
+"maxImagesError": "最多只能上传 10 张图片。",
   "uploadingImagesStatusShort": "正在处理图片...",
   "savingCharacterData": "正在储存角色数据...",
   "characterCreatedSuccess": "角色 \"{charName}\" 已创建！",
   "@characterCreatedSuccess": {
     "placeholders": {
-      "charName": {
-        "type": "String"
-      }
+      "charName": { "type": "String" }
     }
   },
   "uploadImageTimeoutError": "创建角色失败：图片上传超时，请检查您的网络连接。",
   "createCharacterGenericError": "创建角色失败：{error}",
   "@createCharacterGenericError": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
-  "settingsSectionAppearance": "外观与内容",
-  "settingsSectionAccount": "帐号与内容管理",
-  "settingsSectionAbout": "关于我们",
-  "accountManagement": "帐号管理",
-  "userId": "ID:",
-  "authMethodGoogle": "Google",
-  "authMethodUnknown": "未知",
-  "userIdCopied": "使用者 ID 已复制到剪贴簿",
-  "characterManagement": "角色管理",
-  "viewBlockedCharacters": "查看已封锁的角色",
-  "privacyPolicy": "隐私条款",
-  "termsOfService": "服务条款",
-  "logoutButton": "登出帐号",
-  "logoutDialogTitle": "你要登出了吗?(´;ω;`)",
-  "logoutDialogActionCancel": "我按错了",
-  "logoutDialogActionConfirm": "确认",
-  "logoutSuccessSnackbar": "好的!那我等你回来(´∀` )",
-  "deleteAccountButton": "删除帐号",
-  "deleteAccountDialogTitle": "你确定要删掉这个帐号?இдஇ",
-  "deleteAccountDialogContent": "这个操作无法复原，所有资料都会被永久删除！",
-  "deleteAccountDialogActionCancel": "没有,我没有要删掉",
-  "deleteAccountDialogActionConfirm": "确定",
-  "deleteAccountSuccessSnackbar": "帐号已成功删除。",
-  "appDisclaimer": "游戏里面的角色与场景皆为虚构,请勿带入现实!",
-  "appVersion": "App 版本: {version}",
-  "@appVersion": {
-    "description": "显示 App 版本号",
-    "placeholders": {
-      "version": {
-        "type": "String",
-        "example": "1.0.0"
-      }
-    }
-  },
+"settingsSectionAppearance": "外观与内容",
+"settingsSectionAccount": "帐号与内容管理",
+"settingsSectionAbout": "关于我们",
+"accountManagement": "帐号管理",
+"userId": "ID:",
+"authMethodGoogle": "Google",
+"authMethodUnknown": "未知",
+"userIdCopied": "使用者 ID 已复制到剪贴簿",
+"characterManagement": "角色管理",
+"viewBlockedCharacters": "查看已封锁的角色",
+"privacyPolicy": "隐私条款",
+"termsOfService": "服务条款",
+"logoutButton": "登出帐号",
+"logoutDialogTitle": "你要登出了吗?(´;ω;`)",
+"logoutDialogActionCancel": "我按错了",
+"logoutDialogActionConfirm": "确认",
+"logoutSuccessSnackbar": "好的!那我等你回来♥(´∀` )",
+"deleteAccountButton": "删除帐号",
+"deleteAccountDialogTitle": "你确定要删掉这个帐号?இдஇ",
+"deleteAccountDialogContent": "这个操作无法复原，所有资料都会被永久删除！",
+"deleteAccountDialogActionCancel": "没有,我没有要删掉",
+"deleteAccountDialogActionConfirm": "确定",
+"deleteAccountSuccessSnackbar": "帐号已成功删除。",
+"appDisclaimer": "游戏里面的角色与场景皆为虚构,请勿带入现实!",
+
+"appVersion": "App 版本: {version}",
+"@appVersion": {
+"description": "显示 App 版本号",
+"placeholders": {
+  "version": {
+    "type": "String",
+    "example": "1.0.0"
+  }
+}
+},
   "dialogTitleHint": "提示",
   "completeProfilePrompt": "请先编辑您的个人档案以完善资料喔！",
   "goToEdit": "前往编辑",
@@ -142,9 +137,7 @@
   "chattingWith": "与 {friendName} 聊天",
   "@chattingWith": {
     "placeholders": {
-      "friendName": {
-        "type": "String"
-      }
+      "friendName": { "type": "String" }
     }
   },
   "chatContentWith": "与 {friendName} 的聊天内容",
@@ -178,7 +171,7 @@
   "relationship_other": "其他 (请手动输入)",
   "chatModeDaily": "日常模式",
   "chatModeStory": "剧情模式",
-  "chatModeImmersive": "沉浸模式",
+  "chatModeImmersive" :"沉浸模式",
   "chatModeGemini": "生活陪伴",
   "announcement_new": "新公告",
   "mail_notification": "有新的时光信件寄达囉，快去羊皮卷看看吧！",
@@ -189,7 +182,7 @@
   "no_content": "无内容",
   "privacy_policy_title": "《恋恋拾光》隐私权政策",
   "privacy_policy_date": "最近更新日期：2026年4月10日",
-  "terms_title": "使用条款",
+  "terms_title": "《恋恋拾光》服务使用条款",
   "terms_date": "最近更新日期：2026年4月10日",
   "privacy_policy_body": "《恋恋拾光》隐私权政策\n最近更新日期：2026年4月10日\n\n欢迎使用《恋恋拾光》（以下简称“本服务”）。我们非常重视您的隐私，本政策旨在说明我们如何收集、使用及保护您的个人信息。\n\n1. 帐户信息：\n第三方登录：当您通过 Google、Facebook 或 Apple 帐号登录时，我们会收集您的 Firebase UID、电子邮件及公开昵称。\nE-mail 注册：您的登录密码将通过 Firebase 加密技术进行管理与存储，开发团队无法查阅您的原始密码。\n\n互动资料：为了让 AI 角色具备连续的记忆，我们会收集并存储您与 AI 的对话记录与您在游戏里面为角色所写下的内容。\n\n设备信息：包含设备型号、操作系统版本及唯一设备识别码。\n\n2. 信息的使用方式\n提升 AI 体验：优化 AI 的回复质量与个性连贯性。\n服务运营：用于处理点数充值、消费记录及身份验证。\n安全防护：监测恶意行为，保护服务器。\n\n3. 第三方技术合作\n本服务采用 Google Cloud / Firebase 以及 OpenRouter / xAI / Meta 提供技术支持。我们承诺不会向任何广告商出售您的原始对话记录。\n\n4. 数据存储与删除\n您的数据将安全地存储在云端服务器中。您可以随时联系我们要求永久删除您的帐户及所有相关对话数据。",
   "terms_body": "《恋恋拾光》服务使用条款\n最近更新日期：2026年4月10日\n\n在使用《恋恋拾光》前，请仔细阅读以下条款：\n\n1. 服务本质与免责声明\n非真人互动：所有角色回复均由人工智能（Generative AI）生成。AI 可能生成虚构或不准确的内容。\n\n2. 虚拟点数与付费模式\n点数性质：点数一经消耗（如：故事模式、通话、礼物）即无法退还。消耗标准系根据 AI 运算成本设定。\n\n3. 使用者行为规范\n禁止事项：禁止利用 AI 生成极端暴力、犯罪或违反法律之内容。\n\n4. 知识产权\n原创内容：角色姓名（如：程安等）、背景设定、剧情剧本及游戏逻辑，其知识产权均属“恋恋拾光开发团队”所有。\n\n5. 服务终止\n若违反上述规定，本服务有权在不预先通知的情况下暂停或永久停用该帐户。",
@@ -211,8 +204,7 @@
         "example": "程安"
       }
     }
-  },
-  "think_again": "再想想",
+  },  "think_again": "再想想",
   "confirm_block_btn": "确定封锁",
   "no_char_info": "目前还没有这份角色的详细情报...",
   "private_mailbox": "专属信箱",
@@ -306,33 +298,26 @@
   "legal_agreement_prefix": "继续即表示您同意本游戏的",
   "legal_terms_button": "服务条款",
   "legal_and": " 与 ",
-  "legal_privacy_button": "隐私权政策",
-  "call_memory_title": "通话回忆录",
+  "legal_privacy_button": "隐私权政策","call_memory_title": "通话回忆录",
   "please_login_first": "请先登录哦",
   "no_call_memories": "目前还没有保存的通话回忆\n最多只能保存10则收藏哦",
   "call_with_name": "与 {name} 的通话",
   "@call_with_name": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "call_duration": "时长：{time}",
   "@call_duration": {
     "placeholders": {
-      "time": {
-        "type": "String"
-      }
+      "time": { "type": "String" }
     }
   },
   "delete_call_title": "销毁通话记录",
   "delete_call_confirm": "确定要秘密销毁这段与 {name} 的通话回忆吗？\n(删除后无法找回哦)",
   "@delete_call_confirm": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "keep_it": "先留着",
@@ -342,17 +327,13 @@
   "character_thinking": "（{name} 正在思考...）",
   "@character_thinking": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "character_picking_up": "（{name} 正在接起电话...）",
   "@character_picking_up": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "call_interrupted_login": "（通话中断）请先登录喔...",
@@ -367,53 +348,23 @@
   "not_save": "不储存",
   "save_draft": "储存草稿",
   "confirm_delete_char_content": "你确定要删除角色 \"{name}\" 吗？\n\n此动作无法复原！",
-  "@confirm_delete_char_content": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@confirm_delete_char_content": { "placeholders": { "name": { "type": "String" } } },
   "char_deleted": "角色已删除",
   "ok_button": "好的!",
   "cannot_save_title": "无法储存",
   "cannot_save_content": "请填写角色名称并至少上传一张头像！",
   "word_count_exceeded": "字数过多",
   "word_count_error_detail": "「{field}」已超过 {limit} 字，请删减后再储存。",
-  "@word_count_error_detail": {
-    "placeholders": {
-      "field": {
-        "type": "String"
-      },
-      "limit": {
-        "type": "int"
-      }
-    }
-  },
+  "@word_count_error_detail": { "placeholders": { "field": { "type": "String" }, "limit": { "type": "int" } } },
   "content_missing": "内容缺失",
   "content_missing_personality": "请填写「详细个性」！请至少写 10 个字。",
   "content_missing_bg": "「角色简介」太短了！请至少写 20 个字，交代一下背景。",
   "content_missing_tone": "请设定「语气与习惯」，不然容易OOC！",
   "user_not_found": "错误：找不到使用者",
   "char_saved_success": "角色 \"{name}\" 已{action}！",
-  "@char_saved_success": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      },
-      "action": {
-        "type": "String"
-      }
-    }
-  },
+  "@char_saved_success": { "placeholders": { "name": { "type": "String" }, "action": { "type": "String" } } },
   "save_error_detail": "储存失败：{error}",
-  "@save_error_detail": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@save_error_detail": { "placeholders": { "error": { "type": "String" } } },
   "easter_egg_add_title": "新增隐藏彩蛋",
   "easter_egg_edit_title": "编辑彩蛋",
   "keyword_label": "触发关键字 (必填)",
@@ -434,40 +385,16 @@
   "voice_bind_first": "请先选择并「绑定」一个专属声音喔！",
   "voice_test_failed": "试听失败：请先点击「就决定是你了！」正式绑定声音后再微调喔！",
   "voice_name_default": "{name} 的专属声线",
-  "@voice_name_default": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@voice_name_default": { "placeholders": { "name": { "type": "String" } } },
   "voice_description_default": "这是「恋恋拾光」中为专属角色打造的独一无二声线，由玩家亲自挑选生成。",
   "voice_bind_failed": "绑定声音失败，请检查 API 额度或网络状态",
   "voice_bind_success": "\"{name}\" 的灵魂声线已正式绑定！",
-  "@voice_bind_success": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@voice_bind_success": { "placeholders": { "name": { "type": "String" } } },
   "voice_bind_success_draft": "声线绑定成功！现在可以拉动滑杆测试情绪啰！",
   "sync_failed": "同步失败，请检查网络：{error}",
-  "@sync_failed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@sync_failed": { "placeholders": { "error": { "type": "String" } } },
   "edit_character_title": "编辑 {name}",
-  "@edit_character_title": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@edit_character_title": { "placeholders": { "name": { "type": "String" } } },
   "test_mode_tooltip": "测试 ",
   "test_mode_notice": "测试模式将依照各模式原价扣点，且不计入正式回忆喔！",
   "delete_character_tooltip": "删除角色",
@@ -522,13 +449,7 @@
   "voice_generating_status": "正在调配声线中...",
   "voice_select_prompt": "帮你捏好了三种声线，请挑选：",
   "voice_sample_name": "声线样本 {index}",
-  "@voice_sample_name": {
-    "placeholders": {
-      "index": {
-        "type": "int"
-      }
-    }
-  },
+  "@voice_sample_name": { "placeholders": { "index": { "type": "int" } } },
   "voice_sample_desc": "点击卡片选择，点击右侧试听",
   "voice_preparing": "声音还在准备中...",
   "voice_retry": "放弃并重试",
@@ -540,23 +461,11 @@
   "voice_advanced_tuning": "进阶：微调说话情绪 ",
   "voice_stability_low": "野性/气音",
   "voice_stability_value": "理智度: {value}",
-  "@voice_stability_value": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
+  "@voice_stability_value": { "placeholders": { "value": { "type": "String" } } },
   "voice_stability_high": "平稳/冷静",
   "voice_style_low": "冷淡/压抑",
   "voice_style_value": "戏剧表现: {value}",
-  "@voice_style_value": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
+  "@voice_style_value": { "placeholders": { "value": { "type": "String" } } },
   "voice_style_high": "浮夸/深情",
   "voice_test_btn_testing": "正在套用情绪...",
   "voice_test_btn": "试听目前情绪",
@@ -564,29 +473,11 @@
   "social_circle_desc": "设定他对其他角色的看法。当玩家在聊天中提到对方时，他就会根据这里的设定做出反应（例如：吃醋、生气）。",
   "social_no_drama": "目前还没有与其他男神的过节...",
   "social_target": "对象：{name}",
-  "@social_target": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@social_target": { "placeholders": { "name": { "type": "String" } } },
   "social_attitude": "看法：{attitude}",
-  "@social_attitude": {
-    "placeholders": {
-      "attitude": {
-        "type": "String"
-      }
-    }
-  },
+  "@social_attitude": { "placeholders": { "attitude": { "type": "String" } } },
   "social_edit_title": "编辑对 {name} 的看法",
-  "@social_edit_title": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@social_edit_title": { "placeholders": { "name": { "type": "String" } } },
   "social_attitude_label": "他的看法 / 态度",
   "social_attitude_hint": "例如：觉得对方很啰嗦，但其实很依赖他...",
   "social_save_changes": "储存修改",
@@ -597,13 +488,7 @@
   "social_add_confirm": "确认新增",
   "gallery_load_failed": "图片载入失败\n请确认网络正常。",
   "gallery_affection_req": "好感 {level}",
-  "@gallery_affection_req": {
-    "placeholders": {
-      "level": {
-        "type": "int"
-      }
-    }
-  },
+  "@gallery_affection_req": { "placeholders": { "level": { "type": "int" } } },
   "gallery_upload_limit": "最多只能上传10张图片",
   "gallery_photo_setup": "设定照片解锁条件",
   "gallery_photo_desc_label": "这张照片是什么？",
@@ -617,13 +502,7 @@
   "loading_text": "读取中...",
   "default_unnamed_character": "未命名角色",
   "elevenlabs_error": "ElevenLabs 错误：{code}",
-  "@elevenlabs_error": {
-    "placeholders": {
-      "code": {
-        "type": "String"
-      }
-    }
-  },
+  "@elevenlabs_error": { "placeholders": { "code": { "type": "String" } } },
   "voice_sample_script": "（清了清嗓子）你好。这是一段专属于我的声音测试。在接下来的日子里，我会在这里陪着你。不管是开心的时候，还是难过的时候，你都可以跟我分享。这样说话的节奏和音色，你听起来还习惯吗？如果觉得不错的话，我们就把这个声音定下来，做为我以后和你聊天的专属声线吧。期待我们未来的每一天。",
   "voice_test_script": "你到底知不知道，每次看着你的时候，我心里在想些什么？……真是拿你没办法。",
   "field_background": "角色简介",
@@ -634,13 +513,7 @@
   "translating_status": "翻译中...",
   "translate_profile_btn": "翻译档案内容",
   "translate_failed": "翻译失败: {error}",
-  "@translate_failed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@translate_failed": { "placeholders": { "error": { "type": "String" } } },
   "like_own_char_warning": "不能给自创的角色点赞哦！",
   "like_success_msg": "已送出喜欢！创作者会很开心的",
   "unlike_success_msg": "已收回喜欢",
@@ -661,14 +534,14 @@
   "report_opt_4": "垃圾讯息或广告诈骗",
   "report_opt_5": "其他不当内容",
   "report_confirm": "确定检举",
-  "report_success": "检举成功，已收到通知！将尽快审核内容",
+  "report_success": "检举成功，已收到通知！将尽快审核内容 🛡",
   "report_failed": "检举失败，请检查网络连接。",
   "lore_delete_title": "警告：消除记忆",
   "lore_delete_content": "这段记忆一旦删除就彻底消失啰，确定要狠心抹除它吗？",
   "lore_delete_cancel": "手滑了",
   "lore_delete_confirm": "确定抹除",
   "lore_delete_success": "记忆碎片已彻底消除。",
-  "lore_add_title": "撰写新记忆",
+  "lore_add_title": "撰写新记忆 ️",
   "lore_edit_title": "编辑记忆碎片",
   "lore_title_label": "记忆标题",
   "lore_title_hint": "例如：第一次相遇的雨天",
@@ -738,7 +611,7 @@
   "start_story_btn": "开始剧情",
   "default_chat_initial": "找我有事吗？",
   "gallery_title": "专属通话背景",
-  "gallery_current_affection": "目前好感度: {value}",
+  "gallery_current_affection": "目前好感度: {value} 💕",
   "@gallery_current_affection": {
     "placeholders": {
       "value": {
@@ -755,7 +628,7 @@
       }
     }
   },
-  "gallery_lock_msg": "好感度达到 {value} 即可解锁喔！",
+  "gallery_lock_msg": "好感度达到 {value} 即可解锁喔！🍃",
   "@gallery_lock_msg": {
     "placeholders": {
       "value": {
@@ -766,7 +639,7 @@
   "gallery_reset_bg": "已恢复默认通话背景",
   "background_story_title": "初始相遇故事",
   "background_story_empty": "这个角色很神秘，还没有初始相遇故事...",
-  "followed_creator_msg": "已关注 {creatorName}",
+  "followed_creator_msg": "已关注 {creatorName} 🦋",
   "@followed_creator_msg": {
     "placeholders": {
       "creatorName": {
@@ -774,26 +647,24 @@
       }
     }
   },
-  "mailbox_title": "专属信箱",
+  "mailbox_title": "专属信箱 💌",
   "mailbox_empty": "信箱空空的，快去发布动态吸引他吧！",
   "new_notification": "新通知",
   "default_he": "他",
-  "affection_upgrade_title": "{charName} 对妳的好感度提升了！",
+  "affection_upgrade_title": "{charName} 对妳的好感度提升了！ 💖",
   "@affection_upgrade_title": {
     "placeholders": {
-      "charName": {
-        "type": "String"
-      }
+      "charName": { "type": "String" }
     }
   },
-  "flower_reward": "获得 5 点花花",
+  "flower_reward": "🌸 获得 5 点花花",
   "affection_quote_lv5": "「没想到...妳对我来说，已经变得这么重要了。重要到...我无法想象没有妳的世界。」",
   "affection_quote_lv4": "「这辈子最幸运的事，大概就是在那天，回头看见了妳。」",
   "affection_quote_lv3": "「最近...我发现自己发呆的时间变多了，而且脑袋里全都是妳。」",
   "affection_quote_lv2": "「既然是妳的邀约，那我稍微空出点时间，也不是不行。」",
   "affection_quote_lv1": "「最近常看到妳，感觉...并不讨厌这种见面的频率。」",
   "affection_quote_lv0": "「原来妳也在这里，這算是一种奇妙的缘分吗？」",
-  "lore_edit_success": "记忆碎片已成功更新！",
+  "lore_edit_success": "✨ 记忆碎片已成功更新！",
   "delete_failed_network": "删除失败，请检查网络或权限。",
   "ai_chat_language_code": "zh-CN",
   "ai_chat_language": "简体中文",
@@ -803,9 +674,7 @@
   "load_chat_failed": "读取聊天列表失败: {error}",
   "@load_chat_failed": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "chat_list_empty": "聊天室空空的...",
@@ -813,17 +682,13 @@
   "confirm_delete_chat": "确定要删除与 {charName} 的对话吗？",
   "@confirm_delete_chat": {
     "placeholders": {
-      "charName": {
-        "type": "String"
-      }
+      "charName": { "type": "String" }
     }
   },
   "affection_score_short": "好感 {score}",
   "@affection_score_short": {
     "placeholders": {
-      "score": {
-        "type": "String"
-      }
+      "score": { "type": "String" }
     }
   },
   "character_not_found": "无法读取角色资料，该角色可能已被删除。",
@@ -835,9 +700,7 @@
   "update_failed": "更新失败: {error}",
   "@update_failed": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "chat_mode_daily": "日常",
@@ -850,33 +713,21 @@
   "lang_en": "English",
   "lang_vi": "Tiếng Việt",
   "chat_load_char_failed": "找不到角色资料，请返回重试或检查网络。",
-  "chat_jump_success": "已跳转至该段回忆",
+  "chat_jump_success": "已跳转至该段回忆 🍃",
   "chat_create_room_failed": "连线似乎有点不稳，建立聊天室失败，请再试一次。",
-  "chat_secret_file_title": "机密档案",
+  "chat_secret_file_title": "🔒 机密档案",
   "chat_secret_file_desc": "该角色的灵魂档案已被封存或转为私人权限，暂时无法查看详细资料。",
   "chat_understood": "了解",
-  "chat_egg_unlocked": "获得新回忆：{title}",
-  "@chat_egg_unlocked": {
-    "placeholders": {
-      "title": {
-        "type": "String"
-      }
-    }
-  },
+  "chat_egg_unlocked": "✨ 获得新回忆：{title}",
+  "@chat_egg_unlocked": { "placeholders": { "title": { "type": "String" } } },
   "chat_egg_saved": "已自动收录至专属背包",
   "chat_points_not_enough_title": "花花不足",
   "chat_points_not_enough_desc": "你的花朵不够了！请先前往商店补充。",
   "chat_call_confirm_title": "要打给 {name} 吗？",
-  "@chat_call_confirm_title": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_call_confirm_title": { "placeholders": { "name": { "type": "String" } } },
   "chat_call_rule_1": "每次通话都会扣除 20 点花花",
   "chat_call_rule_2": "通话时间为一分钟，若不方便说话可以透过文字传达",
-  "chat_call_rule_3": "建议佩戴耳机，更能听清楚他的声音",
+  "chat_call_rule_3": "建议佩戴耳机，更能听清楚他的声音 ✨",
   "chat_call_btn_cancel": "先不要",
   "chat_call_pref_title": "设定您的通话偏好",
   "chat_call_lang_select": "选择通话语言",
@@ -884,15 +735,9 @@
   "chat_call_save_memory_desc": "通话结束后可重复回听",
   "chat_call_btn_start": "开始通话",
   "chat_points_shortage": "花花点数不够喔！目前有 {points} 点",
-  "@chat_points_shortage": {
-    "placeholders": {
-      "points": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_points_shortage": { "placeholders": { "points": { "type": "String" } } },
   "chat_room_not_ready": "聊天室尚未准备好，请重新进入。",
-  "chat_stop_generating_msg": "已停止回复，点数并没有扣除",
+  "chat_stop_generating_msg": "已停止回复，点数并没有扣除 🍃",
   "chat_heartbeat_up": "他心跳加速了...",
   "chat_heartbeat_down": "他眼神变冷了...",
   "chat_msg_copy": "复制内容",
@@ -920,37 +765,25 @@
   "chat_edit_ai_hint": "编辑他的回复...",
   "chat_edit_user_hint": "请输入新的内容...",
   "chat_no_voice_msg": "目前还没有 {name} 的声音...",
-  "@chat_no_voice_msg": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_no_voice_msg": { "placeholders": { "name": { "type": "String" } } },
   "chat_poke_btn": "戳一下",
-  "chat_poke_success": "已帮妳戳戳创作者啰！请期待他的声音上线～",
-  "chat_gift_points_needed": "花花点数不够喔！需要 {cost} 点",
-  "@chat_gift_points_needed": {
-    "placeholders": {
-      "cost": {
-        "type": "String"
-      }
-    }
-  },
-  "chat_levelup_soulmate": "命定之人",
-  "chat_levelup_normal": "关系晋升！",
+  "chat_poke_success": "✨ 已帮妳戳戳创作者啰！请期待他的声音上线～",
+  "chat_gift_points_needed": "花花点数不够喔！需要 {cost} 点 🌸",
+  "@chat_gift_points_needed": { "placeholders": { "cost": { "type": "String" } } },
+  "chat_levelup_soulmate": "✨ 命定之人 ✨",
+  "chat_levelup_normal": "关系晋升！💖",
   "chat_levelup_btn_soulmate": "刻入灵魂",
   "chat_levelup_btn_normal": "心动收下",
-  "chat_loc_title": "传送虚拟定位",
+  "chat_loc_title": "📍 传送虚拟定位",
   "chat_loc_custom_btn": "发送自订定位",
   "chat_loc_hint": "输入其他地点... (例如：在你心里)",
   "chat_loc_1": "在你家楼下",
   "chat_loc_2": "在学校",
   "chat_loc_3": "在刚才路过的咖啡厅",
   "chat_loc_4": "在便利商店",
-  "chat_interact_title": "想对他做什么呢？",
+  "chat_interact_title": "✨ 想对他做什么呢？",
   "chat_interact_action": "戳一戳与小动作",
-  "chat_interact_gift": "送他小礼物 (消耗花花 )",
+  "chat_interact_gift": "送他小礼物 (消耗花花 🌸)",
   "chat_action_poke": "戳戳脸颊",
   "chat_action_hug": "讨抱抱",
   "chat_action_hand": "偷偷牵手",
@@ -968,7 +801,7 @@
   "chat_menu_period": "生理期追踪",
   "chat_menu_reset": "重置记忆",
   "chat_search_hint": "想回味哪一段甜蜜对话呢？",
-  "chat_search_empty": "找不到这段回忆喔",
+  "chat_search_empty": "找不到这段回忆喔 🥺",
   "chat_search_you": "妳说的",
   "chat_search_him": "他说的",
   "chat_tool_backpack": "背包",
@@ -986,16 +819,7 @@
   "chat_switch_mode_title": "切换聊天模式",
   "chat_voice_call": "语音通话",
   "chat_sys_gift": "【系统事件】{playerName}送出了一个【{giftName}】。",
-  "@chat_sys_gift": {
-    "placeholders": {
-      "playerName": {
-        "type": "String"
-      },
-      "giftName": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_sys_gift": { "placeholders": { "playerName": { "type": "String" }, "giftName": { "type": "String" } } },
   "rel_title_soulmate": "灵魂伴侣/深爱",
   "rel_title_lover": "热恋期/专属男友",
   "rel_title_ambiguous": "暧昧期/互相试探",
@@ -1013,25 +837,10 @@
   "rel_msg_acquaintance": "「最近常看到妳，感觉...并不讨厌这种见面的频率。」",
   "rel_msg_stranger": "「原来妳也在这里，這算是一种奇妙的缘分吗？」",
   "chat_edit_char_count": "{count} 字",
-  "@chat_edit_char_count": {
-    "placeholders": {
-      "count": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_edit_char_count": { "placeholders": { "count": { "type": "String" } } },
   "chat_mysterious_player": "神秘玩家",
   "chat_poke_message": "玩家 {playerName} 期待着听见 {characterName} 的声音，快去生成吧！",
-  "@chat_poke_message": {
-    "placeholders": {
-      "playerName": {
-        "type": "String"
-      },
-      "characterName": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_poke_message": { "placeholders": { "playerName": { "type": "String" }, "characterName": { "type": "String" } } },
   "gift_heart": "爱心",
   "gift_flower": "花花",
   "gift_sun": "太阳",
@@ -1049,32 +858,20 @@
   "weekday_fri": "(五)",
   "weekday_sat": "(六)",
   "weekday_sun": "(日)",
-  "chat_egg_unlocked_dynamic": "获得新回忆：{memoryName}",
-  "@chat_egg_unlocked_dynamic": {
-    "placeholders": {
-      "memoryName": {
-        "type": "String"
-      }
-    }
-  },
+  "chat_egg_unlocked_dynamic": "✨ 获得新回忆：{memoryName}",
+  "@chat_egg_unlocked_dynamic": { "placeholders": { "memoryName": { "type": "String" } } },
   "chat_egg_saved_his_backpack": "已自动收录至他的专属背包",
-  "chat_profile_updated_msg": "拾光档案已更新！他会记住妳的最新设定喔",
+  "chat_profile_updated_msg": "拾光档案已更新！他会记住妳的最新设定喔 🍃",
   "comment_loading_author": "读取中...",
   "comment_post_failed": "留言失败，请检查网络连接：{error}",
-  "@comment_post_failed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@comment_post_failed": { "placeholders": { "error": { "type": "String" } } },
   "comment_delete_confirm_desc": "您确定要永久删除这则留言吗？",
   "comment_delete_failed": "删除失败，请检查网络连接",
   "comment_identity_title": "选择留言身份",
   "comment_identity_myself": "我本人",
   "comment_report_title": "确认检举",
   "comment_report_rules_title": "留言检举规范",
-  "comment_report_rules_desc": "初犯：系统警告并记录一次违规。\n2⃣ 二犯：禁止留言 1 天。\n3⃣ 累犯：禁用检舉功能 14 天，并降低留言能见度。\n\n严重恶意者：\n禁止与角色互动 1 天，ID 将公告于公布栏 3 天（期间禁止更改 ID）。\n\n检举送出后，最终审核结果将通过【游戏内信箱】单独发送给您。\n请互相尊重，理性检举。",
+  "comment_report_rules_desc": "初犯：系统警告并记录一次违规。\n2️⃣ 二犯：禁止留言 1 天。\n3️⃣ 累犯：禁用检舉功能 14 天，并降低留言能见度。\n\n🚨 严重恶意者：\n禁止与角色互动 1 天，ID 将公告于公布栏 3 天（期间禁止更改 ID）。\n\n💡 检举送出后，最终审核结果将通过【游戏内信箱】单独发送给您。\n请互相尊重，理性检举。",
   "comment_report_understood": "我已了解",
   "comment_report_confirm_desc": "您确定要检举这则留言吗？\n恶意检举可能会受到惩罚。",
   "comment_report_submit_btn": "确定检举",
@@ -1083,49 +880,19 @@
   "comment_option_delete": "删除留言",
   "comment_option_report": "检举留言",
   "comment_time_days_ago": "{days}天前",
-  "@comment_time_days_ago": {
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
+  "@comment_time_days_ago": { "placeholders": { "days": { "type": "String" } } },
   "comment_time_hours_ago": "{hours}小时前",
-  "@comment_time_hours_ago": {
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
+  "@comment_time_hours_ago": { "placeholders": { "hours": { "type": "String" } } },
   "comment_time_mins_ago": "{mins}分钟前",
-  "@comment_time_mins_ago": {
-    "placeholders": {
-      "mins": {
-        "type": "String"
-      }
-    }
-  },
+  "@comment_time_mins_ago": { "placeholders": { "mins": { "type": "String" } } },
   "comment_time_just_now": "刚刚",
   "comment_sheet_title": "留言",
   "comment_empty_state": "还没有人留言，快来抢头香！",
   "comment_reply_btn": "回复",
   "comment_replying_to": "正在回复 @{name}",
-  "@comment_replying_to": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@comment_replying_to": { "placeholders": { "name": { "type": "String" } } },
   "comment_input_hint": "以 {name} 的身份留言...",
-  "@comment_input_hint": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@comment_input_hint": { "placeholders": { "name": { "type": "String" } } },
   "moment_create_title": "发布新动态",
   "moment_create_post_btn": "发布",
   "moment_create_hint": "分享新鲜事...",
@@ -1134,73 +901,25 @@
   "moment_create_visibility_public": "公开 (所有人可见)",
   "moment_create_visibility_private": "私密 (仅好友可见)",
   "char_story_expect": "期待与{pronoun}的故事...",
-  "@char_story_expect": {
-    "placeholders": {
-      "pronoun": {
-        "type": "String"
-      }
-    }
-  },
+  "@char_story_expect": { "placeholders": { "pronoun": { "type": "String" } } },
   "common_update_failed": "更新失败，请检查网络",
   "char_edit_fragment": "编辑碎片",
-  "char_dislikes": "讨厌：{dislikes}",
-  "@char_dislikes": {
-    "placeholders": {
-      "dislikes": {
-        "type": "String"
-      }
-    }
-  },
-  "char_likes": "喜欢：{likes}",
-  "@char_likes": {
-    "placeholders": {
-      "likes": {
-        "type": "String"
-      }
-    }
-  },
+  "char_dislikes": "🖤 讨厌：{dislikes}",
+  "@char_dislikes": { "placeholders": { "dislikes": { "type": "String" } } },
+  "char_likes": "🤍 喜欢：{likes}",
+  "@char_likes": { "placeholders": { "likes": { "type": "String" } } },
   "char_age_occupation": "{age}岁 | {job}",
-  "@char_age_occupation": {
-    "placeholders": {
-      "age": {
-        "type": "String"
-      },
-      "job": {
-        "type": "String"
-      }
-    }
-  },
+  "@char_age_occupation": { "placeholders": { "age": { "type": "String" }, "job": { "type": "String" } } },
   "common_got_it": "我知道了",
   "common_add_failed": "添加失败，请检查网络",
   "common_delete_failed_with_err": "删除失败，请检查网络状态：{error}",
-  "@common_delete_failed_with_err": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "char_exclusive_guardian": "专属守护",
+  "@common_delete_failed_with_err": { "placeholders": { "error": { "type": "String" } } },
+  "char_exclusive_guardian": "专属守护 💖",
   "mailbox_like_body": "{playerName} 喜欢了 {charName}！",
-  "@mailbox_like_body": {
-    "placeholders": {
-      "playerName": {
-        "type": "String"
-      },
-      "charName": {
-        "type": "String"
-      }
-    }
-  },
+  "@mailbox_like_body": { "placeholders": { "playerName": { "type": "String" }, "charName": { "type": "String" } } },
   "chat_translation_prefix": "【译】{content} (这是翻译后的感性内容)",
-  "@chat_translation_prefix": {
-    "placeholders": {
-      "content": {
-        "type": "String"
-      }
-    }
-  },
-  "chat_player_sent_location": "(玩家发送了定位：{location})",
+  "@chat_translation_prefix": { "placeholders": { "content": { "type": "String" } } },
+  "chat_player_sent_location": "📍 (玩家发送了定位：{location})",
   "@chat_player_sent_location": {
     "placeholders": {
       "location": {
@@ -1209,149 +928,44 @@
     }
   },
   "player_default_nickname": "旅人",
-  "@chat_player_sent_custom_location": {
-    "placeholders": {
-      "location": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_player_sent_custom_location": { "placeholders": { "location": { "type": "String" } } },
   "chat_you": "妳",
   "chat_opponent": "对手",
   "chat_dice_duel_result": "【系统事件】与{name}掷骰子对决！结果出来了...",
-  "@chat_dice_duel_result": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_dice_duel_result": { "placeholders": { "name": { "type": "String" } } },
   "chat_loading_status": "正在读取中...",
   "chat_error_load_msg": "读取消息失败: {error}",
-  "@chat_error_load_msg": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_error_load_msg": { "placeholders": { "error": { "type": "String" } } },
   "chat_voice_msg_label": "语音消息",
   "chat_special_story_trigger": "【开启特殊剧情：{title}】",
-  "@chat_special_story_trigger": {
-    "placeholders": {
-      "title": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_special_story_trigger": { "placeholders": { "title": { "type": "String" } } },
   "common_edit_failed": "编辑失败: {error}",
-  "@common_edit_failed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@common_edit_failed": { "placeholders": { "error": { "type": "String" } } },
   "common_reset_failed": "重置失败: {error}",
-  "@common_reset_failed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@common_reset_failed": { "placeholders": { "error": { "type": "String" } } },
   "chat_default_greeting": "你好...",
   "chat_memory_cleared": "记忆已彻底清空",
   "chat_history_reset": "对话已重置",
-  "chat_profile_full": "【 专属拾光档案 - {name} 】\n━━━━━━━━━━━━━━━━━━\n姓名：{identity}\n生日：{birthday}\n身高：{height}\n外貌：{appearance}\n职业：{job}\n\n【 关于她的灵魂碎片 】\n{intro}\n━━━━━━━━━━━━━━━━━━",
-  "@chat_profile_full": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      },
-      "identity": {
-        "type": "String"
-      },
-      "birthday": {
-        "type": "String"
-      },
-      "height": {
-        "type": "String"
-      },
-      "appearance": {
-        "type": "String"
-      },
-      "job": {
-        "type": "String"
-      },
-      "intro": {
-        "type": "String"
-      }
-    }
-  },
-  "chat_profile_locked": "【 专属拾光档案 】\n━━━━━━━━━━━━━━━━━━\n姓名：{nickname}\n生日：{birthday}\n\n其他人设资料尚未解锁...\n(填写完整档案，让他在平行时空更了解妳吧！)\n━━━━━━━━━━━━━━━━━━",
-  "@chat_profile_locked": {
-    "placeholders": {
-      "nickname": {
-        "type": "String"
-      },
-      "birthday": {
-        "type": "String"
-      }
-    }
-  },
+  "chat_profile_full": "📜 【 专属拾光档案 - {name} 】\n━━━━━━━━━━━━━━━━━━\n🔹 姓名：{identity}\n🔹 生日：{birthday}\n🔹 身高：{height}\n🔹 外貌：{appearance}\n🔹 职业：{job}\n\n📖 【 关于她的灵魂碎片 】\n{intro}\n━━━━━━━━━━━━━━━━━━",
+  "@chat_profile_full": { "placeholders": { "name": { "type": "String" }, "identity": { "type": "String" }, "birthday": { "type": "String" }, "height": { "type": "String" }, "appearance": { "type": "String" }, "job": { "type": "String" }, "intro": { "type": "String" } } },
+  "chat_profile_locked": "📜 【 专属拾光档案 】\n━━━━━━━━━━━━━━━━━━\n🔹 姓名：{nickname}\n🔹 生日：{birthday}\n\n🔒 其他人设资料尚未解锁...\n(填写完整档案，让他在平行时空更了解妳吧！✨)\n━━━━━━━━━━━━━━━━━━",
+  "@chat_profile_locked": { "placeholders": { "nickname": { "type": "String" }, "birthday": { "type": "String" } } },
   "profile_unnamed_file": "未命名档案",
   "chat_default_player_name": "玩家",
   "error_system_confusion": "系统出现小混乱，请再试一次。",
   "error_msg_send_failed": "消息发送失败，请再试一次。",
   "error_system_busy": "系统繁忙，请稍后再试。",
   "error_network_unavailable": "目前暂时无法连线，请重试。",
-  "chat_call_ended": "通话结束，与 {name} 通话了 {time}",
-  "@chat_call_ended": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      },
-      "time": {
-        "type": "String"
-      }
-    }
-  },
+  "chat_call_ended": "📞 通话结束，与 {name} 通话了 {time}",
+  "@chat_call_ended": { "placeholders": { "name": { "type": "String" }, "time": { "type": "String" } } },
   "chat_exclusive_story": "专属剧情：{title}",
-  "@chat_exclusive_story": {
-    "placeholders": {
-      "title": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_exclusive_story": { "placeholders": { "title": { "type": "String" } } },
   "chat_teaser_exclusive": "这是一段专属于妳和 {name} 的隐藏回忆...",
-  "@chat_teaser_exclusive": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_teaser_exclusive": { "placeholders": { "name": { "type": "String" } } },
   "chat_teaser_keyword": "一段关于「{keyword}」的专属回忆已悄悄解锁...",
-  "@chat_teaser_keyword": {
-    "placeholders": {
-      "keyword": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_teaser_keyword": { "placeholders": { "keyword": { "type": "String" } } },
   "chat_hidden_event_trigger": "【隐藏事件触发：{title}】\n{scene}",
-  "@chat_hidden_event_trigger": {
-    "placeholders": {
-      "title": {
-        "type": "String"
-      },
-      "scene": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_hidden_event_trigger": { "placeholders": { "title": { "type": "String" }, "scene": { "type": "String" } } },
   "chat_first_line_fallback": "……（他静静地看着妳，似乎在等妳先开口）",
   "chat_new_room_created": "新的聊天室已建立",
   "portfolio_title": "{nickname}的作品集",
@@ -1363,13 +977,13 @@
     }
   },
   "enter_secret_studio": "进入我的秘密工作室",
-  "no_public_character_mine": "你还没有发布任何公开角色喔！\n快去工作室创作吧",
+  "no_public_character_mine": "你还没有发布任何公开角色喔！\n快去工作室创作吧✨",
   "no_public_character_other": "这位创作者还没有发布角色喔...",
   "delete_draft_title": "删除草稿",
   "confirm_delete_draft_msg": "确定要删除这个未完成的角色吗？\n(删除后无法复原喔)",
-  "draft_cleared_success": "草稿已清理完毕",
+  "draft_cleared_success": "草稿已清理完毕 🧹",
   "login_required_for_studio": "请先登录才能进入工作室喔！",
-  "my_secret_studio_title": "我的秘密工作室",
+  "my_secret_studio_title": "我的秘密工作室 🛠️",
   "create_new_character_btn": "创造新角色",
   "unnamed_draft": "未命名草稿",
   "click_to_edit_story": "点击继续编辑他的故事...",
@@ -1394,56 +1008,42 @@
   "moment_delete_confirm_content": "删除后，这段朋友圈的回忆就会消失喔！",
   "action_confirm_delete": "确定删除",
   "friend_unknown": "某位朋友",
-  "moment_like_yours": "{nickname}觉得妳的动态很赞喔！",
+  "moment_like_yours": "{nickname}觉得妳的动态很赞喔！💖",
   "@moment_like_yours": {
     "placeholders": {
-      "nickname": {
-        "type": "String"
-      }
+      "nickname": { "type": "String" }
     }
   },
-  "moment_like_others": "{nickname}觉得{authorName}很有魅力，点了个赞！",
+  "moment_like_others": "{nickname}觉得{authorName}很有魅力，点了个赞！✨",
   "@moment_like_others": {
     "placeholders": {
-      "nickname": {
-        "type": "String"
-      },
-      "authorName": {
-        "type": "String"
-      }
+      "nickname": { "type": "String" },
+      "authorName": { "type": "String" }
     }
   },
-  "moment_like_success": "已传递妳的心动！",
-  "moment_notification_new_like": "新点赞！",
-  "moment_mention_mail_body": "{nickname} 在动态中提到了 @{name} 喔！",
+  "moment_like_success": "已传递妳的心动！✨",
+  "moment_notification_new_like": "新点赞！💖",
+  "moment_mention_mail_body": "{nickname} 在动态中提到了 @{name} 喔！✨",
   "@moment_mention_mail_body": {
     "placeholders": {
-      "nickname": {
-        "type": "String"
-      },
-      "name": {
-        "type": "String"
-      }
+      "nickname": { "type": "String" },
+      "name": { "type": "String" }
     }
   },
   "moment_detail_title": "动态详情",
-  "moment_not_found": "这篇动态好像不见了...",
+  "moment_not_found": "这篇动态好像不见了... 😢",
   "moment_comment_title": "朋友圈留言",
-  "moment_comment_empty": "还没有人留言，快来抢沙发！",
+  "moment_comment_empty": "还没有人留言，快来抢沙发！🛋",
   "moment_replying_to": "正在回复 @{name}",
   "@moment_replying_to": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "moment_reply_hint": "回复 @{name}...",
   "@moment_reply_hint": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "moment_leave_comment_hint": "留下妳的回应...",
@@ -1455,64 +1055,42 @@
   "moment_reply_private": "私信回复 {name}",
   "@moment_reply_private": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
-  "moment_go_to_chat_msg": "带着动态去找 {name} 聊天囉！",
+  "moment_go_to_chat_msg": "带着动态去找 {name} 聊天囉！ 💬",
   "@moment_go_to_chat_msg": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
+    "placeholders": { "name": { "type": "String" } }
   },
   "moment_share_to_apps": "分享到其他应用程序",
   "moment_likes_label": "{count} 片叶子",
   "@moment_likes_label": {
     "placeholders": {
-      "count": {
-        "type": "String"
-      }
+      "count": { "type": "String" }
     }
   },
   "moment_external_share_content": "【{appName}】快来看 {author} 的动态：{content}\n\n立即下载，开启妳的专属时光：{appLink}",
   "@moment_external_share_content": {
     "placeholders": {
-      "appName": {
-        "type": "String"
-      },
-      "author": {
-        "type": "String"
-      },
-      "content": {
-        "type": "String"
-      },
-      "appLink": {
-        "type": "String"
-      }
+      "appName": { "type": "String" },
+      "author": { "type": "String" },
+      "content": { "type": "String" },
+      "appLink": { "type": "String" }
     }
   },
-  "moment_forward_title": "转发给正在聊天的角色",
-  "moment_forward_empty_state": "你目前还没有开始聊天的角色喔！\n先去大厅找找心仪的他吧",
+  "moment_forward_title": "转发给正在聊天的角色 💌",
+  "moment_forward_empty_state": "你目前还没有开始聊天的角色喔！\n先去大厅找找心仪的他吧 🌿",
   "moment_forward_template": "【转发了一则动态】\n作者：{author}\n内容：{content}",
   "@moment_forward_template": {
     "placeholders": {
-      "author": {
-        "type": "String"
-      },
-      "content": {
-        "type": "String"
-      }
+      "author": { "type": "String" },
+      "content": { "type": "String" }
     }
   },
-  "moment_forward_success": "已悄悄分享给 {name} 啰！",
+  "moment_forward_success": "✅ 已悄悄分享给 {name} 啰！",
   "@moment_forward_success": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "action_send": "发送",
@@ -1522,9 +1100,7 @@
   "memo_hint_text": "想记下关于 {name} 的什么呢？",
   "@memo_hint_text": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "memo_label_reminder_date": "提醒日期:",
@@ -1533,39 +1109,29 @@
   "memo_list_title": "与 {name} 的备忘录",
   "@memo_list_title": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "memo_empty_state": "还没有任何备忘录喔！\n点击右上角新增一个吧！",
   "memo_reminder_date_display": "提醒日：{date}",
   "@memo_reminder_date_display": {
     "placeholders": {
-      "date": {
-        "type": "String"
-      }
+      "date": { "type": "String" }
     }
   },
   "daily_gift_title": "时光每日赠礼",
-  "daily_login_welcome": "欢迎回到《{appName}》！\n今日签到可领取 {amount} 点花语点数。",
+  "daily_login_welcome": "欢迎回到《{appName}》！\n今日签到可领取 {amount} 点花语点数。🌸",
   "@daily_login_welcome": {
     "placeholders": {
-      "appName": {
-        "type": "String"
-      },
-      "amount": {
-        "type": "String"
-      }
+      "appName": { "type": "String" },
+      "amount": { "type": "String" }
     }
   },
   "title_daily_check_in": "每日签到",
-  "success_claim_reward": "成功领取 {amount} 点花语！",
+  "success_claim_reward": "成功领取 {amount} 点花语！🌸",
   "@success_claim_reward": {
     "placeholders": {
-      "amount": {
-        "type": "String"
-      }
+      "amount": { "type": "String" }
     }
   },
   "error_claim_failed": "领取失败，请检查网络后重试。",
@@ -1615,7 +1181,7 @@
       }
     }
   },
-  "draft_saved_success_msg": "好的！先帮你保存在草稿里，随时可以回来编辑喔！",
+  "draft_saved_success_msg": "好的！先帮你保存在草稿里，随时可以回来编辑喔！✨",
   "dialog_reminder_title": "提醒",
   "warning_id_not_edited": "专属ID尚未编辑，您确定要现在保存吗？",
   "action_continue_editing": "继续编辑",
@@ -1626,7 +1192,7 @@
   "action_select_avatar": "选择头像",
   "action_choose_from_gallery": "从相册选择",
   "title_adjust_avatar": "调整您的时光头像",
-  "avatar_updated_success": "已为您换上头像",
+  "avatar_updated_success": "已为您换上头像 🍃",
   "title_create_profile": "建立你的档案",
   "title_edit_profile": "编辑个人档案",
   "label_your_nickname": "您的昵称",
@@ -1642,73 +1208,61 @@
       }
     }
   },
-  "msg_birthdate_immutable": "生日设定后不可更改",
+  "msg_birthdate_immutable": "生日设定后不可更改 ✨",
   "action_start_journey": "开启时光旅程",
-  "moment_like_self": "{nickname}觉得妳的动态很赞喔！",
+  "moment_like_self": "{nickname}觉得妳的动态很赞喔！💖",
   "@moment_like_self": {
     "placeholders": {
-      "nickname": {
-        "type": "String"
-      }
+      "nickname": { "type": "String" }
     }
   },
-  "moment_like_other": "{nickname}觉得{authorName}很有魅力，点了个赞！",
+  "moment_like_other": "{nickname}觉得{authorName}很有魅力，点了个赞！✨",
   "@moment_like_other": {
     "placeholders": {
-      "nickname": {
-        "type": "String"
-      },
-      "authorName": {
-        "type": "String"
-      }
+      "nickname": { "type": "String" },
+      "authorName": { "type": "String" }
     }
   },
-  "task_social_tour_complete": "达成社群巡礼任务！记得领取花花喔！",
+  "task_social_tour_complete": "✨ 达成社群巡礼任务！记得领取花花喔！🌸",
   "wall_title_shiguang": "拾光墙",
-  "wall_tab_explore": "探索",
-  "wall_tab_exclusive": "专属",
+  "wall_tab_explore": "🌍 探索",
+  "wall_tab_exclusive": "🔒 专属",
   "more_options": "更多选项",
   "delete_warning": "删除后，贴文将无法找回",
   "delete_success": "删除成功",
-  "notification_new_comment": "新留言！",
+  "notification_new_comment": "新留言！💬",
   "notification_like_from_sender": "{senderName} 对妳的动态点了个赞！",
   "@notification_like_from_sender": {
     "placeholders": {
-      "senderName": {
-        "type": "String"
-      }
+      "senderName": { "type": "String" }
     }
   },
-  "empty_public_moments_prompt": "目前空空如也，\n快去发布第一篇公开动态吧！",
-  "empty_private_moments_prompt": "朋友圈还没有留下的瞬间，\n快去与他创造回忆吧！",
-  "profile_archived_or_deleted_message": "这份灵魂档案已被创作者封存、设为私人，或是已经消散在时空的洪流中...\n\n或许在某个平行宇宙，你们还有再次相遇的机会。",
+  "empty_public_moments_prompt": "目前空空如也，\n快去发布第一篇公开动态吧！🌍",
+  "empty_private_moments_prompt": "朋友圈还没有留下的瞬间，\n快去与他创造回忆吧！✨",
+  "profile_archived_or_deleted_message": "这份灵魂档案已被创作者封存、设为私人，或是已经消散在时空的洪流中...\n\n或许在某个平行宇宙，你们还有再次相遇的机会。✨",
   "leave_silently": "默默离开",
   "character_post_schedule": "角色发文排程",
   "creator_self": "创作者本人",
   "post_identity_prompt": "今天要用谁的身分发文？",
-  "identity_creator": "创作者身分",
+  "identity_creator": "✨ 创作者身分",
   "identity_character": "角色身分",
   "decide_post_time_prompt": "帮他们决定发文时间吧！",
-  "auto_post_schedule_hint": "开启后，将会在指定時間自动发布日常动态\n( 建议设定非整点，看起来更像真人喔！)",
+  "auto_post_schedule_hint": "开启后，将会在指定時間自动发布日常动态\n(💡 建议设定非整点，看起来更像真人喔！)",
   "no_characters_created_yet": "妳还没有创建任何角色喔！",
   "time_hour": "{hour} 点",
   "@time_hour": {
     "placeholders": {
-      "hour": {
-        "type": "String"
-      }
+      "hour": { "type": "String" }
     }
   },
   "time_minute": "{minute} 分",
   "@time_minute": {
     "placeholders": {
-      "minute": {
-        "type": "String"
-      }
+      "minute": { "type": "String" }
     }
   },
-  "empty_public_moments_short": "目前还没有公开动态",
-  "empty_private_moments_short": "朋友圈还静悄悄的",
+  "empty_public_moments_short": "目前还没有公开动态 🌍",
+  "empty_private_moments_short": "朋友圈还静悄悄的 ✨",
   "my_created_characters": "我创建的角色",
   "no_characters_yet": "尚未创建角色",
   "play_count_display": "游玩次数: {count}",
@@ -1723,9 +1277,7 @@
   "care_calendar_title": "{characterName} 的关心日历",
   "@care_calendar_title": {
     "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
+      "characterName": { "type": "String" }
     }
   },
   "care_calendar_greeting": "今天的心情如何？",
@@ -1734,38 +1286,28 @@
   "care_calendar_save_success": "{characterName}：「我都记下来了，这几天辛苦妳了，我会一直在妳身边的。」",
   "@care_calendar_save_success": {
     "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
+      "characterName": { "type": "String" }
     }
   },
-  "daily_gift_success": "成功领取每日赠礼！",
-  "check_in_fail_network": "签到失败，请检查网络连线",
+  "daily_gift_success": "成功领取每日赠礼！🌸",
+  "check_in_fail_network": "签到失败，请检查网络连线 🍃",
   "task_completed": "完成任务：{taskName}",
   "@task_completed": {
     "placeholders": {
-      "taskName": {
-        "type": "String"
-      }
+      "taskName": { "type": "String" }
     }
   },
   "task_reward_claimed": "成功领取「{taskName}」的 {rewardAmount} 点花花！",
   "@task_reward_claimed": {
     "placeholders": {
-      "taskName": {
-        "type": "String"
-      },
-      "rewardAmount": {
-        "type": "String"
-      }
+      "taskName": { "type": "String" },
+      "rewardAmount": { "type": "String" }
     }
   },
   "claim_failed_error": "领取失败: {e}",
   "@claim_failed_error": {
     "placeholders": {
-      "e": {
-        "type": "String"
-      }
+      "e": { "type": "String" }
     }
   },
   "tab_heartbeat_diary": "心动日记",
@@ -1778,7 +1320,7 @@
   "btn_claimed": "已领取",
   "btn_claim": "领取",
   "btn_incomplete": "未完成",
-  "network_unstable_retry": "网络连线不稳，请稍后再试",
+  "network_unstable_retry": "网络连线不稳，请稍后再试🍃",
   "title_time_travel": "时光旅行",
   "select_chat_mode": "选择聊天模式",
   "mode_chat": "聊天",
@@ -1802,24 +1344,18 @@
   },
   "search_companion_title": "搜寻拾光伴侣",
   "search_name_placeholder": "输入他的名字...",
-  "search_no_match_hint": "找不到角色，试试其他名字？",
+  "search_no_match_hint": "找不到角色，试试其他名字？ ✨",
   "character_info_full": "{age}岁 | {occupation}",
   "@character_info_full": {
     "placeholders": {
-      "age": {
-        "type": "String"
-      },
-      "occupation": {
-        "type": "String"
-      }
+      "age": { "type": "String" },
+      "occupation": { "type": "String" }
     }
   },
   "character_info_age_only": "{age}岁",
   "@character_info_age_only": {
     "placeholders": {
-      "age": {
-        "type": "String"
-      }
+      "age": { "type": "String" }
     }
   },
   "empty_state_warmth": "这里还留存着时空的余温...",
@@ -1828,18 +1364,14 @@
   "dialog_msg_remove_friend": "您确定要将 {characterName} 从好友列表中移除吗？",
   "@dialog_msg_remove_friend": {
     "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
+      "characterName": { "type": "String" }
     }
   },
   "action_remove": "移除",
   "snackbar_friend_removed": "已将 {characterName} 移除好友",
   "@snackbar_friend_removed": {
     "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
+      "characterName": { "type": "String" }
     }
   },
   "action_remove_friend": "移除好友",
@@ -1847,26 +1379,20 @@
   "dialog_msg_block": "封锁后，您将不会再看到 {characterName} 的任何信息。确定要封锁吗？",
   "@dialog_msg_block": {
     "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
+      "characterName": { "type": "String" }
     }
   },
   "snackbar_blocked": "已封锁 {characterName}",
   "@snackbar_blocked": {
     "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
+      "characterName": { "type": "String" }
     }
   },
   "action_block_character": "封锁此角色",
   "dialog_title_report": "举报 {characterName}",
   "@dialog_title_report": {
     "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
+      "characterName": { "type": "String" }
     }
   },
   "input_hint_report_reason": "请输入举报原因...",
@@ -1878,9 +1404,7 @@
   "text_character_count": "角色数量: {count}",
   "@text_character_count": {
     "placeholders": {
-      "count": {
-        "type": "int"
-      }
+      "count": { "type": "int" }
     }
   },
   "msg_no_more_encounters_today": "今天的邂逅就到这里啰！",
@@ -1891,12 +1415,8 @@
   "text_age_and_identities": "{age}岁 | {identities}",
   "@text_age_and_identities": {
     "placeholders": {
-      "age": {
-        "type": "String"
-      },
-      "identities": {
-        "type": "String"
-      }
+      "age": { "type": "String" },
+      "identities": { "type": "String" }
     }
   },
   "snackbar_operation_failed": "操作失败，请稍后再试",
@@ -1918,13 +1438,13 @@
   "shop_current_points_label": "目前持有的花花点数",
   "shop_tab_top_up": "点数充值",
   "shop_tab_history": "收支明细",
-  "shop_empty_history": "目前还没有花花纪录喔！",
+  "shop_empty_history": "目前还没有花花纪录喔！🌸",
   "shop_unknown_item": "未知项目",
   "shop_first_purchase_bonus": "首购双倍！",
   "story_summary_title": "我们的故事",
   "story_summary_empty_content": "摘要内容为空。",
   "story_summary_deleted_toast": "已移除这段回忆",
-  "story_summary_empty_list": "你们的故事还没有开始...\n多聊聊天，让 {name}\n为你们写下第一篇回忆吧！",
+  "story_summary_empty_list": "你们的故事还没有开始...\n多聊聊天，让 {name} \n为你们写下第一篇回忆吧！ ✨",
   "@story_summary_empty_list": {
     "placeholders": {
       "name": {
@@ -1938,39 +1458,33 @@
   "reset_to_default": "恢复默认",
   "reset_bg_title": "恢复默认背景",
   "reset_bg_content": "确定要取消专属照片，恢复成默认的主题背景吗？",
-  "reset_bg_success": "已恢复为默认背景",
+  "reset_bg_success": "已恢复为默认背景 ✨",
   "confirm_reset": "确定恢复",
   "selectedMessagesCount": "已选择 {count} 则",
   "@selectedMessagesCount": {
     "placeholders": {
-      "count": {
-        "type": "int"
-      }
+      "count": { "type": "int" }
     }
   },
   "screenshotShare": "截屏分享",
   "exclusiveMomentsWith": "与 {name} 的专属拾光",
   "@exclusiveMomentsWith": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "downloadToUnlock": "下载《恋恋拾光》，解锁专属浪漫",
-  "exclusiveMomentsGenerated": "专属拾光已生成",
+  "exclusiveMomentsGenerated": "专属拾光已生成 ✨",
   "selectAgain": "再选一次",
   "downloadAndShare": "下载并分享",
   "inviteToMeet": "快来《恋恋拾光》遇见妳的 {name}！",
   "@inviteToMeet": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
-  "shop_log_monthly_card": "启动：星光契约 (月卡立即赠点)",
-  "shop_log_top_up_double": "充值：{points} 点 (含首购双倍 )",
+  "shop_log_monthly_card": "启动：星光契约 (月卡立即赠点) 🌙",
+  "shop_log_top_up_double": "充值：{points} 点 (含首购双倍 🎁)",
   "@shop_log_top_up_double": {
     "placeholders": {
       "points": {
@@ -1995,7 +1509,7 @@
       }
     }
   },
-  "shop_purchase_success_double_bonus": "恭喜触发首购双倍奖励！",
+  "shop_purchase_success_double_bonus": "✨ 恭喜触发首购双倍奖励！",
   "shop_purchase_awesome": "太棒了",
   "shop_purchase_failed_title": "购买取消或失败",
   "shop_purchase_failed_body": "尚未扣款。\n\n(错误码: {errorCode})",
@@ -2018,18 +1532,18 @@
   "shop_monthly_card_status_inactive": "立即开启 30 天星光加成奖励",
   "shop_monthly_card_limit_reached": "已达上限",
   "shop_monthly_card_promo_desc": "立即得 250 花花，每日领 10 花花",
-  "task_monthly_title": "星之契约．每日特权",
+  "task_monthly_title": "星之契约．每日特权 🌙",
   "task_monthly_locked": "未解锁",
   "task_monthly_subtitle_active": "月卡专属福利发放 ",
   "task_monthly_subtitle_inactive": "解锁【星之契约】月卡开启此任务 ",
   "task_monthly_log_name": "月卡每日特权",
   "profile_id_locked": "专属 ID 已锁定",
   "profile_copy_id": "点击复制 ID",
-  "referral_log_newbie_reward": "星之邀约：新手报到奖励",
-  "referral_log_inviter_reward": "星之邀约：好友达标回馈",
+  "referral_log_newbie_reward": "星之邀约：新手报到奖励 ✨",
+  "referral_log_inviter_reward": "星之邀约：好友达标回馈 🎁",
   "referral_success_title": "星之邀约解锁！",
-  "referral_success_content": "恭喜您已成功与角色深度交流满 15 句！\n\n「新手报到奖励 50 点」已送达您的账户，您的好友也同步获得了 50 点回馈！",
-  "profile_referral_title": "星之邀约",
+  "referral_success_content": "恭喜您已成功与角色深度交流满 15 句！\n\n「新手报到奖励 50 点」已送达您的账户，您的好友也同步获得了 50 点回馈！🎁",
+  "profile_referral_title": "星之邀约 🌟",
   "profile_referral_hint": "输入好友邀请码",
   "profile_referral_bind_btn": "绑定",
   "profile_referral_pending": "已接受玩家 {id} 的邀请\n快去和角色聊满 15 句解锁 50 点花花！",
@@ -2038,53 +1552,47 @@
   "profile_referral_err_not_found": "找不到这位玩家，请确认邀请码！",
   "profile_referral_success": "绑定成功！快去和角色聊天吧！",
   "profile_referral_err_expired": "抱歉，新手邀请码必须在注册 3 天内绑定喔！",
-  "profile_share_message": "我在《恋恋拾光》与{character}展开了心动旅程！快下载 App 并在个人主页填写我的星之邀请码：【{code}】，我们双方都能免费获得 50 点花花喔！\n\n下载链接：\nhttps://lianlianshiguang.web.app/download/",
+  "profile_share_message": "✨ 我在《恋恋拾光》与{character}展开了心动旅程！快下载 App 并在个人主页填写我的星之邀请码：【{code}】，我们双方都能免费获得 50 点花花喔！🎁\n\n 下载链接：\nhttps://lianlianshiguang.web.app/download/",
   "@profile_share_message": {
     "placeholders": {
-      "character": {
-        "type": "String"
-      },
-      "code": {
-        "type": "String"
-      }
+      "character": { "type": "String" },
+      "code": { "type": "String" }
     }
   },
-  "chat_levelup_share_btn": "向好友炫耀这份心动",
+  "chat_levelup_share_btn": "向好友炫耀这份心动 ✨",
   "profile_my_invite_code_with_char": "我的专属邀请码 (当前本命：{character})",
   "@profile_my_invite_code_with_char": {
     "placeholders": {
-      "character": {
-        "type": "String"
-      }
+      "character": { "type": "String" }
     }
   },
   "profile_send_invite_btn": "发送星之邀约给好友",
   "profile_fallback_character": "心动角色",
-  "profile_copy_success": "邀请码已复制到剪贴板！",
+  "profile_copy_success": "✅ 邀请码已复制到剪贴板！",
   "profile_referral_rule_title": "星之契约规则",
-  "profile_referral_rule_receiver": "缔结契约后，只要与任意心动角色聊天满 15 句，你与邀请人就能同时获得 50 朵花花奖励喔！\n\n注意：请在注册帐号后的 3 天内输入邀请码才有效。",
-  "profile_referral_rule_inviter": "邀请新朋友下载并输入你的邀约码，当对方在注册 3 天内完成绑定，并与任意角色聊天满 15 句，你们双方就能同时获得 50 点花花奖励喔！",
+  "profile_referral_rule_receiver": "✨ 缔结契约后，只要与任意心动角色聊天满 15 句，你与邀请人就能同时获得 50 朵花花奖励喔！\n\n⚠️ 注意：请在注册帐号后的 3 天内输入邀请码才有效。",
+  "profile_referral_rule_inviter": "✨ 邀请新朋友下载并输入你的邀约码，当对方在注册 3 天内完成绑定，并与任意角色聊天满 15 句，你们双方就能同时获得 50 点花花奖励喔！🎁",
   "error_user_not_found": "找不到用户，请重新登录",
   "@error_user_not_found": {
-    "description": "找不到使用者時的錯誤提示"
+  "description": "找不到使用者時的錯誤提示"
   },
   "error_id_taken": "此 ID 已被使用，请换一个！",
   "@error_id_taken": {
-    "description": "ID 重複時的錯誤提示 (長版)"
+  "description": "ID 重複時的錯誤提示 (長版)"
   },
   "error_id_taken_short": "此 ID 已被使用！",
   "@error_id_taken_short": {
-    "description": "ID 重複時的錯誤提示 (短版)"
+  "description": "ID 重複時的錯誤提示 (短版)"
   },
-  "shop_restocking": "商店正在补货...",
+  "shop_restocking": "商店正在补货... 📦",
   "@shop_restocking": {
-    "description": "商店載入中或商品為空時的提示"
+  "description": "商店載入中或商品為空時的提示"
   },
-  "shop_preview_mode": "目前为商店预览模式",
+  "shop_preview_mode": "⚠️ 目前为商店预览模式",
   "@shop_preview_mode": {
-    "description": "商店預覽模式的警告標語"
+  "description": "商店預覽模式的警告標語"
   },
-  "friendlyReminderTitle": "温馨提示",
+  "friendlyReminderTitle": "☁️ 温馨提示",
   "editProfileHint": "好的！如果要编辑身份，请点击左下角云朵 Inside 的「拾光档案」做填写喔！",
   "starlightContractTitle": "星光契约启动",
   "dailyLimitReachedPrefix": "今日的额度已经用完啰！\n\n",
@@ -2093,7 +1601,7 @@
   "goToSubscribeButton": "前往开通",
   "profileUpdatedSuccess": "拾光档案已更新！",
   "continueChatTitle": "继续对话",
-  "continueChatCostWarning": "让他说下去，将会消耗 {cost} 朵花花\n确定要继续吗？",
+  "continueChatCostWarning": "让他说下去，将会消耗 {cost} 朵花花 🌸\n确定要继续吗？",
   "@continueChatCostWarning": {
     "placeholders": {
       "cost": {
@@ -2130,34 +1638,26 @@
   "systemPreparingWait": "系统还在准备中，请稍候...",
   "noMessagesToRegenerate": "目前没有可以重新生成的对话喔！",
   "continueButton": "继续",
-  "creatorExclusive": "创作者专属",
+  "creatorExclusive": "🔒 创作者专属",
   "ageAndOccupation": "{age}岁 | {occupation}",
   "@ageAndOccupation": {
     "placeholders": {
-      "age": {
-        "type": "String"
-      },
-      "occupation": {
-        "type": "String"
-      }
+      "age": { "type": "String" },
+      "occupation": { "type": "String" }
     }
   },
-  "likesLabel": "喜欢",
-  "dislikesLabel": "不喜欢",
+  "likesLabel": "💖 喜欢",
+  "dislikesLabel": "👎 不喜欢",
   "birthdayLabel": "生日: {birthday}",
   "@birthdayLabel": {
     "placeholders": {
-      "birthday": {
-        "type": "String"
-      }
+      "birthday": { "type": "String" }
     }
   },
   "heightLabel": "身高: {height} cm",
   "@heightLabel": {
     "placeholders": {
-      "height": {
-        "type": "String"
-      }
+      "height": { "type": "String" }
     }
   },
   "backgroundStoryLabel": "背景故事",
@@ -2172,14 +1672,14 @@
     }
   },
   "passGuideTitle": "恋恋月卡专属指南",
-  "passGuideRegenerateTitle": "为什么需要「重新生成」？",
+  "passGuideRegenerateTitle": "🔄 为什么需要「重新生成」？",
   "passGuideRegenerateContent": "AI 有时候会像个笨蛋木头，不解风情。遇到不满意的回复时，只要按下重新生成，就像时光倒流！妳可以让他重新思考，直到他说出让妳心跳加速的那句完美台词。",
-  "passGuideAffectionTitle": "好感度加速有什么用？",
+  "passGuideAffectionTitle": "💖 好感度加速有什么用？",
   "passGuideAffectionContent": "在游戏中，好感度是解锁角色「深层秘密」与「亲密私照」的唯一钥匙。20% 的加成让妳比别人更快走进他的内心深处。",
   "passGuideUnlockButton": "我明白了，立即解锁！",
   "pleaseWait": "请稍候",
-  "createNewProfileTitle": "建立新拾光档案",
-  "editProfileTitle": "编辑拾光档案",
+  "createNewProfileTitle": "📜 建立新拾光档案",
+  "editProfileTitle": "✏️ 编辑拾光档案",
   "profileEditDescription": "建立 different 的人设，在平行的时空里让他认识不一样的妳！",
   "profileNameLabel": "档案名称 (仅自己可见)",
   "profileNameHint": "例如: 校园学妹设定、霸道女总裁",
@@ -2197,21 +1697,17 @@
   "profileSaveError": "储存失败: {error}",
   "@profileSaveError": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "saveProfileButton": "储存档案",
   "fillLaterButton": "稍后填写",
-  "exclusiveProfileTitle": "专属拾光档案",
+  "exclusiveProfileTitle": "📜 专属拾光档案",
   "profileSelectionDescription": "选择你想用来和他互动的身分 (同角色共用清单，最多 10 个)",
   "profileSwitchError": "切换失败: {error}",
   "@profileSwitchError": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "unnamedProfile": "未命名档案",
@@ -2228,207 +1724,165 @@
   },
   "reward_points_added": "+{amount} 点花花",
   "@reward_points_added": {
-    "description": "獲得花花點數時的提示",
-    "placeholders": {
-      "amount": {
-        "type": "Object",
-        "example": "5"
-      }
-    }
+  "description": "獲得花花點數時的提示",
+  "placeholders": {
+  "amount": {
+  "type": "Object",
+  "example": "5"
+  }
+  }
   },
   "task_reward_already_claimed": "今天已经领取过这个任务奖励",
   "@task_reward_already_claimed": {
-    "description": "任務已領取過的防呆提示"
+  "description": "任務已領取過的防呆提示"
   },
   "add_friend_success": "成功添加 {characterName} 为好友！",
   "@add_friend_success": {
-    "description": "成功添加好友時的提示",
-    "placeholders": {
-      "characterName": {
-        "type": "String",
-        "example": "小明"
-      }
-    }
+  "description": "成功添加好友時的提示",
+  "placeholders": {
+  "characterName": {
+  "type": "String",
+  "example": "小明"
+  }
+  }
   },
   "do_not_show_again_today": "今日不再出现",
   "@do_not_show_again_today": {
-    "description": "彈窗或公告的今日不再顯示勾選框文字"
+  "description": "彈窗或公告的今日不再顯示勾選框文字"
   },
   "chat_menu_aboutus": "关于我们",
   "@chat_menu_aboutus": {
-    "description": "聊天選單中的關於我們"
+  "description": "聊天選單中的關於我們"
   },
   "about_us_empty_hint": "右上角新增重要回忆／剧情\n让你们一起携手前进",
   "@about_us_empty_hint": {
-    "description": "關於我們頁面空白時的提示語"
+  "description": "關於我們頁面空白時的提示語"
   },
   "about_us_limit_error": "专属回忆已达 10 则上限，请先删除旧回忆喔！",
   "@about_us_limit_error": {
-    "description": "回憶滿10則時的防呆提示"
+  "description": "回憶滿10則時的防呆提示"
   },
   "about_us_add_title": "新增专属回忆",
   "@about_us_add_title": {
-    "description": "新增回憶彈窗的標題"
+  "description": "新增回憶彈窗的標題"
   },
   "about_us_field_title": "标题",
   "@about_us_field_title": {
-    "description": "輸入框標籤：標題"
+  "description": "輸入框標籤：標題"
   },
   "about_us_hint_title": "例如：第一次相遇",
   "@about_us_hint_title": {
-    "description": "輸入框提示：標題範例"
+  "description": "輸入框提示：標題範例"
   },
   "about_us_field_subtitle": "副标题",
   "@about_us_field_subtitle": {
-    "description": "輸入框標籤：副標題"
+  "description": "輸入框標籤：副標題"
   },
   "about_us_hint_subtitle": "例如：2025初夏",
   "@about_us_hint_subtitle": {
-    "description": "輸入框提示：副標題範例"
+  "description": "輸入框提示：副標題範例"
   },
   "about_us_field_content": "内容",
   "@about_us_field_content": {
-    "description": "輸入框標籤：內容"
+  "description": "輸入框標籤：內容"
   },
   "about_us_hint_content": "写下你们的重要剧情或约定...",
   "@about_us_hint_content": {
-    "description": "輸入框提示：內容範例"
+  "description": "輸入框提示：內容範例"
   },
   "about_us_add_button": "新增",
   "@about_us_add_button": {
-    "description": "新增按鈕文字"
+  "description": "新增按鈕文字"
   },
   "about_us_delete_tooltip": "删除此回忆",
   "@about_us_delete_tooltip": {
-    "description": "垃圾桶按鈕的提示文字"
+  "description": "垃圾桶按鈕的提示文字"
   },
   "about_us_delete_title": "删除回忆",
   "@about_us_delete_title": {
-    "description": "確認刪除對話框的標題"
+  "description": "確認刪除對話框的標題"
   },
   "about_us_delete_confirm": "确定要删除这段回忆吗？删除后无法恢复喔！",
   "@about_us_delete_confirm": {
-    "description": "確認刪除對話框的內文"
+  "description": "確認刪除對話框的內文"
   },
   "about_us_delete_success": "回忆已删除",
   "@about_us_delete_success": {
-    "description": "刪除成功後的提示"
+  "description": "刪除成功後的提示"
   },
   "pack_first_meet": "初见礼包",
-  "@pack_first_meet": {
-    "description": "90 礼包名称"
-  },
+  "@pack_first_meet": {"description": "90 礼包名称"},
   "pack_crush": "暧昧礼包",
-  "@pack_crush": {
-    "description": "215 礼包名称"
-  },
+  "@pack_crush": {"description": "215 礼包名称"},
   "pack_heartbeat": "心动礼包",
-  "@pack_heartbeat": {
-    "description": "370 礼包名称"
-  },
+  "@pack_heartbeat": {"description": "370 礼包名称"},
   "pack_passionate": "热恋礼包",
-  "@pack_passionate": {
-    "description": "590 礼包名称"
-  },
+  "@pack_passionate": {"description": "590 礼包名称"},
   "pack_soulmate": "知己礼包",
-  "@pack_soulmate": {
-    "description": "780 礼包名称"
-  },
+  "@pack_soulmate": {"description": "780 礼包名称"},
   "pack_waiting": "守候礼包",
-  "@pack_waiting": {
-    "description": "1030 礼包名称"
-  },
+  "@pack_waiting": {"description": "1030 礼包名称"},
   "pack_trust": "信赖礼包",
-  "@pack_trust": {
-    "description": "1420 礼包名称"
-  },
+  "@pack_trust": {"description": "1420 礼包名称"},
   "pack_iloveyou": "我爱你礼包",
-  "@pack_iloveyou": {
-    "description": "1650 礼包名称"
-  },
+  "@pack_iloveyou": {"description": "1650 礼包名称"},
   "pack_honeymoon": "蜜月礼包",
-  "@pack_honeymoon": {
-    "description": "2200 礼包名称"
-  },
+  "@pack_honeymoon": {"description": "2200 礼包名称"},
   "pack_promise": "承诺礼包",
-  "@pack_promise": {
-    "description": "2300 礼包名称"
-  },
+  "@pack_promise": {"description": "2300 礼包名称"},
   "pack_companion": "相伴礼包",
-  "@pack_companion": {
-    "description": "2400 礼包名称"
-  },
+  "@pack_companion": {"description": "2400 礼包名称"},
   "pack_deep_love": "深爱礼包",
-  "@pack_deep_love": {
-    "description": "2680 礼包名称"
-  },
+  "@pack_deep_love": {"description": "2680 礼包名称"},
   "pack_long_lasting": "长久礼包",
-  "@pack_long_lasting": {
-    "description": "3200 礼包名称"
-  },
+  "@pack_long_lasting": {"description": "3200 礼包名称"},
   "pack_the_one": "唯一礼包",
-  "@pack_the_one": {
-    "description": "3400 礼包名称"
-  },
+  "@pack_the_one": {"description": "3400 礼包名称"},
   "pack_beloved": "挚爱礼包",
-  "@pack_beloved": {
-    "description": "4200 礼包名称"
-  },
+  "@pack_beloved": {"description": "4200 礼包名称"},
   "pack_lifetime": "一生一世包",
-  "@pack_lifetime": {
-    "description": "4300 礼包名称"
-  },
+  "@pack_lifetime": {"description": "4300 礼包名称"},
   "pack_vow": "誓约礼包",
-  "@pack_vow": {
-    "description": "6400 礼包名称"
-  },
+  "@pack_vow": {"description": "6400 礼包名称"},
   "pack_eternal": "永恒恋人包",
-  "@pack_eternal": {
-    "description": "10000 礼包名称"
-  },
+  "@pack_eternal": {"description": "10000 礼包名称"},
   "pack_exclusive": "专属礼包",
-  "@pack_exclusive": {
-    "description": "防呆预设礼包名称"
-  },
+  "@pack_exclusive": {"description": "防呆预设礼包名称"},
   "monthly_privilege_reroll_title": "解锁专属「重新生成」",
   "@monthly_privilege_reroll_title": {
-    "description": "月卡特权：重新生成标题"
+  "description": "月卡特权：重新生成标题"
   },
   "monthly_privilege_reroll_desc": "每天高达 20 次重抽机会，直到他说出妳最想听的那句话！",
   "@monthly_privilege_reroll_desc": {
-    "description": "月卡特权：重新生成说明"
+  "description": "月卡特权：重新生成说明"
   },
   "monthly_privilege_affinity_title": "好感度极速升温",
   "@monthly_privilege_affinity_title": {
-    "description": "月卡特权：好感度标题"
+  "description": "月卡特权：好感度标题"
   },
   "monthly_privilege_affinity_desc": "互动好感度加成 20%，更快解锁专属私密照片与彩蛋！",
   "@monthly_privilege_affinity_desc": {
-    "description": "月卡特权：好感度说明"
+  "description": "月卡特权：好感度说明"
   },
   "monthly_manual_button": "为什么需要月卡？",
   "@monthly_manual_button": {
-    "description": "月卡说明书入口按钮"
+  "description": "月卡说明书入口按钮"
   },
   "nav_encounter": "邂逅",
-  "@nav_encounter": {
-    "description": "底部导航栏：邂逅标签"
-  },
+  "@nav_encounter": { "description": "底部导航栏：邂逅标签" },
   "nav_moments": "瞬间",
-  "@nav_moments": {
-    "description": "底部导航栏：瞬间标签"
-  },
-  "birthday_dialog_title": "生日惊喜",
+  "@nav_moments": { "description": "底部导航栏：瞬间标签" },
+  "birthday_dialog_title": "🎂 生日惊喜",
   "@birthday_dialog_title": {
-    "description": "生日弹窗的标题"
+  "description": "生日弹窗的标题"
   },
-  "birthday_dialog_content": "今天是您的专属纪念日！\n\n这份礼物请收下：\n今天聊天全。部。免。费！",
+  "birthday_dialog_content": "今天是您的专属纪念日！\n\n这份礼物请收下：\n今天聊天全。部。免。费！✨",
   "@birthday_dialog_content": {
-    "description": "生日弹窗的惊喜内文"
+  "description": "生日弹窗的惊喜内文"
   },
   "birthday_dialog_button": "开启浪漫的一天",
   "@birthday_dialog_button": {
-    "description": "生日弹窗的确认按钮"
+  "description": "生日弹窗的确认按钮"
   },
   "about_us_edit_title": "修改回忆",
   "about_us_edit_confirm": "确认修改",
@@ -2439,7 +1893,7 @@
   "call_login_content": "登录后即可解锁专属语音通话功能喔！",
   "cancel_later": "稍后再说",
   "go_to_login": "前往登录",
-  "easter_egg_title": "发现隐藏彩蛋",
+  "easter_egg_title": "发现隐藏彩蛋 ✨",
   "easter_egg_content": "你触发了「{title}」。\n\n要使用这个特殊剧情吗？",
   "@easter_egg_content": {
     "placeholders": {
@@ -2459,7 +1913,7 @@
   "not_now": "先不要",
   "go_to_get": "前往获取",
   "status_published": "已发布",
-  "monthly_card_success_title": "尊荣月卡解锁成功！",
+  "monthly_card_success_title": "✨ 尊荣月卡解锁成功！",
   "monthly_card_success_subtitle": "感谢您的订阅！专属特权已生效：",
   "monthly_card_perk_1": "立即获得 250 朵时光花",
   "monthly_card_perk_2": "每日登录额外领取 10 朵时光花",
@@ -2479,14 +1933,15 @@
   "forgot_password_error_user_not_found": "找不到此邮箱的账号",
   "forgot_password_error_with_message": "寄送重置密码信失败：{error}",
   "@forgot_password_error_with_message": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "example": "Network error"
-      }
-    }
+  "placeholders": {
+  "error": {
+  "type": "String",
+  "example": "Network error"
+  }
+  }
   },
   "terms_not_accepted_toast": "请先阅读并同意使用条款与社区规范",
+  "terms_title": "使用条款",
   "terms_content": "欢迎使用恋恋拾光。\n\n使用本服务前，您必须同意遵守本使用条款与社区规范。\n\n您不得上传、建立、发布或传送任何违法、侵权、色情裸露、暴力、仇恨、骚扰、辱骂、诈骗、垃圾讯息，或其他令人反感、冒犯、危害他人权益的内容。\n\n恋恋拾光对不当内容与滥用行为采取零容忍政策。若使用者违反规范，我们可能会移除相关内容、限制功能、暂停或终止帐号。\n\n使用者可透过 App 内建的检举与封锁功能回报不当内容或滥用使用者。",
   "community_rules_title": "社区规范",
   "community_rules_content": "恋恋拾光希望提供安全、友善且尊重创作者与使用者的互动环境。\n\n我们不允许以下内容或行为：\n1. 色情裸露或性暗示不当内容\n2. 骚扰、辱骂、霸凌或威胁他人\n3. 仇恨、歧视或煽动暴力\n4. 血腥、暴力 or 危险行为内容\n5. 侵犯他人著作权、肖像权或其他权利\n6. 垃圾讯息、诈骗或恶意行为\n7. 其他令人反感或不适合公开显示的内容\n\n使用者可以检举不当内容，也可以封锁滥用使用者。封锁后，该使用者的内容将不再显示在您的画面中。",
@@ -2509,21 +1964,21 @@
   "block_character_title": "封锁此角色？",
   "block_character_content": "封锁后，你将不再看到「{authorName}」发布的动态。若此内容涉及违规，我们也会收到通知并进行审查。",
   "@block_character_content": {
-    "placeholders": {
-      "authorName": {
-        "type": "String",
-        "example": "程安"
-      }
-    }
+  "placeholders": {
+  "authorName": {
+  "type": "String",
+  "example": "程安"
+  }
+  }
   },
   "block_character_success": "已封锁「{authorName}」，相关动态已隐藏",
   "@block_character_success": {
-    "placeholders": {
-      "authorName": {
-        "type": "String",
-        "example": "程安"
-      }
-    }
+  "placeholders": {
+  "authorName": {
+  "type": "String",
+  "example": "程安"
+  }
+  }
   },
   "block_character_failed": "封锁失败，请稍后再试",
   "hidden_moments_title": "隐藏的动态",
@@ -2565,6 +2020,7 @@
   },
   "voice_preview": "播放语音",
   "voice_preview_failed": "播放语音失败",
+  "voice_preview_failed": "播放语音失败",
   "characterBannerSectionTitle": "角色首页横幅",
   "characterBannerDescription": "横幅说明",
   "characterBannerRemove": "移除",
@@ -2586,6 +2042,7 @@
   },
   "unlock_after_affection_increase": "提升好感度后解锁",
   "first_meeting_empty": "第一次相遇，尚未展开……",
+  "follow_btn": "关注",
   "photo_load_failed": "读取照片失败：{error}",
   "@photo_load_failed": {
     "placeholders": {
@@ -2621,7 +2078,7 @@
   "message_preview_image": "[图片]",
   "message_preview_recording": "[录音]",
   "message_preview_voice": "[语音讯息]",
-  "send_failed_retry": "送出失败，请稍后再试",
+  "send_failed_retry": "送出失败，请稍后再试 😢",
   "media_upload_failed_retry": "媒体上传失败，请再试一次",
   "ai_thinking_too_long": "他似乎在沉思，请稍后再试...",
   "ai_reply_in_progress": "他正在回复中，请稍候一下，不要重复送出",
@@ -2632,7 +2089,7 @@
   "change_watermark_color": "更换水印颜色",
   "other_party_typing": "对方正在输入...",
   "chat_input_hint": "请输入...",
-  "regenerate_sync_failed": "重新生成次数同步失败，请再试一次",
+  "regenerate_sync_failed": "重新生成次数同步失败，请再试一次 😢",
   "creator_public_works": "公开作品",
   "creator_received_likes": "获得喜欢",
   "about_me": "关于我",
@@ -2936,8 +2393,7 @@
   },
   "mailCaseNumber": "案件编号",
   "mailCopyCaseNumber": "复制案件编号",
-  "mailCaseNumberCopied": "已复制案件编号",
-  "profilePageAboutMe": "关于我",
+  "mailCaseNumberCopied": "已复制案件编号","profilePageAboutMe": "📝 关于我",
   "profilePageTabBio": "自我介绍",
   "profilePageTabCharacters": "角色",
   "profilePageTabMoments": "动态",
@@ -2985,9 +2441,7 @@
   "profilePageInviter": "邀请人：{inviterId}",
   "@profilePageInviter": {
     "placeholders": {
-      "inviterId": {
-        "type": "String"
-      }
+      "inviterId": { "type": "String" }
     }
   },
   "profilePageReferralRewardReceived": "双方已获得 50 花花",
@@ -2995,9 +2449,7 @@
   "profilePageInviterBound": "已绑定邀请人：{inviterId}",
   "@profilePageInviterBound": {
     "placeholders": {
-      "inviterId": {
-        "type": "String"
-      }
+      "inviterId": { "type": "String" }
     }
   },
   "profilePageReferralProgressHint": "完成 15 句聊天后，双方各获得 50 花花",
@@ -3014,13 +2466,7 @@
   "periodBeforeStartError": "日期不能早于本次生理期开始日。",
   "periodEndBeforeStartError": "结束日期不能早于开始日期。",
   "periodRecordSaved": "{date}的记录已保存",
-  "@periodRecordSaved": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
+  "@periodRecordSaved": { "placeholders": { "date": { "type": "String" } } },
   "periodSaveFailed": "保存失败，请稍后再试",
   "periodDeleteTitle": "删除这次生理期记录？",
   "periodDeleteContent": "删除后，周期平均值与下次预测也会重新计算。",
@@ -3028,29 +2474,17 @@
   "periodDelete": "删除",
   "periodNoOngoing": "目前没有进行中的生理期",
   "periodDayCount": "生理期第 {count} 天",
-  "@periodDayCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "@periodDayCount": { "placeholders": { "count": { "type": "int" } } },
   "periodHelp": "使用说明",
   "periodAverageCycle": "平均周期",
   "periodAverageDuration": "平均经期",
   "periodDays": "{count} 天",
-  "@periodDays": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "@periodDays": { "placeholders": { "count": { "type": "int" } } },
   "periodNextPrediction": "下次预测",
   "periodCalculatedAfterRecording": "记录后推算",
   "periodInsufficientData": "目前数据不足，暂时以 28 天周期、5 天经期进行估算。",
   "periodPredictionDisclaimer": "根据现有记录估算，日期仅供生活记录参考。",
-  "periodStartedToday": "今天来了",
+  "periodStartedToday": "🩸 今天来了",
   "periodStillOngoing": "仍在生理期",
   "periodEndedToday": "今天结束",
   "periodDateNotReached": "这一天还没到哦～",
@@ -3071,13 +2505,7 @@
   "periodSymptomIncreasedAppetite": "食欲增加",
   "periodSymptomDigestiveDiscomfort": "肠胃不适",
   "periodDiaryTitle": "{characterName}的贴心日记",
-  "@periodDiaryTitle": {
-    "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
-    }
-  },
+  "@periodDiaryTitle": { "placeholders": { "characterName": { "type": "String" } } },
   "periodLoadFailed": "读取记录失败，请稍后再试",
   "periodWeekdaySun": "日",
   "periodWeekdayMon": "一",
@@ -3095,45 +2523,27 @@
   "periodOtherSymptom": "其他身体状态",
   "periodOtherSymptomHint": "例如：怕冷、没有胃口……",
   "periodNoteForCharacter": "想让 {characterName} 知道的事（选填）",
-  "@periodNoteForCharacter": {
-    "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
-    }
-  },
+  "@periodNoteForCharacter": { "placeholders": { "characterName": { "type": "String" } } },
   "periodNoteHint": "例如：今天想安静休息，不想被催……",
   "periodSaving": "保存中…",
   "periodSaveToday": "保存今日记录",
   "periodHistory": "历史生理期",
   "periodOngoing": "进行中",
   "periodTotalDays": "共 {count} 天",
-  "@periodTotalDays": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "@periodTotalDays": { "placeholders": { "count": { "type": "int" } } },
   "periodDeleteRecord": "删除记录",
   "privateProfilePleaseSignIn": "请先登录",
   "privateProfileLoreLoadFailed": "记忆碎片读取失败：{error}",
   "@privateProfileLoreLoadFailed": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "privateProfileWriteNewLore": "撰写新的记忆碎片（{count} / {limit}）",
   "@privateProfileWriteNewLore": {
     "placeholders": {
-      "count": {
-        "type": "int"
-      },
-      "limit": {
-        "type": "int"
-      }
+      "count": { "type": "int" },
+      "limit": { "type": "int" }
     }
   },
   "privateProfileNoLore": "还没有记忆碎片",
@@ -3158,10 +2568,10 @@
   "privateProfileDeleteFailed": "删除失败，请稍后再试",
   "privateProfileEditLore": "编辑记忆碎片",
   "privateProfileSave": "保存",
-  "editProfileBirthdayReminderTitle": "小提醒",
+  "editProfileBirthdayReminderTitle": "🎂 小提醒",
   "editProfileBirthdayReminderContent": "生日将影响角色的生日祝福、生日礼物及相关活动。\n\n建议确认生日后再完成设置，\n以免影响后续生日奖励。",
   "editProfileGotIt": "知道了",
-  "editProfileBirthdayConfirmTitle": "确认生日",
+  "editProfileBirthdayConfirmTitle": "🎂 确认生日",
   "editProfileBirthdayConfirmContent": "请确认生日是否正确。\n\n生日将用于生日祝福、生日礼物及相关活动。\n\n为避免生日奖励被重复领取，生日完成设置后将无法再次修改。\n\n是否确定使用这个生日？",
   "editProfileReturnToEdit": "返回修改",
   "editProfileConfirmSetting": "确认设置",
@@ -3170,17 +2580,13 @@
   "editProfileCreateFailed": "创建数据失败：{error}",
   "@editProfileCreateFailed": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "editProfileAvatarNumber": "头像 {number}",
   "@editProfileAvatarNumber": {
     "placeholders": {
-      "number": {
-        "type": "int"
-      }
+      "number": { "type": "int" }
     }
   },
   "editProfileImageSelectionFailed": "选择图片失败，请重新选择一张图片",
@@ -3190,9 +2596,7 @@
   "editProfileLoadFailed": "加载数据失败：{error}",
   "@editProfileLoadFailed": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "editProfileBioLabel": "自我介绍",
@@ -3204,28 +2608,24 @@
   "editProfileAvatarReadFailed": "读取头像失败，状态码：{statusCode}",
   "@editProfileAvatarReadFailed": {
     "placeholders": {
-      "statusCode": {
-        "type": "int"
-      }
+      "statusCode": { "type": "int" }
     }
   },
   "editProfileAvatarFileNotFound": "找不到所选的头像文件：{path}",
   "@editProfileAvatarFileNotFound": {
     "placeholders": {
-      "path": {
-        "type": "String"
-      }
+      "path": { "type": "String" }
     }
   },
   "editProfileAvatarEmpty": "头像图片数据为空",
-  "chatPageSendFailed": "发送失败，请稍后再试",
+  "chatPageSendFailed": "发送失败，请稍后再试 😢",
   "chatPageRegenerateFailed": "重新生成失败，原来的消息已保留，请再试一次。",
-  "chatPageRegenerating": "正在重新思考...",
+  "chatPageRegenerating": "💭 正在重新思考...",
   "chatPageThinkingTooLong": "他似乎在沉思，请稍后再试……",
   "chatPageAlreadyReplying": "他正在回复中，请稍等一下，不要重复发送",
   "chatPageMediaUploadFailed": "媒体上传失败，请再试一次",
   "chatPageReportReceived": "感谢你的反馈，我们会尽快确认",
-  "chatPageMessagesDeleted": "已成功删除 {count} 条消息",
+  "chatPageMessagesDeleted": "✅ 已成功删除 {count} 条消息",
   "@chatPageMessagesDeleted": {
     "placeholders": {
       "count": {
@@ -3364,8 +2764,8 @@
       }
     }
   },
-  "characterProfileShareInvitation": "一封来自《恋恋拾光》的相遇邀请",
-  "characterProfileShareCreator": "创作者：{creatorName}",
+  "characterProfileShareInvitation": "🦋 一封来自《恋恋拾光》的相遇邀请",
+  "characterProfileShareCreator": "✦ 创作者：{creatorName}",
   "@characterProfileShareCreator": {
     "placeholders": {
       "creatorName": {
@@ -3390,7 +2790,7 @@
       }
     }
   },
-  "characterProfileCardSearchHint": "搜索角色，开始相遇",
+  "characterProfileCardSearchHint": "搜索角色，开始相遇  🦋",
   "characterProfileScanToDownload": "扫描下载",
   "characterProfileShareTitle": "分享角色“{characterName}”",
   "@characterProfileShareTitle": {
@@ -3416,8 +2816,7 @@
   "characterProfileTranslate": "翻译",
   "loginMethodInfoTooltip": "登录方式说明",
   "characterEditCoreSetting": "角色核心设置",
-  "characterEditCoreSettingHint": "请描述角色的个性、行为模式、待人互动方式及说话语气。\n\n例如：他外表冷淡寡言，实际十分细心。与陌生人保持距离，面对喜欢的人会用行动照顾对方，说话简短直接，不会使用过度甜腻或轻浮的称呼。",
-  "characterEditNameDescription": "这是角色公开显示的名称，完成创建后系统会自动生成角色用户名。",
+  "characterEditCoreSettingHint": "请描述角色的个性、行为模式、待人互动方式及说话语气。\n\n例如：他外表冷淡寡言，实际十分细心。与陌生人保持距离，面对喜欢的人会用行动照顾对方，说话简短直接，不会使用过度甜腻或轻浮的称呼。","characterEditNameDescription": "这是角色公开显示的名称，完成创建后系统会自动生成角色用户名。",
   "characterEditNameHint": "请输入角色名称",
   "characterEditAgeDescription": "设置角色的年龄，也可以依世界观填写外表年龄。",
   "characterEditAgeHint": "例如：25",
@@ -3466,7 +2865,7 @@
   },
   "mailQixiCollectionLabel": "2026 七夕限定收藏",
   "mailShareGenerating": "正在制作分享图片……",
-  "mailShareQixiMessage": "我收到了 {characterName} 写来的七夕限定信",
+  "mailShareQixiMessage": "我收到了 {characterName} 写来的七夕限定信 💌",
   "@mailShareQixiMessage": {
     "placeholders": {
       "characterName": {
@@ -3474,9 +2873,9 @@
       }
     }
   },
-  "mailShareDefaultMessage": "来自《恋恋拾光》的信件",
+  "mailShareDefaultMessage": "来自《恋恋拾光》的信件 💌",
   "mailShareImageFailed": "分享图片生成失败，请稍后再试",
-  "mailCollectedSuccess": "已收藏这封信",
+  "mailCollectedSuccess": "已收藏这封信 💌",
   "mailCollectedCancelled": "已取消收藏",
   "mailCollectedUpdateFailed": "收藏状态更新失败，请稍后再试",
   "mailRemoveCollectionTooltip": "取消收藏",
@@ -3497,6 +2896,7 @@
   "qixiOutsideEventPeriod": "目前不在七夕活动期间",
   "qixiSelectAtLeastOne": "请先选择至少一位好友角色",
   "qixiMysteryCharacter": "神秘角色",
+
   "qixiOpeningStory": "（七夕将近，沉睡在夜色深处的星河悄然苏醒。散落的星光沿着天际缓缓汇聚，像是在等待两个愿意赴约的人，写下彼此的名字。）\n\n（传说，鹊桥只会为真正想要相见的人亮起。当你与「{characterName}」的名字同时出现在星河之上，一道微光穿过夜幕，落进这间只属于你们的聊天室。）\n\n（从此刻起，你们拥有了一场「七夕三日之约」。不必连续，也不必刻意准备盛大的告白；只要在活动期间，选择三个不同的日子回到这里，与对方分享一句问候、一段心情，或一件今天发生的小事。）\n\n（每一次成功相遇，都会让鹊桥上的一点星光亮起。当三日星光全部点亮，这些散落在对话里的心意与回忆，将在第三个完成日结束后，化为一封只写给你的七夕限定信件。）\n\n（此刻，第一缕星光已经落下。鹊桥的另一端，「{characterName}」似乎也收到了这场约定。）\n\n——七夕三日之约，现在开始。",
   "@qixiOpeningStory": {
     "placeholders": {
@@ -3505,10 +2905,12 @@
       }
     }
   },
+
   "qixiRoomOpenedLastMessage": "七夕三日之约已开启",
   "qixiCompanionSlotsFull": "七夕同行名额已经选满了",
-  "qixiSingleRoomOpened": "七夕专属聊天室已开启",
-  "qixiMultipleRoomsOpened": "{count} 间七夕专属聊天室已开启",
+  "qixiSingleRoomOpened": "七夕专属聊天室已开启 💕",
+
+  "qixiMultipleRoomsOpened": "{count} 间七夕专属聊天室已开启 💕",
   "@qixiMultipleRoomsOpened": {
     "placeholders": {
       "count": {
@@ -3516,6 +2918,7 @@
       }
     }
   },
+
   "qixiCreateRoomFailed": "创建七夕聊天室失败，请稍后再试",
   "qixiEventStartsAt": "活动将于 8/19 00:00 开始",
   "qixiEventActiveUntil": "活动进行中・8/26 23:59 截止",
@@ -3528,6 +2931,7 @@
   "qixiLoadingCharacter": "正在读取角色资料……",
   "qixiEventPageTitle": "七夕限定活动",
   "qixiEventRules": "活动期间任选 3 个不同日期，在七夕限定聊天室发送消息并成功收到角色回复，即可点亮三日星光。限定信件将在第三个完成日结束后寄出。活动日期与每日进度均以台湾时间（UTC+8）为准。",
+
   "qixiSelectCompanions": "选择同行角色（{count}/3）",
   "@qixiSelectCompanions": {
     "placeholders": {
@@ -3536,6 +2940,7 @@
       }
     }
   },
+
   "qixiSelectionLockedHint": "最多可选择 3 位已添加好友的角色；选定后不可更换。",
   "qixiConfirmCompanions": "确认同行角色",
   "encounterDailyQuote1": "今天，也许会遇见新的故事。",
@@ -3550,21 +2955,23 @@
   "encounterDailyQuote10": "今天，也许会有人让你停下脚步。",
   "encounterDailyQuote11": "今天，想遇见什么样的人？",
   "encounterDailyQuote12": "今天，别错过悄悄靠近的缘分。",
-  "encounterJoinedToday": "今天加入恋恋拾光",
-  "encounterPopularChats": "最近很多人在聊天",
+
+  "encounterJoinedToday": "✨ 今天加入恋恋拾光",
+  "encounterPopularChats": "❤️ 最近很多人在聊天",
   "qixiBannerActiveUntil": "限时开启・8/26 23:59 截止",
   "qixiBannerStartsAt": "8/19 限定开启",
-  "encounterRecentlyArrived": "最近来到恋恋拾光",
+  "encounterRecentlyArrived": "✨ 最近来到恋恋拾光",
   "encounterRecentlyArrivedPlain": "最近来到恋恋拾光",
   "encounterViewMore": "查看更多",
-  "encounterLovePrompt": "今天想谈什么恋爱？",
+  "encounterLovePrompt": "💕 今天想谈什么恋爱？",
   "encounterNoCharacters": "目前还没有角色",
   "encounterAllLoveTags": "全部恋爱标签",
-  "chatQixiLetterSent": "限定信件已寄出",
+  "chatQixiLetterSent": "限定信件已寄出 💌",
   "chatQixiLetterPendingTonight": "三日星光已点亮・今夜过后寄出信件",
   "chatQixiTodayCompleted": "今日星光已点亮",
   "chatQixiTodayNotCompleted": "今日尚未完成",
   "chatQixiPromiseTitle": "恋恋七夕・三日之约",
+
   "chatQixiStarProgress": "星光 {count}/3",
   "@chatQixiStarProgress": {
     "placeholders": {
@@ -3573,7 +2980,9 @@
       }
     }
   },
+
   "chatQixiProgressRule": "任选三日完成聊天，即可点亮星光。限定信件将于第三日结束后寄出；每日进度以台湾时间（UTC+8）计算。",
+
   "chatQixiDayNumber": "第 {day} 日",
   "@chatQixiDayNumber": {
     "placeholders": {
@@ -3582,6 +2991,7 @@
       }
     }
   },
+
   "chatWebPurchaseUnavailable": "网页版目前不提供充值服务，请使用《恋恋拾光》App 购买花花或订阅。",
   "chatAiThinkingTimeout": "他似乎在沉思，请稍后再试……",
   "chatAiResponseBlocked": "他的思绪似乎受到干扰了，请换个温和的说法再试一次。",
@@ -3596,6 +3006,7 @@
   "momentsCreatorNotFound": "找不到这位创作者的资料",
   "momentCommentLoadFailed": "留言加载失败，请稍后再试",
   "momentCollapseReplies": "收起回复",
+
   "momentViewOtherReplies": "查看其他 {count} 条回复",
   "@momentViewOtherReplies": {
     "placeholders": {
@@ -3604,6 +3015,7 @@
       }
     }
   },
+
   "momentSwitchCommentIdentity": "切换留言身份",
   "momentSendCommentTooltip": "发送留言",
   "momentShareCharactersLoadFailed": "读取聊天角色失败，请稍后再试",
@@ -3623,22 +3035,29 @@
   "auth_error_too_many_requests": "尝试次数过多，请稍后再试。",
   "auth_error_network_failed": "当前网络连接不稳定，请稍后再试。",
   "change_password_failed": "更改密码失败，请稍后再试。",
+
   "change_password_account_not_found": "找不到当前登录账号，请重新登录后再试。",
   "change_password_not_password_account": "此账号不是使用邮箱密码登录，无法在此更改密码。",
   "change_password_same_as_current": "新密码不能与当前密码相同。",
+
   "change_password_success_title": "密码已更新",
   "change_password_success_message": "新的密码已经设置完成，下次登录请使用新密码。",
+
   "change_password_title": "更改密码",
   "change_password_security_title": "账号安全",
   "change_password_description": "请先输入当前密码完成身份验证，再设置新的登录密码。",
+
   "change_password_current_label": "当前密码",
   "change_password_current_required": "请输入当前密码",
+
   "change_password_new_label": "新密码",
   "change_password_new_required": "请输入新密码",
   "change_password_new_min_length": "新密码至少需要 6 个字符",
+
   "change_password_confirm_label": "确认新密码",
   "change_password_confirm_required": "请再次输入新密码",
   "change_password_mismatch": "两次输入的新密码不一致",
+
   "change_password_hint": "密码至少需要 6 个字符。更改完成后，其他设备下次重新登录时需使用新密码。",
   "character_npc_add": "＋ 新增配角",
   "character_npc_added_count": "已加入的配角 {count}",
@@ -3649,11 +3068,15 @@
       }
     }
   },
+
   "character_npc_unnamed": "未命名配角",
+
   "character_npc_title": "配角设置",
   "character_npc_description": "创建会在故事中登场的重要人物，让角色世界更加完整。",
+
   "character_npc_empty_title": "目前尚未新增配角",
   "character_npc_empty_description": "新增后可以在这里查看、编辑与管理配角设置。",
+
   "character_npc_age": "{age}岁",
   "@character_npc_age": {
     "placeholders": {
@@ -3662,6 +3085,7 @@
       }
     }
   },
+
   "character_npc_relationship_with_main": "与主角色：{relationship}",
   "@character_npc_relationship_with_main": {
     "placeholders": {
@@ -3671,15 +3095,21 @@
     }
   },
   "character_management_login_required": "请先登录系统",
+
   "character_management_character_tab": "角色",
   "character_management_creator_tab": "创作者",
+
   "character_management_blocked_characters_empty": "若你暂停与角色联系，会显示在这里。",
+
   "character_management_blocked_creators_load_failed": "读取封锁创作者失败",
   "character_management_blocked_creators_empty": "若你封锁创作者，会显示在这里。",
   "character_management_creator_fallback": "创作者",
+
   "character_management_blocked_creator_status": "已封锁创作者",
   "character_management_blocked_creator_description": "其公开角色与后续新增角色不会出现在推荐中。",
+
   "character_management_unblock_creator_title": "解除封锁创作者",
+
   "character_management_unblock_creator_confirm": "确定要解除封锁“{creatorName}”吗？\n\n解除后，这位创作者及其角色可能会再次出现在推荐内容中。你先前“单独封锁”的角色仍会维持封锁。",
   "@character_management_unblock_creator_confirm": {
     "placeholders": {
@@ -3688,6 +3118,7 @@
       }
     }
   },
+
   "character_management_unblock_creator_success": "已解除封锁“{creatorName}”",
   "@character_management_unblock_creator_success": {
     "placeholders": {
@@ -3696,12 +3127,17 @@
       }
     }
   },
+
   "character_management_unblock_creator_failed": "解除封锁失败，请稍后再试",
+
   "character_management_title": "角色管理",
   "character_management_subtitle": "管理暂停联系的角色",
+
   "character_management_character_fallback": "角色",
+
   "character_management_blocked_character_status": "暂停联系中",
   "character_management_blocked_character_description": "暂停对话与通知，不会删除相关数据。",
+
   "character_management_unblock_character_confirm": "确定要解除封锁“{charName}”吗？解除后，相关内容可能会再次显示。",
   "@character_management_unblock_character_confirm": {
     "placeholders": {
@@ -3712,6 +3148,7 @@
   },
   "creator_follow_following_title": "我关注的创作者",
   "creator_follow_followers_title": "关注我的玩家",
+
   "creator_follow_load_failed": "读取失败：{error}",
   "@creator_follow_load_failed": {
     "placeholders": {
@@ -3720,11 +3157,15 @@
       }
     }
   },
+
   "creator_follow_empty_following_title": "还没有关注创作者",
   "creator_follow_empty_followers_title": "目前还没有关注者",
+
   "creator_follow_empty_following_description": "在角色档案或创作者工作坊关注喜欢的创作者吧。",
   "creator_follow_empty_followers_description": "当其他玩家关注你时，会显示在这里。",
+
   "creator_follow_unknown_player": "未知玩家",
+
   "creator_follow_player_id": "ID：{playerId}",
   "@creator_follow_player_id": {
     "placeholders": {
@@ -3733,8 +3174,11 @@
       }
     }
   },
+
   "creator_follow_no_player_id": "尚未设置玩家 ID",
+
   "creator_follow_following": "已关注",
+
   "creator_follow_unfollow_title": "取消关注",
   "creator_follow_unfollow_confirm": "确定要取消关注这位创作者吗？",
   "creator_follow_unfollow": "取消关注",
@@ -3748,8 +3192,10 @@
   },
   "creator_profile_report_creator": "举报创作者",
   "creator_profile_block_creator": "封锁创作者",
+
   "creator_profile_report_login_required": "请先登录后再举报创作者",
   "creator_profile_report_self_not_allowed": "无法举报自己的创作者页面",
+
   "creator_profile_report_reason_prompt": "请选择举报“{creatorName}”的原因：",
   "@creator_profile_report_reason_prompt": {
     "placeholders": {
@@ -3758,14 +3204,18 @@
       }
     }
   },
+
   "creator_profile_report_reason_inappropriate": "不当或违规内容",
   "creator_profile_report_reason_harassment": "骚扰、攻击或仇恨内容",
   "creator_profile_report_reason_impersonation": "冒充他人或伪造身份",
   "creator_profile_report_reason_spam": "垃圾内容或恶意宣传",
+
   "creator_profile_report_success": "已收到举报，感谢你的反馈",
   "creator_profile_report_failed": "举报提交失败，请稍后再试",
+
   "creator_profile_block_login_required": "请先登录后再封锁创作者",
   "creator_profile_block_self_not_allowed": "无法封锁自己",
+
   "creator_profile_block_confirm": "确定要封锁“{creatorName}”吗？\n\n封锁后，你将不会再看到这位创作者的公开页面，目前由其创建的公开角色也会一并加入封锁名单。",
   "@creator_profile_block_confirm": {
     "placeholders": {
@@ -3774,7 +3224,9 @@
       }
     }
   },
+
   "creator_profile_block_confirm_button": "确认封锁",
+
   "creator_profile_block_success": "已封锁“{creatorName}”",
   "@creator_profile_block_success": {
     "placeholders": {
@@ -3783,26 +3235,36 @@
       }
     }
   },
+
   "creator_profile_block_failed": "封锁失败，请稍后再试",
   "creator_scene_edit_title_edit": "编辑剧场",
   "creator_scene_edit_title_add": "新增剧场",
+
   "creator_scene_edit_heading_edit": "调整这段故事的入口",
   "creator_scene_edit_heading_add": "写下一个新的故事入口",
+
   "creator_scene_edit_scene_title_label": "剧场标题",
   "creator_scene_edit_scene_title_hint": "例如：雨夜重逢",
+
   "creator_scene_edit_description_label": "场景说明",
   "creator_scene_edit_description_hint": "描述故事发生的时间、地点、关系与情境。",
+
   "creator_scene_edit_opening_label": "角色开场",
   "creator_scene_edit_opening_hint": "写下角色进入这段剧情时的第一个反应或第一句话。",
+
   "creator_scene_edit_opening_note": "角色开场会作为这段剧场的第一幕；后续对话仍会以角色原本人设为核心继续。",
+
   "creator_scene_edit_save_changes": "保存修改",
   "creator_scene_edit_save_scene": "保存剧场",
+
   "creator_scene_edit_error_title_required": "请先填写剧场标题。",
   "creator_scene_edit_error_description_required": "请先填写场景说明。",
   "creator_scene_edit_error_opening_required": "请先填写角色开场。",
   "creator_scene_edit_save_failed": "保存失败，请稍后再试。",
   "creator_scene_delete_title": "删除剧场？",
+
   "creator_scene_delete_target_fallback": "这个剧场",
+
   "creator_scene_delete_confirm": "确定要删除“{sceneTitle}”吗？删除后无法恢复。",
   "@creator_scene_delete_confirm": {
     "placeholders": {
@@ -3811,8 +3273,11 @@
       }
     }
   },
+
   "creator_scene_delete_failed": "删除失败，请稍后再试。",
+
   "creator_scene_empty_title": "还没有创作者剧场",
+
   "creator_scene_empty_description": "为 {characterName} 写下不同世界线，\n让玩家可以从另一段故事开始。",
   "@creator_scene_empty_description": {
     "placeholders": {
@@ -3821,8 +3286,11 @@
       }
     }
   },
+
   "creator_scene_add": "新增剧场",
+
   "creator_scene_unnamed": "未命名剧场",
+
   "creator_scene_opening": "角色开场：{opening}",
   "@creator_scene_opening": {
     "placeholders": {
@@ -3831,29 +3299,43 @@
       }
     }
   },
+
   "creator_scene_edit": "编辑",
   "creator_scene_delete": "删除",
+
   "creator_scene_title": "创作者剧场",
+
   "creator_scene_character_unavailable": "目前无法读取角色资料。",
+
   "creator_scene_load_failed": "剧场读取失败，请稍后再试。",
+
   "creator_scene_heading": "为角色创建不同故事入口",
   "custom_scene_edit_heading_edit": "调整这段只属于你的故事",
+
   "custom_scene_edit_heading_add": "写下一个只属于这间聊天室的故事",
+
   "custom_scene_edit_description_hint": "描述故事发生的时间、地点、关系与你想开始的情境。",
+
   "custom_scene_edit_note": "自行创建的剧场没有预设角色开场。开始后，角色会按照场景说明与原本人设进入故事。",
   "moment_create_no_mentionable_characters": "目前没有可以标记的角色。",
+
   "moment_create_mention_my_characters": "标记我的角色",
+
   "moment_create_no_matching_characters": "找不到符合的角色",
+
   "moment_create_my_character": "我的角色",
   "moment_create_friend_character": "好友角色",
+
   "moment_create_public_visibility_hint": "动态将显示在拾光墙上",
   "moment_create_private_visibility_hint": "仅在专属范围内可见",
+
   "moment_create_add_image": "添加图片",
   "moment_create_mention_character": "提及角色",
   "moment_edit_content_hint": "分享你的心情...",
   "moment_forward_chat_preview": "【转发了一条动态】",
   "feedback_image_too_large": "图片大小不能超过 10 MB",
   "feedback_image_pick_failed": "无法选择图片，请稍后再试",
+
   "feedback_category_general": "一般问题",
   "feedback_category_bug": "Bug 反馈",
   "feedback_category_suggestion": "功能建议",
@@ -3862,9 +3344,12 @@
   "feedback_category_ai_reply": "AI 回复异常",
   "feedback_category_character_report": "角色举报",
   "feedback_category_moment_report": "帖子举报",
+
   "feedback_screenshot_required_error": "此类问题请附上画面截图，方便我们确认情况",
   "feedback_login_required": "请先登录后再提交反馈",
+
   "feedback_mail_received_title": "【工单已创建】已收到你的反馈",
+
   "feedback_mail_received_body": "我们已收到你的反馈，会尽快协助确认。\n\n工单编号：{caseNumber}\n\n若客服有进一步回复，会再通过恋恋拾光信箱通知你。",
   "@feedback_mail_received_body": {
     "placeholders": {
@@ -3873,22 +3358,30 @@
       }
     }
   },
+
   "feedback_submit_success": "反馈已成功提交，谢谢你的意见！",
   "feedback_submit_failed": "提交失败，请确认网络后再试",
+
   "feedback_category_section_title": "问题类型",
   "feedback_reported_content_title": "被举报的内容",
+
   "feedback_screenshot_required_title": "问题截图（必填）",
   "feedback_image_optional_title": "附加图片（选填）",
+
   "feedback_screenshot_required_description": "请附上问题发生时的画面截图，方便官方确认实际情况。",
   "feedback_image_optional_description": "若有相关画面，也可以附上截图协助官方确认。",
+
   "feedback_footer_message": "您的意见将帮助我们持续优化游戏体验，谢谢您！",
+
   "feedback_select_image_semantics": "选择反馈图片",
   "feedback_opening_gallery": "正在打开相册…",
   "feedback_select_image_upload": "点击此处选择图片上传",
   "feedback_image_requirements": "支持 JPG、PNG，单张不超过 10 MB",
+
   "feedback_submitting_semantics": "提交中",
   "feedback_submit_semantics": "提交反馈",
   "feedback_submit_button": "提交",
+
   "feedback_remove_image": "移除图片",
   "feedback_selected_image": "已选择图片",
   "feedback_change_image": "更换",
@@ -3902,12 +3395,15 @@
       }
     }
   },
+
   "profile_backpack_physical_gift_status": "实体礼盒解锁状态：",
   "profile_backpack_vip_gift_title": "【顶级挚爱】实体 VIP 专属礼盒",
   "profile_backpack_vip_gift_contents": "含：专属手写信 + 角色代表娃 + 官方感谢信",
+
   "profile_backpack_edit_shipping_info": "修改收件地址信息",
   "profile_backpack_unlock_shipping_info": "已解锁！点击此处填写收件信息",
   "profile_backpack_shipping_registered": "您已成功登记收件地址，我们会尽快为您准备！",
+
   "profile_backpack_amount_remaining": "还差 NT$ {amount} 即可解锁实体大奖！",
   "@profile_backpack_amount_remaining": {
     "placeholders": {
@@ -3916,35 +3412,46 @@
       }
     }
   },
+
   "profile_backpack_hint": "小提示：其他外观与头像框可以在背包里查看哦。",
   "profile_backpack_close": "关闭",
+
   "profile_physical_gift_title": "【顶级挚爱】实体礼盒解锁",
   "profile_physical_gift_description": "感谢玩家对《恋恋拾光》的极致守候！\n请填写以下收件信息，我们将为您寄送专属手写信与角色代表娃娃：",
+
   "profile_physical_gift_recipient_name": "收件人真实姓名",
   "profile_physical_gift_phone": "联系电话",
   "profile_physical_gift_address": "完整收件地址（含邮政编码）",
   "profile_physical_gift_character_name": "想要收到的角色代表娃名字",
   "profile_physical_gift_character_hint": "例如：想要的角色名称",
+
   "profile_physical_gift_fill_later": "稍后填写",
   "profile_physical_gift_required_error": "请完整填写收件信息与心仪的角色名称哦！",
   "profile_physical_gift_submit_success": "收件信息已成功提交！请期待我们的实体惊喜！",
   "profile_physical_gift_confirm_submit": "确认提交",
+
   "profile_tooltip_announcement": "公告",
   "profile_tooltip_settings": "设置",
   "profile_tooltip_backpack": "我的背包",
   "profile_backpack_menu_title": "我的背包",
+
   "profile_about_me_title": "关于我",
   "profile_tab_bio_title": "自我介绍",
+
   "profile_check_in_done": "已签到",
   "profile_check_in": "签到",
   "profile_check_in_done_subtitle": "今天已留下足迹",
   "profile_check_in_not_done_subtitle": "今日尚未签到",
+
   "profile_likes_label": "喜欢",
   "profile_heartbeat_diary_subtitle": "记下心动瞬间",
+
   "profile_create_scene": "创建剧场",
+
   "profile_link_invalid": "链接格式不正确",
   "profile_link_open_failed": "无法打开这个链接",
   "profile_link_default_name": "我的链接",
+
   "profile_publish_moment_short": "写下此刻",
   "edit_profile_default_link_name": "我的链接 {index}",
   "@edit_profile_default_link_name": {
@@ -3954,6 +3461,7 @@
       }
     }
   },
+
   "edit_profile_done": "完成",
   "edit_profile_social_links": "社交平台与链接",
   "edit_profile_add_link": "新增链接",
@@ -3966,12 +3474,15 @@
   "theme_name_mint": "薄荷森",
   "theme_name_midnight": "深夜模式",
   "theme_name_custom": "自定义色彩",
+
   "theme_selection_choose_theme": "选择主题色",
   "theme_selection_title": "更换氛围",
   "theme_selection_description": "挑选你喜欢的主题色，让恋恋拾光更像你的样子。",
   "theme_selection_preview": "预览效果",
+
   "theme_selection_characters": "角色",
   "theme_selection_posts": "动态",
+
   "theme_selection_previewing": "当前预览：{themeName}",
   "@theme_selection_previewing": {
     "placeholders": {
@@ -3980,9 +3491,11 @@
       }
     }
   },
+
   "theme_selection_apply": "应用主题",
   "theme_selection_restore_default": "恢复默认",
   "theme_selection_choose_color": "挑选你的专属色彩",
+
   "theme_selection_applied": "已应用“{themeName}”",
   "@theme_selection_applied": {
     "placeholders": {
@@ -3994,19 +3507,27 @@
   "welcome_guide_help": "游玩指南",
   "welcome_guide_start": "开始旅程",
   "welcome_guide_next": "下一步",
+
   "welcome_guide_welcome_title": "欢迎来到《恋恋拾光》",
   "welcome_guide_welcome_description": "在这里，每一次相遇，都可能成为一段难忘的故事。希望《恋恋拾光》能陪伴你，创造属于你们的美好回忆。",
+
   "welcome_guide_chat_title": "聊天模式",
   "welcome_guide_chat_description": "《恋恋拾光》提供多种聊天模式，每种模式都有不同的互动体验。",
+
   "welcome_guide_daily_title": "日常模式",
   "welcome_guide_daily_description": "陪伴彼此、分享生活，享受轻松自在的聊天时光。",
+
   "welcome_guide_story_title": "剧情模式",
   "welcome_guide_story_description": "推进角色故事，解锁更多专属剧情与互动。",
+
   "welcome_guide_immersive_title": "沉浸模式",
   "welcome_guide_immersive_description": "体验更投入、更有临场感的对话。",
+
   "welcome_guide_chat_more": "更多聊天模式介绍，可在“游戏说明”中查看。",
+
   "welcome_guide_encounter_title": "邂逅",
   "welcome_guide_encounter_description": "每位角色都拥有独特的个性、故事与声音。遇见喜欢的角色后，可以添加好友，与其聊天互动、分享生活，一起创造属于你们的回忆。",
+
   "welcome_guide_more_title": "更多内容",
   "welcome_guide_more_description": "还有收藏、创作者、商城等丰富功能，欢迎前往“游戏说明”了解更多。",
   "preference_selection_max_error": "最多选择 {count} 个偏好。",
@@ -4017,15 +3538,19 @@
       }
     }
   },
+
   "preference_selection_save_failed": "目前无法保存偏好，请稍后再试。",
+
   "preference_selection_title": "你想遇见怎样的人？",
   "preference_selection_description": "选择 3～5 个你喜欢的类型，恋恋会先从这里开始认识你。",
   "preference_selection_recommendation_note": "之后也会根据你的实际互动，慢慢调整更适合你的推荐。",
   "preference_selection_selected": "已选",
   "preference_selection_start": "就从这里开始",
+
   "preference_group_personality": "性格气质",
   "preference_group_relationship_age": "关系・年龄感",
   "preference_group_story": "故事氛围",
+
   "preference_tag_gentle": "温柔",
   "preference_tag_cold": "高冷",
   "preference_tag_scheming": "腹黑",
@@ -4035,8 +3560,10 @@
   "preference_tag_mysterious": "神秘",
   "preference_tag_healing": "治愈",
   "preference_tag_gap_moe": "反差感",
+
   "preference_tag_older": "年上",
   "preference_tag_younger": "年下",
+
   "preference_tag_ceo": "霸总",
   "preference_tag_school": "校园",
   "preference_tag_workplace": "职场",
@@ -4045,6 +3572,7 @@
   "encounter_load_failed": "邂逅数据加载失败，请稍后再试。",
   "encounter_no_available_characters": "目前还没有可以邂逅的角色",
   "encounter_category_empty": "这个分类目前还没有角色",
+
   "encounter_category_all": "全部",
   "encounter_category_xianxia": "仙侠",
   "encounter_category_childhood_friend": "青梅竹马",
@@ -4053,14 +3581,17 @@
   "encounter_category_other": "其他",
   "character_edit_tab_character_settings": "角色设置",
   "character_edit_test": "测试",
+
   "character_edit_supporting_basic_info": "基本资料",
   "character_edit_supporting_main_setting": "与主角色的设置",
   "character_edit_supporting_main_description": "描述这名配角与主角色之间的关系，以及其在故事中的定位。",
+
   "character_edit_banner_preview_hint": "点击图片可预览大图",
   "character_edit_main_photo_hint": "第一张图片将作为主要头像",
   "character_edit_other_photos": "其他角色照片",
   "character_edit_photo_action_hint": "点击照片可预览；点击铅笔图标可编辑照片设置",
-  "character_edit_over_limit_warning": "{label} 已超出 {count} 字，请修改后再发布。",
+
+  "character_edit_over_limit_warning": "⚠ {label} 已超出 {count} 字，请修改后再发布。",
   "@character_edit_over_limit_warning": {
     "placeholders": {
       "label": {
@@ -4073,6 +3604,7 @@
   },
   "memo_notification_channel_name": "备忘录提醒",
   "memo_notification_channel_description": "由角色提醒玩家已设置的备忘事项",
+
   "memo_notification_title": "{characterName} 提醒你",
   "@memo_notification_title": {
     "placeholders": {
@@ -4081,6 +3613,7 @@
       }
     }
   },
+
   "memo_notification_tsundere": "我才不是担心你，只是怕你忘记而已。今天别忘了：{memoContent}",
   "@memo_notification_tsundere": {
     "placeholders": {
@@ -4089,6 +3622,7 @@
       }
     }
   },
+
   "memo_notification_dominant": "行程已经替你记好了，准时完成。今天别忘了：{memoContent}",
   "@memo_notification_dominant": {
     "placeholders": {
@@ -4097,6 +3631,7 @@
       }
     }
   },
+
   "memo_notification_yandere": "不可以忘记哦，我可是会一直记得的。今天别忘了：{memoContent}",
   "@memo_notification_yandere": {
     "placeholders": {
@@ -4105,6 +3640,7 @@
       }
     }
   },
+
   "memo_notification_gentle": "怕你忙着忙着就忘了，所以想提醒你一下。今天别忘了：{memoContent}",
   "@memo_notification_gentle": {
     "placeholders": {
@@ -4113,6 +3649,7 @@
       }
     }
   },
+
   "memo_notification_cold": "提醒你一件事。今天别忘了：{memoContent}",
   "@memo_notification_cold": {
     "placeholders": {
@@ -4121,6 +3658,7 @@
       }
     }
   },
+
   "memo_notification_sunny": "嘿，今天还有一件重要的事哦！别忘了：{memoContent}",
   "@memo_notification_sunny": {
     "placeholders": {
@@ -4129,6 +3667,7 @@
       }
     }
   },
+
   "memo_notification_lazy": "虽然很想继续躺着，但还是得提醒你。今天别忘了：{memoContent}",
   "@memo_notification_lazy": {
     "placeholders": {
@@ -4137,6 +3676,7 @@
       }
     }
   },
+
   "memo_notification_older": "乖，今天的事情别忘记了。记得：{memoContent}",
   "@memo_notification_older": {
     "placeholders": {
@@ -4145,6 +3685,7 @@
       }
     }
   },
+
   "memo_notification_younger": "我有乖乖帮你记住哦！今天别忘了：{memoContent}",
   "@memo_notification_younger": {
     "placeholders": {
@@ -4153,6 +3694,7 @@
       }
     }
   },
+
   "memo_notification_mechanical": "提醒事项已启动。今日任务：{memoContent}",
   "@memo_notification_mechanical": {
     "placeholders": {
@@ -4161,6 +3703,7 @@
       }
     }
   },
+
   "memo_notification_default": "今天别忘了：{memoContent}",
   "@memo_notification_default": {
     "placeholders": {
@@ -4172,24 +3715,33 @@
   "recommendation_load_failed": "目前无法加载推荐，请稍后再试。",
   "recommendation_reload": "重新加载",
   "recommendation_empty": "目前还没有可以推荐的角色。",
+
   "recommendation_title": "为你挑选的相遇",
+
   "recommendation_featured_title": "先看看这几位",
   "recommendation_featured_subtitle": "会先放最适合你的几个相遇。",
+
   "recommendation_matched_behavior_title": "越来越像你的偏好",
   "recommendation_matched_initial_title": "按照你一开始喜欢的方向",
   "recommendation_matched_behavior_subtitle": "第 4 天后开始，最近互动会一起影响排序。",
   "recommendation_matched_initial_subtitle": "现在先用你刚开始勾选的标签，帮你缩小范围。",
+
   "recommendation_explore_title": "也许你会喜欢",
   "recommendation_explore_subtitle": "保留一些随机探索，让你也能偶尔遇见不一样的人。",
+
   "recommendation_refreshing": "正在为你整理新的相遇……",
+
   "recommendation_badge_for_you": "为你推荐",
   "recommendation_badge_featured": "精选相遇",
   "recommendation_badge_explore": "探索",
+
   "recommendation_default_occupation_hint": "点开看看，也许刚好就是你下一次心动。",
   "recommendation_explore_fallback": "换个方向，也许会刚好对上你的心动点。",
+
   "recommendation_behavior_hint_similar_type": "最近常停留在这类角色",
   "recommendation_behavior_hint_forming": "最近互动偏好正在慢慢成形",
   "recommendation_behavior_hint_recent": "按照你最近的互动为你整理",
+
   "recommendation_reason_liked_tags": "因为你喜欢・{tags}",
   "@recommendation_reason_liked_tags": {
     "placeholders": {
@@ -4198,9 +3750,11 @@
       }
     }
   },
+
   "recommendation_reason_popular": "最近也有不少人点进去看看",
   "recommendation_reason_default": "也许会是你下一次刚好的相遇",
   "scene_delete_title": "删除剧场？",
+
   "scene_delete_content": "确定要删除“{title}”吗？删除后无法恢复。",
   "@scene_delete_content": {
     "placeholders": {
@@ -4209,17 +3763,22 @@
       }
     }
   },
+
   "scene_unnamed": "未命名剧场",
   "scene_cancel": "取消",
   "scene_delete": "删除",
   "scene_delete_failed": "删除失败，请稍后再试。",
+
   "scene_start_failed": "目前无法开始剧场，请稍后再试。",
+
   "scene_end_title": "结束剧场？",
   "scene_end_content": "结束后会回到一般聊天，但目前的对话记录不会被删除。",
   "scene_end_action": "结束剧场",
   "scene_ended": "剧场已结束",
   "scene_end_failed": "目前无法结束剧场，请稍后再试。",
+
   "scene_active_label": "目前正在进行",
+
   "scene_opening": "角色开场：{opening}",
   "@scene_opening": {
     "placeholders": {
@@ -4228,26 +3787,34 @@
       }
     }
   },
+
   "scene_edit": "编辑",
   "scene_start": "开始剧场",
+
   "scene_creator_load_failed": "创作者剧场读取失败。",
   "scene_creator_empty_title": "目前还没有创作者剧场",
   "scene_creator_empty_body": "这个角色的创作者还没有创建额外故事。",
+
   "scene_custom_load_failed": "自行创建剧场读取失败。",
   "scene_custom_empty_title": "还没有自己的剧场",
   "scene_custom_empty_body": "为这间聊天室创建一段只属于你的故事。",
   "scene_add": "新增剧场",
+
   "scene_title": "剧场",
   "scene_tab_creator": "创作者剧场",
   "scene_tab_custom": "自行创建",
   "chat_book_player": "玩家",
+
   "chat_book_title": "对话记录",
   "chat_book_export_pdf": "导出 PDF",
+
   "chat_book_brand": "— 恋恋拾光",
   "chat_book_change_cover": "更换封面",
   "chat_book_cover_subtitle": "与你的拾光 · 对话纪念书",
   "chat_book_choose_cover": "选择纪念书封面",
+
   "chat_book_initial_story": "初始故事",
+
   "chat_book_transcript_title": "{characterName} · 对话记录",
   "@chat_book_transcript_title": {
     "placeholders": {
@@ -4256,6 +3823,7 @@
       }
     }
   },
+
   "chat_book_continuation": "{name} · 续",
   "@chat_book_continuation": {
     "placeholders": {
@@ -4264,11 +3832,14 @@
       }
     }
   },
+
   "chat_book_previous_page": "上一页",
   "chat_book_next_page": "下一页",
+
   "chat_book_photo_message": "〔照片〕",
   "chat_book_audio_message": "〔语音消息〕",
   "chat_book_generic_message": "〔消息〕",
+
   "chat_book_export_failed": "导出 PDF 失败：{error}",
   "@chat_book_export_failed": {
     "placeholders": {
@@ -4285,6 +3856,7 @@
       }
     }
   },
+
   "email_policy_read_instruction": "请先打开并阅读完整{title}。阅读后回到《恋恋拾光》，即可点击“我已阅读并同意”。",
   "@email_policy_read_instruction": {
     "placeholders": {
@@ -4293,7 +3865,9 @@
       }
     }
   },
+
   "email_policy_opening": "正在打开……",
+
   "email_policy_read_full": "阅读完整{title}",
   "@email_policy_read_full": {
     "placeholders": {
@@ -4302,6 +3876,7 @@
       }
     }
   },
+
   "email_policy_opened_ready": "已打开{title}，可以确认同意。",
   "@email_policy_opened_ready": {
     "placeholders": {
@@ -4310,6 +3885,7 @@
       }
     }
   },
+
   "email_policy_not_opened": "尚未打开{title}。",
   "@email_policy_not_opened": {
     "placeholders": {
@@ -4318,10 +3894,14 @@
       }
     }
   },
+
   "email_policy_cancel_login": "取消登录",
   "email_policy_agree": "我已阅读并同意",
+
   "email_policy_status_check_failed": "目前无法确认条款状态，请稍后再试。",
+
   "email_policy_login_notice": "首次登录或条款更新时，系统将请您阅读并同意服务条款及隐私政策。",
+
   "email_policy_refresh": "刷新",
   "email_policy_page_load_failed": "页面加载失败",
   "email_policy_check_network": "请确认网络连接后再试一次。",
@@ -4331,6 +3911,7 @@
   "login_method_info_facebook_title": "Facebook 登录",
   "login_method_info_email_title": "恋恋账号（Email）",
   "login_method_info_email_provider": "恋恋账号（Email）",
+
   "login_method_info_content": "使用 {providerName} 登录《恋恋拾光》。\n\n请注意：\n\n• {providerName} 与其他登录方式为不同账号系统。\n\n• 若使用 {providerName} 创建账号，请持续使用相同方式登录。\n\n• 角色资料、聊天记录与购买内容不会与其他登录方式互通。\n\n建议首次登录后持续使用相同的登录方式，以避免创建不同账号而导致数据无法共用。",
   "@login_method_info_content": {
     "placeholders": {
@@ -4339,6 +3920,7 @@
       }
     }
   },
+
   "login_method_info_got_it": "知道了",
   "creator_studio_delete_failed": "删除失败：{error}",
   "@creator_studio_delete_failed": {
@@ -4348,7 +3930,9 @@
       }
     }
   },
+
   "creator_studio_subtitle": "收藏灵感，整理角色，慢慢完成你的作品",
+
   "creator_studio_load_failed": "工作室读取失败：{error}",
   "@creator_studio_load_failed": {
     "placeholders": {
@@ -4357,23 +3941,32 @@
       }
     }
   },
+
   "creator_studio_add_character": "新增角色",
+
   "creator_studio_public_title": "公开角色",
   "creator_studio_public_subtitle": "已上架，可被其他玩家认识",
   "creator_studio_public_empty": "目前没有公开角色",
+
   "creator_studio_private_title": "私人角色",
   "creator_studio_private_subtitle": "只有你自己看得到",
   "creator_studio_private_empty": "目前没有私人角色",
+
   "creator_studio_draft_title": "草稿",
   "creator_studio_draft_subtitle": "尚未完成的创作",
   "creator_studio_draft_empty": "目前没有尚未完成的草稿",
+
   "creator_studio_draft_empty_title": "这里还没有草稿",
   "creator_studio_draft_empty_hint": "灵感来了，就先记在这里吧",
+
   "creator_studio_status_public": "已公开",
   "creator_studio_status_private": "私人",
   "creator_studio_status_draft": "草稿",
+
   "creator_studio_character_load_failed": "角色资料读取失败",
+
   "creator_studio_delete_draft_tooltip": "删除草稿",
+
   "creator_studio_unnamed_creator": "未命名创作者",
   "creator_studio_no_bio": "尚未填写自我介绍",
   "chat_input_tools": "功能",
@@ -4386,17 +3979,20 @@
   "character_navigator_confidential_title": "机密档案",
   "character_navigator_unavailable_message": "此角色可能已转为私人、下架、违规封存或删除。",
   "character_navigator_got_it": "我知道了",
+
   "character_navigator_load_failed_title": "读取失败",
   "character_navigator_load_failed_message": "暂时无法读取角色资料，请稍后再试。",
   "character_navigator_confirm": "确定",
   "character_profile_add_bookmark": "收藏角色",
   "character_profile_remove_bookmark": "取消收藏",
+
   "character_profile_pronoun_female": "她",
   "character_profile_pronoun_male": "他",
   "character_profile_pronoun_neutral": "它",
   "chat_home_pin_limit_reached": "最多可置顶 3 个聊天室，请先取消其他置顶聊天室。",
   "chat_home_pinned_success": "已置顶聊天室",
   "chat_home_unpinned_success": "已取消置顶",
+
   "chat_home_pin_update_failed": "更新置顶状态失败：{error}",
   "@chat_home_pin_update_failed": {
     "placeholders": {
@@ -4405,8 +4001,10 @@
       }
     }
   },
+
   "chat_home_unpin": "取消置顶",
   "chat_home_pin": "置顶聊天室",
+
   "chat_home_time_label": "时间：{time}",
   "@chat_home_time_label": {
     "placeholders": {
@@ -4419,13 +4017,13 @@
   "nav_recommend": "推荐",
   "moments_auto_reply_title": "允许 AI 自动回复玩家动态",
   "moments_auto_reply_description": "开启后，系统才会安排该角色回复玩家。",
+  "mailShareTooltip": "分享信件",
   "mailOriginalQuestionLabel": "你原本询问",
   "hidden_moments_empty_hint": "暂时还没有被隐藏的动态哦",
   "moment_search_unavailable": "搜索暂时无法使用，请稍后再试。",
   "moment_search_hint": "搜索公开帖子、角色或创作者",
   "moment_search_instruction": "输入帖子内容、角色名称或创作者名称",
-  "moment_search_no_results": "找不到相关的公开帖子",
-  "settingsErrorTitle": "发生错误",
+  "moment_search_no_results": "找不到相关的公开帖子","settingsErrorTitle": "发生错误",
   "settingsChangePasswordSubtitle": "验证当前密码后设置新的登录密码",
   "settingsCreatorGuidelines": "创作者规范",
   "settingsPlayGuide": "游玩指南",
@@ -4444,7 +4042,8 @@
     }
   },
   "shop_tab_monthly": "月卡专区",
-  "shop_joined_days": "已来到恋恋拾光 {days} 天",
+
+  "shop_joined_days": "✦ 已来到恋恋拾光 {days} 天 ✦",
   "@shop_joined_days": {
     "placeholders": {
       "days": {
@@ -4452,28 +4051,41 @@
       }
     }
   },
+
   "shop_vip_tier_1_title": "初见倾心",
   "shop_vip_tier_1_reward": "20 点花花 + 专属新手称号",
+
   "shop_vip_tier_2_title": "微光悸动",
   "shop_vip_tier_2_reward": "专属头像框【微光悸动】",
+
   "shop_vip_tier_3_title": "星空呢喃",
   "shop_vip_tier_3_reward": "专属聊天气泡 + 50 点花花",
+
   "shop_vip_tier_4_title": "浪漫夕阳",
   "shop_vip_tier_4_reward": "专属 App 桌面图标 (Icon)",
+
   "shop_vip_tier_5_title": "怦然心动",
   "shop_vip_tier_5_reward": "点击屏幕特效 (Lottie) + 100 点花花",
+
   "shop_vip_tier_6_title": "永恒誓约",
   "shop_vip_tier_6_reward": "进阶动态头像框 + 200 点花花",
+
   "shop_vip_tier_7_title": "灵魂交会",
   "shop_vip_tier_7_reward": "动态聊天气泡特效 + 专属进阶称号",
+
   "shop_vip_tier_8_title": "专属守候",
   "shop_vip_tier_8_reward": "顶级动态名牌 + 500 点花花",
+
   "shop_vip_tier_9_title": "璀璨星河",
   "shop_vip_tier_9_reward": "专属进场 Lottie 特效 + 专属客服",
+
   "shop_vip_tier_10_title": "顶级挚爱",
   "shop_vip_tier_10_reward": "【实体 VIP 专属礼盒】(手写信+代表娃)",
+
   "shop_vip_total_bond": "累计浪漫羁绊",
+
   "shop_vip_all_unlocked": "您已解锁所有顶级特权！",
+
   "shop_vip_next_unlock": "再充值 NT$ {amount} 即可解锁下一阶",
   "@shop_vip_next_unlock": {
     "placeholders": {
@@ -4483,8 +4095,11 @@
     }
   },
   "call_connecting": "电话接通中...",
+
   "call_listening_auto_send": "正在聆听...（讲完会自动发送）",
+
   "call_listening_release_to_send": "正在聆听...（松开手指发送）",
+
   "call_sending_transcript": " {text}\n\n（发送中...）",
   "@call_sending_transcript": {
     "placeholders": {
@@ -4494,7 +4109,9 @@
     }
   },
   "help_translation_fallback": "目前尚未提供此语言的游玩指南，暂时显示繁体中文。",
+
   "help_all_categories": "全部",
+
   "help_subtitle_companion": "日常功能与贴心小助手",
   "help_subtitle_ai_chat": "聊天、语音与智能互动相关",
   "help_subtitle_creation": "角色设置与创作功能相关",
@@ -4503,6 +4120,7 @@
   "help_subtitle_general": "常见功能与操作说明",
   "chat_interact_fun": "趣味玩法",
   "memo_notification_permission_missing": "尚未开启通知权限，备忘录仍会保存，但不会显示系统提醒。",
+
   "memo_saved_with_reminder": "备忘录已保存，{characterName} 会提醒你！",
   "@memo_saved_with_reminder": {
     "placeholders": {
@@ -4511,7 +4129,9 @@
       }
     }
   },
+
   "memo_saved_without_notification": "备忘录已保存，但尚未开启通知权限。",
+
   "memo_updated_with_reminder": "备忘录已更新，{characterName} 会提醒你！",
   "@memo_updated_with_reminder": {
     "placeholders": {
@@ -4520,7 +4140,9 @@
       }
     }
   },
+
   "memo_updated_without_notification": "备忘录已更新，但目前没有通知权限。",
+
   "memo_load_error": "读取数据时发生错误：{error}",
   "@memo_load_error": {
     "placeholders": {
@@ -4530,15 +4152,20 @@
     }
   },
   "story_summary_content_required": "故事内容不能为空",
+
+
   "profile_section_basic_info": "基本资料",
   "profile_section_about_me": "关于这个我",
   "dice_duel_you": "你",
+
   "dice_duel_result_saved": "对决结果已封存！",
+
   "dice_duel_rolling": "宇宙能量汇聚中...",
   "butterfly_loading_connecting": "正在与时光连接...",
   "character_block_login_required": "请先登录后再封锁角色",
   "character_block_self_forbidden": "无法封锁自己创建的角色",
   "character_block_title": "封锁角色",
+
   "character_block_confirm_message": "确定要封锁“{characterName}”吗？\n\n封锁后，你将不会再在邂逅、瞬间等推荐内容中看到这个角色。",
   "@character_block_confirm_message": {
     "placeholders": {
@@ -4547,7 +4174,9 @@
       }
     }
   },
+
   "character_block_confirm": "确认封锁",
+
   "character_block_success": "已封锁“{characterName}”",
   "@character_block_success": {
     "placeholders": {
@@ -4556,6 +4185,7 @@
       }
     }
   },
+
   "character_block_failed": "封锁失败，请稍后再试",
   "character_unblock_success": "已解除封锁",
   "character_unblock_failed": "解除封锁失败，请稍后再试",
@@ -4600,11 +4230,5 @@
   "creator_social_links_saved": "社交链接已保存",
   "creator_social_links_load_failed": "读取社交链接失败，请稍后再试",
   "creator_social_links_save_failed": "保存社交链接失败，请稍后再试",
-  "creator_social_links_open_failed": "无法打开此链接",
-  "chat_regenerate_bottom_tip": "「重新生成」搬到这里啦！想换一个回复时，可以从这里重新生成。",
-  "chat_continue_bottom_tip": "「继续」搬到这里啦！想让角色接着说时，可以从这里继续。",
-  "languageSelectionSubtitle": "选择你习惯的语言",
-  "@languageSelectionSubtitle": {
-    "description": "Subtitle shown below the language settings title."
-  }
+  "creator_social_links_open_failed": "无法打开此链接"
 }

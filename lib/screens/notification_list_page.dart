@@ -739,6 +739,11 @@ class _NotificationListPageState extends State<NotificationListPage> {
                       leadingIcon = _buildMailboxBadge(
                         'assets/images/chat/chat_mail_comment_badge.png',
                       );
+                    } else if (type == 'creator_moment' ||
+                        type == 'character_moment') {
+                      leadingIcon = _buildMailboxBadge(
+                        'assets/images/chat/chat_mail_notification_badge.png',
+                      );
                     } else if (type == 'cs_reply' || type == 'cs_received') {
                       leadingIcon = _buildMailboxBadge(
                         'assets/images/chat/chat_mail_support_badge.png',
@@ -948,7 +953,10 @@ class _NotificationListPageState extends State<NotificationListPage> {
                           }
 
                           if (postId != null &&
-                              (type == 'like' || type == 'comment')) {
+                              (type == 'like' ||
+                                  type == 'comment' ||
+                                  type == 'creator_moment' ||
+                                  type == 'character_moment')) {
                             if (!isRead) {
                               await _markAsRead(userId, doc.id);
                             }
@@ -1983,7 +1991,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
         elevation: 0,
         actions: [
           IconButton(
-            tooltip: l10n.mailShareTooltip,
+            tooltip: '分享信件',
             onPressed: _shareMailAsImage,
             icon: Transform.flip(
               flipX: true,
@@ -2064,7 +2072,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        l10n.mailOriginalQuestionLabel,
+                        '你原本詢問',
                         style: GoogleFonts.notoSerifTc(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -2339,7 +2347,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
                             const SizedBox(width: 6),
                             Expanded(
                               child: Text(
-                                l10n.mailQixiFromCharacter(widget.fromName),
+                                '來自 ${widget.fromName} 的七夕信',
                                 style: const TextStyle(
                                   color: mutedPurple,
                                   fontSize: 13,

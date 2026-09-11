@@ -319,7 +319,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get logoutSuccessSnackbar =>
-      'Baiklah! Saya akan tunggu anda kembali♥(´∀` )';
+      'Baiklah! Saya akan tunggu anda kembali(´∀` )';
 
   @override
   String get deleteAccountButton => 'Padam Akaun';
@@ -1461,7 +1461,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get report_success =>
-      'Laporan berjaya, notifikasi telah diterima! Kandungan akan ditinjau secepat mungkin ️';
+      'Laporan berjaya, notifikasi telah diterima! Kandungan akan ditinjau secepat mungkin';
 
   @override
   String get report_failed =>
@@ -1663,7 +1663,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String gallery_current_affection(String value) {
-    return 'Tahap kasih sayang semasa: $value 💕';
+    return 'Tahap kasih sayang semasa: $value';
   }
 
   @override
@@ -1676,7 +1676,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String gallery_lock_msg(String value) {
-    return 'Capai tahap kasih sayang $value untuk buka kunci! 🍃';
+    return 'Capai tahap kasih sayang $value untuk buka kunci!';
   }
 
   @override
@@ -1692,11 +1692,11 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String followed_creator_msg(String creatorName) {
-    return 'Telah mengikuti $creatorName 🦋';
+    return 'Telah mengikuti $creatorName';
   }
 
   @override
-  String get mailbox_title => 'Peti Mel Eksklusif 💌';
+  String get mailbox_title => 'Peti Mel Eksklusif';
 
   @override
   String get mailbox_empty =>
@@ -1710,11 +1710,11 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String affection_upgrade_title(String charName) {
-    return 'Tahap kasih sayang $charName terhadap anda telah meningkat! 💖';
+    return 'Tahap kasih sayang $charName terhadap anda telah meningkat!';
   }
 
   @override
-  String get flower_reward => '🌸 Mendapat 5 mata bunga';
+  String get flower_reward => 'Mendapat 5 mata bunga';
 
   @override
   String get affection_quote_lv5 =>
@@ -1741,7 +1741,7 @@ class AppLocalizationsMs extends AppLocalizations {
       '「Rupanya awak juga ada di sini, adakah ini sejenis takdir yang aneh?」';
 
   @override
-  String get lore_edit_success => '✨ Serpihan memori berjaya dikemas kini!';
+  String get lore_edit_success => 'Serpihan memori berjaya dikemas kini!';
 
   @override
   String get delete_failed_network =>
@@ -1843,14 +1843,14 @@ class AppLocalizationsMs extends AppLocalizations {
       'Data watak tidak dijumpai, sila kembali dan cuba lagi atau periksa rangkaian.';
 
   @override
-  String get chat_jump_success => 'Telah melompat ke bahagian memori ini 🍃';
+  String get chat_jump_success => 'Telah melompat ke bahagian memori ini';
 
   @override
   String get chat_create_room_failed =>
       'Sambungan tidak stabil, gagal membina bilik sembang, sila cuba lagi.';
 
   @override
-  String get chat_secret_file_title => '🔒 Fail Rahsia';
+  String get chat_secret_file_title => 'Fail Rahsia';
 
   @override
   String get chat_secret_file_desc =>
@@ -1861,7 +1861,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String chat_egg_unlocked(String title) {
-    return '✨ Mendapat memori baru: $title';
+    return 'Mendapat memori baru: $title';
   }
 
   @override
@@ -1889,7 +1889,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get chat_call_rule_3 =>
-      'Disarankan memakai fon kepala untuk mendengar suaranya dengan lebih jelas ✨';
+      'Disarankan memakai fon kepala untuk mendengar suaranya dengan lebih jelas';
 
   @override
   String get chat_call_btn_cancel => 'Bukan sekarang';
@@ -1921,7 +1921,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get chat_stop_generating_msg =>
-      'Berhenti membalas, mata tidak ditolak 🍃';
+      'Berhenti membalas, mata tidak ditolak';
 
   @override
   String get chat_heartbeat_up => 'Jantungnya berdegup kencang...';
@@ -2016,18 +2016,18 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get chat_poke_success =>
-      '✨ Dah tolong cuitkan pencipta untuk anda! Nantikan suara dia dilancarkan nanti~';
+      'Dah tolong cuitkan pencipta untuk anda! Nantikan suara dia dilancarkan nanti~';
 
   @override
   String chat_gift_points_needed(String cost) {
-    return 'Mata bunga tidak mencukupi! Perlu $cost mata 🌸';
+    return 'Mata bunga tidak mencukupi! Perlu $cost mata';
   }
 
   @override
-  String get chat_levelup_soulmate => '✨ Pasangan Takdir ✨';
+  String get chat_levelup_soulmate => 'Pasangan Takdir';
 
   @override
-  String get chat_levelup_normal => 'Hubungan Meningkat! 💖';
+  String get chat_levelup_normal => 'Hubungan Meningkat!';
 
   @override
   String get chat_levelup_btn_soulmate => 'Ukir dalam jiwa';
@@ -2036,7 +2036,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get chat_levelup_btn_normal => 'Terima dengan debaran';
 
   @override
-  String get chat_loc_title => '📍 Hantar lokasi maya';
+  String get chat_loc_title => 'Hantar lokasi maya';
 
   @override
   String get chat_loc_custom_btn => 'Hantar lokasi tersuai';
@@ -2058,13 +2058,13 @@ class AppLocalizationsMs extends AppLocalizations {
   String get chat_loc_4 => 'Di kedai serbaneka';
 
   @override
-  String get chat_interact_title => '✨ Apa yang mahu dilakukan padanya?';
+  String get chat_interact_title => 'Apa yang mahu dilakukan padanya?';
 
   @override
   String get chat_interact_action => 'Cuitan dan pergerakan kecil';
 
   @override
-  String get chat_interact_gift => 'Hantar hadiah kecil (Guna bunga 🌸)';
+  String get chat_interact_gift => 'Hantar hadiah kecil (Guna bunga )';
 
   @override
   String get chat_action_poke => 'Cuit pipi';
@@ -2121,7 +2121,7 @@ class AppLocalizationsMs extends AppLocalizations {
       'Perbualan manis mana yang mahu dikenang semula?';
 
   @override
-  String get chat_search_empty => 'Memori tidak dijumpai 🥺';
+  String get chat_search_empty => 'Memori tidak dijumpai';
 
   @override
   String get chat_search_you => 'Kata awak';
@@ -2301,7 +2301,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String chat_egg_unlocked_dynamic(String memoryName) {
-    return '✨ Mendapat memori baru: $memoryName';
+    return 'Mendapat memori baru: $memoryName';
   }
 
   @override
@@ -2310,7 +2310,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get chat_profile_updated_msg =>
-      'Fail ShiGuang telah dikemas kini! Dia akan mengingati tetapan terbaharu anda 🍃';
+      'Fail ShiGuang telah dikemas kini! Dia akan mengingati tetapan terbaharu anda';
 
   @override
   String get comment_loading_author => 'Memuatkan...';
@@ -2342,7 +2342,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get comment_report_rules_desc =>
-      'Kesalahan Pertama: Amaran sistem dan satu rekod pelanggaran.\n2️⃣ Kesalahan Kedua: Larangan komen selama 1 hari.\n3️⃣ Kesalahan Berulang: Ciri laporan disekat selama 14 hari dan keterlihatan komen dikurangkan.\n\n🚨 Bagi penyalahgunaan teruk:\nInteraksi dengan watak dilarang selama 1 hari, dan ID akan dipaparkan di papan kenyataan selama 3 hari (pertukaran ID dilarang dalam tempoh ini).\n\n💡 Selepas laporan dihantar, keputusan semakan akhir akan dihantar melalui [Mel Dalam Permainan].\nSila hormati satu sama lain dan lapor secara rasional.';
+      'Kesalahan Pertama: Amaran sistem dan satu rekod pelanggaran.\n2⃣ Kesalahan Kedua: Larangan komen selama 1 hari.\n3⃣ Kesalahan Berulang: Ciri laporan disekat selama 14 hari dan keterlihatan komen dikurangkan.\n\nBagi penyalahgunaan teruk:\nInteraksi dengan watak dilarang selama 1 hari, dan ID akan dipaparkan di papan kenyataan selama 3 hari (pertukaran ID dilarang dalam tempoh ini).\n\nSelepas laporan dihantar, keputusan semakan akhir akan dihantar melalui [Mel Dalam Permainan].\nSila hormati satu sama lain dan lapor secara rasional.';
 
   @override
   String get comment_report_understood => 'Saya faham';
@@ -2418,12 +2418,12 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String char_dislikes(String dislikes) {
-    return '🖤 Tidak suka: $dislikes';
+    return 'Tidak suka: $dislikes';
   }
 
   @override
   String char_likes(String likes) {
-    return '🤍 Suka: $likes';
+    return 'Suka: $likes';
   }
 
   @override
@@ -2443,7 +2443,7 @@ class AppLocalizationsMs extends AppLocalizations {
   }
 
   @override
-  String get char_exclusive_guardian => 'Penjaga Eksklusif 💖';
+  String get char_exclusive_guardian => 'Penjaga Eksklusif';
 
   @override
   String mailbox_like_body(String playerName, String charName) {
@@ -2485,7 +2485,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String chat_player_sent_location(String location) {
-    return '📍 (Pemain menghantar lokasi: $location)';
+    return '(Pemain menghantar lokasi: $location)';
   }
 
   @override
@@ -2537,12 +2537,12 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String chat_profile_full(String name, String identity, String birthday,
       String height, String appearance, String job, String intro) {
-    return '📜 【 Profil ShiGuang Eksklusif - $name 】\n━━━━━━━━━━━━━━━━━━\n🔹 Nama: $identity\n🔹 Hari Lahir: $birthday\n🔹 Tinggi: $height\n🔹 Penampilan: $appearance\n🔹 Pekerjaan: $job\n\n📖 【 Tentang Serpihan Jiwanya 】\n$intro\n━━━━━━━━━━━━━━━━━━';
+    return '【 Profil ShiGuang Eksklusif - $name 】\n━━━━━━━━━━━━━━━━━━\nNama: $identity\nHari Lahir: $birthday\nTinggi: $height\nPenampilan: $appearance\nPekerjaan: $job\n\n【 Tentang Serpihan Jiwanya 】\n$intro\n━━━━━━━━━━━━━━━━━━';
   }
 
   @override
   String chat_profile_locked(String nickname, String birthday) {
-    return '📜 【 Profil ShiGuang Eksklusif 】\n━━━━━━━━━━━━━━━━━━\n🔹 Nama Panggilan: $nickname\n🔹 Hari Lahir: $birthday\n\n🔒 Data watak lain belum dibuka...\n(Isikan profil penuh untuk memberinya peluang mengenali awak dengan lebih baik di dunia selari! ✨)\n━━━━━━━━━━━━━━━━━━';
+    return '【 Profil ShiGuang Eksklusif 】\n━━━━━━━━━━━━━━━━━━\nNama Panggilan: $nickname\nHari Lahir: $birthday\n\nData watak lain belum dibuka...\n(Isikan profil penuh untuk memberinya peluang mengenali awak dengan lebih baik di dunia selari! )\n━━━━━━━━━━━━━━━━━━';
   }
 
   @override
@@ -2566,7 +2566,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String chat_call_ended(String name, String time) {
-    return '📞 Panggilan tamat, berbual dengan $name selama $time';
+    return 'Panggilan tamat, berbual dengan $name selama $time';
   }
 
   @override
@@ -2606,7 +2606,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get no_public_character_mine =>
-      'Awak belum menerbitkan mana-mana watak awam!\nJom ke studio dan cipta satu✨';
+      'Awak belum menerbitkan mana-mana watak awam!\nJom ke studio dan cipta satu';
 
   @override
   String get no_public_character_other =>
@@ -2620,14 +2620,14 @@ class AppLocalizationsMs extends AppLocalizations {
       'Pasti mahu memadam watak yang belum siap ini?\n(Tidak boleh dikembalikan selepas dipadam)';
 
   @override
-  String get draft_cleared_success => 'Draf berjaya dibersihkan 🧹';
+  String get draft_cleared_success => 'Draf berjaya dibersihkan';
 
   @override
   String get login_required_for_studio =>
       'Sila log masuk dahulu untuk masuk ke studio!';
 
   @override
-  String get my_secret_studio_title => 'Studio Rahsia Saya 🛠️';
+  String get my_secret_studio_title => 'Studio Rahsia Saya';
 
   @override
   String get create_new_character_btn => 'Cipta Watak Baru';
@@ -2683,37 +2683,37 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String moment_like_yours(String nickname) {
-    return '$nickname suka siaran awak! 💖';
+    return '$nickname suka siaran awak!';
   }
 
   @override
   String moment_like_others(String nickname, String authorName) {
-    return '$nickname rasa $authorName sangat menawan dan meninggalkan suka! ✨';
+    return '$nickname rasa $authorName sangat menawan dan meninggalkan suka!';
   }
 
   @override
-  String get moment_like_success => 'Debaran hati awak telah disampaikan! ✨';
+  String get moment_like_success => 'Debaran hati awak telah disampaikan!';
 
   @override
-  String get moment_notification_new_like => 'Suka Baharu! 💖';
+  String get moment_notification_new_like => 'Suka Baharu!';
 
   @override
   String moment_mention_mail_body(String nickname, String name) {
-    return '$nickname menyebut @$name dalam siaran! ✨';
+    return '$nickname menyebut @$name dalam siaran!';
   }
 
   @override
   String get moment_detail_title => 'Butiran Siaran';
 
   @override
-  String get moment_not_found => 'Siaran ini nampaknya telah hilang... 😢';
+  String get moment_not_found => 'Siaran ini nampaknya telah hilang...';
 
   @override
   String get moment_comment_title => 'Komen Momen';
 
   @override
   String get moment_comment_empty =>
-      'Belum ada komen, jadilah yang pertama memberikan respon! 🛋';
+      'Belum ada komen, jadilah yang pertama memberikan respon!';
 
   @override
   String moment_replying_to(String name) {
@@ -2751,7 +2751,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String moment_go_to_chat_msg(String name) {
-    return 'Jom bersembang dengan $name membawa siaran ini! 💬';
+    return 'Jom bersembang dengan $name membawa siaran ini!';
   }
 
   @override
@@ -2770,11 +2770,11 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get moment_forward_title =>
-      'Majukan kepada watak yang sedang bersembang 💌';
+      'Majukan kepada watak yang sedang bersembang';
 
   @override
   String get moment_forward_empty_state =>
-      'Awak belum mempunyai sembang aktif lagi!\nPergi ke Lobi untuk mencari seseorang yang istimewa 🌿';
+      'Awak belum mempunyai sembang aktif lagi!\nPergi ke Lobi untuk mencari seseorang yang istimewa';
 
   @override
   String moment_forward_template(String author, String content) {
@@ -2783,7 +2783,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String moment_forward_success(String name) {
-    return '✅ Telah dikongsi secara diam-diam dengan $name!';
+    return 'Telah dikongsi secara diam-diam dengan $name!';
   }
 
   @override
@@ -2832,7 +2832,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String daily_login_welcome(String appName, String amount) {
-    return 'Selamat kembali ke $appName!\nDaftar masuk hari ini untuk menuntut $amount mata Bahasa Bunga. 🌸';
+    return 'Selamat kembali ke $appName!\nDaftar masuk hari ini untuk menuntut $amount mata Bahasa Bunga.';
   }
 
   @override
@@ -2840,7 +2840,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String success_claim_reward(String amount) {
-    return 'Berjaya menuntut $amount mata Bahasa Bunga! 🌸';
+    return 'Berjaya menuntut $amount mata Bahasa Bunga!';
   }
 
   @override
@@ -2980,7 +2980,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get draft_saved_success_msg =>
-      'Baiklah! Disimpan dalam draf untuk anda, anda boleh kembali dan mengedit pada bila-bila masa! ✨';
+      'Baiklah! Disimpan dalam draf untuk anda, anda boleh kembali dan mengedit pada bila-bila masa!';
 
   @override
   String get dialog_reminder_title => 'Peringatan';
@@ -3015,8 +3015,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get title_adjust_avatar => 'Sesuaikan avatar anda';
 
   @override
-  String get avatar_updated_success =>
-      'Avatar telah dikemas kini untuk anda 🍃';
+  String get avatar_updated_success => 'Avatar telah dikemas kini untuk anda';
 
   @override
   String get title_create_profile => 'Cipta profil anda';
@@ -3047,7 +3046,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get msg_birthdate_immutable =>
-      'Hari lahir tidak boleh ditukar setelah ditetapkan ✨';
+      'Hari lahir tidak boleh ditukar setelah ditetapkan';
 
   @override
   String get action_start_journey => 'Mulakan perjalanan';
@@ -3057,26 +3056,26 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String moment_like_self(String nickname) {
-    return '$nickname suka siaran awak! 💖';
+    return '$nickname suka siaran awak!';
   }
 
   @override
   String moment_like_other(String nickname, String authorName) {
-    return '$nickname rasa $authorName sangat menawan dan meninggalkan suka! ✨';
+    return '$nickname rasa $authorName sangat menawan dan meninggalkan suka!';
   }
 
   @override
   String get task_social_tour_complete =>
-      '✨ Tugasan Jelajah Sosial selesai! Jangan lupa tuntut bunga! 🌸';
+      'Tugasan Jelajah Sosial selesai! Jangan lupa tuntut bunga!';
 
   @override
   String get wall_title_shiguang => 'Dinding ShiGuang';
 
   @override
-  String get wall_tab_explore => '🌍 Teroka';
+  String get wall_tab_explore => 'Teroka';
 
   @override
-  String get wall_tab_exclusive => '🔒 Eksklusif';
+  String get wall_tab_exclusive => 'Eksklusif';
 
   @override
   String get more_options => 'Lebih Pilihan';
@@ -3089,7 +3088,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get delete_success => 'Berjaya dipadam';
 
   @override
-  String get notification_new_comment => 'Komen baru! 💬';
+  String get notification_new_comment => 'Komen baru!';
 
   @override
   String notification_like_from_sender(String senderName) {
@@ -3098,15 +3097,15 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get empty_public_moments_prompt =>
-      'Buat masa ini kosong,\npergi siarkan siaran awam pertama awak! 🌍';
+      'Buat masa ini kosong,\npergi siarkan siaran awam pertama awak!';
 
   @override
   String get empty_private_moments_prompt =>
-      'Belum ada saat dalam bulatan rakan,\npergi cipta memori dengan dia! ✨';
+      'Belum ada saat dalam bulatan rakan,\npergi cipta memori dengan dia!';
 
   @override
   String get profile_archived_or_deleted_message =>
-      'Fail jiwa ini telah diarkibkan oleh pencipta, ditetapkan sebagai peribadi, atau telah lenyap dalam aliran masa...\n\nMungkin dalam alam semesta selari, awak mempunyai peluang untuk bertemu lagi. ✨';
+      'Fail jiwa ini telah diarkibkan oleh pencipta, ditetapkan sebagai peribadi, atau telah lenyap dalam aliran masa...\n\nMungkin dalam alam semesta selari, awak mempunyai peluang untuk bertemu lagi.';
 
   @override
   String get leave_silently => 'Pergi secara diam-diam';
@@ -3122,7 +3121,7 @@ class AppLocalizationsMs extends AppLocalizations {
       'Hari ini mahu guna identiti siapa untuk siaran?';
 
   @override
-  String get identity_creator => '✨ Identiti Pencipta';
+  String get identity_creator => 'Identiti Pencipta';
 
   @override
   String get identity_character => 'Identiti Watak';
@@ -3132,7 +3131,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get auto_post_schedule_hint =>
-      'Selepas diaktifkan, siaran harian akan disiarkan secara automatik pada masa yang ditetapkan\n(💡 Tip: Tetapkan masa bukan pada waktu genap untuk nampak lebih seperti manusia!)';
+      'Selepas diaktifkan, siaran harian akan disiarkan secara automatik pada masa yang ditetapkan\n( Tip: Tetapkan masa bukan pada waktu genap untuk nampak lebih seperti manusia!)';
 
   @override
   String get no_characters_created_yet =>
@@ -3149,10 +3148,10 @@ class AppLocalizationsMs extends AppLocalizations {
   }
 
   @override
-  String get empty_public_moments_short => 'Belum ada siaran awam 🌍';
+  String get empty_public_moments_short => 'Belum ada siaran awam';
 
   @override
-  String get empty_private_moments_short => 'Bulatan rakan masih sunyi ✨';
+  String get empty_private_moments_short => 'Bulatan rakan masih sunyi';
 
   @override
   String get my_created_characters => 'Watak Ciptaan Saya';
@@ -3186,11 +3185,11 @@ class AppLocalizationsMs extends AppLocalizations {
   }
 
   @override
-  String get daily_gift_success => 'Berjaya menuntut hadiah harian! 🌸';
+  String get daily_gift_success => 'Berjaya menuntut hadiah harian!';
 
   @override
   String get check_in_fail_network =>
-      'Daftar masuk gagal, sila periksa sambungan rangkaian 🍃';
+      'Daftar masuk gagal, sila periksa sambungan rangkaian';
 
   @override
   String task_completed(String taskName) {
@@ -3240,7 +3239,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get network_unstable_retry =>
-      'Sambungan rangkaian tidak stabil, sila cuba lagi nanti 🍃';
+      'Sambungan rangkaian tidak stabil, sila cuba lagi nanti';
 
   @override
   String get title_time_travel => 'Perjalanan Masa';
@@ -3305,7 +3304,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get search_name_placeholder => 'Masukkan namanya...';
 
   @override
-  String get search_no_match_hint => 'Watak tidak dijumpai, cuba nama lain? ✨';
+  String get search_no_match_hint => 'Watak tidak dijumpai, cuba nama lain?';
 
   @override
   String character_info_full(String age, String occupation) {
@@ -3476,7 +3475,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get shop_tab_history => 'Sejarah Transaksi';
 
   @override
-  String get shop_empty_history => 'Belum ada rekod Bunga lagi! 🌸';
+  String get shop_empty_history => 'Belum ada rekod Bunga lagi!';
 
   @override
   String get shop_unknown_item => 'Item tidak diketahui';
@@ -3496,7 +3495,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String story_summary_empty_list(String name) {
-    return 'Kisah korang belum bermula lagi...\nBanyakkan bersembang dan biarkan $name \nmenulis memori pertama korang! ✨';
+    return 'Kisah korang belum bermula lagi...\nBanyakkan bersembang dan biarkan $name\nmenulis memori pertama korang!';
   }
 
   @override
@@ -3520,7 +3519,7 @@ class AppLocalizationsMs extends AppLocalizations {
       'Adakah awak pasti mahu membatalkan foto eksklusif dan kembali ke latar belakang tema lalai?';
 
   @override
-  String get reset_bg_success => 'Telah dipulihkan ke latar belakang lalai ✨';
+  String get reset_bg_success => 'Telah dipulihkan ke latar belakang lalai';
 
   @override
   String get confirm_reset => 'Sahkan Pulihkan';
@@ -3543,7 +3542,7 @@ class AppLocalizationsMs extends AppLocalizations {
       'Muat turun \'Lianlian ShiGuang\' untuk membuka kunci romantik eksklusif';
 
   @override
-  String get exclusiveMomentsGenerated => 'Momen eksklusif telah dijana ✨';
+  String get exclusiveMomentsGenerated => 'Momen eksklusif telah dijana';
 
   @override
   String get selectAgain => 'Pilih lagi';
@@ -3558,11 +3557,11 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get shop_log_monthly_card =>
-      'Diaktifkan: Kontrak Cahaya Bintang (Mata Ganjaran Kad Bulanan) 🌙';
+      'Diaktifkan: Kontrak Cahaya Bintang (Mata Ganjaran Kad Bulanan)';
 
   @override
   String shop_log_top_up_double(int points) {
-    return 'Tambah nilai: $points mata (Termasuk bonus ganda pembelian pertama 🎁)';
+    return 'Tambah nilai: $points mata (Termasuk bonus ganda pembelian pertama )';
   }
 
   @override
@@ -3580,7 +3579,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get shop_purchase_success_double_bonus =>
-      '✨ Tahniah! Bonus ganda pembelian pertama telah diaktifkan!';
+      'Tahniah! Bonus ganda pembelian pertama telah diaktifkan!';
 
   @override
   String get shop_purchase_awesome => 'Hebat';
@@ -3613,7 +3612,7 @@ class AppLocalizationsMs extends AppLocalizations {
       'Dapatkan 250 Bunga dengan segera, tuntut 10 Bunga setiap hari';
 
   @override
-  String get task_monthly_title => 'Kontrak Bintang: Keistimewaan Harian 🌙';
+  String get task_monthly_title => 'Kontrak Bintang: Keistimewaan Harian';
 
   @override
   String get task_monthly_locked => 'Dikunci';
@@ -3637,21 +3636,21 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get referral_log_newbie_reward =>
-      'Undangan Bintang: Ganjaran Pengguna Baharu ✨';
+      'Undangan Bintang: Ganjaran Pengguna Baharu';
 
   @override
   String get referral_log_inviter_reward =>
-      'Undangan Bintang: Ganjaran Sasaran Rakan 🎁';
+      'Undangan Bintang: Ganjaran Sasaran Rakan';
 
   @override
   String get referral_success_title => 'Undangan Bintang Dibuka!';
 
   @override
   String get referral_success_content =>
-      'Tahniah! Awak telah berjaya berbual secara mendalam dengan watak sebanyak 15 ayat!\n\n\'Ganjaran Pengguna Baharu 50 Mata\' telah dihantar ke akaun awak, dan rakan awak juga telah menerima ganjaran 50 mata secara serentak! 🎁';
+      'Tahniah! Awak telah berjaya berbual secara mendalam dengan watak sebanyak 15 ayat!\n\n\'Ganjaran Pengguna Baharu 50 Mata\' telah dihantar ke akaun awak, dan rakan awak juga telah menerima ganjaran 50 mata secara serentak!';
 
   @override
-  String get profile_referral_title => 'Undangan Bintang 🌟';
+  String get profile_referral_title => 'Undangan Bintang';
 
   @override
   String get profile_referral_hint => 'Masukkan kod undangan rakan';
@@ -3686,12 +3685,12 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String profile_share_message(String character, String code) {
-    return '✨ Saya telah memulakan perjalanan yang mendebarkan bersama $character di \'Lianlian ShiGuang\'! Muat turun aplikasi sekarang dan masukkan Kod Undangan Bintang saya: 【$code】 di halaman profil awak. Kita berdua akan mendapat 50 Bunga secara percuma! 🎁\n\n Pautan muat turun:\n https://lianlianshiguang.web.app/download/';
+    return 'Saya telah memulakan perjalanan yang mendebarkan bersama $character di \'Lianlian ShiGuang\'! Muat turun aplikasi sekarang dan masukkan Kod Undangan Bintang saya: 【$code】 di halaman profil awak. Kita berdua akan mendapat 50 Bunga secara percuma!\n\nPautan muat turun:\nhttps://lianlianshiguang.web.app/download/';
   }
 
   @override
   String get chat_levelup_share_btn =>
-      'Tunjuk momen mendebarkan ini kepada rakan-rakan ✨';
+      'Tunjuk momen mendebarkan ini kepada rakan-rakan';
 
   @override
   String profile_my_invite_code_with_char(String character) {
@@ -3706,18 +3705,18 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get profile_copy_success =>
-      '✅ Kod undangan telah disalin ke papan keratan!';
+      'Kod undangan telah disalin ke papan keratan!';
 
   @override
   String get profile_referral_rule_title => 'Peraturan Undangan Bintang';
 
   @override
   String get profile_referral_rule_receiver =>
-      '✨ Selepas mengikat kod, hanya perlu bersembang dengan mana-mana karakter kegemaran sebanyak 15 ayat, awak dan pengundang akan menerima ganjaran 50 Bunga secara serentak!\n\n⚠️ Nota: Sila masukkan kod undangan dalam masa 3 hari selepas pendaftaran akaun untuk memastikan ia sah.';
+      'Selepas mengikat kod, hanya perlu bersembang dengan mana-mana karakter kegemaran sebanyak 15 ayat, awak dan pengundang akan menerima ganjaran 50 Bunga secara serentak!\n\nNota: Sila masukkan kod undangan dalam masa 3 hari selepas pendaftaran akaun untuk memastikan ia sah.';
 
   @override
   String get profile_referral_rule_inviter =>
-      '✨ Jemput rakan baharu untuk memuat turun dan memasukkan kod undangan awak. Apabila mereka menyelesaikan pengikatan dalam masa 3 hari selepas pendaftaran dan bersembang dengan mana-mana watak sebanyak 15 ayat, awak berdua akan menerima ganjaran 50 Bunga secara serentak! 🎁';
+      'Jemput rakan baharu untuk memuat turun dan memasukkan kod undangan awak. Apabila mereka menyelesaikan pengikatan dalam masa 3 hari selepas pendaftaran dan bersembang dengan mana-mana watak sebanyak 15 ayat, awak berdua akan menerima ganjaran 50 Bunga secara serentak!';
 
   @override
   String get error_user_not_found =>
@@ -3731,13 +3730,13 @@ class AppLocalizationsMs extends AppLocalizations {
   String get error_id_taken_short => 'ID ini telah digunakan!';
 
   @override
-  String get shop_restocking => 'Kedai sedang menambah stok... 📦';
+  String get shop_restocking => 'Kedai sedang menambah stok...';
 
   @override
-  String get shop_preview_mode => '⚠️ Pada masa ini dalam Mod Pratonton Kedai';
+  String get shop_preview_mode => 'Pada masa ini dalam Mod Pratonton Kedai';
 
   @override
-  String get friendlyReminderTitle => '☁️ Peringatan Mesra';
+  String get friendlyReminderTitle => 'Peringatan Mesra';
 
   @override
   String get editProfileHint =>
@@ -3769,7 +3768,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String continueChatCostWarning(int cost) {
-    return 'Membiarkan dia terus bercakap akan menggunakan $cost Mata Bunga 🌸\nAdakah awak pasti ingin melanjutkan?';
+    return 'Membiarkan dia terus bercakap akan menggunakan $cost Mata Bunga\nAdakah awak pasti ingin melanjutkan?';
   }
 
   @override
@@ -3803,7 +3802,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get continueButton => 'Teruskan';
 
   @override
-  String get creatorExclusive => '🔒 Eksklusif Pencipta';
+  String get creatorExclusive => 'Eksklusif Pencipta';
 
   @override
   String ageAndOccupation(String age, String occupation) {
@@ -3811,10 +3810,10 @@ class AppLocalizationsMs extends AppLocalizations {
   }
 
   @override
-  String get likesLabel => '💖 Suka';
+  String get likesLabel => 'Suka';
 
   @override
-  String get dislikesLabel => '👎 Tidak Suka';
+  String get dislikesLabel => 'Tidak Suka';
 
   @override
   String birthdayLabel(String birthday) {
@@ -3842,15 +3841,14 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get passGuideRegenerateTitle =>
-      '🔄 Mengapa awak memerlukan \'Jana Semula\'?';
+      'Mengapa awak memerlukan \'Jana Semula\'?';
 
   @override
   String get passGuideRegenerateContent =>
       'AI kadangkala boleh bertindak seperti tungtung kayu yang tidak memahami emosi. Apabila awak menerima maklum balas yang tidak memuaskan, hanya perlu menekan jana semula, ia seperti memutarkan kembali masa! Awak boleh membuat dia berfikir semula sehingga dia mengucapkan ayat sempurna yang membuatkan jantung awak berdegap-degup.';
 
   @override
-  String get passGuideAffectionTitle =>
-      '💖 Apakah kegunaan Pecutan Kejelekitan?';
+  String get passGuideAffectionTitle => 'Apakah kegunaan Pecutan Kejelekitan?';
 
   @override
   String get passGuideAffectionContent =>
@@ -3863,10 +3861,10 @@ class AppLocalizationsMs extends AppLocalizations {
   String get pleaseWait => 'Sila tunggu';
 
   @override
-  String get createNewProfileTitle => '📜 Bina Profil Shiguang Baharu';
+  String get createNewProfileTitle => 'Bina Profil Shiguang Baharu';
 
   @override
-  String get editProfileTitle => '✏️ Edit Profil Shiguang';
+  String get editProfileTitle => 'Edit Profil Shiguang';
 
   @override
   String get profileEditDescription =>
@@ -3927,7 +3925,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get fillLaterButton => 'Isi Kemudian';
 
   @override
-  String get exclusiveProfileTitle => '📜 Profil Shiguang Eksklusif';
+  String get exclusiveProfileTitle => 'Profil Shiguang Eksklusif';
 
   @override
   String get profileSelectionDescription =>
@@ -4101,11 +4099,11 @@ class AppLocalizationsMs extends AppLocalizations {
   String get nav_moments => 'Detik';
 
   @override
-  String get birthday_dialog_title => '🎂 Kejutan Hari Lahir';
+  String get birthday_dialog_title => 'Kejutan Hari Lahir';
 
   @override
   String get birthday_dialog_content =>
-      'Hari ini ialah hari ulang tahun eksklusif awak!\n\nSila terima hadiah ini:\nSemua perbualan hari ini adalah S.E.P.E.N.U.H.N.Y.A P.E.R.C.U.M.A! ✨';
+      'Hari ini ialah hari ulang tahun eksklusif awak!\n\nSila terima hadiah ini:\nSemua perbualan hari ini adalah S.E.P.E.N.U.H.N.Y.A P.E.R.C.U.M.A!';
 
   @override
   String get birthday_dialog_button => 'Mulakan Hari yang Romantik';
@@ -4140,7 +4138,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get go_to_login => 'Log Masuk';
 
   @override
-  String get easter_egg_title => 'Menemui Kejutan Misteri Tersembunyi ✨';
+  String get easter_egg_title => 'Menemui Kejutan Misteri Tersembunyi';
 
   @override
   String easter_egg_content(String title) {
@@ -4181,7 +4179,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get monthly_card_success_title =>
-      '✨ Kad Bulanan Premium Berjaya Dibuka!';
+      'Kad Bulanan Premium Berjaya Dibuka!';
 
   @override
   String get monthly_card_success_subtitle =>
@@ -4552,8 +4550,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get message_preview_voice => '[Mesej Suara]';
 
   @override
-  String get send_failed_retry =>
-      'Gagal menghantar. Sila cuba lagi kemudian 😢';
+  String get send_failed_retry => 'Gagal menghantar. Sila cuba lagi kemudian';
 
   @override
   String get media_upload_failed_retry =>
@@ -4592,7 +4589,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get regenerate_sync_failed =>
-      'Gagal menyegerakkan bilangan penjanaan semula. Sila cuba lagi 😢';
+      'Gagal menyegerakkan bilangan penjanaan semula. Sila cuba lagi';
 
   @override
   String get creator_public_works => 'Karya Awam';
@@ -5073,7 +5070,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get mailCaseNumberCopied => 'Nombor kes telah disalin';
 
   @override
-  String get profilePageAboutMe => '📝 Tentang Saya';
+  String get profilePageAboutMe => 'Tentang Saya';
 
   @override
   String get profilePageTabBio => 'Pengenalan Diri';
@@ -5340,7 +5337,7 @@ class AppLocalizationsMs extends AppLocalizations {
       'Ramalan dibuat berdasarkan rekod sedia ada. Tarikh hanya untuk rujukan catatan peribadi.';
 
   @override
-  String get periodStartedToday => '🩸 Bermula Hari Ini';
+  String get periodStartedToday => 'Bermula Hari Ini';
 
   @override
   String get periodStillOngoing => 'Masih Datang Haid';
@@ -5575,7 +5572,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get privateProfileSave => 'Simpan';
 
   @override
-  String get editProfileBirthdayReminderTitle => '🎂 Peringatan Ringkas';
+  String get editProfileBirthdayReminderTitle => 'Peringatan Ringkas';
 
   @override
   String get editProfileBirthdayReminderContent =>
@@ -5585,7 +5582,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get editProfileGotIt => 'Saya Faham';
 
   @override
-  String get editProfileBirthdayConfirmTitle => '🎂 Sahkan Tarikh Lahir';
+  String get editProfileBirthdayConfirmTitle => 'Sahkan Tarikh Lahir';
 
   @override
   String get editProfileBirthdayConfirmContent =>
@@ -5668,15 +5665,14 @@ class AppLocalizationsMs extends AppLocalizations {
   String get editProfileAvatarEmpty => 'Data imej avatar kosong';
 
   @override
-  String get chatPageSendFailed =>
-      'Gagal menghantar. Sila cuba lagi kemudian 😢';
+  String get chatPageSendFailed => 'Gagal menghantar. Sila cuba lagi kemudian';
 
   @override
   String get chatPageRegenerateFailed =>
       'Gagal menjana semula. Mesej asal telah dikekalkan. Sila cuba lagi.';
 
   @override
-  String get chatPageRegenerating => '💭 Sedang berfikir semula...';
+  String get chatPageRegenerating => 'Sedang berfikir semula...';
 
   @override
   String get chatPageThinkingTooLong =>
@@ -5696,7 +5692,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String chatPageMessagesDeleted(int count) {
-    return '✅ Berjaya memadamkan $count mesej';
+    return 'Berjaya memadamkan $count mesej';
   }
 
   @override
@@ -5937,11 +5933,11 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get characterProfileShareInvitation =>
-      '🦋 Jemputan pertemuan daripada LoveyDovey';
+      'Jemputan pertemuan daripada LoveyDovey';
 
   @override
   String characterProfileShareCreator(String creatorName) {
-    return '✦ Pencipta: $creatorName';
+    return 'Pencipta: $creatorName';
   }
 
   @override
@@ -5959,7 +5955,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get characterProfileCardSearchHint =>
-      'Cari watak dan mulakan pertemuan  🦋';
+      'Cari watak dan mulakan pertemuan';
 
   @override
   String get characterProfileScanToDownload => 'Imbas untuk Muat Turun';
@@ -6132,18 +6128,18 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String mailShareQixiMessage(String characterName) {
-    return 'Saya menerima surat edisi terhad Qixi daripada $characterName 💌';
+    return 'Saya menerima surat edisi terhad Qixi daripada $characterName';
   }
 
   @override
-  String get mailShareDefaultMessage => 'Surat daripada 「LoveyDovey」💌';
+  String get mailShareDefaultMessage => 'Surat daripada 「LoveyDovey」';
 
   @override
   String get mailShareImageFailed =>
       'Gagal menghasilkan imej untuk dikongsi. Sila cuba lagi kemudian';
 
   @override
-  String get mailCollectedSuccess => 'Surat ini telah disimpan 💌';
+  String get mailCollectedSuccess => 'Surat ini telah disimpan';
 
   @override
   String get mailCollectedCancelled =>
@@ -6205,11 +6201,11 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get qixiSingleRoomOpened =>
-      'Bilik sembang eksklusif Qixi telah dibuka 💕';
+      'Bilik sembang eksklusif Qixi telah dibuka';
 
   @override
   String qixiMultipleRoomsOpened(int count) {
-    return '$count bilik sembang eksklusif Qixi telah dibuka 💕';
+    return '$count bilik sembang eksklusif Qixi telah dibuka';
   }
 
   @override
@@ -6314,10 +6310,10 @@ class AppLocalizationsMs extends AppLocalizations {
       'Hari ini, jangan lepaskan jodoh yang sedang mendekat perlahan-lahan.';
 
   @override
-  String get encounterJoinedToday => '✨ Menyertai Lovey Time Hari Ini';
+  String get encounterJoinedToday => 'Menyertai Lovey Time Hari Ini';
 
   @override
-  String get encounterPopularChats => '❤️ Ramai Sedang Berbual Dengan Mereka';
+  String get encounterPopularChats => 'Ramai Sedang Berbual Dengan Mereka';
 
   @override
   String get qixiBannerActiveUntil => 'Masa Terhad · Hingga 8/26 23:59';
@@ -6326,7 +6322,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get qixiBannerStartsAt => 'Dibuka Terhad Mulai 8/19';
 
   @override
-  String get encounterRecentlyArrived => '✨ Baru Tiba di Lovey Time';
+  String get encounterRecentlyArrived => 'Baru Tiba di Lovey Time';
 
   @override
   String get encounterRecentlyArrivedPlain => 'Baru Tiba di Lovey Time';
@@ -6336,7 +6332,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get encounterLovePrompt =>
-      '💕 Cinta seperti apa yang ingin kamu alami hari ini?';
+      'Cinta seperti apa yang ingin kamu alami hari ini?';
 
   @override
   String get encounterNoCharacters => 'Belum ada watak';
@@ -6345,7 +6341,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get encounterAllLoveTags => 'Semua Tag Cinta';
 
   @override
-  String get chatQixiLetterSent => 'Surat terhad telah dihantar 💌';
+  String get chatQixiLetterSent => 'Surat terhad telah dihantar';
 
   @override
   String get chatQixiLetterPendingTonight =>
@@ -7500,7 +7496,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String character_edit_over_limit_warning(String label, String count) {
-    return '⚠ $label melebihi had $count aksara. Sila betulkan sebelum diterbitkan.';
+    return '$label melebihi had $count aksara. Sila betulkan sebelum diterbitkan.';
   }
 
   @override
@@ -8117,7 +8113,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String shop_joined_days(int days) {
-    return '✦ Anda telah bersama LoveyDovey selama $days hari ✦';
+    return 'Anda telah bersama LoveyDovey selama $days hari';
   }
 
   @override
@@ -8432,4 +8428,16 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get creator_social_links_open_failed =>
       'Tidak dapat membuka pautan ini';
+
+  @override
+  String get chat_regenerate_bottom_tip =>
+      '“Jana semula” kini berada di sini! Gunakan butang ini jika anda mahukan balasan yang berbeza.';
+
+  @override
+  String get chat_continue_bottom_tip =>
+      '“Teruskan” kini berada di sini! Gunakan butang ini jika anda mahu watak terus bercakap.';
+
+  @override
+  String get languageSelectionSubtitle =>
+      'Pilih bahasa yang paling selesa anda gunakan';
 }

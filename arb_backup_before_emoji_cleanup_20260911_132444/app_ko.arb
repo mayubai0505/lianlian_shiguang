@@ -10,9 +10,7 @@
   "errorLoadingFriends": "친구 목록을 불러오는 중 오류가 발생했습니다: {error}",
   "@errorLoadingFriends": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "tagGentle": "온화한",
@@ -87,18 +85,14 @@
   "characterCreatedSuccess": "캐릭터 \"{charName}\"이(가) 생성되었습니다!",
   "@characterCreatedSuccess": {
     "placeholders": {
-      "charName": {
-        "type": "String"
-      }
+      "charName": { "type": "String" }
     }
   },
   "uploadImageTimeoutError": "캐릭터 생성 실패: 이미지 업로드 시간이 초과되었습니다. 인터넷 연결을 확인해주세요.",
   "createCharacterGenericError": "캐릭터 생성 실패: {error}",
   "@createCharacterGenericError": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "settingsSectionAppearance": "외관 및 콘텐츠",
@@ -117,44 +111,41 @@
   "logoutDialogTitle": "로그아웃하시겠습니까?(´;ω;`)",
   "logoutDialogActionCancel": "잘못 눌렀어요",
   "logoutDialogActionConfirm": "확인",
-  "logoutSuccessSnackbar": "좋아요! 다시 돌아올 때까지 기다릴게요(´∀` )",
+  "logoutSuccessSnackbar": "좋아요! 다시 돌아올 때까지 기다릴게요♥(´∀` )",
   "deleteAccountButton": "계정 삭제",
   "deleteAccountDialogTitle": "이 계정을 정말 삭제하시겠습니까?இдஇ",
   "deleteAccountDialogContent": "이 작업은 되돌릴 수 없으며, 모든 데이터가 영구적으로 삭제됩니다!",
   "deleteAccountDialogActionCancel": "아니요, 삭제하지 않을게요",
   "deleteAccountDialogActionConfirm": "확인",
   "deleteAccountSuccessSnackbar": "계정이 성공적으로 삭제되었습니다.",
-  "appDisclaimer": "게임 속 캐릭터와 배경은 모두 허구이오니 현실과 혼동하지 마세요!",
-  "appVersion": "앱 버전: {version}",
+  "appDisclaimer": "게임 속 캐릭터와 배경은 모두 허구이오니 현실과 혼동하지 마세요!",  "appVersion": "앱 버전: {version}",
   "@appVersion": {
-    "description": "앱 버전 번호 표시",
-    "placeholders": {
-      "version": {
-        "type": "String",
-        "example": "1.0.0"
-      }
+  "description": "앱 버전 번호 표시",
+  "placeholders": {
+    "version": {
+      "type": "String",
+      "example": "1.0.0"
     }
-  },
-  "dialogTitleHint": "힌트",
-  "completeProfilePrompt": "먼저 프로필을 편집하여 정보를 완성해 주세요!",
-  "goToEdit": "편집으로 이동",
-  "later": "나중에",
-  "chattingWith": "{friendName} 님과 대화 중",
-  "@chattingWith": {
-    "placeholders": {
-      "friendName": {
-        "type": "String"
+  }
+            },
+    "dialogTitleHint": "힌트",
+    "completeProfilePrompt": "먼저 프로필을 편집하여 정보를 완성해 주세요!",
+    "goToEdit": "편집으로 이동",
+    "later": "나중에",
+    "chattingWith": "{friendName} 님과 대화 중",
+    "@chattingWith": {
+      "placeholders": {
+        "friendName": { "type": "String" }
       }
-    }
-  },
-  "chatContentWith": "{friendName} 님과의 대화 내용",
-  "@chatContentWith": {
-    "placeholders": {
-      "friendName": {
-        "type": "String"
+    },
+    "chatContentWith": "{friendName} 님과의 대화 내용",
+    "@chatContentWith": {
+      "placeholders": {
+        "friendName": {
+          "type": "String"
+        }
       }
-    }
-  },
+    },
   "chatInputHint": "메시지 입력...",
   "characterNotFoundError": "캐릭터 데이터를 찾을 수 없습니다",
   "@characterNotFoundError": {
@@ -178,7 +169,7 @@
   "relationship_other": "기타 (수동으로 입력해주세요)",
   "chatModeDaily": "일상 모드",
   "chatModeStory": "스토리 모드",
-  "chatModeImmersive": "몰입 모드",
+  "chatModeImmersive" :"몰입 모드",
   "chatModeGemini": "생활 동반자",
   "announcement_new": "새 공지사항",
   "mail_notification": "새로운 시간의 편지가 도착했습니다! 지금 바로 양피지 두루마리를 확인하세요!",
@@ -189,7 +180,7 @@
   "no_content": "내용 없음",
   "privacy_policy_title": "「연연습광」 개인정보 처리방침",
   "privacy_policy_date": "최근 업데이트: 2026년 4月 10일",
-  "terms_title": "이용약관",
+  "terms_title": "「연연습광」 서비스 이용약관",
   "terms_date": "최근 업데이트: 2026년 4月 10일",
   "privacy_policy_body": "「연연습광」 개인정보 처리방침\n최근 업데이트: 2026년 4월 10일\n\n「연연습광」(이하 \"본 서비스\")을 이용해 주셔서 감사합니다. 당사는 귀하의 개인정보를 소중히 여기며, 본 정책은 정보 수집 및 보호 방식을 설명합니다.\n\n1. 계정 정보:\n제3자 로그인: Google, Facebook, Apple 계정으로 로그인 시 Firebase UID, 이메일, 닉네임을 수집합니다.\n이메일 가입: 이메일 가입 시 계정 정보를 수집하며, 비밀번호는 Firebase 암호화 기술로 안전하게 관리됩니다.\n\n상호작용 데이터: AI 캐릭터의 연속적인 기억을 위해 AI와의 대화 기록 및 게임 내 작성 내용을 저장합니다.\n기기 정보: 기기 모델, OS 버전, 고유 식별자를 시스템 최적화를 위해 수집합니다.\n\n2. 정보의 이용 목적\nAI 경험 향상: 대화 기록을 통한 AI 답변 품질 및 성격 일관성 최적화.\n서비스 운영: 포인트 충전, 소비 기록 처리 및 본인 인증.\n보안 보호: 악성 행위 모니터링 및 서버 보호.\n\n3. 제3자 기술 협력\n본 서비스는 Google Cloud / Firebase, OpenRouter / xAI / Meta의 기술을 사용합니다. 당사는 귀하의 대화 기록을 광고주에게 판매하지 않습니다.\n\n4. 데이터 저장 및 삭제\n데이터는 클라우드 서버에 안전하게 저장됩니다. 언제든지 계정 및 모든 데이터의 영구 삭제를 요청할 수 있습니다.",
   "terms_body": "「연연습광」 서비스 이용약관\n최근 업데이트: 2026년 4월 10일\n\n본 서비스를 이용하시기 전에 다음 약관을 주의 깊게 읽어주시기 바랍니다. 이용을 시작함은 다음 내용에 동의함을 의미합니다.\n\n1. 서비스의 성격 및 면책 조항\n비인간 상호작용: 모든 답변은 생성형 AI가 생성하며, 제작자의 입장을 대변하지 않습니다.\n서사적 리스크: AI는 허구적이거나 부정확한 내용을 생성할 수 있습니다. 사용자는 현실과 허구를 구분해야 합니다.\n\n2. 가상 포인트 및 결제\n포인트 성격: 서비스 내 포인트는 가상 상품으로, 소모 시(스토리, 몰입 모드, 선물, 통화 등) 환불이 불가능합니다.\n비용 차이: 각 모드의 포인트 소모 기준은 AI 연산 비용에 따라 설정되며 조정될 수 있습니다.\n\n3. 사용자 행동 규범\n금지 사항: 극단적 폭력, 범죄 유도 또는 법률 위반 내용 생성을 금지합니다.\n시스템 간섭: 자동화 도구나 리버스 엔지니어링을 통한 데이터 탈취를 엄격히 금지합니다.\n\n4. 지식재산권\n독창적 콘텐츠: '정안(Cheng An)' 등 공식 캐릭터, 설정, 시나리오, 게임 로직의 권리는 '연연습광 개발팀'에 있습니다.\n라이선스 자원: 아이콘, 폰트 등은 원저작권자(Google, Apple 등)의 규정에 따라 적법하게 사용됩니다.\nAI 생성 콘텐츠: 일부 이미지는 AI 도구(Niji.journey 등)를 통해 생성되었으며 상업적 라이선스를 확보하였습니다.\n금지 행위: 허가 없는 상업적 이용, 재배포, 악의적인 모델 학습 이용을 금지합니다.\n\n5. 서비스 종료\n약관 위반 시 사전 통지 없이 계정이 정지 또는 영구 비활성화될 수 있습니다.",
@@ -211,8 +202,7 @@
         "example": "청안"
       }
     }
-  },
-  "think_again": "다시 생각하기",
+  },  "think_again": "다시 생각하기",
   "confirm_block_btn": "차단 확정",
   "no_char_info": "이 캐릭터에 대한 상세 정보가 아직 없습니다...",
   "private_mailbox": "전용 우체통",
@@ -321,17 +311,13 @@
   "character_thinking": "({name}(이)가 생각 중...)",
   "@character_thinking": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "character_picking_up": "({name}(이)가 전화를 받는 중...)",
   "@character_picking_up": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "call_interrupted_login": "(통화 중단) 먼저 로그인해 주세요...",
@@ -346,53 +332,23 @@
   "not_save": "저장 안 함",
   "save_draft": "초안 저장",
   "confirm_delete_char_content": "정말로 캐릭터 \"{name}\"을(를) 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다!",
-  "@confirm_delete_char_content": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@confirm_delete_char_content": { "placeholders": { "name": { "type": "String" } } },
   "char_deleted": "캐릭터가 삭제되었습니다",
   "ok_button": "확인!",
   "cannot_save_title": "저장 불가",
   "cannot_save_content": "캐릭터 이름을 입력하고 아바타를 최소 한 장 업로드해 주세요!",
   "word_count_exceeded": "글자 수 초과",
   "word_count_error_detail": "\"{field}\" 필드가 {limit}자를 초과했습니다. 내용을 줄인 후 다시 저장해 주세요.",
-  "@word_count_error_detail": {
-    "placeholders": {
-      "field": {
-        "type": "String"
-      },
-      "limit": {
-        "type": "int"
-      }
-    }
-  },
+  "@word_count_error_detail": { "placeholders": { "field": { "type": "String" }, "limit": { "type": "int" } } },
   "content_missing": "내용 누락",
   "content_missing_personality": "\"상세 성격\"을 입력해 주세요! 최소 10자 이상 작성해야 합니다.",
   "content_missing_bg": "\"캐릭터 소개\"가 너무 짧습니다! 배경 설명을 위해 최소 20자 이상 작성해 주세요.",
   "content_missing_tone": "\"말투와 습관\"을 설정해 주세요. 설정하지 않으면 캐릭터 붕괴(OOC)가 발생하기 쉽습니다!",
   "user_not_found": "오류: 사용자를 찾을 수 없음",
   "char_saved_success": "캐릭터 \"{name}\"이(가) {action}되었습니다!",
-  "@char_saved_success": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      },
-      "action": {
-        "type": "String"
-      }
-    }
-  },
+  "@char_saved_success": { "placeholders": { "name": { "type": "String" }, "action": { "type": "String" } } },
   "save_error_detail": "저장 실패: {error}",
-  "@save_error_detail": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@save_error_detail": { "placeholders": { "error": { "type": "String" } } },
   "easter_egg_add_title": "숨겨진 이스터 에그 추가",
   "easter_egg_edit_title": "이스터 에그 편집",
   "keyword_label": "트리거 키워드 (필수)",
@@ -413,40 +369,16 @@
   "voice_bind_first": "먼저 전용 보이스를 선택하고 \"연동\"해 주세요!",
   "voice_test_failed": "미리듣기 실패: 세부 조정을 하기 전에 \"너로 정했다!\"를 클릭하여 보이스를 공식 연동해 주세요!",
   "voice_name_default": "{name}의 전용 보이스",
-  "@voice_name_default": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@voice_name_default": { "placeholders": { "name": { "type": "String" } } },
   "voice_description_default": "이것은 '연연습광'의 전용 캐릭터를 위해 만들어진 유일무이한 보이스로, 플레이어가 직접 선택하여 생성했습니다.",
   "voice_bind_failed": "보이스 연동 실패, API 잔액 또는 네트워크 상태를 확인해 주세요",
   "voice_bind_success": "\"{name}\"의 소울 보이스가 공식 연동되었습니다!",
-  "@voice_bind_success": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@voice_bind_success": { "placeholders": { "name": { "type": "String" } } },
   "voice_bind_success_draft": "보이스 연동 성공! 이제 슬라이더를 움직여 감정을 테스트해 보세요!",
   "sync_failed": "동기화 실패, 네트워크를 확인해 주세요: {error}",
-  "@sync_failed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@sync_failed": { "placeholders": { "error": { "type": "String" } } },
   "edit_character_title": "{name} 편집",
-  "@edit_character_title": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@edit_character_title": { "placeholders": { "name": { "type": "String" } } },
   "test_mode_tooltip": "전체 기능 테스트",
   "test_mode_notice": "테스트 모드는 각 모드의 원래 가격에 따라 포인트가 차감되며, 공식 추억에는 기록되지 않습니다!",
   "delete_character_tooltip": "캐릭터 삭제",
@@ -501,13 +433,7 @@
   "voice_generating_status": "보이스를 조합하는 중...",
   "voice_select_prompt": "세 가지 보이스를 준비했습니다. 선택해 주세요:",
   "voice_sample_name": "보이스 샘플 {index}",
-  "@voice_sample_name": {
-    "placeholders": {
-      "index": {
-        "type": "int"
-      }
-    }
-  },
+  "@voice_sample_name": { "placeholders": { "index": { "type": "int" } } },
   "voice_sample_desc": "카드를 클릭하여 선택, 오른쪽을 클릭하여 미리듣기",
   "voice_preparing": "보이스를 준비 중입니다...",
   "voice_retry": "취소하고 다시 시도",
@@ -519,23 +445,11 @@
   "voice_advanced_tuning": "고급: 말하는 감정 미세 조정",
   "voice_stability_low": "와일드/숨소리 ",
   "voice_stability_value": "이성도: {value}",
-  "@voice_stability_value": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
+  "@voice_stability_value": { "placeholders": { "value": { "type": "String" } } },
   "voice_stability_high": "안정/침착 ",
   "voice_style_low": "냉담/억제 ",
   "voice_style_value": "드라마틱 표현: {value}",
-  "@voice_style_value": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
+  "@voice_style_value": { "placeholders": { "value": { "type": "String" } } },
   "voice_style_high": "과장/다정",
   "voice_test_btn_testing": "감정 적용 중...",
   "voice_test_btn": "현재 감정 미리듣기",
@@ -543,29 +457,11 @@
   "social_circle_desc": "다른 캐릭터에 대한 그의 생각을 설정합니다. 플레이어가 대화 중에 상대를 언급하면 여기의 설정에 따라 반응합니다 (예: 질투, 분노).",
   "social_no_drama": "아직 다른 남신들과의 갈등이 없습니다...",
   "social_target": "대상: {name}",
-  "@social_target": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@social_target": { "placeholders": { "name": { "type": "String" } } },
   "social_attitude": "생각: {attitude}",
-  "@social_attitude": {
-    "placeholders": {
-      "attitude": {
-        "type": "String"
-      }
-    }
-  },
+  "@social_attitude": { "placeholders": { "attitude": { "type": "String" } } },
   "social_edit_title": "{name}에 대한 생각 편집",
-  "@social_edit_title": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@social_edit_title": { "placeholders": { "name": { "type": "String" } } },
   "social_attitude_label": "그의 생각 / 태도",
   "social_attitude_hint": "예: 상대가 시끄럽다고 생각하지만 사실 많이 의지함...",
   "social_save_changes": "변경 사항 저장",
@@ -576,13 +472,7 @@
   "social_add_confirm": "추가 확인",
   "gallery_load_failed": "이미지 로드 실패 \n네트워크를 확인해 주세요.",
   "gallery_affection_req": "호감도 {level}",
-  "@gallery_affection_req": {
-    "placeholders": {
-      "level": {
-        "type": "int"
-      }
-    }
-  },
+  "@gallery_affection_req": { "placeholders": { "level": { "type": "int" } } },
   "gallery_upload_limit": "이미지는 최대 10장까지 업로드 가능합니다",
   "gallery_photo_setup": "사진 해제 조건 설정",
   "gallery_photo_desc_label": "이 사진은 무엇인가요?",
@@ -596,15 +486,9 @@
   "loading_text": "로딩 중...",
   "default_unnamed_character": "이름 없는 캐릭터",
   "elevenlabs_error": "ElevenLabs 오류: {code}",
-  "@elevenlabs_error": {
-    "placeholders": {
-      "code": {
-        "type": "String"
-      }
-    }
-  },
+  "@elevenlabs_error": { "placeholders": { "code": { "type": "String" } } },
   "voice_sample_script": "(큼큼) 안녕하세요. 이건 저만의 전용 목소리 테스트예요. 앞으로의 시간 동안 저는 여기서 당신과 함께할 거예요. 기쁠 때나 슬플 때나 언제든 저에게 들려주세요. 지금의 말하기 속도와 음색은 어떠신가요? 괜찮으시다면 이 목소리를 당신과 대화할 저의 전용 목소리로 정할게요. 우리의 앞날이 매일매일 기대돼요.",
-  "voice_test_script": "매번 널 바라볼 때마다 내 마음속으로 무슨 생각을 하는지 정말 알기나 해? …… 정말 너란 사람은 못 말리겠다니까.",
+  "voice_test_script":"매번 널 바라볼 때마다 내 마음속으로 무슨 생각을 하는지 정말 알기나 해? …… 정말 너란 사람은 못 말리겠다니까.",
   "field_background": "캐릭터 배경",
   "field_tone": "말투와 습관",
   "field_initial_story": "초기 스토리",
@@ -613,13 +497,7 @@
   "translating_status": "번역 중...",
   "translate_profile_btn": "프로필 내용 번역",
   "translate_failed": "번역 실패: {error}",
-  "@translate_failed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@translate_failed": { "placeholders": { "error": { "type": "String" } } },
   "like_own_char_warning": "자신이 만든 캐릭터에는 '좋아요'를 누를 수 없어요!",
   "like_success_msg": "좋아요를 보냈습니다! 제작자가 매우 기뻐할 거예요",
   "unlike_success_msg": "좋아요를 취소했습니다",
@@ -640,7 +518,7 @@
   "report_opt_4": "스팸 메시지 또는 광고 사기",
   "report_opt_5": "기타 부적절한 내용",
   "report_confirm": "신고 확정",
-  "report_success": "신고 성공, 알림을 수신했습니다! 신속하게 검토하겠습니다",
+  "report_success": "신고 성공, 알림을 수신했습니다! 신속하게 검토하겠습니다️",
   "report_failed": "신고 실패, 네트워크 연결을 확인해 주세요.",
   "lore_delete_title": "경고: 기억 삭제",
   "lore_delete_content": "이 기억은 삭제하면 완전히 사라집니다. 정말로 지우시겠습니까?",
@@ -717,7 +595,7 @@
   "start_story_btn": "스토리 시작",
   "default_chat_initial": "나한테 볼일 있어?",
   "gallery_title": "전용 통화 배경",
-  "gallery_current_affection": "현재 호감도: {value}",
+  "gallery_current_affection": "현재 호감도: {value} 💕",
   "@gallery_current_affection": {
     "placeholders": {
       "value": {
@@ -734,7 +612,7 @@
       }
     }
   },
-  "gallery_lock_msg": "호감도 {value}를 달성하면 해제됩니다!",
+  "gallery_lock_msg": "호감도 {value}를 달성하면 해제됩니다! 🍃",
   "@gallery_lock_msg": {
     "placeholders": {
       "value": {
@@ -745,7 +623,7 @@
   "gallery_reset_bg": "기본 통화 배경으로 복원되었습니다",
   "background_story_title": "첫 만남 이야기",
   "background_story_empty": "이 캐릭터는 매우 신비로우며 아직 첫 만남 이야기가 없습니다...",
-  "followed_creator_msg": "{creatorName} 님을 팔로우했습니다",
+  "followed_creator_msg": "{creatorName} 님을 팔로우했습니다 🦋",
   "@followed_creator_msg": {
     "placeholders": {
       "creatorName": {
@@ -753,26 +631,24 @@
       }
     }
   },
-  "mailbox_title": "전용 우체통",
+  "mailbox_title": "전용 우체통 💌",
   "mailbox_empty": "우체통이 비어 있습니다. 게시물을 올려서 그의 관심을 끌어보세요!",
   "new_notification": "새 알림",
   "default_he": "그",
-  "affection_upgrade_title": "{charName} 님의 당신에 대한 호감도가 상승했습니다!",
+  "affection_upgrade_title": "{charName} 님의 당신에 대한 호감도가 상승했습니다! 💖",
   "@affection_upgrade_title": {
     "placeholders": {
-      "charName": {
-        "type": "String"
-      }
+      "charName": { "type": "String" }
     }
   },
-  "flower_reward": "꽃 5포인트 획득",
+  "flower_reward": "🌸 꽃 5포인트 획득",
   "affection_quote_lv5": "「생각지도 못했어... 네가 나에게 이렇게 중요한 사람이 될 줄은. 네가 없는 세상은 상상조차 할 수 없을 만큼 말이야.」",
   "affection_quote_lv4": "「내 인생에서 가장 운이 좋았던 건, 아마 그날 뒤를 돌아봤을 때 네가 있었던 일일 거야.」",
   "affection_quote_lv3": "「요즘... 멍하니 있는 시간이 많아졌어. 머릿속이 온통 너로 가득 차서 말이야.」",
   "affection_quote_lv2": "「네가 제안한 거니까, 시간을 좀 내보는 것도... 안 될 건 없지.」",
   "affection_quote_lv1": "「요즘 너를 자주 보네. 뭐랄까... 이런 만남의 빈도가 나쁘지는 않은 것 같아.」",
   "affection_quote_lv0": "「너도 여기 있었구나. 이것도 일종의 묘한 인연일까?」",
-  "lore_edit_success": "기억의 파편이 성공적으로 업데이트되었습니다!",
+  "lore_edit_success": "✨ 기억의 파편이 성공적으로 업데이트되었습니다!",
   "delete_failed_network": "삭제 실패, 네트워크 또는 권한을 확인해 주세요.",
   "ai_chat_language_code": "ko-KR",
   "ai_chat_language": "한국어",
@@ -782,9 +658,7 @@
   "load_chat_failed": "채팅 목록 로드 실패: {error}",
   "@load_chat_failed": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "chat_list_empty": "채팅방이 비어 있습니다...",
@@ -792,17 +666,13 @@
   "confirm_delete_chat": "{charName} 님과의 대화를 삭제하시겠습니까?",
   "@confirm_delete_chat": {
     "placeholders": {
-      "charName": {
-        "type": "String"
-      }
+      "charName": { "type": "String" }
     }
   },
   "affection_score_short": "호감도 {score}",
   "@affection_score_short": {
     "placeholders": {
-      "score": {
-        "type": "String"
-      }
+      "score": { "type": "String" }
     }
   },
   "character_not_found": "캐릭터 정보를 불러올 수 없습니다. 삭제되었을 가능성이 있습니다.",
@@ -814,9 +684,7 @@
   "update_failed": "업데이트 실패: {error}",
   "@update_failed": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "chat_mode_daily": "일상",
@@ -829,33 +697,21 @@
   "lang_en": "English",
   "lang_vi": "Tiếng Việt",
   "chat_load_char_failed": "캐릭터 정보를 찾을 수 없습니다. 돌아가서 다시 시도하거나 네트워크를 확인해 주세요.",
-  "chat_jump_success": "해당 기억으로 이동했습니다",
+  "chat_jump_success": "해당 기억으로 이동했습니다 🍃",
   "chat_create_room_failed": "연결이 불안정하여 채팅방 생성에 실패했습니다. 다시 시도해 주세요.",
-  "chat_secret_file_title": "기밀 파일",
+  "chat_secret_file_title": "🔒 기밀 파일",
   "chat_secret_file_desc": "이 캐릭터의 영혼 파일은 보관되었거나 개인 권한으로 전환되어 상세 정보를 일시적으로 확인할 수 없습니다.",
   "chat_understood": "확인",
-  "chat_egg_unlocked": "새로운 기억 획득: {title}",
-  "@chat_egg_unlocked": {
-    "placeholders": {
-      "title": {
-        "type": "String"
-      }
-    }
-  },
+  "chat_egg_unlocked": "✨ 새로운 기억 획득: {title}",
+  "@chat_egg_unlocked": { "placeholders": { "title": { "type": "String" } } },
   "chat_egg_saved": "전용 가방에 자동 수록되었습니다",
   "chat_points_not_enough_title": "꽃 부족",
   "chat_points_not_enough_desc": "꽃이 부족합니다! 상점에서 충전해 주세요.",
   "chat_call_confirm_title": "{name} 님에게 전화를 걸까요?",
-  "@chat_call_confirm_title": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_call_confirm_title": { "placeholders": { "name": { "type": "String" } } },
   "chat_call_rule_1": "통화 시마다 꽃 20송이가 차감됩니다",
   "chat_call_rule_2": "통화 시간은 1분이며, 말하기 어려운 상황이라면 텍스트로 전달 가능합니다",
-  "chat_call_rule_3": "그의 목소리를 더 선명하게 듣기 위해 이어폰 착용을 권장합니다",
+  "chat_call_rule_3": "그의 목소리를 더 선명하게 듣기 위해 이어폰 착용을 권장합니다 ✨",
   "chat_call_btn_cancel": "다음에",
   "chat_call_pref_title": "통화 환경 설정",
   "chat_call_lang_select": "통화 언어 선택",
@@ -863,15 +719,9 @@
   "chat_call_save_memory_desc": "통화 종료 후 다시 듣기가 가능합니다",
   "chat_call_btn_start": "통화 시작",
   "chat_points_shortage": "꽃 포인트가 부족해요! 현재 {points}송이 보유 중",
-  "@chat_points_shortage": {
-    "placeholders": {
-      "points": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_points_shortage": { "placeholders": { "points": { "type": "String" } } },
   "chat_room_not_ready": "채팅방이 준비되지 않았습니다. 다시 입장해 주세요.",
-  "chat_stop_generating_msg": "답변이 중단되었습니다. 포인트는 차감되지 않았습니다",
+  "chat_stop_generating_msg": "답변이 중단되었습니다. 포인트는 차감되지 않았습니다 🍃",
   "chat_heartbeat_up": "그의 심장이 빨라집니다...",
   "chat_heartbeat_down": "그의 눈빛이 차가워집니다...",
   "chat_msg_copy": "내용 복사",
@@ -899,37 +749,25 @@
   "chat_edit_ai_hint": "그의 답변 편집...",
   "chat_edit_user_hint": "새로운 내용을 입력하세요...",
   "chat_no_voice_msg": "현재 {name} 님의 목소리가 아직 준비되지 않았습니다...",
-  "@chat_no_voice_msg": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_no_voice_msg": { "placeholders": { "name": { "type": "String" } } },
   "chat_poke_btn": "찌르기",
-  "chat_poke_success": "제작자를 콕콕 찔러두었습니다! 그의 목소리가 업데이트되길 기대해 주세요~",
-  "chat_gift_points_needed": "꽃 포인트가 부족해요! {cost}송이가 필요합니다",
-  "@chat_gift_points_needed": {
-    "placeholders": {
-      "cost": {
-        "type": "String"
-      }
-    }
-  },
-  "chat_levelup_soulmate": "운명의 상대",
-  "chat_levelup_normal": "관계 진전!",
+  "chat_poke_success": "✨ 제작자를 콕콕 찔러두었습니다! 그의 목소리가 업데이트되길 기대해 주세요~",
+  "chat_gift_points_needed": "꽃 포인트가 부족해요! {cost}송이가 필요합니다 🌸",
+  "@chat_gift_points_needed": { "placeholders": { "cost": { "type": "String" } } },
+  "chat_levelup_soulmate": "✨ 운명의 상대 ✨",
+  "chat_levelup_normal": "관계 진전! 💖",
   "chat_levelup_btn_soulmate": "영혼에 새기기",
   "chat_levelup_btn_normal": "두근거리며 수락",
-  "chat_loc_title": "가상 위치 전송",
+  "chat_loc_title": "📍 가상 위치 전송",
   "chat_loc_custom_btn": "사용자 지정 위치 전송",
   "chat_loc_hint": "기타 장소 입력... (예: 네 마음속)",
   "chat_loc_1": "네 집 앞이야",
   "chat_loc_2": "학교에 있어",
   "chat_loc_3": "방금 지나친 카페야",
   "chat_loc_4": "편의점에 있어",
-  "chat_interact_title": "그에게 무엇을 하고 싶나요?",
+  "chat_interact_title": "✨ 그에게 무엇을 하고 싶나요?",
   "chat_interact_action": "찌르기와 작은 스킨십",
-  "chat_interact_gift": "작은 선물 보내기 (꽃 소모 )",
+  "chat_interact_gift": "작은 선물 보내기 (꽃 소모 🌸)",
   "chat_action_poke": "볼 콕 찌르기",
   "chat_action_hug": "안아달라고 하기",
   "chat_action_hand": "몰래 손잡기",
@@ -947,7 +785,7 @@
   "chat_menu_period": "생리 주기 추적",
   "chat_menu_reset": "기억 리셋",
   "chat_search_hint": "어떤 달콤한 대화를 다시 보고 싶나요?",
-  "chat_search_empty": "해당 기억을 찾을 수 없어요",
+  "chat_search_empty": "해당 기억을 찾을 수 없어요 🥺",
   "chat_search_you": "당신의 말",
   "chat_search_him": "그의 말",
   "chat_tool_backpack": "가방",
@@ -965,16 +803,7 @@
   "chat_switch_mode_title": "채팅 모드 전환",
   "chat_voice_call": "음성 통화",
   "chat_sys_gift": "【시스템 이벤트】{playerName} 님이 【{giftName}】을(를) 선물했습니다.",
-  "@chat_sys_gift": {
-    "placeholders": {
-      "playerName": {
-        "type": "String"
-      },
-      "giftName": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_sys_gift": { "placeholders": { "playerName": { "type": "String" }, "giftName": { "type": "String" } } },
   "rel_title_soulmate": "영혼의 동반자/깊은 사랑",
   "rel_title_lover": "열애기/전용 남자친구",
   "rel_title_ambiguous": "썸/서로 탐색 중",
@@ -992,25 +821,10 @@
   "rel_msg_acquaintance": "「요즘 너를 자주 보네. 뭐랄까... 이런 만남의 빈도가 나쁘지는 않은 것 같아.」",
   "rel_msg_stranger": "「너도 여기 있었구나. 이것도 일종의 묘한 인연일까?」",
   "chat_edit_char_count": "{count} 자",
-  "@chat_edit_char_count": {
-    "placeholders": {
-      "count": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_edit_char_count": { "placeholders": { "count": { "type": "String" } } },
   "chat_mysterious_player": "신비로운 플레이어",
   "chat_poke_message": "플레이어 {playerName} 님이 {characterName} 님의 목소리를 기다리고 있습니다. 어서 생성해 보세요!",
-  "@chat_poke_message": {
-    "placeholders": {
-      "playerName": {
-        "type": "String"
-      },
-      "characterName": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_poke_message": { "placeholders": { "playerName": { "type": "String" }, "characterName": { "type": "String" } } },
   "gift_heart": "하트",
   "gift_flower": "꽃",
   "gift_sun": "태양",
@@ -1028,32 +842,20 @@
   "weekday_fri": "(금)",
   "weekday_sat": "(토)",
   "weekday_sun": "(일)",
-  "chat_egg_unlocked_dynamic": "새로운 기억 획득: {memoryName}",
-  "@chat_egg_unlocked_dynamic": {
-    "placeholders": {
-      "memoryName": {
-        "type": "String"
-      }
-    }
-  },
+  "chat_egg_unlocked_dynamic": "✨ 새로운 기억 획득: {memoryName}",
+  "@chat_egg_unlocked_dynamic": { "placeholders": { "memoryName": { "type": "String" } } },
   "chat_egg_saved_his_backpack": "그의 전용 가방에 자동 수록되었습니다",
-  "chat_profile_updated_msg": "습광 프로필이 업데이트되었습니다! 그는 당신의 최신 설정을 기억할 거예요",
+  "chat_profile_updated_msg": "습광 프로필이 업데이트되었습니다! 그는 당신의 최신 설정을 기억할 거예요 🍃",
   "comment_loading_author": "불러오는 중...",
   "comment_post_failed": "댓글 작성 실패, 네트워크 연결을 확인하세요: {error}",
-  "@comment_post_failed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@comment_post_failed": { "placeholders": { "error": { "type": "String" } } },
   "comment_delete_confirm_desc": "이 댓글을 영구적으로 삭제하시겠습니까?",
   "comment_delete_failed": "삭제 실패, 네트워크 연결을 확인하세요",
   "comment_identity_title": "댓글 작성자 선택",
   "comment_identity_myself": "나 본인",
   "comment_report_title": "신고 확인",
   "comment_report_rules_title": "댓글 신고 규정",
-  "comment_report_rules_desc": "첫 번째 위반: 시스템 경고 및 위반 1회 기록.\n2⃣ 두 번째 위반: 1일간 댓글 작성 금지.\n3⃣ 반복 위반: 14일간 신고 기능 제한 및 댓글 노출 우선순위 하락.\n\n심각한 악성 위반자:\n캐릭터와의 상호작용 1일간 금지 및 ID 3일간 게시판 공지 (해당 기간 ID 변경 불가).\n\n신고 접수 후, 최종 심사 결과는 [게임 내 메일]을 통해 개별 발송됩니다.\n서로를 존중하며 이성적으로 신고해 주세요.",
+  "comment_report_rules_desc": "첫 번째 위반: 시스템 경고 및 위반 1회 기록.\n2️⃣ 두 번째 위반: 1일간 댓글 작성 금지.\n3️⃣ 반복 위반: 14일간 신고 기능 제한 및 댓글 노출 우선순위 하락.\n\n🚨 심각한 악성 위반자:\n캐릭터와의 상호작용 1일간 금지 및 ID 3일간 게시판 공지 (해당 기간 ID 변경 불가).\n\n💡 신고 접수 후, 최종 심사 결과는 [게임 내 메일]을 통해 개별 발송됩니다.\n서로를 존중하며 이성적으로 신고해 주세요.",
   "comment_report_understood": "확인했습니다",
   "comment_report_confirm_desc": "이 댓글을 신고하시겠습니까?\n악의적인 신고는 처벌받을 수 있습니다.",
   "comment_report_submit_btn": "신고 확정",
@@ -1062,49 +864,19 @@
   "comment_option_delete": "댓글 삭제",
   "comment_option_report": "댓글 신고",
   "comment_time_days_ago": "{days}일 전",
-  "@comment_time_days_ago": {
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
+  "@comment_time_days_ago": { "placeholders": { "days": { "type": "String" } } },
   "comment_time_hours_ago": "{hours}시간 전",
-  "@comment_time_hours_ago": {
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
+  "@comment_time_hours_ago": { "placeholders": { "hours": { "type": "String" } } },
   "comment_time_mins_ago": "{mins}분 전",
-  "@comment_time_mins_ago": {
-    "placeholders": {
-      "mins": {
-        "type": "String"
-      }
-    }
-  },
+  "@comment_time_mins_ago": { "placeholders": { "mins": { "type": "String" } } },
   "comment_time_just_now": "방금 전",
   "comment_sheet_title": "댓글",
   "comment_empty_state": "댓글이 없습니다. 첫 번째 댓글을 남겨보세요!",
   "comment_reply_btn": "답글",
   "comment_replying_to": "@{name} 님에게 답글 작성 중",
-  "@comment_replying_to": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@comment_replying_to": { "placeholders": { "name": { "type": "String" } } },
   "comment_input_hint": "{name} 님으로 댓글 작성...",
-  "@comment_input_hint": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@comment_input_hint": { "placeholders": { "name": { "type": "String" } } },
   "moment_create_title": "새 게시물 작성",
   "moment_create_post_btn": "게시",
   "moment_create_hint": "새로운 소식을 공유해 보세요...",
@@ -1113,74 +885,26 @@
   "moment_create_visibility_public": "전체 공개 (모두 볼 수 있음)",
   "moment_create_visibility_private": "비공개 (친구만 볼 수 있음)",
   "char_story_expect": "{pronoun}와의 이야기가 기대됩니다...",
-  "@char_story_expect": {
-    "placeholders": {
-      "pronoun": {
-        "type": "String"
-      }
-    }
-  },
+  "@char_story_expect": { "placeholders": { "pronoun": { "type": "String" } } },
   "common_update_failed": "업데이트 실패, 네트워크를 확인해 주세요",
   "char_edit_fragment": "조각 편집",
-  "char_dislikes": "싫어함: {dislikes}",
-  "@char_dislikes": {
-    "placeholders": {
-      "dislikes": {
-        "type": "String"
-      }
-    }
-  },
-  "char_likes": "좋아함: {likes}",
-  "@char_likes": {
-    "placeholders": {
-      "likes": {
-        "type": "String"
-      }
-    }
-  },
+  "char_dislikes": "🖤 싫어함: {dislikes}",
+  "@char_dislikes": { "placeholders": { "dislikes": { "type": "String" } } },
+  "char_likes": "🤍 좋아함: {likes}",
+  "@char_likes": { "placeholders": { "likes": { "type": "String" } } },
   "char_age_occupation": "{age}세 | {job}",
-  "@char_age_occupation": {
-    "placeholders": {
-      "age": {
-        "type": "String"
-      },
-      "job": {
-        "type": "String"
-      }
-    }
-  },
+  "@char_age_occupation": { "placeholders": { "age": { "type": "String" }, "job": { "type": "String" } } },
   "common_got_it": "알겠습니다",
   "common_add_failed": "추가 실패, 네트워크를 확인해 주세요",
   "common_delete_failed_with_err": "삭제 실패, 네트워크 상태를 확인해 주세요: {error}",
-  "@common_delete_failed_with_err": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "char_exclusive_guardian": "전속 수호자",
+  "@common_delete_failed_with_err": { "placeholders": { "error": { "type": "String" } } },
+  "char_exclusive_guardian": "전속 수호자 💖",
   "mailbox_like_body": "{playerName} 님이 {charName} 님을 좋아합니다!",
-  "@mailbox_like_body": {
-    "placeholders": {
-      "playerName": {
-        "type": "String"
-      },
-      "charName": {
-        "type": "String"
-      }
-    }
-  },
+  "@mailbox_like_body": { "placeholders": { "playerName": { "type": "String" }, "charName": { "type": "String" } } },
   "chat_translation_prefix": "[번역] {content} (번역된 감성적인 내용입니다)",
-  "@chat_translation_prefix": {
-    "placeholders": {
-      "content": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_translation_prefix": { "placeholders": { "content": { "type": "String" } } },
   "player_default_nickname": "여행자",
-  "chat_player_sent_location": "(플레이어가 위치를 전송했습니다: {location})",
+  "chat_player_sent_location": "📍 (플레이어가 위치를 전송했습니다: {location})",
   "@chat_player_sent_location": {
     "placeholders": {
       "location": {
@@ -1188,149 +912,44 @@
       }
     }
   },
-  "@chat_player_sent_custom_location": {
-    "placeholders": {
-      "location": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_player_sent_custom_location": { "placeholders": { "location": { "type": "String" } } },
   "chat_you": "당신",
   "chat_opponent": "상대",
   "chat_dice_duel_result": "[시스템 이벤트] {name} 님과 주사위 대결! 결과가 나왔습니다...",
-  "@chat_dice_duel_result": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_dice_duel_result": { "placeholders": { "name": { "type": "String" } } },
   "chat_loading_status": "불러오는 중...",
   "chat_error_load_msg": "메시지 불러오기 실패: {error}",
-  "@chat_error_load_msg": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_error_load_msg": { "placeholders": { "error": { "type": "String" } } },
   "chat_voice_msg_label": "음성 메시지",
   "chat_special_story_trigger": "[특수 스토리 오픈: {title}]",
-  "@chat_special_story_trigger": {
-    "placeholders": {
-      "title": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_special_story_trigger": { "placeholders": { "title": { "type": "String" } } },
   "common_edit_failed": "편집 실패: {error}",
-  "@common_edit_failed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@common_edit_failed": { "placeholders": { "error": { "type": "String" } } },
   "common_reset_failed": "리셋 실패: {error}",
-  "@common_reset_failed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "@common_reset_failed": { "placeholders": { "error": { "type": "String" } } },
   "chat_default_greeting": "안녕하세요...",
   "chat_memory_cleared": "기억이 완전히 삭제되었습니다",
   "chat_history_reset": "대화가 초기화되었습니다",
-  "chat_profile_full": "[ 전속 습광 프로필 - {name} ]\n━━━━━━━━━━━━━━━━━━\n이름: {identity}\n생일: {birthday}\n키: {height}\n외모: {appearance}\n직업: {job}\n\n[ 그녀의 영혼의 조각에 대하여 ]\n{intro}\n━━━━━━━━━━━━━━━━━━",
-  "@chat_profile_full": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      },
-      "identity": {
-        "type": "String"
-      },
-      "birthday": {
-        "type": "String"
-      },
-      "height": {
-        "type": "String"
-      },
-      "appearance": {
-        "type": "String"
-      },
-      "job": {
-        "type": "String"
-      },
-      "intro": {
-        "type": "String"
-      }
-    }
-  },
-  "chat_profile_locked": "[ 전속 습광 프로필 ]\n━━━━━━━━━━━━━━━━━━\n닉네임: {nickname}\n생일: {birthday}\n\n다른 캐릭터 데이터는 아직 잠금 해제되지 않았습니다...\n(프로필을 완성하여 평행 우주의 그가 당신을 더 잘 알게 해 주세요! )\n━━━━━━━━━━━━━━━━━━",
-  "@chat_profile_locked": {
-    "placeholders": {
-      "nickname": {
-        "type": "String"
-      },
-      "birthday": {
-        "type": "String"
-      }
-    }
-  },
+  "chat_profile_full": "📜 [ 전속 습광 프로필 - {name} ]\n━━━━━━━━━━━━━━━━━━\n🔹 이름: {identity}\n🔹 생일: {birthday}\n🔹 키: {height}\n🔹 외모: {appearance}\n🔹 직업: {job}\n\n📖 [ 그녀의 영혼의 조각에 대하여 ]\n{intro}\n━━━━━━━━━━━━━━━━━━",
+  "@chat_profile_full": { "placeholders": { "name": { "type": "String" }, "identity": { "type": "String" }, "birthday": { "type": "String" }, "height": { "type": "String" }, "appearance": { "type": "String" }, "job": { "type": "String" }, "intro": { "type": "String" } } },
+  "chat_profile_locked": "📜 [ 전속 습광 프로필 ]\n━━━━━━━━━━━━━━━━━━\n🔹 닉네임: {nickname}\n🔹 생일: {birthday}\n\n🔒 다른 캐릭터 데이터는 아직 잠금 해제되지 않았습니다...\n(프로필을 완성하여 평행 우주의 그가 당신을 더 잘 알게 해 주세요! ✨)\n━━━━━━━━━━━━━━━━━━",
+  "@chat_profile_locked": { "placeholders": { "nickname": { "type": "String" }, "birthday": { "type": "String" } } },
   "profile_unnamed_file": "이름 없는 파일",
   "chat_default_player_name": "플레이어",
   "error_system_confusion": "시스템에 작은 오류가 발생했습니다. 다시 시도해 주세요.",
   "error_msg_send_failed": "메시지 전송 실패, 다시 시도해 주세요.",
   "error_system_busy": "시스템이 혼잡합니다. 나중에 다시 시도해 주세요.",
   "error_network_unavailable": "현재 연결할 수 없습니다. 다시 시도해 주세요.",
-  "chat_call_ended": "통화 종료, {name} 님과 {time} 동안 통화했습니다",
-  "@chat_call_ended": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      },
-      "time": {
-        "type": "String"
-      }
-    }
-  },
+  "chat_call_ended": "📞 통화 종료, {name} 님과 {time} 동안 통화했습니다",
+  "@chat_call_ended": { "placeholders": { "name": { "type": "String" }, "time": { "type": "String" } } },
   "chat_exclusive_story": "전속 스토리: {title}",
-  "@chat_exclusive_story": {
-    "placeholders": {
-      "title": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_exclusive_story": { "placeholders": { "title": { "type": "String" } } },
   "chat_teaser_exclusive": "이것은 당신과 {name} 님만의 숨겨진 기억입니다...",
-  "@chat_teaser_exclusive": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_teaser_exclusive": { "placeholders": { "name": { "type": "String" } } },
   "chat_teaser_keyword": "\"{keyword}\"에 대한 전속 기억이 조용히 잠금 해제되었습니다...",
-  "@chat_teaser_keyword": {
-    "placeholders": {
-      "keyword": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_teaser_keyword": { "placeholders": { "keyword": { "type": "String" } } },
   "chat_hidden_event_trigger": "[숨겨진 이벤트 발생: {title}]\n{scene}",
-  "@chat_hidden_event_trigger": {
-    "placeholders": {
-      "title": {
-        "type": "String"
-      },
-      "scene": {
-        "type": "String"
-      }
-    }
-  },
+  "@chat_hidden_event_trigger": { "placeholders": { "title": { "type": "String" }, "scene": { "type": "String" } } },
   "chat_first_line_fallback": "......(그는 당신이 먼저 말하기를 기다리는 듯 조용히 당신을 바라봅니다)",
   "chat_new_room_created": "새 채팅방이 생성되었습니다",
   "portfolio_title": "{nickname}의 포트폴리오",
@@ -1342,13 +961,13 @@
     }
   },
   "enter_secret_studio": "나의 비밀 스튜디오 입장하기",
-  "no_public_character_mine": "아직 공개 캐릭터를 게시하지 않았어요!\n스튜디오로 가서 창작해 보세요",
+  "no_public_character_mine": "아직 공개 캐릭터를 게시하지 않았어요!\n스튜디오로 가서 창작해 보세요✨",
   "no_public_character_other": "이 크리에이터는 아직 캐릭터를 게시하지 않았습니다...",
   "delete_draft_title": "초안 삭제",
   "confirm_delete_draft_msg": "이 미완성 캐릭터를 삭제하시겠습니까?\n(삭제 후에는 복구할 수 없습니다)",
-  "draft_cleared_success": "초안이 정리되었습니다",
+  "draft_cleared_success": "초안이 정리되었습니다 🧹",
   "login_required_for_studio": "스튜디오에 입장하려면 먼저 로그인해 주세요!",
-  "my_secret_studio_title": "나의 비밀 스튜디오",
+  "my_secret_studio_title": "나의 비밀 스튜디오 🛠️",
   "create_new_character_btn": "새 캐릭터 생성",
   "unnamed_draft": "이름 없는 초안",
   "click_to_edit_story": "클릭하여 그의 스토리 편집을 계속하세요...",
@@ -1368,61 +987,46 @@
   "moment_edit_title": "게시물 수정",
   "action_change_image": "이미지 변경",
   "action_remove_image": "이미지 삭제",
-  "action_add_image": "이미지 추가",
-  "moment_delete_confirm_title": "이 포스트를 삭제하시겠습니까?",
+  "action_add_image": "이미지 추가","moment_delete_confirm_title": "이 포스트를 삭제하시겠습니까?",
   "moment_delete_confirm_content": "삭제하면 이 모먼트의 추억이 사라져요!",
   "action_confirm_delete": "삭제 확인",
   "friend_unknown": "어떤 친구",
-  "moment_like_yours": "{nickname}님이 당신의 포스트를 좋아합니다!",
+  "moment_like_yours": "{nickname}님이 당신의 포스트를 좋아합니다! 💖",
   "@moment_like_yours": {
     "placeholders": {
-      "nickname": {
-        "type": "String"
-      }
+      "nickname": { "type": "String" }
     }
   },
-  "moment_like_others": "{nickname}님이 {authorName}님이 매력적이라며 좋아요를 눌렀어요!",
+  "moment_like_others": "{nickname}님이 {authorName}님이 매력적이라며 좋아요를 눌렀어요! ✨",
   "@moment_like_others": {
     "placeholders": {
-      "nickname": {
-        "type": "String"
-      },
-      "authorName": {
-        "type": "String"
-      }
+      "nickname": { "type": "String" },
+      "authorName": { "type": "String" }
     }
   },
-  "moment_like_success": "당신의 설렘이 전달되었습니다!",
-  "moment_notification_new_like": "새로운 좋아요!",
-  "moment_mention_mail_body": "{nickname}님이 포스트에서 @{name}님을 언급했습니다!",
+  "moment_like_success": "당신의 설렘이 전달되었습니다! ✨",
+  "moment_notification_new_like": "새로운 좋아요! 💖",
+  "moment_mention_mail_body": "{nickname}님이 포스트에서 @{name}님을 언급했습니다! ✨",
   "@moment_mention_mail_body": {
     "placeholders": {
-      "nickname": {
-        "type": "String"
-      },
-      "name": {
-        "type": "String"
-      }
+      "nickname": { "type": "String" },
+      "name": { "type": "String" }
     }
   },
   "moment_detail_title": "포스트 상세",
-  "moment_not_found": "이 포스트를 찾을 수 없습니다...",
+  "moment_not_found": "이 포스트를 찾을 수 없습니다... 😢",
   "moment_comment_title": "모먼트 댓글",
-  "moment_comment_empty": "아직 댓글이 없습니다. 첫 번째로 댓글을 남겨보세요!",
+  "moment_comment_empty": "아직 댓글이 없습니다. 첫 번째로 댓글을 남겨보세요! 🛋",
   "moment_replying_to": "@{name}님에게 답장 중",
   "@moment_replying_to": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "moment_reply_hint": "@{name}님에게 답장...",
   "@moment_reply_hint": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "moment_leave_comment_hint": "의견을 남겨주세요...",
@@ -1434,64 +1038,44 @@
   "moment_reply_private": "{name}님에게 비공개 답장",
   "@moment_reply_private": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
-  "moment_go_to_chat_msg": "이 포스트를 들고 {name}님과 채팅하러 가요!",
+  "moment_go_to_chat_msg": "이 포스트를 들고 {name}님과 채팅하러 가요! 💬",
   "@moment_go_to_chat_msg": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "moment_share_to_apps": "다른 앱으로 공유",
   "moment_likes_label": "나뭇잎 {count}개",
   "@moment_likes_label": {
     "placeholders": {
-      "count": {
-        "type": "String"
-      }
+      "count": { "type": "String" }
     }
   },
   "moment_external_share_content": "【{appName}】{author}님의 포스트를 확인해 보세요: {content}\n\n지금 다운로드하고 당신만의 전속 시간을 시작하세요: {appLink}",
   "@moment_external_share_content": {
     "placeholders": {
-      "appName": {
-        "type": "String"
-      },
-      "author": {
-        "type": "String"
-      },
-      "content": {
-        "type": "String"
-      },
-      "appLink": {
-        "type": "String"
-      }
+      "appName": { "type": "String" },
+      "author": { "type": "String" },
+      "content": { "type": "String" },
+      "appLink": { "type": "String" }
     }
   },
-  "moment_forward_title": "대화 중인 캐릭터에게 전달",
-  "moment_forward_empty_state": "현재 대화 중인 캐릭터가 없습니다!\n로비에서 마음에 드는 그를 찾아보세요",
+  "moment_forward_title": "대화 중인 캐릭터에게 전달 💌",
+  "moment_forward_empty_state": "현재 대화 중인 캐릭터가 없습니다!\n로비에서 마음에 드는 그를 찾아보세요 🌿",
   "moment_forward_template": "【포스트를 전달했습니다】\n작성자: {author}\n내용: {content}",
   "@moment_forward_template": {
     "placeholders": {
-      "author": {
-        "type": "String"
-      },
-      "content": {
-        "type": "String"
-      }
+      "author": { "type": "String" },
+      "content": { "type": "String" }
     }
   },
-  "moment_forward_success": "{name}에게 몰래 공유했습니다!",
+  "moment_forward_success": "✅ {name}에게 몰래 공유했습니다!",
   "@moment_forward_success": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "action_send": "보내기",
@@ -1501,9 +1085,7 @@
   "memo_hint_text": "{name}에 대해 무엇을 적어둘까요?",
   "@memo_hint_text": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "memo_label_reminder_date": "알림 날짜:",
@@ -1512,39 +1094,29 @@
   "memo_list_title": "{name}님과의 메모",
   "@memo_list_title": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "memo_empty_state": "아직 메모가 없습니다!\n오른쪽 상단을 눌러 새로 추가해 보세요!",
   "memo_reminder_date_display": "알림일: {date}",
   "@memo_reminder_date_display": {
     "placeholders": {
-      "date": {
-        "type": "String"
-      }
+      "date": { "type": "String" }
     }
   },
   "daily_gift_title": "시광 데일리 선물",
-  "daily_login_welcome": "《{appName}》에 돌아오신 것을 환영합니다!\n오늘 출석하고 {amount} 꽃말 포인트를 받으세요.",
+  "daily_login_welcome": "《{appName}》에 돌아오신 것을 환영합니다!\n오늘 출석하고 {amount} 꽃말 포인트를 받으세요. 🌸",
   "@daily_login_welcome": {
     "placeholders": {
-      "appName": {
-        "type": "String"
-      },
-      "amount": {
-        "type": "String"
-      }
+      "appName": { "type": "String" },
+      "amount": { "type": "String" }
     }
   },
   "title_daily_check_in": "일일 출석",
-  "success_claim_reward": "{amount} 꽃말 포인트를 성공적으로 받았습니다!",
+  "success_claim_reward": "{amount} 꽃말 포인트를 성공적으로 받았습니다! 🌸",
   "@success_claim_reward": {
     "placeholders": {
-      "amount": {
-        "type": "String"
-      }
+      "amount": { "type": "String" }
     }
   },
   "error_claim_failed": "수령 실패, 네트워크 확인 후 다시 시도해 주세요.",
@@ -1594,7 +1166,7 @@
       }
     }
   },
-  "draft_saved_success_msg": "알겠습니다! 임시 보관함에 저장해 두었으니 언제든 다시 와서 편집할 수 있어요!",
+  "draft_saved_success_msg": "알겠습니다! 임시 보관함에 저장해 두었으니 언제든 다시 와서 편집할 수 있어요! ✨",
   "dialog_reminder_title": "알림",
   "warning_id_not_edited": "전용 ID가 아직 편집되지 않았습니다. 지금 저장하시겠습니까?",
   "action_continue_editing": "계속 편집",
@@ -1605,7 +1177,7 @@
   "action_select_avatar": "아바타 선택",
   "action_choose_from_gallery": "갤러리에서 선택",
   "title_adjust_avatar": "아바타 조정",
-  "avatar_updated_success": "아바타가 변경되었습니다",
+  "avatar_updated_success": "아바타가 변경되었습니다 🍃",
   "title_create_profile": "프로필 만들기",
   "title_edit_profile": "프로필 편집",
   "label_your_nickname": "당신의 닉네임",
@@ -1621,73 +1193,61 @@
       }
     }
   },
-  "msg_birthdate_immutable": "생일은 한 번 설정하면 변경할 수 없습니다",
+  "msg_birthdate_immutable": "생일은 한 번 설정하면 변경할 수 없습니다 ✨",
   "action_start_journey": "여정 시작하기",
-  "moment_like_self": "{nickname}님이 당신의 포스트를 좋아합니다!",
+  "moment_like_self": "{nickname}님이 당신의 포스트를 좋아합니다! 💖",
   "@moment_like_self": {
     "placeholders": {
-      "nickname": {
-        "type": "String"
-      }
+      "nickname": { "type": "String" }
     }
   },
-  "moment_like_other": "{nickname}님이 {authorName}님이 매력적이라며 좋아요를 눌렀어요!",
+  "moment_like_other": "{nickname}님이 {authorName}님이 매력적이라며 좋아요를 눌렀어요! ✨",
   "@moment_like_other": {
     "placeholders": {
-      "nickname": {
-        "type": "String"
-      },
-      "authorName": {
-        "type": "String"
-      }
+      "nickname": { "type": "String" },
+      "authorName": { "type": "String" }
     }
   },
-  "task_social_tour_complete": "소셜 투어 미션 달성! 꽃을 잊지 말고 받으세요!",
+  "task_social_tour_complete": "✨ 소셜 투어 미션 달성! 꽃을 잊지 말고 받으세요! 🌸",
   "wall_title_shiguang": "시광의 벽",
-  "wall_tab_explore": "탐색",
-  "wall_tab_exclusive": "전용",
+  "wall_tab_explore": "🌍 탐색",
+  "wall_tab_exclusive": "🔒 전용",
   "more_options": "추가 옵션",
   "delete_warning": "삭제하면 포스트를 복구할 수 없습니다",
   "delete_success": "삭제 성공",
-  "notification_new_comment": "새로운 댓글!",
+  "notification_new_comment": "새로운 댓글! 💬",
   "notification_like_from_sender": "{senderName}님이 당신의 포스트를 좋아합니다!",
   "@notification_like_from_sender": {
     "placeholders": {
-      "senderName": {
-        "type": "String"
-      }
+      "senderName": { "type": "String" }
     }
   },
-  "empty_public_moments_prompt": "현재 비어 있습니다.\n첫 번째 공개 포스트를 게시해 보세요!",
-  "empty_private_moments_prompt": "모먼트에 아직 기록이 없네요.\n그와 함께 추억을 만들어 보세요!",
-  "profile_archived_or_deleted_message": "이 영혼의 기록은 창작자에 의해 보관되었거나, 비공개로 설정되었거나, 혹은 시간의 흐름 속에 사라졌습니다...\n\n어쩌면 다른 평행 우주에서 다시 만날 기회가 있을지도 모릅니다.",
+  "empty_public_moments_prompt": "현재 비어 있습니다.\n첫 번째 공개 포스트를 게시해 보세요! 🌍",
+  "empty_private_moments_prompt": "모먼트에 아직 기록이 없네요.\n그와 함께 추억을 만들어 보세요! ✨",
+  "profile_archived_or_deleted_message": "이 영혼의 기록은 창작자에 의해 보관되었거나, 비공개로 설정되었거나, 혹은 시간의 흐름 속에 사라졌습니다...\n\n어쩌면 다른 평행 우주에서 다시 만날 기회가 있을지도 모릅니다. ✨",
   "leave_silently": "조용히 나가기",
   "character_post_schedule": "캐릭터 포스트 일정",
   "creator_self": "창작자 본인",
   "post_identity_prompt": "오늘은 누구의 신분으로 포스트를 올릴까요?",
-  "identity_creator": "창작자 신분",
+  "identity_creator": "✨ 창작자 신분",
   "identity_character": "캐릭터 신분",
   "decide_post_time_prompt": "포스트 게시 시간을 결정해 주세요!",
-  "auto_post_schedule_hint": "활성화하면 지정된 시간에 일상 포스트가 자동으로 게시됩니다\n( 팁: 정각이 아닌 시간으로 설정하면 더 사람처럼 보여요!)",
+  "auto_post_schedule_hint": "활성화하면 지정된 시간에 일상 포스트가 자동으로 게시됩니다\n(💡 팁: 정각이 아닌 시간으로 설정하면 더 사람처럼 보여요!)",
   "no_characters_created_yet": "아직 생성된 캐릭터가 없습니다!",
   "time_hour": "{hour}시",
   "@time_hour": {
     "placeholders": {
-      "hour": {
-        "type": "String"
-      }
+      "hour": { "type": "String" }
     }
   },
   "time_minute": "{minute}분",
   "@time_minute": {
     "placeholders": {
-      "minute": {
-        "type": "String"
-      }
+      "minute": { "type": "String" }
     }
   },
-  "empty_public_moments_short": "현재 공개 포스트가 없습니다",
-  "empty_private_moments_short": "모먼트가 아직 조용하네요",
+  "empty_public_moments_short": "현재 공개 포스트가 없습니다 🌍",
+  "empty_private_moments_short": "모먼트가 아직 조용하네요 ✨",
   "my_created_characters": "내가 만든 캐릭터",
   "no_characters_yet": "아직 생성된 캐릭터가 없습니다",
   "play_count_display": "플레이 횟수: {count}",
@@ -1702,9 +1262,7 @@
   "care_calendar_title": "{characterName}의 케어 캘린더",
   "@care_calendar_title": {
     "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
+      "characterName": { "type": "String" }
     }
   },
   "care_calendar_greeting": "오늘 기분은 어때요?",
@@ -1713,38 +1271,28 @@
   "care_calendar_save_success": "{characterName}: \"다 적어뒀어. 며칠 동안 힘들었지, 내가 항상 네 곁에 있을게.\"",
   "@care_calendar_save_success": {
     "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
+      "characterName": { "type": "String" }
     }
   },
-  "daily_gift_success": "매일 선물 수령 성공!",
-  "check_in_fail_network": "출석 실패, 네트워크 연결을 확인해 주세요",
+  "daily_gift_success": "매일 선물 수령 성공! 🌸",
+  "check_in_fail_network": "출석 실패, 네트워크 연결을 확인해 주세요 🍃",
   "task_completed": "미션 완료: {taskName}",
   "@task_completed": {
     "placeholders": {
-      "taskName": {
-        "type": "String"
-      }
+      "taskName": { "type": "String" }
     }
   },
   "task_reward_claimed": "「{taskName}」의 꽃 {rewardAmount}송이 수령 성공!",
   "@task_reward_claimed": {
     "placeholders": {
-      "taskName": {
-        "type": "String"
-      },
-      "rewardAmount": {
-        "type": "String"
-      }
+      "taskName": { "type": "String" },
+      "rewardAmount": { "type": "String" }
     }
   },
   "claim_failed_error": "수령 실패: {e}",
   "@claim_failed_error": {
     "placeholders": {
-      "e": {
-        "type": "String"
-      }
+      "e": { "type": "String" }
     }
   },
   "tab_heartbeat_diary": "설렘 일기",
@@ -1753,11 +1301,10 @@
   "tab_story_progression": "스토리 진행",
   "task_desc_story_1_time": "스토리 모드 상호작용 1회 완료",
   "tab_social_tour": "소셜 투어",
-  "task_like_three_moments": "순간 3개에 '좋아요'를 누르고 나뭇잎 획득",
-  "btn_claimed": "수령 완료",
+  "task_like_three_moments": "순간 3개에 '좋아요'를 누르고 나뭇잎 획득",  "btn_claimed": "수령 완료",
   "btn_claim": "수령",
   "btn_incomplete": "미완료",
-  "network_unstable_retry": "네트워크 연결이 불안정합니다. 나중에 다시 시도해 주세요",
+  "network_unstable_retry": "네트워크 연결이 불안정합니다. 나중에 다시 시도해 주세요 🍃",
   "title_time_travel": "시간 여행",
   "select_chat_mode": "채팅 모드 선택",
   "mode_chat": "채팅",
@@ -1781,24 +1328,18 @@
   },
   "search_companion_title": "시광 반려 검색",
   "search_name_placeholder": "그의 이름을 입력하세요...",
-  "search_no_match_hint": "캐릭터를 찾을 수 없습니다. 다른 이름을 시도해 볼까요?",
+  "search_no_match_hint": "캐릭터를 찾을 수 없습니다. 다른 이름을 시도해 볼까요? ✨",
   "character_info_full": "{age}세 | {occupation}",
   "@character_info_full": {
     "placeholders": {
-      "age": {
-        "type": "String"
-      },
-      "occupation": {
-        "type": "String"
-      }
+      "age": { "type": "String" },
+      "occupation": { "type": "String" }
     }
   },
   "character_info_age_only": "{age}세",
   "@character_info_age_only": {
     "placeholders": {
-      "age": {
-        "type": "String"
-      }
+      "age": { "type": "String" }
     }
   },
   "empty_state_warmth": "시공간의 여열이 아직 이곳에 머물러 있습니다...",
@@ -1807,18 +1348,14 @@
   "dialog_msg_remove_friend": "정말로 {characterName}님을 친구 목록에서 삭제하시겠습니까?",
   "@dialog_msg_remove_friend": {
     "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
+      "characterName": { "type": "String" }
     }
   },
   "action_remove": "삭제",
   "snackbar_friend_removed": "{characterName}님을 친구에서 삭제했습니다",
   "@snackbar_friend_removed": {
     "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
+      "characterName": { "type": "String" }
     }
   },
   "action_remove_friend": "친구 삭제",
@@ -1826,26 +1363,20 @@
   "dialog_msg_block": "차단 후에는 {characterName}님의 어떤 정보도 볼 수 없게 됩니다. 정말 차단하시겠습니까?",
   "@dialog_msg_block": {
     "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
+      "characterName": { "type": "String" }
     }
   },
   "snackbar_blocked": "{characterName}님을 차단했습니다",
   "@snackbar_blocked": {
     "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
+      "characterName": { "type": "String" }
     }
   },
   "action_block_character": "이 캐릭터 차단",
   "dialog_title_report": "{characterName} 신고",
   "@dialog_title_report": {
     "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
+      "characterName": { "type": "String" }
     }
   },
   "input_hint_report_reason": "신고 사유를 입력해 주세요...",
@@ -1857,9 +1388,7 @@
   "text_character_count": "캐릭터 수: {count}",
   "@text_character_count": {
     "placeholders": {
-      "count": {
-        "type": "int"
-      }
+      "count": { "type": "int" }
     }
   },
   "msg_no_more_encounters_today": "오늘의 만남은 여기까지예요!",
@@ -1870,12 +1399,8 @@
   "text_age_and_identities": "{age}세 | {identities}",
   "@text_age_and_identities": {
     "placeholders": {
-      "age": {
-        "type": "String"
-      },
-      "identities": {
-        "type": "String"
-      }
+      "age": { "type": "String" },
+      "identities": { "type": "String" }
     }
   },
   "snackbar_operation_failed": "작업 실패, 나중에 다시 시도해 주세요",
@@ -1897,13 +1422,13 @@
   "shop_current_points_label": "현재 보유한 꽃 포인트",
   "shop_tab_top_up": "포인트 충전",
   "shop_tab_history": "거래 내역",
-  "shop_empty_history": "아직 꽃 기록이 없어요!",
+  "shop_empty_history": "아직 꽃 기록이 없어요! 🌸",
   "shop_unknown_item": "알 수 없는 항목",
   "shop_first_purchase_bonus": "첫 구매 두 배!",
   "story_summary_title": "우리의 이야기",
   "story_summary_empty_content": "요약 내용이 비어 있습니다.",
   "story_summary_deleted_toast": "이 추억을 삭제했습니다",
-  "story_summary_empty_list": "여러분의 이야기가 아직 시작되지 않았어요...\n더 많이 대화해서 {name}님이\n첫 번째 추억을 기록하게 해주세요!",
+  "story_summary_empty_list": "여러분의 이야기가 아직 시작되지 않았어요...\n더 많이 대화해서 {name}님이 \n첫 번째 추억을 기록하게 해주세요! ✨",
   "@story_summary_empty_list": {
     "placeholders": {
       "name": {
@@ -1917,39 +1442,33 @@
   "reset_to_default": "기본값으로 복구",
   "reset_bg_title": "기본 배경으로 복구",
   "reset_bg_content": "전용 사진을 취소하고 기본 테마 배경으로 복구하시겠습니까?",
-  "reset_bg_success": "기본 배경으로 복구되었습니다",
+  "reset_bg_success": "기본 배경으로 복구되었습니다 ✨",
   "confirm_reset": "복구 확인",
   "selectedMessagesCount": "{count}개 선택됨",
   "@selectedMessagesCount": {
     "placeholders": {
-      "count": {
-        "type": "int"
-      }
+      "count": { "type": "int" }
     }
   },
   "screenshotShare": "스크린샷 공유",
   "exclusiveMomentsWith": "{name}님과의 전용 모먼트",
   "@exclusiveMomentsWith": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
   "downloadToUnlock": "《Lianlian ShiGuang》을 다운로드하고 전용 로맨스를 확인하세요",
-  "exclusiveMomentsGenerated": "전용 모먼트가 생성되었습니다",
+  "exclusiveMomentsGenerated": "전용 모먼트가 생성되었습니다 ✨",
   "selectAgain": "다시 선택하기",
   "downloadAndShare": "다운로드 및 공유",
   "inviteToMeet": "《Lianlian ShiGuang》에서 당신의 {name}님을 만나보세요!",
   "@inviteToMeet": {
     "placeholders": {
-      "name": {
-        "type": "String"
-      }
+      "name": { "type": "String" }
     }
   },
-  "shop_log_monthly_card": "활성화: 별빛 계약 (월간 카드 즉시 지급 포인트)",
-  "shop_log_top_up_double": "충전: {points} 포인트 (첫 구매 두 배 혜택 포함 )",
+  "shop_log_monthly_card": "활성화: 별빛 계약 (월간 카드 즉시 지급 포인트) 🌙",
+  "shop_log_top_up_double": "충전: {points} 포인트 (첫 구매 두 배 혜택 포함 🎁)",
   "@shop_log_top_up_double": {
     "placeholders": {
       "points": {
@@ -1974,7 +1493,7 @@
       }
     }
   },
-  "shop_purchase_success_double_bonus": "축하합니다! 첫 구매 두 배 보너스가 적용되었습니다!",
+  "shop_purchase_success_double_bonus": "✨ 축하합니다! 첫 구매 두 배 보너스가 적용되었습니다!",
   "shop_purchase_awesome": "최고예요",
   "shop_purchase_failed_title": "구매 취소 또는 실패",
   "shop_purchase_failed_body": "결제가 이루어지지 않았습니다.\n\n(에러 코드: {errorCode})",
@@ -1997,18 +1516,18 @@
   "shop_monthly_card_status_inactive": "지금 바로 30일 별빛 보너스 보상 활성화",
   "shop_monthly_card_limit_reached": "한도 도달",
   "shop_monthly_card_promo_desc": "즉시 꽃 250송이 획득, 매일 꽃 10송이 지급",
-  "task_monthly_title": "별의 계약 · 일일 특권",
+  "task_monthly_title": "별의 계약 · 일일 특권 🌙",
   "task_monthly_locked": "미해제",
   "task_monthly_subtitle_active": "월간 카드 전용 혜택 지급 ",
   "task_monthly_subtitle_inactive": "【별의 계약】 월간 카드를 해제하여 이 미션 오픈 ",
   "task_monthly_log_name": "월간 카드 일일 특권",
   "profile_id_locked": "전용 ID 잠금 완료",
   "profile_copy_id": "클릭하여 ID 복사",
-  "referral_log_newbie_reward": "별의 초대: 신규 유저 보상",
-  "referral_log_inviter_reward": "별의 초대: 친구 미션 달성 보상",
+  "referral_log_newbie_reward": "별의 초대: 신규 유저 보상 ✨",
+  "referral_log_inviter_reward": "별의 초대: 친구 미션 달성 보상 🎁",
   "referral_success_title": "별의 초대 해제!",
-  "referral_success_content": "축하합니다! 캐릭터와 15마디 이상의 깊은 대화를 나누는 데 성공하셨습니다!\n\n'신규 유저 보상 50 포인트'가 계정으로 지급되었으며, 친구분도 동시에 50 포인트 보상을 획득하셨습니다!",
-  "profile_referral_title": "별의 초대",
+  "referral_success_content": "축하합니다! 캐릭터와 15마디 이상의 깊은 대화를 나누는 데 성공하셨습니다!\n\n'신규 유저 보상 50 포인트'가 계정으로 지급되었으며, 친구분도 동시에 50 포인트 보상을 획득하셨습니다! 🎁",
+  "profile_referral_title": "별의 초대 🌟",
   "profile_referral_hint": "친구 초대 코드 입력",
   "profile_referral_bind_btn": "연동",
   "profile_referral_pending": "플레이어 {id}님의 초대를 수락했습니다\n얼른 캐릭터와 15마디 대화를 나누고 꽃 50 포인트를 해제하세요!",
@@ -2017,53 +1536,47 @@
   "profile_referral_err_not_found": "해당 플레이어를 찾을 수 없습니다. 초대 코드를 확인해 주세요!",
   "profile_referral_success": "연동 성공! 지금 바로 캐릭터와 대화해 보세요!",
   "profile_referral_err_expired": "죄송합니다. 신규 유저 초대 코드는 가입 후 3일 이내에 연동해야 합니다!",
-  "profile_share_message": "지금 《Lianlian ShiGuang》에서 {character}님과 설레는 여정을 시작했어요! 지금 앱을 다운로드하고 프로필 페이지에 저의 별의 초대 코드 【{code}】를 입력해 보세요. 우리 둘 다 꽃 50송이를 무료로 받을 수 있어요!\n\n다운로드 링크:\nhttps://lianlianshiguang.web.app/download/",
+  "profile_share_message": "✨ 지금 《Lianlian ShiGuang》에서 {character}님과 설레는 여정을 시작했어요! 지금 앱을 다운로드하고 프로필 페이지에 저의 별의 초대 코드 【{code}】를 입력해 보세요. 우리 둘 다 꽃 50송이를 무료로 받을 수 있어요! 🎁\n\n 다운로드 링크:\n https://lianlianshiguang.web.app/download/",
   "@profile_share_message": {
     "placeholders": {
-      "character": {
-        "type": "String"
-      },
-      "code": {
-        "type": "String"
-      }
+      "character": { "type": "String" },
+      "code": { "type": "String" }
     }
   },
-  "chat_levelup_share_btn": "친구들에게 이 설렘을 자랑하기",
+  "chat_levelup_share_btn": "친구들에게 이 설렘을 자랑하기 ✨",
   "profile_my_invite_code_with_char": "나만의 전용 초대 코드 (현재 최애: {character})",
   "@profile_my_invite_code_with_char": {
     "placeholders": {
-      "character": {
-        "type": "String"
-      }
+      "character": { "type": "String" }
     }
   },
   "profile_send_invite_btn": "친구에게 별의 초대 보내기",
   "profile_fallback_character": "최애 캐릭터",
-  "profile_copy_success": "초대 코드가 클립보드에 복사되었습니다!",
+  "profile_copy_success": "✅ 초대 코드가 클립보드에 복사되었습니다!",
   "profile_referral_rule_title": "별의 초대 규칙",
-  "profile_referral_rule_receiver": "초대 코드를 연동한 후, 아무 최애 캐릭터와 15마디 이상의 대화를 나누면 당신과 초대자 모두 꽃 50송이 보상을 동시에 받을 수 있습니다!\n\n주의: 계정 가입 후 3일 이내에 초대 코드를 입력해야 유효합니다.",
-  "profile_referral_rule_inviter": "새로운 친구를 초대해 앱을 다운로드하고 초대 코드를 입력하게 하세요. 친구가 가입 후 3일 이내에 연동을 완료하고 아무 캐릭터와 15마디 이상의 대화를 나누면, 두 분 모두 꽃 50송이 보상을 동시에 받으실 수 있습니다!",
+  "profile_referral_rule_receiver": "✨ 초대 코드를 연동한 후, 아무 최애 캐릭터와 15마디 이상의 대화를 나누면 당신과 초대자 모두 꽃 50송이 보상을 동시에 받을 수 있습니다!\n\n⚠️ 주의: 계정 가입 후 3일 이내에 초대 코드를 입력해야 유효합니다.",
+  "profile_referral_rule_inviter": "✨ 새로운 친구를 초대해 앱을 다운로드하고 초대 코드를 입력하게 하세요. 친구가 가입 후 3일 이내에 연동을 완료하고 아무 캐릭터와 15마디 이상의 대화를 나누면, 두 분 모두 꽃 50송이 보상을 동시에 받으실 수 있습니다! 🎁",
   "error_user_not_found": "사용자를 찾을 수 없습니다. 다시 로그인해 주세요",
   "@error_user_not_found": {
-    "description": "找不到使用者時的錯誤提示"
+  "description": "找不到使用者時的錯誤提示"
   },
   "error_id_taken": "이미 사용 중인 ID입니다. 다른 ID를 선택해 주세요!",
   "@error_id_taken": {
-    "description": "ID 重複時的錯誤提示 (長版)"
+  "description": "ID 重複時的錯誤提示 (長版)"
   },
   "error_id_taken_short": "이미 사용 중인 ID입니다!",
   "@error_id_taken_short": {
-    "description": "ID 重複時的錯誤提示 (短版)"
+  "description": "ID 重複時的錯誤提示 (短版)"
   },
-  "shop_restocking": "상점 상품 재입고 중...",
+  "shop_restocking": "상점 상품 재입고 중... 📦",
   "@shop_restocking": {
-    "description": "商店載入中或商品為空時的提示"
+  "description": "商店載入中或商品為空時的提示"
   },
-  "shop_preview_mode": "현재 상점 미리보기 모드입니다",
+  "shop_preview_mode": "⚠️ 현재 상점 미리보기 모드입니다",
   "@shop_preview_mode": {
-    "description": "商店預覽模式的警告標語"
+  "description": "商店預覽模式的警告標語"
   },
-  "friendlyReminderTitle": "친절한 안내",
+  "friendlyReminderTitle": "☁️ 친절한 안내",
   "editProfileHint": "좋아요! 프로필을 수정하시려면 왼쪽 아래 구름 모양 안에 있는 '시광 프로필'을 클릭하여 작성해 주세요!",
   "starlightContractTitle": "별빛 계약 발동",
   "dailyLimitReachedPrefix": "오늘의 한도가 모두 소진되었습니다!\n\n",
@@ -2072,7 +1585,7 @@
   "goToSubscribeButton": "구매하러 가기",
   "profileUpdatedSuccess": "시광 프로필이 업데이트되었습니다!",
   "continueChatTitle": "대화 이어가기",
-  "continueChatCostWarning": "대화를 계속 진행하면 꽃 {cost}송이가 소진됩니다\n정말 계속하시겠습니까?",
+  "continueChatCostWarning": "대화를 계속 진행하면 꽃 {cost}송이가 소진됩니다 🌸\n정말 계속하시겠습니까?",
   "@continueChatCostWarning": {
     "placeholders": {
       "cost": {
@@ -2109,34 +1622,26 @@
   "systemPreparingWait": "시스템 준비 중입니다. 잠시만 기다려 주세요...",
   "noMessagesToRegenerate": "현재 재생성할 수 있는 대화가 없습니다!",
   "continueButton": "계속하기",
-  "creatorExclusive": "크리에이터 전용",
+  "creatorExclusive": "🔒 크리에이터 전용",
   "ageAndOccupation": "{age}세 | {occupation}",
   "@ageAndOccupation": {
     "placeholders": {
-      "age": {
-        "type": "String"
-      },
-      "occupation": {
-        "type": "String"
-      }
+      "age": { "type": "String" },
+      "occupation": { "type": "String" }
     }
   },
-  "likesLabel": "좋아하는 것",
-  "dislikesLabel": "싫어하는 것",
+  "likesLabel": "💖 좋아하는 것",
+  "dislikesLabel": "👎 싫어하는 것",
   "birthdayLabel": "생일: {birthday}",
   "@birthdayLabel": {
     "placeholders": {
-      "birthday": {
-        "type": "String"
-      }
+      "birthday": { "type": "String" }
     }
   },
   "heightLabel": "신장: {height} cm",
   "@heightLabel": {
     "placeholders": {
-      "height": {
-        "type": "String"
-      }
+      "height": { "type": "String" }
     }
   },
   "backgroundStoryLabel": "백스토리",
@@ -2151,14 +1656,14 @@
     }
   },
   "passGuideTitle": "리엔리엔 월간 카드 전용 가이드",
-  "passGuideRegenerateTitle": "'재생성' 기능이 왜 필요할까요?",
+  "passGuideRegenerateTitle": "🔄 '재생성' 기능이 왜 필요할까요?",
   "passGuideRegenerateContent": "AI는 가끔 눈치 없는 통나무처럼 굴 때가 있습니다. 마음에 들지 않는 답변을 받았다면, 재생성을 눌러 시간을 되돌려 보세요! 당신의 심장을 두근거리게 할 완벽한 대사를 말할 때까지 그를 다시 생각하게 만들 수 있습니다.",
-  "passGuideAffectionTitle": "호감도 부스트는 어디에 쓰이나요?",
+  "passGuideAffectionTitle": "💖 호감도 부스트는 어디에 쓰이나요?",
   "passGuideAffectionContent": "게임 속 호감도는 캐릭터의 '깊은 비밀'과 '친밀한 사생활 사진'을 해제할 수 있는 유일한 열쇠입니다. 20% 보너스 효과로 다른 사람들보다 더 빠르게 그의 마음 깊은 곳으로 다가가 보세요.",
   "passGuideUnlockButton": "이해했습니다, 즉시 해제!",
   "pleaseWait": "잠시만 기다려 주세요",
-  "createNewProfileTitle": "새 시광 프로필 만들기",
-  "editProfileTitle": "시광 프로필 수정",
+  "createNewProfileTitle": "📜 새 시광 프로필 만들기",
+  "editProfileTitle": "✏️ 시광 프로필 수정",
   "profileEditDescription": "다양한 페르소나를 설정하여 평행 세계 속 그에게 완전히 새로운 당신을 보여주세요!",
   "profileNameLabel": "프로필 이름 (나에게만 보임)",
   "profileNameHint": "예: 학교 후배 설정, 걸크러시 여사장",
@@ -2176,21 +1681,17 @@
   "profileSaveError": "저장 실패: {error}",
   "@profileSaveError": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "saveProfileButton": "프로필 저장",
   "fillLaterButton": "나중에 작성",
-  "exclusiveProfileTitle": "전용 시광 프로필",
+  "exclusiveProfileTitle": "📜 전용 시광 프로필",
   "profileSelectionDescription": "그와 소통할 때 사용할 신분을 선택해 주세요 (캐릭터별 리스트 공유, 최대 10개)",
   "profileSwitchError": "전환 실패: {error}",
   "@profileSwitchError": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "unnamedProfile": "이름 없는 프로필",
@@ -2207,207 +1708,165 @@
   },
   "reward_points_added": "꽃 +{amount}송이",
   "@reward_points_added": {
-    "description": "獲得花花點數時的提示",
-    "placeholders": {
-      "amount": {
-        "type": "Object",
-        "example": "5"
-      }
-    }
+  "description": "獲得花花點數時的提示",
+  "placeholders": {
+  "amount": {
+  "type": "Object",
+  "example": "5"
+  }
+  }
   },
   "task_reward_already_claimed": "오늘 이 미션 보상을 이미 수령하셨습니다",
   "@task_reward_already_claimed": {
-    "description": "任務已領取過的防呆提示"
+  "description": "任務已領取過的防呆提示"
   },
   "add_friend_success": "{characterName} 님을 친구로 추가했습니다!",
   "@add_friend_success": {
-    "description": "成功添加好友時的提示",
-    "placeholders": {
-      "characterName": {
-        "type": "String",
-        "example": "小明"
-      }
-    }
+  "description": "成功添加好友時的提示",
+  "placeholders": {
+  "characterName": {
+  "type": "String",
+  "example": "小明"
+  }
+  }
   },
   "do_not_show_again_today": "오늘 하루 동안 보지 않기",
   "@do_not_show_again_today": {
-    "description": "彈窗或公告的今日不再顯示勾選框文字"
+  "description": "彈窗或公告的今日不再顯示勾選框文字"
   },
   "chat_menu_aboutus": "우리 이야기",
   "@chat_menu_aboutus": {
-    "description": "聊天選單中的關於我們"
+  "description": "聊天選單中的關於我們"
   },
   "about_us_empty_hint": "우측 상단에서 중요한 추억／스토리를 추가하여\n두 사람이 함께 손을 잡고 앞으로 나아가 보세요",
   "@about_us_empty_hint": {
-    "description": "關於我們頁面空白時的提示語"
+  "description": "關於我們頁面空白時的提示語"
   },
   "about_us_limit_error": "전용 추억이 최대 한도인 10개에 도달했습니다. 먼저 이전 추억을 삭제해 주세요!",
   "@about_us_limit_error": {
-    "description": "回憶滿10則時的防呆提示"
+  "description": "回憶滿10則時的防呆提示"
   },
   "about_us_add_title": "전용 추억 추가",
   "@about_us_add_title": {
-    "description": "新增回憶彈窗的標題"
+  "description": "新增回憶彈窗的標題"
   },
   "about_us_field_title": "제목",
   "@about_us_field_title": {
-    "description": "輸入框標籤：標題"
+  "description": "輸入框標籤：標題"
   },
   "about_us_hint_title": "예: 첫 만남",
   "@about_us_hint_title": {
-    "description": "輸入框提示：標題範例"
+  "description": "輸入框提示：標題範例"
   },
   "about_us_field_subtitle": "부제목",
   "@about_us_field_subtitle": {
-    "description": "輸入框標籤：副標題"
+  "description": "輸入框標籤：副標題"
   },
   "about_us_hint_subtitle": "예: 2025년 초여름",
   "@about_us_hint_subtitle": {
-    "description": "輸入框提示：副標題範例"
+  "description": "輸入框提示：副標題範例"
   },
   "about_us_field_content": "내용",
   "@about_us_field_content": {
-    "description": "輸入框標籤：內容"
+  "description": "輸入框標籤：內容"
   },
   "about_us_hint_content": "두 사람의 중요한 스토리나 약속을 적어보세요...",
   "@about_us_hint_content": {
-    "description": "輸入框提示：內容範例"
+  "description": "輸入框提示：內容範例"
   },
   "about_us_add_button": "추가",
   "@about_us_add_button": {
-    "description": "新增按鈕文字"
+  "description": "新增按鈕文字"
   },
   "about_us_delete_tooltip": "이 추억 삭제",
   "@about_us_delete_tooltip": {
-    "description": "垃圾桶按鈕的提示文字"
+  "description": "垃圾桶按鈕的提示文字"
   },
   "about_us_delete_title": "추억 삭제",
   "@about_us_delete_title": {
-    "description": "確認刪除對話框的標題"
+  "description": "確認刪除對話框的標題"
   },
   "about_us_delete_confirm": "이 추억을 정말 삭제하시겠습니까? 삭제 후에는 복구할 수 없습니다!",
   "@about_us_delete_confirm": {
-    "description": "確認刪除對話框的內文"
+  "description": "確認刪除對話框的內文"
   },
   "about_us_delete_success": "추억이 삭제되었습니다",
   "@about_us_delete_success": {
-    "description": "刪除成功後的提示"
+  "description": "刪除成功後的提示"
   },
   "pack_first_meet": "첫 만남 패키지",
-  "@pack_first_meet": {
-    "description": "90 禮包名稱"
-  },
+  "@pack_first_meet": {"description": "90 禮包名稱"},
   "pack_crush": "썸 패키지",
-  "@pack_crush": {
-    "description": "215 禮包名稱"
-  },
+  "@pack_crush": {"description": "215 禮包名稱"},
   "pack_heartbeat": "심쿵 패키지",
-  "@pack_heartbeat": {
-    "description": "370 禮包名稱"
-  },
+  "@pack_heartbeat": {"description": "370 禮包名稱"},
   "pack_passionate": "열애 패키지",
-  "@pack_passionate": {
-    "description": "590 禮包名稱"
-  },
+  "@pack_passionate": {"description": "590 禮包名稱"},
   "pack_soulmate": "소울메이트 패키지",
-  "@pack_soulmate": {
-    "description": "780 禮包名稱"
-  },
+  "@pack_soulmate": {"description": "780 禮包名稱"},
   "pack_waiting": "기다림 패키지",
-  "@pack_waiting": {
-    "description": "1030 禮包名稱"
-  },
+  "@pack_waiting": {"description": "1030 禮包名稱"},
   "pack_trust": "신뢰 패키지",
-  "@pack_trust": {
-    "description": "1420 禮包名稱"
-  },
+  "@pack_trust": {"description": "1420 禮包名稱"},
   "pack_iloveyou": "사랑해 패키지",
-  "@pack_iloveyou": {
-    "description": "1650 禮包名稱"
-  },
+  "@pack_iloveyou": {"description": "1650 禮包名稱"},
   "pack_honeymoon": "허니문 패키지",
-  "@pack_honeymoon": {
-    "description": "2200 禮包名稱"
-  },
+  "@pack_honeymoon": {"description": "2200 禮包名稱"},
   "pack_promise": "약속 패키지",
-  "@pack_promise": {
-    "description": "2300 禮包名稱"
-  },
+  "@pack_promise": {"description": "2300 禮包名稱"},
   "pack_companion": "동반 패키지",
-  "@pack_companion": {
-    "description": "2400 禮包名稱"
-  },
+  "@pack_companion": {"description": "2400 禮包名稱"},
   "pack_deep_love": "깊은 사랑 패키지",
-  "@pack_deep_love": {
-    "description": "2680 禮包名稱"
-  },
+  "@pack_deep_love": {"description": "2680 禮包名稱"},
   "pack_long_lasting": "영원히 함께 패키지",
-  "@pack_long_lasting": {
-    "description": "3200 禮包名稱"
-  },
+  "@pack_long_lasting": {"description": "3200 禮包名稱"},
   "pack_the_one": "유일한 사랑 패키지",
-  "@pack_the_one": {
-    "description": "3400 禮包名稱"
-  },
+  "@pack_the_one": {"description": "3400 禮包名稱"},
   "pack_beloved": "최애 패키지",
-  "@pack_beloved": {
-    "description": "4200 禮包名稱"
-  },
+  "@pack_beloved": {"description": "4200 禮包名稱"},
   "pack_lifetime": "평생토록 패키지",
-  "@pack_lifetime": {
-    "description": "4300 禮包名稱"
-  },
+  "@pack_lifetime": {"description": "4300 禮包名稱"},
   "pack_vow": "서약 패키지",
-  "@pack_vow": {
-    "description": "6400 禮包名稱"
-  },
+  "@pack_vow": {"description": "6400 禮包名稱"},
   "pack_eternal": "영원한 연인 패키지",
-  "@pack_eternal": {
-    "description": "10000 禮包名稱"
-  },
+  "@pack_eternal": {"description": "10000 禮包名稱"},
   "pack_exclusive": "전용 패키지",
-  "@pack_exclusive": {
-    "description": "防呆預設禮包名稱"
-  },
+  "@pack_exclusive": {"description": "防呆預設禮包名稱"},
   "monthly_privilege_reroll_title": "전용 '재생성' 기능 해제",
   "@monthly_privilege_reroll_title": {
-    "description": "月卡特權：重新生成標題"
+  "description": "月卡特權：重新生成標題"
   },
   "monthly_privilege_reroll_desc": "매일 최대 20회의 재생성 기회 제공! 그가 당신이 가장 듣고 싶어 하는 말을 할 때까지 시도해 보세요!",
   "@monthly_privilege_reroll_desc": {
-    "description": "月卡特權：重新生成說明"
+  "description": "月卡特權：重新生成說明"
   },
   "monthly_privilege_affinity_title": "호감도 초고속 상승",
   "@monthly_privilege_affinity_title": {
-    "description": "月卡特權：好감도 標題"
+  "description": "月卡特權：好감도 標題"
   },
   "monthly_privilege_affinity_desc": "소통 시 호감도 20% 추가 혜택! 전용 시크릿 사진과 숨겨진 보너스를 더 빠르게 해제해 보세요!",
   "@monthly_privilege_affinity_desc": {
-    "description": "月卡特權：好感度說明"
+  "description": "月卡特權：好感度說明"
   },
   "monthly_manual_button": "월간 카드가 왜 필요할까요?",
   "@monthly_manual_button": {
-    "description": "月卡說明書入口按鈕"
+  "description": "月卡說明書入口按鈕"
   },
   "nav_encounter": "만남",
-  "@nav_encounter": {
-    "description": "底部導航欄：邂逅標籤"
-  },
+  "@nav_encounter": { "description": "底部導航欄：邂逅標籤" },
   "nav_moments": "순간",
-  "@nav_moments": {
-    "description": "底部導航欄：瞬間標籤"
-  },
-  "birthday_dialog_title": "생일 서프라이즈",
+  "@nav_moments": { "description": "底部導航欄：瞬間標籤" },
+  "birthday_dialog_title": "🎂 생일 서프라이즈",
   "@birthday_dialog_title": {
-    "description": "生日彈窗的標題"
+  "description": "生日彈窗的標題"
   },
-  "birthday_dialog_content": "오늘은 당신만을 위한 특별한 기념일입니다!\n\n이 선물을 받아주세요:\n오늘 하루 대화는 전.부.무.료.입니다!",
+  "birthday_dialog_content": "오늘은 당신만을 위한 특별한 기념일입니다!\n\n이 선물을 받아주세요:\n오늘 하루 대화는 전.부.무.료.입니다! ✨",
   "@birthday_dialog_content": {
-    "description": "生日彈窗的驚喜內文"
+  "description": "生日彈窗的驚喜內文"
   },
   "birthday_dialog_button": "로맨틱한 하루 시작하기",
   "@birthday_dialog_button": {
-    "description": "生日彈窗의 확인 버튼"
+  "description": "生日彈窗의 확인 버튼"
   },
   "about_us_edit_title": "추억 수정",
   "about_us_edit_confirm": "수정 확인",
@@ -2418,7 +1877,7 @@
   "call_login_content": "로그인하시면 전용 음성 통화 기능을 해제할 수 있습니다!",
   "cancel_later": "나중에 하기",
   "go_to_login": "로그인하기",
-  "easter_egg_title": "숨겨진 이스터 에그 발견",
+  "easter_egg_title": "숨겨진 이스터 에그 발견 ✨",
   "easter_egg_content": "당신은 '{title}'을(를) 발동시켰습니다.\n\n이 특별한 스토리를 사용하시겠습니까?",
   "@easter_egg_content": {
     "placeholders": {
@@ -2438,7 +1897,7 @@
   "not_now": "나중에 하기",
   "go_to_get": "획득하러 가기",
   "status_published": "게시됨",
-  "monthly_card_success_title": "프리미엄 월간 카드 해제 성공!",
+  "monthly_card_success_title": "✨ 프리미엄 월간 카드 해제 성공!",
   "monthly_card_success_subtitle": "구독해 주셔서 감사합니다! 전용 혜택이 적용되었습니다:",
   "monthly_card_perk_1": "시간의 꽃 250송이 즉시 획득",
   "monthly_card_perk_2": "매일 로그인 시 시간의 꽃 10송이 추가 수령",
@@ -2458,14 +1917,15 @@
   "forgot_password_error_user_not_found": "이 이메일로 가입된 계정을 찾을 수 없습니다",
   "forgot_password_error_with_message": "비밀번호 재설정 이메일 발송 실패: {error}",
   "@forgot_password_error_with_message": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "example": "Network error"
-      }
-    }
+  "placeholders": {
+  "error": {
+  "type": "String",
+  "example": "Network error"
+  }
+  }
   },
   "terms_not_accepted_toast": "이용약관 및 커뮤니티 가이드라인을 읽고 동의해 주세요",
+  "terms_title": "이용약관",
   "terms_content": "연연습광(戀戀拾光)에 오신 것을 환영합니다.\n\n본 서비스를 이용하시기 전에 귀하는 본 이용약관 및 커뮤니티 가이드라인을 준수하는 데 동의하셔야 합니다.\n\n귀하는 불법, 권리 침해, 음란 및 노출, 폭력, 혐오, 괴롭힘, 욕설, 사기, 스팸 메시지 또는 기타 불쾌감을 주거나 공격적이고 타인의 권익을 해치는 콘텐츠를 업로드, 생성, 게시 또는 전송할 수 없습니다.\n\n연연습광은 부적절한 콘텐츠 및 악용 행위에 대해 무관용(Zero-Tolerance) 정책을 적용합니다. 사용자가 규정을 위반하는 경우, 당사는 관련 콘텐츠를 삭제하거나 기능을 제한하고, 계정을 일시 정지 또는 해지할 수 있습니다.\n\n사용자는 앱 내에 내장된 신고 및 차단 기능을 통해 부적절한 콘텐츠나 악용 사용자를 신고할 수 있습니다.",
   "community_rules_title": "커뮤니티 가이드라인",
   "community_rules_content": "연연습광은 크리에이터와 사용자에게 안전하고 우호적이며 서로를 존중하는 상호작용 환경을 제공하고자 합니다.\n\n당사는 다음과 같은 콘텐츠나 행위를 허용하지 않습니다:\n1. 음란 및 노출 또는 부적절한 성적 암시를 포함한 콘텐츠\n2. 타인을 괴롭히거나 욕설, 따돌림(불링) 또는 위협하는 행위\n3. 혐오, 차별 또는 폭력을 선동하는 행위\n4. 잔혹함, 폭력 또는 위험한 행동을 담은 콘텐츠\n5. 타인의 저작권, 초상권 또는 기타 권리를 침해하는 행위\n6. 스팸, 사기 또는 악의적인 행위\n7. 기타 불쾌감을 주거나 공개적으로 표시하기에 부적절한 콘텐츠\n\n사용자는 부적절한 콘텐츠를 신고할 수 있으며, 악용 사용자를 차단할 수도 있습니다. 차단 후에는 해당 사용자의 콘텐츠가 귀하의 화면에 더 이상 표시되지 않습니다.",
@@ -2488,21 +1948,21 @@
   "block_character_title": "이 캐릭터를 차단하시겠습니까?",
   "block_character_content": "차단하면 「{authorName}」이(가) 게시한 순간들을 더 이상 볼 수 없습니다. 해당 콘텐츠가 규정 위반에 해당하는 경우, 저희 측에도 알림이 전송되어 검토가 진행됩니다.",
   "@block_character_content": {
-    "placeholders": {
-      "authorName": {
-        "type": "String",
-        "example": "程安"
-      }
-    }
+  "placeholders": {
+  "authorName": {
+  "type": "String",
+  "example": "程安"
+  }
+  }
   },
   "block_character_success": "「{authorName}」을(를) 차단했으며, 관련 순간들이 숨겨졌습니다",
   "@block_character_success": {
-    "placeholders": {
-      "authorName": {
-        "type": "String",
-        "example": "程安"
-      }
-    }
+  "placeholders": {
+  "authorName": {
+  "type": "String",
+  "example": "程安"
+  }
+  }
   },
   "block_character_failed": "차단에 실패했습니다. 잠시 후 다시 시도해 주세요",
   "hidden_moments_title": "숨겨진 순간",
@@ -2544,6 +2004,7 @@
   },
   "voice_preview": "보이스 재생",
   "voice_preview_failed": "보이스 재생 실패",
+  "voice_preview_failed": "보이스 재생 실패",
   "characterBannerSectionTitle": "캐릭터 홈 배너",
   "characterBannerDescription": "배너 설명",
   "characterBannerRemove": "제거",
@@ -2565,6 +2026,7 @@
   },
   "unlock_after_affection_increase": "호감도 레벨 상승 후 해제",
   "first_meeting_empty": "첫 만남, 아직 시작되지 않았습니다...",
+  "follow_btn": "팔로우",
   "photo_load_failed": "사진 불러오기 실패: {error}",
   "@photo_load_failed": {
     "placeholders": {
@@ -2600,7 +2062,7 @@
   "message_preview_image": "[사진]",
   "message_preview_recording": "[녹음]",
   "message_preview_voice": "[음성 메시지]",
-  "send_failed_retry": "전송 실패. 잠시 후 다시 시도해 주세요",
+  "send_failed_retry": "전송 실패. 잠시 후 다시 시도해 주세요 😢",
   "media_upload_failed_retry": "미디어 업로드 실패. 다시 시도해 주세요",
   "ai_thinking_too_long": "그가 깊은 생각에 잠긴 것 같습니다. 잠시 후 다시 시도해 주세요...",
   "ai_reply_in_progress": "답장 중입니다. 중복 전송하지 말고 잠시만 기다려 주세요",
@@ -2611,7 +2073,7 @@
   "change_watermark_color": "워터마크 색상 변경",
   "other_party_typing": "상대방이 입력 중입니다...",
   "chat_input_hint": "메시지를 입력하세요...",
-  "regenerate_sync_failed": "재생성 횟수 동기화 실패. 다시 시도해 주세요",
+  "regenerate_sync_failed": "재생성 횟수 동기화 실패. 다시 시도해 주세요 😢",
   "creator_public_works": "공개 작품",
   "creator_received_likes": "받은 좋아요",
   "about_me": "자기소개",
@@ -2916,7 +2378,7 @@
   "mailCaseNumber": "문의 번호",
   "mailCopyCaseNumber": "문의 번호 복사",
   "mailCaseNumberCopied": "문의 번호가 복사되었습니다",
-  "profilePageAboutMe": "내 소개",
+  "profilePageAboutMe": "📝 내 소개",
   "profilePageTabBio": "자기소개",
   "profilePageTabCharacters": "캐릭터",
   "profilePageTabMoments": "게시물",
@@ -2964,9 +2426,7 @@
   "profilePageInviter": "초대한 사람: {inviterId}",
   "@profilePageInviter": {
     "placeholders": {
-      "inviterId": {
-        "type": "String"
-      }
+      "inviterId": { "type": "String" }
     }
   },
   "profilePageReferralRewardReceived": "양쪽 모두 꽃 50개를 받았습니다",
@@ -2974,9 +2434,7 @@
   "profilePageInviterBound": "초대한 사람이 등록되었습니다: {inviterId}",
   "@profilePageInviterBound": {
     "placeholders": {
-      "inviterId": {
-        "type": "String"
-      }
+      "inviterId": { "type": "String" }
     }
   },
   "profilePageReferralProgressHint": "채팅 메시지 15개를 완료하면 양쪽 모두 꽃 50개씩 받습니다",
@@ -2993,13 +2451,7 @@
   "periodBeforeStartError": "이번 생리 시작일보다 이전 날짜를 선택할 수 없습니다.",
   "periodEndBeforeStartError": "종료일은 시작일보다 빠를 수 없습니다.",
   "periodRecordSaved": "{date}의 기록을 저장했습니다",
-  "@periodRecordSaved": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
+  "@periodRecordSaved": { "placeholders": { "date": { "type": "String" } } },
   "periodSaveFailed": "저장하지 못했습니다. 잠시 후 다시 시도해 주세요",
   "periodDeleteTitle": "이번 생리 기록을 삭제할까요?",
   "periodDeleteContent": "삭제하면 평균 주기와 다음 예상일도 다시 계산됩니다.",
@@ -3007,29 +2459,17 @@
   "periodDelete": "삭제",
   "periodNoOngoing": "현재 진행 중인 생리 기록이 없습니다",
   "periodDayCount": "생리 {count}일째",
-  "@periodDayCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "@periodDayCount": { "placeholders": { "count": { "type": "int" } } },
   "periodHelp": "사용 방법",
   "periodAverageCycle": "평균 주기",
   "periodAverageDuration": "평균 생리 기간",
   "periodDays": "{count}일",
-  "@periodDays": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "@periodDays": { "placeholders": { "count": { "type": "int" } } },
   "periodNextPrediction": "다음 예상일",
   "periodCalculatedAfterRecording": "기록 후 계산",
   "periodInsufficientData": "현재 데이터가 부족하여 임시로 28일 주기와 5일의 생리 기간을 기준으로 예상합니다.",
   "periodPredictionDisclaimer": "현재 기록을 기반으로 예상한 날짜이며, 일상 기록을 위한 참고용으로만 제공됩니다.",
-  "periodStartedToday": "오늘 시작했어요",
+  "periodStartedToday": "🩸 오늘 시작했어요",
   "periodStillOngoing": "아직 생리 중이에요",
   "periodEndedToday": "오늘 끝났어요",
   "periodDateNotReached": "아직 오지 않은 날이에요～",
@@ -3050,13 +2490,7 @@
   "periodSymptomIncreasedAppetite": "식욕 증가",
   "periodSymptomDigestiveDiscomfort": "소화 불편",
   "periodDiaryTitle": "{characterName}의 다정한 일기",
-  "@periodDiaryTitle": {
-    "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
-    }
-  },
+  "@periodDiaryTitle": { "placeholders": { "characterName": { "type": "String" } } },
   "periodLoadFailed": "기록을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요",
   "periodWeekdaySun": "일",
   "periodWeekdayMon": "월",
@@ -3074,45 +2508,27 @@
   "periodOtherSymptom": "다른 몸 상태",
   "periodOtherSymptomHint": "예: 추위를 느낌, 입맛이 없음……",
   "periodNoteForCharacter": "{characterName}에게 알려주고 싶은 내용(선택 사항)",
-  "@periodNoteForCharacter": {
-    "placeholders": {
-      "characterName": {
-        "type": "String"
-      }
-    }
-  },
+  "@periodNoteForCharacter": { "placeholders": { "characterName": { "type": "String" } } },
   "periodNoteHint": "예: 오늘은 조용히 쉬고 싶으니 재촉하지 않았으면 좋겠어……",
   "periodSaving": "저장 중…",
   "periodSaveToday": "오늘의 기록 저장",
   "periodHistory": "생리 기록",
   "periodOngoing": "진행 중",
   "periodTotalDays": "총 {count}일",
-  "@periodTotalDays": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "@periodTotalDays": { "placeholders": { "count": { "type": "int" } } },
   "periodDeleteRecord": "기록 삭제",
   "privateProfilePleaseSignIn": "먼저 로그인해 주세요",
   "privateProfileLoreLoadFailed": "기억 조각을 불러오지 못했습니다: {error}",
   "@privateProfileLoreLoadFailed": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "privateProfileWriteNewLore": "새 기억 조각 작성 ({count} / {limit})",
   "@privateProfileWriteNewLore": {
     "placeholders": {
-      "count": {
-        "type": "int"
-      },
-      "limit": {
-        "type": "int"
-      }
+      "count": { "type": "int" },
+      "limit": { "type": "int" }
     }
   },
   "privateProfileNoLore": "아직 기억 조각이 없습니다",
@@ -3137,10 +2553,10 @@
   "privateProfileDeleteFailed": "삭제하지 못했습니다. 잠시 후 다시 시도해 주세요",
   "privateProfileEditLore": "기억 조각 편집",
   "privateProfileSave": "저장",
-  "editProfileBirthdayReminderTitle": "잠깐 알려드려요",
+  "editProfileBirthdayReminderTitle": "🎂 잠깐 알려드려요",
   "editProfileBirthdayReminderContent": "생일은 캐릭터의 생일 축하, 생일 선물 및 관련 이벤트에 영향을 줍니다.\n\n향후 생일 보상에 영향을 주지 않도록\n생일을 확인한 후 설정을 완료하는 것을 권장합니다.",
   "editProfileGotIt": "알겠어요",
-  "editProfileBirthdayConfirmTitle": "생일 확인",
+  "editProfileBirthdayConfirmTitle": "🎂 생일 확인",
   "editProfileBirthdayConfirmContent": "생일이 정확한지 확인해 주세요.\n\n생일은 생일 축하, 생일 선물 및 관련 이벤트에 사용됩니다.\n\n생일 보상의 중복 수령을 방지하기 위해 설정을 완료한 후에는 생일을 다시 변경할 수 없습니다.\n\n이 생일을 사용하시겠습니까?",
   "editProfileReturnToEdit": "수정으로 돌아가기",
   "editProfileConfirmSetting": "설정 확인",
@@ -3149,17 +2565,13 @@
   "editProfileCreateFailed": "데이터를 생성하지 못했습니다: {error}",
   "@editProfileCreateFailed": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "editProfileAvatarNumber": "프로필 이미지 {number}",
   "@editProfileAvatarNumber": {
     "placeholders": {
-      "number": {
-        "type": "int"
-      }
+      "number": { "type": "int" }
     }
   },
   "editProfileImageSelectionFailed": "이미지를 선택하지 못했습니다. 다른 이미지를 선택해 주세요",
@@ -3169,9 +2581,7 @@
   "editProfileLoadFailed": "데이터를 불러오지 못했습니다: {error}",
   "@editProfileLoadFailed": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "editProfileBioLabel": "자기소개",
@@ -3183,28 +2593,24 @@
   "editProfileAvatarReadFailed": "프로필 이미지를 불러오지 못했습니다. 상태 코드: {statusCode}",
   "@editProfileAvatarReadFailed": {
     "placeholders": {
-      "statusCode": {
-        "type": "int"
-      }
+      "statusCode": { "type": "int" }
     }
   },
   "editProfileAvatarFileNotFound": "선택한 프로필 이미지 파일을 찾을 수 없습니다: {path}",
   "@editProfileAvatarFileNotFound": {
     "placeholders": {
-      "path": {
-        "type": "String"
-      }
+      "path": { "type": "String" }
     }
   },
   "editProfileAvatarEmpty": "프로필 이미지 데이터가 비어 있습니다",
-  "chatPageSendFailed": "전송하지 못했습니다. 잠시 후 다시 시도해 주세요",
+  "chatPageSendFailed": "전송하지 못했습니다. 잠시 후 다시 시도해 주세요 😢",
   "chatPageRegenerateFailed": "다시 생성하지 못했습니다. 기존 메시지는 유지되었습니다. 다시 시도해 주세요.",
-  "chatPageRegenerating": "다시 생각하는 중...",
+  "chatPageRegenerating": "💭 다시 생각하는 중...",
   "chatPageThinkingTooLong": "생각에 잠긴 것 같아요. 잠시 후 다시 시도해 주세요……",
   "chatPageAlreadyReplying": "답변 중입니다. 잠시 기다려 주시고 중복으로 전송하지 마세요",
   "chatPageMediaUploadFailed": "미디어를 업로드하지 못했습니다. 다시 시도해 주세요",
   "chatPageReportReceived": "신고해 주셔서 감사합니다. 최대한 빨리 확인하겠습니다",
-  "chatPageMessagesDeleted": "메시지 {count}개를 삭제했습니다",
+  "chatPageMessagesDeleted": "✅ 메시지 {count}개를 삭제했습니다",
   "@chatPageMessagesDeleted": {
     "placeholders": {
       "count": {
@@ -3343,8 +2749,8 @@
       }
     }
   },
-  "characterProfileShareInvitation": "LoveyDovey에서 온 만남의 초대장",
-  "characterProfileShareCreator": "크리에이터: {creatorName}",
+  "characterProfileShareInvitation": "🦋 LoveyDovey에서 온 만남의 초대장",
+  "characterProfileShareCreator": "✦ 크리에이터: {creatorName}",
   "@characterProfileShareCreator": {
     "placeholders": {
       "creatorName": {
@@ -3369,7 +2775,7 @@
       }
     }
   },
-  "characterProfileCardSearchHint": "캐릭터를 검색하고 만남을 시작하세요",
+  "characterProfileCardSearchHint": "캐릭터를 검색하고 만남을 시작하세요  🦋",
   "characterProfileScanToDownload": "스캔하여 다운로드",
   "characterProfileShareTitle": "캐릭터 ‘{characterName}’ 공유",
   "@characterProfileShareTitle": {
@@ -3414,8 +2820,7 @@
   "characterEditInitialStoryDescription": "플레이어가 채팅방에 처음 입장했을 때 가장 먼저 보게 되는 이야기 상황입니다.",
   "characterEditFirstLineDescription": "캐릭터가 플레이어를 처음 만났을 때 하는 첫 번째 말입니다.",
   "characterEditCustomStatusBar": "스토리 상태 표시줄(선택 사항)",
-  "characterEditCustomStatusBarDescription": "스토리 모드와 몰입 모드에만 적용됩니다. 답변 끝에 항상 표시할 캐릭터의 상태, 위치, 복장 또는 관계 정보를 설정할 수 있습니다. 비워 두면 상태 표시줄이 생성되지 않습니다.",
-  "characterProfileCharacterIntro": "캐릭터 소개",
+  "characterEditCustomStatusBarDescription": "스토리 모드와 몰입 모드에만 적용됩니다. 답변 끝에 항상 표시할 캐릭터의 상태, 위치, 복장 또는 관계 정보를 설정할 수 있습니다. 비워 두면 상태 표시줄이 생성되지 않습니다.","characterProfileCharacterIntro": "캐릭터 소개",
   "characterProfileNoIntroduction": "크리에이터가 아직 캐릭터 소개를 작성하지 않았습니다",
   "characterProfileViewMore": "더 보기",
   "characterProfileCollapse": "접기",
@@ -3445,7 +2850,7 @@
   },
   "mailQixiCollectionLabel": "2026 칠석 한정 컬렉션",
   "mailShareGenerating": "공유 이미지를 만들고 있습니다……",
-  "mailShareQixiMessage": "{characterName}에게서 칠석 한정 편지를 받았어요",
+  "mailShareQixiMessage": "{characterName}에게서 칠석 한정 편지를 받았어요 💌",
   "@mailShareQixiMessage": {
     "placeholders": {
       "characterName": {
@@ -3453,9 +2858,9 @@
       }
     }
   },
-  "mailShareDefaultMessage": "「LoveyDovey」에서 온 편지",
+  "mailShareDefaultMessage": "「LoveyDovey」에서 온 편지 💌",
   "mailShareImageFailed": "공유 이미지 생성에 실패했습니다. 잠시 후 다시 시도해 주세요",
-  "mailCollectedSuccess": "이 편지를 보관했습니다",
+  "mailCollectedSuccess": "이 편지를 보관했습니다 💌",
   "mailCollectedCancelled": "보관을 취소했습니다",
   "mailCollectedUpdateFailed": "보관 상태를 업데이트하지 못했습니다. 잠시 후 다시 시도해 주세요",
   "mailRemoveCollectionTooltip": "보관 취소",
@@ -3470,12 +2875,12 @@
     }
   },
   "mailQixiDetailTitle": "칠석 한정 편지",
-  "mailQixiShareTooltip": "칠석 편지 공유",
-  "qixiMaxThreeFriends": "이번 이벤트에서는 친구 캐릭터를 최대 3명까지 선택할 수 있습니다",
+  "mailQixiShareTooltip": "칠석 편지 공유","qixiMaxThreeFriends": "이번 이벤트에서는 친구 캐릭터를 최대 3명까지 선택할 수 있습니다",
   "qixiLoginRequired": "칠석 이벤트에 참여하려면 먼저 로그인해 주세요",
   "qixiOutsideEventPeriod": "현재는 칠석 이벤트 기간이 아닙니다",
   "qixiSelectAtLeastOne": "친구 캐릭터를 최소 1명 선택해 주세요",
   "qixiMysteryCharacter": "신비로운 캐릭터",
+
   "qixiOpeningStory": "(칠석이 다가오자 깊은 밤 속에 잠들어 있던 은하수가 조용히 깨어난다. 흩어져 있던 별빛이 하늘 끝에서 천천히 모여들며, 약속을 지키러 온 두 사람이 서로의 이름을 새기기를 기다리는 듯하다.)\n\n(전설에 따르면 오작교는 진심으로 서로를 만나고 싶어 하는 사람들을 위해서만 빛난다고 한다. 당신과 「{characterName}」의 이름이 동시에 은하수 위에 나타나는 순간, 희미한 빛 한 줄기가 밤하늘을 가로질러 오직 두 사람만을 위한 이 채팅방으로 내려온다.)\n\n(지금부터 두 사람에게는 「칠석, 사흘의 약속」이 주어진다. 꼭 연속된 날일 필요도 없고, 거창한 고백을 준비할 필요도 없다. 이벤트 기간 동안 서로 다른 세 날에 이곳으로 돌아와 인사 한마디, 마음 한 조각, 혹은 오늘 있었던 작은 일을 나누면 된다.)\n\n(만남이 이루어질 때마다 오작교 위의 별빛 하나가 켜진다. 사흘의 별빛이 모두 밝혀지면, 대화 속에 흩어져 있던 마음과 추억은 세 번째 완료일이 끝난 뒤 오직 당신만을 위한 칠석 한정 편지가 되어 찾아올 것이다.)\n\n(지금, 첫 번째 별빛이 내려앉았다. 오작교의 반대편에서 「{characterName}」도 이 약속을 받은 듯하다.)\n\n——칠석, 사흘의 약속. 지금 시작됩니다.",
   "@qixiOpeningStory": {
     "placeholders": {
@@ -3484,10 +2889,12 @@
       }
     }
   },
+
   "qixiRoomOpenedLastMessage": "칠석, 사흘의 약속이 시작되었습니다",
   "qixiCompanionSlotsFull": "칠석 동행 캐릭터를 모두 선택했습니다",
-  "qixiSingleRoomOpened": "칠석 전용 채팅방이 열렸습니다",
-  "qixiMultipleRoomsOpened": "칠석 전용 채팅방 {count}개가 열렸습니다",
+  "qixiSingleRoomOpened": "칠석 전용 채팅방이 열렸습니다 💕",
+
+  "qixiMultipleRoomsOpened": "칠석 전용 채팅방 {count}개가 열렸습니다 💕",
   "@qixiMultipleRoomsOpened": {
     "placeholders": {
       "count": {
@@ -3495,6 +2902,7 @@
       }
     }
   },
+
   "qixiCreateRoomFailed": "칠석 채팅방을 만들지 못했습니다. 잠시 후 다시 시도해 주세요",
   "qixiEventStartsAt": "이벤트는 8/19 00:00에 시작됩니다",
   "qixiEventActiveUntil": "이벤트 진행 중 · 8/26 23:59 종료",
@@ -3507,6 +2915,7 @@
   "qixiLoadingCharacter": "캐릭터 정보를 불러오는 중……",
   "qixiEventPageTitle": "칠석 한정 이벤트",
   "qixiEventRules": "이벤트 기간 동안 서로 다른 3일을 선택해 칠석 전용 채팅방에서 메시지를 보내고 캐릭터의 답장을 받으면 사흘의 별빛 중 하나가 켜집니다. 한정 편지는 세 번째 완료일이 끝난 뒤 발송됩니다. 이벤트 날짜와 일일 진행 상황은 모두 대만 시간(UTC+8)을 기준으로 합니다.",
+
   "qixiSelectCompanions": "동행 캐릭터 선택 ({count}/3)",
   "@qixiSelectCompanions": {
     "placeholders": {
@@ -3515,6 +2924,7 @@
       }
     }
   },
+
   "qixiSelectionLockedHint": "친구로 추가한 캐릭터 중 최대 3명까지 선택할 수 있으며, 선택 후에는 변경할 수 없습니다.",
   "qixiConfirmCompanions": "동행 캐릭터 확정",
   "encounterDailyQuote1": "오늘, 새로운 이야기를 만나게 될지도 몰라요.",
@@ -3529,21 +2939,23 @@
   "encounterDailyQuote10": "오늘, 문득 발걸음을 멈추게 할 누군가를 만날지도 몰라요.",
   "encounterDailyQuote11": "오늘은 어떤 사람을 만나고 싶나요?",
   "encounterDailyQuote12": "오늘, 조용히 다가오는 인연을 놓치지 마세요.",
-  "encounterJoinedToday": "오늘 Lovey Time에 합류했어요",
-  "encounterPopularChats": "최근 대화가 활발한 캐릭터",
+
+  "encounterJoinedToday": "✨ 오늘 Lovey Time에 합류했어요",
+  "encounterPopularChats": "❤️ 최근 대화가 활발한 캐릭터",
   "qixiBannerActiveUntil": "기간 한정 · 8/26 23:59까지",
   "qixiBannerStartsAt": "8/19 한정 오픈",
-  "encounterRecentlyArrived": "최근 Lovey Time에 찾아왔어요",
+  "encounterRecentlyArrived": "✨ 최근 Lovey Time에 찾아왔어요",
   "encounterRecentlyArrivedPlain": "최근 Lovey Time에 찾아왔어요",
   "encounterViewMore": "더 보기",
-  "encounterLovePrompt": "오늘은 어떤 사랑을 하고 싶나요?",
+  "encounterLovePrompt": "💕 오늘은 어떤 사랑을 하고 싶나요?",
   "encounterNoCharacters": "아직 캐릭터가 없습니다",
   "encounterAllLoveTags": "모든 연애 태그",
-  "chatQixiLetterSent": "한정 편지가 발송되었습니다",
+  "chatQixiLetterSent": "한정 편지가 발송되었습니다 💌",
   "chatQixiLetterPendingTonight": "사흘의 별빛이 모두 켜졌어요 · 오늘 밤이 지나면 편지가 발송됩니다",
   "chatQixiTodayCompleted": "오늘의 별빛이 켜졌어요",
   "chatQixiTodayNotCompleted": "오늘은 아직 완료하지 않았어요",
   "chatQixiPromiseTitle": "러브러브 칠석 · 사흘의 약속",
+
   "chatQixiStarProgress": "별빛 {count}/3",
   "@chatQixiStarProgress": {
     "placeholders": {
@@ -3552,7 +2964,9 @@
       }
     }
   },
+
   "chatQixiProgressRule": "서로 다른 3일에 채팅을 완료하면 별빛이 켜집니다. 한정 편지는 세 번째 날이 끝난 뒤 발송됩니다. 일일 진행 상황은 대만 시간(UTC+8)을 기준으로 계산됩니다.",
+
   "chatQixiDayNumber": "{day}일차",
   "@chatQixiDayNumber": {
     "placeholders": {
@@ -3561,6 +2975,7 @@
       }
     }
   },
+
   "chatWebPurchaseUnavailable": "웹 버전에서는 현재 충전 서비스를 제공하지 않습니다. 꽃 구매 또는 구독은 Lovey Time 앱을 이용해 주세요.",
   "chatAiThinkingTimeout": "그가 생각에 잠긴 것 같아요. 잠시 후 다시 시도해 주세요……",
   "chatAiResponseBlocked": "그의 생각이 조금 흐트러진 것 같아요. 조금 더 부드럽게 표현해서 다시 시도해 주세요.",
@@ -3575,6 +2990,7 @@
   "momentsCreatorNotFound": "이 크리에이터의 정보를 찾을 수 없습니다",
   "momentCommentLoadFailed": "댓글을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요",
   "momentCollapseReplies": "답글 접기",
+
   "momentViewOtherReplies": "다른 답글 {count}개 보기",
   "@momentViewOtherReplies": {
     "placeholders": {
@@ -3583,6 +2999,7 @@
       }
     }
   },
+
   "momentSwitchCommentIdentity": "댓글 작성 신분 변경",
   "momentSendCommentTooltip": "댓글 보내기",
   "momentShareCharactersLoadFailed": "대화한 캐릭터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요",
@@ -3602,22 +3019,29 @@
   "auth_error_too_many_requests": "시도 횟수가 너무 많습니다. 잠시 후 다시 시도해 주세요.",
   "auth_error_network_failed": "현재 네트워크 연결이 불안정합니다. 잠시 후 다시 시도해 주세요.",
   "change_password_failed": "비밀번호를 변경하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+
   "change_password_account_not_found": "현재 로그인한 계정을 찾을 수 없습니다. 다시 로그인한 후 시도해 주세요.",
   "change_password_not_password_account": "이 계정은 이메일과 비밀번호로 로그인하는 계정이 아니므로 여기에서 비밀번호를 변경할 수 없습니다.",
   "change_password_same_as_current": "새 비밀번호는 현재 비밀번호와 같을 수 없습니다.",
+
   "change_password_success_title": "비밀번호가 변경되었습니다",
   "change_password_success_message": "새 비밀번호가 설정되었습니다. 다음 로그인부터 새 비밀번호를 사용해 주세요.",
+
   "change_password_title": "비밀번호 변경",
   "change_password_security_title": "계정 보안",
   "change_password_description": "본인 확인을 위해 현재 비밀번호를 입력한 후 새로운 로그인 비밀번호를 설정해 주세요.",
+
   "change_password_current_label": "현재 비밀번호",
   "change_password_current_required": "현재 비밀번호를 입력해 주세요",
+
   "change_password_new_label": "새 비밀번호",
   "change_password_new_required": "새 비밀번호를 입력해 주세요",
   "change_password_new_min_length": "새 비밀번호는 6자 이상이어야 합니다",
+
   "change_password_confirm_label": "새 비밀번호 확인",
   "change_password_confirm_required": "새 비밀번호를 다시 입력해 주세요",
   "change_password_mismatch": "새 비밀번호가 일치하지 않습니다",
+
   "change_password_hint": "비밀번호는 6자 이상이어야 합니다. 변경 후 다른 기기에서 다시 로그인할 때는 새 비밀번호를 사용해 주세요.",
   "character_npc_add": "＋ 조연 추가",
   "character_npc_added_count": "추가된 조연 {count}명",
@@ -3628,11 +3052,15 @@
       }
     }
   },
+
   "character_npc_unnamed": "이름 없는 조연",
+
   "character_npc_title": "조연 설정",
   "character_npc_description": "이야기에 등장하는 주요 인물을 만들어 캐릭터의 세계를 더욱 풍성하게 완성해 보세요.",
+
   "character_npc_empty_title": "아직 추가된 조연이 없습니다",
   "character_npc_empty_description": "조연을 추가하면 여기에서 설정을 확인하고 편집하거나 관리할 수 있습니다.",
+
   "character_npc_age": "{age}세",
   "@character_npc_age": {
     "placeholders": {
@@ -3641,6 +3069,7 @@
       }
     }
   },
+
   "character_npc_relationship_with_main": "주인공과의 관계: {relationship}",
   "@character_npc_relationship_with_main": {
     "placeholders": {
@@ -3650,15 +3079,21 @@
     }
   },
   "character_management_login_required": "먼저 로그인해 주세요",
+
   "character_management_character_tab": "캐릭터",
   "character_management_creator_tab": "크리에이터",
+
   "character_management_blocked_characters_empty": "연락을 중단한 캐릭터가 여기에 표시됩니다.",
+
   "character_management_blocked_creators_load_failed": "차단한 크리에이터를 불러오지 못했습니다",
   "character_management_blocked_creators_empty": "차단한 크리에이터가 여기에 표시됩니다.",
   "character_management_creator_fallback": "크리에이터",
+
   "character_management_blocked_creator_status": "차단한 크리에이터",
   "character_management_blocked_creator_description": "해당 크리에이터의 공개 캐릭터와 이후 추가되는 캐릭터는 추천에 표시되지 않습니다.",
+
   "character_management_unblock_creator_title": "크리에이터 차단 해제",
+
   "character_management_unblock_creator_confirm": "「{creatorName}」 님의 차단을 해제하시겠습니까?\n\n차단을 해제하면 이 크리에이터와 캐릭터가 추천 콘텐츠에 다시 표시될 수 있습니다. 이전에 개별적으로 차단한 캐릭터는 계속 차단된 상태로 유지됩니다.",
   "@character_management_unblock_creator_confirm": {
     "placeholders": {
@@ -3667,6 +3102,7 @@
       }
     }
   },
+
   "character_management_unblock_creator_success": "「{creatorName}」 님의 차단을 해제했습니다",
   "@character_management_unblock_creator_success": {
     "placeholders": {
@@ -3675,12 +3111,17 @@
       }
     }
   },
+
   "character_management_unblock_creator_failed": "차단을 해제하지 못했습니다. 잠시 후 다시 시도해 주세요",
+
   "character_management_title": "캐릭터 관리",
   "character_management_subtitle": "연락을 중단한 캐릭터를 관리합니다",
+
   "character_management_character_fallback": "캐릭터",
+
   "character_management_blocked_character_status": "연락 중단 중",
   "character_management_blocked_character_description": "관련 데이터는 삭제하지 않고 대화와 알림만 중단합니다.",
+
   "character_management_unblock_character_confirm": "「{charName}」의 차단을 해제하시겠습니까? 차단을 해제하면 관련 콘텐츠가 다시 표시될 수 있습니다.",
   "@character_management_unblock_character_confirm": {
     "placeholders": {
@@ -3691,6 +3132,7 @@
   },
   "creator_follow_following_title": "내가 팔로우한 크리에이터",
   "creator_follow_followers_title": "나를 팔로우한 플레이어",
+
   "creator_follow_load_failed": "불러오지 못했습니다: {error}",
   "@creator_follow_load_failed": {
     "placeholders": {
@@ -3699,11 +3141,15 @@
       }
     }
   },
+
   "creator_follow_empty_following_title": "아직 팔로우한 크리에이터가 없습니다",
   "creator_follow_empty_followers_title": "아직 팔로워가 없습니다",
+
   "creator_follow_empty_following_description": "캐릭터 프로필이나 크리에이터 워크숍에서 마음에 드는 크리에이터를 팔로우해 보세요.",
   "creator_follow_empty_followers_description": "다른 플레이어가 나를 팔로우하면 여기에 표시됩니다.",
+
   "creator_follow_unknown_player": "알 수 없는 플레이어",
+
   "creator_follow_player_id": "ID: {playerId}",
   "@creator_follow_player_id": {
     "placeholders": {
@@ -3712,8 +3158,11 @@
       }
     }
   },
+
   "creator_follow_no_player_id": "플레이어 ID가 아직 설정되지 않았습니다",
+
   "creator_follow_following": "팔로우 중",
+
   "creator_follow_unfollow_title": "팔로우 취소",
   "creator_follow_unfollow_confirm": "이 크리에이터의 팔로우를 취소하시겠습니까?",
   "creator_follow_unfollow": "팔로우 취소",
@@ -3727,8 +3176,10 @@
   },
   "creator_profile_report_creator": "크리에이터 신고",
   "creator_profile_block_creator": "크리에이터 차단",
+
   "creator_profile_report_login_required": "크리에이터를 신고하려면 먼저 로그인해 주세요",
   "creator_profile_report_self_not_allowed": "자신의 크리에이터 페이지는 신고할 수 없습니다",
+
   "creator_profile_report_reason_prompt": "「{creatorName}」 님을 신고하는 이유를 선택해 주세요:",
   "@creator_profile_report_reason_prompt": {
     "placeholders": {
@@ -3737,14 +3188,18 @@
       }
     }
   },
+
   "creator_profile_report_reason_inappropriate": "부적절하거나 규정을 위반한 콘텐츠",
   "creator_profile_report_reason_harassment": "괴롭힘, 공격 또는 혐오 콘텐츠",
   "creator_profile_report_reason_impersonation": "타인 사칭 또는 신원 위조",
   "creator_profile_report_reason_spam": "스팸 또는 악의적인 홍보",
+
   "creator_profile_report_success": "신고가 접수되었습니다. 제보해 주셔서 감사합니다",
   "creator_profile_report_failed": "신고를 제출하지 못했습니다. 잠시 후 다시 시도해 주세요",
+
   "creator_profile_block_login_required": "크리에이터를 차단하려면 먼저 로그인해 주세요",
   "creator_profile_block_self_not_allowed": "자기 자신은 차단할 수 없습니다",
+
   "creator_profile_block_confirm": "「{creatorName}」 님을 차단하시겠습니까?\n\n차단하면 이 크리에이터의 공개 페이지가 더 이상 표시되지 않으며, 현재 이 크리에이터가 만든 공개 캐릭터도 차단 목록에 함께 추가됩니다.",
   "@creator_profile_block_confirm": {
     "placeholders": {
@@ -3753,7 +3208,9 @@
       }
     }
   },
+
   "creator_profile_block_confirm_button": "차단 확인",
+
   "creator_profile_block_success": "「{creatorName}」 님을 차단했습니다",
   "@creator_profile_block_success": {
     "placeholders": {
@@ -3762,26 +3219,36 @@
       }
     }
   },
+
   "creator_profile_block_failed": "차단하지 못했습니다. 잠시 후 다시 시도해 주세요",
   "creator_scene_edit_title_edit": "장면 편집",
   "creator_scene_edit_title_add": "장면 추가",
+
   "creator_scene_edit_heading_edit": "이 이야기의 시작을 다듬어 보세요",
   "creator_scene_edit_heading_add": "새로운 이야기의 시작을 작성해 보세요",
+
   "creator_scene_edit_scene_title_label": "장면 제목",
   "creator_scene_edit_scene_title_hint": "예: 비 오는 밤의 재회",
+
   "creator_scene_edit_description_label": "장면 설명",
   "creator_scene_edit_description_hint": "이야기가 펼쳐지는 시간, 장소, 관계와 상황을 설명해 주세요.",
+
   "creator_scene_edit_opening_label": "캐릭터 도입부",
   "creator_scene_edit_opening_hint": "캐릭터가 이 이야기에 등장할 때 보이는 첫 반응이나 첫 대사를 작성해 주세요.",
+
   "creator_scene_edit_opening_note": "캐릭터 도입부는 이 장면의 첫 장면으로 사용됩니다. 이후 대화도 캐릭터의 기존 설정을 중심으로 이어집니다.",
+
   "creator_scene_edit_save_changes": "변경 사항 저장",
   "creator_scene_edit_save_scene": "장면 저장",
+
   "creator_scene_edit_error_title_required": "장면 제목을 먼저 입력해 주세요.",
   "creator_scene_edit_error_description_required": "장면 설명을 먼저 입력해 주세요.",
   "creator_scene_edit_error_opening_required": "캐릭터 도입부를 먼저 입력해 주세요.",
   "creator_scene_edit_save_failed": "저장하지 못했습니다. 잠시 후 다시 시도해 주세요.",
   "creator_scene_delete_title": "장면을 삭제할까요?",
+
   "creator_scene_delete_target_fallback": "이 장면",
+
   "creator_scene_delete_confirm": "「{sceneTitle}」을 삭제하시겠습니까? 삭제한 후에는 복구할 수 없습니다.",
   "@creator_scene_delete_confirm": {
     "placeholders": {
@@ -3790,8 +3257,11 @@
       }
     }
   },
+
   "creator_scene_delete_failed": "삭제하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+
   "creator_scene_empty_title": "아직 크리에이터 장면이 없습니다",
+
   "creator_scene_empty_description": "{characterName}의 또 다른 세계관을 작성하여\n플레이어가 새로운 이야기에서 시작할 수 있게 해 보세요.",
   "@creator_scene_empty_description": {
     "placeholders": {
@@ -3800,8 +3270,11 @@
       }
     }
   },
+
   "creator_scene_add": "장면 추가",
+
   "creator_scene_unnamed": "제목 없는 장면",
+
   "creator_scene_opening": "캐릭터 도입부: {opening}",
   "@creator_scene_opening": {
     "placeholders": {
@@ -3810,29 +3283,43 @@
       }
     }
   },
+
   "creator_scene_edit": "편집",
   "creator_scene_delete": "삭제",
+
   "creator_scene_title": "크리에이터 장면",
+
   "creator_scene_character_unavailable": "현재 캐릭터 정보를 불러올 수 없습니다.",
+
   "creator_scene_load_failed": "장면을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.",
+
   "creator_scene_heading": "캐릭터를 위한 다양한 이야기의 시작 만들기",
   "custom_scene_edit_heading_edit": "오직 나만을 위한 이야기를 다듬어 보세요",
+
   "custom_scene_edit_heading_add": "이 채팅방만을 위한 이야기를 작성해 보세요",
+
   "custom_scene_edit_description_hint": "이야기가 펼쳐지는 시간, 장소, 관계와 시작하고 싶은 상황을 설명해 주세요.",
+
   "custom_scene_edit_note": "직접 만든 장면에는 미리 설정된 캐릭터 도입부가 없습니다. 시작하면 캐릭터가 장면 설명과 기존 설정에 따라 이야기에 등장합니다.",
   "moment_create_no_mentionable_characters": "현재 태그할 수 있는 캐릭터가 없습니다.",
+
   "moment_create_mention_my_characters": "내 캐릭터 태그",
+
   "moment_create_no_matching_characters": "일치하는 캐릭터를 찾을 수 없습니다",
+
   "moment_create_my_character": "내 캐릭터",
   "moment_create_friend_character": "친구 캐릭터",
+
   "moment_create_public_visibility_hint": "게시물이 모먼트 담벼락에 표시됩니다",
   "moment_create_private_visibility_hint": "지정된 범위 내에서만 공개됩니다",
+
   "moment_create_add_image": "이미지 추가",
   "moment_create_mention_character": "캐릭터 태그",
   "moment_edit_content_hint": "지금의 기분을 공유해 보세요...",
   "moment_forward_chat_preview": "【게시물을 공유했습니다】",
   "feedback_image_too_large": "이미지 크기는 10MB를 초과할 수 없습니다",
   "feedback_image_pick_failed": "이미지를 선택할 수 없습니다. 잠시 후 다시 시도해 주세요",
+
   "feedback_category_general": "일반 문의",
   "feedback_category_bug": "버그 신고",
   "feedback_category_suggestion": "기능 제안",
@@ -3841,9 +3328,12 @@
   "feedback_category_ai_reply": "AI 답변 오류",
   "feedback_category_character_report": "캐릭터 신고",
   "feedback_category_moment_report": "게시물 신고",
+
   "feedback_screenshot_required_error": "상황을 확인할 수 있도록 이 유형의 문제에는 화면 스크린샷을 첨부해 주세요",
   "feedback_login_required": "신고를 제출하려면 먼저 로그인해 주세요",
+
   "feedback_mail_received_title": "【접수 완료】신고가 접수되었습니다",
+
   "feedback_mail_received_body": "신고가 접수되었으며 최대한 빠르게 확인하겠습니다.\n\n접수 번호: {caseNumber}\n\n고객센터에서 추가 답변을 보내면 LoveyDovey 우편함을 통해 알려드립니다.",
   "@feedback_mail_received_body": {
     "placeholders": {
@@ -3852,22 +3342,30 @@
       }
     }
   },
+
   "feedback_submit_success": "신고가 성공적으로 제출되었습니다. 소중한 의견 감사합니다!",
   "feedback_submit_failed": "제출하지 못했습니다. 네트워크 연결을 확인한 후 다시 시도해 주세요",
+
   "feedback_category_section_title": "문제 유형",
   "feedback_reported_content_title": "신고된 콘텐츠",
+
   "feedback_screenshot_required_title": "문제 스크린샷 (필수)",
   "feedback_image_optional_title": "추가 이미지 (선택)",
+
   "feedback_screenshot_required_description": "실제 상황을 확인할 수 있도록 문제가 발생했을 때의 화면 스크린샷을 첨부해 주세요.",
   "feedback_image_optional_description": "관련 이미지가 있다면 확인에 도움이 되도록 함께 첨부해 주세요.",
+
   "feedback_footer_message": "보내 주신 의견은 게임 경험을 지속적으로 개선하는 데 도움이 됩니다. 감사합니다!",
+
   "feedback_select_image_semantics": "신고 이미지 선택",
   "feedback_opening_gallery": "갤러리를 여는 중…",
   "feedback_select_image_upload": "여기를 눌러 업로드할 이미지를 선택하세요",
   "feedback_image_requirements": "JPG 및 PNG 지원, 이미지당 최대 10MB",
+
   "feedback_submitting_semantics": "제출 중",
   "feedback_submit_semantics": "신고 제출",
   "feedback_submit_button": "제출",
+
   "feedback_remove_image": "이미지 삭제",
   "feedback_selected_image": "이미지 선택됨",
   "feedback_change_image": "변경",
@@ -3881,12 +3379,15 @@
       }
     }
   },
+
   "profile_backpack_physical_gift_status": "실물 선물 상자 해제 상태:",
   "profile_backpack_vip_gift_title": "【최고의 사랑】VIP 전용 실물 선물 상자",
   "profile_backpack_vip_gift_contents": "구성: 전용 손편지 + 캐릭터 대표 인형 + 공식 감사 편지",
+
   "profile_backpack_edit_shipping_info": "배송지 정보 수정",
   "profile_backpack_unlock_shipping_info": "해제 완료! 눌러서 배송 정보를 입력하세요",
   "profile_backpack_shipping_registered": "배송지 등록이 완료되었습니다. 최대한 빠르게 준비해 드리겠습니다!",
+
   "profile_backpack_amount_remaining": "NT$ {amount}만 더 모으면 실물 대상이 해제됩니다!",
   "@profile_backpack_amount_remaining": {
     "placeholders": {
@@ -3895,35 +3396,46 @@
       }
     }
   },
+
   "profile_backpack_hint": "팁: 다른 외형과 프로필 테두리는 가방에서 확인할 수 있어요.",
   "profile_backpack_close": "닫기",
+
   "profile_physical_gift_title": "【최고의 사랑】실물 선물 상자 해제",
   "profile_physical_gift_description": "「LoveyDovey」를 향한 변함없는 사랑에 감사드립니다!\n아래 배송 정보를 입력해 주세요. 전용 손편지와 캐릭터 대표 인형을 보내 드립니다:",
+
   "profile_physical_gift_recipient_name": "수령인의 실명",
   "profile_physical_gift_phone": "연락처",
   "profile_physical_gift_address": "전체 배송 주소 (우편번호 포함)",
   "profile_physical_gift_character_name": "받고 싶은 캐릭터 대표 인형의 이름",
   "profile_physical_gift_character_hint": "예: 원하는 캐릭터 이름 입력",
+
   "profile_physical_gift_fill_later": "나중에 입력",
   "profile_physical_gift_required_error": "배송 정보와 원하는 캐릭터 이름을 모두 입력해 주세요!",
   "profile_physical_gift_submit_success": "배송 정보가 성공적으로 제출되었습니다! 실물 깜짝 선물을 기대해 주세요!",
   "profile_physical_gift_confirm_submit": "제출 확인",
+
   "profile_tooltip_announcement": "공지",
   "profile_tooltip_settings": "설정",
   "profile_tooltip_backpack": "내 가방",
   "profile_backpack_menu_title": "내 가방",
+
   "profile_about_me_title": "내 소개",
   "profile_tab_bio_title": "자기소개",
+
   "profile_check_in_done": "출석 완료",
   "profile_check_in": "출석",
   "profile_check_in_done_subtitle": "오늘의 발자국을 남겼어요",
   "profile_check_in_not_done_subtitle": "오늘은 아직 출석하지 않았어요",
+
   "profile_likes_label": "좋아요",
   "profile_heartbeat_diary_subtitle": "설레는 순간을 기록하세요",
+
   "profile_create_scene": "장면 만들기",
+
   "profile_link_invalid": "링크 형식이 올바르지 않습니다",
   "profile_link_open_failed": "이 링크를 열 수 없습니다",
   "profile_link_default_name": "내 링크",
+
   "profile_publish_moment_short": "이 순간 기록하기",
   "edit_profile_default_link_name": "내 링크 {index}",
   "@edit_profile_default_link_name": {
@@ -3933,6 +3445,7 @@
       }
     }
   },
+
   "edit_profile_done": "완료",
   "edit_profile_social_links": "소셜 미디어 및 링크",
   "edit_profile_add_link": "링크 추가",
@@ -3945,12 +3458,15 @@
   "theme_name_mint": "숲속 민트",
   "theme_name_midnight": "심야 모드",
   "theme_name_custom": "사용자 지정 색상",
+
   "theme_selection_choose_theme": "테마 색상 선택",
   "theme_selection_title": "분위기 바꾸기",
   "theme_selection_description": "마음에 드는 테마 색상을 골라 LoveyDovey를 나만의 분위기로 꾸며 보세요.",
   "theme_selection_preview": "미리보기",
+
   "theme_selection_characters": "캐릭터",
   "theme_selection_posts": "게시물",
+
   "theme_selection_previewing": "현재 미리보기: {themeName}",
   "@theme_selection_previewing": {
     "placeholders": {
@@ -3959,9 +3475,11 @@
       }
     }
   },
+
   "theme_selection_apply": "테마 적용",
   "theme_selection_restore_default": "기본값으로 복원",
   "theme_selection_choose_color": "나만의 색상 선택",
+
   "theme_selection_applied": "「{themeName}」 테마를 적용했습니다",
   "@theme_selection_applied": {
     "placeholders": {
@@ -3973,19 +3491,27 @@
   "welcome_guide_help": "게임 가이드",
   "welcome_guide_start": "여정 시작",
   "welcome_guide_next": "다음",
+
   "welcome_guide_welcome_title": "「LoveyDovey」에 오신 것을 환영합니다",
   "welcome_guide_welcome_description": "이곳에서는 모든 만남이 잊지 못할 이야기로 이어질 수 있습니다. 「LoveyDovey」와 함께 둘만의 아름다운 추억을 만들어 가세요.",
+
   "welcome_guide_chat_title": "채팅 모드",
   "welcome_guide_chat_description": "「LoveyDovey」에서는 다양한 채팅 모드를 제공하며, 모드마다 서로 다른 상호작용을 경험할 수 있습니다.",
+
   "welcome_guide_daily_title": "일상 모드",
   "welcome_guide_daily_description": "서로의 곁을 지키고 일상을 나누며 편안한 대화를 즐겨 보세요.",
+
   "welcome_guide_story_title": "스토리 모드",
   "welcome_guide_story_description": "캐릭터의 이야기를 진행하고 더 많은 전용 스토리와 상호작용을 해제하세요.",
+
   "welcome_guide_immersive_title": "몰입 모드",
   "welcome_guide_immersive_description": "더욱 깊이 빠져들 수 있는 생생한 대화를 경험해 보세요.",
+
   "welcome_guide_chat_more": "채팅 모드에 대한 자세한 설명은 「게임 도움말」에서 확인할 수 있습니다.",
+
   "welcome_guide_encounter_title": "새로운 만남",
   "welcome_guide_encounter_description": "모든 캐릭터는 저마다 독특한 성격과 이야기, 목소리를 지니고 있습니다. 마음에 드는 캐릭터를 만나면 친구로 추가하여 대화하고 교감하며 일상을 나누고, 둘만의 추억을 만들어 보세요.",
+
   "welcome_guide_more_title": "더 많은 콘텐츠",
   "welcome_guide_more_description": "컬렉션, 크리에이터, 상점 등 다양한 기능도 준비되어 있습니다. 자세한 내용은 「게임 도움말」에서 확인해 주세요.",
   "preference_selection_max_error": "취향은 최대 {count}개까지 선택할 수 있습니다.",
@@ -3996,15 +3522,19 @@
       }
     }
   },
+
   "preference_selection_save_failed": "현재 취향을 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+
   "preference_selection_title": "어떤 사람을 만나고 싶나요?",
   "preference_selection_description": "좋아하는 유형을 3~5개 선택해 주세요. LoveyDovey가 여기서부터 당신을 알아갈게요.",
   "preference_selection_recommendation_note": "앞으로 실제 상호작용에 따라 더욱 잘 맞는 추천으로 조금씩 조정됩니다.",
   "preference_selection_selected": "선택됨",
   "preference_selection_start": "여기서 시작하기",
+
   "preference_group_personality": "성격・분위기",
   "preference_group_relationship_age": "관계・나이 차이",
   "preference_group_story": "이야기 분위기",
+
   "preference_tag_gentle": "다정함",
   "preference_tag_cold": "차가움",
   "preference_tag_scheming": "계략형",
@@ -4014,8 +3544,10 @@
   "preference_tag_mysterious": "신비로움",
   "preference_tag_healing": "힐링",
   "preference_tag_gap_moe": "반전 매력",
+
   "preference_tag_older": "연상",
   "preference_tag_younger": "연하",
+
   "preference_tag_ceo": "재벌 대표",
   "preference_tag_school": "학원물",
   "preference_tag_workplace": "오피스물",
@@ -4024,6 +3556,7 @@
   "encounter_load_failed": "만남 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.",
   "encounter_no_available_characters": "아직 만날 수 있는 캐릭터가 없습니다",
   "encounter_category_empty": "현재 이 카테고리에 캐릭터가 없습니다",
+
   "encounter_category_all": "전체",
   "encounter_category_xianxia": "선협",
   "encounter_category_childhood_friend": "소꿉친구",
@@ -4032,14 +3565,17 @@
   "encounter_category_other": "기타",
   "character_edit_tab_character_settings": "캐릭터 설정",
   "character_edit_test": "테스트",
+
   "character_edit_supporting_basic_info": "기본 정보",
   "character_edit_supporting_main_setting": "주인공과의 관계 설정",
   "character_edit_supporting_main_description": "이 조연과 주인공의 관계 및 이야기 속 역할을 설명해 주세요.",
+
   "character_edit_banner_preview_hint": "이미지를 누르면 크게 볼 수 있습니다",
   "character_edit_main_photo_hint": "첫 번째 이미지가 대표 프로필로 사용됩니다",
   "character_edit_other_photos": "다른 캐릭터 사진",
   "character_edit_photo_action_hint": "사진을 누르면 미리 볼 수 있으며, 연필 아이콘으로 사진 설정을 편집할 수 있습니다",
-  "character_edit_over_limit_warning": "{label}이(가) {count}자를 초과했습니다. 수정한 후 다시 공개해 주세요.",
+
+  "character_edit_over_limit_warning": "⚠ {label}이(가) {count}자를 초과했습니다. 수정한 후 다시 공개해 주세요.",
   "@character_edit_over_limit_warning": {
     "placeholders": {
       "label": {
@@ -4052,6 +3588,7 @@
   },
   "memo_notification_channel_name": "메모 알림",
   "memo_notification_channel_description": "캐릭터가 플레이어에게 설정한 메모를 알려 줍니다",
+
   "memo_notification_title": "{characterName}의 알림",
   "@memo_notification_title": {
     "placeholders": {
@@ -4060,6 +3597,7 @@
       }
     }
   },
+
   "memo_notification_tsundere": "딱히 네가 걱정되는 건 아니야. 그냥 잊을까 봐 알려 주는 것뿐이야. 오늘 잊지 마: {memoContent}",
   "@memo_notification_tsundere": {
     "placeholders": {
@@ -4068,6 +3606,7 @@
       }
     }
   },
+
   "memo_notification_dominant": "일정은 이미 대신 기억해 뒀어. 제시간에 끝내. 오늘 잊지 마: {memoContent}",
   "@memo_notification_dominant": {
     "placeholders": {
@@ -4076,6 +3615,7 @@
       }
     }
   },
+
   "memo_notification_yandere": "잊으면 안 돼. 나는 계속 기억하고 있을 테니까. 오늘 잊지 마: {memoContent}",
   "@memo_notification_yandere": {
     "placeholders": {
@@ -4084,6 +3624,7 @@
       }
     }
   },
+
   "memo_notification_gentle": "바쁘다 보면 잊을까 봐 알려 주고 싶었어. 오늘 잊지 마: {memoContent}",
   "@memo_notification_gentle": {
     "placeholders": {
@@ -4092,6 +3633,7 @@
       }
     }
   },
+
   "memo_notification_cold": "한 가지 알려 줄 게 있어. 오늘 잊지 마: {memoContent}",
   "@memo_notification_cold": {
     "placeholders": {
@@ -4100,6 +3642,7 @@
       }
     }
   },
+
   "memo_notification_sunny": "있잖아, 오늘 아직 중요한 일이 하나 남았어! 잊지 마: {memoContent}",
   "@memo_notification_sunny": {
     "placeholders": {
@@ -4108,6 +3651,7 @@
       }
     }
   },
+
   "memo_notification_lazy": "계속 누워 있고 싶지만, 그래도 알려 줘야겠지. 오늘 잊지 마: {memoContent}",
   "@memo_notification_lazy": {
     "placeholders": {
@@ -4116,6 +3660,7 @@
       }
     }
   },
+
   "memo_notification_older": "착하지, 오늘 할 일 잊지 마. 기억해 둬: {memoContent}",
   "@memo_notification_older": {
     "placeholders": {
@@ -4124,6 +3669,7 @@
       }
     }
   },
+
   "memo_notification_younger": "내가 착하게 대신 기억하고 있었어! 오늘 잊지 마: {memoContent}",
   "@memo_notification_younger": {
     "placeholders": {
@@ -4132,6 +3678,7 @@
       }
     }
   },
+
   "memo_notification_mechanical": "알림이 활성화되었습니다. 오늘의 임무: {memoContent}",
   "@memo_notification_mechanical": {
     "placeholders": {
@@ -4140,6 +3687,7 @@
       }
     }
   },
+
   "memo_notification_default": "오늘 잊지 마: {memoContent}",
   "@memo_notification_default": {
     "placeholders": {
@@ -4151,24 +3699,33 @@
   "recommendation_load_failed": "현재 추천을 불러올 수 없습니다. 잠시 후 다시 시도해 주세요.",
   "recommendation_reload": "다시 불러오기",
   "recommendation_empty": "아직 추천할 수 있는 캐릭터가 없습니다.",
+
   "recommendation_title": "당신을 위해 고른 만남",
+
   "recommendation_featured_title": "먼저 이들을 만나 보세요",
   "recommendation_featured_subtitle": "당신에게 가장 잘 맞을 것 같은 만남을 먼저 보여 드려요.",
+
   "recommendation_matched_behavior_title": "당신의 취향에 점점 가까워지고 있어요",
   "recommendation_matched_initial_title": "처음 선택한 취향을 바탕으로",
   "recommendation_matched_behavior_subtitle": "4일 차 이후부터 최근 상호작용도 추천 순서에 반영됩니다.",
   "recommendation_matched_initial_subtitle": "지금은 처음 선택한 태그를 바탕으로 추천 범위를 좁혀 드려요.",
+
   "recommendation_explore_title": "이런 사람도 좋아할지 몰라요",
   "recommendation_explore_subtitle": "가끔은 색다른 사람을 만날 수 있도록 무작위 탐색도 조금 남겨 두었어요.",
+
   "recommendation_refreshing": "새로운 만남을 준비하고 있어요……",
+
   "recommendation_badge_for_you": "맞춤 추천",
   "recommendation_badge_featured": "특별한 만남",
   "recommendation_badge_explore": "탐색",
+
   "recommendation_default_occupation_hint": "한번 열어 보세요. 다음에 마음을 설레게 할 인연일지도 몰라요.",
   "recommendation_explore_fallback": "조금 다른 방향에서 뜻밖의 설렘을 발견할지도 몰라요.",
+
   "recommendation_behavior_hint_similar_type": "최근 이런 유형의 캐릭터를 자주 보고 있어요",
   "recommendation_behavior_hint_forming": "최근 상호작용을 통해 취향이 조금씩 만들어지고 있어요",
   "recommendation_behavior_hint_recent": "최근 상호작용을 바탕으로 골랐어요",
+
   "recommendation_reason_liked_tags": "좋아하는 취향・{tags}",
   "@recommendation_reason_liked_tags": {
     "placeholders": {
@@ -4177,9 +3734,11 @@
       }
     }
   },
+
   "recommendation_reason_popular": "최근 많은 사람이 이 캐릭터를 만나 보고 있어요",
   "recommendation_reason_default": "다음 설렘으로 이어질 꼭 맞는 만남일지도 몰라요",
   "scene_delete_title": "장면을 삭제할까요?",
+
   "scene_delete_content": "「{title}」을 삭제하시겠습니까? 삭제한 후에는 복구할 수 없습니다.",
   "@scene_delete_content": {
     "placeholders": {
@@ -4188,17 +3747,22 @@
       }
     }
   },
+
   "scene_unnamed": "제목 없는 장면",
   "scene_cancel": "취소",
   "scene_delete": "삭제",
   "scene_delete_failed": "삭제하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+
   "scene_start_failed": "현재 장면을 시작할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+
   "scene_end_title": "장면을 종료할까요?",
   "scene_end_content": "종료하면 일반 채팅으로 돌아가며, 현재 대화 기록은 삭제되지 않습니다.",
   "scene_end_action": "장면 종료",
   "scene_ended": "장면이 종료되었습니다",
   "scene_end_failed": "현재 장면을 종료할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+
   "scene_active_label": "현재 진행 중",
+
   "scene_opening": "캐릭터 도입부: {opening}",
   "@scene_opening": {
     "placeholders": {
@@ -4207,26 +3771,34 @@
       }
     }
   },
+
   "scene_edit": "편집",
   "scene_start": "장면 시작",
+
   "scene_creator_load_failed": "크리에이터 장면을 불러오지 못했습니다.",
   "scene_creator_empty_title": "아직 크리에이터 장면이 없습니다",
   "scene_creator_empty_body": "이 캐릭터의 크리에이터가 아직 추가 이야기를 만들지 않았습니다.",
+
   "scene_custom_load_failed": "직접 만든 장면을 불러오지 못했습니다.",
   "scene_custom_empty_title": "아직 직접 만든 장면이 없습니다",
   "scene_custom_empty_body": "이 채팅방만을 위한 나만의 이야기를 만들어 보세요.",
   "scene_add": "장면 추가",
+
   "scene_title": "장면",
   "scene_tab_creator": "크리에이터 장면",
   "scene_tab_custom": "직접 만들기",
   "chat_book_player": "플레이어",
+
   "chat_book_title": "대화 기록",
   "chat_book_export_pdf": "PDF 내보내기",
+
   "chat_book_brand": "— LoveyDovey",
   "chat_book_change_cover": "표지 변경",
   "chat_book_cover_subtitle": "함께한 시간 · 대화 기념책",
   "chat_book_choose_cover": "기념책 표지 선택",
+
   "chat_book_initial_story": "첫 이야기",
+
   "chat_book_transcript_title": "{characterName} · 대화 기록",
   "@chat_book_transcript_title": {
     "placeholders": {
@@ -4235,6 +3807,7 @@
       }
     }
   },
+
   "chat_book_continuation": "{name} · 계속",
   "@chat_book_continuation": {
     "placeholders": {
@@ -4243,11 +3816,14 @@
       }
     }
   },
+
   "chat_book_previous_page": "이전 페이지",
   "chat_book_next_page": "다음 페이지",
+
   "chat_book_photo_message": "〔사진〕",
   "chat_book_audio_message": "〔음성 메시지〕",
   "chat_book_generic_message": "〔메시지〕",
+
   "chat_book_export_failed": "PDF를 내보내지 못했습니다: {error}",
   "@chat_book_export_failed": {
     "placeholders": {
@@ -4264,6 +3840,7 @@
       }
     }
   },
+
   "email_policy_read_instruction": "먼저 {title} 전문을 열어 읽어 주세요. 모두 읽은 후 「LoveyDovey」로 돌아오면 「읽었으며 동의합니다」를 누를 수 있습니다.",
   "@email_policy_read_instruction": {
     "placeholders": {
@@ -4272,7 +3849,9 @@
       }
     }
   },
+
   "email_policy_opening": "여는 중……",
+
   "email_policy_read_full": "{title} 전문 읽기",
   "@email_policy_read_full": {
     "placeholders": {
@@ -4281,6 +3860,7 @@
       }
     }
   },
+
   "email_policy_opened_ready": "{title}을(를) 열었습니다. 이제 동의 여부를 확인할 수 있습니다.",
   "@email_policy_opened_ready": {
     "placeholders": {
@@ -4289,6 +3869,7 @@
       }
     }
   },
+
   "email_policy_not_opened": "{title}을(를) 아직 열지 않았습니다.",
   "@email_policy_not_opened": {
     "placeholders": {
@@ -4297,10 +3878,14 @@
       }
     }
   },
+
   "email_policy_cancel_login": "로그인 취소",
   "email_policy_agree": "읽었으며 동의합니다",
+
   "email_policy_status_check_failed": "현재 약관 동의 상태를 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+
   "email_policy_login_notice": "최초 로그인 또는 약관 업데이트 시 서비스 이용약관과 개인정보 처리방침을 읽고 동의해야 합니다.",
+
   "email_policy_refresh": "새로 고침",
   "email_policy_page_load_failed": "페이지를 불러오지 못했습니다",
   "email_policy_check_network": "네트워크 연결을 확인한 후 다시 시도해 주세요.",
@@ -4310,6 +3895,7 @@
   "login_method_info_facebook_title": "Facebook으로 로그인",
   "login_method_info_email_title": "LoveyDovey 계정 (이메일)",
   "login_method_info_email_provider": "LoveyDovey 계정 (이메일)",
+
   "login_method_info_content": "{providerName}(으)로 「LoveyDovey」에 로그인합니다.\n\n유의 사항:\n\n• {providerName} 로그인과 다른 로그인 방식은 서로 별개의 계정 시스템입니다.\n\n• {providerName}(으)로 계정을 만들었다면 이후에도 같은 방식으로 로그인해 주세요.\n\n• 캐릭터 데이터, 채팅 기록 및 구매 내역은 다른 로그인 방식의 계정과 공유되지 않습니다.\n\n서로 다른 계정이 생성되어 데이터를 공유하지 못하는 상황을 방지하려면 최초 로그인 후에도 같은 로그인 방식을 계속 사용해 주세요.",
   "@login_method_info_content": {
     "placeholders": {
@@ -4318,6 +3904,7 @@
       }
     }
   },
+
   "login_method_info_got_it": "확인",
   "creator_studio_delete_failed": "삭제하지 못했습니다: {error}",
   "@creator_studio_delete_failed": {
@@ -4327,7 +3914,9 @@
       }
     }
   },
+
   "creator_studio_subtitle": "영감을 모으고 캐릭터를 정리하며 천천히 작품을 완성해 보세요",
+
   "creator_studio_load_failed": "스튜디오를 불러오지 못했습니다: {error}",
   "@creator_studio_load_failed": {
     "placeholders": {
@@ -4336,23 +3925,32 @@
       }
     }
   },
+
   "creator_studio_add_character": "캐릭터 추가",
+
   "creator_studio_public_title": "공개 캐릭터",
   "creator_studio_public_subtitle": "공개되어 다른 플레이어가 만날 수 있습니다",
   "creator_studio_public_empty": "현재 공개 캐릭터가 없습니다",
+
   "creator_studio_private_title": "비공개 캐릭터",
   "creator_studio_private_subtitle": "나만 볼 수 있습니다",
   "creator_studio_private_empty": "현재 비공개 캐릭터가 없습니다",
+
   "creator_studio_draft_title": "초안",
   "creator_studio_draft_subtitle": "아직 완성되지 않은 작품",
   "creator_studio_draft_empty": "현재 미완성 초안이 없습니다",
+
   "creator_studio_draft_empty_title": "아직 초안이 없습니다",
   "creator_studio_draft_empty_hint": "영감이 떠오르면 먼저 여기에 기록해 보세요",
+
   "creator_studio_status_public": "공개",
   "creator_studio_status_private": "비공개",
   "creator_studio_status_draft": "초안",
+
   "creator_studio_character_load_failed": "캐릭터 정보를 불러오지 못했습니다",
+
   "creator_studio_delete_draft_tooltip": "초안 삭제",
+
   "creator_studio_unnamed_creator": "이름 없는 크리에이터",
   "creator_studio_no_bio": "아직 자기소개를 작성하지 않았습니다",
   "chat_input_tools": "기능",
@@ -4365,17 +3963,20 @@
   "character_navigator_confidential_title": "기밀 파일",
   "character_navigator_unavailable_message": "이 캐릭터는 비공개로 전환되었거나, 공개 중단, 규정 위반으로 인한 보관 또는 삭제 처리되었을 수 있습니다.",
   "character_navigator_got_it": "확인",
+
   "character_navigator_load_failed_title": "불러오기 실패",
   "character_navigator_load_failed_message": "현재 캐릭터 정보를 불러올 수 없습니다. 잠시 후 다시 시도해 주세요.",
   "character_navigator_confirm": "확인",
   "character_profile_add_bookmark": "캐릭터 보관",
   "character_profile_remove_bookmark": "보관 취소",
+
   "character_profile_pronoun_female": "그녀",
   "character_profile_pronoun_male": "그",
   "character_profile_pronoun_neutral": "그 캐릭터",
   "chat_home_pin_limit_reached": "채팅방은 최대 3개까지 고정할 수 있습니다. 먼저 다른 채팅방의 고정을 해제해 주세요.",
   "chat_home_pinned_success": "채팅방을 고정했습니다",
   "chat_home_unpinned_success": "고정을 해제했습니다",
+
   "chat_home_pin_update_failed": "고정 상태를 업데이트하지 못했습니다: {error}",
   "@chat_home_pin_update_failed": {
     "placeholders": {
@@ -4384,8 +3985,10 @@
       }
     }
   },
+
   "chat_home_unpin": "고정 해제",
   "chat_home_pin": "채팅방 고정",
+
   "chat_home_time_label": "시간: {time}",
   "@chat_home_time_label": {
     "placeholders": {
@@ -4398,13 +4001,13 @@
   "nav_recommend": "추천",
   "moments_auto_reply_title": "AI의 플레이어 게시물 자동 답글 허용",
   "moments_auto_reply_description": "활성화하면 시스템이 이 캐릭터를 선택해 플레이어의 게시물에 답글을 남길 수 있습니다.",
+  "mailShareTooltip": "편지 공유",
   "mailOriginalQuestionLabel": "처음 물어본 내용",
   "hidden_moments_empty_hint": "아직 숨긴 게시물이 없어요",
   "moment_search_unavailable": "현재 검색을 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.",
   "moment_search_hint": "공개 게시물, 캐릭터 또는 크리에이터 검색",
   "moment_search_instruction": "게시물 내용, 캐릭터 이름 또는 크리에이터 이름을 입력하세요",
-  "moment_search_no_results": "관련 공개 게시물을 찾을 수 없습니다",
-  "settingsErrorTitle": "오류가 발생했습니다",
+  "moment_search_no_results": "관련 공개 게시물을 찾을 수 없습니다","settingsErrorTitle": "오류가 발생했습니다",
   "settingsChangePasswordSubtitle": "현재 비밀번호를 확인한 후 새 로그인 비밀번호를 설정합니다",
   "settingsCreatorGuidelines": "크리에이터 가이드라인",
   "settingsPlayGuide": "게임 가이드",
@@ -4423,7 +4026,8 @@
     }
   },
   "shop_tab_monthly": "월간 패스",
-  "shop_joined_days": "LoveyDovey와 함께한 지 {days}일째",
+
+  "shop_joined_days": "✦ LoveyDovey와 함께한 지 {days}일째 ✦",
   "@shop_joined_days": {
     "placeholders": {
       "days": {
@@ -4431,28 +4035,41 @@
       }
     }
   },
+
   "shop_vip_tier_1_title": "첫눈에 반한 마음",
   "shop_vip_tier_1_reward": "꽃 포인트 20개 + 신규 전용 칭호",
+
   "shop_vip_tier_2_title": "희미한 빛의 설렘",
   "shop_vip_tier_2_reward": "전용 프로필 테두리 【희미한 빛의 설렘】",
+
   "shop_vip_tier_3_title": "별빛 아래 속삭임",
   "shop_vip_tier_3_reward": "전용 채팅 말풍선 + 꽃 포인트 50개",
+
   "shop_vip_tier_4_title": "낭만적인 노을",
   "shop_vip_tier_4_reward": "전용 앱 아이콘",
+
   "shop_vip_tier_5_title": "두근거리는 마음",
   "shop_vip_tier_5_reward": "화면 터치 효과 (Lottie) + 꽃 포인트 100개",
+
   "shop_vip_tier_6_title": "영원한 맹세",
   "shop_vip_tier_6_reward": "고급 움직이는 프로필 테두리 + 꽃 포인트 200개",
+
   "shop_vip_tier_7_title": "영혼의 만남",
   "shop_vip_tier_7_reward": "움직이는 채팅 말풍선 효과 + 전용 고급 칭호",
+
   "shop_vip_tier_8_title": "오직 당신을 위한 기다림",
   "shop_vip_tier_8_reward": "최고급 움직이는 명찰 + 꽃 포인트 500개",
+
   "shop_vip_tier_9_title": "눈부신 은하수",
   "shop_vip_tier_9_reward": "전용 입장 Lottie 효과 + 전용 고객 지원",
+
   "shop_vip_tier_10_title": "최고의 사랑",
   "shop_vip_tier_10_reward": "【VIP 전용 실물 선물 상자】 (손편지 + 캐릭터 대표 인형)",
+
   "shop_vip_total_bond": "누적 로맨틱 인연",
+
   "shop_vip_all_unlocked": "모든 최고급 혜택을 해제했습니다!",
+
   "shop_vip_next_unlock": "NT$ {amount}를 더 충전하면 다음 단계를 해제할 수 있습니다",
   "@shop_vip_next_unlock": {
     "placeholders": {
@@ -4462,8 +4079,11 @@
     }
   },
   "call_connecting": "통화 연결 중...",
+
   "call_listening_auto_send": "듣고 있습니다... (말을 마치면 자동으로 전송됩니다)",
+
   "call_listening_release_to_send": "듣고 있습니다... (손가락을 떼면 전송됩니다)",
+
   "call_sending_transcript": " {text}\n\n(전송 중...)",
   "@call_sending_transcript": {
     "placeholders": {
@@ -4473,7 +4093,9 @@
     }
   },
   "help_translation_fallback": "현재 이 언어로 제공되는 플레이 가이드가 없어 임시로 번체 중국어로 표시됩니다.",
+
   "help_all_categories": "전체",
+
   "help_subtitle_companion": "일상 기능과 유용한 도우미",
   "help_subtitle_ai_chat": "채팅, 음성 및 스마트 상호작용",
   "help_subtitle_creation": "캐릭터 설정 및 창작 기능",
@@ -4482,6 +4104,7 @@
   "help_subtitle_general": "일반적인 기능 및 이용 방법",
   "chat_interact_fun": "재미있는 활동",
   "memo_notification_permission_missing": "알림 권한이 아직 허용되지 않았습니다. 메모는 저장되지만 시스템 알림은 표시되지 않습니다.",
+
   "memo_saved_with_reminder": "메모를 저장했습니다. {characterName}이(가) 알려 줄 거예요!",
   "@memo_saved_with_reminder": {
     "placeholders": {
@@ -4490,7 +4113,9 @@
       }
     }
   },
+
   "memo_saved_without_notification": "메모를 저장했지만 알림 권한이 아직 허용되지 않았습니다.",
+
   "memo_updated_with_reminder": "메모를 수정했습니다. {characterName}이(가) 알려 줄 거예요!",
   "@memo_updated_with_reminder": {
     "placeholders": {
@@ -4499,7 +4124,9 @@
       }
     }
   },
+
   "memo_updated_without_notification": "메모를 수정했지만 현재 알림 권한이 없습니다.",
+
   "memo_load_error": "데이터를 불러오는 중 오류가 발생했습니다: {error}",
   "@memo_load_error": {
     "placeholders": {
@@ -4509,16 +4136,20 @@
     }
   },
   "story_summary_content_required": "스토리 내용을 입력해 주세요",
+
   "story_summary_edit_hint": "두 사람의 이야기를 적어 보세요...",
   "profile_section_basic_info": "기본 정보",
   "profile_section_about_me": "나에 대해",
   "dice_duel_you": "나",
+
   "dice_duel_result_saved": "대결 결과를 저장했습니다!",
+
   "dice_duel_rolling": "우주의 에너지를 모으는 중...",
   "butterfly_loading_connecting": "시간과 연결하는 중...",
   "character_block_login_required": "캐릭터를 차단하려면 먼저 로그인해 주세요",
   "character_block_self_forbidden": "직접 만든 캐릭터는 차단할 수 없습니다",
   "character_block_title": "캐릭터 차단",
+
   "character_block_confirm_message": "‘{characterName}’을(를) 차단하시겠습니까?\n\n차단하면 만남, 모먼트 등의 추천 콘텐츠에 이 캐릭터가 더 이상 표시되지 않습니다.",
   "@character_block_confirm_message": {
     "placeholders": {
@@ -4527,7 +4158,9 @@
       }
     }
   },
+
   "character_block_confirm": "차단하기",
+
   "character_block_success": "‘{characterName}’을(를) 차단했습니다",
   "@character_block_success": {
     "placeholders": {
@@ -4536,6 +4169,7 @@
       }
     }
   },
+
   "character_block_failed": "차단하지 못했습니다. 잠시 후 다시 시도해 주세요",
   "character_unblock_success": "차단을 해제했습니다",
   "character_unblock_failed": "차단을 해제하지 못했습니다. 잠시 후 다시 시도해 주세요",
@@ -4580,11 +4214,5 @@
   "creator_social_links_saved": "소셜 링크를 저장했습니다",
   "creator_social_links_load_failed": "소셜 링크를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요",
   "creator_social_links_save_failed": "소셜 링크를 저장하지 못했습니다. 잠시 후 다시 시도해 주세요",
-  "creator_social_links_open_failed": "이 링크를 열 수 없습니다",
-  "chat_regenerate_bottom_tip": "‘다시 생성’이 여기로 이동했어요! 다른 답변을 받고 싶을 때 이 버튼을 사용하세요.",
-  "chat_continue_bottom_tip": "‘계속’이 여기로 이동했어요! 캐릭터가 계속 말하게 하고 싶을 때 이 버튼을 사용하세요.",
-  "languageSelectionSubtitle": "익숙한 언어를 선택해 주세요",
-  "@languageSelectionSubtitle": {
-    "description": "Subtitle shown below the language settings title."
-  }
+  "creator_social_links_open_failed": "이 링크를 열 수 없습니다"
 }

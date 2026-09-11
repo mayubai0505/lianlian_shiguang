@@ -40,6 +40,223 @@ const stripeWebhookSecret = defineSecret("STRIPE_WEBHOOK_SECRET");
 const crypto = require("crypto");
 const APP_ID = "lianlianshiguang";
 
+// ============================================================
+// 通知多國語系共用工具
+// ============================================================
+const NOTIFICATION_TEXTS = {
+  zh_Hant: {
+    announcementTitle: "戀戀拾光有新公告",
+    announcementBody: "新的官方公告已發布，點擊查看。",
+    creatorMomentTitle: (name) => `${name} 發布了新的瞬間`,
+    creatorMomentBody: "你關注的創作者有新動態，點擊看看。",
+    characterMomentTitle: (name) => `${name} 發布了新的瞬間`,
+    characterMomentBody: "你關注的創作者旗下角色有新動態，點擊看看。",
+    autoLikeTitle: "角色按讚了你的瞬間",
+    autoLikeBody: (name) => `${name} 喜歡了你的瞬間動態。`,
+    autoReplyTitle: "動態有新回應",
+    autoReplyBody: (name, content, isReply) => isReply
+      ? `${name} 回覆了你的留言：「${content}」`
+      : `${name} 回覆了你的動態：「${content}」`,
+  },
+  zh_Hans: {
+    announcementTitle: "恋恋拾光有新公告",
+    announcementBody: "新的官方公告已发布，点击查看。",
+    creatorMomentTitle: (name) => `${name} 发布了新的瞬间`,
+    creatorMomentBody: "你关注的创作者有新动态，点击看看。",
+    characterMomentTitle: (name) => `${name} 发布了新的瞬间`,
+    characterMomentBody: "你关注的创作者旗下角色有新动态，点击看看。",
+    autoLikeTitle: "角色点赞了你的瞬间",
+    autoLikeBody: (name) => `${name} 喜欢了你的瞬间动态。`,
+    autoReplyTitle: "动态有新回复",
+    autoReplyBody: (name, content, isReply) => isReply
+      ? `${name} 回复了你的留言：“${content}”`
+      : `${name} 回复了你的动态：“${content}”`,
+  },
+  en: {
+    announcementTitle: "New announcement from Lianlian Shiguang",
+    announcementBody: "A new official announcement is available. Tap to view it.",
+    creatorMomentTitle: (name) => `${name} posted a new Moment`,
+    creatorMomentBody: "A creator you follow has a new update. Tap to view it.",
+    characterMomentTitle: (name) => `${name} posted a new Moment`,
+    characterMomentBody: "A character from a creator you follow has a new update.",
+    autoLikeTitle: "A character liked your Moment",
+    autoLikeBody: (name) => `${name} liked your Moment.`,
+    autoReplyTitle: "New reply on your Moment",
+    autoReplyBody: (name, content, isReply) => isReply
+      ? `${name} replied to your comment: “${content}”`
+      : `${name} replied to your Moment: “${content}”`,
+  },
+  ja: {
+    announcementTitle: "恋恋拾光から新しいお知らせ",
+    announcementBody: "新しい公式お知らせが公開されました。タップして確認してください。",
+    creatorMomentTitle: (name) => `${name}が新しい瞬間を投稿しました`,
+    creatorMomentBody: "フォロー中のクリエイターに新しい投稿があります。",
+    characterMomentTitle: (name) => `${name}が新しい瞬間を投稿しました`,
+    characterMomentBody: "フォロー中のクリエイターのキャラクターに新しい投稿があります。",
+    autoLikeTitle: "キャラクターがあなたの瞬間にいいねしました",
+    autoLikeBody: (name) => `${name}があなたの瞬間を気に入りました。`,
+    autoReplyTitle: "瞬間に新しい返信があります",
+    autoReplyBody: (name, content, isReply) => isReply ? `${name}がコメントに返信しました：「${content}」` : `${name}が瞬間に返信しました：「${content}」`,
+  },
+  ko: {
+    announcementTitle: "연연습광 새 공지",
+    announcementBody: "새 공식 공지가 등록되었습니다. 눌러서 확인해 보세요.",
+    creatorMomentTitle: (name) => `${name}님이 새 순간을 게시했어요`,
+    creatorMomentBody: "팔로우 중인 크리에이터의 새 소식이 있어요.",
+    characterMomentTitle: (name) => `${name}이(가) 새 순간을 게시했어요`,
+    characterMomentBody: "팔로우 중인 크리에이터의 캐릭터가 새 글을 올렸어요.",
+    autoLikeTitle: "캐릭터가 내 순간을 좋아했어요",
+    autoLikeBody: (name) => `${name}이(가) 내 순간을 좋아했어요.`,
+    autoReplyTitle: "순간에 새 답글이 있어요",
+    autoReplyBody: (name, content, isReply) => isReply ? `${name}이(가) 댓글에 답했어요: “${content}”` : `${name}이(가) 순간에 답했어요: “${content}”`,
+  },
+  vi: {
+    announcementTitle: "Thông báo mới từ Lianlian Shiguang",
+    announcementBody: "Đã có thông báo chính thức mới. Nhấn để xem.",
+    creatorMomentTitle: (name) => `${name} đã đăng Khoảnh khắc mới`,
+    creatorMomentBody: "Một nhà sáng tạo bạn theo dõi vừa có cập nhật mới.",
+    characterMomentTitle: (name) => `${name} đã đăng Khoảnh khắc mới`,
+    characterMomentBody: "Một nhân vật của nhà sáng tạo bạn theo dõi vừa có cập nhật mới.",
+    autoLikeTitle: "Một nhân vật đã thích Khoảnh khắc của bạn",
+    autoLikeBody: (name) => `${name} đã thích Khoảnh khắc của bạn.`,
+    autoReplyTitle: "Có phản hồi mới trên Khoảnh khắc",
+    autoReplyBody: (name, content, isReply) => isReply ? `${name} đã trả lời bình luận của bạn: “${content}”` : `${name} đã trả lời Khoảnh khắc của bạn: “${content}”`,
+  },
+  id: {
+    announcementTitle: "Pengumuman baru dari Lianlian Shiguang",
+    announcementBody: "Ada pengumuman resmi baru. Ketuk untuk melihat.",
+    creatorMomentTitle: (name) => `${name} memposting Momen baru`,
+    creatorMomentBody: "Kreator yang kamu ikuti punya pembaruan baru.",
+    characterMomentTitle: (name) => `${name} memposting Momen baru`,
+    characterMomentBody: "Karakter dari kreator yang kamu ikuti punya pembaruan baru.",
+    autoLikeTitle: "Karakter menyukai Momenmu",
+    autoLikeBody: (name) => `${name} menyukai Momenmu.`,
+    autoReplyTitle: "Balasan baru di Momenmu",
+    autoReplyBody: (name, content, isReply) => isReply ? `${name} membalas komentarmu: “${content}”` : `${name} membalas Momenmu: “${content}”`,
+  },
+  th: {
+    announcementTitle: "ประกาศใหม่จาก Lianlian Shiguang",
+    announcementBody: "มีประกาศทางการใหม่ แตะเพื่อดูรายละเอียด",
+    creatorMomentTitle: (name) => `${name} โพสต์โมเมนต์ใหม่`,
+    creatorMomentBody: "ครีเอเตอร์ที่คุณติดตามมีอัปเดตใหม่",
+    characterMomentTitle: (name) => `${name} โพสต์โมเมนต์ใหม่`,
+    characterMomentBody: "ตัวละครจากครีเอเตอร์ที่คุณติดตามมีอัปเดตใหม่",
+    autoLikeTitle: "ตัวละครกดถูกใจโมเมนต์ของคุณ",
+    autoLikeBody: (name) => `${name} ถูกใจโมเมนต์ของคุณ`,
+    autoReplyTitle: "มีการตอบกลับใหม่ในโมเมนต์",
+    autoReplyBody: (name, content, isReply) => isReply ? `${name} ตอบกลับความคิดเห็นของคุณ: “${content}”` : `${name} ตอบกลับโมเมนต์ของคุณ: “${content}”`,
+  },
+  ar: {
+    announcementTitle: "إعلان جديد من Lianlian Shiguang",
+    announcementBody: "تم نشر إعلان رسمي جديد. اضغط لعرضه.",
+    creatorMomentTitle: (name) => `نشر ${name} لحظة جديدة`,
+    creatorMomentBody: "هناك تحديث جديد من منشئ محتوى تتابعه.",
+    characterMomentTitle: (name) => `نشر ${name} لحظة جديدة`,
+    characterMomentBody: "هناك تحديث جديد لشخصية من منشئ محتوى تتابعه.",
+    autoLikeTitle: "أعجبت شخصية بلحظتك",
+    autoLikeBody: (name) => `أعجب ${name} بلحظتك.`,
+    autoReplyTitle: "رد جديد على لحظتك",
+    autoReplyBody: (name, content, isReply) => isReply ? `رد ${name} على تعليقك: «${content}»` : `رد ${name} على لحظتك: «${content}»`,
+  },
+  fr: {
+    announcementTitle: "Nouvelle annonce de Lianlian Shiguang",
+    announcementBody: "Une nouvelle annonce officielle est disponible. Touchez pour la voir.",
+    creatorMomentTitle: (name) => `${name} a publié un nouveau Moment`,
+    creatorMomentBody: "Un créateur que vous suivez a publié une nouveauté.",
+    characterMomentTitle: (name) => `${name} a publié un nouveau Moment`,
+    characterMomentBody: "Un personnage d’un créateur que vous suivez a publié une nouveauté.",
+    autoLikeTitle: "Un personnage a aimé votre Moment",
+    autoLikeBody: (name) => `${name} a aimé votre Moment.`,
+    autoReplyTitle: "Nouvelle réponse sur votre Moment",
+    autoReplyBody: (name, content, isReply) => isReply ? `${name} a répondu à votre commentaire : « ${content} »` : `${name} a répondu à votre Moment : « ${content} »`,
+  },
+  ms: {
+    announcementTitle: "Pengumuman baharu daripada Lianlian Shiguang",
+    announcementBody: "Pengumuman rasmi baharu telah diterbitkan. Ketik untuk melihat.",
+    creatorMomentTitle: (name) => `${name} menyiarkan Momen baharu`,
+    creatorMomentBody: "Pencipta yang anda ikuti mempunyai kemas kini baharu.",
+    characterMomentTitle: (name) => `${name} menyiarkan Momen baharu`,
+    characterMomentBody: "Watak daripada pencipta yang anda ikuti mempunyai kemas kini baharu.",
+    autoLikeTitle: "Watak menyukai Momen anda",
+    autoLikeBody: (name) => `${name} menyukai Momen anda.`,
+    autoReplyTitle: "Balasan baharu pada Momen anda",
+    autoReplyBody: (name, content, isReply) => isReply ? `${name} membalas komen anda: “${content}”` : `${name} membalas Momen anda: “${content}”`,
+  },
+  es: {
+    announcementTitle: "Nuevo anuncio de Lianlian Shiguang",
+    announcementBody: "Hay un nuevo anuncio oficial. Toca para verlo.",
+    creatorMomentTitle: (name) => `${name} publicó un nuevo Momento`,
+    creatorMomentBody: "Un creador que sigues tiene una nueva publicación.",
+    characterMomentTitle: (name) => `${name} publicó un nuevo Momento`,
+    characterMomentBody: "Un personaje de un creador que sigues tiene una nueva publicación.",
+    autoLikeTitle: "Un personaje indicó que le gusta tu Momento",
+    autoLikeBody: (name) => `A ${name} le gustó tu Momento.`,
+    autoReplyTitle: "Nueva respuesta en tu Momento",
+    autoReplyBody: (name, content, isReply) => isReply ? `${name} respondió a tu comentario: “${content}”` : `${name} respondió a tu Momento: “${content}”`,
+  },
+  hi: {
+    announcementTitle: "Lianlian Shiguang की नई घोषणा",
+    announcementBody: "नई आधिकारिक घोषणा उपलब्ध है। देखने के लिए टैप करें।",
+    creatorMomentTitle: (name) => `${name} ने नया मोमेंट पोस्ट किया`,
+    creatorMomentBody: "जिस क्रिएटर को आप फ़ॉलो करते हैं, उसने नया अपडेट पोस्ट किया है।",
+    characterMomentTitle: (name) => `${name} ने नया मोमेंट पोस्ट किया`,
+    characterMomentBody: "आपके फ़ॉलो किए गए क्रिएटर के किरदार ने नया अपडेट पोस्ट किया है।",
+    autoLikeTitle: "एक किरदार ने आपके मोमेंट को पसंद किया",
+    autoLikeBody: (name) => `${name} ने आपके मोमेंट को पसंद किया।`,
+    autoReplyTitle: "आपके मोमेंट पर नया जवाब",
+    autoReplyBody: (name, content, isReply) => isReply ? `${name} ने आपकी टिप्पणी का जवाब दिया: “${content}”` : `${name} ने आपके मोमेंट का जवाब दिया: “${content}”`,
+  },
+  pt: {
+    announcementTitle: "Novo anúncio do Lianlian Shiguang",
+    announcementBody: "Há um novo anúncio oficial. Toque para ver.",
+    creatorMomentTitle: (name) => `${name} publicou um novo Momento`,
+    creatorMomentBody: "Um criador que você segue tem uma nova publicação.",
+    characterMomentTitle: (name) => `${name} publicou um novo Momento`,
+    characterMomentBody: "Um personagem de um criador que você segue tem uma nova publicação.",
+    autoLikeTitle: "Um personagem curtiu seu Momento",
+    autoLikeBody: (name) => `${name} curtiu seu Momento.`,
+    autoReplyTitle: "Nova resposta no seu Momento",
+    autoReplyBody: (name, content, isReply) => isReply ? `${name} respondeu ao seu comentário: “${content}”` : `${name} respondeu ao seu Momento: “${content}”`,
+  },
+};
+
+function normalizeNotificationLocale(value) {
+  const raw = String(value || "").trim().replace(/-/g, "_");
+  const lower = raw.toLowerCase();
+  if (lower === "zh_cn" || lower === "zh_hans" || lower.startsWith("zh_hans")) return "zh_Hans";
+  if (lower === "zh_tw" || lower === "zh_hant" || lower === "zh_hk" || lower === "zh_mo" || lower.startsWith("zh_hant")) return "zh_Hant";
+  const code = lower.split("_")[0];
+  return Object.prototype.hasOwnProperty.call(NOTIFICATION_TEXTS, code) ? code : "zh_Hant";
+}
+
+async function getUserNotificationLocale(userId) {
+  try {
+    const snap = await db.collection("users").doc(String(userId)).get();
+    if (!snap.exists) return "zh_Hant";
+    const data = snap.data() || {};
+    return normalizeNotificationLocale(
+      data.notificationLocale || data.locale || data.languageCode || data.language || "zh_Hant"
+    );
+  } catch (_) {
+    return "zh_Hant";
+  }
+}
+
+function getNotificationText(locale, type, args = {}) {
+  const t = NOTIFICATION_TEXTS[normalizeNotificationLocale(locale)] || NOTIFICATION_TEXTS.zh_Hant;
+  const name = String(args.name || "").trim() || "角色";
+  const content = String(args.content || "").trim();
+  switch (type) {
+    case "announcement": return {title: t.announcementTitle, body: t.announcementBody};
+    case "creator_moment": return {title: t.creatorMomentTitle(name), body: t.creatorMomentBody};
+    case "character_moment": return {title: t.characterMomentTitle(name), body: t.characterMomentBody};
+    case "character_auto_like": return {title: t.autoLikeTitle, body: t.autoLikeBody(name)};
+    case "character_auto_reply": return {title: t.autoReplyTitle, body: t.autoReplyBody(name, content, args.isReply === true)};
+    default: return {title: "戀戀拾光", body: ""};
+  }
+}
+
+
 const WEB_PRODUCTS = {
   web_monthly_card_250: {
     name: "星光契約月卡",
@@ -2147,7 +2364,7 @@ let relationContext = "";
             `;
             }
 
-            const langDirective = `請優先使用 ${playerLanguage} 作為預設溝通語言。然而，為了確保玩家的沉浸感，當玩家以其他語言（如韓文、英文、日文等）與你對話時，請務必即時識別並切換至該語言進行回應，且過程中必須嚴格維持 ${name} 的性格特質、說話口吻與人設背景。`;
+            const langDirective = `【輸出語言】本次回覆必須使用 ${playerLanguage}。除非玩家明確要求翻譯或切換語言，否則不要混用其他語言，也不要在每句後面附加雙語翻譯。無論使用哪種語言，都必須維持 ${name} 的人格、語氣與角色設定。`;
 
 function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, charactersList) {
     if (!userInput) return { activeCharacters, currentFocusCharacter };
@@ -3095,10 +3312,11 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
             ${systemEventRules}
             ${contextBriefing}
 
-            ### 🌍 國際化動態語言鏡像協議 (Dynamic Language Mirroring)
-            1. **【語系字體自適應】**：實時偵測玩家「${playerName}」目前輸入的文字與字體。
-            2. **【字體與用語鏡像】**：如果玩家使用的是「繁體中文（台灣習慣用語）」，你必須全程使用繁體中文與其對話並注意用語在地化（如：訊息、貼文、軟體）；如果玩家使用的是「簡體中文」，你則必須自動切換為簡體中文與其對話。輸出字體與用語習慣必須與玩家完全同步！
-            3. **【強制鏡像翻譯】**：若玩家使用非中文語系（如英文/日文），每一句對話、動作、心理、生理描寫後方必須緊跟括號「( )」，括號內翻譯成玩家的母語。
+            ### 🌍 國際化輸出規範
+            1. 本次主要輸出語言固定為「${playerLanguage}」。
+            2. 繁體中文使用台灣繁體中文與自然台灣用語；簡體中文使用簡體字與自然簡中用語。
+            3. 英文、日文、韓文及其他語系直接使用該語言自然演繹，不要在每句後方再附中文或第二語言翻譯。
+            4. 玩家若在單一訊息中短暫使用其他語言，不要因此自行改變整個聊天室的主要輸出語言；只有玩家明確要求切換語言時才切換。
 
             ### 沉浸模式核心規則
 
@@ -6076,53 +6294,218 @@ exports.processMemoryJob = onDocumentCreated(
 );
 
                           exports.onPostCreated = onDocumentCreated({
-                              region: "asia-east1",
-                              // ✨ 將路徑對應到我們今天修改的 artifacts 大廳
-                              document: "artifacts/{appId}/moments/{momentId}"
-                          }, async (event) => {
-                              const snap = event.data;
-                              if (!snap) return;
+    region: "asia-east1",
+    document: "artifacts/{appId}/moments/{momentId}"
+}, async (event) => {
+    const snap = event.data;
+    if (!snap) return null;
 
-                              const newPost = snap.data();
-                              const authorId = newPost.authorId;
-                              const { appId, momentId } = event.params;
+    const newPost = snap.data() || {};
+    const authorId = String(newPost.authorId || "").trim();
+    const {appId, momentId} = event.params;
+    if (!authorId) return null;
 
-                              try {
-                                  const charactersRef = db.collection("artifacts").doc(appId).collection("public_characters");
-                                  const snapshot = await charactersRef.where("createdBy", "==", authorId).get();
+    try {
+        const charactersRef = db
+            .collection("artifacts")
+            .doc(appId)
+            .collection("public_characters");
+        const charactersSnapshot = await charactersRef
+            .where("createdBy", "==", authorId)
+            .get();
 
-                                  if (snapshot.empty) return null;
+        if (charactersSnapshot.empty) return null;
 
-                                  const batch = db.batch();
-                                  snapshot.forEach((doc) => {
-                                      const charData = doc.data();
+        const locale = await getUserNotificationLocale(authorId);
 
-                                      // 在動態底下按讚
-                                      const likeRef = db.collection(`artifacts/${appId}/moments/${momentId}/likes`).doc(doc.id);
-                                      batch.set(likeRef, {
-                                          likedBy: doc.id,
-                                          name: charData.name,
-                                          timestamp: FieldValue.serverTimestamp()
-                                      });
+        for (const characterDoc of charactersSnapshot.docs) {
+            const charData = characterDoc.data() || {};
+            const characterId = characterDoc.id;
+            const likeRef = snap.ref.collection("likes").doc(characterId);
+            const mailboxRef = db
+                .collection("users")
+                .doc(authorId)
+                .collection("mailbox")
+                .doc(`moment_auto_like_${momentId}_${characterId}`);
+            const text = getNotificationText(locale, "character_auto_like", {
+                name: charData.name || "角色",
+            });
 
-                                      // 發送專屬信箱通知給創作者
-                                      const notificationRef = db.collection(`users/${authorId}/mailbox`).doc();
-                                      batch.set(notificationRef, {
-                                          type: "like",
-                                          title: "專屬守護 💖",
-                                          body: `${charData.name} 覺得你的動態很讚！`,
-                                          isRead: false,
-                                          createdAt: FieldValue.serverTimestamp()
-                                      });
-                                  });
+            await db.runTransaction(async (transaction) => {
+                const existingLike = await transaction.get(likeRef);
+                if (existingLike.exists) return;
 
-                                  await batch.commit();
-                              } catch (error) {
-                                  console.error("自動按讚發生錯誤：", error);
-                              }
-                          });
+                transaction.set(likeRef, {
+                    likedBy: characterId,
+                    name: charData.name || "角色",
+                    timestamp: FieldValue.serverTimestamp(),
+                    isAI: true,
+                    autoGenerated: true,
+                });
 
-                          // ============================================================================
+                transaction.update(snap.ref, {
+                    likeCount: FieldValue.increment(1),
+                    likedBy: FieldValue.arrayUnion(characterId),
+                });
+
+                transaction.set(mailboxRef, {
+                    type: "like",
+                    title: text.title,
+                    body: text.body,
+                    fromId: characterId,
+                    fromName: charData.name || "角色",
+                    postId: momentId,
+                    source: "character_auto_like",
+                    notificationLocale: locale,
+                    isRead: false,
+                    read: false,
+                    createdAt: FieldValue.serverTimestamp(),
+                });
+            });
+        }
+
+        return null;
+    } catch (error) {
+        console.error("自動按讚發生錯誤：", error);
+        return null;
+    }
+});
+
+// ============================================================
+// 創作者 / 角色新動態 → 通知該創作者的追蹤者
+// ============================================================
+exports.notifyFollowersOnNewMomentV2 = onDocumentCreated(
+    {
+        region: "asia-east1",
+        document: "artifacts/{appId}/moments/{momentId}",
+        timeoutSeconds: 180,
+        memory: "512MiB",
+    },
+    async (event) => {
+        const snap = event.data;
+        if (!snap) return null;
+
+        const moment = snap.data() || {};
+        const {appId, momentId} = event.params;
+        if (moment.isPublic !== true) return null;
+
+        const isCreatorPost = moment.isCreatorPost === true;
+        let creatorId = "";
+        let actorName = String(moment.authorName || "").trim();
+        let characterId = "";
+
+        if (isCreatorPost) {
+            creatorId = String(moment.createdBy || moment.authorId || "").trim();
+        } else {
+            characterId = String(moment.authorId || "").trim();
+            if (!characterId) return null;
+
+            const charSnap = await db
+                .collection("artifacts")
+                .doc(appId)
+                .collection("public_characters")
+                .doc(characterId)
+                .get();
+            if (!charSnap.exists) return null;
+
+            const charData = charSnap.data() || {};
+            creatorId = String(charData.createdBy || moment.createdBy || "").trim();
+            actorName = actorName || String(charData.name || "角色").trim();
+        }
+
+        if (!creatorId) return null;
+
+        if (!actorName) {
+            const creatorSnap = await db.collection("users").doc(creatorId).get();
+            const creatorData = creatorSnap.data() || {};
+            actorName = String(
+                creatorData.nickname ||
+                creatorData.displayName ||
+                creatorData.name ||
+                "創作者"
+            ).trim();
+        }
+
+        const followersSnap = await db
+            .collection("users")
+            .doc(creatorId)
+            .collection("followers")
+            .get();
+        if (followersSnap.empty) return null;
+
+        let batch = db.batch();
+        let operationCount = 0;
+
+        const commitIfNeeded = async (force = false) => {
+            if (operationCount === 0) return;
+            if (force || operationCount >= 350) {
+                await batch.commit();
+                batch = db.batch();
+                operationCount = 0;
+            }
+        };
+
+        for (const followerDoc of followersSnap.docs) {
+            const followerId = String(followerDoc.id || "").trim();
+            if (!followerId || followerId === creatorId) continue;
+
+            const blockedCreatorSnap = await db
+                .collection("users")
+                .doc(followerId)
+                .collection("blockedCreators")
+                .doc(creatorId)
+                .get();
+            if (blockedCreatorSnap.exists) continue;
+
+            if (characterId) {
+                const blockedCharacterSnap = await db
+                    .collection("users")
+                    .doc(followerId)
+                    .collection("blockedCharacters")
+                    .doc(characterId)
+                    .get();
+                if (blockedCharacterSnap.exists) continue;
+            }
+
+            const locale = await getUserNotificationLocale(followerId);
+            const notificationType = isCreatorPost
+                ? "creator_moment"
+                : "character_moment";
+            const text = getNotificationText(locale, notificationType, {
+                name: actorName,
+            });
+
+            const mailRef = db
+                .collection("users")
+                .doc(followerId)
+                .collection("mailbox")
+                .doc(`${notificationType}_${momentId}`);
+
+            batch.set(mailRef, {
+                type: notificationType,
+                title: text.title,
+                body: text.body,
+                fromId: isCreatorPost ? creatorId : characterId,
+                fromName: actorName,
+                creatorId,
+                characterId: characterId || null,
+                postId: momentId,
+                source: "followed_creator_moment",
+                notificationLocale: locale,
+                isRead: false,
+                read: false,
+                createdAt: FieldValue.serverTimestamp(),
+            });
+            operationCount++;
+            await commitIfNeeded();
+        }
+
+        await commitIfNeeded(true);
+        return null;
+    }
+);
+
+// ============================================================================
                           // 🤖 瞬間 AI 自動回覆 v1
                           // 規則：
                           // 1. 每隻公開角色以 autoReplyEnabled === true 才能參與。
@@ -6572,6 +6955,17 @@ exports.processMemoryJob = onDocumentCreated(
                                   const mailboxId =
                                       `moment_auto_reply_${sanitizeMomentReplyId(momentId)}_${sanitizeMomentReplyId(commentDocId)}`;
 
+                                  const locale = await getUserNotificationLocale(playerUserId);
+                                  const notificationText = getNotificationText(
+                                      locale,
+                                      "character_auto_reply",
+                                      {
+                                          name: characterData?.name || "角色",
+                                          content,
+                                          isReply: source === "reply_to_player_comment",
+                                      }
+                                  );
+
                                   await db
                                       .collection("users")
                                       .doc(playerUserId)
@@ -6582,16 +6976,15 @@ exports.processMemoryJob = onDocumentCreated(
                                               type: "comment",
                                               fromId: safeCharacterId,
                                               fromName: characterData?.name || "角色",
-                                              title: "動態有新回應！💬",
-                                              body:
-                                                  source === "reply_to_player_comment"
-                                                      ? `${characterData?.name || "角色"}回覆了你的留言：「${content}」`
-                                                      : `${characterData?.name || "角色"}回覆了你的動態：「${content}」`,
+                                              title: notificationText.title,
+                                              body: notificationText.body,
                                               postId: momentId,
                                               commentId: commentDocId,
                                               createdAt: FieldValue.serverTimestamp(),
                                               isRead: false,
+                                              read: false,
                                               source: "auto_moment_reply",
+                                              notificationLocale: locale,
                                           },
                                           {merge: true}
                                       );
@@ -12763,6 +13156,539 @@ exports.cancelAiResponse = onRequest(
 // 🎁 官方活動禮物系統
 // ==================================================
 
+
+// ============================================================
+// 📢 後台公告：一鍵發布 + 自動翻譯
+// 原文使用繁體中文；其他 App 支援語系在發布時一次翻譯並快取。
+// ============================================================
+const ANNOUNCEMENT_TRANSLATION_TARGETS = {
+  zh_Hans: "zh-CN",
+  en: "en",
+  ja: "ja",
+  ko: "ko",
+  vi: "vi",
+  id: "id",
+  th: "th",
+  ar: "ar",
+  fr: "fr",
+  ms: "ms",
+  es: "es",
+  hi: "hi",
+  pt: "pt",
+};
+
+async function translateAnnouncementForLocale(title, content, targetLanguage) {
+  if (!translateClient) {
+    translateClient = new Translate();
+  }
+
+  const [translated] = await translateClient.translate(
+    [title, content],
+    targetLanguage,
+  );
+
+  const result = Array.isArray(translated) ? translated : [translated];
+  return {
+    title: String(result[0] || title).trim(),
+    content: String(result[1] || content).trim(),
+  };
+}
+
+exports.publishAnnouncement = onCall(
+  {
+    region: "asia-east1",
+    timeoutSeconds: 180,
+    memory: "512MiB",
+  },
+  async (request) => {
+    const adminUid = requireRewardCampaignAdmin(request);
+
+    const title = String(request.data?.title || "").trim();
+    const content = String(request.data?.content || "").trim();
+    const sendNotification = request.data?.sendNotification !== false;
+
+    if (!title) {
+      throw new HttpsError("invalid-argument", "公告標題不能為空");
+    }
+    if (!content) {
+      throw new HttpsError("invalid-argument", "公告內容不能為空");
+    }
+    if (title.length > 150) {
+      throw new HttpsError("invalid-argument", "公告標題不能超過 150 字");
+    }
+    if (content.length > 10000) {
+      throw new HttpsError("invalid-argument", "公告內容不能超過 10000 字");
+    }
+
+    const translations = {};
+    const translationFailures = [];
+
+    // 每一個語系互不牽連；單一語言翻譯失敗時仍可發布公告，
+    // 該語系前端會自動 fallback 到繁中原文。
+    const translationResults = await Promise.allSettled(
+      Object.entries(ANNOUNCEMENT_TRANSLATION_TARGETS).map(
+        async ([localeKey, targetLanguage]) => {
+          const translated = await translateAnnouncementForLocale(
+            title,
+            content,
+            targetLanguage,
+          );
+          return { localeKey, translated };
+        },
+      ),
+    );
+
+    for (let i = 0; i < translationResults.length; i++) {
+      const result = translationResults[i];
+      const localeKey = Object.keys(ANNOUNCEMENT_TRANSLATION_TARGETS)[i];
+
+      if (result.status === "fulfilled") {
+        translations[result.value.localeKey] = result.value.translated;
+      } else {
+        translationFailures.push(localeKey);
+        console.error(
+          `❌ 公告翻譯失敗 locale=${localeKey}:`,
+          result.reason,
+        );
+      }
+    }
+
+    const announcementRef = db.collection("announcements").doc();
+    const batch = db.batch();
+
+    batch.set(announcementRef, {
+      title,
+      content,
+      sourceLocale: "zh_Hant",
+      translations,
+      translationStatus:
+        translationFailures.length === 0 ? "complete" : "partial",
+      translationFailures,
+      publishedBy: adminUid,
+      createdAt: FieldValue.serverTimestamp(),
+    });
+
+    if (sendNotification) {
+      const notifyRef = db.collection("system_notifications").doc();
+      batch.set(notifyRef, {
+        type: "global_announcement",
+        announcementId: announcementRef.id,
+        createdAt: FieldValue.serverTimestamp(),
+      });
+    }
+
+    await batch.commit();
+
+    console.log("📢 公告已發布並完成翻譯", {
+      announcementId: announcementRef.id,
+      translationCount: Object.keys(translations).length,
+      translationFailures,
+      sendNotification,
+    });
+
+    return {
+      success: true,
+      announcementId: announcementRef.id,
+      translatedLocales: Object.keys(translations),
+      translationFailures,
+      sendNotification,
+    };
+  },
+);
+
+
+// ============================================================
+// 🌍 角色內容多語系：按需翻譯 + Firestore 共用快取
+// ============================================================
+const CHARACTER_TRANSLATION_TARGETS = {
+  zh_Hans: "zh-CN",
+  zh_Hant: "zh-TW",
+  en: "en",
+  ja: "ja",
+  ko: "ko",
+  vi: "vi",
+  id: "id",
+  th: "th",
+  ar: "ar",
+  fr: "fr",
+  ms: "ms",
+  es: "es",
+  hi: "hi",
+  pt: "pt",
+};
+
+function normalizeCharacterLocale(value) {
+  const raw = String(value || "")
+    .trim()
+    .replace(/-/g, "_")
+    .toLowerCase();
+
+  if (
+    raw === "zh" ||
+    raw === "zh_tw" ||
+    raw === "zh_hant" ||
+    raw === "zh_hk" ||
+    raw === "zh_mo"
+  ) {
+    return "zh_Hant";
+  }
+
+  if (
+    raw === "zh_cn" ||
+    raw === "zh_hans" ||
+    raw === "zh_sg"
+  ) {
+    return "zh_Hans";
+  }
+
+  const code = raw.split("_")[0];
+  return Object.prototype.hasOwnProperty.call(
+    CHARACTER_TRANSLATION_TARGETS,
+    code,
+  )
+    ? code
+    : "zh_Hant";
+}
+
+function buildCharacterSourcePayload(data) {
+  const stringFields = [
+    "occupation",
+    "storySummary",
+    "story",
+    "storyModeFirstLine",
+    "background",
+    "coreCharacterSetting",
+    "detailedPersonality",
+    "appearance",
+    "toneAndStyle",
+    "likes",
+    "dislikes",
+    "secrets",
+    "initialRelationship",
+    "dialogueExamples",
+    "stageStranger",
+    "stageAcquaintance",
+    "stageIntimate",
+    "socialInteraction",
+    "playerIdentity",
+  ];
+
+  const listFields = [
+    "personalityTags",
+    "extraInfoItems",
+    "identities",
+  ];
+
+  const payload = {};
+
+  for (const field of stringFields) {
+    const value = String(data?.[field] || "").trim();
+    if (value) payload[field] = value;
+  }
+
+  for (const field of listFields) {
+    const values = Array.isArray(data?.[field])
+      ? data[field]
+          .map((item) => String(item || "").trim())
+          .filter(Boolean)
+      : [];
+
+    if (values.length > 0) payload[field] = values;
+  }
+
+  if (
+    data?.relationships &&
+    typeof data.relationships === "object" &&
+    !Array.isArray(data.relationships)
+  ) {
+    const relationships = {};
+    for (const [key, value] of Object.entries(data.relationships)) {
+      const text = String(value || "").trim();
+      if (text) relationships[key] = text;
+    }
+    if (Object.keys(relationships).length > 0) {
+      payload.relationships = relationships;
+    }
+  }
+
+  return payload;
+}
+
+function protectCharacterTranslationTokens(text) {
+  const tokens = [];
+  let protectedText = String(text || "");
+
+  const patterns = [
+    /\{\{[^{}]{1,120}\}\}/g,
+    /\(玩家名字\)/g,
+    /（玩家名字）/g,
+  ];
+
+  for (const pattern of patterns) {
+    protectedText = protectedText.replace(pattern, (match) => {
+      const index = tokens.length;
+      tokens.push(match);
+      return `__LLPH_${index}__`;
+    });
+  }
+
+  return { protectedText, tokens };
+}
+
+function restoreCharacterTranslationTokens(text, tokens) {
+  let restored = String(text || "");
+
+  tokens.forEach((token, index) => {
+    const marker = new RegExp(`__LLPH_${index}__`, "gi");
+    restored = restored.replace(marker, token);
+  });
+
+  return restored;
+}
+
+async function translateCharacterPayload(payload, targetLanguage) {
+  if (!translateClient) {
+    translateClient = new Translate();
+  }
+
+  const descriptors = [];
+  const texts = [];
+
+  const queueText = (field, value, extra = {}) => {
+    const protectedValue = protectCharacterTranslationTokens(value);
+    descriptors.push({
+      field,
+      tokens: protectedValue.tokens,
+      ...extra,
+    });
+    texts.push(protectedValue.protectedText);
+  };
+
+  for (const [field, value] of Object.entries(payload)) {
+    if (typeof value === "string") {
+      queueText(field, value);
+      continue;
+    }
+
+    if (Array.isArray(value)) {
+      value.forEach((item, index) => {
+        queueText(field, item, { index, kind: "list" });
+      });
+      continue;
+    }
+
+    if (value && typeof value === "object") {
+      for (const [key, item] of Object.entries(value)) {
+        queueText(field, item, { key, kind: "map" });
+      }
+    }
+  }
+
+  if (texts.length === 0) return {};
+
+  const [translatedRaw] = await translateClient.translate(
+    texts,
+    targetLanguage,
+  );
+
+  const translated = Array.isArray(translatedRaw)
+    ? translatedRaw
+    : [translatedRaw];
+
+  const result = {};
+
+  descriptors.forEach((descriptor, index) => {
+    const value = restoreCharacterTranslationTokens(
+      translated[index] ?? texts[index],
+      descriptor.tokens,
+    ).trim();
+
+    if (descriptor.kind === "list") {
+      if (!Array.isArray(result[descriptor.field])) {
+        result[descriptor.field] = [];
+      }
+      result[descriptor.field][descriptor.index] = value;
+      return;
+    }
+
+    if (descriptor.kind === "map") {
+      if (
+        !result[descriptor.field] ||
+        typeof result[descriptor.field] !== "object"
+      ) {
+        result[descriptor.field] = {};
+      }
+      result[descriptor.field][descriptor.key] = value;
+      return;
+    }
+
+    result[descriptor.field] = value;
+  });
+
+  return result;
+}
+
+exports.getCharacterTranslation = onCall(
+  {
+    region: "asia-east1",
+    timeoutSeconds: 120,
+    memory: "512MiB",
+  },
+  async (request) => {
+    if (!request.auth) {
+      throw new HttpsError(
+        "unauthenticated",
+        "請先登入。",
+      );
+    }
+
+    const characterId = String(
+      request.data?.characterId || "",
+    ).trim();
+
+    const targetLocale = normalizeCharacterLocale(
+      request.data?.targetLocale,
+    );
+
+    const force = request.data?.force === true;
+
+    if (!characterId) {
+      throw new HttpsError(
+        "invalid-argument",
+        "缺少角色 ID。",
+      );
+    }
+
+    if (
+      !Object.prototype.hasOwnProperty.call(
+        CHARACTER_TRANSLATION_TARGETS,
+        targetLocale,
+      )
+    ) {
+      throw new HttpsError(
+        "invalid-argument",
+        "不支援的目標語言。",
+      );
+    }
+
+    const charRef = db
+      .collection("artifacts")
+      .doc(APP_ID)
+      .collection("public_characters")
+      .doc(characterId);
+
+    const charSnap = await charRef.get();
+
+    if (!charSnap.exists) {
+      throw new HttpsError(
+        "not-found",
+        "找不到角色。",
+      );
+    }
+
+    const data = charSnap.data() || {};
+
+    if (
+      data.isPublic !== true ||
+      String(data.status || "") !== "published"
+    ) {
+      throw new HttpsError(
+        "permission-denied",
+        "此角色目前不可翻譯。",
+      );
+    }
+
+    const sourceLocale = normalizeCharacterLocale(
+      data.content_language || "zh_Hant",
+    );
+
+    const sourcePayload = buildCharacterSourcePayload(data);
+
+    const sourceHash = crypto
+      .createHash("sha256")
+      .update(JSON.stringify(sourcePayload))
+      .digest("hex");
+
+    if (targetLocale === sourceLocale) {
+      return {
+        success: true,
+        locale: targetLocale,
+        sourceLocale,
+        cached: true,
+        translation: sourcePayload,
+      };
+    }
+
+    const existingTranslations =
+      data.translations &&
+      typeof data.translations === "object"
+        ? data.translations
+        : {};
+
+    const cached = existingTranslations[targetLocale];
+
+    if (
+      !force &&
+      cached &&
+      typeof cached === "object" &&
+      cached.__sourceHash === sourceHash
+    ) {
+      const {
+        __sourceHash,
+        __translatedAt,
+        ...publicCached
+      } = cached;
+
+      return {
+        success: true,
+        locale: targetLocale,
+        sourceLocale,
+        cached: true,
+        translation: publicCached,
+      };
+    }
+
+    const targetLanguage =
+      CHARACTER_TRANSLATION_TARGETS[targetLocale];
+
+    const translated = await translateCharacterPayload(
+      sourcePayload,
+      targetLanguage,
+    );
+
+    const storedTranslation = {
+      ...translated,
+      __sourceHash: sourceHash,
+      __translatedAt: new Date().toISOString(),
+    };
+
+    await charRef.set(
+      {
+        translations: {
+          [targetLocale]: storedTranslation,
+        },
+        translationUpdatedAt: FieldValue.serverTimestamp(),
+      },
+      { merge: true },
+    );
+
+    console.log("🌍 角色翻譯完成", {
+      characterId,
+      sourceLocale,
+      targetLocale,
+      fields: Object.keys(translated),
+    });
+
+    return {
+      success: true,
+      locale: targetLocale,
+      sourceLocale,
+      cached: false,
+      translation: translated,
+    };
+  },
+);
+
 const REWARD_CAMPAIGN_ADMIN_UIDS = new Set([
   "B71k2kyooubYsOtIO1nkiBwyBXt2",
 ]);
@@ -15352,106 +16278,85 @@ exports.sendAdminMailboxMessage = onCall(
 // 📢 全服公告推播
 // 監聽 system_notifications 新增文件，將公告推播給所有裝置
 // ============================================================
-exports.sendGlobalAnnouncementNotification = onDocumentCreated(
+exports.sendGlobalAnnouncementNotificationV2 = onDocumentCreated(
     {
         region: "asia-east1",
         document: "system_notifications/{notificationId}",
+        timeoutSeconds: 300,
+        memory: "512MiB",
     },
     async (event) => {
         const snapshot = event.data;
-
-        if (!snapshot) {
-            console.log("⚠️ 公告通知文件不存在，略過推播");
-            return null;
-        }
+        if (!snapshot) return null;
 
         const notificationData = snapshot.data() || {};
-
-        // 只處理全服公告，避免其他通知誤觸發
-        if (notificationData.type !== "global_announcement") {
-            console.log(
-                `ℹ️ 非全服公告通知，略過：${notificationData.type || "unknown"}`
-            );
-            return null;
-        }
-
-        const title = String(
-            notificationData.title || "📢 戀戀拾光新公告"
-        ).trim();
-
-        const message = String(
-            notificationData.message || "有一則新的系統公告"
-        ).trim();
+        if (notificationData.type !== "global_announcement") return null;
 
         const announcementId = String(
             notificationData.announcementId || ""
         ).trim();
 
         try {
-            // 取得所有玩家裝置的 FCM Token
-            const tokenSnapshot = await db
-                .collectionGroup("fcmTokens")
-                .get();
-
-            // 以 token 為 key 去除重複裝置
-            const tokenReferences = new Map();
-
-            for (const tokenDoc of tokenSnapshot.docs) {
-                const tokenData = tokenDoc.data() || {};
-
-                const token = String(
-                    tokenData.token || tokenDoc.id || ""
-                ).trim();
-
-                if (token.length > 20 && !tokenReferences.has(token)) {
-                    tokenReferences.set(token, tokenDoc.ref);
+            let announcementData = {};
+            if (announcementId) {
+                const announcementSnapshot = await db
+                    .collection("announcements")
+                    .doc(announcementId)
+                    .get();
+                if (announcementSnapshot.exists) {
+                    announcementData = announcementSnapshot.data() || {};
                 }
             }
 
-            const tokens = [...tokenReferences.keys()];
+            const originalTitle = String(announcementData.title || "").trim();
+            const originalContent = String(announcementData.content || "").trim();
+            const translations = announcementData.translations &&
+                typeof announcementData.translations === "object"
+                ? announcementData.translations
+                : {};
 
-            if (tokens.length === 0) {
-                console.log("⚠️ 找不到任何 FCM Token，全服公告無法推播");
-                return null;
-            }
+            const usersSnapshot = await db.collection("users").get();
+            let successUsers = 0;
+            let failedUsers = 0;
 
-            console.log(
-                `📢 準備發送全服公告，共 ${tokens.length} 個裝置`
-            );
-
-            // Firebase 每批最多接受 500 個 Token
-            const batchSize = 500;
-
-            let successCount = 0;
-            let failureCount = 0;
-            const invalidTokenDeleteTasks = [];
-
-            for (
-                let startIndex = 0;
-                startIndex < tokens.length;
-                startIndex += batchSize
-            ) {
-                const currentTokens = tokens.slice(
-                    startIndex,
-                    startIndex + batchSize
+            for (const userDoc of usersSnapshot.docs) {
+                const userId = userDoc.id;
+                const userData = userDoc.data() || {};
+                const locale = normalizeNotificationLocale(
+                    userData.notificationLocale ||
+                    userData.locale ||
+                    userData.languageCode ||
+                    userData.language ||
+                    "zh_Hant"
                 );
 
-                const response = await admin
-                    .messaging()
-                    .sendEachForMulticast({
-                        tokens: currentTokens,
+                const translated = translations[locale] &&
+                    typeof translations[locale] === "object"
+                    ? translations[locale]
+                    : null;
 
+                const genericText = getNotificationText(locale, "announcement");
+                const localizedTitle = String(
+                    translated?.title || originalTitle || genericText.title
+                ).trim();
+                const localizedContent = String(
+                    translated?.content || originalContent || genericText.body
+                ).trim();
+                const localizedBody = localizedContent.length > 140
+                    ? `${localizedContent.slice(0, 137)}...`
+                    : localizedContent;
+
+                try {
+                    await sendToUserDevices(userId, {
                         notification: {
-                            title,
-                            body: message,
+                            title: localizedTitle,
+                            body: localizedBody || genericText.body,
                         },
-
                         data: {
                             type: "global_announcement",
                             announcementId,
                             notificationId: event.params.notificationId,
                         },
-
                         android: {
                             priority: "high",
                             notification: {
@@ -15459,7 +16364,6 @@ exports.sendGlobalAnnouncementNotification = onDocumentCreated(
                                 sound: "default",
                             },
                         },
-
                         apns: {
                             headers: {
                                 "apns-priority": "10",
@@ -15471,51 +16375,22 @@ exports.sendGlobalAnnouncementNotification = onDocumentCreated(
                             },
                         },
                     });
-
-                successCount += response.successCount;
-                failureCount += response.failureCount;
-
-                // 清除已失效的 Token
-                response.responses.forEach((result, index) => {
-                    if (result.success) return;
-
-                    const errorCode = result.error?.code || "";
-                    const failedToken = currentTokens[index];
-
+                    successUsers++;
+                } catch (error) {
+                    failedUsers++;
                     console.error(
-                        `❌ 公告推播失敗 token=${failedToken.slice(0, 12)}...`,
-                        errorCode
+                        `公告推播失敗 user=${userId}`,
+                        error?.message || error
                     );
-
-                    if (
-                        errorCode ===
-                            "messaging/registration-token-not-registered" ||
-                        errorCode ===
-                            "messaging/invalid-registration-token"
-                    ) {
-                        const tokenReference =
-                            tokenReferences.get(failedToken);
-
-                        if (tokenReference) {
-                            invalidTokenDeleteTasks.push(
-                                tokenReference.delete().catch(() => null)
-                            );
-                        }
-                    }
-                });
-            }
-
-            if (invalidTokenDeleteTasks.length > 0) {
-                await Promise.all(invalidTokenDeleteTasks);
+                }
             }
 
             console.log(
-                `✅ 全服公告推播完成：成功 ${successCount}，失敗 ${failureCount}`
+                `全服公告推播完成：successUsers=${successUsers}, failedUsers=${failedUsers}`
             );
-
             return null;
         } catch (error) {
-            console.error("❌ 全服公告推播發生錯誤：", error);
+            console.error("全服公告推播發生錯誤：", error);
             return null;
         }
     }

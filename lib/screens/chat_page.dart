@@ -131,7 +131,9 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final GlobalKey _replyModelMenuShowcaseKey = GlobalKey();
-  bool _hasScheduledReplyModelMenuTip = false;
+  final GlobalKey _regenerateBottomShowcaseKey = GlobalKey();
+  final GlobalKey _continueBottomShowcaseKey = GlobalKey();
+  bool _hasScheduledChatFeatureTips = false;
 
   // 在 _ChatPageState 的變數宣告區加上這行：
   final Map<String, String> _imageDownloadUrlCache = {};
@@ -254,6 +256,154 @@ class _ChatPageState extends State<ChatPage> {
   List<ChatMessage> _localMessages = [];
   String? _userId;
   Map<String, dynamic> _currentAiProfile = {'type': 'basic', 'name': '玩家'};
+
+  Map<String, dynamic>? _runtimeCharacterTranslation;
+  String? _runtimeCharacterTranslationLocale;
+  bool _runtimeCharacterTranslationLoading = false;
+
+  String _currentContentLocaleKey() {
+    final locale = Localizations.localeOf(context);
+
+    if (locale.languageCode == 'zh') {
+      final script = locale.scriptCode?.toLowerCase();
+      final country = locale.countryCode?.toUpperCase();
+
+      if (script == 'hans' || country == 'CN' || country == 'SG') {
+        return 'zh_Hans';
+      }
+      return 'zh_Hant';
+    }
+
+    return locale.languageCode;
+  }
+
+  String _currentAiLanguageName() {
+    switch (_currentContentLocaleKey()) {
+      case 'zh_Hans':
+        return '简体中文';
+      case 'zh_Hant':
+        return '台灣繁體中文';
+      case 'en':
+        return 'English';
+      case 'ja':
+        return '日本語';
+      case 'ko':
+        return '한국어';
+      case 'vi':
+        return 'Tiếng Việt';
+      case 'id':
+        return 'Bahasa Indonesia';
+      case 'th':
+        return 'ภาษาไทย';
+      case 'ar':
+        return 'العربية';
+      case 'fr':
+        return 'Français';
+      case 'ms':
+        return 'Bahasa Melayu';
+      case 'es':
+        return 'Español';
+      case 'hi':
+        return 'हिन्दी';
+      case 'pt':
+        return 'Português';
+      default:
+        return _currentContentLocaleKey();
+    }
+  }
+
+  String _normalizeCharacterSourceLocale(String? rawValue) {
+    final raw = (rawValue ?? 'zh_Hant')
+        .trim()
+        .replaceAll('-', '_')
+        .toLowerCase();
+
+    if (raw == 'zh' ||
+        raw == 'zh_tw' ||
+        raw == 'zh_hant' ||
+        raw == 'zh_hk' ||
+        raw == 'zh_mo') {
+      return 'zh_Hant';
+    }
+
+    if (raw == 'zh_cn' || raw == 'zh_hans' || raw == 'zh_sg') {
+      return 'zh_Hans';
+    }
+
+    return raw.split('_').first;
+  }
+
+  Map<String, dynamic>? _characterTranslationForCurrentLocale() {
+    final localeKey = _currentContentLocaleKey();
+
+    if (_runtimeCharacterTranslationLocale == localeKey &&
+        _runtimeCharacterTranslation != null) {
+      return _runtimeCharacterTranslation;
+    }
+
+    return _currentCharacter.translationForLocale(localeKey);
+  }
+
+  String _localizedCharacterText(
+      String field,
+      String originalValue,
+      ) {
+    final translated = _characterTranslationForCurrentLocale()?[field];
+    final value = translated?.toString().trim() ?? '';
+    return value.isNotEmpty ? value : originalValue;
+  }
+
+  Future<void> _ensureCharacterTranslationForChat() async {
+    if (!mounted || _runtimeCharacterTranslationLoading) return;
+
+    final localeKey = _currentContentLocaleKey();
+    final sourceLocale =
+    _normalizeCharacterSourceLocale(_currentCharacter.contentLanguage);
+
+    if (localeKey == sourceLocale) {
+      _runtimeCharacterTranslation = null;
+      _runtimeCharacterTranslationLocale = localeKey;
+      return;
+    }
+
+    final cached = _currentCharacter.translationForLocale(localeKey);
+    if (cached != null && cached.isNotEmpty) {
+      _runtimeCharacterTranslation = cached;
+      _runtimeCharacterTranslationLocale = localeKey;
+      return;
+    }
+
+    _runtimeCharacterTranslationLoading = true;
+
+    try {
+      final callable = FirebaseFunctions.instanceFor(
+        region: 'asia-east1',
+      ).httpsCallable(
+        'getCharacterTranslation',
+        options: HttpsCallableOptions(
+          timeout: const Duration(seconds: 90),
+        ),
+      );
+
+      final result = await callable.call({
+        'characterId': _currentCharacter.id,
+        'targetLocale': localeKey,
+      });
+
+      final data = result.data;
+      if (data is Map && data['translation'] is Map) {
+        _runtimeCharacterTranslation =
+        Map<String, dynamic>.from(data['translation'] as Map);
+        _runtimeCharacterTranslationLocale = localeKey;
+      }
+    } catch (e) {
+      // 翻譯失敗不能阻擋玩家聊天。
+      debugPrint('⚠️ 角色設定翻譯失敗，改用原文繼續聊天：$e');
+    } finally {
+      _runtimeCharacterTranslationLoading = false;
+    }
+  }
+
   String get _roomLockKey {
     final sid = (_sessionId ?? widget.sessionId ?? '').trim();
     return sid.isNotEmpty ? sid : widget.character.id;
@@ -2565,8 +2715,12 @@ class _ChatPageState extends State<ChatPage> {
         playerGenderForAi,
       );
 
+      await _ensureCharacterTranslationForChat();
+
       final Map<String, dynamic> requestBody = {
         'clientRequestId': clientRequestId,
+        'language': _currentAiLanguageName(),
+        'responseLocale': _currentContentLocaleKey(),
         'audioUrl': '',
         'userMessage': lastUserText,
         'chatMode': _currentMode?.name ?? 'daily',
@@ -2601,7 +2755,7 @@ class _ChatPageState extends State<ChatPage> {
           'name': _currentCharacter.name,
 
           // 新版角色核心設定
-          'coreCharacterSetting': _currentCharacter.coreCharacterSetting
+          'coreCharacterSetting': _localizedCharacterText('coreCharacterSetting', _currentCharacter.coreCharacterSetting)
               .replaceAll(
             '{{玩家名字}}',
             _playerNickname,
@@ -2622,7 +2776,7 @@ class _ChatPageState extends State<ChatPage> {
           ),
 
           // 舊版角色相容欄位
-          'toneAndStyle': _currentCharacter.toneAndStyle
+          'toneAndStyle': _localizedCharacterText('toneAndStyle', _currentCharacter.toneAndStyle)
               .replaceAll(
             '{{玩家名字}}',
             _playerNickname,
@@ -2632,7 +2786,7 @@ class _ChatPageState extends State<ChatPage> {
             _playerNickname,
           ),
 
-          'detailedPersonality': _currentCharacter.detailedPersonality
+          'detailedPersonality': _localizedCharacterText('detailedPersonality', _currentCharacter.detailedPersonality)
               .replaceAll(
             '{{玩家名字}}',
             _playerNickname,
@@ -2642,7 +2796,7 @@ class _ChatPageState extends State<ChatPage> {
             _playerNickname,
           ),
 
-          'socialInteraction': _currentCharacter.socialInteraction
+          'socialInteraction': _localizedCharacterText('socialInteraction', _currentCharacter.socialInteraction)
               .replaceAll(
             '{{玩家名字}}',
             _playerNickname,
@@ -2652,7 +2806,7 @@ class _ChatPageState extends State<ChatPage> {
             _playerNickname,
           ),
 
-          'background': _currentCharacter.background
+          'background': _localizedCharacterText('background', _currentCharacter.background)
               .replaceAll(
             '{{玩家名字}}',
             _playerNickname,
@@ -2662,7 +2816,7 @@ class _ChatPageState extends State<ChatPage> {
             _playerNickname,
           ),
 
-          'worldSetting': _currentCharacter.worldSetting
+          'worldSetting': _localizedCharacterText('worldSetting', _currentCharacter.worldSetting)
               .replaceAll(
             '{{玩家名字}}',
             _playerNickname,
@@ -2672,7 +2826,7 @@ class _ChatPageState extends State<ChatPage> {
             _playerNickname,
           ),
 
-          'likes': _currentCharacter.likes
+          'likes': _localizedCharacterText('likes', _currentCharacter.likes)
               .replaceAll(
             '{{玩家名字}}',
             _playerNickname,
@@ -2682,7 +2836,7 @@ class _ChatPageState extends State<ChatPage> {
             _playerNickname,
           ),
 
-          'secrets': _currentCharacter.secrets
+          'secrets': _localizedCharacterText('secrets', _currentCharacter.secrets)
               .replaceAll(
             '{{玩家名字}}',
             _playerNickname,
@@ -4507,8 +4661,12 @@ class _ChatPageState extends State<ChatPage> {
 
       final String playerPronounGuide =
       _buildPlayerPronounGuide(playerGenderForAi);
+      await _ensureCharacterTranslationForChat();
+
       final Map<String, dynamic> requestBody = {
         "clientRequestId": clientRequestId,
+        "language": _currentAiLanguageName(),
+        "responseLocale": _currentContentLocaleKey(),
         "userMessageId": userMessageId ?? "",
         "isTestMode": widget.isTestMode,
         "billingType": billingType,
@@ -4541,7 +4699,7 @@ class _ChatPageState extends State<ChatPage> {
           "name": _currentCharacter.name,
 
           // 新版合併後的角色核心設定
-          "coreCharacterSetting": _currentCharacter.coreCharacterSetting
+          "coreCharacterSetting": _localizedCharacterText('coreCharacterSetting', _currentCharacter.coreCharacterSetting)
               .replaceAll(
             '{{玩家名字}}',
             _playerNickname,
@@ -4562,7 +4720,7 @@ class _ChatPageState extends State<ChatPage> {
           ),
 
           // 舊版相容欄位，暫時保留
-          "toneAndStyle": _currentCharacter.toneAndStyle
+          "toneAndStyle": _localizedCharacterText('toneAndStyle', _currentCharacter.toneAndStyle)
               .replaceAll(
             '{{玩家名字}}',
             _playerNickname,
@@ -4572,7 +4730,7 @@ class _ChatPageState extends State<ChatPage> {
             _playerNickname,
           ),
 
-          "detailedPersonality": _currentCharacter.detailedPersonality
+          "detailedPersonality": _localizedCharacterText('detailedPersonality', _currentCharacter.detailedPersonality)
               .replaceAll(
             '{{玩家名字}}',
             _playerNickname,
@@ -4583,7 +4741,7 @@ class _ChatPageState extends State<ChatPage> {
           ),
 
           // 舊角色的社交／環境互動相容資料
-          "socialInteraction": _currentCharacter.socialInteraction
+          "socialInteraction": _localizedCharacterText('socialInteraction', _currentCharacter.socialInteraction)
               .replaceAll(
             '{{玩家名字}}',
             _playerNickname,
@@ -4593,7 +4751,7 @@ class _ChatPageState extends State<ChatPage> {
             _playerNickname,
           ),
 
-          "background": _currentCharacter.background
+          "background": _localizedCharacterText('background', _currentCharacter.background)
               .replaceAll(
             '{{玩家名字}}',
             _playerNickname,
@@ -4603,7 +4761,7 @@ class _ChatPageState extends State<ChatPage> {
             _playerNickname,
           ),
 
-          "worldSetting": _currentCharacter.worldSetting
+          "worldSetting": _localizedCharacterText('worldSetting', _currentCharacter.worldSetting)
               .replaceAll(
             '{{玩家名字}}',
             _playerNickname,
@@ -4613,7 +4771,7 @@ class _ChatPageState extends State<ChatPage> {
             _playerNickname,
           ),
 
-          "likes": _currentCharacter.likes
+          "likes": _localizedCharacterText('likes', _currentCharacter.likes)
               .replaceAll(
             '{{玩家名字}}',
             _playerNickname,
@@ -4623,7 +4781,7 @@ class _ChatPageState extends State<ChatPage> {
             _playerNickname,
           ),
 
-          "secrets": _currentCharacter.secrets
+          "secrets": _localizedCharacterText('secrets', _currentCharacter.secrets)
               .replaceAll(
             '{{玩家名字}}',
             _playerNickname,
@@ -9644,25 +9802,40 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  Future<void> _showReplyModelMenuTipOnce(
+  Future<void> _showChatFeatureTipsOnce(
       BuildContext showcaseContext,
       ) async {
-    if (_hasScheduledReplyModelMenuTip || widget.isTestMode) return;
-    _hasScheduledReplyModelMenuTip = true;
+    if (_hasScheduledChatFeatureTips || widget.isTestMode) return;
+    _hasScheduledChatFeatureTips = true;
 
     final userId = FirebaseAuth.instance.currentUser?.uid ?? 'guest';
     final prefs = await SharedPreferences.getInstance();
-    final prefKey = 'chat_reply_model_menu_tip_shown_$userId';
 
-    if (prefs.getBool(prefKey) == true) return;
-    if (!mounted) return;
+    final menuPrefKey = 'chat_reply_model_menu_tip_shown_$userId';
+    final bottomPrefKey = 'chat_bottom_actions_tip_shown_$userId';
 
-    await prefs.setBool(prefKey, true);
-    if (!mounted) return;
+    final bool menuTipShown = prefs.getBool(menuPrefKey) == true;
+    final bool bottomTipShown = prefs.getBool(bottomPrefKey) == true;
 
-    ShowCaseWidget.of(showcaseContext).startShowCase([
-      _replyModelMenuShowcaseKey,
-    ]);
+    final List<GlobalKey> tipsToShow = <GlobalKey>[];
+
+    if (!menuTipShown) {
+      tipsToShow.add(_replyModelMenuShowcaseKey);
+      await prefs.setBool(menuPrefKey, true);
+    }
+
+    if (!bottomTipShown) {
+      tipsToShow.add(_regenerateBottomShowcaseKey);
+      tipsToShow.add(_continueBottomShowcaseKey);
+      await prefs.setBool(bottomPrefKey, true);
+    }
+
+    if (!mounted || tipsToShow.isEmpty) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ShowCaseWidget.of(showcaseContext).startShowCase(tipsToShow);
+    });
   }
 
   @override
@@ -9683,25 +9856,24 @@ class _ChatPageState extends State<ChatPage> {
 
     // 聊天室本體不再監聽整個 ThemeNotifier。
     // 背景更新時只重建背景殼，不重建 Header、訊息列與輸入框。
-    final Widget chatScaffold = GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-      },
-      child: Scaffold(
-        backgroundColor: Colors.transparent, // 🚩 這裡必須透明，照片才透得過來
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(62),
-          child: ShowCaseWidget(
-            builder: (showcaseContext) {
-              if (!_hasScheduledReplyModelMenuTip &&
-                  !widget.isTestMode) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (!mounted) return;
-                  _showReplyModelMenuTipOnce(showcaseContext);
-                });
-              }
+    final Widget chatScaffold = ShowCaseWidget(
+      builder: (showcaseContext) {
+        if (!_hasScheduledChatFeatureTips && !widget.isTestMode) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            _showChatFeatureTipsOnce(showcaseContext);
+          });
+        }
 
-              return ChatHeader(
+        return GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: Scaffold(
+            backgroundColor: Colors.transparent, // 🚩 這裡必須透明，照片才透得過來
+            appBar: PreferredSize(
+              preferredSize: const Size.fromHeight(62),
+              child: ChatHeader(
                 characterName: _currentCharacter.name,
                 friendship: _currentFriendship,
                 nextThreshold: nextStageThreshold,
@@ -9728,312 +9900,318 @@ class _ChatPageState extends State<ChatPage> {
                 menuShowcaseKey: _replyModelMenuShowcaseKey,
                 menuShowcaseDescription:
                 l10n.chat_reply_model_menu_tip,
-              );
-            },
-          ),
-        ),
-        // 👇 🌟 移除了原本擋在前面的內層背景，直接放 Column
-        body: Column(
-          children: [
-            // 頂部資訊已移至 ChatHeader
-            if (_isQixiRoom) _buildQixiProgressCard(theme),
-            // ✨ 2. 中間訊息列表
-            Expanded(
-              // 有舊訊息快取時，即使房間 metadata 還在背景初始化，
-              // 也先顯示聊天內容；只有完全沒有任何可顯示內容時才轉圈。
-              child: (_isLoading && _localMessages.isEmpty)
-                  ? const Center(
-                child: CircularProgressIndicator(),
-              )
-
-              // 測試模式必須先判斷，因為它本來就沒有正式 session
-                  : widget.isTestMode
-                  ? (_testMessages.isEmpty && !_isGenerating
-                  ? Center(
-                child: Text(
-                  l10n.chat_test_mode_msg,
-                ),
-              )
-                  : _buildMessageList(
-                _testMessages,
-              ))
-
-              // 只有正式聊天室才檢查這兩個資料。
-              // 若 session 管線尚未接好、但已有快取訊息，就先顯示快取。
-                  : (_sessionId == null ||
-                  _messagesCollection == null)
-                  ? (_localMessages.isNotEmpty
-                  ? _buildMessageList(_localMessages)
-                  : Center(
-                child: Text(
-                  l10n.chat_loading_failed,
-                ),
-              ))
-                  : StreamBuilder<QuerySnapshot>(
-                stream: _messagesStream,
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    if (_localMessages.isNotEmpty) {
-                      return _buildMessageList(_localMessages);
-                    }
-
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-
-                  if (snapshot.hasError)
-                    return Center(
-                        child: Text(
-                            l10n.chat_error_load_msg(
-                                snapshot.error
-                                    .toString())));
-
-                  final messages = snapshot.data!.docs
-                      .map((doc) =>
-                      ChatMessage.fromFirestore(doc))
-                      .toList();
-                  _localMessages = messages;
-
-                  final activeSessionId =
-                  (_sessionId ?? widget.sessionId ?? '').trim();
-                  if (activeSessionId.isNotEmpty) {
-                    _sessionMessageCache[activeSessionId] =
-                    List<ChatMessage>.from(messages);
-                  }
-
-                  // ✨✨✨ 靈魂出竅自動解鎖魔法 開始 ✨✨✨
-                  if (messages.isNotEmpty) {
-                    final latestMessage = messages.first;
-
-                    if (_isGenerating &&
-                        _waitingForNewAiReply &&
-                        latestMessage.sender == 'ai') {
-                      final lastUserSendTime =
-                          _lastUserSendTime;
-                      final DateTime? aiMessageTime =
-                      latestMessage.timestamp?.toDate();
-
-                      final bool isNewAiReply =
-                          lastUserSendTime != null &&
-                              aiMessageTime != null &&
-                              aiMessageTime.isAfter(
-                                  lastUserSendTime);
-
-                      if (isNewAiReply) {
-                        WidgetsBinding.instance
-                            .addPostFrameCallback((_) {
-                          if (!mounted) return;
-
-                          setState(() {
-                            _isGenerating = false;
-                            _isLoading = false;
-                            _waitingForNewAiReply = false;
-                          });
-
-                          generatingRooms
-                              .remove(_roomLockKey);
-
-                          debugPrint(
-                              "✨ 偵測到新的 AI 回覆，解除鎖定狀態！");
-                        });
-                      }
-                    }
-                  }
-                  // ✨✨✨ 靈魂出竅自動解鎖魔法 結束 ✨✨✨
-                  if (messages.isEmpty && !_isGenerating) {
-                    return Center(
-                        child: Text(l10n.chat_empty_msg));
-                  }
-                  return Column(
-                    children: [
-                      Expanded(
-                        child: _buildMessageList(messages),
-                      ),
-                      if (_isRegenerating)
-                        Padding(
-                          padding:
-                          const EdgeInsets.fromLTRB(
-                            16,
-                            8,
-                            16,
-                            12,
-                          ),
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Container(
-                              padding: const EdgeInsets
-                                  .symmetric(
-                                horizontal: 14,
-                                vertical: 10,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .surfaceContainerHighest
-                                    .withValues(
-                                    alpha: 0.75),
-                                borderRadius:
-                                BorderRadius.circular(
-                                    18),
-                              ),
-                              child: Row(
-                                mainAxisSize:
-                                MainAxisSize.min,
-                                children: [
-                                  SizedBox(
-                                    width: 15,
-                                    height: 15,
-                                    child:
-                                    CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color:
-                                      Theme.of(context)
-                                          .colorScheme
-                                          .primary,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    l10n.chatPageRegenerating,
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color:
-                                      Theme.of(context)
-                                          .colorScheme
-                                          .onSurface
-                                          .withValues(
-                                          alpha:
-                                          0.72),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  );
-                },
               ),
             ),
-            if (_isScreenshotMode)
-            // 如果是截圖模式，就顯示專屬操作列
-              _buildScreenshotBottomBar()
-            else ...[
-              // ✨ 3. 底部（）快捷鍵區
-              showInputExtras
-                  ? Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 3,
-                ),
-                color: theme.cardColor.withValues(alpha: 0.5),
-                child: Row(
-                  children: [
-                    OutlinedButton(
-                      onPressed: (_isGenerating || _isLoading)
-                          ? null
-                          : () {
-                        final text = _textController.text;
+            // 👇 🌟 移除了原本擋在前面的內層背景，直接放 Column
+            body: Column(
+              children: [
+                // 頂部資訊已移至 ChatHeader
+                if (_isQixiRoom) _buildQixiProgressCard(theme),
+                // ✨ 2. 中間訊息列表
+                Expanded(
+                  // 有舊訊息快取時，即使房間 metadata 還在背景初始化，
+                  // 也先顯示聊天內容；只有完全沒有任何可顯示內容時才轉圈。
+                  child: (_isLoading && _localMessages.isEmpty)
+                      ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
 
-                        final selection =
-                            _textController.selection;
+                  // 測試模式必須先判斷，因為它本來就沒有正式 session
+                      : widget.isTestMode
+                      ? (_testMessages.isEmpty && !_isGenerating
+                      ? Center(
+                    child: Text(
+                      l10n.chat_test_mode_msg,
+                    ),
+                  )
+                      : _buildMessageList(
+                    _testMessages,
+                  ))
 
-                        int cursorPosition =
-                            selection.baseOffset;
-
-                        if (cursorPosition < 0 ||
-                            cursorPosition > text.length) {
-                          cursorPosition = text.length;
+                  // 只有正式聊天室才檢查這兩個資料。
+                  // 若 session 管線尚未接好、但已有快取訊息，就先顯示快取。
+                      : (_sessionId == null ||
+                      _messagesCollection == null)
+                      ? (_localMessages.isNotEmpty
+                      ? _buildMessageList(_localMessages)
+                      : Center(
+                    child: Text(
+                      l10n.chat_loading_failed,
+                    ),
+                  ))
+                      : StreamBuilder<QuerySnapshot>(
+                    stream: _messagesStream,
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        if (_localMessages.isNotEmpty) {
+                          return _buildMessageList(_localMessages);
                         }
 
-                        final newText = text.substring(
-                          0,
-                          cursorPosition,
-                        ) +
-                            '（）' +
-                            text.substring(
-                              cursorPosition,
-                            );
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
 
-                        _textController.value =
-                            TextEditingValue(
-                              text: newText,
-                              selection: TextSelection.collapsed(
-                                offset: cursorPosition + 1,
+                      if (snapshot.hasError)
+                        return Center(
+                            child: Text(
+                                l10n.chat_error_load_msg(
+                                    snapshot.error
+                                        .toString())));
+
+                      final messages = snapshot.data!.docs
+                          .map((doc) =>
+                          ChatMessage.fromFirestore(doc))
+                          .toList();
+                      _localMessages = messages;
+
+                      final activeSessionId =
+                      (_sessionId ?? widget.sessionId ?? '').trim();
+                      if (activeSessionId.isNotEmpty) {
+                        _sessionMessageCache[activeSessionId] =
+                        List<ChatMessage>.from(messages);
+                      }
+
+                      // ✨✨✨ 靈魂出竅自動解鎖魔法 開始 ✨✨✨
+                      if (messages.isNotEmpty) {
+                        final latestMessage = messages.first;
+
+                        if (_isGenerating &&
+                            _waitingForNewAiReply &&
+                            latestMessage.sender == 'ai') {
+                          final lastUserSendTime =
+                              _lastUserSendTime;
+                          final DateTime? aiMessageTime =
+                          latestMessage.timestamp?.toDate();
+
+                          final bool isNewAiReply =
+                              lastUserSendTime != null &&
+                                  aiMessageTime != null &&
+                                  aiMessageTime.isAfter(
+                                      lastUserSendTime);
+
+                          if (isNewAiReply) {
+                            WidgetsBinding.instance
+                                .addPostFrameCallback((_) {
+                              if (!mounted) return;
+
+                              setState(() {
+                                _isGenerating = false;
+                                _isLoading = false;
+                                _waitingForNewAiReply = false;
+                              });
+
+                              generatingRooms
+                                  .remove(_roomLockKey);
+
+                              debugPrint(
+                                  "✨ 偵測到新的 AI 回覆，解除鎖定狀態！");
+                            });
+                          }
+                        }
+                      }
+                      // ✨✨✨ 靈魂出竅自動解鎖魔法 結束 ✨✨✨
+                      if (messages.isEmpty && !_isGenerating) {
+                        return Center(
+                            child: Text(l10n.chat_empty_msg));
+                      }
+                      return Column(
+                        children: [
+                          Expanded(
+                            child: _buildMessageList(messages),
+                          ),
+                          if (_isRegenerating)
+                            Padding(
+                              padding:
+                              const EdgeInsets.fromLTRB(
+                                16,
+                                8,
+                                16,
+                                12,
                               ),
-                            );
-
-                        _focusNode.requestFocus();
-                      },
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(42, 30),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                        ),
-                        visualDensity: VisualDensity.compact,
-                        tapTargetSize:
-                        MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      child: const Text('（）'),
-                    ),
-                  ],
-                ),
-              )
-                  : const SizedBox.shrink(),
-
-              // 🌟 多選模式 / 平常輸入框
-              if (_isMultiSelectMode)
-                _buildMultiSelectBottomBar()
-              else
-                ChatInputBar(
-                  controller: _textController,
-                  focusNode: _focusNode,
-                  isGenerating: _isGenerating,
-                  isLoading: _isLoading,
-                  showCounter: showInputExtras,
-                  hintText: _isGenerating
-                      ? (AppLocalizations.of(context)?.chat_ai_typing ??
-                      l10n.chatTypingIndicator)
-                      : (AppLocalizations.of(context)
-                      ?.chat_input_hint_default ??
-                      l10n.chatInputHint),
-                  regeneratingTooltip: l10n.regenerateButtonLabel(
-                    _freeRegenerateCount,
-                    _maxRegenerateCount,
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Container(
+                                  padding: const EdgeInsets
+                                      .symmetric(
+                                    horizontal: 14,
+                                    vertical: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .surfaceContainerHighest
+                                        .withValues(
+                                        alpha: 0.75),
+                                    borderRadius:
+                                    BorderRadius.circular(
+                                        18),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize:
+                                    MainAxisSize.min,
+                                    children: [
+                                      SizedBox(
+                                        width: 15,
+                                        height: 15,
+                                        child:
+                                        CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color:
+                                          Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Text(
+                                        l10n.chatPageRegenerating,
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color:
+                                          Theme.of(context)
+                                              .colorScheme
+                                              .onSurface
+                                              .withValues(
+                                              alpha:
+                                              0.72),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      );
+                    },
                   ),
-                  continueTooltip: l10n.continueButton,
-                  onChanged: _saveDraft,
-                  onToolbox: _showToolbox,
-                  onRegenerate: _handleRegenerateButton,
-                  onContinue: _handleContinueButton,
-                  onStop: _stopGenerating,
-                  onSend: () async {
-                    final text = _textController.text.trim();
-                    final imagePath = _selectedChatImagePath;
-
-                    if (text.isEmpty &&
-                        (imagePath == null || imagePath.isEmpty)) {
-                      return;
-                    }
-
-                    setState(() {
-                      _selectedChatImagePath = null;
-                    });
-
-                    await _sendMessage(
-                      text: text,
-                      imagePath: imagePath,
-                      showInChat: true,
-                    );
-                  },
                 ),
-            ],
-          ],
-        ),
-      ),
+                if (_isScreenshotMode)
+                // 如果是截圖模式，就顯示專屬操作列
+                  _buildScreenshotBottomBar()
+                else ...[
+                  // ✨ 3. 底部（）快捷鍵區
+                  showInputExtras
+                      ? Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
+                    color: theme.cardColor.withValues(alpha: 0.5),
+                    child: Row(
+                      children: [
+                        OutlinedButton(
+                          onPressed: (_isGenerating || _isLoading)
+                              ? null
+                              : () {
+                            final text = _textController.text;
+
+                            final selection =
+                                _textController.selection;
+
+                            int cursorPosition =
+                                selection.baseOffset;
+
+                            if (cursorPosition < 0 ||
+                                cursorPosition > text.length) {
+                              cursorPosition = text.length;
+                            }
+
+                            final newText = text.substring(
+                              0,
+                              cursorPosition,
+                            ) +
+                                '（）' +
+                                text.substring(
+                                  cursorPosition,
+                                );
+
+                            _textController.value =
+                                TextEditingValue(
+                                  text: newText,
+                                  selection: TextSelection.collapsed(
+                                    offset: cursorPosition + 1,
+                                  ),
+                                );
+
+                            _focusNode.requestFocus();
+                          },
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(42, 30),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                            ),
+                            visualDensity: VisualDensity.compact,
+                            tapTargetSize:
+                            MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: const Text('（）'),
+                        ),
+                      ],
+                    ),
+                  )
+                      : const SizedBox.shrink(),
+
+                  // 🌟 多選模式 / 平常輸入框
+                  if (_isMultiSelectMode)
+                    _buildMultiSelectBottomBar()
+                  else
+                    ChatInputBar(
+                      controller: _textController,
+                      focusNode: _focusNode,
+                      isGenerating: _isGenerating,
+                      isLoading: _isLoading,
+                      showCounter: showInputExtras,
+                      hintText: _isGenerating
+                          ? (AppLocalizations.of(context)?.chat_ai_typing ??
+                          l10n.chatTypingIndicator)
+                          : (AppLocalizations.of(context)
+                          ?.chat_input_hint_default ??
+                          l10n.chatInputHint),
+                      regeneratingTooltip: l10n.regenerateButtonLabel(
+                        _freeRegenerateCount,
+                        _maxRegenerateCount,
+                      ),
+                      continueTooltip: l10n.continueButton,
+                      regenerateShowcaseKey: _regenerateBottomShowcaseKey,
+                      continueShowcaseKey: _continueBottomShowcaseKey,
+                      regenerateShowcaseDescription:
+                      l10n.chat_regenerate_bottom_tip,
+                      continueShowcaseDescription:
+                      l10n.chat_continue_bottom_tip,
+                      onChanged: _saveDraft,
+                      onToolbox: _showToolbox,
+                      onRegenerate: _handleRegenerateButton,
+                      onContinue: _handleContinueButton,
+                      onStop: _stopGenerating,
+                      onSend: () async {
+                        final text = _textController.text.trim();
+                        final imagePath = _selectedChatImagePath;
+
+                        if (text.isEmpty &&
+                            (imagePath == null || imagePath.isEmpty)) {
+                          return;
+                        }
+
+                        setState(() {
+                          _selectedChatImagePath = null;
+                        });
+
+                        await _sendMessage(
+                          text: text,
+                          imagePath: imagePath,
+                          showInChat: true,
+                        );
+                      },
+                    ),
+                ],
+              ],
+            ),
+          ),
+        );
+      },
     );
 
     return Consumer<ThemeNotifier>(

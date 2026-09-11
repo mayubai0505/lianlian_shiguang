@@ -415,51 +415,69 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   }
 
   Future<void> _publish() async {
-    final l10n = AppLocalizations.of(context)!;
-    if (_titleController.text.isEmpty || _contentController.text.isEmpty)
-      return;
+    final title = _titleController.text.trim();
+    final content = _contentController.text.trim();
+
+    if (title.isEmpty || content.isEmpty) return;
+    if (_isPublishing) return;
+
     setState(() => _isPublishing = true);
+
     try {
-      final batch = FirebaseFirestore.instance.batch();
-      DocumentReference annRef =
-      FirebaseFirestore.instance.collection('announcements').doc();
-      batch.set(annRef, {
-        'title': _titleController.text.trim(),
-        'content': _contentController.text.trim(),
-        'createdAt': FieldValue.serverTimestamp(),
+      final callable = _functions.httpsCallable(
+        'publishAnnouncement',
+        options: HttpsCallableOptions(
+          timeout: const Duration(minutes: 3),
+        ),
+      );
+
+      final result = await callable.call({
+        'title': title,
+        'content': content,
+        'sendNotification': _sendNotification,
       });
 
-      if (_sendNotification) {
-        DocumentReference notifyRef =
-        FirebaseFirestore.instance.collection('system_notifications').doc();
-        batch.set(notifyRef, {
-          'title': '📢 ${_titleController.text.trim()}',
-          'message': _contentController.text.trim(),
-          'type': 'global_announcement',
-          'announcementId': annRef.id,
-          'createdAt': FieldValue.serverTimestamp(),
-        });
-      }
-      await batch.commit();
-      if (mounted) {
-        // ✨ 總裁級：全服公告發布成功的優雅回饋
-        ToastUtils.showCenterToast(
-          context,
-          '✅ 公告與全服通知已發布！',
-          customIcon: Icons.campaign_rounded, // 💡 用「廣播/公告」圖示，完美對應公告發布的情境
-        );
-      }
+      final data = result.data is Map
+          ? Map<String, dynamic>.from(result.data as Map)
+          : <String, dynamic>{};
+
+      final rawFailures = data['translationFailures'];
+      final failures = rawFailures is List
+          ? rawFailures.map((e) => e.toString()).toList()
+          : <String>[];
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        failures.isEmpty
+            ? '公告已發布，其他語系也已自動翻譯完成！'
+            : '公告已發布；${failures.length} 個語系翻譯失敗，玩家會先看到繁中原文。',
+        customIcon: Icons.campaign_rounded,
+      );
+
       _titleController.clear();
       _contentController.clear();
-    } catch (e) {
-      if (mounted) {
-        // ⚠️ 發布失敗：重量級錯誤提示
-        ToastUtils.showCenterToast(
-          context,
-          '❌ 發布失敗: $e',
-          isError: true, // 💡 帶上紅驚嘆號，讓管理員第一時間發現異常
-        );
-      }
+    } on FirebaseFunctionsException catch (e, stackTrace) {
+      debugPrint('❌ 發布公告 Function 失敗：${e.code} ${e.message}');
+      debugPrintStack(stackTrace: stackTrace);
+
+      if (!mounted) return;
+      ToastUtils.showCenterToast(
+        context,
+        e.message ?? '發布失敗，請稍後再試',
+        isError: true,
+      );
+    } catch (e, stackTrace) {
+      debugPrint('❌ 發布公告失敗：$e');
+      debugPrintStack(stackTrace: stackTrace);
+
+      if (!mounted) return;
+      ToastUtils.showCenterToast(
+        context,
+        '發布失敗：$e',
+        isError: true,
+      );
     } finally {
       if (mounted) setState(() => _isPublishing = false);
     }
@@ -2219,28 +2237,28 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     error,
     stackTrace
     ) {
-    debugPrint(
-    '❌ 系統健康資料讀取失敗：'
-    '${error.code} '
-    '${error.message}',
-    );
+      debugPrint(
+        '❌ 系統健康資料讀取失敗：'
+            '${error.code} '
+            '${error.message}',
+      );
 
-    debugPrintStack(
-    stackTrace: stackTrace,
-    );
+      debugPrintStack(
+        stackTrace: stackTrace,
+      );
 
-    rethrow;
+      rethrow;
     } catch (error, stackTrace) {
-    debugPrint(
-    '❌ 系統健康資料錯誤：'
-    '$error',
-    );
+      debugPrint(
+        '❌ 系統健康資料錯誤：'
+            '$error',
+      );
 
-    debugPrintStack(
-    stackTrace: stackTrace,
-    );
+      debugPrintStack(
+        stackTrace: stackTrace,
+      );
 
-    rethrow;
+      rethrow;
     }
   }
 

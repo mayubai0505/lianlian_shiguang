@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 class ChatInputBar extends StatefulWidget {
   final TextEditingController controller;
@@ -11,6 +11,10 @@ class ChatInputBar extends StatefulWidget {
   final String hintText;
   final String regeneratingTooltip;
   final String continueTooltip;
+  final GlobalKey? regenerateShowcaseKey;
+  final GlobalKey? continueShowcaseKey;
+  final String? regenerateShowcaseDescription;
+  final String? continueShowcaseDescription;
 
   final ValueChanged<String> onChanged;
   final VoidCallback onToolbox;
@@ -29,6 +33,10 @@ class ChatInputBar extends StatefulWidget {
     required this.hintText,
     required this.regeneratingTooltip,
     required this.continueTooltip,
+    this.regenerateShowcaseKey,
+    this.continueShowcaseKey,
+    this.regenerateShowcaseDescription,
+    this.continueShowcaseDescription,
     required this.onChanged,
     required this.onToolbox,
     required this.onRegenerate,
@@ -99,7 +107,6 @@ class _ChatInputBarState extends State<ChatInputBar>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context)!;
     final primary = theme.colorScheme.primary;
     final disabled = widget.isGenerating || widget.isLoading;
 
@@ -134,14 +141,29 @@ class _ChatInputBarState extends State<ChatInputBar>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     _BareIconButton(
-                      tooltip: l10n.chat_input_tools,
+                      tooltip: 'Tools',
                       asset:
                       'assets/images/chat/chat_more_cloud_mask.png',
                       assetSize: 30,
                       onPressed:
                       disabled ? null : widget.onToolbox,
                     ),
-                    _BareIconButton(
+                    widget.regenerateShowcaseKey != null &&
+                        widget.regenerateShowcaseDescription != null
+                        ? Showcase(
+                      key: widget.regenerateShowcaseKey!,
+                      description:
+                      widget.regenerateShowcaseDescription!,
+                      child: _BareIconButton(
+                        tooltip: widget.regeneratingTooltip,
+                        asset:
+                        'assets/images/chat/chat_regenerate_vine_mask.png',
+                        assetSize: 30,
+                        onPressed:
+                        disabled ? null : widget.onRegenerate,
+                      ),
+                    )
+                        : _BareIconButton(
                       tooltip: widget.regeneratingTooltip,
                       asset:
                       'assets/images/chat/chat_regenerate_vine_mask.png',
@@ -149,7 +171,22 @@ class _ChatInputBarState extends State<ChatInputBar>
                       onPressed:
                       disabled ? null : widget.onRegenerate,
                     ),
-                    _BareIconButton(
+                    widget.continueShowcaseKey != null &&
+                        widget.continueShowcaseDescription != null
+                        ? Showcase(
+                      key: widget.continueShowcaseKey!,
+                      description:
+                      widget.continueShowcaseDescription!,
+                      child: _BareIconButton(
+                        tooltip: widget.continueTooltip,
+                        asset:
+                        'assets/images/chat/chat_continue_vine_mask.png',
+                        assetSize: 30,
+                        onPressed:
+                        disabled ? null : widget.onContinue,
+                      ),
+                    )
+                        : _BareIconButton(
                       tooltip: widget.continueTooltip,
                       asset:
                       'assets/images/chat/chat_continue_vine_mask.png',
@@ -161,7 +198,7 @@ class _ChatInputBarState extends State<ChatInputBar>
                 )
                     : _BareIconButton(
                   key: const ValueKey('expand-chat-tools'),
-                  tooltip: l10n.chat_input_expand_tools,
+                  tooltip: '展開功能',
                   icon: Icons.chevron_right_rounded,
                   iconSize: 29,
                   onPressed: disabled ? null : _expandTools,
@@ -242,9 +279,7 @@ class _ChatInputBarState extends State<ChatInputBar>
             ),
             const SizedBox(width: 5),
             _BareIconButton(
-              tooltip: widget.isGenerating
-                  ? l10n.chat_input_stop
-                  : l10n.chat_input_send,
+              tooltip: widget.isGenerating ? 'Stop' : 'Send',
               icon: widget.isGenerating
                   ? Icons.stop_circle_outlined
                   : null,
