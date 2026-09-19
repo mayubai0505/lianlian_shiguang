@@ -13,8 +13,9 @@ class AppConfig {
   static const Color primaryColor = Color(0xFFFFB6C1); // 櫻花粉
 
   // 🌸 👇👇👇 完美加在這裡：各種聊天模式的花朵消耗量 👇👇👇
-  static const int costDailyChat = 1;      // 一般聊天
-  static const int costStoryChat = 5;      // 故事模式
-  static const int costImmersiveChat = 7;  // 沉浸模式
-  static const int costGeminiChat = 0;     // Gemini 模式
+  static const int costDailyChat = 1;       // 舊版日常模式（相容保留）
+  static const int costGeminiChat = 1;      // 閒聊：標準價格 1 花；每日前 10 次免費由後端判斷
+  static const int costStoryChat = 5;       // 故事模式
+  static const int costImmersiveChat = 7;   // 沉浸模式
+  static const int costResonanceChat = 10;  // 共鳴模式
 }

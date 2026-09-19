@@ -17,11 +17,13 @@ import 'dart:ui';
 class BackgroundSettingsPage extends StatefulWidget {
   final Character character;
   final String characterId;
+  final String sessionId;
 
   const BackgroundSettingsPage({
     super.key,
     required this.character,
     required this.characterId,
+    this.sessionId = '',
   });
 
   @override
@@ -32,9 +34,6 @@ class BackgroundSettingsPage extends StatefulWidget {
 class _BackgroundSettingsPageState extends State<BackgroundSettingsPage> {
   static const String _topRightFloralAsset =
       'assets/images/theme/theme_card_starlight1.png';
-
-  static const String _bottomLeftFloralAsset =
-      'assets/images/profile_edit/profile_edit_botanical_left.png';
 
   final PageController _pageController = PageController();
   int _currentPhotoIndex = 0;
@@ -48,10 +47,6 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage> {
 
     precacheImage(
       const AssetImage(_topRightFloralAsset),
-      context,
-    ).catchError((_) {});
-    precacheImage(
-      const AssetImage(_bottomLeftFloralAsset),
       context,
     ).catchError((_) {});
   }
@@ -119,21 +114,6 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage> {
                 child: Image.asset(
                   _topRightFloralAsset,
                   width: 155,
-                  fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            left: -16,
-            bottom: -12,
-            child: IgnorePointer(
-              child: Opacity(
-                opacity: 0.09,
-                child: Image.asset(
-                  _bottomLeftFloralAsset,
-                  width: 170,
                   fit: BoxFit.contain,
                   errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                 ),
@@ -621,12 +601,13 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage> {
               backgroundColor: Colors.redAccent,
               foregroundColor: Colors.white,
             ),
-            onPressed: () {
-              Provider.of<ThemeNotifier>(
+            onPressed: () async {
+              await Provider.of<ThemeNotifier>(
                 pageContext,
                 listen: false,
-              ).resetCharacterBackground(widget.character.name);
+              ).resetChatRoomBackground(widget.sessionId);
 
+              if (!dialogContext.mounted) return;
               Navigator.pop(dialogContext);
 
               ToastUtils.showCenterToast(
@@ -674,15 +655,16 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage> {
             ),
           ),
           ElevatedButton(
-            onPressed: () {
-              Provider.of<ThemeNotifier>(
+            onPressed: () async {
+              await Provider.of<ThemeNotifier>(
                 pageContext,
                 listen: false,
-              ).setCharacterBackground(
-                widget.character.name,
+              ).setChatRoomBackground(
+                widget.sessionId,
                 cg.imageUrl,
               );
 
+              if (!dialogContext.mounted) return;
               Navigator.pop(dialogContext);
 
               if (pageContext.mounted) {

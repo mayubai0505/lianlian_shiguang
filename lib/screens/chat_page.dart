@@ -58,7 +58,7 @@ import 'chat_input_bar.dart';
 import 'scene_page.dart';
 
 //聊天頁面ˋ
-enum ChatMode { daily, story, immersive, gemini }
+enum ChatMode { daily, story, immersive, resonance, gemini }
 
 class FlowerStage {
   final int threshold;
@@ -146,6 +146,8 @@ class _ChatPageState extends State<ChatPage> {
   bool _hasLoadedBirthdayFreeStatus = false;
   bool _hasPromptedProfileSetup = false; // 用來記住「已經問過玩家了」
   Map<String, dynamic>? _roomConfig;
+  // 新建立的聊天室預設使用主題純色，不繼承同角色舊聊天室的照片背景。
+  bool _useDefaultBackgroundForNewRoom = false;
   bool _isMonthlyPassActive = false;
   bool _isBirthdayFreeToday = false;
   // 七夕限定聊天室
@@ -256,6 +258,7 @@ class _ChatPageState extends State<ChatPage> {
   List<ChatMessage> _localMessages = [];
   String? _userId;
   Map<String, dynamic> _currentAiProfile = {'type': 'basic', 'name': '玩家'};
+  String _activePlayerProfileId = 'default';
 
   Map<String, dynamic>? _runtimeCharacterTranslation;
   String? _runtimeCharacterTranslationLocale;
@@ -698,12 +701,10 @@ class _ChatPageState extends State<ChatPage> {
     }
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
 
-    // 提早開始讀取角色背景，縮短預設背景切換到角色背景的時間差。
-    unawaited(
-      themeNotifier.loadCharacterBackground(
-        _currentCharacter.name,
-      ),
-    );
+    // 先清空上一間聊天室殘留在 ThemeNotifier 記憶體中的背景。
+    // 真正的房間背景會在 sessionId 確定後，以 sessionId 為 key 重新載入。
+    themeNotifier.clearActiveChatRoomBackground();
+    _useDefaultBackgroundForNewRoom = true;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -799,7 +800,7 @@ class _ChatPageState extends State<ChatPage> {
       if (mounted) {
         // 🌟 總裁級無縫接軌：有真實 ID 就用真實的，沒有就發放「臨時身分證」
         final String safeRoomId =
-            widget.sessionId ?? 'draft_${widget.characterId}';
+            _sessionId ?? widget.sessionId ?? 'draft_${widget.characterId}';
 
         // ✨ 直接放行！所有的檢查、兜底跟迎賓彈窗，都交給大腦去處理！
         _checkProfileCompletion(safeRoomId, widget.characterId);
@@ -1050,7 +1051,7 @@ class _ChatPageState extends State<ChatPage> {
     bool didSave = false; // 追蹤玩家有沒有乖乖存檔
     final l10n = AppLocalizations.of(context)!;
     // 🌟 總裁級修復：取得安全的房間 ID，保護新房間不崩潰！
-    final String safeRoomId = widget.sessionId ?? 'draft_${widget.characterId}';
+    final String safeRoomId = _sessionId ?? widget.sessionId ?? 'draft_${widget.characterId}';
     UserProfilePopup.show(
       context,
       roomId: safeRoomId, // 🛡️ 換成安全的 ID
@@ -1486,14 +1487,58 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  Future<String> _resolvePlayerProfileIdForRoom({
+    required String roomId,
+    required String characterId,
+  }) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return 'default';
+
+    try {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      final data = userDoc.data() ?? <String, dynamic>{};
+      final profiles = data['profiles'];
+      final rawRoomProfiles = data['roomProfiles'];
+
+      final Map<String, dynamic> roomProfiles = rawRoomProfiles is Map
+          ? Map<String, dynamic>.from(rawRoomProfiles)
+          : <String, dynamic>{};
+
+      final String draftKey = 'draft_$characterId';
+      final String candidateId =
+          (roomProfiles[roomId] ?? roomProfiles[draftKey])
+              ?.toString()
+              .trim() ??
+              '';
+
+      if (candidateId.isEmpty || profiles is! List) {
+        return 'default';
+      }
+
+      final bool exists = profiles.any((profile) {
+        if (profile is! Map) return false;
+        return profile['id']?.toString().trim() == candidateId;
+      });
+
+      return exists ? candidateId : 'default';
+    } catch (e) {
+      debugPrint('⚠️ 解析聊天室玩家檔案 ID 失敗：$e');
+      return 'default';
+    }
+  }
+
   Future<void> _initializeChat() async {
     // 🌟 總裁補位：如果是測試模式，直接開門！
     if (widget.isTestMode) {
-      final String modeName = widget.chatMode ?? 'daily';
+      final String modeName = widget.chatMode ?? 'story';
       if (mounted)
         setState(() {
           _currentMode = ChatMode.values.firstWhere((e) => e.name == modeName,
-              orElse: () => ChatMode.daily);
+              orElse: () => ChatMode.story);
           _isLoading = false;
         });
       return;
@@ -1508,9 +1553,9 @@ class _ChatPageState extends State<ChatPage> {
       await _loadExistingChat(widget.sessionId!);
     } else if (widget.forceNewRoom == true) {
       print("✨ 收到強制開新房指令，直接呼叫工程隊！");
-      final modeName = widget.chatMode ?? 'daily';
+      final modeName = widget.chatMode ?? 'story';
       _currentMode = ChatMode.values
-          .firstWhere((e) => e.name == modeName, orElse: () => ChatMode.daily);
+          .firstWhere((e) => e.name == modeName, orElse: () => ChatMode.story);
       await _createNewChat(modeName);
     }
     // 情況 2：玩家沒帶鑰匙，管家親自去幫他找或蓋房子！
@@ -1532,15 +1577,15 @@ class _ChatPageState extends State<ChatPage> {
           await _loadExistingChat(existingSession.docs.first.id);
         } else {
           // 🏗️ 沒找到舊房間！管家現場直接呼叫工程隊蓋一間！
-          final modeName = widget.chatMode ?? 'daily'; // 預設用 daily 模式開房
+          final modeName = widget.chatMode ?? 'story'; // 新版劇情聊天室預設使用 story
           _currentMode = ChatMode.values.firstWhere((e) => e.name == modeName,
-              orElse: () => ChatMode.daily);
+              orElse: () => ChatMode.story);
           await _createNewChat(modeName);
         }
       } catch (e) {
         print("❌ 管家尋找房間時發生錯誤: $e");
         // 萬一查資料庫出錯，為了不讓玩家卡住，強制蓋一間新房間給他！
-        final modeName = widget.chatMode ?? 'daily';
+        final modeName = widget.chatMode ?? 'story';
         await _createNewChat(modeName);
       }
     }
@@ -1679,6 +1724,23 @@ class _ChatPageState extends State<ChatPage> {
         _currentMode = ChatMode.values.firstWhere((e) => e.name == modeName,
             orElse: () => ChatMode.daily);
 
+        String resolvedProfileId =
+            data['playerProfileId']?.toString().trim() ?? '';
+        if (resolvedProfileId.isEmpty) {
+          resolvedProfileId = await _resolvePlayerProfileIdForRoom(
+            roomId: sessionId,
+            characterId: _currentCharacter.id,
+          );
+          unawaited(
+            sessionDocRef.set(
+              {'playerProfileId': resolvedProfileId},
+              SetOptions(merge: true),
+            ),
+          );
+        }
+        _activePlayerProfileId =
+        resolvedProfileId.isEmpty ? 'default' : resolvedProfileId;
+
         _sessionDocRef = sessionDocRef;
         _messagesCollection = sessionDocRef.collection('messages'); // 這裡確保賦值
         _messagesStream = _messagesCollection!
@@ -1712,6 +1774,16 @@ class _ChatPageState extends State<ChatPage> {
             });
         }
 
+        final themeNotifier =
+        Provider.of<ThemeNotifier>(context, listen: false);
+        await themeNotifier.loadChatRoomBackground(sessionId);
+        if (mounted) {
+          setState(() {
+            _useDefaultBackgroundForNewRoom =
+                (themeNotifier.activeCharacterBackground ?? '').trim().isEmpty;
+          });
+        }
+
         unawaited(_rememberCurrentChat(sessionId));
 
         if (data['isQixiRoom'] == true &&
@@ -1729,11 +1801,21 @@ class _ChatPageState extends State<ChatPage> {
       else {
         print("✨ 發現新房間或幽靈房間，啟動自動建房程序！");
 
-        // 1. 在資料庫裡建立這間新房的基礎資料
+        // 1. 房間資料遺失時依入口重建：
+        // 閒聊入口維持 gemini；其餘新版劇情入口預設 story。
+        final String fallbackMode =
+        widget.chatMode == 'gemini' ? 'gemini' : 'story';
+        final String resolvedProfileId =
+        await _resolvePlayerProfileIdForRoom(
+          roomId: sessionId,
+          characterId: _currentCharacter.id,
+        );
+
         await sessionDocRef.set({
           'userId': user.uid,
           'characterId': _currentCharacter.id,
-          'chatMode': 'daily',
+          'chatMode': fallbackMode,
+          'playerProfileId': resolvedProfileId,
           'friendshipScore': 0,
           'createdAt': FieldValue.serverTimestamp(),
           'lastActivity': FieldValue.serverTimestamp(),
@@ -1751,9 +1833,24 @@ class _ChatPageState extends State<ChatPage> {
           if (mounted)
             setState(() {
               _sessionId = sessionId; // 保持原本帶進來的 ID
+              _currentMode = ChatMode.values.firstWhere(
+                    (mode) => mode.name == fallbackMode,
+                orElse: () => ChatMode.story,
+              );
               _currentFriendship = 0;
+              _activePlayerProfileId = resolvedProfileId;
               _isLoading = false; // 讓畫面停止轉圈圈，順利進入聊天室
             });
+        }
+
+        final themeNotifier =
+        Provider.of<ThemeNotifier>(context, listen: false);
+        await themeNotifier.loadChatRoomBackground(sessionId);
+        if (mounted) {
+          setState(() {
+            _useDefaultBackgroundForNewRoom =
+                (themeNotifier.activeCharacterBackground ?? '').trim().isEmpty;
+          });
         }
 
         unawaited(_rememberCurrentChat(sessionId));
@@ -1781,6 +1878,12 @@ class _ChatPageState extends State<ChatPage> {
           .collection('chat_sessions')
           .doc();
 
+      final String resolvedProfileId =
+      await _resolvePlayerProfileIdForRoom(
+        roomId: newSessionRef.id,
+        characterId: _currentCharacter.id,
+      );
+
       // ✨ 2. 開啟批次作業 (Batch)，確保所有動作同進同退
       final batch = db.batch();
 
@@ -1795,6 +1898,7 @@ class _ChatPageState extends State<ChatPage> {
         'lastMessage': l10n.chat_new_room_created,
         'lastActivity': FieldValue.serverTimestamp(),
         'chatMode': chatMode,
+        'playerProfileId': resolvedProfileId,
         'unreadCount': 0,
       };
       // 將建立房間的動作加入 batch
@@ -1839,6 +1943,20 @@ class _ChatPageState extends State<ChatPage> {
       }
       // ✨✨✨ 4. 關鍵煞車：等待全部寫入成功！ ✨✨✨
       await batch.commit();
+
+      // 新房建立成功後，把建立前使用的 draft 身分綁定搬到正式 sessionId。
+      if (resolvedProfileId != 'default') {
+        final userRef = db.collection('users').doc(user.uid);
+        unawaited(
+          userRef.update({
+            'roomProfiles.${newSessionRef.id}': resolvedProfileId,
+            'roomProfiles.draft_${_currentCharacter.id}': FieldValue.delete(),
+          }).catchError((error) {
+            debugPrint('⚠️ 搬移聊天室玩家檔案綁定失敗：$error');
+          }),
+        );
+      }
+
       // 5. 確保資料庫真的寫入成功後，才切換畫面狀態
       if (mounted) {
         if (mounted)
@@ -1850,8 +1968,18 @@ class _ChatPageState extends State<ChatPage> {
                 .orderBy('timestamp', descending: true)
                 .snapshots();
             _currentFriendship = 0;
+            _activePlayerProfileId = resolvedProfileId;
             _isLoading = false;
           });
+      }
+
+      final themeNotifier =
+      Provider.of<ThemeNotifier>(context, listen: false);
+      await themeNotifier.loadChatRoomBackground(newSessionRef.id);
+      if (mounted) {
+        setState(() {
+          _useDefaultBackgroundForNewRoom = true;
+        });
       }
 
       unawaited(_rememberCurrentChat(newSessionRef.id));
@@ -2141,6 +2269,126 @@ class _ChatPageState extends State<ChatPage> {
     return result == true;
   }
 
+  String _todayTaipeiDateKey() {
+    final now = DateTime.now().toUtc().add(const Duration(hours: 8));
+    return DateFormat('yyyy-MM-dd').format(now);
+  }
+
+  String get _paidGeminiConsentPrefsKey {
+    final uid = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous';
+    return 'paid_gemini_chat_consent_${uid}_${_todayTaipeiDateKey()}';
+  }
+
+  Future<bool> _hasPaidGeminiConsentToday() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_paidGeminiConsentPrefsKey) ?? false;
+  }
+
+  Future<void> _savePaidGeminiConsentToday() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_paidGeminiConsentPrefsKey, true);
+  }
+
+  Future<int> _loadTodayFreeGeminiUsed() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return 0;
+
+    try {
+      final snap = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('daily_chat_usage')
+          .doc(_todayTaipeiDateKey())
+          .get();
+
+      final raw = snap.data()?['usedCount'];
+      return raw is num ? raw.toInt() : 0;
+    } catch (e) {
+      debugPrint('⚠️ 讀取每日免費閒聊次數失敗，交由後端最終判斷：$e');
+      return 0;
+    }
+  }
+
+  Future<bool> _showPaidGeminiChatConfirmDialog() async {
+    if (!mounted) return false;
+
+    final theme = Theme.of(context);
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Row(
+          children: [
+            Icon(
+              Icons.local_florist_rounded,
+              color: theme.colorScheme.primary,
+            ),
+            const SizedBox(width: 8),
+            const Expanded(
+              child: Text('今日免費閒聊已達上限'),
+            ),
+          ],
+        ),
+        content: const Text(
+          '今天的 10 次免費閒聊已使用完畢。\n\n接下來每次閒聊需支付 1 朵花花，是否繼續？',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('取消'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: theme.colorScheme.primary,
+              foregroundColor: Colors.white,
+              shape: const StadiumBorder(),
+            ),
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('同意並繼續'),
+          ),
+        ],
+      ),
+    );
+
+    return result == true;
+  }
+
+  Future<bool> _preparePaidGeminiChatIfNeeded({
+    required String billingType,
+    required bool isContinue,
+  }) async {
+    if (widget.isTestMode ||
+        billingType != 'chat' ||
+        _currentMode != ChatMode.gemini) {
+      return false;
+    }
+
+    // 生日免費與七夕特殊開場由後端判斷，不需要玩家確認付費。
+    if (_isBirthdayFreeToday) {
+      return false;
+    }
+
+    if (await _hasPaidGeminiConsentToday()) {
+      return true;
+    }
+
+    final used = await _loadTodayFreeGeminiUsed();
+    if (used < 10) {
+      return false;
+    }
+
+    final agreed = await _showPaidGeminiChatConfirmDialog();
+    if (!agreed) {
+      return false;
+    }
+
+    await _savePaidGeminiConsentToday();
+    return true;
+  }
+
   Future<void> _sendMessage({
     String text = '',
     String? imagePath,
@@ -2153,6 +2401,7 @@ class _ChatPageState extends State<ChatPage> {
     String billingType = 'chat',
     String? interactionType,
     String? giftType,
+    bool? paidChatConfirmed,
   }) async {
     final l10n = AppLocalizations.of(context)!;
     final messageText = text.trim();
@@ -2163,6 +2412,28 @@ class _ChatPageState extends State<ChatPage> {
         generatingRooms.contains(roomLockKey) ||
         _sessionId == null) {
       return;
+    }
+
+    bool resolvedPaidChatConfirmed = paidChatConfirmed ?? false;
+
+    if (paidChatConfirmed == null &&
+        billingType == 'chat' &&
+        _currentMode == ChatMode.gemini &&
+        !widget.isTestMode) {
+      final used = await _loadTodayFreeGeminiUsed();
+      final alreadyConsented = await _hasPaidGeminiConsentToday();
+
+      if (used >= 10 && !alreadyConsented) {
+        final agreed = await _showPaidGeminiChatConfirmDialog();
+        if (!agreed) {
+          // 不同意：完全不送出、不扣花，輸入框文字也維持原樣。
+          return;
+        }
+        await _savePaidGeminiConsentToday();
+        resolvedPaidChatConfirmed = true;
+      } else if (used >= 10 && alreadyConsented) {
+        resolvedPaidChatConfirmed = true;
+      }
     }
 
     final String clientRequestId = _createAiRequestId();
@@ -2271,6 +2542,7 @@ class _ChatPageState extends State<ChatPage> {
             billingType: billingType,
             interactionType: interactionType,
             giftType: giftType,
+            paidChatConfirmed: resolvedPaidChatConfirmed,
           );
         } else {
           // 不使用彩蛋：AI 照原本文字正常回覆
@@ -2287,6 +2559,7 @@ class _ChatPageState extends State<ChatPage> {
             billingType: billingType,
             interactionType: interactionType,
             giftType: giftType,
+            paidChatConfirmed: resolvedPaidChatConfirmed,
           );
         }
       } else {
@@ -2302,6 +2575,7 @@ class _ChatPageState extends State<ChatPage> {
           billingType: billingType,
           interactionType: interactionType,
           giftType: giftType,
+          paidChatConfirmed: resolvedPaidChatConfirmed,
         );
       }
     } catch (e) {
@@ -2656,23 +2930,10 @@ class _ChatPageState extends State<ChatPage> {
         }
       }
 
-      // 讀取回憶
-      final aboutMeSnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection('characters')
-          .doc(characterId)
-          .collection('memories')
-          .get();
-
-      final aboutMeNotes = aboutMeSnapshot.docs
-          .map(
-            (doc) => doc.data()['text']?.toString() ?? '',
-      )
-          .where(
-            (text) => text.trim().isNotEmpty,
-      )
-          .toList();
+      // 新版玩家記憶改由後端依 playerProfileId + characterId + sessionId 三層檢索。
+      // 這裡不可再讀 users/{uid}/characters/{characterId}/memories，
+      // 否則同角色不同玩家檔案／不同世界線會再次串台。
+      final List<String> aboutMeNotes = <String>[];
 
       // 讀取備忘錄
       List<String> memos = [];
@@ -2729,6 +2990,7 @@ class _ChatPageState extends State<ChatPage> {
         'isBirthdayFreebie': false,
         'overrideSystemPrompt': '',
         'sessionId': _sessionId,
+        'playerProfileId': _activePlayerProfileId,
         'playerName': _playerNickname,
         'playerGender': playerGenderForAi,
         'playerPronounGuide': playerPronounGuide,
@@ -3068,6 +3330,7 @@ class _ChatPageState extends State<ChatPage> {
     if (_currentMode == ChatMode.immersive) {
       cost = AppConfig.costImmersiveChat;
     }
+    if (_currentMode == ChatMode.resonance) cost = AppConfig.costResonanceChat;
     if (_currentMode == ChatMode.gemini) cost = AppConfig.costGeminiChat;
 
     bool dontShowAgain = false;
@@ -4211,6 +4474,7 @@ class _ChatPageState extends State<ChatPage> {
     String billingType = 'chat',
     String? interactionType,
     String? giftType,
+    bool paidChatConfirmed = false,
   }) async {
     // 🌟 1. 身分檢查
     final currentUser = FirebaseAuth.instance.currentUser;
@@ -4255,12 +4519,22 @@ class _ChatPageState extends State<ChatPage> {
         messageCost = AppConfig.costStoryChat;
       } else if (_currentMode == ChatMode.immersive) {
         messageCost = AppConfig.costImmersiveChat;
+      } else if (_currentMode == ChatMode.resonance) {
+        messageCost = AppConfig.costResonanceChat;
       } else if (_currentMode == ChatMode.gemini) {
         messageCost = AppConfig.costGeminiChat;
       }
 
       // 🌸 前端只做點數預檢，真正價格與扣款仍以後端為準。
       int requiredFlowerPoints = messageCost;
+
+      // 閒聊的標準價格雖然是 1 花，但每日前 10 次免費。
+      // 未進入付費狀態時，前端不能因為玩家花花為 0 就擋住免費訊息。
+      if (_currentMode == ChatMode.gemini) {
+        requiredFlowerPoints = paidChatConfirmed
+            ? AppConfig.costGeminiChat
+            : 0;
+      }
 
       if (billingType == 'interaction') {
         requiredFlowerPoints = 3;
@@ -4607,17 +4881,8 @@ class _ChatPageState extends State<ChatPage> {
         });
       }
 
-      // --- 喚醒靈魂：讀取玩家記憶與生理期 ---
-      final aboutMeSnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection('characters')
-          .doc(characterId)
-          .collection('memories')
-          .get();
-      final aboutMeNotes = aboutMeSnapshot.docs
-          .map((doc) => doc.data()['text'] as String? ?? '')
-          .toList();
+      // --- 新版玩家記憶由後端三層 RAG 處理；前端不再讀舊的角色共用 memories。 ---
+      final List<String> aboutMeNotes = <String>[];
 
       List<String> memos = [];
       if (_currentMode == ChatMode.daily || _currentMode == ChatMode.gemini) {
@@ -4670,17 +4935,20 @@ class _ChatPageState extends State<ChatPage> {
         "userMessageId": userMessageId ?? "",
         "isTestMode": widget.isTestMode,
         "billingType": billingType,
+        "casualBillingVersion": 1,
         "interactionType": interactionType ?? "",
         "giftType": giftType ?? "",
+        "paidChatConfirmed": paidChatConfirmed,
         "imageUrl": hasImage ? (storagePath ?? "") : "",
         "audioUrl": hasAudio ? (storagePath ?? "") : "",
         "userMessage": effectiveUserMessage,
         "isContinue": isContinue,
-        "chatMode": _currentMode?.name ?? "daily",
+        "chatMode": _currentMode?.name ?? "gemini",
         "isBirthdayFreebie": isFreeToday,
         "isQixiOpening": isQixiOpening,
         "overrideSystemPrompt": overridePrompt ?? "",
         "sessionId": widget.isTestMode ? _testSessionId : _sessionId,
+        "playerProfileId": _activePlayerProfileId,
         "playerName": _playerNickname,
         "playerGender": playerGenderForAi,
         "playerPronounGuide": playerPronounGuide,
@@ -5060,6 +5328,74 @@ class _ChatPageState extends State<ChatPage> {
             _showCenterToast(l10n.error_system_busy, isError: true);
           }
         }
+      } else if (response.statusCode == 409) {
+        generatingRooms.remove(_roomLockKey);
+
+        try {
+          final errorData = jsonDecode(utf8.decode(response.bodyBytes));
+          final isFreeLimit =
+              errorData is Map && errorData['errorCode'] == 'FREE_CHAT_LIMIT_REACHED';
+
+          if (isFreeLimit) {
+            // 後端是最終裁判。若因跨聊天室同步送出剛好撞到第 10 次，
+            // 把本次已暫存的玩家訊息撤回，避免「取消付費但訊息已送出」。
+            if (!widget.isTestMode && userMessageId != null && _messagesCollection != null) {
+              try {
+                await _messagesCollection!.doc(userMessageId).delete();
+              } catch (e) {
+                debugPrint('⚠️ 免費額度競態時撤回玩家訊息失敗：$e');
+              }
+            }
+
+            if (mounted && userText.trim().isNotEmpty) {
+              _textController.text = userText;
+              _textController.selection = TextSelection.collapsed(
+                offset: _textController.text.length,
+              );
+            }
+
+            final agreed = await _showPaidGeminiChatConfirmDialog();
+
+            if (agreed && mounted) {
+              await _savePaidGeminiConsentToday();
+
+              // 先釋放本輪 UI lock，才可以重新走完整送出流程。
+              setState(() {
+                _isGenerating = false;
+                _isLoading = false;
+              });
+              generatingRooms.remove(_roomLockKey);
+
+              // 重新走完整送出流程；這次明確帶入已同意付費。
+              await _sendMessage(
+                text: userText,
+                imagePath: imagePath,
+                audioPath: audioPath,
+                secretPrompt: secretPrompt,
+                showInChat: showInChat,
+                isContinue: isContinue,
+                billingType: billingType,
+                interactionType: interactionType,
+                giftType: giftType,
+                paidChatConfirmed: true,
+              );
+            }
+
+            return;
+          }
+        } catch (e) {
+          debugPrint('⚠️ 解析付費確認 409 回覆失敗：$e');
+        }
+
+        if (mounted) {
+          setState(() {
+            _isGenerating = false;
+            _isLoading = false;
+          });
+          _showCenterToast(l10n.error_system_busy, isError: true);
+        }
+
+        return;
       } else if (response.statusCode == 429) {
         generatingRooms.remove(_roomLockKey);
 
@@ -5239,7 +5575,9 @@ class _ChatPageState extends State<ChatPage> {
     final todayString = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
     // 根據當前的聊天模式，決定要更新哪個任務的進度
-    final String progressField = _currentMode == ChatMode.daily
+    final bool isCasualTaskMode =
+        _currentMode == ChatMode.daily || _currentMode == ChatMode.gemini;
+    final String progressField = isCasualTaskMode
         ? 'dailyTasks.dailyChatProgress'
         : 'dailyTasks.storyChatProgress';
 
@@ -5261,7 +5599,7 @@ class _ChatPageState extends State<ChatPage> {
           transaction.update(userDocRef, {
             'lastTasksResetDate': FieldValue.serverTimestamp(),
             'dailyTasks': {
-              'dailyChatProgress': _currentMode == ChatMode.daily ? 1 : 0,
+              'dailyChatProgress': isCasualTaskMode ? 1 : 0,
               'dailyChatClaimed': false,
               'storyChatProgress': _currentMode == ChatMode.story ? 1 : 0,
               'storyChatClaimed': false,
@@ -5536,11 +5874,21 @@ class _ChatPageState extends State<ChatPage> {
               roomProfiles[roomId] ?? roomProfiles['draft_$characterId'];
         }
 
+        // 若 user.roomProfiles 尚未建立（例如舊房補資料），則沿用 session 已記錄的 profileId。
+        if ((targetProfileId == null || targetProfileId.toString().trim().isEmpty) &&
+            _activePlayerProfileId != 'default') {
+          targetProfileId = _activePlayerProfileId;
+        }
+
+        String resolvedProfileId = 'default';
         if (targetProfileId != null) {
           // ✨ 總裁級魔法：用 where().firstOrNull 取代笨重的 try-catch
           activeProfile = allProfiles
               .where((p) => p['id'] == targetProfileId)
               .firstOrNull;
+          if (activeProfile != null) {
+            resolvedProfileId = targetProfileId.toString();
+          }
         }
         // ✨ 虛擬組裝：沒有指定人設的房間，一律用最原始的名字跟生日！
         activeProfile ??= {
@@ -5561,7 +5909,10 @@ class _ChatPageState extends State<ChatPage> {
                 ? activeProfile!['name']
                 : nickname;
 
+            _activePlayerProfileId = resolvedProfileId;
+
             _currentAiProfile = {
+              'id': resolvedProfileId,
               // 如果是基礎檔案就走軌道 B，否則走軌道 A (高級人設)
               'type': activeProfile!['profileName'] == '基礎檔案'
                   ? 'basic'
@@ -5586,6 +5937,19 @@ class _ChatPageState extends State<ChatPage> {
                 activeProfile!['occupation'] ?? '尚未填寫',
                 activeProfile!['intro'] ?? '這份拾光檔案還在等待主人動筆...');
           });
+
+          // 將目前選中的玩家檔案同步寫回聊天室，讓後端 RAG 後續能直接依 session 分流。
+          final sessionRef = _sessionDocRef;
+          if (sessionRef != null && !widget.isTestMode) {
+            unawaited(
+              sessionRef.set(
+                {'playerProfileId': resolvedProfileId},
+                SetOptions(merge: true),
+              ).catchError((error) {
+                debugPrint('⚠️ 同步聊天室玩家檔案 ID 失敗：$error');
+              }),
+            );
+          }
         }
       }
     } finally {
@@ -6654,6 +7018,8 @@ class _ChatPageState extends State<ChatPage> {
         return l10n.chatModeStory;
       case ChatMode.immersive:
         return l10n.chatModeImmersive;
+      case ChatMode.resonance:
+        return '共鳴';
       case ChatMode.gemini:
         return l10n.chat_mode_gemini;
     }
@@ -7374,7 +7740,8 @@ class _ChatPageState extends State<ChatPage> {
                                   final safeContext = this.context;
                                   Navigator.pop(context);
 
-                                  final String safeRoomId = widget.sessionId ??
+                                  final String safeRoomId = _sessionId ??
+                                      widget.sessionId ??
                                       'draft_${widget.characterId}';
 
                                   UserProfilePopup.show(
@@ -7810,7 +8177,7 @@ class _ChatPageState extends State<ChatPage> {
   Future<void> _switchChatModeFromDropdown(String modeName) async {
     final mode = ChatMode.values.firstWhere(
           (item) => item.name == modeName,
-      orElse: () => _currentMode ?? ChatMode.daily,
+      orElse: () => _currentMode ?? ChatMode.story,
     );
 
     if (_currentMode == mode) return;
@@ -7848,13 +8215,12 @@ class _ChatPageState extends State<ChatPage> {
     // 定義每個模式的詳細資訊 (名稱、價格、說明)
     final modeDetails = [
       {
-        'mode': ChatMode.daily,
-        'title': l10n.chatModeDaily,
-        'cost': '1 點',
-        'desc': l10n.chat_mode_daily_desc,
-        'icon': Icons.coffee,
-        // ☕ 總裁指定：淡咖啡色 -> 我們用 Colors.brown.shade200，既有咖啡的溫暖又很輕盈
-        'color': Colors.brown.shade200,
+        'mode': ChatMode.gemini,
+        'title': l10n.chat_mode_gemini,
+        'cost': '每日前 10 次免費，之後 1 點',
+        'desc': '適合輕鬆聊天與日常陪伴。',
+        'icon': Icons.chat_bubble_outline_rounded,
+        'color': Colors.green.shade200,
       },
       {
         'mode': ChatMode.story,
@@ -7873,6 +8239,14 @@ class _ChatPageState extends State<ChatPage> {
         'icon': Icons.auto_awesome,
         // ✨ 總裁指定：淡黃色 -> 我們用 Colors.amber.shade200，自帶暖光卻不會刺眼
         'color': Colors.amber.shade200,
+      },
+      {
+        'mode': ChatMode.resonance,
+        'title': '共鳴',
+        'cost': '10 點',
+        'desc': '更細膩地延伸情緒、關係張力與角色反應。',
+        'icon': Icons.favorite_rounded,
+        'color': Colors.purple.shade200,
       },
     ];
 
@@ -9462,11 +9836,13 @@ class _ChatPageState extends State<ChatPage> {
         resetLabel: l10n.chat_menu_reset,
 
         modelLabel: l10n.chat_menu_reply_model,
-        dailyLabel: l10n.chatModeDaily,
+        dailyLabel: l10n.chat_mode_gemini, // 新版：此欄位顯示『閒聊』
         storyLabel: l10n.chatModeStory,
         immersiveLabel: l10n.chatModeImmersive,
+        resonanceLabel: '共鳴',
         callLabel: l10n.chat_voice_call,
-        currentModeId: (_currentMode ?? ChatMode.daily).name,
+        currentModeId: (_currentMode ?? ChatMode.story).name,
+        showModelSelector: true,
 
         onSearch: () {
           closeThen(() async {
@@ -9500,15 +9876,37 @@ class _ChatPageState extends State<ChatPage> {
 
         onGallery: () {
           closeThen(() async {
+            final themeNotifier =
+            Provider.of<ThemeNotifier>(context, listen: false);
+            final String? beforeBackground =
+                themeNotifier.activeCharacterBackground;
+
             await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => BackgroundSettingsPage(
                   character: _currentCharacter,
                   characterId: _currentCharacter.id,
+                  sessionId: _sessionId ?? '',
                 ),
               ),
             );
+
+            // 返回聊天室時，只要這個 session 已經有自己的背景，
+            // 就立刻解除「新房預設底色」鎖定。
+            // 背景設定頁會 await 寫入，因此此時 activeCharacterBackground 已是最新值。
+            final String? afterBackground =
+                themeNotifier.activeCharacterBackground;
+            if (mounted && afterBackground != null && afterBackground.trim().isNotEmpty) {
+              setState(() {
+                _useDefaultBackgroundForNewRoom = false;
+              });
+            } else if (mounted && beforeBackground != afterBackground) {
+              // 若使用者恢復預設，保持／切回預設底色。
+              setState(() {
+                _useDefaultBackgroundForNewRoom = true;
+              });
+            }
           });
         },
 
@@ -10217,13 +10615,15 @@ class _ChatPageState extends State<ChatPage> {
     return Consumer<ThemeNotifier>(
       child: chatScaffold,
       builder: (context, themeNotifier, child) {
-        final bool hasPhotoBackground =
-            themeNotifier.activeCharacterBackground != null ||
+        final bool hasPhotoBackground = !_useDefaultBackgroundForNewRoom &&
+            (themeNotifier.activeCharacterBackground != null ||
                 (themeNotifier.currentThemeEnum == AppTheme.custom &&
-                    themeNotifier.backgroundImagePath != null);
+                    themeNotifier.backgroundImagePath != null));
 
         return Container(
-          decoration: themeNotifier.characterChatBackground,
+          decoration: _useDefaultBackgroundForNewRoom
+              ? themeNotifier.chatDefaultBackground
+              : themeNotifier.characterChatBackground,
           child: Stack(
             fit: StackFit.expand,
             children: [

@@ -3163,61 +3163,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
             ),
             child: Row(
               children: [
-                // 左：閒聊
-                Expanded(
-                  child: SizedBox(
-                    height: 52,
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: theme.colorScheme.primary,
-                        backgroundColor:
-                        theme.scaffoldBackgroundColor.withValues(alpha: 0.92),
-                        side: BorderSide(
-                          color: theme.colorScheme.primary.withValues(alpha: 0.62),
-                          width: 1.1,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        textStyle: GoogleFonts.notoSerifTc(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      onPressed: () async {
-                        if (_isNavigating) return;
-                        setState(() {
-                          _isNavigating = true;
-                        });
-                        _recordRecommendationChatStart();
-                        await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ChatPage(
-                                  character: widget.character,
-                                  chatMode: "gemini", // 維持妳的 0元 模式
-                                  selectedLanguage:
-                                  l10n.ai_chat_language_code,
-                                  forceNewRoom: true,
-                                  initialText: widget
-                                      .character.storyModeFirstLine ??
-                                      l10n.default_chat_initial, // ✨ 補上第一句話
-                                  characterId: widget.character.id,
-                                )));
-                        if (mounted) {
-                          setState(() {
-                            _isNavigating = false;
-                          });
-                        }
-                      },
-                      child: Text(l10n.chat_free_btn),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(width: 12),
-
-                // 右：開始劇情
+                // 新版：角色頁只保留「開始劇情」。
+                // 閒聊已併入聊天室內的回覆模型，不再建立獨立免費閒聊房。
                 Expanded(
                   child: SizedBox(
                     height: 52,
@@ -3243,15 +3190,17 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                         });
                         _recordRecommendationChatStart();
                         await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ChatPage(
-                                  character: widget.character,
-                                  chatMode: "daily",
-                                  selectedLanguage: l10n.ai_chat_language,
-                                  forceNewRoom: true,
-                                  characterId: widget.character.id,
-                                )));
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ChatPage(
+                              character: widget.character,
+                              chatMode: "story",
+                              selectedLanguage: l10n.ai_chat_language,
+                              forceNewRoom: true,
+                              characterId: widget.character.id,
+                            ),
+                          ),
+                        );
                         if (mounted) {
                           setState(() {
                             _isNavigating = false;

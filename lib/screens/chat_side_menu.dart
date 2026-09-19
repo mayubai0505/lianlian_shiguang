@@ -16,8 +16,10 @@ class ChatSideMenu extends StatefulWidget {
   final String dailyLabel;
   final String storyLabel;
   final String immersiveLabel;
+  final String resonanceLabel;
   final String callLabel;
   final String currentModeId;
+  final bool showModelSelector;
 
   final VoidCallback onSearch;
   final VoidCallback onSaveTranscript;
@@ -45,8 +47,10 @@ class ChatSideMenu extends StatefulWidget {
     required this.dailyLabel,
     required this.storyLabel,
     required this.immersiveLabel,
+    this.resonanceLabel = '共鳴',
     required this.callLabel,
     required this.currentModeId,
+    this.showModelSelector = true,
     required this.onSearch,
     required this.onSaveTranscript,
     required this.onGallery,
@@ -184,85 +188,97 @@ class _ChatSideMenuState extends State<ChatSideMenu> {
             children: [
               _SectionTitle(label: l10n.chat_side_menu_section_chat),
 
-              // 回覆模型直接放在「聊天」第一個，不再另外拉「回覆設定」。
-              _MenuTile(
-                asset: 'assets/images/chat/chat_menu_model_mask.png',
-                fallbackIcon: Icons.tune_rounded,
-                label: widget.modelLabel,
-                onTap: () {
-                  setState(() {
-                    _modelExpanded = !_modelExpanded;
-                  });
-                },
-                trailing: AnimatedRotation(
-                  turns: _modelExpanded ? 0.5 : 0,
-                  duration: const Duration(milliseconds: 180),
-                  child: Icon(
-                    Icons.keyboard_arrow_down_rounded,
-                    color: primary.withValues(alpha: 0.62),
+              // 新版所有一般聊天室共用同一組回覆模型。
+              // 「閒聊」不再是獨立聊天室，而是其中一個可切換模式。
+              if (widget.showModelSelector) ...[
+                _MenuTile(
+                  asset: 'assets/images/chat/chat_menu_model_mask.png',
+                  fallbackIcon: Icons.tune_rounded,
+                  label: widget.modelLabel,
+                  onTap: () {
+                    setState(() {
+                      _modelExpanded = !_modelExpanded;
+                    });
+                  },
+                  trailing: AnimatedRotation(
+                    turns: _modelExpanded ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 180),
+                    child: Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      color: primary.withValues(alpha: 0.62),
+                    ),
                   ),
                 ),
-              ),
 
-              AnimatedSize(
-                duration: const Duration(milliseconds: 220),
-                curve: Curves.easeOutCubic,
-                child: _modelExpanded
-                    ? Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 2, 0, 8),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: primary.withValues(alpha: 0.035),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: primary.withValues(alpha: 0.08),
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 220),
+                  curve: Curves.easeOutCubic,
+                  child: _modelExpanded
+                      ? Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 2, 0, 8),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: primary.withValues(alpha: 0.035),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: primary.withValues(alpha: 0.08),
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          _ModeTile(
+                            asset:
+                            'assets/images/chat/chat_menu_model_mask.png',
+                            fallbackIcon: Icons.chat_bubble_outline_rounded,
+                            label: widget.dailyLabel,
+                            selected: _selectedModeId == 'gemini',
+                            disabled: _switchingMode,
+                            onTap: () => _selectMode('gemini'),
+                          ),
+                          _ModeTile(
+                            asset:
+                            'assets/images/chat/chat_mode_story_mask.png',
+                            fallbackIcon: Icons.menu_book_rounded,
+                            label: widget.storyLabel,
+                            selected: _selectedModeId == 'story',
+                            disabled: _switchingMode,
+                            onTap: () => _selectMode('story'),
+                          ),
+                          _ModeTile(
+                            asset:
+                            'assets/images/chat/chat_mode_immersive_mask.png',
+                            fallbackIcon: Icons.dark_mode_outlined,
+                            label: widget.immersiveLabel,
+                            selected: _selectedModeId == 'immersive',
+                            disabled: _switchingMode,
+                            onTap: () => _selectMode('immersive'),
+                          ),
+                          _ModeTile(
+                            asset:
+                            'assets/images/chat/chat_menu_model_mask.png',
+                            fallbackIcon: Icons.favorite_border_rounded,
+                            label: widget.resonanceLabel,
+                            selected: _selectedModeId == 'resonance',
+                            disabled: _switchingMode,
+                            onTap: () => _selectMode('resonance'),
+                          ),
+                          const _InnerDivider(),
+                          _ModeTile(
+                            asset:
+                            'assets/images/chat/chat_menu_call_mask.png',
+                            fallbackIcon: Icons.call_outlined,
+                            label: widget.callLabel,
+                            selected: false,
+                            disabled: false,
+                            onTap: widget.onCall,
+                          ),
+                        ],
                       ),
                     ),
-                    child: Column(
-                      children: [
-                        _ModeTile(
-                          asset:
-                          'assets/images/chat/chat_mode_daily_mask.png',
-                          fallbackIcon: Icons.chat_bubble_outline_rounded,
-                          label: widget.dailyLabel,
-                          selected: _selectedModeId == 'daily',
-                          disabled: _switchingMode,
-                          onTap: () => _selectMode('daily'),
-                        ),
-                        _ModeTile(
-                          asset:
-                          'assets/images/chat/chat_mode_story_mask.png',
-                          fallbackIcon: Icons.menu_book_rounded,
-                          label: widget.storyLabel,
-                          selected: _selectedModeId == 'story',
-                          disabled: _switchingMode,
-                          onTap: () => _selectMode('story'),
-                        ),
-                        _ModeTile(
-                          asset:
-                          'assets/images/chat/chat_mode_immersive_mask.png',
-                          fallbackIcon: Icons.dark_mode_outlined,
-                          label: widget.immersiveLabel,
-                          selected: _selectedModeId == 'immersive',
-                          disabled: _switchingMode,
-                          onTap: () => _selectMode('immersive'),
-                        ),
-                        const _InnerDivider(),
-                        _ModeTile(
-                          asset:
-                          'assets/images/chat/chat_menu_call_mask.png',
-                          fallbackIcon: Icons.call_outlined,
-                          label: widget.callLabel,
-                          selected: false,
-                          disabled: false,
-                          onTap: widget.onCall,
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-                    : const SizedBox.shrink(),
-              ),
+                  )
+                      : const SizedBox.shrink(),
+                ),
+              ],
 
               _MenuTile(
                 asset: 'assets/images/chat/chat_menu_search_mask.png',

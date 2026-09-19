@@ -317,28 +317,98 @@ class ThemeNotifier extends ChangeNotifier {
     }
   }
 
-  Future<void> setCharacterBackground(String characterName, String path) async {
-    final prefs = await SharedPreferences.getInstance();
-    // 儲存到本地，鑰匙用角色名字
-    await prefs.setString('bg_$characterName', path);
+  // 聊天室預設背景：只跟隨主題「顏色」，不繼承全域自訂照片。
+  // 這樣新房間／尚未設定房間背景的聊天室都會是乾淨的主題底色。
+  BoxDecoration get chatDefaultBackground {
+    if (_currentThemeEnum == AppTheme.custom) {
+      return _solidBackground(
+        Color.lerp(Colors.white, _customColor, 0.055)!,
+      );
+    }
 
-    // 🔥 重要：立刻更新當前變數並通知畫面刷新
+    switch (_currentThemeEnum) {
+      case AppTheme.light:
+        return _solidBackground(const Color(0xFFFCFAFE));
+      case AppTheme.dark:
+        return _solidBackground(const Color(0xFF11182B));
+      case AppTheme.pinkGradient:
+        return _solidBackground(const Color(0xFFFFF9FB));
+      case AppTheme.blueGradient:
+        return _solidBackground(const Color(0xFFF8FAFE));
+      case AppTheme.orangeGradient:
+        return _solidBackground(const Color(0xFFFEFAF7));
+      case AppTheme.yellowGradient:
+        return _solidBackground(const Color(0xFFFEFCF6));
+      case AppTheme.greenGradient:
+        return _solidBackground(const Color(0xFFF8FCFA));
+      default:
+        return _solidBackground(Colors.white);
+    }
+  }
+
+  // 多聊天室版本：聊天室背景改以 sessionId 為單位儲存，
+  // 避免同一角色的 A 房、B 房互相覆蓋背景。
+  String _chatRoomBackgroundKey(String sessionId) => 'chat_bg_$sessionId';
+
+  Future<void> setChatRoomBackground(String sessionId, String path) async {
+    final safeSessionId = sessionId.trim();
+    if (safeSessionId.isEmpty) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_chatRoomBackgroundKey(safeSessionId), path);
+
     _activeCharacterBackground = path;
     notifyListeners();
   }
 
-  // ✨ 2. 【新增】恢復預設背景功能
-  Future<void> resetCharacterBackground(String characterName) async {
-    final prefs = await SharedPreferences.getInstance();
-    // 移除該角色的背景紀錄
-    await prefs.remove('bg_$characterName');
+  Future<void> resetChatRoomBackground(String sessionId) async {
+    final safeSessionId = sessionId.trim();
+    if (safeSessionId.isEmpty) return;
 
-    // 🔥 重要：清空當前變數並通知畫面
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_chatRoomBackgroundKey(safeSessionId));
+
     _activeCharacterBackground = null;
     notifyListeners();
   }
 
-  // ✨ 3. 載入特定角色的背景 (進入聊天室時呼叫)
+  Future<void> loadChatRoomBackground(String sessionId) async {
+    final safeSessionId = sessionId.trim();
+    if (safeSessionId.isEmpty) {
+      _activeCharacterBackground = null;
+      notifyListeners();
+      return;
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    _activeCharacterBackground =
+        prefs.getString(_chatRoomBackgroundKey(safeSessionId));
+    notifyListeners();
+  }
+
+  // 只清空目前畫面上的聊天室背景，不刪除任何已儲存設定。
+  // 新開房間時用這個，確保先顯示主題預設底色。
+  void clearActiveChatRoomBackground() {
+    if (_activeCharacterBackground == null) return;
+    _activeCharacterBackground = null;
+    notifyListeners();
+  }
+
+  // 舊 API 暫時保留，避免專案中其他尚未搬移的呼叫點編譯失敗。
+  Future<void> setCharacterBackground(String characterName, String path) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('bg_$characterName', path);
+    _activeCharacterBackground = path;
+    notifyListeners();
+  }
+
+  Future<void> resetCharacterBackground(String characterName) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('bg_$characterName');
+    _activeCharacterBackground = null;
+    notifyListeners();
+  }
+
   Future<void> loadCharacterBackground(String characterName) async {
     final prefs = await SharedPreferences.getInstance();
     _activeCharacterBackground = prefs.getString('bg_$characterName');
@@ -379,8 +449,8 @@ class ThemeNotifier extends ChangeNotifier {
       );
     }
 
-    // 沒有角色專屬背景，使用全域主題背景
-    return currentBackground;
+    // 沒有此聊天室專屬背景，只使用主題顏色；不要帶入全域主題照片。
+    return chatDefaultBackground;
   }
   // 📸 設定背景圖
   Future<void> setBackgroundImage(String path) async {

@@ -401,70 +401,14 @@ class _PrivateCharacterProfilePageState
                 Expanded(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                      theme.colorScheme.surfaceVariant,
-                      foregroundColor:
-                      theme.colorScheme.onSurfaceVariant,
-                      elevation: 0,
-                      padding:
-                      const EdgeInsets.symmetric(
-                        vertical: 16,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                        BorderRadius.circular(12),
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ChatPage(
-                            character: character,
-                            chatMode: 'gemini',
-                            selectedLanguage:
-                            l10n.ai_chat_language_code,
-                            forceNewRoom: true,
-                            initialText:
-                            character.storyModeFirstLine ??
-                                l10n.default_chat_initial,
-                            characterId: character.id,
-                          ),
-                        ),
-                      );
-                    },
-                    child: Row(
-                      mainAxisAlignment:
-                      MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.chat_bubble_outline,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(l10n.chat_free_btn),
-                      ],
-                    ),
-                  ),
-                ),
-
-                const SizedBox(width: 12),
-
-                Expanded(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                      theme.colorScheme.primary,
-                      foregroundColor:
-                      theme.colorScheme.onPrimary,
+                      backgroundColor: theme.colorScheme.primary,
+                      foregroundColor: theme.colorScheme.onPrimary,
                       elevation: 4,
-                      padding:
-                      const EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                         vertical: 16,
                       ),
                       shape: RoundedRectangleBorder(
-                        borderRadius:
-                        BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                     onPressed: () {
@@ -473,9 +417,8 @@ class _PrivateCharacterProfilePageState
                         MaterialPageRoute(
                           builder: (_) => ChatPage(
                             character: character,
-                            chatMode: 'daily',
-                            selectedLanguage:
-                            l10n.ai_chat_language,
+                            chatMode: 'story',
+                            selectedLanguage: l10n.ai_chat_language,
                             forceNewRoom: true,
                             characterId: character.id,
                           ),
@@ -483,8 +426,7 @@ class _PrivateCharacterProfilePageState
                       );
                     },
                     child: Row(
-                      mainAxisAlignment:
-                      MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Icon(
                           Icons.book_outlined,
