@@ -1641,6 +1641,7 @@ exports.getAiResponse = onRequest({
                 giftType = "",
                 casualBillingVersion = 0,
                 paidChatConfirmed = false,
+                memoryScopeVersion = 0,
             } = body;
 
             // 🌸 只有新版 App 明確送出 billingType，才啟用新版計價。
@@ -1654,6 +1655,15 @@ exports.getAiResponse = onRequest({
             // 舊 App 即使已經會傳 billingType，也不會誤觸新版 409 確認流程。
             const supportsCasualBilling =
                 Number(casualBillingVersion || 0) >= 1;
+
+            // 🧠 三層記憶採獨立版本 gate。
+            // 舊 App 沒有 memoryScopeVersion，預設為 0：
+            // - 聊天照常
+            // - 讀取既有 legacy shared_memories
+            // - 不建立新版 Profile / Character / Session 記憶
+            // 新 App 必須明確送 memoryScopeVersion >= 1 才啟用新版三層記憶。
+            const supportsScopedMemory =
+                Number(memoryScopeVersion || 0) >= 1;
 
             // 角色建立頁的測試聊天室
             // 只有明確傳入 true 才視為測試模式
@@ -3350,8 +3360,9 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                                         }
                                                                                                     }
 
-                                                                                                    if (uid && charId && effectiveProfileId && safeSessionId) {
+                                                                                                    if (supportsScopedMemory && uid && charId && effectiveProfileId && safeSessionId) {
                                                                                                         // 新版三層記憶：Profile / Character / Session
+                                                                                                        // 只有 memoryScopeVersion >= 1 的新版 App 才會進入此路徑。
                                                                                                         const profileMemoriesRef = db
                                                                                                             .collection("users").doc(uid)
                                                                                                             .collection("profile_memories").doc(effectiveProfileId)
@@ -3383,10 +3394,16 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                                                 if (!text) return;
 
                                                                                                                 sharedMemoryCandidates.push({
+                                                                                                                    id: doc.id,
                                                                                                                     title: limitMemoryText(memory.title, 40),
                                                                                                                     subtitle: limitMemoryText(memory.subtitle, 40),
                                                                                                                     content: text,
                                                                                                                     scope,
+                                                                                                                    factKey: normalizeMemoryFactKey(memory.factKey),
+                                                                                                                    factValue: String(memory.factValue || "").trim().slice(0, 240),
+                                                                                                                    active: memory.active !== false,
+                                                                                                                    confidence: Number(memory.confidence || 0),
+                                                                                                                    timestamp: memory.timestamp || null,
                                                                                                                     important: memory.important === true,
                                                                                                                 });
                                                                                                             });
@@ -3396,7 +3413,8 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                                         appendScopedMemories(characterSnapshot, "character");
                                                                                                         appendScopedMemories(profileSnapshot, "profile");
                                                                                                     } else if (uid && charId) {
-                                                                                                        // 舊版 App / 舊房間相容：保留既有角色共用回憶，不影響已上線版本。
+                                                                                                        // 舊版 App / memoryScopeVersion < 1：
+                                                                                                        // 保留既有角色共用回憶，不啟用新版三層記憶。
                                                                                                         const sharedMemoriesSnapshot = await db
                                                                                                             .collection("users").doc(uid)
                                                                                                             .collection("characters").doc(charId)
@@ -3422,8 +3440,13 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                                     console.error("讀取三層記憶失敗:", error);
                                                                                                 }
 
+                                                                                                // 同一 factKey 在不同 scope 衝突時：
+                                                                                                // Session > Character > Profile；同 scope 則取較新的 active 記憶。
+                                                                                                sharedMemoryCandidates =
+                                                                                                    resolveMemoryConflicts(sharedMemoryCandidates);
+
                                                                                                 // =========================================================================
-                                                                                                // 🧠 Relevant Context RAG v1
+                                                                                                // 🧠 Relevant Context RAG v2
                                                                                                 // 不額外呼叫模型：先用本輪訊息 + 最近對話做輕量相關性檢索。
                                                                                                 // 之後若換成 embedding RAG，只需要替換這個 selector，Writer 不用改。
                                                                                                 // =========================================================================
@@ -3552,7 +3575,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                                     sharedMemoriesText = "";
                                                                                                 }
 
-                                                                                                console.log("🧠 RAG v1:", {
+                                                                                                console.log("🧠 RAG v2 + Conflict Resolver:", {
                                                                                                     loreCandidates: loreCandidates.length,
                                                                                                     retrievedLores: retrievedLores.length,
                                                                                                     sharedMemoryCandidates: sharedMemoryCandidates.length,
@@ -7347,6 +7370,7 @@ const sessionData =
 
             // 沒有玩家原始訊息時，不需要建立記憶工作
             if (
+                supportsScopedMemory &&
                 !isTestChat &&
                 !isQixiOpeningRequest &&
                 finalCharacterId &&
@@ -7370,6 +7394,7 @@ const sessionData =
 
                     sessionId,
                     playerProfileId: String(playerProfileId || body.playerProfileId || "").trim(),
+                    memoryScopeVersion: Number(memoryScopeVersion || 0),
                     sourceMessageId: aiMessageRef.id,
 
                     status: "pending",
@@ -7390,7 +7415,9 @@ const sessionData =
                 );
             } else {
                 console.log(
-                    "🧠 本輪沒有可供提取的玩家原始訊息，略過背景記憶工作。"
+                    supportsScopedMemory
+                        ? "🧠 本輪沒有可供提取的玩家原始訊息，略過背景記憶工作。"
+                        : "🧠 memoryScopeVersion < 1：舊 App 相容模式，不建立新版三層記憶工作。"
                 );
             }
         } catch (memoryQueueError) {
@@ -7717,6 +7744,9 @@ exports.processMemoryJob = onDocumentCreated(
                 jobData.userMessage || ""
             ).trim();
 
+        const memoryScopeVersion =
+            Number(jobData.memoryScopeVersion || 0);
+
         console.log(
             "🧠 開始處理長期記憶背景工作：",
             {
@@ -7728,6 +7758,28 @@ exports.processMemoryJob = onDocumentCreated(
                     userMessage.length,
             }
         );
+
+        // ==========================================
+        // 0. 三層記憶版本 gate
+        // ==========================================
+        if (memoryScopeVersion < 1) {
+            console.log(
+                "🧠 memoryScopeVersion < 1：略過新版三層記憶背景工作。",
+                { jobId, memoryScopeVersion }
+            );
+
+            await jobRef.set(
+                {
+                    status: "skipped",
+                    errorCode: "MEMORY_SCOPE_VERSION_DISABLED",
+                    errorMessage: "舊版 App 未啟用新版三層記憶。",
+                    completedAt: FieldValue.serverTimestamp(),
+                },
+                { merge: true }
+            );
+
+            return;
+        }
 
         // ==========================================
         // 1. 基本資料防禦
@@ -10542,7 +10594,7 @@ exports.extractUserMemory = onRequest({
     minInstances: 0,
     memory: "512MiB",
     timeoutSeconds: 60,
-    secrets: [openRouterApiKey],
+    secrets: [openRouterApiKey, geminiApiKey],
 }, (req, res) => {
     return cors(req, res, async () => {
         try {
@@ -10571,10 +10623,29 @@ exports.extractUserMemory = onRequest({
 
             const decodedToken = await getAuth().verifyIdToken(idToken);
             const userId = decodedToken.uid;
-
             const body = req.body || {};
-            const characterId = body.characterId;
-            const userMessage = String(body.userMessage || "").trim();
+
+            const appId =
+                String(body.appId || APP_ID).trim() || APP_ID;
+            const characterId =
+                String(body.characterId || "").trim();
+            const sessionId =
+                String(body.sessionId || "").trim();
+            const requestedProfileId =
+                String(body.playerProfileId || "").trim();
+            const userMessage =
+                String(body.userMessage || "").trim();
+            const memoryScopeVersion =
+                Number(body.memoryScopeVersion || 0);
+
+            // 舊 App 若仍呼叫這支相容 API，也不允許偷偷進入新版三層記憶。
+            if (memoryScopeVersion < 1) {
+                return res.status(200).json({
+                    status: "success",
+                    saved: false,
+                    reason: "memory_scope_version_disabled",
+                });
+            }
 
             if (!characterId || !userMessage) {
                 return res.status(400).json({
@@ -10583,7 +10654,6 @@ exports.extractUserMemory = onRequest({
                 });
             }
 
-            // 太短、太普通的句子不用浪費 AI 成本
             if (userMessage.length < 4) {
                 return res.status(200).json({
                     status: "success",
@@ -10592,148 +10662,63 @@ exports.extractUserMemory = onRequest({
                 });
             }
 
-            const prompt = `
-你是乙女聊天遊戲的「玩家長期記憶整理器」。
-
-請判斷下面這句玩家訊息，是否包含值得長期記住的資訊。
-
-只記住這些：
-- 玩家穩定的喜好、討厭、習慣
-- 玩家對角色的稱呼偏好
-- 玩家希望角色怎麼對待玩家
-- 玩家長期設定、身份、人設、背景
-- 對未來互動有幫助的資訊
-
-不要記住這些：
-- 一次性的劇情行動
-- 當下情緒
-- 單純撒嬌、問候、玩笑
-- 重複資訊
-- 太私密或敏感、但對角色互動沒有必要的內容
-
-請只回 JSON，不要加解釋。
-
-格式：
-{
-  "shouldSave": true 或 false,
-  "memory": "要保存的繁體中文記憶，30字內；如果不保存就空字串"
-}
-
-玩家訊息：
-${userMessage}
-`;
-
-            const aiResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${openRouterApiKey.value()}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    model: "deepseek/deepseek-v4-pro",
-                    messages: [
-                        {
-                            role: "user",
-                            content: prompt,
-                        },
-                    ],
-                    temperature: 0.2,
-                    max_tokens: 200,
-                    reasoning: { effort: "none" },
-                    response_format: { type: "json_object" },
-                }),
-            });
-
-            const rawText = await aiResponse.text();
-
-            if (!aiResponse.ok) {
-                console.error("🧠 記憶擷取 AI 失敗:", {
-                    status: aiResponse.status,
-                    rawText: rawText.slice(0, 1000),
-                });
-
+            // 這支 API 是舊版相容入口。沒有任何可辨識的玩家檔案／聊天室範圍時，
+            // 寧可不存，也不要再寫回 users/{uid}/characters/{characterId}/memories。
+            if (!sessionId && !requestedProfileId) {
+                console.log(
+                    "🧠 extractUserMemory 缺少 sessionId / playerProfileId，略過未分流記憶寫入"
+                );
                 return res.status(200).json({
                     status: "success",
                     saved: false,
-                    reason: "ai_failed_but_ignored",
+                    reason: "missing_memory_scope",
                 });
             }
 
-            let parsed;
-            try {
-                const data = JSON.parse(rawText);
-                let content = data?.choices?.[0]?.message?.content || "";
-
-                content = content
-                    .replace(/```json/g, "")
-                    .replace(/```/g, "")
-                    .trim();
-
-                parsed = JSON.parse(content);
-            } catch (parseError) {
-                console.error("🧠 記憶 JSON 解析失敗:", {
-                    rawText: rawText.slice(0, 1000),
-                    message: parseError?.message,
-                });
-
-                return res.status(200).json({
-                    status: "success",
-                    saved: false,
-                    reason: "parse_failed",
-                });
-            }
-
-            const shouldSave = parsed?.shouldSave === true;
-            const memoryText = String(parsed?.memory || "").trim();
-
-            if (!shouldSave || !memoryText) {
-                return res.status(200).json({
-                    status: "success",
-                    saved: false,
-                    reason: "not_worth_saving",
-                });
-            }
-
-            const memoriesRef = db
+            const userSnapshot = await db
                 .collection("users")
                 .doc(userId)
-                .collection("characters")
-                .doc(characterId)
-                .collection("memories");
-
-            // 簡單防重複：一樣的 text 不再存
-            const duplicateSnapshot = await memoriesRef
-                .where("text", "==", memoryText)
-                .limit(1)
                 .get();
+            const userData = userSnapshot.data() || {};
 
-            if (!duplicateSnapshot.empty) {
-                return res.status(200).json({
-                    status: "success",
-                    saved: false,
-                    reason: "duplicate",
-                    memory: memoryText,
+            const effectiveProfileId =
+                await resolveEffectivePlayerProfileId({
+                    appId,
+                    userId,
+                    characterId,
+                    sessionId,
+                    requestedProfileId,
+                    userData,
                 });
-            }
 
-            await memoriesRef.add({
-                text: memoryText,
-                source: "chat",
-                sourceMessagePreview: userMessage.slice(0, 120),
-                createdAt: FieldValue.serverTimestamp(),
-                updatedAt: FieldValue.serverTimestamp(),
-            });
+            const playerIdentity =
+                resolvePlayerIdentityFromUserData(
+                    userData,
+                    effectiveProfileId
+                );
 
-            console.log("🧠 已儲存玩家長期記憶:", {
-                userId,
-                characterId,
-                memoryText,
-            });
+            const savedMemory =
+                await savePlayerMemoryIfNeeded({
+                    appId,
+                    userId,
+                    characterId,
+                    playerProfileId: effectiveProfileId,
+                    sessionId,
+                    userMessage,
+                    playerName: playerIdentity.name,
+                    abortController: null,
+                });
 
             return res.status(200).json({
                 status: "success",
-                saved: true,
-                memory: memoryText,
+                saved: savedMemory != null,
+                memory: savedMemory?.memory || "",
+                scope: savedMemory?.scope || "none",
+                playerProfileId: effectiveProfileId,
+                reason:
+                    savedMemory != null
+                        ? "saved"
+                        : "not_worth_saving",
             });
         } catch (error) {
             console.error("🧠 extractUserMemory 發生錯誤:", error);
@@ -14234,6 +14219,50 @@ async function extractPlayerMemory({
 - 絕對不要使用「玩家喜歡……」這種系統式稱呼。
 - 一次最多提取一項最重要的記憶。
 - 若沒有值得長期保存的資訊，shouldRemember 必須是 false。
+- 若 shouldRemember=true，必須同時提供 factKey 與 factValue。
+- factKey 是「這條事實屬於哪一個固定欄位」的機器鍵，不可把玩家姓名、角色姓名、日期或具體值塞進 key。
+- 同一件事即使說法改變，也必須盡量使用相同 factKey，讓系統能辨識更新與衝突。
+- factKey 必須使用下列固定 taxonomy；不要自行創造新的第一、第二層分類。
+- 固定鍵：
+  - identity.name
+  - identity.gender
+  - identity.occupation
+  - identity.birthday
+  - identity.residence
+  - identity.family
+  - identity.pet
+  - interaction.preferred_address
+  - interaction.preferred_treatment
+  - relationship.status
+  - worldline.pregnancy_status
+  - worldline.identity
+- 可帶「穩定主題 slug」的鍵（第三層只能放被描述的事物，不可放喜歡/討厭/現在/每天等狀態）：
+  - preference.food.<subject>
+  - preference.drink.<subject>
+  - preference.hobby.<subject>
+  - preference.activity.<subject>
+  - preference.media.<subject>
+  - preference.other.<subject>
+  - habit.<subject>
+  - trait.<subject>
+  - important_event.<subject>
+  - relationship.event.<subject>
+  - worldline.preference.<subject>
+  - worldline.event.<subject>
+- subject 一律使用簡短、穩定的小寫英文 snake_case。相同事物前後改變時必須沿用同一 subject。
+- 特別例子：
+  - 「我不喝咖啡」→ preference.drink.coffee
+  - 「我現在每天喝咖啡」若是在更新長期習慣，仍用 preference.drink.coffee，不要改成 habit.coffee。
+  - 「我討厭草莓蛋糕」與「我現在最喜歡草莓蛋糕」→ 都用 preference.food.strawberry_cake。
+  - 「我是學生」與「我畢業後成為咖啡師」→ 都用 identity.occupation。
+  - 「叫我小滿」與「以後叫我阿滿」→ 都用 interaction.preferred_address。
+  - 「我們結婚了」與「我們決定離婚」→ 都用 relationship.status；事件本身若另有長期意義才用 relationship.event.<subject>。
+  - scope 只表示「這個事實在哪裡成立」，不要把 scope 重複編進 factKey。
+  - 「在這個世界裡我很愛甜食」→ scope=session，但 factKey 仍是 preference.food.sweets，不要輸出 worldline.preference.sweets。
+  - 只要已有 identity / preference / habit / interaction / relationship 等語意鍵可用，就優先使用語意鍵；worldline.* 僅保留給沒有其他 canonical semantic key 可表達的世界線事實。
+  - 「我懷孕了」→ worldline.pregnancy_status。
+- 禁止輸出 personal.job、habit.alcohol、relationship.preferred_name、story.relationship_status、story.pregnancy_status 等舊式自由鍵。
+- factValue 是這條事實目前的簡潔值，例如「咖啡師」「不喝」「喜歡」「阿滿」「已婚」「離婚」「懷孕」。
 - 只回傳合法 JSON，不要加入 Markdown 或說明。
 
 【記憶範圍判斷】
@@ -14246,7 +14275,10 @@ async function extractPlayerMemory({
 - none：一次性、模糊、玩笑、當下狀態，或不值得長期保存。
 
 判斷原則：
-- 「我今天想吃草莓蛋糕」不是穩定偏好，scope 應為 none。
+- 「我今天想吃草莓蛋糕」只是當下需求，不是穩定偏好，scope 應為 none。
+- 「我現在最喜歡草莓蛋糕」中的「現在」是在更新長期偏好，不是短暫狀態；scope 應為 profile。
+- 「最喜歡／最愛／討厭／不喜歡／不吃／不喝／每天／固定／習慣」等明確穩定語意，若沒有角色或世界線限定，優先視為 profile。
+- 只有「今天／剛剛／突然／今晚／這次／現在想……」這類純當下需求才應判為 none。
 - 若無法確定是全域穩定事實，寧可選 character 或 session，不要誤放 profile。
 - 一次最多提取一項最重要的記憶。
 
@@ -14256,6 +14288,8 @@ async function extractPlayerMemory({
   "memory": "${playerName || "對方"}喜歡吃草莓蛋糕。",
   "scope": "profile | character | session | none",
   "category": "preference | personal | habit | relationship | story_state | important_event | none",
+  "factKey": "preference.food.strawberry_cake",
+  "factValue": "喜歡",
   "confidence": 0 到 1
 }
 `;
@@ -14313,6 +14347,8 @@ async function extractPlayerMemory({
       memory: String(parsed.memory || "").trim(),
       scope: String(parsed.scope || "none").trim().toLowerCase(),
       category: String(parsed.category || "none").trim(),
+      factKey: String(parsed.factKey || "").trim(),
+      factValue: String(parsed.factValue || "").trim(),
       confidence: Number(parsed.confidence || 0),
     };
   } catch (error) {
@@ -14327,6 +14363,538 @@ async function extractPlayerMemory({
     };
   }
 }
+
+
+function resolvePlayerIdentityFromUserData(userData = {}, playerProfileId = "default") {
+  const safeProfileId = String(playerProfileId || "default").trim() || "default";
+  const accountName =
+    String(
+      userData.nickname ||
+      userData.displayName ||
+      userData.name ||
+      "你"
+    ).trim() || "你";
+
+  const accountGender =
+    String(userData.gender || "未設定").trim() || "未設定";
+  const accountBirthday =
+    String(userData.birthday || "未設定").trim() || "未設定";
+
+  const profiles = Array.isArray(userData.profiles)
+    ? userData.profiles
+    : [];
+
+  const matchedProfile =
+    safeProfileId !== "default"
+      ? profiles.find(
+          (profile) =>
+            String(profile?.id || "").trim() === safeProfileId
+        ) || null
+      : null;
+
+  if (!matchedProfile) {
+    return {
+      id: "default",
+      name: accountName,
+      gender: accountGender,
+      birthday: accountBirthday,
+      profile: null,
+    };
+  }
+
+  return {
+    id: safeProfileId,
+    name:
+      String(matchedProfile.name || accountName).trim() || accountName,
+    // 目前前端的自訂拾光檔案仍沿用帳號層級性別／生日；若未來 profile 自己有值則優先使用。
+    gender:
+      String(matchedProfile.gender || accountGender).trim() || accountGender,
+    birthday:
+      String(matchedProfile.birthday || accountBirthday).trim() || accountBirthday,
+    profile: matchedProfile,
+  };
+}
+
+async function resolveEffectivePlayerProfileId({
+  appId = APP_ID,
+  userId,
+  characterId = "",
+  sessionId = "",
+  requestedProfileId = "",
+  userData = null,
+}) {
+  const safeAppId = String(appId || APP_ID).trim() || APP_ID;
+  const safeUserId = String(userId || "").trim();
+  const safeCharacterId = String(characterId || "").trim();
+  const safeSessionId = String(sessionId || "").trim();
+  let effectiveProfileId = String(requestedProfileId || "").trim();
+
+  let resolvedUserData = userData;
+  let roomData = null;
+
+  if (safeSessionId && safeUserId) {
+    try {
+      const roomSnapshot = await db
+        .collection("artifacts")
+        .doc(safeAppId)
+        .collection("chat_sessions")
+        .doc(safeSessionId)
+        .get();
+
+      if (roomSnapshot.exists) {
+        const candidateRoomData = roomSnapshot.data() || {};
+        const roomOwner = String(candidateRoomData.userId || "").trim();
+        const roomCharacterId = String(candidateRoomData.characterId || "").trim();
+
+        if (
+          roomOwner === safeUserId &&
+          (!safeCharacterId || !roomCharacterId || roomCharacterId === safeCharacterId)
+        ) {
+          roomData = candidateRoomData;
+          const roomProfileId =
+            String(candidateRoomData.playerProfileId || "").trim();
+          if (roomProfileId) {
+            effectiveProfileId = roomProfileId;
+          }
+        }
+      }
+    } catch (error) {
+      console.warn(
+        "⚠️ resolveEffectivePlayerProfileId 讀取聊天室失敗：",
+        error?.message || error
+      );
+    }
+  }
+
+  if (!resolvedUserData && safeUserId) {
+    try {
+      const userSnapshot = await db
+        .collection("users")
+        .doc(safeUserId)
+        .get();
+      resolvedUserData = userSnapshot.data() || {};
+    } catch (error) {
+      console.warn(
+        "⚠️ resolveEffectivePlayerProfileId 讀取玩家資料失敗：",
+        error?.message || error
+      );
+      resolvedUserData = {};
+    }
+  }
+
+  const safeUserData = resolvedUserData || {};
+
+  if (!effectiveProfileId && safeSessionId) {
+    const roomProfiles =
+      safeUserData.roomProfiles && typeof safeUserData.roomProfiles === "object"
+        ? safeUserData.roomProfiles
+        : {};
+
+    effectiveProfileId =
+      String(roomProfiles[safeSessionId] || "").trim();
+  }
+
+  // 舊房間若完全沒有紀錄，視為基礎檔案，避免再落回角色共用記憶路徑。
+  if (!effectiveProfileId) {
+    effectiveProfileId = "default";
+  }
+
+  if (effectiveProfileId !== "default") {
+    const profiles = Array.isArray(safeUserData.profiles)
+      ? safeUserData.profiles
+      : [];
+    const profileExists = profiles.some(
+      (profile) =>
+        String(profile?.id || "").trim() === effectiveProfileId
+    );
+
+    if (!profileExists) {
+      console.warn(
+        "⚠️ 找不到指定 playerProfileId，退回基礎檔案：",
+        effectiveProfileId
+      );
+      effectiveProfileId = "default";
+    }
+  }
+
+  // 可以安全補回舊房間，之後每次都以 room 綁定為準。
+  if (
+    safeSessionId &&
+    safeUserId &&
+    roomData &&
+    !String(roomData.playerProfileId || "").trim()
+  ) {
+    try {
+      await db
+        .collection("artifacts")
+        .doc(safeAppId)
+        .collection("chat_sessions")
+        .doc(safeSessionId)
+        .set(
+          {
+            playerProfileId: effectiveProfileId,
+          },
+          {merge: true}
+        );
+    } catch (error) {
+      console.warn(
+        "⚠️ 回填聊天室 playerProfileId 失敗：",
+        error?.message || error
+      );
+    }
+  }
+
+  return effectiveProfileId;
+}
+
+
+function normalizeMemoryFactKey(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "_")
+    .replace(/[^a-z0-9._:-]/g, "")
+    .replace(/\.{2,}/g, ".")
+    .replace(/^\.|\.$/g, "")
+    .slice(0, 120);
+}
+
+const MEMORY_FACT_KEY_EXACT = new Set([
+  "identity.name",
+  "identity.gender",
+  "identity.occupation",
+  "identity.birthday",
+  "identity.residence",
+  "identity.family",
+  "identity.pet",
+  "interaction.preferred_address",
+  "interaction.preferred_treatment",
+  "relationship.status",
+  "worldline.pregnancy_status",
+  "worldline.identity",
+]);
+
+const MEMORY_FACT_KEY_PREFIXES = [
+  "preference.food.",
+  "preference.drink.",
+  "preference.hobby.",
+  "preference.activity.",
+  "preference.media.",
+  "preference.other.",
+  "habit.",
+  "trait.",
+  "important_event.",
+  "relationship.event.",
+  "worldline.preference.",
+  "worldline.event.",
+];
+
+const MEMORY_FACT_KEY_ALIASES = new Map([
+  ["personal.job", "identity.occupation"],
+  ["personal.occupation", "identity.occupation"],
+  ["identity.job", "identity.occupation"],
+  ["relationship.preferred_name", "interaction.preferred_address"],
+  ["relationship.preferred_address", "interaction.preferred_address"],
+  ["story.relationship_status", "relationship.status"],
+  ["story.pregnancy_status", "worldline.pregnancy_status"],
+  ["pregnancy.status", "worldline.pregnancy_status"],
+  ["habit.alcohol", "preference.drink.alcohol"],
+  ["habit.coffee", "preference.drink.coffee"],
+  ["preference.coffee", "preference.drink.coffee"],
+  ["preference.alcohol", "preference.drink.alcohol"],
+]);
+
+function canonicalizeMemoryFactKey(value, {userMessage = "", category = ""} = {}) {
+  let key = normalizeMemoryFactKey(value);
+  if (!key) return "";
+
+  key = MEMORY_FACT_KEY_ALIASES.get(key) || key;
+
+  // 常見「同一事實、不同分類」的模型漂移，伺服器再做一次收斂。
+  const message = String(userMessage || "").toLowerCase();
+  const normalizedCategory = String(category || "").trim().toLowerCase();
+
+  // 已經是明確 identity 欄位時，不要再因為值裡含有「咖啡」等字樣被食物/飲料規則覆蓋。
+  // 例：「我是咖啡師」的 factKey=identity.occupation，不能被「咖啡」誤改成 preference.drink.coffee。
+  if (MEMORY_FACT_KEY_EXACT.has(key) && key.startsWith("identity.")) {
+    return key;
+  }
+
+  if (/(咖啡(?!師)|coffee(?!\s*(?:maker|barista)))/i.test(message)) {
+    key = "preference.drink.coffee";
+  } else if (/(酒|喝酒|酒精|alcohol|wine|beer)/i.test(message)) {
+    key = "preference.drink.alcohol";
+  } else if (/(草莓蛋糕|strawberry\s*cake)/i.test(message)) {
+    key = "preference.food.strawberry_cake";
+  } else if (/(甜食|甜點|dessert|sweets?)/i.test(message)) {
+    key = "preference.food.sweets";
+  } else if (/(香菜|cilantro|coriander)/i.test(message)) {
+    key = "preference.food.cilantro";
+  }
+
+  // 關係狀態屬於同一 canonical fact。
+  // scope 只決定這個事實在哪一層成立，不應讓「結婚 / 離婚 / 交往 / 分手」
+  // 因為措辭不同而漂成 relationship.event.*。
+  if (/(結婚|已婚|夫妻|離婚|分手|交往|在一起|戀人|情侶|曖昧)/i.test(message)) {
+    key = "relationship.status";
+  }
+
+  // 若模型把一般偏好誤編成 worldline.preference.*，在有明確語意主題時
+  // 收斂回 preference.*；世界線限定應由 scope=session 表示。
+  if (key === "worldline.preference.sweets") {
+    key = "preference.food.sweets";
+  } else if (key === "worldline.preference.strawberry_cake") {
+    key = "preference.food.strawberry_cake";
+  } else if (key === "worldline.preference.coffee") {
+    key = "preference.drink.coffee";
+  }
+
+  if (
+    normalizedCategory === "personal" &&
+    /^(personal\.|identity\.).*(job|occupation|career|work)$/.test(key)
+  ) {
+    key = "identity.occupation";
+  }
+
+  if (MEMORY_FACT_KEY_EXACT.has(key)) return key;
+
+  for (const prefix of MEMORY_FACT_KEY_PREFIXES) {
+    if (!key.startsWith(prefix)) continue;
+    const subject = key.slice(prefix.length);
+    // 第三層主題必須穩定且不能再偷偷帶更多階層。
+    if (/^[a-z0-9][a-z0-9_]{0,63}$/.test(subject)) {
+      return key;
+    }
+    return "";
+  }
+
+  return "";
+}
+
+function normalizeMemoryFactValue(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[，。！？、；：,.!?;:\s"'「」『』（）()【】\[\]]/g, "")
+    .slice(0, 240);
+}
+
+function memoryTimestampToMillis(value) {
+  if (!value) return 0;
+  if (typeof value.toMillis === "function") {
+    try {
+      return Number(value.toMillis()) || 0;
+    } catch (_) {
+      return 0;
+    }
+  }
+  if (value instanceof Date) return value.getTime();
+  if (typeof value === "number") return value;
+  return 0;
+}
+
+function resolveMemoryConflicts(entries = []) {
+  if (!Array.isArray(entries) || entries.length === 0) return [];
+
+  const scopeRank = {
+    session: 3,
+    character: 2,
+    profile: 1,
+    legacy: 0,
+  };
+
+  const noKey = [];
+  const bestByFactKey = new Map();
+
+  for (const rawEntry of entries) {
+    if (!rawEntry || rawEntry.active === false) continue;
+
+    const entry = {
+      ...rawEntry,
+      factKey: canonicalizeMemoryFactKey(rawEntry.factKey, {
+        category: rawEntry.category,
+      }),
+    };
+
+    if (!entry.factKey) {
+      noKey.push(entry);
+      continue;
+    }
+
+    const current = bestByFactKey.get(entry.factKey);
+    if (!current) {
+      bestByFactKey.set(entry.factKey, entry);
+      continue;
+    }
+
+    const entryRank = scopeRank[entry.scope] ?? 0;
+    const currentRank = scopeRank[current.scope] ?? 0;
+
+    if (entryRank > currentRank) {
+      bestByFactKey.set(entry.factKey, entry);
+      continue;
+    }
+
+    if (
+      entryRank === currentRank &&
+      memoryTimestampToMillis(entry.timestamp) >
+        memoryTimestampToMillis(current.timestamp)
+    ) {
+      bestByFactKey.set(entry.factKey, entry);
+    }
+  }
+
+  return [
+    ...bestByFactKey.values(),
+    ...noKey,
+  ];
+}
+
+async function loadScopedMemoryEntries({
+  appId = APP_ID,
+  userId,
+  characterId,
+  playerProfileId,
+  sessionId,
+  perScopeLimit = 8,
+}) {
+  const safeAppId = String(appId || APP_ID).trim() || APP_ID;
+  const safeUserId = String(userId || "").trim();
+  const safeCharacterId = String(characterId || "").trim();
+  const safeProfileId = String(playerProfileId || "default").trim() || "default";
+  const safeSessionId = String(sessionId || "").trim();
+
+  if (!safeUserId || !safeCharacterId || !safeSessionId) {
+    return [];
+  }
+
+  const profileMemoriesRef = db
+    .collection("users")
+    .doc(safeUserId)
+    .collection("profile_memories")
+    .doc(safeProfileId)
+    .collection("memories");
+
+  const characterMemoriesRef = db
+    .collection("users")
+    .doc(safeUserId)
+    .collection("profile_memories")
+    .doc(safeProfileId)
+    .collection("characters")
+    .doc(safeCharacterId)
+    .collection("memories");
+
+  const sessionMemoriesRef = db
+    .collection("artifacts")
+    .doc(safeAppId)
+    .collection("chat_sessions")
+    .doc(safeSessionId)
+    .collection("memories");
+
+  const [profileSnapshot, characterSnapshot, sessionSnapshot] =
+    await Promise.all([
+      profileMemoriesRef
+        .orderBy("timestamp", "desc")
+        .limit(perScopeLimit)
+        .get(),
+      characterMemoriesRef
+        .orderBy("timestamp", "desc")
+        .limit(perScopeLimit)
+        .get(),
+      sessionMemoriesRef
+        .orderBy("timestamp", "desc")
+        .limit(perScopeLimit)
+        .get(),
+    ]);
+
+  const entries = [];
+
+  const append = (snapshot, scope) => {
+    for (const doc of snapshot.docs) {
+      const data = doc.data() || {};
+      const content =
+        String(data.text || data.content || "").trim().slice(0, 700);
+      if (!content) continue;
+
+      entries.push({
+        id: doc.id,
+        scope,
+        title: String(data.title || "").trim().slice(0, 80),
+        content,
+        factKey: canonicalizeMemoryFactKey(data.factKey, {
+          category: data.category,
+        }),
+        factValue: String(data.factValue || "").trim().slice(0, 240),
+        active: data.active !== false,
+        confidence: Number(data.confidence || 0),
+        timestamp: data.timestamp || null,
+      });
+    }
+  };
+
+  // 世界線事實最靠近當前聊天室，其次角色關係，最後才是玩家跨角色穩定資料。
+  append(sessionSnapshot, "session");
+  append(characterSnapshot, "character");
+  append(profileSnapshot, "profile");
+
+  return resolveMemoryConflicts(entries);
+}
+
+
+function repairMemoryScope({
+  scope,
+  shouldRemember,
+  factKey,
+  userMessage,
+}) {
+  let safeScope = String(scope || "none").trim().toLowerCase();
+  if (["profile", "character", "session"].includes(safeScope)) {
+    return safeScope;
+  }
+
+  if (shouldRemember !== true || !factKey) {
+    return "none";
+  }
+
+  const message = String(userMessage || "").trim();
+
+  // 明確世界線限定，一律 session。
+  if (/(在這個世界(?:裡|中)?|這個世界線|這條世界線|在這個聊天室|這個聊天室裡)/i.test(message)) {
+    return "session";
+  }
+
+  // 對「你」這個角色的稱呼偏好，只屬於 character。
+  if (
+    factKey === "interaction.preferred_address" &&
+    /(你叫我|你喊我|你稱呼我|你可以叫我|我喜歡你叫我)/i.test(message)
+  ) {
+    return "character";
+  }
+
+  // 只有在模型已判定 shouldRemember=true、factKey 也合法，
+  // 且句子有明確穩定語意時，才把錯誤的 none 修回 profile。
+  const stableSignal =
+    /(最喜歡|最愛|很喜歡|喜歡|討厭|不喜歡|不吃|不喝|每天|固定|習慣|我是|我的職業|叫我.+就好|以後叫我)/i.test(message);
+
+  const ephemeralOnly =
+    /(今天(?:突然)?想|剛剛|突然想|今晚想|這次想|等等想|現在想(?:吃|喝|做|看|去))/i.test(message);
+
+  if (stableSignal && !ephemeralOnly) {
+    if (
+      factKey.startsWith("identity.") ||
+      factKey.startsWith("preference.") ||
+      factKey.startsWith("habit.") ||
+      factKey.startsWith("trait.") ||
+      factKey === "interaction.preferred_address" ||
+      factKey === "interaction.preferred_treatment"
+    ) {
+      return "profile";
+    }
+  }
+
+  return "none";
+}
+
 
 async function savePlayerMemoryIfNeeded({
   appId,
@@ -14352,6 +14920,18 @@ async function savePlayerMemoryIfNeeded({
   const confidence = Number(extracted.confidence || 0);
   let memoryText = String(extracted.memory || "").trim();
   let memoryScope = String(extracted.scope || "none").trim().toLowerCase();
+  const factKey = canonicalizeMemoryFactKey(extracted.factKey, {
+    userMessage,
+    category: extracted.category,
+  });
+  const factValue = String(extracted.factValue || "").trim().slice(0, 240);
+
+  memoryScope = repairMemoryScope({
+    scope: memoryScope,
+    shouldRemember: extracted.shouldRemember,
+    factKey,
+    userMessage,
+  });
 
   const safeMemoryName =
       String(playerName || "對方").trim() || "對方";
@@ -14367,60 +14947,58 @@ async function savePlayerMemoryIfNeeded({
     extracted.shouldRemember !== true ||
     confidence < 0.75 ||
     memoryText.length < 4 ||
-    memoryScope === "none"
+    memoryScope === "none" ||
+    !factKey
   ) {
     console.log("🧠 本輪沒有需要保存的玩家記憶", {
       shouldRemember: extracted.shouldRemember,
       scope: memoryScope,
+      factKey: factKey || null,
       confidence,
     });
 
     return null;
   }
 
-  const safeProfileId = String(playerProfileId || "").trim();
   const safeSessionId = String(sessionId || "").trim();
-  const safeAppId = String(appId || "lianlianshiguang").trim() || "lianlianshiguang";
+  const safeAppId = String(appId || APP_ID).trim() || APP_ID;
+  const safeProfileId = await resolveEffectivePlayerProfileId({
+    appId: safeAppId,
+    userId,
+    characterId,
+    sessionId: safeSessionId,
+    requestedProfileId: playerProfileId,
+  });
 
   let memoriesRef;
 
-  if (safeProfileId) {
-    if (memoryScope === "profile") {
-      memoriesRef = db
-        .collection("users")
-        .doc(userId)
-        .collection("profile_memories")
-        .doc(safeProfileId)
-        .collection("memories");
-    } else if (memoryScope === "character") {
-      memoriesRef = db
-        .collection("users")
-        .doc(userId)
-        .collection("profile_memories")
-        .doc(safeProfileId)
-        .collection("characters")
-        .doc(characterId)
-        .collection("memories");
-    } else if (memoryScope === "session") {
-      if (!safeSessionId) {
-        console.warn("⚠️ Session Memory 缺少 sessionId，為避免串世界線，本輪不保存");
-        return null;
-      }
-
-      memoriesRef = db
-        .collection("artifacts")
-        .doc(safeAppId)
-        .collection("chat_sessions")
-        .doc(safeSessionId)
-        .collection("memories");
-    }
-  } else {
-    // 舊版 App 相容：沒有 playerProfileId 時仍寫入舊路徑。
+  if (memoryScope === "profile") {
     memoriesRef = db
       .collection("users")
       .doc(userId)
+      .collection("profile_memories")
+      .doc(safeProfileId)
+      .collection("memories");
+  } else if (memoryScope === "character") {
+    memoriesRef = db
+      .collection("users")
+      .doc(userId)
+      .collection("profile_memories")
+      .doc(safeProfileId)
       .collection("characters")
       .doc(characterId)
+      .collection("memories");
+  } else if (memoryScope === "session") {
+    if (!safeSessionId) {
+      console.warn("⚠️ Session Memory 缺少 sessionId，為避免串世界線，本輪不保存");
+      return null;
+    }
+
+    memoriesRef = db
+      .collection("artifacts")
+      .doc(safeAppId)
+      .collection("chat_sessions")
+      .doc(safeSessionId)
       .collection("memories");
   }
 
@@ -14436,37 +15014,97 @@ async function savePlayerMemoryIfNeeded({
       .replace(/[，。！？、\s]/g, "")
       .toLowerCase();
 
-    const alreadyExists = recentSnapshot.docs.some((doc) => {
-      const oldText = String(doc.data()?.text || "")
+    const activeDocs = recentSnapshot.docs.filter(
+      (doc) => doc.data()?.active !== false
+    );
+
+    const alreadyExists = activeDocs.some((doc) => {
+      const oldData = doc.data() || {};
+      const oldText = String(oldData.text || "")
         .replace(/[，。！？、\s]/g, "")
         .toLowerCase();
 
-      return oldText === normalizedNewMemory;
+      if (oldText === normalizedNewMemory) return true;
+
+      const oldFactKey = canonicalizeMemoryFactKey(oldData.factKey, {
+        userMessage: oldData.sourceMessage || "",
+        category: oldData.category,
+      });
+      const oldFactValue = normalizeMemoryFactValue(oldData.factValue);
+      const newFactValue = normalizeMemoryFactValue(factValue);
+
+      return Boolean(
+        factKey &&
+        oldFactKey === factKey &&
+        newFactValue &&
+        oldFactValue === newFactValue
+      );
     });
 
     if (alreadyExists) {
-      console.log("🧠 相同記憶已存在，略過新增：", memoryText);
+      console.log("🧠 相同記憶已存在，略過新增：", {
+        factKey: factKey || null,
+        text: memoryText,
+      });
       return null;
     }
 
-    const memoryRef = await memoriesRef.add({
+    const conflictingDocs = factKey
+      ? activeDocs.filter(
+          (doc) =>
+            canonicalizeMemoryFactKey(doc.data()?.factKey, {
+              userMessage: doc.data()?.sourceMessage || "",
+              category: doc.data()?.category,
+            }) === factKey
+        )
+      : [];
+
+    const memoryRef = memoriesRef.doc();
+    const batch = db.batch();
+
+    batch.set(memoryRef, {
       text: memoryText,
-      scope: safeProfileId ? memoryScope : "legacy",
+      scope: memoryScope,
       playerProfileId: safeProfileId || null,
       characterId,
       sessionId: safeSessionId || null,
       category: extracted.category || "personal",
+      factKey: factKey || null,
+      factValue: factValue || null,
       confidence,
       source: "auto",
       sourceMessage: String(userMessage || "").trim().slice(0, 500),
       isFavorite: false,
+      active: true,
+      supersedes:
+        conflictingDocs.length > 0
+          ? conflictingDocs.map((doc) => doc.id)
+          : [],
       timestamp: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
     });
+
+    for (const oldDoc of conflictingDocs) {
+      batch.set(
+        oldDoc.ref,
+        {
+          active: false,
+          supersededBy: memoryRef.id,
+          supersededAt: FieldValue.serverTimestamp(),
+          updatedAt: FieldValue.serverTimestamp(),
+        },
+        {merge: true}
+      );
+    }
+
+    await batch.commit();
 
     console.log("✅ 已自動保存玩家記憶：", {
       id: memoryRef.id,
-      scope: safeProfileId ? memoryScope : "legacy",
+      scope: memoryScope,
       playerProfileId: safeProfileId || null,
+      factKey: factKey || null,
+      supersededCount: conflictingDocs.length,
       text: memoryText,
       category: extracted.category,
       confidence,
@@ -14475,7 +15113,7 @@ async function savePlayerMemoryIfNeeded({
     return {
       id: memoryRef.id,
       ...extracted,
-      scope: safeProfileId ? memoryScope : "legacy",
+      scope: memoryScope,
     };
   } catch (error) {
     console.error("⚠️ 儲存玩家記憶失敗：", error);
@@ -18542,27 +19180,12 @@ try {
         .collection("public_characters")
         .doc(characterId);
 
-    const sharedMemoriesRef = userRef
-        .collection("characters")
-        .doc(characterId)
-        .collection("shared_memories");
-
     const [
         userSnapshot,
         characterSnapshot,
-        sharedMemoriesSnapshot,
     ] = await Promise.all([
         userRef.get(),
-
         characterRef.get(),
-
-        sharedMemoriesRef
-            .orderBy(
-                "timestamp",
-                "desc"
-            )
-            .limit(5)
-            .get(),
     ]);
 
     const userData =
@@ -18571,19 +19194,25 @@ try {
     const characterData =
         characterSnapshot.data() || {};
 
-    const playerName =
-        String(
-            userData.nickname ||
-            userData.displayName ||
-            userData.name ||
-            "你"
-        ).trim();
+    const effectiveProfileId =
+        await resolveEffectivePlayerProfileId({
+            appId: APP_ID,
+            userId,
+            characterId,
+            sessionId: roomSnapshot.id,
+            requestedProfileId:
+                claimedRoomData.playerProfileId || "",
+            userData,
+        });
 
-    const playerGender =
-        String(
-            userData.gender ||
-            "未設定"
-        ).trim();
+    const playerIdentity =
+        resolvePlayerIdentityFromUserData(
+            userData,
+            effectiveProfileId
+        );
+
+    const playerName = playerIdentity.name;
+    const playerGender = playerIdentity.gender;
 
     const characterCoreSetting =
         String(
@@ -18619,50 +19248,39 @@ try {
                 .friendshipScore || 0
         );
 
-    const sharedMemoryLines = [];
+    const scopedMemoryEntries =
+        await loadScopedMemoryEntries({
+            appId: APP_ID,
+            userId,
+            characterId,
+            playerProfileId: effectiveProfileId,
+            sessionId: roomSnapshot.id,
+            perScopeLimit: 6,
+        });
 
-    for (
-        const memorySnapshot of
-        sharedMemoriesSnapshot.docs
-    ) {
-        const memoryData =
-            memorySnapshot.data() || {};
+    const memoryScopeLabels = {
+        session: "本聊天室／世界線",
+        character: "與此角色的長期記憶",
+        profile: "玩家穩定資料",
+    };
 
-        const memoryTitle =
-            String(
-                memoryData.title || ""
-            ).trim();
-
-        const memoryContent =
-            String(
-                memoryData.content ||
-                memoryData.text ||
-                ""
-            )
-                .trim()
-                .slice(0, 600);
-
-        if (
-            memoryTitle ||
-            memoryContent
-        ) {
-            sharedMemoryLines.push(
-                `- ${memoryTitle}` +
-                (
-                    memoryContent
-                        ? `：${memoryContent}`
-                        : ""
-                )
-            );
-        }
-    }
+    const sharedMemoryLines =
+        scopedMemoryEntries.map((memory) => {
+            const label =
+                memoryScopeLabels[memory.scope] ||
+                "相關記憶";
+            const title = memory.title
+                ? `《${memory.title}》：`
+                : "";
+            return `- [${label}] ${title}${memory.content}`;
+        });
 
     const sharedMemoryContext =
         sharedMemoryLines.length > 0
             ? sharedMemoryLines
                 .join("\n")
                 .slice(0, 3000)
-            : "目前沒有已保存的共同回憶。";
+            : "目前沒有已保存的相關記憶。";
 
     const letterSystemPrompt = `
 【七夕限定信件】
@@ -18693,8 +19311,9 @@ ${Number.isFinite(friendshipScore)
 【收信人】
 姓名：${playerName}
 性別：${playerGender}
+玩家檔案 ID：${effectiveProfileId}
 
-【重要共同回憶】
+【相關記憶（依玩家檔案與本聊天室分流）】
 ${sharedMemoryContext}
 
 【七夕三日內的真實對話】
