@@ -1585,6 +1585,1520 @@ async function transcribeAudioWithGemini(audioUrlOrPath) {
     }
 }
 
+
+// ============================================================
+// 🎃 通用活動系統 1.0：任務進度 / 活動貨幣
+// ============================================================
+
+function normalizeReusableEventTaskDefinition(taskId, data = {}) {
+    const title = String(data.title || "").trim();
+    const explicitType = String(data.taskType || "").trim();
+
+    let taskType = explicitType || "any_chat";
+
+    // 舊測試資料相容：尚未有 taskType 時，依任務名稱推斷。
+    if (!explicitType) {
+        if (/沉浸/.test(title)) taskType = "mode_immersive";
+        else if (/共鳴/.test(title)) taskType = "mode_resonance";
+        else if (/劇情/.test(title)) taskType = "mode_story";
+        else if (/閒聊/.test(title)) taskType = "mode_gemini";
+        else if (/日常/.test(title)) taskType = "mode_daily";
+        else if (/禮物/.test(title)) taskType = "gift";
+        else if (/互動/.test(title)) taskType = "interaction";
+        else taskType = "any_chat";
+    }
+
+    let target = Number(data.target || 0);
+
+    // 舊測試資料相容：例如「聊天 5 次」會抓到 5。
+    if (!Number.isFinite(target) || target <= 0) {
+        const titleNumber = title.match(/(\d+)/);
+        target = titleNumber ? Number(titleNumber[1]) : 1;
+    }
+
+    target = Math.max(1, Math.trunc(target));
+
+    const rewardAmount = Math.max(
+        0,
+        Math.trunc(Number(data.rewardAmount || 0))
+    );
+
+    return {
+        taskId,
+        taskType,
+        target,
+        rewardAmount,
+        title,
+    };
+}
+
+function reusableEventTaskMatchesAction(taskType, action) {
+    const billingType = String(action.billingType || "chat");
+    const chatMode = String(action.chatMode || "");
+
+    switch (taskType) {
+        case "any_chat":
+            return billingType === "chat";
+        case "mode_gemini":
+            return billingType === "chat" && chatMode === "gemini";
+        case "mode_daily":
+            return billingType === "chat" && chatMode === "daily";
+        case "mode_story":
+            return billingType === "chat" && chatMode === "story";
+        case "mode_immersive":
+            return billingType === "chat" && chatMode === "immersive";
+        case "mode_resonance":
+            return billingType === "chat" && chatMode === "resonance";
+        case "interaction":
+            return billingType === "interaction";
+        case "gift":
+            return billingType === "gift";
+        default:
+            return false;
+    }
+}
+
+function reusableEventIsRunning(eventData, now = new Date()) {
+    if (eventData?.isActive !== true) return false;
+
+    const startAt = eventData?.startAt?.toDate?.();
+    const endAt = eventData?.endAt?.toDate?.();
+
+    if (startAt && now < startAt) return false;
+    if (endAt && now > endAt) return false;
+
+    return true;
+}
+
+function reusableEventProgressRef(userId, eventId) {
+    return db
+        .collection("artifacts")
+        .doc(APP_ID)
+        .collection("event_progress")
+        .doc(userId)
+        .collection("events")
+        .doc(eventId);
+}
+
+async function recordReusableEventTaskProgress({
+    userId,
+    sessionId,
+    messageId,
+    chatMode,
+    billingType,
+    interactionType = "",
+    giftType = "",
+    isTestChat = false,
+    isRegenerate = false,
+    isContinue = false,
+    isQixiOpening = false,
+}) {
+    // 只有玩家真正完成一次正式互動才計入活動任務。
+    if (
+        !userId ||
+        !messageId ||
+        isTestChat ||
+        isRegenerate ||
+        isContinue ||
+        isQixiOpening
+    ) {
+        return;
+    }
+
+    const now = new Date();
+
+    const eventsSnapshot = await db
+        .collection("artifacts")
+        .doc(APP_ID)
+        .collection("events")
+        .where("isActive", "==", true)
+        .limit(10)
+        .get();
+
+    for (const eventDoc of eventsSnapshot.docs) {
+        const eventData = eventDoc.data() || {};
+        if (!reusableEventIsRunning(eventData, now)) continue;
+        if (eventData.hasTasks === false) continue;
+
+        const tasksSnapshot = await eventDoc.ref
+            .collection("tasks")
+            .limit(50)
+            .get();
+
+        const action = {
+            chatMode,
+            billingType,
+            interactionType,
+            giftType,
+        };
+
+        const matchedTasks = tasksSnapshot.docs
+            .map((taskDoc) =>
+                normalizeReusableEventTaskDefinition(
+                    taskDoc.id,
+                    taskDoc.data() || {}
+                )
+            )
+            .filter((task) =>
+                reusableEventTaskMatchesAction(
+                    task.taskType,
+                    action
+                )
+            );
+
+        if (matchedTasks.length === 0) continue;
+
+        const progressRef =
+            reusableEventProgressRef(
+                userId,
+                eventDoc.id
+            );
+
+        // 同一則 AI 訊息只允許計入一次，避免重試 / 重送造成重複進度。
+        const safeActionId =
+            `${sessionId || "session"}_${messageId}`
+                .replace(/\//g, "_");
+
+        const actionRef =
+            progressRef
+                .collection("actions")
+                .doc(safeActionId);
+
+        await db.runTransaction(async (transaction) => {
+            const [
+                actionSnapshot,
+                progressSnapshot,
+            ] = await Promise.all([
+                transaction.get(actionRef),
+                transaction.get(progressRef),
+            ]);
+
+            if (actionSnapshot.exists) {
+                return;
+            }
+
+            const progressData =
+                progressSnapshot.data() || {};
+
+            const currentTaskProgress =
+                progressData.taskProgress &&
+                typeof progressData.taskProgress === "object"
+                    ? { ...progressData.taskProgress }
+                    : {};
+
+            const changedTaskIds = [];
+
+            for (const task of matchedTasks) {
+                const current =
+                    Number(
+                        currentTaskProgress[
+                            task.taskId
+                        ] || 0
+                    );
+
+                const next = Math.min(
+                    task.target,
+                    Math.max(0, current) + 1
+                );
+
+                if (next !== current) {
+                    currentTaskProgress[
+                        task.taskId
+                    ] = next;
+
+                    changedTaskIds.push(
+                        task.taskId
+                    );
+                }
+            }
+
+            transaction.set(
+                progressRef,
+                {
+                    userId,
+                    eventId: eventDoc.id,
+                    currency:
+                        Number(
+                            progressData.currency || 0
+                        ),
+                    taskProgress:
+                        currentTaskProgress,
+                    updatedAt:
+                        FieldValue.serverTimestamp(),
+                    lastProgressAt:
+                        FieldValue.serverTimestamp(),
+                },
+                { merge: true }
+            );
+
+            transaction.set(
+                actionRef,
+                {
+                    userId,
+                    eventId: eventDoc.id,
+                    sessionId:
+                        String(sessionId || ""),
+                    messageId,
+                    chatMode:
+                        String(chatMode || ""),
+                    billingType:
+                        String(billingType || ""),
+                    interactionType:
+                        String(interactionType || ""),
+                    giftType:
+                        String(giftType || ""),
+                    changedTaskIds,
+                    createdAt:
+                        FieldValue.serverTimestamp(),
+                }
+            );
+        });
+    }
+}
+
+exports.claimEventTaskReward = onCall(
+    {
+        region: "asia-east1",
+        timeoutSeconds: 30,
+        memory: "256MiB",
+    },
+    async (request) => {
+        const userId = request.auth?.uid;
+
+        if (!userId) {
+            throw new HttpsError(
+                "unauthenticated",
+                "請先登入"
+            );
+        }
+
+        const eventId =
+            String(
+                request.data?.eventId || ""
+            ).trim();
+
+        const taskId =
+            String(
+                request.data?.taskId || ""
+            ).trim();
+
+        if (!eventId || !taskId) {
+            throw new HttpsError(
+                "invalid-argument",
+                "缺少活動或任務編號"
+            );
+        }
+
+        const eventRef = db
+            .collection("artifacts")
+            .doc(APP_ID)
+            .collection("events")
+            .doc(eventId);
+
+        const taskRef = eventRef
+            .collection("tasks")
+            .doc(taskId);
+
+        const progressRef =
+            reusableEventProgressRef(
+                userId,
+                eventId
+            );
+
+        const result = await db.runTransaction(
+            async (transaction) => {
+                const [
+                    eventSnapshot,
+                    taskSnapshot,
+                    progressSnapshot,
+                ] = await Promise.all([
+                    transaction.get(eventRef),
+                    transaction.get(taskRef),
+                    transaction.get(progressRef),
+                ]);
+
+                if (!eventSnapshot.exists) {
+                    throw new HttpsError(
+                        "not-found",
+                        "找不到活動"
+                    );
+                }
+
+                const eventData =
+                    eventSnapshot.data() || {};
+
+                if (
+                    !reusableEventIsRunning(
+                        eventData,
+                        new Date()
+                    )
+                ) {
+                    throw new HttpsError(
+                        "failed-precondition",
+                        "活動目前未開放"
+                    );
+                }
+
+                if (!taskSnapshot.exists) {
+                    throw new HttpsError(
+                        "not-found",
+                        "找不到任務"
+                    );
+                }
+
+                const task =
+                    normalizeReusableEventTaskDefinition(
+                        taskId,
+                        taskSnapshot.data() || {}
+                    );
+
+                if (task.rewardAmount <= 0) {
+                    throw new HttpsError(
+                        "failed-precondition",
+                        "這個任務沒有可領取的活動貨幣"
+                    );
+                }
+
+                const progressData =
+                    progressSnapshot.data() || {};
+
+                const taskProgress =
+                    progressData.taskProgress &&
+                    typeof progressData.taskProgress === "object"
+                        ? progressData.taskProgress
+                        : {};
+
+                const claimedTasks =
+                    progressData.claimedTasks &&
+                    typeof progressData.claimedTasks === "object"
+                        ? progressData.claimedTasks
+                        : {};
+
+                if (claimedTasks[taskId] === true) {
+                    throw new HttpsError(
+                        "already-exists",
+                        "這個任務獎勵已經領取"
+                    );
+                }
+
+                const currentProgress =
+                    Math.max(
+                        0,
+                        Math.trunc(
+                            Number(
+                                taskProgress[taskId] || 0
+                            )
+                        )
+                    );
+
+                if (currentProgress < task.target) {
+                    throw new HttpsError(
+                        "failed-precondition",
+                        "任務尚未完成"
+                    );
+                }
+
+                const currentCurrency =
+                    Math.max(
+                        0,
+                        Math.trunc(
+                            Number(
+                                progressData.currency || 0
+                            )
+                        )
+                    );
+
+                const nextCurrency =
+                    currentCurrency +
+                    task.rewardAmount;
+
+                transaction.set(
+                    progressRef,
+                    {
+                        userId,
+                        eventId,
+                        currency:
+                            nextCurrency,
+                        totalEarned:
+                            FieldValue.increment(
+                                task.rewardAmount
+                            ),
+                        claimedTasks: {
+                            ...claimedTasks,
+                            [taskId]: true,
+                        },
+                        lastClaimedTaskId:
+                            taskId,
+                        lastClaimedAt:
+                            FieldValue.serverTimestamp(),
+                        updatedAt:
+                            FieldValue.serverTimestamp(),
+                    },
+                    { merge: true }
+                );
+
+                const claimLogRef =
+                    progressRef
+                        .collection("claims")
+                        .doc(taskId);
+
+                transaction.set(
+                    claimLogRef,
+                    {
+                        userId,
+                        eventId,
+                        taskId,
+                        taskTitle:
+                            task.title,
+                        rewardAmount:
+                            task.rewardAmount,
+                        currencyName:
+                            String(
+                                eventData.currencyName ||
+                                "活動貨幣"
+                            ),
+                        claimedAt:
+                            FieldValue.serverTimestamp(),
+                    }
+                );
+
+                return {
+                    eventId,
+                    taskId,
+                    progress:
+                        currentProgress,
+                    target:
+                        task.target,
+                    rewardAmount:
+                        task.rewardAmount,
+                    currency:
+                        nextCurrency,
+                };
+            }
+        );
+
+        console.log(
+            "🎃 活動任務獎勵已領取",
+            {
+                userId,
+                ...result,
+            }
+        );
+
+        return {
+            success: true,
+            ...result,
+        };
+    }
+);
+
+
+// =====================================================
+// 🛍️ 通用活動商店：兌換商品
+// - Cloud Function 原子扣除活動貨幣
+// - 每人限兌換商品防重複
+// - 花花商品直接發放 flowerPoints + flower_logs
+// - 其他商品先記錄到 event_progress.ownedEventItems，
+//   後續頭像框 / 稱號 / 特殊背景 / 回憶卡可直接接這份所有權資料。
+// =====================================================
+exports.redeemEventShopItem = onCall(
+    {
+        region: "asia-east1",
+        timeoutSeconds: 30,
+        memory: "256MiB",
+    },
+    async (request) => {
+        const userId = request.auth?.uid;
+
+        if (!userId) {
+            throw new HttpsError(
+                "unauthenticated",
+                "請先登入"
+            );
+        }
+
+        const eventId =
+            String(
+                request.data?.eventId || ""
+            ).trim();
+
+        const itemId =
+            String(
+                request.data?.itemId || ""
+            ).trim();
+
+        if (!eventId || !itemId) {
+            throw new HttpsError(
+                "invalid-argument",
+                "缺少活動或商品編號"
+            );
+        }
+
+        const eventRef = db
+            .collection("artifacts")
+            .doc(APP_ID)
+            .collection("events")
+            .doc(eventId);
+
+        const itemRef = eventRef
+            .collection("shop_items")
+            .doc(itemId);
+
+        const progressRef =
+            reusableEventProgressRef(
+                userId,
+                eventId
+            );
+
+        const userRef = db
+            .collection("users")
+            .doc(userId);
+
+        const redemptionRef =
+            progressRef
+                .collection("shop_redemptions")
+                .doc();
+
+        const flowerLogRef =
+            userRef
+                .collection("flower_logs")
+                .doc();
+
+        const result = await db.runTransaction(
+            async (transaction) => {
+                // Firestore transaction 要先完成所有 read，再進行 write。
+                const [
+                    eventSnapshot,
+                    itemSnapshot,
+                    progressSnapshot,
+                    userSnapshot,
+                ] = await Promise.all([
+                    transaction.get(eventRef),
+                    transaction.get(itemRef),
+                    transaction.get(progressRef),
+                    transaction.get(userRef),
+                ]);
+
+                if (!eventSnapshot.exists) {
+                    throw new HttpsError(
+                        "not-found",
+                        "找不到活動"
+                    );
+                }
+
+                const eventData =
+                    eventSnapshot.data() || {};
+
+                if (
+                    !reusableEventIsRunning(
+                        eventData,
+                        new Date()
+                    )
+                ) {
+                    throw new HttpsError(
+                        "failed-precondition",
+                        "活動目前未開放"
+                    );
+                }
+
+                if (eventData.hasShop === false) {
+                    throw new HttpsError(
+                        "failed-precondition",
+                        "活動商店目前未開放"
+                    );
+                }
+
+                if (!itemSnapshot.exists) {
+                    throw new HttpsError(
+                        "not-found",
+                        "找不到商品"
+                    );
+                }
+
+                const itemData =
+                    itemSnapshot.data() || {};
+
+                const price =
+                    Math.max(
+                        0,
+                        Math.trunc(
+                            Number(itemData.price || 0)
+                        )
+                    );
+
+                if (
+                    !Number.isFinite(price) ||
+                    price < 0 ||
+                    price > 1000000
+                ) {
+                    throw new HttpsError(
+                        "failed-precondition",
+                        "商品價格設定異常"
+                    );
+                }
+
+                const progressData =
+                    progressSnapshot.data() || {};
+
+                const currentCurrency =
+                    Math.max(
+                        0,
+                        Math.trunc(
+                            Number(
+                                progressData.currency || 0
+                            )
+                        )
+                    );
+
+                if (currentCurrency < price) {
+                    throw new HttpsError(
+                        "failed-precondition",
+                        "活動貨幣不足"
+                    );
+                }
+
+                const redeemedShopItems =
+                    progressData.redeemedShopItems &&
+                    typeof progressData.redeemedShopItems === "object"
+                        ? { ...progressData.redeemedShopItems }
+                        : {};
+
+                const previousRedeemCount =
+                    Math.max(
+                        0,
+                        Math.trunc(
+                            Number(
+                                redeemedShopItems[itemId] || 0
+                            )
+                        )
+                    );
+
+                const limitOne =
+                    itemData.limitOne === true;
+
+                if (
+                    limitOne &&
+                    previousRedeemCount > 0
+                ) {
+                    throw new HttpsError(
+                        "already-exists",
+                        "這個商品已經兌換過"
+                    );
+                }
+
+                const itemType =
+                    String(
+                        itemData.itemType || "other"
+                    ).trim() || "other";
+
+                const itemName =
+                    String(
+                        itemData.name || "活動商品"
+                    ).trim() || "活動商品";
+
+                const imageUrl =
+                    String(
+                        itemData.imageUrl || ""
+                    ).trim();
+
+                const description =
+                    String(
+                        itemData.description || ""
+                    ).trim();
+
+                const nextRedeemCount =
+                    previousRedeemCount + 1;
+
+                const nextCurrency =
+                    currentCurrency - price;
+
+                redeemedShopItems[itemId] =
+                    nextRedeemCount;
+
+                const ownedEventItems =
+                    progressData.ownedEventItems &&
+                    typeof progressData.ownedEventItems === "object"
+                        ? { ...progressData.ownedEventItems }
+                        : {};
+
+                if (itemType !== "flower") {
+                    const previousOwnedItem =
+                        ownedEventItems[itemId] &&
+                        typeof ownedEventItems[itemId] === "object"
+                            ? ownedEventItems[itemId]
+                            : {};
+
+                    ownedEventItems[itemId] = {
+                        eventId,
+                        itemId,
+                        itemType,
+                        name: itemName,
+                        imageUrl,
+                        description,
+                        count: nextRedeemCount,
+                        acquiredAt:
+                            previousOwnedItem.acquiredAt ||
+                            FieldValue.serverTimestamp(),
+                    };
+                }
+
+                let flowerRewardAmount = 0;
+                let nextFlowerPoints = null;
+
+                if (itemType === "flower") {
+                    flowerRewardAmount =
+                        Math.max(
+                            0,
+                            Math.trunc(
+                                Number(
+                                    itemData.rewardAmount || 0
+                                )
+                            )
+                        );
+
+                    if (
+                        flowerRewardAmount <= 0 ||
+                        flowerRewardAmount > 10000
+                    ) {
+                        throw new HttpsError(
+                            "failed-precondition",
+                            "花花商品的發放數量設定異常"
+                        );
+                    }
+
+                    if (!userSnapshot.exists) {
+                        throw new HttpsError(
+                            "not-found",
+                            "找不到玩家資料"
+                        );
+                    }
+
+                    const currentFlowerPoints =
+                        Math.max(
+                            0,
+                            Math.trunc(
+                                Number(
+                                    userSnapshot.data()
+                                        ?.flowerPoints || 0
+                                )
+                            )
+                        );
+
+                    nextFlowerPoints =
+                        currentFlowerPoints +
+                        flowerRewardAmount;
+                }
+
+                transaction.set(
+                    progressRef,
+                    {
+                        userId,
+                        eventId,
+                        currency:
+                            nextCurrency,
+                        totalSpent:
+                            FieldValue.increment(
+                                price
+                            ),
+                        redeemedShopItems,
+                        ownedEventItems,
+                        lastRedeemedShopItemId:
+                            itemId,
+                        lastRedeemedShopItemAt:
+                            FieldValue.serverTimestamp(),
+                        updatedAt:
+                            FieldValue.serverTimestamp(),
+                    },
+                    { merge: true }
+                );
+
+                transaction.set(
+                    redemptionRef,
+                    {
+                        userId,
+                        eventId,
+                        itemId,
+                        itemName,
+                        itemType,
+                        price,
+                        rewardAmount:
+                            flowerRewardAmount,
+                        redeemCount:
+                            nextRedeemCount,
+                        currencyName:
+                            String(
+                                eventData.currencyName ||
+                                "活動貨幣"
+                            ),
+                        redeemedAt:
+                            FieldValue.serverTimestamp(),
+                    }
+                );
+
+                if (itemType === "flower") {
+                    transaction.update(
+                        userRef,
+                        {
+                            flowerPoints:
+                                FieldValue.increment(
+                                    flowerRewardAmount
+                                ),
+                        }
+                    );
+
+                    transaction.set(
+                        flowerLogRef,
+                        {
+                            title:
+                                `${eventData.name || "活動"}商店兌換：${itemName}`,
+                            amount:
+                                flowerRewardAmount,
+                            type:
+                                "reward_campaign",
+                            reason:
+                                "reusable_event_shop",
+                            source:
+                                "event_shop",
+                            eventId,
+                            itemId,
+                            createdAt:
+                                FieldValue.serverTimestamp(),
+                        }
+                    );
+                }
+
+                return {
+                    eventId,
+                    itemId,
+                    itemName,
+                    itemType,
+                    price,
+                    currency:
+                        nextCurrency,
+                    redeemCount:
+                        nextRedeemCount,
+                    rewardAmount:
+                        flowerRewardAmount,
+                    flowerPoints:
+                        nextFlowerPoints,
+                };
+            }
+        );
+
+        console.log(
+            "🛍️ 活動商店兌換成功",
+            {
+                userId,
+                ...result,
+            }
+        );
+
+        return {
+            success: true,
+            ...result,
+        };
+    }
+);
+
+
+// =====================================================
+// 🗑️ 通用活動收藏：永久刪除已擁有限定物品
+// - 僅允許頭像框 / 聊天室背景類型
+// - 真正從 event_progress.ownedEventItems 移除
+// - 保留 redeemedShopItems：刪除後不能再次兌換限兌一次商品
+// - 若物品正在使用中，同步解除裝備
+// =====================================================
+exports.deleteEventOwnedItem = onCall(
+    {
+        region: "asia-east1",
+        timeoutSeconds: 30,
+        memory: "256MiB",
+    },
+    async (request) => {
+        const userId = request.auth?.uid;
+
+        if (!userId) {
+            throw new HttpsError(
+                "unauthenticated",
+                "請先登入"
+            );
+        }
+
+        const eventId =
+            String(
+                request.data?.eventId || ""
+            ).trim();
+
+        const itemId =
+            String(
+                request.data?.itemId || ""
+            ).trim();
+
+        if (!eventId || !itemId) {
+            throw new HttpsError(
+                "invalid-argument",
+                "缺少活動或商品編號"
+            );
+        }
+
+        const progressRef =
+            reusableEventProgressRef(
+                userId,
+                eventId
+            );
+
+        const userRef =
+            db.collection("users").doc(userId);
+
+        const deleteLogRef =
+            progressRef
+                .collection("deleted_owned_items")
+                .doc();
+
+        const result = await db.runTransaction(
+            async (transaction) => {
+                const [
+                    progressSnapshot,
+                    userSnapshot,
+                ] = await Promise.all([
+                    transaction.get(progressRef),
+                    transaction.get(userRef),
+                ]);
+
+                if (!progressSnapshot.exists) {
+                    throw new HttpsError(
+                        "not-found",
+                        "找不到活動收藏資料"
+                    );
+                }
+
+                const progressData =
+                    progressSnapshot.data() || {};
+
+                const ownedEventItems =
+                    progressData.ownedEventItems &&
+                    typeof progressData.ownedEventItems === "object"
+                        ? { ...progressData.ownedEventItems }
+                        : {};
+
+                const rawOwnedItem =
+                    ownedEventItems[itemId];
+
+                if (
+                    !rawOwnedItem ||
+                    typeof rawOwnedItem !== "object"
+                ) {
+                    throw new HttpsError(
+                        "not-found",
+                        "找不到這個限定物品"
+                    );
+                }
+
+                const ownedItem = {
+                    ...rawOwnedItem,
+                };
+
+                const itemType =
+                    String(
+                        ownedItem.itemType || ""
+                    ).trim();
+
+                const deletableTypes = new Set([
+                    "avatar_frame",
+                    "background",
+                    "chat_background",
+                    "scene_background",
+                ]);
+
+                if (!deletableTypes.has(itemType)) {
+                    throw new HttpsError(
+                        "failed-precondition",
+                        "這個收藏不能使用永久刪除"
+                    );
+                }
+
+                delete ownedEventItems[itemId];
+
+                transaction.set(
+                    progressRef,
+                    {
+                        ownedEventItems,
+                        lastDeletedOwnedItemId:
+                            itemId,
+                        lastDeletedOwnedItemType:
+                            itemType,
+                        lastDeletedOwnedItemAt:
+                            FieldValue.serverTimestamp(),
+                        updatedAt:
+                            FieldValue.serverTimestamp(),
+                    },
+                    { merge: true }
+                );
+
+                let unequippedAvatarFrame = false;
+                let unequippedChatBackground = false;
+
+                if (userSnapshot.exists) {
+                    const userData =
+                        userSnapshot.data() || {};
+
+                    const userUpdate = {};
+
+                    if (itemType === "avatar_frame") {
+                        const equipped =
+                            userData.equippedAvatarFrame &&
+                            typeof userData.equippedAvatarFrame === "object"
+                                ? userData.equippedAvatarFrame
+                                : {};
+
+                        if (
+                            String(equipped.eventId || "") === eventId &&
+                            String(equipped.itemId || "") === itemId
+                        ) {
+                            userUpdate.equippedAvatarFrame =
+                                FieldValue.delete();
+                            userUpdate.equippedAvatarFrameUpdatedAt =
+                                FieldValue.serverTimestamp();
+                            unequippedAvatarFrame = true;
+                        }
+                    }
+
+                    if (
+                        itemType === "background" ||
+                        itemType === "chat_background" ||
+                        itemType === "scene_background"
+                    ) {
+                        const equippedChatBackground =
+                            userData.equippedChatBackground &&
+                            typeof userData.equippedChatBackground === "object"
+                                ? userData.equippedChatBackground
+                                : {};
+
+                        if (
+                            String(
+                                equippedChatBackground.eventId || ""
+                            ) === eventId &&
+                            String(
+                                equippedChatBackground.itemId || ""
+                            ) === itemId
+                        ) {
+                            userUpdate.equippedChatBackground =
+                                FieldValue.delete();
+                            userUpdate.equippedChatBackgroundUpdatedAt =
+                                FieldValue.serverTimestamp();
+                            unequippedChatBackground = true;
+                        }
+
+                        const equippedBackground =
+                            userData.equippedBackground &&
+                            typeof userData.equippedBackground === "object"
+                                ? userData.equippedBackground
+                                : {};
+
+                        if (
+                            String(
+                                equippedBackground.eventId || ""
+                            ) === eventId &&
+                            String(
+                                equippedBackground.itemId || ""
+                            ) === itemId
+                        ) {
+                            userUpdate.equippedBackground =
+                                FieldValue.delete();
+                            userUpdate.equippedBackgroundUpdatedAt =
+                                FieldValue.serverTimestamp();
+                            unequippedChatBackground = true;
+                        }
+                    }
+
+                    if (Object.keys(userUpdate).length > 0) {
+                        transaction.update(
+                            userRef,
+                            userUpdate
+                        );
+                    }
+                }
+
+                transaction.set(
+                    deleteLogRef,
+                    {
+                        userId,
+                        eventId,
+                        itemId,
+                        itemType,
+                        itemName:
+                            String(
+                                ownedItem.name || "限定物品"
+                            ),
+                        imageUrl:
+                            String(
+                                ownedItem.imageUrl || ""
+                            ),
+                        deletedAt:
+                            FieldValue.serverTimestamp(),
+                    }
+                );
+
+                return {
+                    eventId,
+                    itemId,
+                    itemType,
+                    itemName:
+                        String(
+                            ownedItem.name || "限定物品"
+                        ),
+                    unequippedAvatarFrame,
+                    unequippedChatBackground,
+                };
+            }
+        );
+
+        console.log(
+            "🗑️ 活動限定物品已永久刪除",
+            {
+                userId,
+                ...result,
+            }
+        );
+
+        return {
+            success: true,
+            ...result,
+        };
+    }
+);
+
+
+
+// =====================================================
+// 🕰️ 活動收藏日期補正 V1
+// 舊 ownedEventItems 沒有 acquiredAt 時，
+// 從 shop_redemptions 的 redeemedAt 回填「首次取得日期」。
+// 新兌換物品已在 redeemEventShopItem 寫入 acquiredAt。
+// =====================================================
+exports.backfillEventOwnedItemAcquiredAt = onCall(
+    {
+        region: "asia-east1",
+        timeoutSeconds: 60,
+        memory: "256MiB",
+    },
+    async (request) => {
+        const userId = request.auth?.uid;
+
+        if (!userId) {
+            throw new HttpsError(
+                "unauthenticated",
+                "請先登入"
+            );
+        }
+
+        const userRef =
+            db.collection("users").doc(userId);
+
+        const userSnapshot =
+            await userRef.get();
+
+        const userData =
+            userSnapshot.exists
+                ? (userSnapshot.data() || {})
+                : {};
+
+        if (
+            userData
+                .eventOwnedItemAcquiredAtBackfillV1Done === true
+        ) {
+            return {
+                success: true,
+                alreadyDone: true,
+                updatedItems: 0,
+            };
+        }
+
+        const eventsRef =
+            db.collection("artifacts")
+                .doc(APP_ID)
+                .collection("event_progress")
+                .doc(userId)
+                .collection("events");
+
+        const eventsSnapshot =
+            await eventsRef.get();
+
+        let updatedItems = 0;
+        let scannedEvents = 0;
+
+        for (const eventDoc of eventsSnapshot.docs) {
+            scannedEvents++;
+
+            const progressData =
+                eventDoc.data() || {};
+
+            const rawOwned =
+                progressData.ownedEventItems;
+
+            if (
+                !rawOwned ||
+                typeof rawOwned !== "object"
+            ) {
+                continue;
+            }
+
+            const ownedEventItems = {
+                ...rawOwned,
+            };
+
+            const missingItemIds =
+                Object.entries(ownedEventItems)
+                    .filter(([_, item]) => {
+                        return (
+                            item &&
+                            typeof item === "object" &&
+                            !item.acquiredAt
+                        );
+                    })
+                    .map(([itemId]) => itemId);
+
+            if (missingItemIds.length === 0) {
+                continue;
+            }
+
+            const redemptionsSnapshot =
+                await eventDoc.ref
+                    .collection("shop_redemptions")
+                    .orderBy("redeemedAt", "asc")
+                    .get();
+
+            const firstRedeemedAtByItem =
+                new Map();
+
+            for (
+                const redemptionDoc
+                of redemptionsSnapshot.docs
+            ) {
+                const redemption =
+                    redemptionDoc.data() || {};
+
+                const itemId =
+                    String(
+                        redemption.itemId || ""
+                    ).trim();
+
+                if (
+                    !itemId ||
+                    firstRedeemedAtByItem.has(itemId)
+                ) {
+                    continue;
+                }
+
+                const redeemedAt =
+                    redemption.redeemedAt;
+
+                if (redeemedAt) {
+                    firstRedeemedAtByItem.set(
+                        itemId,
+                        redeemedAt
+                    );
+                }
+            }
+
+            let changed = false;
+
+            for (const itemId of missingItemIds) {
+                const acquiredAt =
+                    firstRedeemedAtByItem.get(itemId);
+
+                if (!acquiredAt) {
+                    continue;
+                }
+
+                ownedEventItems[itemId] = {
+                    ...ownedEventItems[itemId],
+                    acquiredAt,
+                };
+
+                updatedItems++;
+                changed = true;
+            }
+
+            if (changed) {
+                await eventDoc.ref.set(
+                    {
+                        ownedEventItems,
+                        updatedAt:
+                            FieldValue.serverTimestamp(),
+                    },
+                    { merge: true }
+                );
+            }
+        }
+
+        await userRef.set(
+            {
+                eventOwnedItemAcquiredAtBackfillV1Done:
+                    true,
+                eventOwnedItemAcquiredAtBackfillV1At:
+                    FieldValue.serverTimestamp(),
+            },
+            { merge: true }
+        );
+
+        console.log(
+            "🕰️ 活動收藏日期補正完成",
+            {
+                userId,
+                scannedEvents,
+                updatedItems,
+            }
+        );
+
+        return {
+            success: true,
+            alreadyDone: false,
+            scannedEvents,
+            updatedItems,
+        };
+    }
+);
+
+
+
+// =====================================================
+// 👀 活動限定回憶：記錄「完整觀看」
+// - 僅由完成整段演出時呼叫
+// - 跳過演出不應呼叫
+// - viewedAt 保留第一次完整觀看時間
+// =====================================================
+exports.markEventMemoryViewed = onCall(
+    {
+        region: "asia-east1",
+        timeoutSeconds: 30,
+        memory: "256MiB",
+    },
+    async (request) => {
+        const userId = request.auth?.uid;
+
+        if (!userId) {
+            throw new HttpsError(
+                "unauthenticated",
+                "請先登入"
+            );
+        }
+
+        const eventId =
+            String(
+                request.data?.eventId || ""
+            ).trim();
+
+        const memoryId =
+            String(
+                request.data?.memoryId || ""
+            ).trim();
+
+        if (!eventId || !memoryId) {
+            throw new HttpsError(
+                "invalid-argument",
+                "缺少活動或回憶編號"
+            );
+        }
+
+        const memoryRef =
+            db.collection("artifacts")
+                .doc(APP_ID)
+                .collection("events")
+                .doc(eventId)
+                .collection("memories")
+                .doc(memoryId);
+
+        const progressRef =
+            reusableEventProgressRef(
+                userId,
+                eventId
+            );
+
+        const result = await db.runTransaction(
+            async (transaction) => {
+                const [
+                    memorySnapshot,
+                    progressSnapshot,
+                ] = await Promise.all([
+                    transaction.get(memoryRef),
+                    transaction.get(progressRef),
+                ]);
+
+                if (!memorySnapshot.exists) {
+                    throw new HttpsError(
+                        "not-found",
+                        "找不到這篇限定回憶"
+                    );
+                }
+
+                const memoryData =
+                    memorySnapshot.data() || {};
+
+                if (memoryData.isActive === false) {
+                    throw new HttpsError(
+                        "failed-precondition",
+                        "這篇限定回憶目前未開放"
+                    );
+                }
+
+                const progressData =
+                    progressSnapshot.exists
+                        ? (progressSnapshot.data() || {})
+                        : {};
+
+                const viewedMemories =
+                    progressData.viewedMemories &&
+                    typeof progressData.viewedMemories === "object"
+                        ? { ...progressData.viewedMemories }
+                        : {};
+
+                const alreadyViewed =
+                    Object.prototype.hasOwnProperty.call(
+                        viewedMemories,
+                        memoryId
+                    );
+
+                if (!alreadyViewed) {
+                    viewedMemories[memoryId] = {
+                        viewedAt:
+                            FieldValue.serverTimestamp(),
+                    };
+
+                    transaction.set(
+                        progressRef,
+                        {
+                            userId,
+                            eventId,
+                            viewedMemories,
+                            lastViewedMemoryId:
+                                memoryId,
+                            lastViewedMemoryAt:
+                                FieldValue.serverTimestamp(),
+                            updatedAt:
+                                FieldValue.serverTimestamp(),
+                        },
+                        { merge: true }
+                    );
+                }
+
+                return {
+                    alreadyViewed,
+                };
+            }
+        );
+
+        return {
+            success: true,
+            eventId,
+            memoryId,
+            alreadyViewed:
+                result.alreadyViewed === true,
+        };
+    }
+);
+
+
 exports.getAiResponse = onRequest({
     region: REGION,
     minInstances: 0,
@@ -6925,6 +8439,17 @@ if (sessionId) {
                     .doc()
                 : null;
 
+        // 📊 模式使用事件：只在正式聊天室、AI 成功寫入時紀錄。
+        // 用 deterministic id 綁定本次 AI 訊息，避免重複統計。
+        const modeUsageEventRef =
+            !isTestChat && !isQixiOpeningRequest
+                ? db
+                    .collection("artifacts")
+                    .doc(APP_ID)
+                    .collection("chat_mode_events")
+                    .doc(`${sessionId}_${aiMessageRef.id}`)
+                : null;
+
         const wasCancelled =
             await db.runTransaction(
                 async (transaction) => {
@@ -7088,6 +8613,10 @@ const sessionData =
                             characterName: name,
                             role: "assistant",
 
+                            // 📊 營運統計用，不影響聊天室顯示
+                            chatMode,
+                            billingType,
+
                             // 🧭 Writer Router v2 內部觀測資料
                             writerTier: writerRoute.writerTier,
                             writerModelId: writerRoute.modelId,
@@ -7171,6 +8700,44 @@ const sessionData =
                             }
                         );
                     }
+                    // 📊 成功回覆後才寫模式使用事件。
+                    if (modeUsageEventRef) {
+                        transaction.set(
+                            modeUsageEventRef,
+                            {
+                                userId,
+                                sessionId,
+                                messageId: aiMessageRef.id,
+                                characterId:
+                                    characterProfile.id || "",
+                                chatMode,
+                                billingType,
+                                interactionType:
+                                    billingType === "interaction"
+                                        ? interactionType
+                                        : "",
+                                giftType:
+                                    billingType === "gift"
+                                        ? giftType
+                                        : "",
+                                chargedFlowers: Math.max(0, Number(cost || 0)),
+                                isPaidGeminiChat:
+                                    isPaidGeminiChat === true,
+                                isFreeCasual:
+                                    chatMode === "gemini" &&
+                                    billingType === "chat" &&
+                                    Number(cost || 0) === 0,
+                                isRegenerate:
+                                    isRegenerateRequest === true,
+                                isContinue:
+                                    isContinue === true,
+                                createdAt:
+                                    FieldValue.serverTimestamp(),
+                            },
+                            { merge: true }
+                        );
+                    }
+
                     // C. 成功完成免費閒聊後才消耗 1 次每日免費額度
                     if (shouldConsumeFreeChatQuota) {
                         transaction.set(
@@ -7223,6 +8790,17 @@ const sessionData =
                                     : aiMessageRef.id,
 
                                 chatMode,
+                                billingType,
+                                interactionType:
+                                    billingType === "interaction"
+                                        ? interactionType
+                                        : "",
+                                giftType:
+                                    billingType === "gift"
+                                        ? giftType
+                                        : "",
+                                isPaidGeminiChat:
+                                    isPaidGeminiChat === true,
                                 isTestMode: isTestChat,
 
                                 createdAt:
@@ -7283,6 +8861,33 @@ const sessionData =
             );
 
             return;
+        }
+
+        // 🎃 通用活動任務進度：
+        // 只有 AI 回覆與原本收銀台交易都成功後才計入，
+        // 且失敗不得影響聊天本身。
+        try {
+            await recordReusableEventTaskProgress({
+                userId,
+                sessionId,
+                messageId: aiMessageRef.id,
+                chatMode,
+                billingType,
+                interactionType,
+                giftType,
+                isTestChat,
+                isRegenerate:
+                    isRegenerateRequest === true,
+                isContinue:
+                    isContinue === true,
+                isQixiOpening:
+                    isQixiOpeningRequest === true,
+            });
+        } catch (eventProgressError) {
+            console.error(
+                "⚠️ 活動任務進度寫入失敗，不影響聊天：",
+                eventProgressError
+            );
         }
 
         // 成功後不要再無條件刪除 cancellationRef。
@@ -9307,6 +10912,147 @@ exports.notifyFollowersOnNewMomentV2 = onDocumentCreated(
                           // ==========================================
                           // 📞 電話專屬 VIP 綠色通道 (內建同理心保險絲 + 記憶晶體版)
                           // ==========================================
+
+// =====================================================
+// 📞 通話模式：綁定聊天室三層記憶
+// 新版 Call 會傳 memoryScopeVersion: 1 + sessionId + characterId。
+// 舊版 Call 沒有這些欄位時仍維持原本行為，不會被擋住。
+// =====================================================
+async function buildCallScopedMemoryContext({
+    userId,
+    sessionId,
+    characterId,
+    memoryScopeVersion = 0,
+}) {
+    if (Number(memoryScopeVersion || 0) < 1) {
+        return "";
+    }
+
+    const safeUserId = String(userId || "").trim();
+    const safeSessionId = String(sessionId || "").trim();
+    const requestedCharacterId = String(characterId || "").trim();
+
+    if (!safeUserId || !safeSessionId) {
+        return "";
+    }
+
+    const roomSnapshot = await db
+        .collection("artifacts")
+        .doc(APP_ID)
+        .collection("chat_sessions")
+        .doc(safeSessionId)
+        .get();
+
+    if (!roomSnapshot.exists) {
+        console.warn("📞 找不到通話來源聊天室，略過三層記憶：", {
+            userId: safeUserId,
+            sessionId: safeSessionId,
+        });
+        return "";
+    }
+
+    const roomData = roomSnapshot.data() || {};
+    const roomOwner = String(roomData.userId || "").trim();
+    const roomCharacterId = String(roomData.characterId || "").trim();
+
+    if (roomOwner !== safeUserId) {
+        const error = new Error("CALL_ROOM_FORBIDDEN");
+        error.code = "CALL_ROOM_FORBIDDEN";
+        throw error;
+    }
+
+    if (
+        requestedCharacterId &&
+        roomCharacterId &&
+        requestedCharacterId !== roomCharacterId
+    ) {
+        const error = new Error("CALL_CHARACTER_MISMATCH");
+        error.code = "CALL_CHARACTER_MISMATCH";
+        throw error;
+    }
+
+    const effectiveCharacterId =
+        roomCharacterId || requestedCharacterId;
+
+    if (!effectiveCharacterId) {
+        return "";
+    }
+
+    const userSnapshot = await db
+        .collection("users")
+        .doc(safeUserId)
+        .get();
+
+    const userData = userSnapshot.data() || {};
+
+    const effectiveProfileId =
+        await resolveEffectivePlayerProfileId({
+            appId: APP_ID,
+            userId: safeUserId,
+            characterId: effectiveCharacterId,
+            sessionId: safeSessionId,
+            requestedProfileId:
+                String(roomData.playerProfileId || "").trim(),
+            userData,
+        });
+
+    const identity =
+        resolvePlayerIdentityFromUserData(
+            userData,
+            effectiveProfileId
+        );
+
+    const entries =
+        await loadScopedMemoryEntries({
+            appId: APP_ID,
+            userId: safeUserId,
+            characterId: effectiveCharacterId,
+            playerProfileId: effectiveProfileId,
+            sessionId: safeSessionId,
+            perScopeLimit: 8,
+        });
+
+    const identityLines = [
+        `目前玩家檔案：${identity.name || "你"}`,
+        identity.gender && identity.gender !== "未設定"
+            ? `玩家性別設定：${identity.gender}`
+            : "",
+        identity.birthday && identity.birthday !== "未設定"
+            ? `玩家生日設定：${identity.birthday}`
+            : "",
+    ].filter(Boolean);
+
+    const memoryLines = entries
+        .slice(0, 18)
+        .map((entry, index) => {
+            const scopeLabel =
+                entry.scope === "session"
+                    ? "本聊天室"
+                    : entry.scope === "character"
+                    ? "你們之間"
+                    : "玩家檔案";
+
+            return `${index + 1}. [${scopeLabel}] ${entry.content}`;
+        });
+
+    if (memoryLines.length === 0 && identityLines.length === 0) {
+        return "";
+    }
+
+    return `
+【本次電話綁定的玩家檔案與聊天室記憶｜既定事實】
+${identityLines.join("\n")}
+${memoryLines.join("\n")}
+
+【通話記憶規則】
+- 這通電話屬於 sessionId=${safeSessionId} 的同一條世界線。
+- 本聊天室(Session)事實優先於角色共用(Character)，角色共用再優先於玩家檔案(Profile)。
+- 不得自行引用其他聊天室的世界線、身份、關係或稱呼。
+- 若近期通話 history 與長期記憶看似衝突，先自然回應最新對話，不要假裝沒看見玩家剛說過的內容。
+`.trim();
+}
+
+
                           exports.directCallAi = onRequest({
                               region: "asia-east1",
                               secrets: [openRouterApiKey],
@@ -9314,10 +11060,32 @@ exports.notifyFollowersOnNewMomentV2 = onDocumentCreated(
                               timeoutSeconds: 60,
                           }, async (req, res) => {
                               try {
-                                  const data = req.body;
+                                  const data = req.body || {};
                                   const fetch = (await import('node-fetch')).default;
 
+                                  const authHeader = String(req.headers.authorization || "");
+                                  if (!authHeader.startsWith("Bearer ")) {
+                                      return res.status(401).json({ error: "未授權" });
+                                  }
+
+                                  const idToken = authHeader.slice(7).trim();
+                                  const decodedToken = await auth.verifyIdToken(idToken);
+                                  const userId = decodedToken.uid;
+
                                   let fullSystemPrompt = data.overrideSystemPrompt || "";
+
+                                  const callScopedMemoryContext =
+                                      await buildCallScopedMemoryContext({
+                                          userId,
+                                          sessionId: data.sessionId,
+                                          characterId: data.characterId,
+                                          memoryScopeVersion: data.memoryScopeVersion,
+                                      });
+
+                                  if (callScopedMemoryContext) {
+                                      fullSystemPrompt +=
+                                          `\n\n${callScopedMemoryContext}`;
+                                  }
 
                                   if (data.characterProfile) {
                                     const p = data.characterProfile;
@@ -9386,6 +11154,16 @@ exports.notifyFollowersOnNewMomentV2 = onDocumentCreated(
 
                               } catch (error) {
                                   console.error("電話通道錯誤:", error);
+
+                                  if (
+                                      error?.code === "CALL_ROOM_FORBIDDEN" ||
+                                      error?.code === "CALL_CHARACTER_MISMATCH"
+                                  ) {
+                                      return res.status(403).json({
+                                          error: "CALL_SCOPE_FORBIDDEN",
+                                      });
+                                  }
+
                                   res.status(500).json({ error: "訊號不好" });
                               }
                           });
@@ -10070,7 +11848,32 @@ exports.directCallAiStream = onRequest({
     }
 
     try {
-        const { userMessage, history, overrideSystemPrompt, characterProfile } = req.body || {};
+        const {
+            userMessage,
+            history,
+            overrideSystemPrompt,
+            characterProfile,
+            sessionId,
+            characterId,
+            memoryScopeVersion = 0,
+        } = req.body || {};
+
+        const authHeader = String(req.headers.authorization || "");
+        if (!authHeader.startsWith("Bearer ")) {
+            return res.status(401).end();
+        }
+
+        const idToken = authHeader.slice(7).trim();
+        const decodedToken = await auth.verifyIdToken(idToken);
+        const userId = decodedToken.uid;
+
+        const callScopedMemoryContext =
+            await buildCallScopedMemoryContext({
+                userId,
+                sessionId,
+                characterId,
+                memoryScopeVersion,
+            });
 
         // 2. 準備給前端的資料流通道
         res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
@@ -10079,7 +11882,15 @@ exports.directCallAiStream = onRequest({
 
         // 3. 組合記憶與人設
         const messages = [
-            { role: "system", content: `${overrideSystemPrompt}\n角色人設：${JSON.stringify(characterProfile)}` }
+            {
+                role: "system",
+                content:
+                    `${overrideSystemPrompt || ""}` +
+                    `\n角色人設：${JSON.stringify(characterProfile || {})}` +
+                    (callScopedMemoryContext
+                        ? `\n\n${callScopedMemoryContext}`
+                        : ""),
+            }
         ];
         if (history && history.length > 0) {
             history.forEach(h => messages.push({ role: h.role === "user" ? "user" : "assistant", content: h.content }));
@@ -10143,6 +11954,14 @@ exports.directCallAiStream = onRequest({
 
     } catch (err) {
         console.error("串流嚴重錯誤:", err.response?.data || err.message);
+
+        if (
+            err?.code === "CALL_ROOM_FORBIDDEN" ||
+            err?.code === "CALL_CHARACTER_MISMATCH"
+        ) {
+            return res.status(403).end();
+        }
+
         res.status(500).end();
     }
 });
@@ -11090,7 +12909,7 @@ exports.createMomentNotification = onCall(
 );
 exports.requestDeleteAccount = onCall(
   {
-     region: "us-central1",
+    region: "us-central1",
   },
   async (request) => {
     if (!request.auth) {
@@ -11108,7 +12927,9 @@ exports.requestDeleteAccount = onCall(
     await db.collection("users").doc(uid).set(
       {
         accountDeleteRequested: true,
-        deleteScheduledAt: db.Timestamp.fromDate(deleteDate),
+
+        // ✅ 不要再用 db.Timestamp
+        deleteScheduledAt: Timestamp.fromDate(deleteDate),
       },
       {
         merge: true,
@@ -11121,9 +12942,10 @@ exports.requestDeleteAccount = onCall(
   }
 );
 
+
 exports.cancelDeleteAccount = onCall(
   {
-     region: 'us-central1', // 鎖定美國區，避開亞洲區 CPU 滿載
+    region: "us-central1",
   },
   async (request) => {
     if (!request.auth) {
@@ -11135,7 +12957,6 @@ exports.cancelDeleteAccount = onCall(
 
     const uid = request.auth.uid;
 
-    // 使用 set + merge，確保絕對不會因為欄位問題而 Crash
     await db.collection("users").doc(uid).set(
       {
         accountDeleteRequested: false,
@@ -11151,16 +12972,18 @@ exports.cancelDeleteAccount = onCall(
     };
   }
 );
+
+
 exports.checkScheduledDelete = onSchedule(
   {
-  region: 'us-central1',
+    region: "us-central1",
     schedule: "every 24 hours",
     timeZone: "Asia/Taipei",
   },
   async () => {
 
-    const now = db.Timestamp.now();
-
+    // ✅ 這裡也要改
+    const now = Timestamp.now();
 
     const usersSnapshot = await db
       .collection("users")
@@ -11172,29 +12995,21 @@ exports.checkScheduledDelete = onSchedule(
       )
       .get();
 
-
     if (usersSnapshot.empty) {
       console.log("目前沒有需要刪除的帳號");
       return;
     }
 
-
     for (const doc of usersSnapshot.docs) {
-
       const uid = doc.id;
-
 
       console.log(
         `開始刪除過期帳號 UID=${uid}`
       );
 
-
       try {
-
-
         const userRef =
           db.collection("users").doc(uid);
-
 
         // ======================
         // 刪 aiRequests
@@ -11205,16 +13020,11 @@ exports.checkScheduledDelete = onSchedule(
             .collection("aiRequests")
             .get();
 
-
-        const batch =
-          db.batch();
-
+        const batch = db.batch();
 
         aiRequests.docs.forEach(item => {
           batch.delete(item.ref);
         });
-
-
 
         // ======================
         // 刪 flower_logs
@@ -11225,12 +13035,9 @@ exports.checkScheduledDelete = onSchedule(
             .collection("flower_logs")
             .get();
 
-
         flowerLogs.docs.forEach(item => {
           batch.delete(item.ref);
         });
-
-
 
         // ======================
         // 刪 users
@@ -11238,10 +13045,7 @@ exports.checkScheduledDelete = onSchedule(
 
         batch.delete(userRef);
 
-
         await batch.commit();
-
-
 
         // ======================
         // 刪 Authentication
@@ -11251,25 +13055,17 @@ exports.checkScheduledDelete = onSchedule(
           .auth()
           .deleteUser(uid);
 
-
-
         console.log(
           `✅ 完成刪除 UID=${uid}`
         );
 
-
-      } catch(error) {
-
-
+      } catch (error) {
         console.error(
           `❌ 刪除失敗 UID=${uid}`,
           error
         );
-
       }
-
     }
-
   }
 );
 // ============================================================
@@ -14256,6 +16052,8 @@ async function extractPlayerMemory({
   - 「我討厭草莓蛋糕」與「我現在最喜歡草莓蛋糕」→ 都用 preference.food.strawberry_cake。
   - 「我是學生」與「我畢業後成為咖啡師」→ 都用 identity.occupation。
   - 「叫我小滿」與「以後叫我阿滿」→ 都用 interaction.preferred_address。
+  - 若是一般、跨聊天室成立的稱呼（例如「大家都叫我阿滿」「叫我小滿就好」）→ scope=profile。
+  - 若是目前角色／目前聊天室專屬稱呼（例如「我喜歡你叫我寶寶」「你叫我老婆」「不要叫我寶寶，叫名字」）→ scope=session。
   - 「我們結婚了」與「我們決定離婚」→ 都用 relationship.status；事件本身若另有長期意義才用 relationship.event.<subject>。
   - scope 只表示「這個事實在哪裡成立」，不要把 scope 重複編進 factKey。
   - 「在這個世界裡我很愛甜食」→ scope=session，但 factKey 仍是 preference.food.sweets，不要輸出 worldline.preference.sweets。
@@ -14268,10 +16066,10 @@ async function extractPlayerMemory({
 【記憶範圍判斷】
 - profile：只在明確是玩家穩定、自身、跨角色都成立的事實時使用。
   例：我是咖啡師、我對花生過敏、我固定不喝酒。
-- character：只對目前這個角色有意義的關係型長期記憶。
-  例：我最喜歡你做的草莓蛋糕、我希望你叫我小滿。
-- session：只在目前聊天室／世界線成立的劇情事實。
-  例：我們昨天結婚了、在這個世界裡我不吃甜食、我現在懷孕了。
+- character：只對目前這個角色有意義、而且應跨該角色不同聊天室共享的長期記憶。
+  例：我最喜歡你做的草莓蛋糕、我一直很信任你。
+- session：只在目前聊天室／世界線成立的劇情事實與稱呼。
+  例：我們昨天結婚了、在這個世界裡我不吃甜食、我現在懷孕了、我喜歡你在這裡叫我寶寶。
 - none：一次性、模糊、玩笑、當下狀態，或不值得長期保存。
 
 判斷原則：
@@ -14281,6 +16079,11 @@ async function extractPlayerMemory({
 - 只有「今天／剛剛／突然／今晚／這次／現在想……」這類純當下需求才應判為 none。
 - 若無法確定是全域穩定事實，寧可選 character 或 session，不要誤放 profile。
 - 一次最多提取一項最重要的記憶。
+
+輸出要求：
+- 只輸出一個合法 JSON object。
+- 禁止任何前言、解釋、Markdown、程式碼框或「Here is...」之類文字。
+- 即使 shouldRemember=false，也必須輸出完整 JSON 結構。
 
 輸出格式：
 {
@@ -14305,7 +16108,7 @@ async function extractPlayerMemory({
         content: `需要記憶的人名：${playerName || "對方"}\n最新訊息：${cleanMessage}`,
       },
     ],
-    max_tokens: 160,
+    max_tokens: 400,
     temperature: 0,
     response_format: {
       type: "json_object",
@@ -14322,25 +16125,72 @@ async function extractPlayerMemory({
       requestBody,
     });
 
-    const rawContent =
-      result?.choices?.[0]?.message?.content || "";
-
-    if (!rawContent.trim()) {
-      return {
-        shouldRemember: false,
-        memory: "",
-        scope: "none",
-        category: "none",
-        confidence: 0,
-      };
-    }
-
-    const parsed = JSON.parse(
-      rawContent
+    const parseMemoryJson = (value) => {
+      const cleaned = String(value || "")
         .replace(/```json/gi, "")
         .replace(/```/g, "")
-        .trim(),
-    );
+        .trim();
+
+      if (!cleaned) {
+        throw new Error("EMPTY_MEMORY_EXTRACTOR_OUTPUT");
+      }
+
+      const start = cleaned.indexOf("{");
+      const end = cleaned.lastIndexOf("}");
+      if (start < 0 || end <= start) {
+        throw new Error(
+          `INVALID_MEMORY_EXTRACTOR_JSON: ${cleaned.slice(0, 160)}`
+        );
+      }
+
+      return JSON.parse(cleaned.slice(start, end + 1));
+    };
+
+    let parsed;
+
+    try {
+      parsed = parseMemoryJson(
+        result?.choices?.[0]?.message?.content || ""
+      );
+    } catch (firstParseError) {
+      console.warn(
+        "⚠️ Gemini 記憶提取輸出不是合法 JSON，改用 DeepSeek 重試一次：",
+        {
+          finishReason: result?.choices?.[0]?.finish_reason || "",
+          preview: String(
+            result?.choices?.[0]?.message?.content || ""
+          ).slice(0, 180),
+          error: firstParseError?.message || String(firstParseError),
+        }
+      );
+
+      const retryResult = await callAiWithRetry({
+        modelId: "deepseek/deepseek-v4-flash",
+        fallbackModelId: "deepseek/deepseek-v4-flash",
+        abortController,
+        timeoutMs: 20_000,
+        requestBody: {
+          ...requestBody,
+          max_tokens: 400,
+          messages: [
+            {
+              role: "system",
+              content:
+                memorySystemPrompt +
+                "\n\n【最高格式要求】只輸出一個合法 JSON object；禁止前言、說明、Markdown 或程式碼框。",
+            },
+            {
+              role: "user",
+              content: `需要記憶的人名：${playerName || "對方"}\n最新訊息：${cleanMessage}`,
+            },
+          ],
+        },
+      });
+
+      parsed = parseMemoryJson(
+        retryResult?.choices?.[0]?.message?.content || ""
+      );
+    }
 
     return {
       shouldRemember: parsed.shouldRemember === true,
@@ -14620,15 +16470,27 @@ function canonicalizeMemoryFactKey(value, {userMessage = "", category = ""} = {}
     return key;
   }
 
-  if (/(咖啡(?!師)|coffee(?!\s*(?:maker|barista)))/i.test(message)) {
+  // 如果模型已經給了「有效而且更具體」的偏好主題，就不要只因為句子背景提到
+  // 咖啡店、酒吧等詞，把主題粗暴覆蓋掉。
+  // 例：「我在咖啡店不喝拿鐵」若模型已判 preference.drink.latte，
+  // 必須保留 latte，不能因為「咖啡店」被改成 coffee。
+  const hasSpecificDrinkKey =
+    key.startsWith("preference.drink.") &&
+    !["preference.drink.drink", "preference.drink.other"].includes(key);
+
+  const hasSpecificFoodKey =
+    key.startsWith("preference.food.") &&
+    !["preference.food.food", "preference.food.other"].includes(key);
+
+  if (!hasSpecificDrinkKey && /(不喝咖啡|喝咖啡|喜歡咖啡|愛喝咖啡|討厭咖啡|每天(?:都)?喝咖啡|coffee)/i.test(message)) {
     key = "preference.drink.coffee";
-  } else if (/(酒|喝酒|酒精|alcohol|wine|beer)/i.test(message)) {
+  } else if (!hasSpecificDrinkKey && /(不喝酒|喝酒|喜歡喝酒|愛喝酒|討厭喝酒|酒精|alcohol|wine|beer)/i.test(message)) {
     key = "preference.drink.alcohol";
-  } else if (/(草莓蛋糕|strawberry\s*cake)/i.test(message)) {
+  } else if ((!hasSpecificFoodKey || key === "preference.food.cake") && /(草莓蛋糕|strawberry\s*cake)/i.test(message)) {
     key = "preference.food.strawberry_cake";
-  } else if (/(甜食|甜點|dessert|sweets?)/i.test(message)) {
+  } else if (!hasSpecificFoodKey && /(甜食|甜點|dessert|sweets?)/i.test(message)) {
     key = "preference.food.sweets";
-  } else if (/(香菜|cilantro|coriander)/i.test(message)) {
+  } else if (!hasSpecificFoodKey && /(香菜|cilantro|coriander)/i.test(message)) {
     key = "preference.food.cilantro";
   }
 
@@ -14848,6 +16710,18 @@ function repairMemoryScope({
   userMessage,
 }) {
   let safeScope = String(scope || "none").trim().toLowerCase();
+  const message = String(userMessage || "").trim();
+
+  // 目前角色／聊天室專屬稱呼一律屬於 session。
+  // 即使 Extractor 已先判成 character，也要在這裡修正，
+  // 避免同角色不同聊天室互相污染「寶寶／老婆／老公」等稱呼。
+  if (
+    factKey === "interaction.preferred_address" &&
+    /(你叫我|你喊我|你稱呼我|你可以叫我|我喜歡你叫我|不要再叫我|不要叫我|改叫我|叫我老婆|叫我老公|叫我寶寶)/i.test(message)
+  ) {
+    return "session";
+  }
+
   if (["profile", "character", "session"].includes(safeScope)) {
     return safeScope;
   }
@@ -14856,25 +16730,15 @@ function repairMemoryScope({
     return "none";
   }
 
-  const message = String(userMessage || "").trim();
-
   // 明確世界線限定，一律 session。
   if (/(在這個世界(?:裡|中)?|這個世界線|這條世界線|在這個聊天室|這個聊天室裡)/i.test(message)) {
     return "session";
   }
 
-  // 對「你」這個角色的稱呼偏好，只屬於 character。
-  if (
-    factKey === "interaction.preferred_address" &&
-    /(你叫我|你喊我|你稱呼我|你可以叫我|我喜歡你叫我)/i.test(message)
-  ) {
-    return "character";
-  }
-
   // 只有在模型已判定 shouldRemember=true、factKey 也合法，
   // 且句子有明確穩定語意時，才把錯誤的 none 修回 profile。
   const stableSignal =
-    /(最喜歡|最愛|很喜歡|喜歡|討厭|不喜歡|不吃|不喝|每天|固定|習慣|我是|我的職業|叫我.+就好|以後叫我)/i.test(message);
+    /(最喜歡|最愛|很喜歡|喜歡|討厭|不喜歡|不吃|不喝|每天|固定|習慣|我是|我的職業|叫我.+就好|以後叫我|大家都叫我)/i.test(message);
 
   const ephemeralOnly =
     /(今天(?:突然)?想|剛剛|突然想|今晚想|這次想|等等想|現在想(?:吃|喝|做|看|去))/i.test(message);
@@ -17488,6 +19352,623 @@ function parseRewardCampaignDate(value, fieldName) {
 // ==================================================
 // 🎁 管理員建立活動禮物
 // ==================================================
+
+
+// ============================================================
+// 📈 後台：營運分析（保留原本統計，另外提供月 / 來源 / 用途 / 趨勢 / 模式比例）
+// ============================================================
+function getTaipeiUtcStartOfDay(date = new Date()) {
+    const formatter = new Intl.DateTimeFormat("en-US", {
+        timeZone: "Asia/Taipei",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+    });
+
+    const values = {};
+    for (const part of formatter.formatToParts(date)) {
+        if (part.type === "year" || part.type === "month" || part.type === "day") {
+            values[part.type] = Number(part.value);
+        }
+    }
+
+    return new Date(Date.UTC(
+        values.year,
+        values.month - 1,
+        values.day,
+        -8,
+        0,
+        0,
+        0
+    ));
+}
+
+function getTaipeiMonthStart(date = new Date(), offsetMonths = 0) {
+    const dayStart = getTaipeiUtcStartOfDay(date);
+    const taipeiLocal = new Date(dayStart.getTime() + 8 * 60 * 60 * 1000);
+    return new Date(Date.UTC(
+        taipeiLocal.getUTCFullYear(),
+        taipeiLocal.getUTCMonth() + offsetMonths,
+        1,
+        -8,
+        0,
+        0,
+        0
+    ));
+}
+
+function normalizeAdminMode(rawMode) {
+    const mode = String(rawMode || "").trim().toLowerCase();
+    if (mode === "gemini") return "gemini";
+    if (mode === "daily") return "daily";
+    if (mode === "story") return "story";
+    if (mode === "immersive") return "immersive";
+    if (mode === "resonance") return "resonance";
+    return "other";
+}
+
+function classifyFlowerGrantSource(data = {}) {
+    const type = String(data.type || "").trim().toLowerCase();
+    const source = String(data.source || "").trim().toLowerCase();
+    const title = String(data.title || "").trim().toLowerCase();
+    const reason = String(data.reason || "").trim().toLowerCase();
+    const productId = String(data.productId || "").trim().toLowerCase();
+    const productType = String(data.productType || "").trim().toLowerCase();
+    const provider = String(data.provider || "").trim().toLowerCase();
+    const text = `${type} ${source} ${title} ${reason} ${productId} ${productType} ${provider}`;
+
+    const looksLikePurchase =
+        type === "purchase" ||
+        provider === "apple_iap" ||
+        provider === "google_play" ||
+        source === "stripe_web";
+
+    if (
+        /月卡/.test(text) &&
+        /(每日|日領|daily)/.test(text)
+    ) {
+        return "monthlyDaily";
+    }
+
+    if (looksLikePurchase) {
+        if (
+            productType === "monthly_card" ||
+            /monthly|月卡|星光契約/.test(text)
+        ) {
+            return "monthlyCardPurchase";
+        }
+        return "topup";
+    }
+
+    if (
+        type === "cs_compensation" ||
+        /客服補償|補償/.test(text)
+    ) {
+        return "compensation";
+    }
+
+    if (
+        type === "reward_campaign" ||
+        /活動|campaign|節慶|七夕|萬聖|聖誕/.test(text)
+    ) {
+        return "event";
+    }
+
+    if (
+        type === "admin_adjustment" &&
+        Number(data.amount || 0) > 0
+    ) {
+        return "admin";
+    }
+
+    if (
+        type === "system_grant" ||
+        /任務|簽到|新手|推薦|邀請|referral|每日任務|免費/.test(text)
+    ) {
+        return "freeTask";
+    }
+
+    return "other";
+}
+
+function classifyFlowerSpendUse(data = {}) {
+    const billingType = String(data.billingType || "").trim().toLowerCase();
+    const type = String(data.type || "").trim().toLowerCase();
+    const title = String(data.title || "").trim().toLowerCase();
+    const reason = String(data.reason || "").trim().toLowerCase();
+    const text = `${billingType} ${type} ${title} ${reason}`;
+
+    if (billingType === "interaction" || /互動|戳戳|抱抱|牽手|定位|擲骰子/.test(text)) {
+        return "interaction";
+    }
+    if (billingType === "gift" || /禮物|gift/.test(text)) {
+        return "gift";
+    }
+
+    const mode = normalizeAdminMode(data.chatMode);
+    if (mode !== "other") return mode;
+
+    return "other";
+}
+
+function getRevenuePurchaseInfo(data = {}) {
+    const type = String(data.type || "").trim().toLowerCase();
+    const provider = String(data.provider || "").trim().toLowerCase();
+    const currency = String(data.currency || "").trim().toUpperCase();
+    const price = Number(data.price || 0);
+    const productType = String(data.productType || "").trim().toLowerCase();
+    const productId = String(data.productId || "").trim().toLowerCase();
+    const title = String(data.title || "").trim().toLowerCase();
+
+    const isMobilePurchase =
+        type === "purchase" &&
+        (provider === "apple_iap" || provider === "google_play");
+
+    if (!isMobilePurchase) {
+        return null;
+    }
+
+    const isPricedTwd =
+        currency === "TWD" &&
+        Number.isFinite(price) &&
+        price > 0;
+
+    const isMonthlyCard =
+        productType === "monthly_card" ||
+        /monthly|月卡|星光契約/.test(`${productId} ${title}`);
+
+    return {
+        provider,
+        isPricedTwd,
+        revenueTwd: isPricedTwd ? price : 0,
+        isMonthlyCard,
+    };
+}
+
+function getBucketIndex(value, startMs, bucketMs, bucketCount) {
+    const index = Math.floor((value.getTime() - startMs) / bucketMs);
+    return index >= 0 && index < bucketCount ? index : -1;
+}
+
+function isInternalTesterForAnalytics(uid, data = {}, configuredUids = new Set()) {
+    if (configuredUids.has(String(uid || "").trim())) return true;
+
+    if (
+        data.analyticsExcludeFromEconomy === true ||
+        data.isInternalTester === true ||
+        data.internalTester === true ||
+        data.isTester === true ||
+        data.isTestUser === true ||
+        data.testUser === true ||
+        data.isBetaTester === true ||
+        data.betaTester === true
+    ) {
+        return true;
+    }
+
+    const accountType = String(data.accountType || "").trim().toLowerCase();
+    return [
+        "internal_test",
+        "internal_tester",
+        "tester",
+        "test",
+        "beta_tester",
+        "beta"
+    ].includes(accountType);
+}
+
+function medianNumber(values = []) {
+    if (!Array.isArray(values) || values.length === 0) return 0;
+
+    const sorted = values
+        .map((value) => Number(value || 0))
+        .filter((value) => Number.isFinite(value))
+        .sort((a, b) => a - b);
+
+    if (sorted.length === 0) return 0;
+
+    const middle = Math.floor(sorted.length / 2);
+    if (sorted.length % 2 === 1) return sorted[middle];
+    return (sorted[middle - 1] + sorted[middle]) / 2;
+}
+
+function buildFlowerInventoryStats(rows = []) {
+    const safeRows = Array.isArray(rows) ? rows : [];
+    const balances = safeRows.map((row) => Math.max(0, Number(row?.balance || 0)));
+    const totalPlayers = balances.length;
+    const totalFlowers = balances.reduce((sum, value) => sum + value, 0);
+
+    const bucketDefs = [
+        { key: "0_100", label: "0～100", min: 0, max: 100 },
+        { key: "101_300", label: "101～300", min: 101, max: 300 },
+        { key: "301_1000", label: "301～1,000", min: 301, max: 1000 },
+        { key: "1001_3000", label: "1,001～3,000", min: 1001, max: 3000 },
+        { key: "3001_plus", label: "3,001 以上", min: 3001, max: null },
+    ];
+
+    const buckets = bucketDefs.map((def) => {
+        const matched = safeRows.filter((row) => {
+            const balance = Math.max(0, Number(row?.balance || 0));
+            if (balance < def.min) return false;
+            if (def.max != null && balance > def.max) return false;
+            return true;
+        });
+
+        const flowerTotal = matched.reduce(
+            (sum, row) => sum + Math.max(0, Number(row?.balance || 0)),
+            0
+        );
+
+        return {
+            key: def.key,
+            label: def.label,
+            players: matched.length,
+            playerRatio: totalPlayers > 0 ? matched.length / totalPlayers : 0,
+            flowerTotal,
+        };
+    });
+
+    return {
+        playerCount: totalPlayers,
+        totalFlowers,
+        averageFlowers: totalPlayers > 0 ? totalFlowers / totalPlayers : 0,
+        medianFlowers: medianNumber(balances),
+        buckets,
+    };
+}
+
+exports.getAdminOperationsAnalytics = onCall(
+    {
+        region: REGION,
+        timeoutSeconds: 120,
+        memory: "512MiB",
+    },
+    async (request) => {
+        requireRewardCampaignAdmin(request);
+
+        const now = new Date();
+        const todayStart = getTaipeiUtcStartOfDay(now);
+        const tomorrowStart = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
+        const monthStart = getTaipeiMonthStart(now, 0);
+        const sixMonthStart = getTaipeiMonthStart(now, -5);
+        const sevenDayStart = new Date(todayStart.getTime() - 6 * 24 * 60 * 60 * 1000);
+        const eightWeekStart = new Date(todayStart.getTime() - 55 * 24 * 60 * 60 * 1000);
+
+        const flowerSnapshot = await db
+            .collectionGroup("flower_logs")
+            .where("createdAt", ">=", Timestamp.fromDate(sixMonthStart))
+            .where("createdAt", "<", Timestamp.fromDate(tomorrowStart))
+            .get();
+
+        let modeEventSnapshot = null;
+        try {
+            modeEventSnapshot = await db
+                .collection("artifacts")
+                .doc(APP_ID)
+                .collection("chat_mode_events")
+                .where("createdAt", ">=", Timestamp.fromDate(monthStart))
+                .where("createdAt", "<", Timestamp.fromDate(tomorrowStart))
+                .get();
+        } catch (error) {
+            console.warn("⚠️ chat_mode_events 讀取失敗，將以舊花花紀錄補足：", error?.message || error);
+        }
+
+        // ============================================================
+        // 🌸 玩家花花庫存：全體 / 排除內測 / 內測玩家
+        // ============================================================
+        const [usersSnapshot, analyticsConfigSnapshot] = await Promise.all([
+            db.collection("users").get(),
+            db.collection("artifacts")
+                .doc(APP_ID)
+                .collection("admin_settings")
+                .doc("operations_analytics")
+                .get(),
+        ]);
+
+        const configuredTesterUids = new Set(
+            Array.isArray(analyticsConfigSnapshot.data()?.internalTesterUids)
+                ? analyticsConfigSnapshot.data().internalTesterUids
+                    .map((value) => String(value || "").trim())
+                    .filter(Boolean)
+                : []
+        );
+
+        const allInventoryRows = [];
+        const normalInventoryRows = [];
+        const internalTesterRows = [];
+
+        for (const userDoc of usersSnapshot.docs) {
+            const userData = userDoc.data() || {};
+            const rawBalance = Number(userData.flowerPoints || 0);
+            const balance = Number.isFinite(rawBalance)
+                ? Math.max(0, Math.trunc(rawBalance))
+                : 0;
+
+            const row = {
+                uid: userDoc.id,
+                balance,
+            };
+
+            allInventoryRows.push(row);
+
+            if (
+                isInternalTesterForAnalytics(
+                    userDoc.id,
+                    userData,
+                    configuredTesterUids
+                )
+            ) {
+                internalTesterRows.push(row);
+            } else {
+                normalInventoryRows.push(row);
+            }
+        }
+
+        const flowerInventory = {
+            allPlayers: buildFlowerInventoryStats(allInventoryRows),
+            excludingInternalTesters: buildFlowerInventoryStats(normalInventoryRows),
+            internalTesters: buildFlowerInventoryStats(internalTesterRows),
+            internalTesterDetection: {
+                configuredUidCount: configuredTesterUids.size,
+                detectedPlayerCount: internalTesterRows.length,
+            },
+        };
+
+        const grantSources = {
+            freeTask: 0,
+            monthlyDaily: 0,
+            monthlyCardPurchase: 0,
+            topup: 0,
+            compensation: 0,
+            event: 0,
+            admin: 0,
+            other: 0,
+        };
+
+        const spendUses = {
+            gemini: 0,
+            daily: 0,
+            story: 0,
+            immersive: 0,
+            resonance: 0,
+            interaction: 0,
+            gift: 0,
+            other: 0,
+        };
+
+        const modeUsage = {
+            gemini: 0,
+            daily: 0,
+            story: 0,
+            immersive: 0,
+            resonance: 0,
+            other: 0,
+        };
+
+        const dailyTrend = Array.from({ length: 7 }, (_, index) => ({
+            label: new Intl.DateTimeFormat("zh-TW", {
+                timeZone: "Asia/Taipei",
+                month: "numeric",
+                day: "numeric",
+            }).format(new Date(sevenDayStart.getTime() + index * 24 * 60 * 60 * 1000)),
+            granted: 0,
+            spent: 0,
+            revenueTwd: 0,
+        }));
+
+        const weeklyTrend = Array.from({ length: 8 }, (_, index) => ({
+            label: `W${index + 1}`,
+            granted: 0,
+            spent: 0,
+            revenueTwd: 0,
+        }));
+
+        const monthlyTrend = Array.from({ length: 6 }, (_, index) => {
+            const bucketStart = getTaipeiMonthStart(now, index - 5);
+            const taipeiLocal = new Date(bucketStart.getTime() + 8 * 60 * 60 * 1000);
+            return {
+                label: `${taipeiLocal.getUTCMonth() + 1}月`,
+                granted: 0,
+                spent: 0,
+                revenueTwd: 0,
+            };
+        });
+
+        const monthPayerUids = new Set();
+        const seenModeEventKeys = new Set();
+
+        let monthRevenueTwd = 0;
+        let monthPurchaseCount = 0;
+        let monthMonthlyCardRevenueTwd = 0;
+        let monthTopupRevenueTwd = 0;
+        let monthMonthlyCardPurchaseCount = 0;
+        let monthTopupPurchaseCount = 0;
+        let monthFlowerGranted = 0;
+        let monthFlowerSpent = 0;
+        let monthPaidRelatedGranted = 0;
+        let monthFreeGranted = 0;
+        let unpricedPurchaseCount = 0;
+
+        if (modeEventSnapshot) {
+            for (const doc of modeEventSnapshot.docs) {
+                const data = doc.data() || {};
+                const createdAt = data.createdAt?.toDate?.();
+                if (!createdAt || createdAt < monthStart || createdAt >= tomorrowStart) continue;
+
+                const mode = normalizeAdminMode(data.chatMode);
+                const eventBillingType =
+                    String(data.billingType || "chat")
+                        .trim()
+                        .toLowerCase();
+
+                if (eventBillingType === "chat") {
+                    modeUsage[mode] = (modeUsage[mode] || 0) + 1;
+                }
+
+                const key = `${String(data.sessionId || "")}|${String(data.messageId || "")}`;
+                if (key !== "|") seenModeEventKeys.add(key);
+            }
+        }
+
+        for (const doc of flowerSnapshot.docs) {
+            const data = doc.data() || {};
+            const createdAt = data.createdAt?.toDate?.();
+            if (!createdAt) continue;
+
+            const amount = Number(data.amount || 0);
+            const isMonth = createdAt >= monthStart && createdAt < tomorrowStart;
+
+            // 日趨勢
+            if (createdAt >= sevenDayStart && createdAt < tomorrowStart) {
+                const idx = getBucketIndex(createdAt, sevenDayStart.getTime(), 24 * 60 * 60 * 1000, 7);
+                if (idx >= 0 && Number.isFinite(amount)) {
+                    if (amount > 0) dailyTrend[idx].granted += amount;
+                    if (amount < 0) dailyTrend[idx].spent += Math.abs(amount);
+                }
+            }
+
+            // 週趨勢（近 8 週，每 7 天一桶）
+            if (createdAt >= eightWeekStart && createdAt < tomorrowStart) {
+                const idx = getBucketIndex(createdAt, eightWeekStart.getTime(), 7 * 24 * 60 * 60 * 1000, 8);
+                if (idx >= 0 && Number.isFinite(amount)) {
+                    if (amount > 0) weeklyTrend[idx].granted += amount;
+                    if (amount < 0) weeklyTrend[idx].spent += Math.abs(amount);
+                }
+            }
+
+            // 月趨勢
+            for (let i = 0; i < 6; i++) {
+                const bucketStart = getTaipeiMonthStart(now, i - 5);
+                const bucketEnd = getTaipeiMonthStart(now, i - 4);
+                if (createdAt >= bucketStart && createdAt < bucketEnd) {
+                    if (Number.isFinite(amount)) {
+                        if (amount > 0) monthlyTrend[i].granted += amount;
+                        if (amount < 0) monthlyTrend[i].spent += Math.abs(amount);
+                    }
+                    break;
+                }
+            }
+
+            const revenueInfo = getRevenuePurchaseInfo(data);
+            if (revenueInfo) {
+                if (!revenueInfo.isPricedTwd) {
+                    if (isMonth) unpricedPurchaseCount++;
+                } else {
+                    // 日 revenue 趨勢
+                    if (createdAt >= sevenDayStart && createdAt < tomorrowStart) {
+                        const idx = getBucketIndex(createdAt, sevenDayStart.getTime(), 24 * 60 * 60 * 1000, 7);
+                        if (idx >= 0) dailyTrend[idx].revenueTwd += revenueInfo.revenueTwd;
+                    }
+                    if (createdAt >= eightWeekStart && createdAt < tomorrowStart) {
+                        const idx = getBucketIndex(createdAt, eightWeekStart.getTime(), 7 * 24 * 60 * 60 * 1000, 8);
+                        if (idx >= 0) weeklyTrend[idx].revenueTwd += revenueInfo.revenueTwd;
+                    }
+                    for (let i = 0; i < 6; i++) {
+                        const bucketStart = getTaipeiMonthStart(now, i - 5);
+                        const bucketEnd = getTaipeiMonthStart(now, i - 4);
+                        if (createdAt >= bucketStart && createdAt < bucketEnd) {
+                            monthlyTrend[i].revenueTwd += revenueInfo.revenueTwd;
+                            break;
+                        }
+                    }
+                }
+
+                if (isMonth) {
+                    monthPurchaseCount++;
+                    if (revenueInfo.isPricedTwd) {
+                        monthRevenueTwd += revenueInfo.revenueTwd;
+                    }
+
+                    if (revenueInfo.isMonthlyCard) {
+                        monthMonthlyCardPurchaseCount++;
+                        if (revenueInfo.isPricedTwd) {
+                            monthMonthlyCardRevenueTwd += revenueInfo.revenueTwd;
+                        }
+                    } else {
+                        monthTopupPurchaseCount++;
+                        if (revenueInfo.isPricedTwd) {
+                            monthTopupRevenueTwd += revenueInfo.revenueTwd;
+                        }
+                    }
+
+                    const uid = doc.ref.parent.parent?.id || "";
+                    if (uid) monthPayerUids.add(uid);
+                }
+            }
+
+            if (!isMonth || !Number.isFinite(amount) || amount === 0) {
+                continue;
+            }
+
+            if (amount > 0) {
+                monthFlowerGranted += amount;
+                const sourceKey = classifyFlowerGrantSource(data);
+                grantSources[sourceKey] = (grantSources[sourceKey] || 0) + amount;
+
+                if (sourceKey === "monthlyCardPurchase" || sourceKey === "topup" || sourceKey === "monthlyDaily") {
+                    monthPaidRelatedGranted += amount;
+                } else {
+                    monthFreeGranted += amount;
+                }
+            } else {
+                monthFlowerSpent += Math.abs(amount);
+                const spendKey = classifyFlowerSpendUse(data);
+                spendUses[spendKey] = (spendUses[spendKey] || 0) + Math.abs(amount);
+
+                // 舊資料沒有 chat_mode_events 時，以付費聊天 log 補模式次數。
+                const mode = normalizeAdminMode(data.chatMode);
+                const legacyBillingType =
+                    String(data.billingType || "chat")
+                        .trim()
+                        .toLowerCase();
+
+                if (mode !== "other" && legacyBillingType === "chat") {
+                    const key = `${String(data.sessionId || "")}|${String(data.messageId || "")}`;
+                    if (!seenModeEventKeys.has(key)) {
+                        modeUsage[mode] = (modeUsage[mode] || 0) + 1;
+                    }
+                }
+            }
+        }
+
+        const modeUsageTotal = Object.values(modeUsage)
+            .reduce((sum, value) => sum + Number(value || 0), 0);
+
+        const monthPayingUsers = monthPayerUids.size;
+        const monthArppuTwd = monthPayingUsers > 0
+            ? monthRevenueTwd / monthPayingUsers
+            : null;
+
+        return {
+            generatedAt: new Date().toISOString(),
+            month: {
+                revenueTwd: monthRevenueTwd,
+                payingUsers: monthPayingUsers,
+                arppuTwd: monthArppuTwd,
+                purchaseCount: monthPurchaseCount,
+                monthlyCardRevenueTwd: monthMonthlyCardRevenueTwd,
+                topupRevenueTwd: monthTopupRevenueTwd,
+                monthlyCardPurchaseCount: monthMonthlyCardPurchaseCount,
+                topupPurchaseCount: monthTopupPurchaseCount,
+                flowerGranted: monthFlowerGranted,
+                flowerSpent: monthFlowerSpent,
+                paidRelatedGranted: monthPaidRelatedGranted,
+                freeGranted: monthFreeGranted,
+                unpricedPurchaseCount,
+            },
+            grantSources,
+            spendUses,
+            modeUsage,
+            modeUsageTotal,
+            trends: {
+                day: dailyTrend,
+                week: weeklyTrend,
+                month: monthlyTrend,
+            },
+            flowerInventory,
+        };
+    }
+);
 
 exports.createRewardCampaign = onCall(
   {

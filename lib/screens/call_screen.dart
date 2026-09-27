@@ -282,6 +282,9 @@ class _CallOverlayState extends State<CallOverlay> {
         "userMessage": promptText,
         "history": _callHistory,
         "chatMode": "call",
+        "memoryScopeVersion": 1,
+        "sessionId": widget.sessionId,
+        "characterId": widget.characterId,
         "overrideSystemPrompt": callOverridePrompt,
         "characterProfile": {
           "name": widget.character.name,
@@ -571,6 +574,9 @@ class _CallOverlayState extends State<CallOverlay> {
           "userMessage": userText,
           "history": _callHistory,
           "chatMode": "call",
+          "memoryScopeVersion": 1,
+          "sessionId": widget.sessionId,
+          "characterId": widget.characterId,
           "characterProfile": {"name": widget.character.name}
         }),
       );

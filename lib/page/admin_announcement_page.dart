@@ -10,6 +10,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/toast_utils.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:image_cropper/image_cropper.dart';
 import '../services/help_translation_admin_service.dart';
 import '../screens/character_model.dart';
 import '../utils/image_utils.dart';
@@ -119,6 +122,53 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   List<Map<String, dynamic>> _rewardCampaigns = [];
   String _rewardAudience = 'admin_only';
 
+  // ==========================================
+  // 🎃 通用活動系統 1.0 管理
+  // ==========================================
+  final TextEditingController _eventIdController = TextEditingController();
+  final TextEditingController _eventNameController = TextEditingController();
+  final TextEditingController _eventSubtitleController = TextEditingController();
+  final TextEditingController _eventDescriptionController = TextEditingController();
+  final TextEditingController _eventCurrencyNameController =
+  TextEditingController(text: '南瓜糖');
+  final TextEditingController _eventCurrencyIconController =
+  TextEditingController(text: '🎃');
+  final TextEditingController _eventBannerUrlController = TextEditingController();
+  final TextEditingController _eventHeroUrlController = TextEditingController();
+  final TextEditingController _eventAccentColorController = TextEditingController(text: '#8D6CC4');
+  final TextEditingController _eventAccentColorLightController = TextEditingController(text: '#E9DFF7');
+  final TextEditingController _eventBackgroundColorController = TextEditingController(text: '#FBF8FF');
+  final TextEditingController _eventCardColorController = TextEditingController(text: '#FFFFFF');
+
+  final TextEditingController _eventTasksHeaderIconUrlController = TextEditingController();
+  final TextEditingController _eventMilestonesHeaderIconUrlController = TextEditingController();
+  final TextEditingController _eventMemoryCardImageUrlController = TextEditingController();
+  final TextEditingController _eventShopCardImageUrlController = TextEditingController();
+  final TextEditingController _eventInfoHeaderIconUrlController = TextEditingController();
+  final TextEditingController _eventPageTopLeftUrlController = TextEditingController();
+  final TextEditingController _eventPageTopRightUrlController = TextEditingController();
+  final TextEditingController _eventProgressDecorationUrlController = TextEditingController();
+  final TextEditingController _eventInfoDecorationUrlController = TextEditingController();
+  final TextEditingController _eventPageBottomLeftUrlController = TextEditingController();
+  final TextEditingController _eventPageBottomRightUrlController = TextEditingController();
+
+  DateTime _eventStartAt = DateTime.now();
+  DateTime _eventEndAt = DateTime.now().add(const Duration(days: 14));
+
+  bool _eventIsActive = true;
+  bool _eventHasTasks = true;
+  bool _eventHasMilestones = true;
+  bool _eventHasShop = true;
+  bool _eventHasMemory = true;
+  bool _isSavingEvent = false;
+  String? _uploadingEventImageSlot;
+  String? _editingReusableEventId;
+
+  final List<Map<String, dynamic>> _eventTaskDrafts = [];
+  final List<Map<String, dynamic>> _eventMilestoneDrafts = [];
+  final List<Map<String, dynamic>> _eventShopDrafts = [];
+  final List<Map<String, dynamic>> _eventMemoryDrafts = [];
+
   // 公告用的 Controller
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
@@ -134,6 +184,13 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   String _helpTranslationStatus = '';
   String _selectedHelpLanguage = 'en';
 
+  // 📈 營運分析趨勢切換：day / week / month
+  String _analyticsTrendPeriod = 'day';
+
+  // 📊 Dashboard Future 快取
+  // 避免只切換「日 / 週 / 月」時，整頁重新呼叫 API 並顯示 loading。
+  late Future<Map<String, dynamic>> _dashboardFuture;
+
   // 後台 2.0 狀態
   String _supportStatus = 'pending';
   String _supportSearch = '';
@@ -147,6 +204,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   @override
   void initState() {
     super.initState();
+
+    _dashboardFuture = _loadDashboardData();
 
     _tabController = TabController(
       length: 7,
@@ -168,6 +227,29 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     _rewardTitleController.dispose();
     _rewardDescriptionController.dispose();
     _rewardAmountController.dispose();
+    _eventIdController.dispose();
+    _eventNameController.dispose();
+    _eventSubtitleController.dispose();
+    _eventDescriptionController.dispose();
+    _eventCurrencyNameController.dispose();
+    _eventCurrencyIconController.dispose();
+    _eventBannerUrlController.dispose();
+    _eventHeroUrlController.dispose();
+    _eventAccentColorController.dispose();
+    _eventAccentColorLightController.dispose();
+    _eventBackgroundColorController.dispose();
+    _eventCardColorController.dispose();
+    _eventTasksHeaderIconUrlController.dispose();
+    _eventMilestonesHeaderIconUrlController.dispose();
+    _eventMemoryCardImageUrlController.dispose();
+    _eventShopCardImageUrlController.dispose();
+    _eventInfoHeaderIconUrlController.dispose();
+    _eventPageTopLeftUrlController.dispose();
+    _eventPageTopRightUrlController.dispose();
+    _eventProgressDecorationUrlController.dispose();
+    _eventInfoDecorationUrlController.dispose();
+    _eventPageBottomLeftUrlController.dispose();
+    _eventPageBottomRightUrlController.dispose();
     super.dispose();
   }
 
@@ -2106,6 +2188,15 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         ),
       );
 
+      final analyticsCallable =
+      _functions.httpsCallable(
+        'getAdminOperationsAnalytics',
+        options: HttpsCallableOptions(
+          timeout:
+          const Duration(seconds: 120),
+        ),
+      );
+
       final results =
       await Future.wait([
         dashboardCallable.call(),
@@ -2168,6 +2259,20 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
             as num?)
                 ?.toInt() ??
                 0;
+      }
+
+      // 新營運分析是加掛功能：就算尚未部署或暫時讀取失敗，
+      // 原本後台統計也照常顯示，不互相拖累。
+      try {
+        final analyticsResult = await analyticsCallable.call();
+        if (analyticsResult.data is Map) {
+          data['operationsAnalytics'] =
+          Map<String, dynamic>.from(
+            analyticsResult.data as Map,
+          );
+        }
+      } catch (error) {
+        debugPrint('⚠️ 營運分析讀取失敗，保留原後台資料：$error');
       }
 
       debugPrint(
@@ -2339,9 +2444,739 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     );
   }
 
+  Map<String, dynamic> _asStringMap(dynamic raw) {
+    if (raw is Map) {
+      return Map<String, dynamic>.from(raw);
+    }
+    return <String, dynamic>{};
+  }
+
+  int _analyticsInt(dynamic raw) => (raw as num?)?.toInt() ?? 0;
+
+  double _analyticsDouble(dynamic raw) => (raw as num?)?.toDouble() ?? 0;
+
+  String _formatTwd(dynamic raw) {
+    final value = _analyticsDouble(raw);
+    final formatter = NumberFormat('#,##0', 'zh_TW');
+    return 'NT\$${formatter.format(value.round())}';
+  }
+
+  String _formatCount(dynamic raw) {
+    return NumberFormat('#,##0', 'zh_TW').format(_analyticsInt(raw));
+  }
+
+  Widget _analyticsSectionTitle({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+  }) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 38,
+          height: 38,
+          decoration: BoxDecoration(
+            color: primary.withValues(alpha: 0.09),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(icon, color: primary, size: 20),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                subtitle,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 12,
+                  height: 1.4,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.58),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _analyticsBreakdownCard({
+    required String title,
+    required Map<String, dynamic> values,
+    required List<(String, String)> rows,
+    String suffix = '朵',
+  }) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    final total = rows.fold<int>(
+      0,
+          (sum, row) => sum + _analyticsInt(values[row.$1]),
+    );
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(17),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: GoogleFonts.notoSerifTc(
+                fontSize: 15.5,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 14),
+            ...rows.map((row) {
+              final value = _analyticsInt(values[row.$1]);
+              final ratio = total <= 0 ? 0.0 : value / total;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 11),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            row.$2,
+                            style: GoogleFonts.notoSerifTc(fontSize: 12.5),
+                          ),
+                        ),
+                        Text(
+                          '${_formatCount(value)} $suffix',
+                          style: GoogleFonts.notoSerifTc(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        SizedBox(
+                          width: 46,
+                          child: Text(
+                            '${(ratio * 100).toStringAsFixed(1)}%',
+                            textAlign: TextAlign.right,
+                            style: GoogleFonts.notoSerifTc(
+                              fontSize: 11,
+                              color: theme.colorScheme.onSurface.withValues(alpha: 0.56),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(99),
+                      child: LinearProgressIndicator(
+                        minHeight: 6,
+                        value: ratio.clamp(0.0, 1.0),
+                        backgroundColor: primary.withValues(alpha: 0.08),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          primary.withValues(alpha: 0.52),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildModeUsageCard(Map<String, dynamic> analytics) {
+    final theme = Theme.of(context);
+    final modeUsage = _asStringMap(analytics['modeUsage']);
+    final total = _analyticsInt(analytics['modeUsageTotal']);
+    final modes = <(String, String)>[
+      ('gemini', '閒聊'),
+      ('daily', '日常'),
+      ('story', '劇情'),
+      ('immersive', '沉浸'),
+      ('resonance', '共鳴'),
+    ];
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(17),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '本月模式使用比例',
+              style: GoogleFonts.notoSerifTc(
+                fontSize: 15.5,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 5),
+            Text(
+              '舊版日常與新版閒聊都保留；比例以成功 AI 回覆次數計算。',
+              style: GoogleFonts.notoSerifTc(
+                fontSize: 11.5,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.58),
+              ),
+            ),
+            const SizedBox(height: 15),
+            ...modes.map((mode) {
+              final value = _analyticsInt(modeUsage[mode.$1]);
+              final ratio = total <= 0 ? 0.0 : value / total;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 46,
+                      child: Text(
+                        mode.$2,
+                        style: GoogleFonts.notoSerifTc(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(99),
+                        child: LinearProgressIndicator(
+                          minHeight: 8,
+                          value: ratio.clamp(0.0, 1.0),
+                          backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.08),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            theme.colorScheme.primary.withValues(alpha: 0.54),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    SizedBox(
+                      width: 92,
+                      child: Text(
+                        '${_formatCount(value)} 次 · ${(ratio * 100).toStringAsFixed(1)}%',
+                        textAlign: TextAlign.right,
+                        style: GoogleFonts.notoSerifTc(fontSize: 11.5),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+            if (_analyticsInt(modeUsage['other']) > 0)
+              Text(
+                '其他 / 無法辨識：${_formatCount(modeUsage['other'])} 次',
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 11,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.52),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTrendMetricBars({
+    required List<Map<String, dynamic>> items,
+    required String valueKey,
+    required String label,
+    required bool money,
+  }) {
+    final theme = Theme.of(context);
+    final values = items
+        .map((item) => _analyticsDouble(item[valueKey]))
+        .toList();
+    final maxValue = values.fold<double>(
+      0,
+          (max, value) => value > max ? value : max,
+    );
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: GoogleFonts.notoSerifTc(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 14),
+            SizedBox(
+              height: 145,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: List.generate(items.length, (index) {
+                  final value = values[index];
+                  final ratio = maxValue <= 0
+                      ? 0.04
+                      : (value / maxValue).clamp(0.04, 1.0);
+                  final text = money
+                      ? _formatTwd(value)
+                      : _formatCount(value.round());
+                  return Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 2.5),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              text,
+                              style: GoogleFonts.notoSerifTc(fontSize: 9.5),
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Flexible(
+                            child: FractionallySizedBox(
+                              heightFactor: ratio,
+                              alignment: Alignment.bottomCenter,
+                              child: Container(
+                                width: 17,
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.primary.withValues(alpha: 0.50),
+                                  borderRadius: const BorderRadius.vertical(
+                                    top: Radius.circular(6),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              items[index]['label']?.toString() ?? '',
+                              style: GoogleFonts.notoSerifTc(
+                                fontSize: 9,
+                                color: theme.colorScheme.onSurface.withValues(alpha: 0.50),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFlowerInventoryStatsCard({
+    required String title,
+    required Map<String, dynamic> stats,
+    String? subtitle,
+  }) {
+    final theme = Theme.of(context);
+    final rawBuckets = stats['buckets'];
+    final buckets = rawBuckets is List
+        ? rawBuckets
+        .whereType<Map>()
+        .map((item) => Map<String, dynamic>.from(item))
+        .toList()
+        : <Map<String, dynamic>>[];
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(17),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: GoogleFonts.notoSerifTc(
+                fontSize: 15.5,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            if (subtitle != null && subtitle.trim().isNotEmpty) ...[
+              const SizedBox(height: 5),
+              Text(
+                subtitle,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 11.5,
+                  height: 1.45,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
+                ),
+              ),
+            ],
+            const SizedBox(height: 14),
+            _adminInfoLine(
+              '玩家數',
+              '${_formatCount(stats['playerCount'])} 人',
+            ),
+            _adminInfoLine(
+              '花花總庫存',
+              '${_formatCount(stats['totalFlowers'])} 朵',
+            ),
+            _adminInfoLine(
+              '平均餘額',
+              '${_formatCount(_analyticsDouble(stats['averageFlowers']).round())} 朵',
+            ),
+            _adminInfoLine(
+              '中位數',
+              '${_formatCount(_analyticsDouble(stats['medianFlowers']).round())} 朵',
+            ),
+            if (buckets.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Divider(
+                color: theme.colorScheme.primary.withValues(alpha: 0.10),
+              ),
+              const SizedBox(height: 6),
+              ...buckets.map((bucket) {
+                final players = _analyticsInt(bucket['players']);
+                final ratio = _analyticsDouble(bucket['playerRatio']) * 100;
+                final flowers = _analyticsInt(bucket['flowerTotal']);
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          bucket['label']?.toString() ?? '',
+                          style: GoogleFonts.notoSerifTc(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        '$players 人 · ${ratio.toStringAsFixed(1)}% · ${_formatCount(flowers)} 朵',
+                        textAlign: TextAlign.right,
+                        style: GoogleFonts.notoSerifTc(
+                          fontSize: 11.5,
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.62),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOperationsAnalytics(Map<String, dynamic> analytics) {
+    if (analytics.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final month = _asStringMap(analytics['month']);
+    final grants = _asStringMap(analytics['grantSources']);
+    final spend = _asStringMap(analytics['spendUses']);
+    final trends = _asStringMap(analytics['trends']);
+    final inventory = _asStringMap(analytics['flowerInventory']);
+    final inventoryAll = _asStringMap(inventory['allPlayers']);
+    final inventoryNormal = _asStringMap(inventory['excludingInternalTesters']);
+    final inventoryTesters = _asStringMap(inventory['internalTesters']);
+    final inventoryDetection = _asStringMap(inventory['internalTesterDetection']);
+    final selectedRaw = trends[_analyticsTrendPeriod];
+    final selectedTrend = selectedRaw is List
+        ? selectedRaw
+        .whereType<Map>()
+        .map((item) => Map<String, dynamic>.from(item))
+        .toList()
+        : <Map<String, dynamic>>[];
+
+    final paid = _analyticsInt(month['paidRelatedGranted']);
+    final free = _analyticsInt(month['freeGranted']);
+    final sourceTotal = paid + free;
+    final paidRatio = sourceTotal <= 0 ? 0.0 : paid / sourceTotal;
+    final freeRatio = sourceTotal <= 0 ? 0.0 : free / sourceTotal;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 28),
+          _analyticsSectionTitle(
+            title: '營運數據分析',
+            subtitle: '在原本後台資料之外，加上本月營收、花花來源 / 用途、模式比例與趨勢。',
+            icon: Icons.insights_outlined,
+          ),
+          const SizedBox(height: 14),
+          GridView.count(
+            crossAxisCount: MediaQuery.sizeOf(context).width >= 900 ? 4 : 2,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
+            childAspectRatio: 0.88,
+            children: [
+              _adminStatCard(
+                label: '本月總營收',
+                value: _formatTwd(month['revenueTwd']),
+                icon: Icons.payments_outlined,
+                caption: '${_formatCount(month['purchaseCount'])} 筆付款',
+              ),
+              _adminStatCard(
+                label: '本月花花發放',
+                value: _formatCount(month['flowerGranted']),
+                icon: Icons.local_florist_outlined,
+              ),
+              _adminStatCard(
+                label: '本月花花消耗',
+                value: _formatCount(month['flowerSpent']),
+                icon: Icons.spa_outlined,
+              ),
+              _adminStatCard(
+                label: '本月付費玩家',
+                value: _formatCount(month['payingUsers']),
+                icon: Icons.person_pin_circle_outlined,
+                caption: 'ARPPU ${month['arppuTwd'] == null ? '—' : _formatTwd(month['arppuTwd'])}',
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(17),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '月卡 vs 儲值',
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 15.5,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _adminInfoLine(
+                    '月卡',
+                    '${_formatTwd(month['monthlyCardRevenueTwd'])} · ${_formatCount(month['monthlyCardPurchaseCount'])} 筆',
+                  ),
+                  _adminInfoLine(
+                    '儲值',
+                    '${_formatTwd(month['topupRevenueTwd'])} · ${_formatCount(month['topupPurchaseCount'])} 筆',
+                  ),
+                  if (_analyticsInt(month['unpricedPurchaseCount']) > 0)
+                    _adminInfoLine(
+                      '未計入金額的付款紀錄',
+                      '${_formatCount(month['unpricedPurchaseCount'])} 筆',
+                    ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(17),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '免費 vs 付費來源花花',
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 15.5,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _adminInfoLine(
+                    '付費來源（含月卡日領）',
+                    '${_formatCount(paid)} 朵 · ${(paidRatio * 100).toStringAsFixed(1)}%',
+                  ),
+                  _adminInfoLine(
+                    '免費 / 官方來源',
+                    '${_formatCount(free)} 朵 · ${(freeRatio * 100).toStringAsFixed(1)}%',
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _analyticsSectionTitle(
+            title: '玩家花花庫存分布',
+            subtitle: '同時看全體與排除內測玩家，避免早期測試花花把正式營運數據拉高。',
+            icon: Icons.inventory_2_outlined,
+          ),
+          const SizedBox(height: 10),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final wide = constraints.maxWidth >= 820;
+              final allCard = _buildFlowerInventoryStatsCard(
+                title: '全體玩家',
+                stats: inventoryAll,
+                subtitle: '包含內測 / 測試帳號。',
+              );
+              final normalCard = _buildFlowerInventoryStatsCard(
+                title: '排除內測玩家',
+                stats: inventoryNormal,
+                subtitle: '較適合拿來判斷正式玩家是否囤花。',
+              );
+
+              if (wide) {
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: allCard),
+                    const SizedBox(width: 12),
+                    Expanded(child: normalCard),
+                  ],
+                );
+              }
+
+              return Column(
+                children: [
+                  allCard,
+                  const SizedBox(height: 12),
+                  normalCard,
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 12),
+          _buildFlowerInventoryStatsCard(
+            title: '內測玩家庫存',
+            stats: inventoryTesters,
+            subtitle:
+            '辨識到 ${_formatCount(inventoryDetection['detectedPlayerCount'])} 位內測玩家；這批花花不建議拿來判斷正式經濟。',
+          ),
+          const SizedBox(height: 12),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final wide = constraints.maxWidth >= 820;
+
+              final grantCard = _analyticsBreakdownCard(
+                title: '本月花花發放來源',
+                values: grants,
+                rows: const [
+                  ('freeTask', '免費 / 任務'),
+                  ('monthlyDaily', '月卡每日'),
+                  ('monthlyCardPurchase', '購買月卡'),
+                  ('topup', '儲值'),
+                  ('compensation', '客服 / 官方補償'),
+                  ('event', '活動'),
+                  ('admin', '管理員補發'),
+                  ('other', '其他'),
+                ],
+              );
+
+              final spendCard = _analyticsBreakdownCard(
+                title: '本月花花消耗用途',
+                values: spend,
+                rows: const [
+                  ('gemini', '閒聊'),
+                  ('daily', '日常'),
+                  ('story', '劇情'),
+                  ('immersive', '沉浸'),
+                  ('resonance', '共鳴'),
+                  ('interaction', '小互動'),
+                  ('gift', '禮物'),
+                  ('other', '其他'),
+                ],
+              );
+
+              if (wide) {
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: grantCard),
+                    const SizedBox(width: 12),
+                    Expanded(child: spendCard),
+                  ],
+                );
+              }
+
+              return Column(
+                children: [
+                  grantCard,
+                  const SizedBox(height: 12),
+                  spendCard,
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 12),
+          _buildModeUsageCard(analytics),
+          const SizedBox(height: 12),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      '花花 / 營收趨勢',
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 15.5,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  SegmentedButton<String>(
+                    segments: const [
+                      ButtonSegment(value: 'day', label: Text('日')),
+                      ButtonSegment(value: 'week', label: Text('週')),
+                      ButtonSegment(value: 'month', label: Text('月')),
+                    ],
+                    selected: {_analyticsTrendPeriod},
+                    showSelectedIcon: false,
+                    onSelectionChanged: (value) {
+                      if (value.isEmpty) return;
+                      setState(() => _analyticsTrendPeriod = value.first);
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          _buildTrendMetricBars(
+            items: selectedTrend,
+            valueKey: 'granted',
+            label: '花花發放',
+            money: false,
+          ),
+          const SizedBox(height: 10),
+          _buildTrendMetricBars(
+            items: selectedTrend,
+            valueKey: 'spent',
+            label: '花花消耗',
+            money: false,
+          ),
+          const SizedBox(height: 10),
+          _buildTrendMetricBars(
+            items: selectedTrend,
+            valueKey: 'revenueTwd',
+            label: '營收',
+            money: true,
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildDashboardTab() {
     return FutureBuilder<Map<String, dynamic>>(
-      future: _loadDashboardData(),
+      future: _dashboardFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -2359,7 +3194,13 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         String v(String key) => '${data[key] ?? 0}';
 
         return RefreshIndicator(
-          onRefresh: () async => setState(() {}),
+          onRefresh: () async {
+            final nextFuture = _loadDashboardData();
+            setState(() {
+              _dashboardFuture = nextFuture;
+            });
+            await nextFuture;
+          },
           child: ListView(
             padding: const EdgeInsets.only(bottom: 80),
             children: [
@@ -2405,6 +3246,9 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                   values: List<int>.from(data['chatTrend'] ?? const [0,0,0,0,0,0,0]),
                   title: '最近 7 天聊天室活動',
                 ),
+              ),
+              _buildOperationsAnalytics(
+                _asStringMap(data['operationsAnalytics']),
               ),
             ],
           ),
@@ -2467,6 +3311,61 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       result > 0 ? '已補發 $result 點花花' : '已扣除 ${result.abs()} 點花花',
       customIcon: Icons.local_florist_rounded,
     );
+  }
+
+  Future<void> _toggleInternalTesterFlag({
+    required String uid,
+    required String displayName,
+    required bool currentlyTester,
+  }) async {
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(currentlyTester ? '取消內測標記' : '標記為內測玩家'),
+        content: Text(
+          currentlyTester
+              ? '取消後，$displayName 會重新納入「排除內測玩家」的正式營運庫存統計。'
+              : '標記後，$displayName 仍會出現在全體數據，但會從正式玩家庫存統計中排除。',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('取消'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(currentlyTester ? '取消標記' : '確認標記'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    await FirebaseFirestore.instance.collection('users').doc(uid).set(
+      {
+        'analyticsExcludeFromEconomy': !currentlyTester,
+        'analyticsTesterUpdatedAt': FieldValue.serverTimestamp(),
+        'analyticsTesterUpdatedBy': FirebaseAuth.instance.currentUser?.uid ?? '',
+      },
+      SetOptions(merge: true),
+    );
+
+    if (!mounted) return;
+
+    ToastUtils.showCenterToast(
+      context,
+      currentlyTester ? '已取消內測玩家標記' : '已標記為內測玩家',
+      customIcon: currentlyTester
+          ? Icons.person_outline_rounded
+          : Icons.science_outlined,
+    );
+
+    final nextFuture = _loadDashboardData();
+    setState(() {
+      _dashboardFuture = nextFuture;
+    });
+    await nextFuture;
   }
 
   Future<void> _toggleUserAdminRestriction({
@@ -2583,6 +3482,15 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                   final monthlyEnd = _dateFromDynamic(data['monthlySubEndDate']);
                   final monthlyActive = monthlyEnd != null && monthlyEnd.isAfter(DateTime.now());
                   final suspended = data['suspended'] == true;
+                  final internalTester =
+                      data['analyticsExcludeFromEconomy'] == true ||
+                          data['isInternalTester'] == true ||
+                          data['internalTester'] == true ||
+                          data['isTester'] == true ||
+                          data['isTestUser'] == true ||
+                          data['testUser'] == true ||
+                          data['isBetaTester'] == true ||
+                          data['betaTester'] == true;
                   final created = _dateFromDynamic(data['createdAt'] ?? data['registeredAt']);
 
                   return Card(
@@ -2610,6 +3518,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                         _adminInfoLine('月卡狀態', monthlyActive ? '有效' : '未啟用 / 已到期'),
                         _adminInfoLine('註冊時間', created == null ? '未記錄' : DateFormat('yyyy/MM/dd HH:mm').format(created)),
                         _adminInfoLine('帳號狀態', suspended ? '已停權' : '正常'),
+                        _adminInfoLine('營運統計身分', internalTester ? '內測玩家（正式庫存統計排除）' : '一般玩家'),
                         const SizedBox(height: 14),
                         Wrap(
                           spacing: 8,
@@ -2624,6 +3533,21 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                               onPressed: () => _adjustUserFlowerPoints(uid: doc.id, displayName: nickname ?? '玩家'),
                               icon: const Icon(Icons.local_florist_outlined),
                               label: const Text('調整花花'),
+                            ),
+                            OutlinedButton.icon(
+                              onPressed: () => _toggleInternalTesterFlag(
+                                uid: doc.id,
+                                displayName: nickname ?? '玩家',
+                                currentlyTester: internalTester,
+                              ),
+                              icon: Icon(
+                                internalTester
+                                    ? Icons.science_rounded
+                                    : Icons.science_outlined,
+                              ),
+                              label: Text(
+                                internalTester ? '取消內測標記' : '標記內測',
+                              ),
                             ),
                             OutlinedButton.icon(
                               style: OutlinedButton.styleFrom(
@@ -3061,18 +3985,20 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
 
   Widget _buildCampaignCenterTab() {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Column(
         children: [
           _adminPageHeader(
             title: '活動與獎勵',
-            subtitle: '公告、單一玩家信件與活動花花集中管理。兌換碼與分眾活動已預留位置。',
+            subtitle: '公告、活動禮物與通用活動頁集中管理。',
             icon: Icons.celebration_outlined,
           ),
           const TabBar(
+            isScrollable: true,
             tabs: [
               Tab(text: '公告與信件'),
               Tab(text: '活動禮物'),
+              Tab(text: '活動頁'),
               Tab(text: '兌換碼 / 分眾'),
             ],
           ),
@@ -3081,12 +4007,2594 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
               children: [
                 _buildAnnouncementTab(),
                 _buildRewardCampaignTab(),
+                _buildReusableEventAdminTab(),
                 _buildCampaignSegmentationPlaceholder(),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+
+  CollectionReference<Map<String, dynamic>> _eventAdminCollection() {
+    return FirebaseFirestore.instance
+        .collection('artifacts')
+        .doc(AppConfig.appId)
+        .collection('events');
+  }
+
+  String _eventSlugify(String value) {
+    final normalized = value
+        .trim()
+        .toLowerCase()
+        .replaceAll(RegExp(r'[^a-z0-9_\-]+'), '_')
+        .replaceAll(RegExp(r'_+'), '_')
+        .replaceAll(RegExp(r'^_+|_+$'), '');
+    return normalized;
+  }
+
+  Future<void> _pickEventDateTime({required bool isStart}) async {
+    final initial = isStart ? _eventStartAt : _eventEndAt;
+
+    final selectedDate = await showDatePicker(
+      context: context,
+      initialDate: initial,
+      firstDate: DateTime.now().subtract(const Duration(days: 365)),
+      lastDate: DateTime.now().add(const Duration(days: 3650)),
+    );
+
+    if (selectedDate == null || !mounted) return;
+
+    final selectedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(initial),
+    );
+
+    if (selectedTime == null || !mounted) return;
+
+    final result = DateTime(
+      selectedDate.year,
+      selectedDate.month,
+      selectedDate.day,
+      selectedTime.hour,
+      selectedTime.minute,
+    );
+
+    setState(() {
+      if (isStart) {
+        _eventStartAt = result;
+        if (!_eventEndAt.isAfter(result)) {
+          _eventEndAt = result.add(const Duration(days: 14));
+        }
+      } else {
+        _eventEndAt = result;
+      }
+    });
+  }
+
+  String _eventImageContentType(XFile file) {
+    final name = file.name.toLowerCase();
+    if (name.endsWith('.png')) return 'image/png';
+    if (name.endsWith('.webp')) return 'image/webp';
+    if (name.endsWith('.gif')) return 'image/gif';
+    if (name.endsWith('.heic') || name.endsWith('.heif')) return 'image/heic';
+    return 'image/jpeg';
+  }
+
+  String _eventImageExtension(XFile file) {
+    final name = file.name.toLowerCase();
+    final dot = name.lastIndexOf('.');
+    if (dot >= 0 && dot < name.length - 1) {
+      final ext = name.substring(dot + 1).replaceAll(RegExp(r'[^a-z0-9]'), '');
+      if (ext.isNotEmpty && ext.length <= 5) return ext;
+    }
+    return 'jpg';
+  }
+
+  CropAspectRatio _eventCropAspectRatioForSlot(String slot) {
+    switch (slot) {
+      case 'banner':
+        return const CropAspectRatio(ratioX: 8, ratioY: 3);
+      case 'hero':
+        return const CropAspectRatio(ratioX: 16, ratioY: 9);
+      case 'memory_card':
+      case 'shop_card':
+      case 'memory_cover':
+        return const CropAspectRatio(ratioX: 4, ratioY: 3);
+      case 'memory_background':
+        return const CropAspectRatio(ratioX: 16, ratioY: 9);
+      case 'memory_character':
+        return const CropAspectRatio(ratioX: 3, ratioY: 4);
+      case 'shop_frame':
+      case 'shop':
+      default:
+        return const CropAspectRatio(ratioX: 1, ratioY: 1);
+    }
+  }
+
+  String _eventCropLabelForSlot(String slot) {
+    switch (slot) {
+      case 'banner':
+        return '推薦頁活動卡（8:3）';
+      case 'hero':
+        return '活動主頁主視覺（16:9）';
+      case 'memory_card':
+        return '限定回憶卡裝飾（4:3）';
+      case 'memory_cover':
+        return '限定回憶封面（4:3）';
+      case 'memory_background':
+        return '回憶演出背景（16:9）';
+      case 'memory_character':
+        return '回憶角色立繪（3:4，可使用透明 PNG）';
+      case 'shop_card':
+        return '活動商店卡裝飾（4:3）';
+      case 'tasks_icon':
+      case 'milestones_icon':
+      case 'info_icon':
+      case 'page_top_left':
+      case 'page_top_right':
+      case 'progress_decor':
+      case 'info_decor':
+      case 'page_bottom_left':
+      case 'page_bottom_right':
+        return '活動裝飾圖（1:1，可使用透明 PNG）';
+      case 'shop_frame':
+        return '頭像框 PNG（1:1，保留透明背景）';
+      case 'shop':
+      default:
+        return '商店商品圖（1:1）';
+    }
+  }
+
+  Future<String?> _pickAndUploadReusableEventImage({
+    required String slot,
+  }) async {
+    if (_uploadingEventImageSlot != null) return null;
+
+    try {
+      final bool preserveAlpha = slot == 'shop_frame' ||
+          slot == 'memory_character' ||
+          slot.endsWith('_icon') ||
+          slot.contains('decor') ||
+          slot.startsWith('page_');
+      final picked = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        imageQuality: preserveAlpha ? null : 95,
+        maxWidth: preserveAlpha ? null : (slot == 'banner' ? 2400 : 2200),
+      );
+      if (picked == null) return null;
+
+      final cropped = await ImageCropper().cropImage(
+        sourcePath: picked.path,
+        compressFormat: preserveAlpha
+            ? ImageCompressFormat.png
+            : ImageCompressFormat.jpg,
+        compressQuality: preserveAlpha ? 100 : 92,
+        aspectRatio: _eventCropAspectRatioForSlot(slot),
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: _eventCropLabelForSlot(slot),
+            lockAspectRatio: true,
+            hideBottomControls: false,
+          ),
+          IOSUiSettings(
+            title: _eventCropLabelForSlot(slot),
+            aspectRatioLockEnabled: true,
+            resetAspectRatioEnabled: false,
+          ),
+          WebUiSettings(
+            context: context,
+          ),
+        ],
+      );
+      if (cropped == null) return null;
+
+      if (mounted) setState(() => _uploadingEventImageSlot = slot);
+
+      final bytes = await cropped.readAsBytes();
+      if (bytes.isEmpty) throw Exception('裁切後的圖片檔案是空的');
+
+      final rawEventId = _eventSlugify(_eventIdController.text);
+      final safeEventId = rawEventId.isEmpty ? 'draft' : rawEventId;
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final String extension = preserveAlpha ? 'png' : 'jpg';
+      final String contentType = preserveAlpha ? 'image/png' : 'image/jpeg';
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('artifacts/${AppConfig.appId}/events/$safeEventId/images')
+          .child('${slot}_$timestamp.$extension');
+
+      final task = await storageRef.putData(
+        bytes,
+        SettableMetadata(contentType: contentType),
+      );
+      final url = await task.ref.getDownloadURL();
+
+      if (mounted) {
+        ToastUtils.showCenterToast(
+          context,
+          '裁切並上傳完成',
+          customIcon: Icons.crop_rounded,
+        );
+      }
+      return url;
+    } catch (error, stackTrace) {
+      debugPrint('❌ 活動圖片裁切／上傳失敗：$error');
+      debugPrintStack(stackTrace: stackTrace);
+      if (mounted) {
+        ToastUtils.showCenterToast(
+          context,
+          '圖片處理失敗：$error',
+          isError: true,
+        );
+      }
+      return null;
+    } finally {
+      if (mounted) setState(() => _uploadingEventImageSlot = null);
+    }
+  }
+
+  Future<void> _showReusableEventImagePreview({
+    required String imageUrl,
+    required String title,
+  }) async {
+    final url = imageUrl.trim();
+    if (url.isEmpty || !mounted) return;
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        final size = MediaQuery.sizeOf(dialogContext);
+        return Dialog(
+          insetPadding: const EdgeInsets.all(18),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: size.width > 1100 ? 1000 : size.width - 36,
+              maxHeight: size.height - 50,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 10, 8, 8),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          title,
+                          style: GoogleFonts.notoSerifTc(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        tooltip: '關閉',
+                        onPressed: () => Navigator.of(dialogContext).pop(),
+                        icon: const Icon(Icons.close_rounded),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1),
+                Flexible(
+                  child: Container(
+                    color: Colors.black,
+                    alignment: Alignment.center,
+                    child: InteractiveViewer(
+                      minScale: 0.6,
+                      maxScale: 5,
+                      boundaryMargin: const EdgeInsets.all(80),
+                      child: Image.network(
+                        url,
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, __, ___) => const Padding(
+                          padding: EdgeInsets.all(40),
+                          child: Text(
+                            '圖片預覽失敗',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Text(
+                    '可拖曳圖片，並以手勢或滑鼠滾輪縮放。',
+                    style: GoogleFonts.notoSerifTc(fontSize: 11),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _eventImageUploadField({
+    required String label,
+    required String slot,
+    required TextEditingController controller,
+    required double aspectRatio,
+  }) {
+    final uploading = _uploadingEventImageSlot == slot;
+    final url = controller.text.trim();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: controller,
+                onChanged: (_) => setState(() {}),
+                decoration: InputDecoration(
+                  labelText: label,
+                  hintText: '可直接貼 URL，或按右側選圖並裁切',
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            SizedBox(
+              height: 56,
+              child: FilledButton.tonalIcon(
+                onPressed: _uploadingEventImageSlot != null
+                    ? null
+                    : () async {
+                  final uploaded = await _pickAndUploadReusableEventImage(
+                    slot: slot,
+                  );
+                  if (uploaded == null || !mounted) return;
+                  setState(() => controller.text = uploaded);
+                },
+                icon: uploading
+                    ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+                    : const Icon(Icons.crop_rounded),
+                label: Text(uploading ? '上傳中' : '選圖裁切'),
+              ),
+            ),
+          ],
+        ),
+        if (url.isNotEmpty) ...[
+          const SizedBox(height: 10),
+          InkWell(
+            borderRadius: BorderRadius.circular(14),
+            onTap: () => _showReusableEventImagePreview(
+              imageUrl: url,
+              title: label,
+            ),
+            child: Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: AspectRatio(
+                    aspectRatio: aspectRatio,
+                    child: Image.network(
+                      url,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Container(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest,
+                        alignment: Alignment.center,
+                        child: const Text('圖片預覽失敗'),
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  right: 10,
+                  top: 10,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(7),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.58),
+                          borderRadius: BorderRadius.circular(99),
+                        ),
+                        child: const Icon(
+                          Icons.zoom_out_map_rounded,
+                          size: 18,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(width: 7),
+                      Material(
+                        color: Colors.black.withValues(alpha: 0.58),
+                        shape: const CircleBorder(),
+                        child: InkWell(
+                          customBorder: const CircleBorder(),
+                          onTap: () {
+                            setState(() => controller.clear());
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.all(7),
+                            child: Icon(
+                              Icons.close_rounded,
+                              size: 18,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            '點圖片可放大預覽 · ${_eventCropLabelForSlot(slot)}',
+            style: GoogleFonts.notoSerifTc(
+              fontSize: 10.5,
+              color: Theme.of(context)
+                  .colorScheme
+                  .onSurface
+                  .withValues(alpha: 0.48),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Future<Map<String, dynamic>?> _showEventItemDialog({
+    required String type,
+    Map<String, dynamic>? initial,
+  }) async {
+    // 不在這個短生命週期 Dialog 裡建立 / dispose TextEditingController。
+    // showDialog 關閉時 Overlay 仍可能有一個 frame 在重建；
+    // 若 controller 已先 dispose，就會觸發
+    // "A TextEditingController was used after being disposed."
+    String titleValue =
+        initial?['title']?.toString() ?? initial?['name']?.toString() ?? '';
+    String amountValue =
+    (initial?['rewardAmount'] ?? initial?['target'] ?? initial?['price'] ?? '')
+        .toString();
+    String imageValue = initial?['imageUrl']?.toString() ?? '';
+    String descriptionValue = initial?['description']?.toString() ?? '';
+    String taskTargetValue = (initial?['target'] ?? '1').toString();
+    String shopRewardAmountValue =
+    (initial?['rewardAmount'] ?? '10').toString();
+
+    return showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (dialogContext) {
+        String itemType = initial?['itemType']?.toString() ?? 'flower';
+        String taskType = initial?['taskType']?.toString() ?? 'any_chat';
+        bool limited = initial?['limitOne'] == true;
+
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            String dialogTitle;
+            String amountLabel;
+
+            if (type == 'task') {
+              dialogTitle = '新增每日任務';
+              amountLabel = '獎勵活動貨幣';
+            } else if (type == 'milestone') {
+              dialogTitle = '新增累積獎勵';
+              amountLabel = '達成門檻';
+            } else {
+              dialogTitle = '新增商店商品';
+              amountLabel = '兌換價格';
+            }
+
+            return AlertDialog(
+              title: Text(dialogTitle),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      initialValue: titleValue,
+                      onChanged: (value) => titleValue = value,
+                      decoration: InputDecoration(
+                        labelText: type == 'shop' ? '商品名稱' : '名稱',
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    if (type == 'task') ...[
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<String>(
+                        initialValue: taskType,
+                        decoration: const InputDecoration(
+                          labelText: '任務條件',
+                          border: OutlineInputBorder(),
+                        ),
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'any_chat',
+                            child: Text('任意聊天回覆'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'mode_gemini',
+                            child: Text('閒聊'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'mode_daily',
+                            child: Text('日常（舊模式）'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'mode_story',
+                            child: Text('劇情'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'mode_immersive',
+                            child: Text('沉浸'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'mode_resonance',
+                            child: Text('共鳴'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'interaction',
+                            child: Text('小互動'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'gift',
+                            child: Text('送禮'),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          if (value == null) return;
+                          setDialogState(() => taskType = value);
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        initialValue: taskTargetValue,
+                        onChanged: (value) => taskTargetValue = value,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: '完成次數',
+                          hintText: '例如：5',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      initialValue: amountValue,
+                      onChanged: (value) => amountValue = value,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: amountLabel,
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    if (type == 'shop') ...[
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<String>(
+                        initialValue: itemType,
+                        decoration: const InputDecoration(
+                          labelText: '商品類型',
+                          border: OutlineInputBorder(),
+                        ),
+                        items: const [
+                          DropdownMenuItem(value: 'flower', child: Text('花花')),
+                          DropdownMenuItem(value: 'avatar_frame', child: Text('頭像框')),
+                          DropdownMenuItem(value: 'title', child: Text('稱號')),
+                          DropdownMenuItem(
+                            value: 'special_background',
+                            child: Text('特殊背景'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'memory_card',
+                            child: Text('限定回憶卡'),
+                          ),
+                          DropdownMenuItem(value: 'other', child: Text('其他')),
+                        ],
+                        onChanged: (value) {
+                          if (value == null) return;
+                          setDialogState(() => itemType = value);
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      if (itemType == 'flower') ...[
+                        TextFormField(
+                          initialValue: shopRewardAmountValue,
+                          onChanged: (value) =>
+                          shopRewardAmountValue = value,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            labelText: '發放花花數量',
+                            hintText: '例如：20',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                      TextFormField(
+                        initialValue: descriptionValue,
+                        onChanged: (value) => descriptionValue = value,
+                        minLines: 2,
+                        maxLines: 3,
+                        decoration: const InputDecoration(
+                          labelText: '商品說明',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        key: ValueKey('shop_image_$imageValue'),
+                        initialValue: imageValue,
+                        onChanged: (value) => imageValue = value,
+                        decoration: const InputDecoration(
+                          labelText: '商品圖片 URL',
+                          hintText: '可貼 URL，或使用下方選圖並裁切',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: FilledButton.tonalIcon(
+                          onPressed: _uploadingEventImageSlot != null
+                              ? null
+                              : () async {
+                            final imageSlot = itemType == 'avatar_frame'
+                                ? 'shop_frame'
+                                : 'shop';
+                            final uploaded =
+                            await _pickAndUploadReusableEventImage(
+                              slot: imageSlot,
+                            );
+                            if (uploaded == null || !mounted) return;
+                            setDialogState(() => imageValue = uploaded);
+                          },
+                          icon: (_uploadingEventImageSlot == 'shop' ||
+                              _uploadingEventImageSlot == 'shop_frame')
+                              ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
+                          )
+                              : const Icon(Icons.photo_library_outlined),
+                          label: Text(
+                            (_uploadingEventImageSlot == 'shop' ||
+                                _uploadingEventImageSlot == 'shop_frame')
+                                ? '上傳中'
+                                : (itemType == 'avatar_frame'
+                                ? '選透明 PNG 並裁切'
+                                : '選圖並裁切'),
+                          ),
+                        ),
+                      ),
+                      if (imageValue.trim().isNotEmpty) ...[
+                        const SizedBox(height: 10),
+                        InkWell(
+                          borderRadius: BorderRadius.circular(12),
+                          onTap: () => _showReusableEventImagePreview(
+                            imageUrl: imageValue.trim(),
+                            title: '商店商品圖片',
+                          ),
+                          child: Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: AspectRatio(
+                                  aspectRatio: 1,
+                                  child: Image.network(
+                                    imageValue.trim(),
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => Container(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .surfaceContainerHighest,
+                                      alignment: Alignment.center,
+                                      child: const Text('商品圖片預覽失敗'),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                right: 9,
+                                top: 9,
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(7),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black.withValues(alpha: 0.58),
+                                        borderRadius: BorderRadius.circular(99),
+                                      ),
+                                      child: const Icon(
+                                        Icons.zoom_out_map_rounded,
+                                        size: 17,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 7),
+                                    Material(
+                                      color: Colors.black.withValues(alpha: 0.58),
+                                      shape: const CircleBorder(),
+                                      child: InkWell(
+                                        customBorder: const CircleBorder(),
+                                        onTap: () {
+                                          setDialogState(() => imageValue = '');
+                                        },
+                                        child: const Padding(
+                                          padding: EdgeInsets.all(7),
+                                          child: Icon(
+                                            Icons.close_rounded,
+                                            size: 17,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          '點圖片可放大預覽 · 商店商品圖固定 1:1 裁切',
+                          style: GoogleFonts.notoSerifTc(
+                            fontSize: 10.5,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withValues(alpha: 0.48),
+                          ),
+                        ),
+                      ],
+                      SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: const Text('每位玩家限兌換 1 次'),
+                        value: limited,
+                        onChanged: (value) {
+                          setDialogState(() => limited = value);
+                        },
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  child: const Text('取消'),
+                ),
+                FilledButton(
+                  onPressed: () {
+                    final title = titleValue.trim();
+                    final amount = int.tryParse(amountValue.trim());
+
+                    if (title.isEmpty || amount == null || amount < 0) {
+                      ScaffoldMessenger.of(dialogContext).showSnackBar(
+                        const SnackBar(content: Text('請確認名稱與數值')),
+                      );
+                      return;
+                    }
+
+                    if (type == 'task') {
+                      final target =
+                      int.tryParse(taskTargetValue.trim());
+
+                      if (target == null || target <= 0) {
+                        ScaffoldMessenger.of(dialogContext).showSnackBar(
+                          const SnackBar(
+                            content: Text('完成次數請輸入大於 0 的整數'),
+                          ),
+                        );
+                        return;
+                      }
+
+                      Navigator.of(dialogContext).pop({
+                        'title': title,
+                        'taskType': taskType,
+                        'target': target,
+                        'rewardAmount': amount,
+                      });
+                    } else if (type == 'milestone') {
+                      Navigator.of(dialogContext).pop({
+                        'title': title,
+                        'target': amount,
+                      });
+                    } else {
+                      final shopRewardAmount =
+                          int.tryParse(shopRewardAmountValue.trim()) ?? 0;
+
+                      if (itemType == 'flower' && shopRewardAmount <= 0) {
+                        ScaffoldMessenger.of(dialogContext).showSnackBar(
+                          const SnackBar(
+                            content: Text('花花商品請輸入大於 0 的發放數量'),
+                          ),
+                        );
+                        return;
+                      }
+
+                      Navigator.of(dialogContext).pop({
+                        'name': title,
+                        'price': amount,
+                        'itemType': itemType,
+                        'rewardAmount':
+                        itemType == 'flower' ? shopRewardAmount : 0,
+                        'description': descriptionValue.trim(),
+                        'imageUrl': imageValue.trim(),
+                        'limitOne': limited,
+                      });
+                    }
+                  },
+                  child: const Text('加入'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _addEventDraftItem(String type) async {
+    final result = await _showEventItemDialog(type: type);
+    if (result == null || !mounted) return;
+
+    setState(() {
+      if (type == 'task') {
+        _eventTaskDrafts.add(result);
+      } else if (type == 'milestone') {
+        _eventMilestoneDrafts.add(result);
+      } else {
+        _eventShopDrafts.add(result);
+      }
+    });
+  }
+
+  DateTime? _eventDateFromDynamic(dynamic value) {
+    if (value is Timestamp) return value.toDate();
+    if (value is DateTime) return value;
+    if (value is String) return DateTime.tryParse(value);
+    return null;
+  }
+
+  String _memoryUnlockLabel(String type) {
+    switch (type) {
+      case 'total_earned':
+        return '累積活動貨幣';
+      case 'task':
+        return '完成指定任務';
+      case 'shop_item':
+        return '兌換指定商品';
+      case 'free':
+      default:
+        return '直接開放';
+    }
+  }
+
+  String _memorySceneTypeLabel(String type) {
+    switch (type) {
+      case 'dialogue':
+        return '角色台詞';
+      case 'ending':
+        return '特殊收尾';
+      case 'narration':
+      default:
+        return '旁白';
+    }
+  }
+
+  Future<Map<String, dynamic>?> _showMemorySceneDialog({
+    Map<String, dynamic>? initial,
+  }) async {
+    final textController = TextEditingController(text: initial?['text']?.toString() ?? '');
+    final backgroundController = TextEditingController(
+      text: initial?['backgroundImageUrl']?.toString() ?? '',
+    );
+    final characterController = TextEditingController(
+      text: initial?['characterImageUrl']?.toString() ?? '',
+    );
+    final durationController = TextEditingController(
+      text: (initial?['durationMs'] ?? 1800).toString(),
+    );
+    String sceneType = initial?['type']?.toString() ?? 'narration';
+    String animation = initial?['animation']?.toString() ?? 'fade';
+    String characterAnimation =
+        initial?['characterAnimation']?.toString() ?? 'fadeIn';
+
+    final result = await showDialog<Map<String, dynamic>>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            Future<void> pickImage(String slot, TextEditingController controller) async {
+              final url = await _pickAndUploadReusableEventImage(slot: slot);
+              if (url != null && dialogContext.mounted) {
+                setDialogState(() => controller.text = url);
+              }
+            }
+
+            return AlertDialog(
+              title: Text(initial == null ? '新增 Scene' : '編輯 Scene'),
+              content: SizedBox(
+                width: 620,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      DropdownButtonFormField<String>(
+                        initialValue: sceneType,
+                        decoration: const InputDecoration(
+                          labelText: '文字類型',
+                          border: OutlineInputBorder(),
+                        ),
+                        items: const [
+                          DropdownMenuItem(value: 'narration', child: Text('旁白')),
+                          DropdownMenuItem(value: 'dialogue', child: Text('角色台詞')),
+                          DropdownMenuItem(value: 'ending', child: Text('特殊收尾')),
+                        ],
+                        onChanged: (value) {
+                          if (value != null) setDialogState(() => sceneType = value);
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: textController,
+                        minLines: 4,
+                        maxLines: 8,
+                        decoration: const InputDecoration(
+                          labelText: 'Scene 文字',
+                          hintText: '輸入這一幕要顯示的旁白或角色台詞',
+                          alignLabelWithHint: true,
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          Widget textAnimationField() {
+                            return DropdownButtonFormField<String>(
+                              initialValue: animation,
+                              isExpanded: true,
+                              decoration: const InputDecoration(
+                                labelText: '文字動畫',
+                                border: OutlineInputBorder(),
+                              ),
+                              items: const [
+                                DropdownMenuItem(value: 'fade', child: Text('淡入')),
+                                DropdownMenuItem(value: 'typewriter', child: Text('逐字顯示')),
+                                DropdownMenuItem(value: 'slideUp', child: Text('向上浮現')),
+                              ],
+                              onChanged: (value) {
+                                if (value != null) {
+                                  setDialogState(() => animation = value);
+                                }
+                              },
+                            );
+                          }
+
+                          Widget characterAnimationField() {
+                            return DropdownButtonFormField<String>(
+                              initialValue: characterAnimation,
+                              isExpanded: true,
+                              decoration: const InputDecoration(
+                                labelText: '角色動畫',
+                                border: OutlineInputBorder(),
+                              ),
+                              items: const [
+                                DropdownMenuItem(value: 'fadeIn', child: Text('淡入')),
+                                DropdownMenuItem(value: 'slideUp', child: Text('向上浮現')),
+                                DropdownMenuItem(value: 'none', child: Text('不切換')),
+                              ],
+                              onChanged: (value) {
+                                if (value != null) {
+                                  setDialogState(() => characterAnimation = value);
+                                }
+                              },
+                            );
+                          }
+
+                          if (constraints.maxWidth < 460) {
+                            return Column(
+                              children: [
+                                textAnimationField(),
+                                const SizedBox(height: 12),
+                                characterAnimationField(),
+                              ],
+                            );
+                          }
+
+                          return Row(
+                            children: [
+                              Expanded(child: textAnimationField()),
+                              const SizedBox(width: 12),
+                              Expanded(child: characterAnimationField()),
+                            ],
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: durationController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: '建議停留時間（毫秒）',
+                          hintText: '例如 1800',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: backgroundController,
+                              decoration: const InputDecoration(
+                                labelText: '背景圖（選填）',
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton.filledTonal(
+                            tooltip: '選擇背景圖',
+                            onPressed: _uploadingEventImageSlot == null
+                                ? () => pickImage('memory_background', backgroundController)
+                                : null,
+                            icon: const Icon(Icons.image_outlined),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: characterController,
+                              decoration: const InputDecoration(
+                                labelText: '角色立繪（選填）',
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton.filledTonal(
+                            tooltip: '選擇角色立繪',
+                            onPressed: _uploadingEventImageSlot == null
+                                ? () => pickImage('memory_character', characterController)
+                                : null,
+                            icon: const Icon(Icons.person_outline_rounded),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  child: const Text('取消'),
+                ),
+                FilledButton(
+                  onPressed: () {
+                    final text = textController.text.trim();
+                    if (text.isEmpty) {
+                      ScaffoldMessenger.of(dialogContext).showSnackBar(
+                        const SnackBar(content: Text('請輸入 Scene 文字')),
+                      );
+                      return;
+                    }
+                    final duration = int.tryParse(durationController.text.trim()) ?? 1800;
+                    Navigator.of(dialogContext).pop({
+                      'type': sceneType,
+                      'text': text,
+                      'animation': animation,
+                      'characterAnimation': characterAnimation,
+                      'durationMs': duration.clamp(300, 15000),
+                      'backgroundImageUrl': backgroundController.text.trim(),
+                      'characterImageUrl': characterController.text.trim(),
+                    });
+                  },
+                  child: const Text('完成'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    // Do not manually dispose dialog-local controllers here.
+    // Flutter may still rebuild the closing route for one more frame after pop,
+    // which can otherwise trigger "TextEditingController used after disposed".
+    return result;
+  }
+
+  Future<Map<String, dynamic>?> _showEventMemoryDialog({
+    Map<String, dynamic>? initial,
+  }) async {
+    final titleController = TextEditingController(text: initial?['title']?.toString() ?? '');
+    final subtitleController = TextEditingController(text: initial?['subtitle']?.toString() ?? '');
+    final coverController = TextEditingController(text: initial?['coverImageUrl']?.toString() ?? '');
+    final backgroundController = TextEditingController(
+      text: initial?['defaultBackgroundImageUrl']?.toString() ?? '',
+    );
+    final unlockValueController = TextEditingController(
+      text: (initial?['unlockValue'] ?? 0).toString(),
+    );
+    final unlockTargetController = TextEditingController(
+      text: initial?['unlockTargetId']?.toString() ?? '',
+    );
+    String unlockType = initial?['unlockType']?.toString() ?? 'free';
+    bool isActive = initial?['isActive'] != false;
+    final scenes = <Map<String, dynamic>>[
+      ...((initial?['scenes'] is List)
+          ? (initial!['scenes'] as List)
+          .whereType<Map>()
+          .map((e) => Map<String, dynamic>.from(e))
+          : const <Map<String, dynamic>>[]),
+    ];
+
+    final result = await showDialog<Map<String, dynamic>>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            Future<void> pickImage(String slot, TextEditingController controller) async {
+              final url = await _pickAndUploadReusableEventImage(slot: slot);
+              if (url != null && dialogContext.mounted) {
+                setDialogState(() => controller.text = url);
+              }
+            }
+
+            return AlertDialog(
+              title: Text(initial == null ? '新增限定回憶' : '編輯限定回憶'),
+              content: SizedBox(
+                width: 760,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextField(
+                        controller: titleController,
+                        decoration: const InputDecoration(
+                          labelText: '回憶篇章名稱',
+                          hintText: '例如：月下的約定',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: subtitleController,
+                        decoration: const InputDecoration(
+                          labelText: '篇章副標／短介紹',
+                          hintText: '例如：那一晚，月色比平常更靠近。',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: coverController,
+                              decoration: const InputDecoration(
+                                labelText: '篇章封面圖',
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton.filledTonal(
+                            tooltip: '選擇封面圖',
+                            onPressed: _uploadingEventImageSlot == null
+                                ? () => pickImage('memory_cover', coverController)
+                                : null,
+                            icon: const Icon(Icons.photo_outlined),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: backgroundController,
+                              decoration: const InputDecoration(
+                                labelText: '預設演出背景圖',
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton.filledTonal(
+                            tooltip: '選擇背景圖',
+                            onPressed: _uploadingEventImageSlot == null
+                                ? () => pickImage('memory_background', backgroundController)
+                                : null,
+                            icon: const Icon(Icons.landscape_outlined),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<String>(
+                        initialValue: unlockType,
+                        isExpanded: true,
+                        decoration: const InputDecoration(
+                          labelText: '解鎖條件',
+                          border: OutlineInputBorder(),
+                        ),
+                        items: const [
+                          DropdownMenuItem(value: 'free', child: Text('直接開放')),
+                          DropdownMenuItem(value: 'total_earned', child: Text('累積活動貨幣')),
+                          DropdownMenuItem(value: 'task', child: Text('完成指定任務')),
+                          DropdownMenuItem(value: 'shop_item', child: Text('兌換指定商品')),
+                        ],
+                        onChanged: (value) {
+                          if (value != null) {
+                            setDialogState(() => unlockType = value);
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: unlockValueController,
+                        keyboardType: TextInputType.number,
+                        enabled: unlockType == 'total_earned',
+                        decoration: const InputDecoration(
+                          labelText: '解鎖數值',
+                          hintText: '例如 100',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      if (unlockType == 'task' || unlockType == 'shop_item') ...[
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: unlockTargetController,
+                          decoration: InputDecoration(
+                            labelText: unlockType == 'task' ? '任務 ID' : '商品 ID',
+                            hintText: unlockType == 'task' ? '例如 task_1' : '例如 item_1',
+                            border: const OutlineInputBorder(),
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 4),
+                      SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: const Text('啟用這篇回憶'),
+                        value: isActive,
+                        onChanged: (value) => setDialogState(() => isActive = value),
+                      ),
+                      const Divider(height: 28),
+                      Row(
+                        children: [
+                          const Expanded(
+                            child: Text(
+                              '回憶 Scene',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          FilledButton.tonalIcon(
+                            onPressed: () async {
+                              final scene = await _showMemorySceneDialog();
+                              if (scene != null && dialogContext.mounted) {
+                                setDialogState(() => scenes.add(scene));
+                              }
+                            },
+                            icon: const Icon(Icons.add_rounded),
+                            label: const Text('新增 Scene'),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      if (scenes.isEmpty)
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 14),
+                          child: Text('尚未新增 Scene。正式篇章建議 6～12 個 Scene。'),
+                        )
+                      else
+                        ...List.generate(scenes.length, (index) {
+                          final scene = scenes[index];
+                          final text = scene['text']?.toString() ?? '';
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            child: ListTile(
+                              leading: CircleAvatar(child: Text('${index + 1}')),
+                              title: Text(
+                                '${_memorySceneTypeLabel(scene['type']?.toString() ?? 'narration')} · ${scene['animation'] ?? 'fade'}',
+                              ),
+                              subtitle: Text(
+                                text,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              trailing: Wrap(
+                                spacing: 0,
+                                children: [
+                                  IconButton(
+                                    tooltip: '上移',
+                                    onPressed: index == 0
+                                        ? null
+                                        : () => setDialogState(() {
+                                      final item = scenes.removeAt(index);
+                                      scenes.insert(index - 1, item);
+                                    }),
+                                    icon: const Icon(Icons.arrow_upward_rounded),
+                                  ),
+                                  IconButton(
+                                    tooltip: '下移',
+                                    onPressed: index == scenes.length - 1
+                                        ? null
+                                        : () => setDialogState(() {
+                                      final item = scenes.removeAt(index);
+                                      scenes.insert(index + 1, item);
+                                    }),
+                                    icon: const Icon(Icons.arrow_downward_rounded),
+                                  ),
+                                  IconButton(
+                                    tooltip: '編輯',
+                                    onPressed: () async {
+                                      final edited = await _showMemorySceneDialog(initial: scene);
+                                      if (edited != null && dialogContext.mounted) {
+                                        setDialogState(() => scenes[index] = edited);
+                                      }
+                                    },
+                                    icon: const Icon(Icons.edit_outlined),
+                                  ),
+                                  IconButton(
+                                    tooltip: '刪除',
+                                    onPressed: () => setDialogState(() => scenes.removeAt(index)),
+                                    icon: const Icon(Icons.delete_outline_rounded),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  child: const Text('取消'),
+                ),
+                FilledButton(
+                  onPressed: () {
+                    final title = titleController.text.trim();
+                    if (title.isEmpty) {
+                      ScaffoldMessenger.of(dialogContext).showSnackBar(
+                        const SnackBar(content: Text('請輸入回憶篇章名稱')),
+                      );
+                      return;
+                    }
+                    if (scenes.isEmpty) {
+                      ScaffoldMessenger.of(dialogContext).showSnackBar(
+                        const SnackBar(content: Text('請至少新增 1 個 Scene')),
+                      );
+                      return;
+                    }
+                    Navigator.of(dialogContext).pop({
+                      'title': title,
+                      'subtitle': subtitleController.text.trim(),
+                      'coverImageUrl': coverController.text.trim(),
+                      'defaultBackgroundImageUrl': backgroundController.text.trim(),
+                      'unlockType': unlockType,
+                      'unlockValue': int.tryParse(unlockValueController.text.trim()) ?? 0,
+                      'unlockTargetId': unlockTargetController.text.trim(),
+                      'isActive': isActive,
+                      'scenes': scenes,
+                    });
+                  },
+                  child: const Text('完成'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    // Same reason as the Scene dialog above: leave these short-lived
+    // dialog-local controllers to be garbage collected after the route closes.
+    return result;
+  }
+
+  Future<void> _addEventMemoryDraft() async {
+    final memory = await _showEventMemoryDialog();
+    if (memory == null || !mounted) return;
+    setState(() => _eventMemoryDrafts.add(memory));
+  }
+
+  Widget _buildEventMemoryDraftList() {
+    final theme = Theme.of(context);
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '限定回憶篇章',
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                FilledButton.tonalIcon(
+                  onPressed: _addEventMemoryDraft,
+                  icon: const Icon(Icons.add_rounded, size: 18),
+                  label: const Text('新增篇章'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              '每篇可設定解鎖條件與 6～12 個 Scene。Scene 支援旁白、角色台詞、特殊收尾、背景與角色立繪。',
+              style: GoogleFonts.notoSerifTc(
+                fontSize: 11.5,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
+              ),
+            ),
+            const SizedBox(height: 10),
+            if (_eventMemoryDrafts.isEmpty)
+              Text(
+                '尚未新增限定回憶',
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 12,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.45),
+                ),
+              )
+            else
+              ...List.generate(_eventMemoryDrafts.length, (index) {
+                final memory = _eventMemoryDrafts[index];
+                final scenes = memory['scenes'] is List ? memory['scenes'] as List : const [];
+                final unlockType = memory['unlockType']?.toString() ?? 'free';
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  child: ListTile(
+                    leading: CircleAvatar(child: Text('${index + 1}')),
+                    title: Text(memory['title']?.toString() ?? '限定回憶'),
+                    subtitle: Text(
+                      '${_memoryUnlockLabel(unlockType)} · ${scenes.length} Scenes',
+                    ),
+                    trailing: Wrap(
+                      spacing: 0,
+                      children: [
+                        IconButton(
+                          tooltip: '上移',
+                          onPressed: index == 0
+                              ? null
+                              : () => setState(() {
+                            final item = _eventMemoryDrafts.removeAt(index);
+                            _eventMemoryDrafts.insert(index - 1, item);
+                          }),
+                          icon: const Icon(Icons.arrow_upward_rounded),
+                        ),
+                        IconButton(
+                          tooltip: '下移',
+                          onPressed: index == _eventMemoryDrafts.length - 1
+                              ? null
+                              : () => setState(() {
+                            final item = _eventMemoryDrafts.removeAt(index);
+                            _eventMemoryDrafts.insert(index + 1, item);
+                          }),
+                          icon: const Icon(Icons.arrow_downward_rounded),
+                        ),
+                        IconButton(
+                          tooltip: '編輯',
+                          onPressed: () async {
+                            final edited = await _showEventMemoryDialog(initial: memory);
+                            if (edited != null && mounted) {
+                              setState(() => _eventMemoryDrafts[index] = edited);
+                            }
+                          },
+                          icon: const Icon(Icons.edit_outlined),
+                        ),
+                        IconButton(
+                          tooltip: '刪除',
+                          onPressed: () => setState(() => _eventMemoryDrafts.removeAt(index)),
+                          icon: const Icon(Icons.delete_outline_rounded),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _loadReusableEventForEditing(
+      QueryDocumentSnapshot<Map<String, dynamic>> doc,
+      ) async {
+    if (_isSavingEvent) return;
+
+    try {
+      final eventRef = doc.reference;
+      final results = await Future.wait([
+        eventRef.collection('tasks').get(),
+        eventRef.collection('milestones').get(),
+        eventRef.collection('shop_items').get(),
+      ]);
+      final memorySnapshot = await eventRef.collection('memories').get();
+      final memoryDocs = memorySnapshot.docs.toList()
+        ..sort((a, b) => ((a.data()['order'] as num?)?.toInt() ?? 999999)
+            .compareTo((b.data()['order'] as num?)?.toInt() ?? 999999));
+      final loadedMemories = <Map<String, dynamic>>[];
+      for (final memoryDoc in memoryDocs) {
+        final sceneSnapshot = await memoryDoc.reference.collection('scenes').get();
+        final sceneDocs = sceneSnapshot.docs.toList()
+          ..sort((a, b) => ((a.data()['order'] as num?)?.toInt() ?? 999999)
+              .compareTo((b.data()['order'] as num?)?.toInt() ?? 999999));
+        loadedMemories.add({
+          ...memoryDoc.data(),
+          'memoryId': memoryDoc.id,
+          'scenes': sceneDocs.map((sceneDoc) => <String, dynamic>{
+            ...sceneDoc.data(),
+            'sceneId': sceneDoc.id,
+          }).toList(),
+        });
+      }
+
+      List<Map<String, dynamic>> orderedItems(QuerySnapshot<Map<String, dynamic>> snap) {
+        final items = snap.docs.map((itemDoc) {
+          return <String, dynamic>{...itemDoc.data()};
+        }).toList();
+        items.sort((a, b) {
+          final aOrder = (a['order'] as num?)?.toInt() ?? 999999;
+          final bOrder = (b['order'] as num?)?.toInt() ?? 999999;
+          return aOrder.compareTo(bOrder);
+        });
+        return items;
+      }
+
+      final data = doc.data();
+      final startAt = _eventDateFromDynamic(data['startAt']);
+      final endAt = _eventDateFromDynamic(data['endAt']);
+
+      if (!mounted) return;
+      setState(() {
+        _editingReusableEventId = doc.id;
+        _eventIdController.text = doc.id;
+        _eventNameController.text = data['name']?.toString() ?? '';
+        _eventSubtitleController.text = data['subtitle']?.toString() ?? '';
+        _eventDescriptionController.text = data['description']?.toString() ?? '';
+        _eventCurrencyNameController.text = data['currencyName']?.toString() ?? '南瓜糖';
+        _eventCurrencyIconController.text = data['currencyIcon']?.toString() ?? '🎃';
+        _eventBannerUrlController.text = data['bannerImageUrl']?.toString() ?? '';
+        _eventHeroUrlController.text = data['heroImageUrl']?.toString() ?? '';
+        final themeData = data['theme'] is Map
+            ? Map<String, dynamic>.from(data['theme'] as Map)
+            : <String, dynamic>{};
+        final decorationData = data['decorations'] is Map
+            ? Map<String, dynamic>.from(data['decorations'] as Map)
+            : <String, dynamic>{};
+
+        _eventAccentColorController.text = themeData['accentColor']?.toString() ?? '#8D6CC4';
+        _eventAccentColorLightController.text = themeData['accentColorLight']?.toString() ??
+            themeData['accentColor2']?.toString() ?? '#E9DFF7';
+        _eventBackgroundColorController.text = themeData['backgroundColor']?.toString() ??
+            themeData['pageBackgroundColor']?.toString() ?? '#FBF8FF';
+        _eventCardColorController.text = themeData['cardColor']?.toString() ?? '#FFFFFF';
+
+        _eventTasksHeaderIconUrlController.text = decorationData['tasksHeaderIconUrl']?.toString() ?? '';
+        _eventMilestonesHeaderIconUrlController.text = decorationData['milestonesHeaderIconUrl']?.toString() ?? '';
+        _eventMemoryCardImageUrlController.text = decorationData['memoryCardImageUrl']?.toString() ??
+            themeData['memoryFeatureImageUrl']?.toString() ?? data['memoryFeatureImageUrl']?.toString() ?? '';
+        _eventShopCardImageUrlController.text = decorationData['shopCardImageUrl']?.toString() ??
+            themeData['shopFeatureImageUrl']?.toString() ?? data['shopFeatureImageUrl']?.toString() ?? '';
+        _eventInfoHeaderIconUrlController.text = decorationData['infoHeaderIconUrl']?.toString() ?? '';
+        _eventPageTopLeftUrlController.text = decorationData['pageTopLeftUrl']?.toString() ?? '';
+        _eventPageTopRightUrlController.text = decorationData['pageTopRightUrl']?.toString() ?? '';
+        _eventProgressDecorationUrlController.text = decorationData['progressDecorationUrl']?.toString() ?? '';
+        _eventInfoDecorationUrlController.text = decorationData['infoDecorationUrl']?.toString() ?? '';
+        _eventPageBottomLeftUrlController.text = decorationData['pageBottomLeftUrl']?.toString() ?? '';
+        _eventPageBottomRightUrlController.text = decorationData['pageBottomRightUrl']?.toString() ?? '';
+        if (startAt != null) _eventStartAt = startAt;
+        if (endAt != null) _eventEndAt = endAt;
+        _eventIsActive = data['isActive'] == true;
+        _eventHasTasks = data['hasTasks'] != false;
+        _eventHasMilestones = data['hasMilestones'] != false;
+        _eventHasShop = data['hasShop'] != false;
+        _eventHasMemory = data['hasMemory'] != false;
+
+        _eventTaskDrafts
+          ..clear()
+          ..addAll(orderedItems(results[0] as QuerySnapshot<Map<String, dynamic>>));
+        _eventMilestoneDrafts
+          ..clear()
+          ..addAll(orderedItems(results[1] as QuerySnapshot<Map<String, dynamic>>));
+        _eventShopDrafts
+          ..clear()
+          ..addAll(orderedItems(results[2] as QuerySnapshot<Map<String, dynamic>>));
+        _eventMemoryDrafts
+          ..clear()
+          ..addAll(loadedMemories);
+      });
+
+      ToastUtils.showCenterToast(
+        context,
+        '已載入「${data['name'] ?? doc.id}」，請到上方修改後儲存',
+        customIcon: Icons.edit_rounded,
+      );
+    } catch (error, stackTrace) {
+      debugPrint('❌ 載入活動編輯資料失敗：$error');
+      debugPrintStack(stackTrace: stackTrace);
+      if (!mounted) return;
+      ToastUtils.showCenterToast(
+        context,
+        '載入活動失敗：$error',
+        isError: true,
+      );
+    }
+  }
+
+  void _resetReusableEventEditor() {
+    setState(() {
+      _editingReusableEventId = null;
+      _eventIdController.clear();
+      _eventNameController.clear();
+      _eventSubtitleController.clear();
+      _eventDescriptionController.clear();
+      _eventCurrencyNameController.text = '南瓜糖';
+      _eventCurrencyIconController.text = '🎃';
+      _eventBannerUrlController.clear();
+      _eventHeroUrlController.clear();
+      _eventAccentColorController.text = '#8D6CC4';
+      _eventAccentColorLightController.text = '#E9DFF7';
+      _eventBackgroundColorController.text = '#FBF8FF';
+      _eventCardColorController.text = '#FFFFFF';
+      _eventTasksHeaderIconUrlController.clear();
+      _eventMilestonesHeaderIconUrlController.clear();
+      _eventMemoryCardImageUrlController.clear();
+      _eventShopCardImageUrlController.clear();
+      _eventInfoHeaderIconUrlController.clear();
+      _eventPageTopLeftUrlController.clear();
+      _eventPageTopRightUrlController.clear();
+      _eventProgressDecorationUrlController.clear();
+      _eventInfoDecorationUrlController.clear();
+      _eventPageBottomLeftUrlController.clear();
+      _eventPageBottomRightUrlController.clear();
+      _eventStartAt = DateTime.now();
+      _eventEndAt = DateTime.now().add(const Duration(days: 14));
+      _eventIsActive = true;
+      _eventHasTasks = true;
+      _eventHasMilestones = true;
+      _eventHasShop = true;
+      _eventHasMemory = true;
+      _eventTaskDrafts.clear();
+      _eventMilestoneDrafts.clear();
+      _eventShopDrafts.clear();
+      _eventMemoryDrafts.clear();
+    });
+  }
+
+  Future<void> _saveReusableEvent() async {
+    if (_isSavingEvent) return;
+
+    final name = _eventNameController.text.trim();
+    final subtitle = _eventSubtitleController.text.trim();
+    final description = _eventDescriptionController.text.trim();
+    final currencyName = _eventCurrencyNameController.text.trim();
+    final currencyIcon = _eventCurrencyIconController.text.trim();
+
+    String eventId = _editingReusableEventId ?? _eventSlugify(_eventIdController.text);
+    if (eventId.isEmpty) {
+      eventId = 'event_${DateTime.now().millisecondsSinceEpoch}';
+    }
+
+    if (name.isEmpty) {
+      ToastUtils.showCenterToast(context, '請輸入活動名稱', isError: true);
+      return;
+    }
+
+    if (!_eventEndAt.isAfter(_eventStartAt)) {
+      ToastUtils.showCenterToast(
+        context,
+        '活動結束時間必須晚於開始時間',
+        isError: true,
+      );
+      return;
+    }
+
+    if (currencyName.isEmpty) {
+      ToastUtils.showCenterToast(context, '請輸入活動貨幣名稱', isError: true);
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(_editingReusableEventId == null ? '儲存活動' : '更新活動'),
+        content: Text(
+          '活動：$name\n'
+              '活動 ID：$eventId\n'
+              '開始：${_formatRewardDateTime(_eventStartAt)}\n'
+              '結束：${_formatRewardDateTime(_eventEndAt)}\n'
+              '任務：${_eventTaskDrafts.length} 個\n'
+              '里程碑：${_eventMilestoneDrafts.length} 個\n'
+              '商品：${_eventShopDrafts.length} 個\n'
+              '限定回憶：${_eventMemoryDrafts.length} 篇\n\n'
+              '儲存後 App 會依 isActive 與活動期間自動判斷是否顯示。',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('取消'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(_editingReusableEventId == null ? '確認儲存' : '確認更新'),
+          ),
+        ],
+      ),
+    ) ??
+        false;
+
+    if (!confirmed || !mounted) return;
+
+    setState(() => _isSavingEvent = true);
+
+    try {
+      final db = FirebaseFirestore.instance;
+      final eventRef = _eventAdminCollection().doc(eventId);
+
+      final existing = await eventRef.get();
+      final existingChildren = await Future.wait([
+        eventRef.collection('tasks').get(),
+        eventRef.collection('milestones').get(),
+        eventRef.collection('shop_items').get(),
+      ]);
+      final existingMemories = await eventRef.collection('memories').get();
+      final existingSceneSnapshots = <QuerySnapshot<Map<String, dynamic>>>[];
+      for (final memoryDoc in existingMemories.docs) {
+        existingSceneSnapshots.add(await memoryDoc.reference.collection('scenes').get());
+      }
+      final batch = db.batch();
+
+      // 編輯既有活動時，先移除舊的草稿型子集合再依目前畫面重建，
+      // 避免刪掉任務/里程碑/商品後，舊文件殘留在 Firestore。
+      for (final childSnapshot in existingChildren) {
+        for (final childDoc in childSnapshot.docs) {
+          batch.delete(childDoc.reference);
+        }
+      }
+      for (final sceneSnapshot in existingSceneSnapshots) {
+        for (final sceneDoc in sceneSnapshot.docs) {
+          batch.delete(sceneDoc.reference);
+        }
+      }
+      for (final memoryDoc in existingMemories.docs) {
+        batch.delete(memoryDoc.reference);
+      }
+
+      batch.set(
+        eventRef,
+        {
+          'eventId': eventId,
+          'name': name,
+          'subtitle': subtitle,
+          'description': description,
+          'isActive': _eventIsActive,
+          'startAt': Timestamp.fromDate(_eventStartAt),
+          'endAt': Timestamp.fromDate(_eventEndAt),
+          'bannerImageUrl': _eventBannerUrlController.text.trim(),
+          'heroImageUrl': _eventHeroUrlController.text.trim(),
+          'theme': {
+            'accentColor': _eventAccentColorController.text.trim(),
+            'accentColor2': _eventAccentColorLightController.text.trim(),
+            'accentColorLight': _eventAccentColorLightController.text.trim(),
+            'pageBackgroundColor': _eventBackgroundColorController.text.trim(),
+            'backgroundColor': _eventBackgroundColorController.text.trim(),
+            'cardColor': _eventCardColorController.text.trim(),
+          },
+          'decorations': {
+            'tasksHeaderIconUrl': _eventTasksHeaderIconUrlController.text.trim(),
+            'milestonesHeaderIconUrl': _eventMilestonesHeaderIconUrlController.text.trim(),
+            'memoryCardImageUrl': _eventMemoryCardImageUrlController.text.trim(),
+            'shopCardImageUrl': _eventShopCardImageUrlController.text.trim(),
+            'infoHeaderIconUrl': _eventInfoHeaderIconUrlController.text.trim(),
+            'pageTopLeftUrl': _eventPageTopLeftUrlController.text.trim(),
+            'pageTopRightUrl': _eventPageTopRightUrlController.text.trim(),
+            'progressDecorationUrl': _eventProgressDecorationUrlController.text.trim(),
+            'infoDecorationUrl': _eventInfoDecorationUrlController.text.trim(),
+            'pageBottomLeftUrl': _eventPageBottomLeftUrlController.text.trim(),
+            'pageBottomRightUrl': _eventPageBottomRightUrlController.text.trim(),
+          },
+          // 舊版活動頁仍可直接讀這兩個欄位。
+          'memoryFeatureImageUrl': _eventMemoryCardImageUrlController.text.trim(),
+          'shopFeatureImageUrl': _eventShopCardImageUrlController.text.trim(),
+          'currencyName': currencyName,
+          'currencyIcon': currencyIcon,
+          'hasTasks': _eventHasTasks,
+          'hasMilestones': _eventHasMilestones,
+          'hasShop': _eventHasShop,
+          'hasMemory': _eventHasMemory,
+          'updatedAt': FieldValue.serverTimestamp(),
+          if (!existing.exists) 'createdAt': FieldValue.serverTimestamp(),
+          'createdBy': FirebaseAuth.instance.currentUser?.uid ?? '',
+        },
+        SetOptions(merge: true),
+      );
+
+      for (int i = 0; i < _eventTaskDrafts.length; i++) {
+        final item = _eventTaskDrafts[i];
+        final ref = eventRef.collection('tasks').doc('task_${i + 1}');
+        batch.set(ref, {
+          ...item,
+          'order': i + 1,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      }
+
+      for (int i = 0; i < _eventMilestoneDrafts.length; i++) {
+        final item = _eventMilestoneDrafts[i];
+        final ref = eventRef.collection('milestones').doc('milestone_${i + 1}');
+        batch.set(ref, {
+          ...item,
+          'order': i + 1,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      }
+
+      for (int i = 0; i < _eventShopDrafts.length; i++) {
+        final item = _eventShopDrafts[i];
+        final ref = eventRef.collection('shop_items').doc('item_${i + 1}');
+        batch.set(ref, {
+          ...item,
+          'order': i + 1,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      }
+
+
+      for (int i = 0; i < _eventMemoryDrafts.length; i++) {
+        final memory = Map<String, dynamic>.from(_eventMemoryDrafts[i]);
+        final rawScenes = memory.remove('scenes');
+        memory.remove('memoryId');
+        final memoryRef = eventRef.collection('memories').doc('memory_${i + 1}');
+        batch.set(memoryRef, {
+          ...memory,
+          'order': i + 1,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+
+        final scenes = rawScenes is List
+            ? rawScenes.whereType<Map>().map((e) => Map<String, dynamic>.from(e)).toList()
+            : <Map<String, dynamic>>[];
+        for (int j = 0; j < scenes.length; j++) {
+          final scene = Map<String, dynamic>.from(scenes[j]);
+          scene.remove('sceneId');
+          final sceneRef = memoryRef.collection('scenes').doc('scene_${j + 1}');
+          batch.set(sceneRef, {
+            ...scene,
+            'order': j + 1,
+            'updatedAt': FieldValue.serverTimestamp(),
+          });
+        }
+      }
+
+      await batch.commit();
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        _editingReusableEventId == null
+            ? '活動「$name」已儲存'
+            : '活動「$name」已更新',
+        customIcon: _editingReusableEventId == null
+            ? Icons.celebration_rounded
+            : Icons.check_circle_outline_rounded,
+      );
+
+      setState(() {
+        _editingReusableEventId = eventId;
+        _eventIdController.text = eventId;
+      });
+    } catch (error, stackTrace) {
+      debugPrint('❌ 儲存通用活動失敗：$error');
+      debugPrintStack(stackTrace: stackTrace);
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '儲存活動失敗：$error',
+        isError: true,
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isSavingEvent = false);
+      }
+    }
+  }
+
+  Future<void> _toggleReusableEvent(
+      DocumentReference<Map<String, dynamic>> ref,
+      bool active,
+      ) async {
+    try {
+      await ref.set({
+        'isActive': active,
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+      if (!mounted) return;
+      ToastUtils.showCenterToast(
+        context,
+        active ? '活動已啟用' : '活動已停用',
+        customIcon: active ? Icons.play_circle_fill_rounded : Icons.pause_circle_rounded,
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ToastUtils.showCenterToast(
+        context,
+        '更新活動狀態失敗：$error',
+        isError: true,
+      );
+    }
+  }
+
+  Widget _buildEventDraftList({
+    required String title,
+    required String type,
+    required List<Map<String, dynamic>> items,
+  }) {
+    final theme = Theme.of(context);
+
+    String itemText(Map<String, dynamic> item) {
+      if (type == 'task') {
+        final target = item['target'] ?? 1;
+        return '${item['title']}  ·  $target 次  ·  +${item['rewardAmount']}';
+      }
+      if (type == 'milestone') {
+        return '${item['target']}  ·  ${item['title']}';
+      }
+      if (item['itemType'] == 'flower') {
+        return '${item['name']}  ·  ${item['price']}  ·  花花 ×${item['rewardAmount'] ?? 0}';
+      }
+      return '${item['name']}  ·  ${item['price']}';
+    }
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    title,
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                FilledButton.tonalIcon(
+                  onPressed: () => _addEventDraftItem(type),
+                  icon: const Icon(Icons.add_rounded, size: 18),
+                  label: const Text('新增'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            if (items.isEmpty)
+              Text(
+                '尚未新增',
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 12,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.45),
+                ),
+              )
+            else
+              ...List.generate(items.length, (index) {
+                final item = items[index];
+                return ListTile(
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    itemText(item),
+                    style: GoogleFonts.notoSerifTc(fontSize: 12.5),
+                  ),
+                  trailing: IconButton(
+                    tooltip: '移除',
+                    onPressed: () {
+                      setState(() => items.removeAt(index));
+                    },
+                    icon: const Icon(Icons.close_rounded, size: 18),
+                  ),
+                );
+              }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildReusableEventAdminTab() {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: _eventAdminCollection()
+          .orderBy('startAt', descending: true)
+          .limit(30)
+          .snapshots(),
+      builder: (context, snapshot) {
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(16, 18, 16, 80),
+          children: [
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.auto_awesome_rounded, color: colors.primary),
+                        const SizedBox(width: 9),
+                        Expanded(
+                          child: Text(
+                            _editingReusableEventId == null
+                                ? '新增通用活動'
+                                : '編輯活動：${_eventNameController.text.isEmpty ? _editingReusableEventId : _eventNameController.text}',
+                            style: GoogleFonts.notoSerifTc(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        if (_editingReusableEventId != null)
+                          TextButton.icon(
+                            onPressed: _resetReusableEventEditor,
+                            icon: const Icon(Icons.add_rounded),
+                            label: const Text('新增活動'),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 7),
+                    Text(
+                      '儲存後會寫入 events/{eventId}。App 會依啟用狀態與開始／結束時間自動顯示。',
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 12,
+                        height: 1.55,
+                        color: colors.onSurface.withValues(alpha: 0.58),
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    TextField(
+                      controller: _eventIdController,
+                      readOnly: _editingReusableEventId != null,
+                      decoration: InputDecoration(
+                        labelText: '活動 ID（英文，可留空自動產生）',
+                        hintText: '例如 halloween_2026',
+                        helperText: _editingReusableEventId == null
+                            ? null
+                            : '編輯既有活動時不允許變更 ID，避免建立成另一個活動。',
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _eventNameController,
+                      decoration: const InputDecoration(
+                        labelText: '活動名稱',
+                        hintText: '例如：萬聖奇遇夜',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _eventSubtitleController,
+                      decoration: const InputDecoration(
+                        labelText: '活動副標',
+                        hintText: '例如：與他一起蒐集南瓜糖，解鎖節日限定回憶',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _eventDescriptionController,
+                      minLines: 3,
+                      maxLines: 5,
+                      decoration: const InputDecoration(
+                        labelText: '活動說明',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _eventCurrencyNameController,
+                            decoration: const InputDecoration(
+                              labelText: '活動貨幣名稱',
+                              hintText: '南瓜糖',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        SizedBox(
+                          width: 120,
+                          child: TextField(
+                            controller: _eventCurrencyIconController,
+                            decoration: const InputDecoration(
+                              labelText: 'Icon',
+                              hintText: '🎃',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    _eventImageUploadField(
+                      label: '推薦頁活動卡圖片',
+                      slot: 'banner',
+                      controller: _eventBannerUrlController,
+                      aspectRatio: 16 / 6,
+                    ),
+                    const SizedBox(height: 14),
+                    _eventImageUploadField(
+                      label: '活動主頁主視覺',
+                      slot: 'hero',
+                      controller: _eventHeroUrlController,
+                      aspectRatio: 16 / 9,
+                    ),
+                    const SizedBox(height: 18),
+                    Text(
+                      '活動主題色',
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: [
+                        SizedBox(
+                          width: 190,
+                          child: TextField(
+                            controller: _eventAccentColorController,
+                            decoration: const InputDecoration(
+                              labelText: '主色',
+                              hintText: '#8D6CC4',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 190,
+                          child: TextField(
+                            controller: _eventAccentColorLightController,
+                            decoration: const InputDecoration(
+                              labelText: '輔助淡色',
+                              hintText: '#E9DFF7',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 190,
+                          child: TextField(
+                            controller: _eventBackgroundColorController,
+                            decoration: const InputDecoration(
+                              labelText: '頁面背景色',
+                              hintText: '#FBF8FF',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 190,
+                          child: TextField(
+                            controller: _eventCardColorController,
+                            decoration: const InputDecoration(
+                              labelText: '卡片底色',
+                              hintText: '#FFFFFF',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 18),
+                    ExpansionTile(
+                      tilePadding: EdgeInsets.zero,
+                      childrenPadding: const EdgeInsets.only(bottom: 6),
+                      leading: const Icon(Icons.auto_awesome_rounded),
+                      title: const Text('活動裝飾圖片（選填）'),
+                      subtitle: const Text('沒有上傳就使用預設 icon，不會留下空白。'),
+                      children: [
+                        _eventImageUploadField(
+                          label: '今日任務標題裝飾',
+                          slot: 'tasks_icon',
+                          controller: _eventTasksHeaderIconUrlController,
+                          aspectRatio: 1,
+                        ),
+                        const SizedBox(height: 12),
+                        _eventImageUploadField(
+                          label: '累積進度標題裝飾',
+                          slot: 'milestones_icon',
+                          controller: _eventMilestonesHeaderIconUrlController,
+                          aspectRatio: 1,
+                        ),
+                        const SizedBox(height: 12),
+                        _eventImageUploadField(
+                          label: '限定回憶卡裝飾',
+                          slot: 'memory_card',
+                          controller: _eventMemoryCardImageUrlController,
+                          aspectRatio: 4 / 3,
+                        ),
+                        const SizedBox(height: 12),
+                        _eventImageUploadField(
+                          label: '活動商店卡裝飾',
+                          slot: 'shop_card',
+                          controller: _eventShopCardImageUrlController,
+                          aspectRatio: 4 / 3,
+                        ),
+                        const SizedBox(height: 12),
+                        _eventImageUploadField(
+                          label: '活動說明標題裝飾',
+                          slot: 'info_icon',
+                          controller: _eventInfoHeaderIconUrlController,
+                          aspectRatio: 1,
+                        ),
+                        const SizedBox(height: 12),
+                        _eventImageUploadField(
+                          label: '頁面左上角裝飾',
+                          slot: 'page_top_left',
+                          controller: _eventPageTopLeftUrlController,
+                          aspectRatio: 1,
+                        ),
+                        const SizedBox(height: 12),
+                        _eventImageUploadField(
+                          label: '頁面右上角裝飾',
+                          slot: 'page_top_right',
+                          controller: _eventPageTopRightUrlController,
+                          aspectRatio: 1,
+                        ),
+                        const SizedBox(height: 12),
+                        _eventImageUploadField(
+                          label: '累積進度區裝飾',
+                          slot: 'progress_decor',
+                          controller: _eventProgressDecorationUrlController,
+                          aspectRatio: 1,
+                        ),
+                        const SizedBox(height: 12),
+                        _eventImageUploadField(
+                          label: '活動說明區裝飾',
+                          slot: 'info_decor',
+                          controller: _eventInfoDecorationUrlController,
+                          aspectRatio: 1,
+                        ),
+                        const SizedBox(height: 12),
+                        _eventImageUploadField(
+                          label: '頁面左下角裝飾',
+                          slot: 'page_bottom_left',
+                          controller: _eventPageBottomLeftUrlController,
+                          aspectRatio: 1,
+                        ),
+                        const SizedBox(height: 12),
+                        _eventImageUploadField(
+                          label: '頁面右下角裝飾',
+                          slot: 'page_bottom_right',
+                          controller: _eventPageBottomRightUrlController,
+                          aspectRatio: 1,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '選圖後會先依用途裁切，再上傳到 Firebase Storage；點縮圖可放大預覽。URL 欄位仍保留，方便必要時手動替換。',
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 11,
+                        color: colors.onSurface.withValues(alpha: 0.48),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.play_circle_outline_rounded),
+                      title: const Text('開始時間'),
+                      subtitle: Text(_formatRewardDateTime(_eventStartAt)),
+                      trailing: const Icon(Icons.edit_calendar_rounded),
+                      onTap: () => _pickEventDateTime(isStart: true),
+                    ),
+                    const Divider(),
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.event_busy_outlined),
+                      title: const Text('結束時間'),
+                      subtitle: Text(_formatRewardDateTime(_eventEndAt)),
+                      trailing: const Icon(Icons.edit_calendar_rounded),
+                      onTap: () => _pickEventDateTime(isStart: false),
+                    ),
+                    const SizedBox(height: 8),
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text('啟用活動'),
+                      subtitle: const Text('仍須同時落在活動開始與結束時間內，玩家才看得到。'),
+                      value: _eventIsActive,
+                      onChanged: (value) {
+                        setState(() => _eventIsActive = value);
+                      },
+                    ),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      children: [
+                        FilterChip(
+                          label: const Text('每日任務'),
+                          selected: _eventHasTasks,
+                          onSelected: (value) {
+                            setState(() => _eventHasTasks = value);
+                          },
+                        ),
+                        FilterChip(
+                          label: const Text('累積獎勵'),
+                          selected: _eventHasMilestones,
+                          onSelected: (value) {
+                            setState(() => _eventHasMilestones = value);
+                          },
+                        ),
+                        FilterChip(
+                          label: const Text('活動商店'),
+                          selected: _eventHasShop,
+                          onSelected: (value) {
+                            setState(() => _eventHasShop = value);
+                          },
+                        ),
+                        FilterChip(
+                          label: const Text('限定回憶'),
+                          selected: _eventHasMemory,
+                          onSelected: (value) {
+                            setState(() => _eventHasMemory = value);
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 14),
+            if (_eventHasTasks)
+              _buildEventDraftList(
+                title: '每日任務',
+                type: 'task',
+                items: _eventTaskDrafts,
+              ),
+            if (_eventHasTasks) const SizedBox(height: 12),
+            if (_eventHasMilestones)
+              _buildEventDraftList(
+                title: '累積進度 / 里程碑',
+                type: 'milestone',
+                items: _eventMilestoneDrafts,
+              ),
+            if (_eventHasMilestones) const SizedBox(height: 12),
+            if (_eventHasShop)
+              _buildEventDraftList(
+                title: '活動商店商品',
+                type: 'shop',
+                items: _eventShopDrafts,
+              ),
+            if (_eventHasShop) const SizedBox(height: 12),
+            if (_eventHasMemory) _buildEventMemoryDraftList(),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: _isSavingEvent ? null : _saveReusableEvent,
+                icon: _isSavingEvent
+                    ? const SizedBox.square(
+                  dimension: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+                    : const Icon(Icons.save_rounded),
+                label: Text(
+                  _isSavingEvent
+                      ? '儲存中…'
+                      : (_editingReusableEventId == null ? '儲存活動' : '更新活動'),
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '已建立的活動頁',
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Text(
+                  '最多顯示 30 筆',
+                  style: GoogleFonts.notoSerifTc(
+                    fontSize: 11,
+                    color: colors.onSurface.withValues(alpha: 0.42),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(24),
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            else if (snapshot.hasError)
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(18),
+                  child: Text('讀取活動失敗：${snapshot.error}'),
+                ),
+              )
+            else if ((snapshot.data?.docs ?? []).isEmpty)
+                const Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(22),
+                    child: Center(child: Text('目前還沒有活動頁')),
+                  ),
+                )
+              else
+                ...snapshot.data!.docs.map((doc) {
+                  final data = doc.data();
+                  final active = data['isActive'] == true;
+                  final startAt = data['startAt'] is Timestamp
+                      ? (data['startAt'] as Timestamp).toDate()
+                      : null;
+                  final endAt = data['endAt'] is Timestamp
+                      ? (data['endAt'] as Timestamp).toDate()
+                      : null;
+                  final now = DateTime.now();
+
+                  String status;
+                  Color statusColor;
+
+                  if (!active) {
+                    status = '已停用';
+                    statusColor = Colors.grey;
+                  } else if (startAt != null && now.isBefore(startAt)) {
+                    status = '尚未開始';
+                    statusColor = Colors.blue;
+                  } else if (endAt != null && now.isAfter(endAt)) {
+                    status = '已結束';
+                    statusColor = Colors.orange;
+                  } else {
+                    status = '進行中';
+                    statusColor = Colors.green;
+                  }
+
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  data['name']?.toString() ?? doc.id,
+                                  style: GoogleFonts.notoSerifTc(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 9,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: statusColor.withValues(alpha: 0.10),
+                                  borderRadius: BorderRadius.circular(999),
+                                ),
+                                child: Text(
+                                  status,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: statusColor,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            'ID：${doc.id}',
+                            style: GoogleFonts.notoSerifTc(
+                              fontSize: 11,
+                              color: colors.onSurface.withValues(alpha: 0.48),
+                            ),
+                          ),
+                          if (startAt != null || endAt != null) ...[
+                            const SizedBox(height: 5),
+                            Text(
+                              '${startAt == null ? '—' : _formatRewardDateTime(startAt)}'
+                                  ' ～ '
+                                  '${endAt == null ? '—' : _formatRewardDateTime(endAt)}',
+                              style: GoogleFonts.notoSerifTc(
+                                fontSize: 11,
+                                color: colors.onSurface.withValues(alpha: 0.48),
+                              ),
+                            ),
+                          ],
+                          const SizedBox(height: 8),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: Wrap(
+                              spacing: 6,
+                              children: [
+                                TextButton.icon(
+                                  onPressed: () => _loadReusableEventForEditing(doc),
+                                  icon: const Icon(Icons.edit_rounded),
+                                  label: const Text('編輯'),
+                                ),
+                                TextButton.icon(
+                                  onPressed: () => _toggleReusableEvent(
+                                    doc.reference,
+                                    !active,
+                                  ),
+                                  icon: Icon(
+                                    active
+                                        ? Icons.pause_circle_outline_rounded
+                                        : Icons.play_circle_outline_rounded,
+                                  ),
+                                  label: Text(active ? '停用' : '啟用'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
+          ],
+        );
+      },
     );
   }
 

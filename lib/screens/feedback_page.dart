@@ -531,7 +531,9 @@ class _FeedbackPageState
 
           'title': l10n.feedback_mail_received_title,
 
-          'body': l10n.feedback_mail_received_body,
+          'body': l10n.feedback_mail_received_body(
+            caseNumber,
+          ),
 
           // ⭐ 方便之後客服回覆對應
           'caseNumber':

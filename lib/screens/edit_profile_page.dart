@@ -20,8 +20,10 @@ import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
 
 import '../services/toast_utils.dart';
+import '../services/app_constants.dart';
 import '../utils/image_utils.dart';
 import 'welcome_guide_page.dart';
+import 'avatar_frame_picker_page.dart';
 //個人檔案
 
 class EditProfilePage extends StatefulWidget {
@@ -58,6 +60,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
   DateTime? _originalBirthDate;
   String _originalBio = '';
 
+  // --- 活動頭像框 ---
+  String _equippedAvatarFrameName = '';
+  String _equippedAvatarFrameImageUrl = '';
+  String _equippedAvatarFrameEventId = '';
+  String _equippedAvatarFrameItemId = '';
+  bool _avatarFrameChanged = false;
+
   // --- Services ---
   final ImagePicker _picker = ImagePicker();
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -68,7 +77,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
     super.initState();
     // ✨ 關鍵修復 1：不管是不是首次創建，都先去雲端查有沒有資料！
     // 避免本地資料被清空時，App 誤以為你是新玩家而解鎖生日。
-    _loadProfileFuture = _loadProfileData();
+    _loadProfileFuture = _loadProfileData().then((_) async {
+      await _loadAvatarFrameCache();
+      await _loadEquippedAvatarFrame();
+    });
   }
 
   @override
@@ -330,6 +342,180 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
   }
 
+  String _avatarFrameCacheKey(String uid, String field) =>
+      'avatarFrame_${uid}_$field';
+
+  Future<void> _loadAvatarFrameCache() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final key = prefs.getString(
+        _avatarFrameCacheKey(user.uid, 'key'),
+      ) ??
+          '';
+      final imageUrl = prefs.getString(
+        _avatarFrameCacheKey(user.uid, 'imageUrl'),
+      ) ??
+          '';
+      final name = prefs.getString(
+        _avatarFrameCacheKey(user.uid, 'name'),
+      ) ??
+          '';
+
+      if (!mounted || key.isEmpty || imageUrl.isEmpty) return;
+      final parts = key.split('::');
+      if (parts.length != 2) return;
+
+      setState(() {
+        _equippedAvatarFrameEventId = parts[0];
+        _equippedAvatarFrameItemId = parts[1];
+        _equippedAvatarFrameImageUrl = imageUrl;
+        _equippedAvatarFrameName = name;
+      });
+    } catch (e) {
+      debugPrint('⚠️ 讀取頭像框本機快取失敗：$e');
+    }
+  }
+
+  Future<void> _saveAvatarFrameCache({
+    required String uid,
+    required String eventId,
+    required String itemId,
+    required String imageUrl,
+    required String name,
+  }) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(
+        _avatarFrameCacheKey(uid, 'key'),
+        '$eventId::$itemId',
+      );
+      await prefs.setString(
+        _avatarFrameCacheKey(uid, 'imageUrl'),
+        imageUrl,
+      );
+      await prefs.setString(_avatarFrameCacheKey(uid, 'name'), name);
+    } catch (e) {
+      debugPrint('⚠️ 儲存頭像框本機快取失敗：$e');
+    }
+  }
+
+  Future<void> _clearAvatarFrameCache(String uid) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_avatarFrameCacheKey(uid, 'key'));
+      await prefs.remove(_avatarFrameCacheKey(uid, 'imageUrl'));
+      await prefs.remove(_avatarFrameCacheKey(uid, 'name'));
+    } catch (e) {
+      debugPrint('⚠️ 清除頭像框本機快取失敗：$e');
+    }
+  }
+
+  Future<void> _loadEquippedAvatarFrame() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    try {
+      final userDoc = await _db.collection('users').doc(user.uid).get();
+      final rawEquipped = userDoc.data()?['equippedAvatarFrame'];
+      final equipped = rawEquipped is Map
+          ? Map<String, dynamic>.from(rawEquipped)
+          : <String, dynamic>{};
+
+      final eventId = (equipped['eventId'] ?? '').toString().trim();
+      final itemId = (equipped['itemId'] ?? '').toString().trim();
+
+      if (eventId.isEmpty || itemId.isEmpty) {
+        await _clearAvatarFrameCache(user.uid);
+        if (!mounted) return;
+        setState(() {
+          _equippedAvatarFrameName = '';
+          _equippedAvatarFrameImageUrl = '';
+          _equippedAvatarFrameEventId = '';
+          _equippedAvatarFrameItemId = '';
+        });
+        return;
+      }
+
+      final progressDoc = await _db
+          .collection('artifacts')
+          .doc(AppConfig.appId)
+          .collection('event_progress')
+          .doc(user.uid)
+          .collection('events')
+          .doc(eventId)
+          .get();
+
+      final rawOwned = progressDoc.data()?['ownedEventItems'];
+      Map<String, dynamic>? ownedItem;
+      if (rawOwned is Map && rawOwned[itemId] is Map) {
+        ownedItem = Map<String, dynamic>.from(rawOwned[itemId] as Map);
+      }
+
+      final valid = ownedItem != null &&
+          (ownedItem['itemType'] ?? '').toString() == 'avatar_frame' &&
+          (ownedItem['imageUrl'] ?? '').toString().trim().isNotEmpty;
+
+      final resolvedName = valid
+          ? (ownedItem!['name'] ?? '活動頭像框').toString()
+          : '';
+      final resolvedImageUrl = valid
+          ? (ownedItem!['imageUrl'] ?? '').toString().trim()
+          : '';
+
+      if (!mounted) return;
+      setState(() {
+        if (valid) {
+          _equippedAvatarFrameName = resolvedName;
+          _equippedAvatarFrameImageUrl = resolvedImageUrl;
+          _equippedAvatarFrameEventId = eventId;
+          _equippedAvatarFrameItemId = itemId;
+        } else {
+          _equippedAvatarFrameName = '';
+          _equippedAvatarFrameImageUrl = '';
+          _equippedAvatarFrameEventId = '';
+          _equippedAvatarFrameItemId = '';
+        }
+      });
+
+      if (valid) {
+        await _saveAvatarFrameCache(
+          uid: user.uid,
+          eventId: eventId,
+          itemId: itemId,
+          imageUrl: resolvedImageUrl,
+          name: resolvedName,
+        );
+      } else {
+        await _clearAvatarFrameCache(user.uid);
+      }
+    } catch (e) {
+      debugPrint('⚠️ 讀取已裝備頭像框失敗：$e');
+    }
+  }
+
+  Future<void> _openAvatarFramePicker() async {
+    if (widget.isCreating) return;
+
+    final result = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => AvatarFramePickerPage(
+          avatarPath: _avatarPath,
+        ),
+      ),
+    );
+
+    if (!mounted) return;
+    await _loadEquippedAvatarFrame();
+    if (result == true && mounted) {
+      setState(() {
+        _avatarFrameChanged = true;
+      });
+    }
+  }
+
   // ✨ 自動生成 8 碼隨機專屬 ID (大寫英文+數字)
   String _generateRandomID() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -424,7 +610,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
           _birthDate,
           _originalBirthDate,
         ) ||
-        _profileLinksChanged();
+        _profileLinksChanged() ||
+        _avatarFrameChanged;
   }
 
 
@@ -824,6 +1011,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       _originalGender = _gender;
       _originalBirthDate = _birthDate;
       _originalProfileLinks = _currentProfileLinks();
+      _avatarFrameChanged = false;
 
       if (newID != null) {
         _originalID = newID;
@@ -1570,6 +1758,24 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             _getEditableAvatarProvider(_avatarPath),
                           ),
                         ),
+                        if (_equippedAvatarFrameImageUrl.isNotEmpty)
+                          Positioned(
+                            left: -8,
+                            right: -8,
+                            top: -8,
+                            bottom: -8,
+                            child: IgnorePointer(
+                              child: Image(
+                                image: getAvatarImageProvider(
+                                  _equippedAvatarFrameImageUrl,
+                                ),
+                                fit: BoxFit.contain,
+                                filterQuality: FilterQuality.high,
+                                errorBuilder: (_, __, ___) =>
+                                const SizedBox.shrink(),
+                              ),
+                            ),
+                          ),
                         Positioned(
                           right: -2,
                           bottom: -2,
@@ -1633,6 +1839,109 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ),
                   ),
                   const SizedBox(height: 18),
+
+                  if (!widget.isCreating) ...[
+                    Divider(
+                      color: primaryColor.withValues(alpha: 0.16),
+                      height: 1,
+                    ),
+                    const SizedBox(height: 18),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.auto_awesome_outlined,
+                          size: 19,
+                          color: primaryColor.withValues(alpha: 0.72),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '個人裝扮',
+                          style: GoogleFonts.notoSerifTc(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: primaryColor.withValues(alpha: 0.78),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: _openAvatarFramePicker,
+                        borderRadius: BorderRadius.circular(14),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 8,
+                          ),
+                          child: Row(
+                            children: [
+                              SizedBox.square(
+                                dimension: 54,
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 23,
+                                      backgroundImage:
+                                      _getEditableAvatarProvider(_avatarPath),
+                                    ),
+                                    if (_equippedAvatarFrameImageUrl.isNotEmpty)
+                                      Positioned.fill(
+                                        child: IgnorePointer(
+                                          child: Image(
+                                            image: getAvatarImageProvider(
+                                              _equippedAvatarFrameImageUrl,
+                                            ),
+                                            fit: BoxFit.contain,
+                                            errorBuilder: (_, __, ___) =>
+                                            const SizedBox.shrink(),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '頭像框',
+                                      style: GoogleFonts.notoSerifTc(
+                                        fontSize: 13.5,
+                                        fontWeight: FontWeight.w600,
+                                        color: onSurface,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      _equippedAvatarFrameName.isEmpty
+                                          ? '目前未使用'
+                                          : _equippedAvatarFrameName,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: GoogleFonts.notoSerifTc(
+                                        fontSize: 11.5,
+                                        color: onSurface.withValues(alpha: 0.5),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Icon(
+                                Icons.chevron_right_rounded,
+                                color: onSurface.withValues(alpha: 0.32),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                  ],
 
                   labeledField(
                     label: l10n.label_player_exclusive_id,

@@ -13,6 +13,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   flutter_secure_storage_windows
   flutter_sound
   flutter_timezone
+  gal
   permission_handler_windows
   printing
   share_plus

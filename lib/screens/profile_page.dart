@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 import 'dart:math';
 import 'heartbeat_diary_page.dart';
+import 'event_memory_collection_page.dart';
 import '../repositories/character_repository.dart';
 import '../services/moment_notification_service.dart';
 import '../services/toast_utils.dart';
@@ -53,6 +54,9 @@ class _ProfilePageState extends State<ProfilePage>
   // --- 狀態變數 ---
   String _nickname = '';
   String _avatarPath = 'assets/images/avatar1.png';
+  String _equippedAvatarFrameImageUrl = '';
+  String _equippedAvatarFrameName = '';
+  String _equippedAvatarFrameKey = '';
   String _bio = '';
   List<Map<String, String>> _profileLinks = [];
   bool _isBioExpanded = false;
@@ -122,6 +126,9 @@ class _ProfilePageState extends State<ProfilePage>
             _userId = user.uid;
           });
 
+          // 先用本機快取立即顯示頭像框，再由 Firestore 背景校正。
+          unawaited(_loadAvatarFrameCache(user.uid));
+
           // 🌟 第三步：確定有 UserID 了，再來抓 ID 鎖頭和基本資料
           _loadUserPIDData();
           _loadInitialData();
@@ -148,6 +155,59 @@ class _ProfilePageState extends State<ProfilePage>
         });
       }
     });
+  }
+
+  String _avatarFrameCacheKey(String uid, String field) =>
+      'avatarFrame_${uid}_$field';
+
+  Future<void> _loadAvatarFrameCache(String uid) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final key = prefs.getString(_avatarFrameCacheKey(uid, 'key')) ?? '';
+      final imageUrl =
+          prefs.getString(_avatarFrameCacheKey(uid, 'imageUrl')) ?? '';
+      final name = prefs.getString(_avatarFrameCacheKey(uid, 'name')) ?? '';
+
+      if (!mounted || key.isEmpty || imageUrl.isEmpty) return;
+
+      setState(() {
+        _equippedAvatarFrameKey = key;
+        _equippedAvatarFrameImageUrl = imageUrl;
+        _equippedAvatarFrameName = name;
+      });
+    } catch (e) {
+      debugPrint('⚠️ 讀取頭像框本機快取失敗：$e');
+    }
+  }
+
+  Future<void> _saveAvatarFrameCache({
+    required String uid,
+    required String key,
+    required String imageUrl,
+    required String name,
+  }) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_avatarFrameCacheKey(uid, 'key'), key);
+      await prefs.setString(
+        _avatarFrameCacheKey(uid, 'imageUrl'),
+        imageUrl,
+      );
+      await prefs.setString(_avatarFrameCacheKey(uid, 'name'), name);
+    } catch (e) {
+      debugPrint('⚠️ 儲存頭像框本機快取失敗：$e');
+    }
+  }
+
+  Future<void> _clearAvatarFrameCache(String uid) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_avatarFrameCacheKey(uid, 'key'));
+      await prefs.remove(_avatarFrameCacheKey(uid, 'imageUrl'));
+      await prefs.remove(_avatarFrameCacheKey(uid, 'name'));
+    } catch (e) {
+      debugPrint('⚠️ 清除頭像框本機快取失敗：$e');
+    }
   }
 
 // 👇 把這段 Function 放在 initState 的下面或其他獨立的區塊裡
@@ -310,6 +370,8 @@ class _ProfilePageState extends State<ProfilePage>
 
       final data = snapshot.data()!;
 
+      unawaited(_syncEquippedAvatarFrame(data));
+
       setState(() {
         // 🌟 1. 暱稱與頭像：優先用雲端的，沒有才用目前的 (避免閃爍)
         _nickname = data['nickname'] ?? _nickname;
@@ -344,6 +406,93 @@ class _ProfilePageState extends State<ProfilePage>
       // ✨ 同步回本地快取，下次打開 App 速度會更快
       _updateLocalCache(data);
     });
+  }
+
+  Future<void> _syncEquippedAvatarFrame(Map<String, dynamic> userData) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final rawEquipped = userData['equippedAvatarFrame'];
+    final equipped = rawEquipped is Map
+        ? Map<String, dynamic>.from(rawEquipped)
+        : <String, dynamic>{};
+
+    final eventId = (equipped['eventId'] ?? '').toString().trim();
+    final itemId = (equipped['itemId'] ?? '').toString().trim();
+    final key = eventId.isEmpty || itemId.isEmpty ? '' : '$eventId::$itemId';
+
+    if (key.isEmpty) {
+      await _clearAvatarFrameCache(user.uid);
+      if (!mounted) return;
+      if (_equippedAvatarFrameKey.isNotEmpty ||
+          _equippedAvatarFrameImageUrl.isNotEmpty) {
+        setState(() {
+          _equippedAvatarFrameKey = '';
+          _equippedAvatarFrameImageUrl = '';
+          _equippedAvatarFrameName = '';
+        });
+      }
+      return;
+    }
+
+    if (_equippedAvatarFrameKey == key &&
+        _equippedAvatarFrameImageUrl.isNotEmpty) {
+      return;
+    }
+
+    try {
+      final progressDoc = await _db
+          .collection('artifacts')
+          .doc(_appId)
+          .collection('event_progress')
+          .doc(user.uid)
+          .collection('events')
+          .doc(eventId)
+          .get();
+
+      final rawOwned = progressDoc.data()?['ownedEventItems'];
+      Map<String, dynamic>? ownedItem;
+      if (rawOwned is Map && rawOwned[itemId] is Map) {
+        ownedItem = Map<String, dynamic>.from(rawOwned[itemId] as Map);
+      }
+
+      final valid = ownedItem != null &&
+          (ownedItem['itemType'] ?? '').toString() == 'avatar_frame' &&
+          (ownedItem['imageUrl'] ?? '').toString().trim().isNotEmpty;
+
+      if (!mounted) return;
+      final resolvedImageUrl = valid
+          ? (ownedItem!['imageUrl'] ?? '').toString().trim()
+          : '';
+      final resolvedName = valid
+          ? (ownedItem!['name'] ?? '活動頭像框').toString()
+          : '';
+
+      setState(() {
+        if (valid) {
+          _equippedAvatarFrameKey = key;
+          _equippedAvatarFrameImageUrl = resolvedImageUrl;
+          _equippedAvatarFrameName = resolvedName;
+        } else {
+          _equippedAvatarFrameKey = '';
+          _equippedAvatarFrameImageUrl = '';
+          _equippedAvatarFrameName = '';
+        }
+      });
+
+      if (valid) {
+        await _saveAvatarFrameCache(
+          uid: user.uid,
+          key: key,
+          imageUrl: resolvedImageUrl,
+          name: resolvedName,
+        );
+      } else {
+        await _clearAvatarFrameCache(user.uid);
+      }
+    } catch (e) {
+      debugPrint('⚠️ 同步頭像框失敗：$e');
+    }
   }
 
   // ✨ 輔助小工具：把雲端抓到的最新資料順手存進本地快取
@@ -2061,6 +2210,25 @@ class _ProfilePageState extends State<ProfilePage>
                       ),
                     ),
                     IconButton(
+                      tooltip: '拾光收藏',
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                            const EventMemoryCollectionPage(),
+                          ),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.collections_bookmark_outlined,
+                        color: theme.colorScheme.primary
+                            .withValues(alpha: 0.62),
+                        size: 25,
+                      ),
+                    ),
+
+                    IconButton(
                       tooltip: l10n.profile_tooltip_settings,
                       onPressed: () {
                         Navigator.push(
@@ -2680,14 +2848,36 @@ class _ProfilePageState extends State<ProfilePage>
                   ]
                       : null,
                 ),
-                child: CircleAvatar(
-                  radius: 47,
-                  backgroundColor:
-                  theme.colorScheme.primary.withValues(alpha: 0.07),
-                  backgroundImage: getAvatarImageProvider(_avatarPath),
-                  onBackgroundImageError: (exception, stackTrace) {
-                    debugPrint('⚠️ 個人檔案大頭貼載入失敗');
-                  },
+                child: SizedBox.square(
+                  dimension: 106,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      CircleAvatar(
+                        radius: 47,
+                        backgroundColor:
+                        theme.colorScheme.primary.withValues(alpha: 0.07),
+                        backgroundImage: getAvatarImageProvider(_avatarPath),
+                        onBackgroundImageError: (exception, stackTrace) {
+                          debugPrint('⚠️ 個人檔案大頭貼載入失敗');
+                        },
+                      ),
+                      if (_equippedAvatarFrameImageUrl.isNotEmpty)
+                        Positioned.fill(
+                          child: IgnorePointer(
+                            child: Image(
+                              image: getAvatarImageProvider(
+                                _equippedAvatarFrameImageUrl,
+                              ),
+                              fit: BoxFit.contain,
+                              filterQuality: FilterQuality.high,
+                              errorBuilder: (_, __, ___) =>
+                              const SizedBox.shrink(),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 13),

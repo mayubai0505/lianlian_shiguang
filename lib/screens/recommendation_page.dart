@@ -9,6 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../services/app_constants.dart';
 import 'character_model.dart';
 import 'character_profile_page.dart';
+import 'event_page.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 // =========================================================
@@ -780,8 +781,10 @@ class RecommendationPageState extends State<RecommendationPage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 10),
+                  const _ActiveEventEntry(),
                   if (_preferredTags.isNotEmpty) ...[
+                    const SizedBox(height: 14),
                     const SizedBox(height: 14),
                     Wrap(
                       spacing: 8,
@@ -928,6 +931,256 @@ class RecommendationPageState extends State<RecommendationPage> {
                 ),
               ),
             ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ActiveEventEntry extends StatelessWidget {
+  const _ActiveEventEntry();
+
+  CollectionReference<Map<String, dynamic>> _eventsRef() =>
+      FirebaseFirestore.instance
+          .collection('artifacts')
+          .doc(AppConfig.appId)
+          .collection('events');
+
+  DateTime? _date(dynamic value) => value is Timestamp ? value.toDate() : null;
+
+  bool _isRunning(Map<String, dynamic> data) {
+    if (data['isActive'] != true) return false;
+    final now = DateTime.now();
+    final start = _date(data['startAt']);
+    final end = _date(data['endAt']);
+    if (start != null && now.isBefore(start)) return false;
+    if (end != null && now.isAfter(end)) return false;
+    return true;
+  }
+
+  String _remaining(DateTime? end) {
+    if (end == null) return '活動進行中';
+    final d = end.difference(DateTime.now());
+    if (d.isNegative) return '活動已結束';
+    if (d.inDays >= 1) return '剩 ${d.inDays + 1} 天';
+    if (d.inHours >= 1) return '剩 ${d.inHours} 小時';
+    return '即將結束';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final onSurface = colors.onSurface;
+
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      // 測試階段先不要在 query 層加 isActive 條件。
+      // 直接讀 events 後由前端判斷，可同時避開資料型別/欄位異常造成完全查不到，
+      // 並讓 log 能看見實際讀到哪些活動。
+      stream: _eventsRef().limit(20).snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          debugPrint(
+            '❌ 活動入口讀取失敗：appId=${AppConfig.appId} error=${snapshot.error}',
+          );
+          return const SizedBox.shrink();
+        }
+
+        if (!snapshot.hasData) {
+          return const SizedBox.shrink();
+        }
+
+        final now = DateTime.now();
+        debugPrint(
+          '🎃 活動入口讀取：appId=${AppConfig.appId} '
+              'docs=${snapshot.data!.docs.length} now=$now',
+        );
+
+        for (final eventDoc in snapshot.data!.docs) {
+          final eventData = eventDoc.data();
+          debugPrint(
+            '🎃 event=${eventDoc.id} '
+                'isActive=${eventData['isActive']} '
+                'startAt=${_date(eventData['startAt'])} '
+                'endAt=${_date(eventData['endAt'])} '
+                'running=${_isRunning(eventData)}',
+          );
+        }
+
+        final docs = snapshot.data!.docs
+            .where((d) => _isRunning(d.data()))
+            .toList();
+
+        if (docs.isEmpty) {
+          debugPrint('⚠️ 活動入口：目前沒有符合顯示條件的活動');
+          return const SizedBox.shrink();
+        }
+
+        docs.sort((a, b) {
+          final aa = _date(a.data()['startAt']);
+          final bb = _date(b.data()['startAt']);
+          if (aa == null && bb == null) return 0;
+          if (aa == null) return 1;
+          if (bb == null) return -1;
+          return bb.compareTo(aa);
+        });
+
+        final doc = docs.first;
+        final data = doc.data();
+        final name = (data['name'] ?? '期間限定活動').toString();
+        final subtitle = (data['subtitle'] ?? '和他一起留下這個季節的特別回憶。').toString();
+        final imageUrl = (data['bannerImageUrl'] ?? data['heroImageUrl'] ?? '').toString().trim();
+        final currencyName = (data['currencyName'] ?? '活動貨幣').toString();
+        final currencyIcon = (data['currencyIcon'] ?? '✦').toString();
+        final endAt = _date(data['endAt']);
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 4),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(22),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => EventPage(eventId: doc.id)),
+              ),
+              child: Ink(
+                height: 136,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(22),
+                  color: colors.primary.withValues(alpha: 0.055),
+                  border: Border.all(color: colors.primary.withValues(alpha: 0.12)),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(22),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      if (imageUrl.isNotEmpty)
+                        _buildRecommendationCachedImage(
+                          context,
+                          imageUrl: imageUrl,
+                          fit: BoxFit.cover,
+                          cacheWidth: 900,
+                          alignment: Alignment.center,
+                          fallback: const SizedBox.shrink(),
+                        ),
+                      if (imageUrl.isNotEmpty)
+                        DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                              colors: [
+                                Colors.black.withValues(alpha: 0.46),
+                                Colors.black.withValues(alpha: 0.16),
+                                Colors.black.withValues(alpha: 0.02),
+                              ],
+                            ),
+                          ),
+                        ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 14, 12),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    name,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.notoSerifTc(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700,
+                                      color: imageUrl.isNotEmpty ? Colors.white : onSurface,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    subtitle,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.notoSerifTc(
+                                      fontSize: 11.5,
+                                      color: imageUrl.isNotEmpty
+                                          ? Colors.white.withValues(alpha: 0.88)
+                                          : onSurface.withValues(alpha: 0.56),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Wrap(
+                                    spacing: 8,
+                                    runSpacing: 4,
+                                    children: [
+                                      _EventMiniPill(icon: Icons.schedule_rounded, label: _remaining(endAt)),
+                                      _EventMiniPill(textIcon: currencyIcon, label: currencyName),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Container(
+                              width: 38,
+                              height: 38,
+                              decoration: BoxDecoration(
+                                color: imageUrl.isNotEmpty
+                                    ? Colors.white.withValues(alpha: 0.92)
+                                    : colors.primary.withValues(alpha: 0.10),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(Icons.arrow_forward_rounded, size: 19, color: colors.primary),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _EventMiniPill extends StatelessWidget {
+  final IconData? icon;
+  final String? textIcon;
+  final String label;
+
+  const _EventMiniPill({this.icon, this.textIcon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.88),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 13, color: colors.primary),
+            const SizedBox(width: 4),
+          ] else if ((textIcon ?? '').isNotEmpty) ...[
+            Text(textIcon!, style: const TextStyle(fontSize: 12)),
+            const SizedBox(width: 4),
+          ],
+          Text(
+            label,
+            style: GoogleFonts.notoSerifTc(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w600,
+              color: colors.primary,
+            ),
+          ),
         ],
       ),
     );

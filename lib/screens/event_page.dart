@@ -1,0 +1,2290 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import '../services/app_constants.dart';
+import 'event_memory_page.dart';
+
+/// Reusable event page v4
+///
+/// Event-specific visuals are driven by Firestore config instead of hardcoded
+/// Halloween/Christmas copy. Existing events keep working because every new
+/// field has a fallback.
+class EventPage extends StatelessWidget {
+  final String eventId;
+
+  const EventPage({
+    super.key,
+    required this.eventId,
+  });
+
+  DocumentReference<Map<String, dynamic>> _eventRef() {
+    return FirebaseFirestore.instance
+        .collection('artifacts')
+        .doc(AppConfig.appId)
+        .collection('events')
+        .doc(eventId);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      backgroundColor: colors.surface,
+      body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+        stream: _eventRef().snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting &&
+              !snapshot.hasData) {
+            return Center(
+              child: CircularProgressIndicator(
+                color: colors.primary,
+                strokeWidth: 2.2,
+              ),
+            );
+          }
+
+          if (snapshot.hasError || !snapshot.hasData || !snapshot.data!.exists) {
+            return _EventUnavailablePage(
+              message: snapshot.hasError ? '活動資料讀取失敗' : '找不到這個活動',
+            );
+          }
+
+          return _EventContent(
+            eventId: eventId,
+            data: snapshot.data!.data() ?? <String, dynamic>{},
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _EventVisualStyle {
+  final Color accent;
+  final Color accent2;
+  final Color pageBackground;
+  final Color cardColor;
+  final String pageBackgroundImageUrl;
+  final String memoryFeatureImageUrl;
+  final String shopFeatureImageUrl;
+  final String tasksHeaderIconUrl;
+  final String milestonesHeaderIconUrl;
+  final String infoHeaderIconUrl;
+  final String pageTopLeftUrl;
+  final String pageTopRightUrl;
+  final String progressDecorationUrl;
+  final String infoDecorationUrl;
+  final String pageBottomLeftUrl;
+  final String pageBottomRightUrl;
+
+  const _EventVisualStyle({
+    required this.accent,
+    required this.accent2,
+    required this.pageBackground,
+    required this.cardColor,
+    required this.pageBackgroundImageUrl,
+    required this.memoryFeatureImageUrl,
+    required this.shopFeatureImageUrl,
+    required this.tasksHeaderIconUrl,
+    required this.milestonesHeaderIconUrl,
+    required this.infoHeaderIconUrl,
+    required this.pageTopLeftUrl,
+    required this.pageTopRightUrl,
+    required this.progressDecorationUrl,
+    required this.infoDecorationUrl,
+    required this.pageBottomLeftUrl,
+    required this.pageBottomRightUrl,
+  });
+
+  static Map<String, dynamic> _asMap(dynamic raw) {
+    return raw is Map ? Map<String, dynamic>.from(raw) : <String, dynamic>{};
+  }
+
+  static Color? _hex(dynamic raw) {
+    final text = (raw ?? '').toString().trim().replaceAll('#', '');
+    if (text.length != 6 && text.length != 8) return null;
+    try {
+      final value = int.parse(text, radix: 16);
+      return Color(text.length == 6 ? 0xFF000000 | value : value);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  factory _EventVisualStyle.fromData(
+      BuildContext context,
+      Map<String, dynamic> data,
+      ) {
+    final colors = Theme.of(context).colorScheme;
+    final theme = _asMap(data['theme']);
+    final decorations = _asMap(data['decorations']);
+
+    String value(String key, [String fallback = '']) {
+      final themed = theme[key]?.toString().trim() ?? '';
+      if (themed.isNotEmpty) return themed;
+      final top = data[key]?.toString().trim() ?? '';
+      return top.isNotEmpty ? top : fallback;
+    }
+
+    String decorationValue(String key, [String fallback = '']) {
+      final decorated = decorations[key]?.toString().trim() ?? '';
+      if (decorated.isNotEmpty) return decorated;
+      return fallback;
+    }
+
+    final accent = _hex(theme['accentColor'] ?? data['accentColor']) ??
+        colors.primary;
+    final accent2 = _hex(theme['accentColor2'] ?? data['accentColor2']) ??
+        Color.lerp(accent, Colors.white, 0.56)!;
+    final pageBackground =
+        _hex(theme['pageBackgroundColor'] ?? theme['backgroundColor'] ?? data['pageBackgroundColor']) ??
+            Color.lerp(colors.surface, accent, 0.035)!;
+    final cardColor =
+        _hex(theme['cardColor'] ?? data['cardColor']) ?? colors.surface;
+
+    return _EventVisualStyle(
+      accent: accent,
+      accent2: accent2,
+      pageBackground: pageBackground,
+      cardColor: cardColor,
+      pageBackgroundImageUrl: value('pageBackgroundImageUrl'),
+      memoryFeatureImageUrl: decorationValue(
+        'memoryCardImageUrl',
+        value('memoryFeatureImageUrl'),
+      ),
+      shopFeatureImageUrl: decorationValue(
+        'shopCardImageUrl',
+        value('shopFeatureImageUrl'),
+      ),
+      tasksHeaderIconUrl: decorationValue('tasksHeaderIconUrl'),
+      milestonesHeaderIconUrl: decorationValue('milestonesHeaderIconUrl'),
+      infoHeaderIconUrl: decorationValue('infoHeaderIconUrl'),
+      pageTopLeftUrl: decorationValue('pageTopLeftUrl'),
+      pageTopRightUrl: decorationValue('pageTopRightUrl'),
+      progressDecorationUrl: decorationValue('progressDecorationUrl'),
+      infoDecorationUrl: decorationValue('infoDecorationUrl'),
+      pageBottomLeftUrl: decorationValue('pageBottomLeftUrl'),
+      pageBottomRightUrl: decorationValue('pageBottomRightUrl'),
+    );
+  }
+}
+
+class _EventContent extends StatelessWidget {
+  final String eventId;
+  final Map<String, dynamic> data;
+
+  const _EventContent({
+    required this.eventId,
+    required this.data,
+  });
+
+  CollectionReference<Map<String, dynamic>> _subcollection(String name) {
+    return FirebaseFirestore.instance
+        .collection('artifacts')
+        .doc(AppConfig.appId)
+        .collection('events')
+        .doc(eventId)
+        .collection(name);
+  }
+
+  DocumentReference<Map<String, dynamic>>? _progressRef() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return null;
+    return FirebaseFirestore.instance
+        .collection('artifacts')
+        .doc(AppConfig.appId)
+        .collection('event_progress')
+        .doc(user.uid)
+        .collection('events')
+        .doc(eventId);
+  }
+
+  DateTime? _date(dynamic value) => value is Timestamp ? value.toDate() : null;
+
+  String _remaining(DateTime? end) {
+    if (end == null) return '活動進行中';
+    final d = end.difference(DateTime.now());
+    if (d.isNegative) return '活動已結束';
+    if (d.inDays >= 1) return '剩餘 ${d.inDays + 1} 天';
+    if (d.inHours >= 1) return '剩餘 ${d.inHours} 小時';
+    return '即將結束';
+  }
+
+  String _dateText(DateTime? start, DateTime? end) {
+    String f(DateTime d) =>
+        '${d.year}.${d.month.toString().padLeft(2, '0')}.${d.day.toString().padLeft(2, '0')}';
+    if (start == null && end == null) return '';
+    if (start == null) return '～ ${f(end!)}';
+    if (end == null) return '${f(start)} ～';
+    return '${f(start)} ～ ${f(end)}';
+  }
+
+  Map<String, dynamic> _uiText() {
+    final raw = data['uiText'];
+    return raw is Map ? Map<String, dynamic>.from(raw) : <String, dynamic>{};
+  }
+
+  String _text(String key, String fallback) {
+    final ui = _uiText();
+    final fromUi = ui[key]?.toString().trim() ?? '';
+    if (fromUi.isNotEmpty) return fromUi;
+    final fromTop = data[key]?.toString().trim() ?? '';
+    return fromTop.isNotEmpty ? fromTop : fallback;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final style = _EventVisualStyle.fromData(context, data);
+    final colors = Theme.of(context).colorScheme;
+    final onSurface = colors.onSurface;
+
+    final name = (data['name'] ?? '期間限定活動').toString();
+    final subtitle =
+    (data['subtitle'] ?? '和他一起留下這個季節的特別回憶。').toString();
+    final heroImageUrl =
+    (data['heroImageUrl'] ?? data['bannerImageUrl'] ?? '').toString();
+    final currencyName = (data['currencyName'] ?? '活動貨幣').toString();
+    final currencyIcon = (data['currencyIcon'] ?? '✦').toString();
+    final startAt = _date(data['startAt']);
+    final endAt = _date(data['endAt']);
+
+    final hasTasks = data['hasTasks'] != false;
+    final hasMilestones = data['hasMilestones'] != false;
+    final hasShop = data['hasShop'] != false;
+    final hasMemory = data['hasMemory'] != false;
+
+    final progressRef = _progressRef();
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: style.pageBackground,
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color.lerp(style.pageBackground, style.accent2, 0.15)!,
+            style.pageBackground,
+            Color.lerp(style.pageBackground, Colors.white, 0.30)!,
+          ],
+        ),
+      ),
+      child: Stack(
+        children: [
+          if (style.pageBackgroundImageUrl.isNotEmpty)
+            Positioned.fill(
+              child: IgnorePointer(
+                child: Opacity(
+                  opacity: 0.12,
+                  child: CachedNetworkImage(
+                    imageUrl: style.pageBackgroundImageUrl,
+                    fit: BoxFit.cover,
+                    errorWidget: (_, __, ___) => const SizedBox.shrink(),
+                  ),
+                ),
+              ),
+            ),
+          if (style.pageTopLeftUrl.isNotEmpty)
+            Positioned(
+              left: -18,
+              top: 72,
+              child: IgnorePointer(
+                child: Opacity(
+                  opacity: 0.72,
+                  child: _DecorationImage(
+                    imageUrl: style.pageTopLeftUrl,
+                    width: 112,
+                  ),
+                ),
+              ),
+            ),
+          if (style.pageTopRightUrl.isNotEmpty)
+            Positioned(
+              right: -18,
+              top: 86,
+              child: IgnorePointer(
+                child: Opacity(
+                  opacity: 0.72,
+                  child: _DecorationImage(
+                    imageUrl: style.pageTopRightUrl,
+                    width: 112,
+                  ),
+                ),
+              ),
+            ),
+          CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                pinned: true,
+                backgroundColor: style.pageBackground.withValues(alpha: 0.93),
+                surfaceTintColor: Colors.transparent,
+                title: Text(
+                  name,
+                  style: GoogleFonts.notoSerifTc(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: onSurface,
+                  ),
+                ),
+              ),
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 36),
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    _EventHeroCard(
+                      eventId: eventId,
+                      progressRef: progressRef,
+                      name: name,
+                      subtitle: subtitle,
+                      heroImageUrl: heroImageUrl,
+                      remainingLabel: _remaining(endAt),
+                      dateLabel: _dateText(startAt, endAt),
+                      currencyIcon: currencyIcon,
+                      currencyName: currencyName,
+                      style: style,
+                    ),
+                    if (hasTasks) ...[
+                      const SizedBox(height: 14),
+                      _RichSectionShell(
+                        style: style,
+                        title: _text('tasksTitle', '今日任務'),
+                        subtitle: _text(
+                          'tasksSubtitle',
+                          '完成任務，收集$currencyName，解鎖更多限定內容。',
+                        ),
+                        icon: Icons.auto_awesome_rounded,
+                        headerImageUrl: style.tasksHeaderIconUrl,
+                        child: _TaskList(
+                          eventId: eventId,
+                          ref: _subcollection('tasks'),
+                          currencyIcon: currencyIcon,
+                          currencyName: currencyName,
+                          accent: style.accent,
+                          cardColor: style.cardColor,
+                        ),
+                      ),
+                    ],
+                    if (hasMilestones) ...[
+                      const SizedBox(height: 14),
+                      _RichSectionShell(
+                        style: style,
+                        title: _text('milestonesTitle', '累積進度'),
+                        subtitle: _text(
+                          'milestonesSubtitle',
+                          '累積$currencyName，領取活動限定獎勵。',
+                        ),
+                        icon: Icons.stars_rounded,
+                        headerImageUrl: style.milestonesHeaderIconUrl,
+                        trailingDecorationUrl: style.progressDecorationUrl,
+                        child: _MilestoneProgress(
+                          ref: _subcollection('milestones'),
+                          progressRef: progressRef,
+                          currencyIcon: currencyIcon,
+                          accent: style.accent,
+                        ),
+                      ),
+                    ],
+                    if (hasMemory || hasShop) ...[
+                      const SizedBox(height: 14),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (hasMemory)
+                            Expanded(
+                              child: _RichFeatureEntryCard(
+                                accent: style.accent,
+                                imageUrl: style.memoryFeatureImageUrl,
+                                icon: Icons.photo_library_outlined,
+                                title: _text('memoryTitle', '限定回憶'),
+                                subtitle: _text(
+                                  'memorySubtitle',
+                                  '留下這次活動的專屬回憶。',
+                                ),
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => EventMemoryPage(
+                                        eventId: eventId,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          if (hasMemory && hasShop) const SizedBox(width: 10),
+                          if (hasShop)
+                            Expanded(
+                              child: _RichFeatureEntryCard(
+                                accent: style.accent,
+                                imageUrl: style.shopFeatureImageUrl,
+                                icon: Icons.storefront_rounded,
+                                title: _text('shopTitle', '活動商店'),
+                                subtitle: _text(
+                                  'shopSubtitle',
+                                  '使用$currencyName兌換限定獎勵。',
+                                ),
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => EventShopPage(
+                                        eventId: eventId,
+                                        currencyName: currencyName,
+                                        currencyIcon: currencyIcon,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
+                    const SizedBox(height: 14),
+                    _RichEventInfoCard(
+                      title: _text('infoTitle', '活動說明'),
+                      description: (data['description'] ??
+                          '活動期間完成指定任務即可取得活動貨幣。\n兌換的獎勵會依活動規則發放至帳號。\n活動結束後，未使用的活動貨幣將依活動規則處理。')
+                          .toString(),
+                      accent: style.accent,
+                      cardColor: style.cardColor,
+                      headerImageUrl: style.infoHeaderIconUrl,
+                      decorationImageUrl: style.infoDecorationUrl,
+                    ),
+                    if (style.pageBottomLeftUrl.isNotEmpty ||
+                        style.pageBottomRightUrl.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        height: 76,
+                        child: Stack(
+                          children: [
+                            if (style.pageBottomLeftUrl.isNotEmpty)
+                              Positioned(
+                                left: 0,
+                                bottom: 0,
+                                child: _DecorationImage(
+                                  imageUrl: style.pageBottomLeftUrl,
+                                  width: 92,
+                                ),
+                              ),
+                            if (style.pageBottomRightUrl.isNotEmpty)
+                              Positioned(
+                                right: 0,
+                                bottom: 0,
+                                child: _DecorationImage(
+                                  imageUrl: style.pageBottomRightUrl,
+                                  width: 92,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ]),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EventHeroCard extends StatelessWidget {
+  final String eventId;
+  final DocumentReference<Map<String, dynamic>>? progressRef;
+  final String name;
+  final String subtitle;
+  final String heroImageUrl;
+  final String remainingLabel;
+  final String dateLabel;
+  final String currencyIcon;
+  final String currencyName;
+  final _EventVisualStyle style;
+
+  const _EventHeroCard({
+    required this.eventId,
+    required this.progressRef,
+    required this.name,
+    required this.subtitle,
+    required this.heroImageUrl,
+    required this.remainingLabel,
+    required this.dateLabel,
+    required this.currencyIcon,
+    required this.currencyName,
+    required this.style,
+  });
+
+  int _intValue(dynamic raw) {
+    if (raw is num) return raw.toInt();
+    return int.tryParse(raw?.toString() ?? '') ?? 0;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    final hasImage = heroImageUrl.trim().isNotEmpty;
+
+    Widget balancePill(int amount) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.94),
+          borderRadius: BorderRadius.circular(999),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.07),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(currencyIcon, style: const TextStyle(fontSize: 18)),
+            const SizedBox(width: 7),
+            Text(
+              '$currencyName  $amount',
+              style: GoogleFonts.notoSerifTc(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: style.accent,
+              ),
+            ),
+            const SizedBox(width: 2),
+            Icon(Icons.chevron_right_rounded, size: 20, color: style.accent),
+          ],
+        ),
+      );
+    }
+
+    return Container(
+      height: 300,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(28),
+        color: Color.lerp(style.cardColor, style.accent2, 0.22),
+        border: Border.all(color: style.accent.withValues(alpha: 0.12)),
+        boxShadow: [
+          BoxShadow(
+            color: style.accent.withValues(alpha: 0.10),
+            blurRadius: 24,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(28),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (hasImage)
+              CachedNetworkImage(
+                imageUrl: heroImageUrl.trim(),
+                fit: BoxFit.cover,
+                placeholder: (_, __) => Container(
+                  color: style.accent.withValues(alpha: 0.05),
+                ),
+                errorWidget: (_, __, ___) => Container(
+                  color: style.accent.withValues(alpha: 0.05),
+                ),
+              ),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: hasImage
+                      ? [
+                    Colors.black.withValues(alpha: 0.02),
+                    Colors.black.withValues(alpha: 0.18),
+                    Colors.black.withValues(alpha: 0.64),
+                  ]
+                      : [
+                    style.accent2.withValues(alpha: 0.22),
+                    style.cardColor,
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Spacer(),
+                      _HeroChip(
+                        icon: Icons.hourglass_bottom_rounded,
+                        label: remainingLabel,
+                        accent: style.accent,
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  Text(
+                    name,
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 29,
+                      height: 1.15,
+                      fontWeight: FontWeight.w700,
+                      color: hasImage ? Colors.white : onSurface,
+                      shadows: hasImage
+                          ? [
+                        Shadow(
+                          color: Colors.black.withValues(alpha: 0.25),
+                          blurRadius: 8,
+                        ),
+                      ]
+                          : null,
+                    ),
+                  ),
+                  const SizedBox(height: 7),
+                  Text(
+                    subtitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 12.5,
+                      height: 1.6,
+                      color: hasImage
+                          ? Colors.white.withValues(alpha: 0.92)
+                          : onSurface.withValues(alpha: 0.62),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      if (progressRef != null)
+                        StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                          stream: progressRef!.snapshots(),
+                          builder: (context, snapshot) {
+                            final amount = _intValue(
+                              snapshot.data?.data()?['currency'],
+                            );
+                            return balancePill(amount);
+                          },
+                        )
+                      else
+                        balancePill(0),
+                      const Spacer(),
+                      if (dateLabel.isNotEmpty)
+                        Flexible(
+                          child: Text(
+                            dateLabel,
+                            textAlign: TextAlign.right,
+                            style: GoogleFonts.notoSerifTc(
+                              fontSize: 10.5,
+                              color: hasImage
+                                  ? Colors.white.withValues(alpha: 0.78)
+                                  : onSurface.withValues(alpha: 0.46),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HeroChip extends StatelessWidget {
+  final IconData? icon;
+  final String label;
+  final Color accent;
+
+  const _HeroChip({this.icon, required this.label, required this.accent});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.90),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.55)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 15, color: accent),
+            const SizedBox(width: 5),
+          ],
+          Text(
+            label,
+            style: GoogleFonts.notoSerifTc(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: accent,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DecorationImage extends StatelessWidget {
+  final String imageUrl;
+  final double width;
+
+  const _DecorationImage({
+    required this.imageUrl,
+    required this.width,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (imageUrl.trim().isEmpty) return const SizedBox.shrink();
+    return CachedNetworkImage(
+      imageUrl: imageUrl.trim(),
+      width: width,
+      fit: BoxFit.contain,
+      fadeInDuration: const Duration(milliseconds: 120),
+      errorWidget: (_, __, ___) => const SizedBox.shrink(),
+    );
+  }
+}
+
+class _SectionHeaderVisual extends StatelessWidget {
+  final String imageUrl;
+  final IconData fallbackIcon;
+  final Color accent;
+  final double size;
+
+  const _SectionHeaderVisual({
+    required this.imageUrl,
+    required this.fallbackIcon,
+    required this.accent,
+    this.size = 36,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (imageUrl.trim().isNotEmpty) {
+      return SizedBox(
+        width: size,
+        height: size,
+        child: CachedNetworkImage(
+          imageUrl: imageUrl.trim(),
+          fit: BoxFit.contain,
+          fadeInDuration: const Duration(milliseconds: 120),
+          errorWidget: (_, __, ___) => Icon(
+            fallbackIcon,
+            color: accent,
+            size: size * 0.56,
+          ),
+        ),
+      );
+    }
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: accent.withValues(alpha: 0.10),
+      ),
+      child: Icon(fallbackIcon, color: accent, size: size * 0.56),
+    );
+  }
+}
+
+class _RichSectionShell extends StatelessWidget {
+  final _EventVisualStyle style;
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final String headerImageUrl;
+  final String trailingDecorationUrl;
+  final Widget child;
+
+  const _RichSectionShell({
+    required this.style,
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    this.headerImageUrl = '',
+    this.trailingDecorationUrl = '',
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
+      decoration: BoxDecoration(
+        color: style.cardColor.withValues(alpha: 0.96),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: style.accent.withValues(alpha: 0.10)),
+        boxShadow: [
+          BoxShadow(
+            color: style.accent.withValues(alpha: 0.08),
+            blurRadius: 18,
+            offset: const Offset(0, 7),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          if (trailingDecorationUrl.trim().isNotEmpty)
+            Positioned(
+              right: -8,
+              top: 2,
+              child: IgnorePointer(
+                child: Opacity(
+                  opacity: 0.38,
+                  child: _DecorationImage(
+                    imageUrl: trailingDecorationUrl,
+                    width: 88,
+                  ),
+                ),
+              ),
+            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _SectionHeaderVisual(
+                    imageUrl: headerImageUrl,
+                    fallbackIcon: icon,
+                    accent: style.accent,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: GoogleFonts.notoSerifTc(
+                            fontSize: 19,
+                            fontWeight: FontWeight.w700,
+                            color: onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          subtitle,
+                          style: GoogleFonts.notoSerifTc(
+                            fontSize: 10.8,
+                            height: 1.5,
+                            color: onSurface.withValues(alpha: 0.50),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              child,
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TaskList extends StatefulWidget {
+  final String eventId;
+  final CollectionReference<Map<String, dynamic>> ref;
+  final String currencyIcon;
+  final String currencyName;
+  final Color accent;
+  final Color cardColor;
+
+  const _TaskList({
+    required this.eventId,
+    required this.ref,
+    required this.currencyIcon,
+    required this.currencyName,
+    required this.accent,
+    required this.cardColor,
+  });
+
+  @override
+  State<_TaskList> createState() => _TaskListState();
+}
+
+class _TaskListState extends State<_TaskList> {
+  final Set<String> _claimingTaskIds = <String>{};
+
+  DocumentReference<Map<String, dynamic>>? _progressRef() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return null;
+
+    return FirebaseFirestore.instance
+        .collection('artifacts')
+        .doc(AppConfig.appId)
+        .collection('event_progress')
+        .doc(user.uid)
+        .collection('events')
+        .doc(widget.eventId);
+  }
+
+  int _intValue(dynamic raw, {int fallback = 0}) {
+    if (raw is num) return raw.toInt();
+    return int.tryParse(raw?.toString() ?? '') ?? fallback;
+  }
+
+  int _targetForTask(Map<String, dynamic> data) {
+    final explicit = _intValue(data['target']);
+    if (explicit > 0) return explicit;
+    final title = (data['title'] ?? '').toString();
+    final match = RegExp(r'(\d+)').firstMatch(title);
+    return int.tryParse(match?.group(1) ?? '') ?? 1;
+  }
+
+  Future<void> _claimTask(String taskId) async {
+    if (_claimingTaskIds.contains(taskId)) return;
+    setState(() => _claimingTaskIds.add(taskId));
+
+    try {
+      final callable = FirebaseFunctions.instanceFor(
+        region: 'asia-east1',
+      ).httpsCallable('claimEventTaskReward');
+
+      final result = await callable.call(<String, dynamic>{
+        'eventId': widget.eventId,
+        'taskId': taskId,
+      });
+
+      final data = result.data is Map
+          ? Map<String, dynamic>.from(result.data as Map)
+          : <String, dynamic>{};
+
+      if (!mounted) return;
+      final reward = _intValue(data['rewardAmount']);
+      final currency = _intValue(data['currency']);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            reward > 0
+                ? '已領取 ${widget.currencyIcon} $reward ${widget.currencyName}，目前共有 $currency'
+                : '獎勵已領取',
+          ),
+        ),
+      );
+    } on FirebaseFunctionsException catch (error) {
+      if (!mounted) return;
+      String message = error.message ?? '領取失敗';
+      if (error.code == 'already-exists') {
+        message = '這個任務已經領取過了';
+      } else if (error.code == 'failed-precondition') {
+        message = error.message ?? '任務尚未完成';
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('領取失敗：$error')),
+      );
+    } finally {
+      if (mounted) setState(() => _claimingTaskIds.remove(taskId));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final progressRef = _progressRef();
+
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: widget.ref.orderBy('order').snapshots(),
+      builder: (context, taskSnapshot) {
+        if (!taskSnapshot.hasData) {
+          return const _SoftCard(label: '讀取任務中…');
+        }
+        if (taskSnapshot.data!.docs.isEmpty) {
+          return const _SoftCard(label: '目前沒有任務');
+        }
+        if (progressRef == null) {
+          return const _SoftCard(label: '登入後即可查看活動任務進度');
+        }
+
+        return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+          stream: progressRef.snapshots(),
+          builder: (context, progressSnapshot) {
+            final progressData =
+                progressSnapshot.data?.data() ?? <String, dynamic>{};
+            final rawTaskProgress = progressData['taskProgress'];
+            final taskProgress = rawTaskProgress is Map
+                ? Map<String, dynamic>.from(rawTaskProgress)
+                : <String, dynamic>{};
+            final rawClaimed = progressData['claimedTasks'];
+            final claimedTasks = rawClaimed is Map
+                ? Map<String, dynamic>.from(rawClaimed)
+                : <String, dynamic>{};
+
+            return Column(
+              children: taskSnapshot.data!.docs.map((doc) {
+                final data = doc.data();
+                final reward = _intValue(data['rewardAmount']);
+                final target = _targetForTask(data);
+                final progress = _intValue(taskProgress[doc.id]).clamp(0, target);
+                final claimed = claimedTasks[doc.id] == true;
+                final completed = progress >= target;
+                final claiming = _claimingTaskIds.contains(doc.id);
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 9),
+                  child: _TaskCard(
+                    title: (data['title'] ?? '活動任務').toString(),
+                    description: (data['description'] ?? '').toString(),
+                    actionType: (data['actionType'] ?? '').toString(),
+                    rewardText:
+                    '${widget.currencyIcon} ${widget.currencyName} ×$reward',
+                    progress: progress,
+                    target: target,
+                    claimed: claimed,
+                    claiming: claiming,
+                    accent: widget.accent,
+                    cardColor: widget.cardColor,
+                    onClaim: completed && !claimed && !claiming
+                        ? () => _claimTask(doc.id)
+                        : null,
+                  ),
+                );
+              }).toList(),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class _TaskCard extends StatelessWidget {
+  final String title;
+  final String description;
+  final String actionType;
+  final String rewardText;
+  final int progress;
+  final int target;
+  final bool claimed;
+  final bool claiming;
+  final Color accent;
+  final Color cardColor;
+  final VoidCallback? onClaim;
+
+  const _TaskCard({
+    required this.title,
+    required this.description,
+    required this.actionType,
+    required this.rewardText,
+    required this.progress,
+    required this.target,
+    required this.claimed,
+    required this.claiming,
+    required this.accent,
+    required this.cardColor,
+    required this.onClaim,
+  });
+
+  IconData _icon() {
+    switch (actionType) {
+      case 'any_chat':
+      case 'mode_gemini':
+      case 'mode_daily':
+        return Icons.chat_bubble_outline_rounded;
+      case 'mode_story':
+        return Icons.menu_book_rounded;
+      case 'mode_immersive':
+        return Icons.sports_esports_rounded;
+      case 'mode_resonance':
+        return Icons.favorite_border_rounded;
+      case 'gift':
+        return Icons.card_giftcard_rounded;
+      case 'interaction':
+        return Icons.touch_app_rounded;
+      default:
+        return Icons.auto_awesome_rounded;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    final completed = progress >= target;
+    final progressValue = target <= 0 ? 0.0 : (progress / target).clamp(0.0, 1.0);
+
+    String buttonText() {
+      if (claimed) return '已領取';
+      if (completed) return '領取';
+      return '進行中';
+    }
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(12, 11, 10, 11),
+      decoration: BoxDecoration(
+        color: Color.lerp(cardColor, accent, 0.018),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: accent.withValues(alpha: 0.09)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              color: accent.withValues(alpha: 0.10),
+            ),
+            child: Icon(
+              claimed ? Icons.check_rounded : _icon(),
+              color: accent,
+              size: 21,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.notoSerifTc(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w700,
+                    color: onSurface,
+                  ),
+                ),
+                if (description.trim().isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    description,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 9.8,
+                      color: onSurface.withValues(alpha: 0.43),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 7),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(99),
+                        child: LinearProgressIndicator(
+                          minHeight: 5,
+                          value: progressValue,
+                          backgroundColor: accent.withValues(alpha: 0.10),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            accent.withValues(alpha: 0.70),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 7),
+                    Text(
+                      '$progress / $target',
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w600,
+                        color: accent,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          SizedBox(
+            width: 92,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  rewardText,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.notoSerifTc(
+                    fontSize: 9.8,
+                    color: accent,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                SizedBox(
+                  height: 32,
+                  child: FilledButton.tonal(
+                    onPressed: completed && !claimed ? onClaim : null,
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      backgroundColor: completed && !claimed
+                          ? accent.withValues(alpha: 0.14)
+                          : accent.withValues(alpha: 0.055),
+                      foregroundColor: accent,
+                    ),
+                    child: claiming
+                        ? const SizedBox.square(
+                      dimension: 14,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                        : Text(
+                      buttonText(),
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MilestoneProgress extends StatelessWidget {
+  final CollectionReference<Map<String, dynamic>> ref;
+  final DocumentReference<Map<String, dynamic>>? progressRef;
+  final String currencyIcon;
+  final Color accent;
+
+  const _MilestoneProgress({
+    required this.ref,
+    required this.progressRef,
+    required this.currencyIcon,
+    required this.accent,
+  });
+
+  int _intValue(dynamic raw) {
+    if (raw is num) return raw.toInt();
+    return int.tryParse(raw?.toString() ?? '') ?? 0;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: ref.orderBy('order').snapshots(),
+      builder: (context, milestoneSnapshot) {
+        if (!milestoneSnapshot.hasData) {
+          return _CompactSectionMessage(
+            label: '讀取累積獎勵中…',
+            accent: accent,
+          );
+        }
+        final docs = milestoneSnapshot.data!.docs;
+        if (docs.isEmpty) {
+          return _CompactSectionMessage(
+            label: '目前沒有累積獎勵',
+            accent: accent,
+          );
+        }
+
+        Widget buildWithTotal(int totalEarned) {
+          final targets = docs
+              .map((doc) => _intValue(doc.data()['target']))
+              .where((value) => value > 0)
+              .toList();
+          final maxTarget = targets.isEmpty ? 1 : targets.reduce((a, b) => a > b ? a : b);
+          final ratio = (totalEarned / maxTarget).clamp(0.0, 1.0);
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: accent.withValues(alpha: 0.10),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    '目前  $totalEarned',
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: accent,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Stack(
+                alignment: Alignment.centerLeft,
+                children: [
+                  Container(
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: accent.withValues(alpha: 0.10),
+                      borderRadius: BorderRadius.circular(99),
+                    ),
+                  ),
+                  FractionallySizedBox(
+                    widthFactor: ratio,
+                    child: Container(
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: accent.withValues(alpha: 0.72),
+                        borderRadius: BorderRadius.circular(99),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: docs.map((doc) {
+                  final data = doc.data();
+                  final target = _intValue(data['target']);
+                  final title = (data['title'] ?? '限定獎勵').toString();
+                  final unlocked = totalEarned >= target;
+                  return Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 3),
+                      child: Column(
+                        children: [
+                          Container(
+                            width: 34,
+                            height: 34,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: unlocked
+                                  ? accent.withValues(alpha: 0.16)
+                                  : accent.withValues(alpha: 0.055),
+                              border: Border.all(
+                                color: accent.withValues(alpha: unlocked ? 0.30 : 0.12),
+                              ),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              unlocked ? currencyIcon : '🎁',
+                              style: const TextStyle(fontSize: 17),
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            '$target',
+                            style: GoogleFonts.notoSerifTc(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: accent,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            title,
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.notoSerifTc(
+                              fontSize: 9.5,
+                              height: 1.3,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withValues(alpha: 0.58),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
+          );
+        }
+
+        if (progressRef == null) return buildWithTotal(0);
+        return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+          stream: progressRef!.snapshots(),
+          builder: (context, snapshot) {
+            final data = snapshot.data?.data() ?? <String, dynamic>{};
+            // totalEarned is deliberate: spending currency must not reduce milestone progress.
+            final totalEarned = _intValue(data['totalEarned']);
+            return buildWithTotal(totalEarned);
+          },
+        );
+      },
+    );
+  }
+}
+
+class _RichFeatureEntryCard extends StatelessWidget {
+  final Color accent;
+  final String imageUrl;
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  const _RichFeatureEntryCard({
+    required this.accent,
+    required this.imageUrl,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    final hasImage = imageUrl.trim().isNotEmpty;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(22),
+        child: Ink(
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.96),
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(color: accent.withValues(alpha: 0.10)),
+            boxShadow: [
+              BoxShadow(
+                color: accent.withValues(alpha: 0.07),
+                blurRadius: 16,
+                offset: const Offset(0, 7),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(22),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (hasImage)
+                  SizedBox(
+                    height: 82,
+                    child: CachedNetworkImage(
+                      imageUrl: imageUrl.trim(),
+                      fit: BoxFit.cover,
+                      placeholder: (_, __) => Container(
+                        color: accent.withValues(alpha: 0.035),
+                      ),
+                      errorWidget: (_, __, ___) => Container(
+                        color: accent.withValues(alpha: 0.035),
+                        alignment: Alignment.center,
+                        child: Icon(icon, color: accent, size: 28),
+                      ),
+                    ),
+                  )
+                else
+                  Container(
+                    height: 58,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: accent.withValues(alpha: 0.045),
+                    ),
+                    child: Icon(icon, color: accent, size: 27),
+                  ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(13, 11, 11, 13),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.notoSerifTc(
+                                fontSize: 15.5,
+                                fontWeight: FontWeight.w700,
+                                color: onSurface,
+                              ),
+                            ),
+                          ),
+                          Icon(
+                            Icons.chevron_right_rounded,
+                            size: 21,
+                            color: accent,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        subtitle,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.notoSerifTc(
+                          fontSize: 10.2,
+                          height: 1.45,
+                          color: onSurface.withValues(alpha: 0.50),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RichEventInfoCard extends StatelessWidget {
+  final String title;
+  final String description;
+  final Color accent;
+  final Color cardColor;
+  final String headerImageUrl;
+  final String decorationImageUrl;
+
+  const _RichEventInfoCard({
+    required this.title,
+    required this.description,
+    required this.accent,
+    required this.cardColor,
+    this.headerImageUrl = '',
+    this.decorationImageUrl = '',
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    final text = description.trim();
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: cardColor.withValues(alpha: 0.96),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: accent.withValues(alpha: 0.09)),
+      ),
+      child: Stack(
+        children: [
+          if (decorationImageUrl.trim().isNotEmpty)
+            Positioned(
+              right: -10,
+              bottom: -12,
+              child: IgnorePointer(
+                child: Opacity(
+                  opacity: 0.24,
+                  child: _DecorationImage(
+                    imageUrl: decorationImageUrl,
+                    width: 112,
+                  ),
+                ),
+              ),
+            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  _SectionHeaderVisual(
+                    imageUrl: headerImageUrl,
+                    fallbackIcon: Icons.description_outlined,
+                    accent: accent,
+                    size: 30,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: onSurface,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              if (text.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Padding(
+                  padding: EdgeInsets.only(
+                    right: decorationImageUrl.trim().isNotEmpty ? 72 : 0,
+                  ),
+                  child: Text(
+                    text,
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 11,
+                      height: 1.7,
+                      color: onSurface.withValues(alpha: 0.60),
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class EventShopPage extends StatefulWidget {
+  final String eventId;
+  final String currencyName;
+  final String currencyIcon;
+
+  const EventShopPage({
+    super.key,
+    required this.eventId,
+    required this.currencyName,
+    required this.currencyIcon,
+  });
+
+  @override
+  State<EventShopPage> createState() => _EventShopPageState();
+}
+
+class _EventShopPageState extends State<EventShopPage> {
+  final Set<String> _redeemingItemIds = <String>{};
+
+  CollectionReference<Map<String, dynamic>> _itemsRef() {
+    return FirebaseFirestore.instance
+        .collection('artifacts')
+        .doc(AppConfig.appId)
+        .collection('events')
+        .doc(widget.eventId)
+        .collection('shop_items');
+  }
+
+  DocumentReference<Map<String, dynamic>>? _progressRef() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return null;
+
+    return FirebaseFirestore.instance
+        .collection('artifacts')
+        .doc(AppConfig.appId)
+        .collection('event_progress')
+        .doc(user.uid)
+        .collection('events')
+        .doc(widget.eventId);
+  }
+
+  Future<void> _redeemItem({
+    required String itemId,
+    required Map<String, dynamic> data,
+    required int price,
+  }) async {
+    if (_redeemingItemIds.contains(itemId)) return;
+
+    final itemName = (data['name'] ?? '活動商品').toString();
+    final itemType = (data['itemType'] ?? 'other').toString();
+    final rewardAmount = data['rewardAmount'] is num
+        ? (data['rewardAmount'] as num).toInt()
+        : int.tryParse('${data['rewardAmount']}') ?? 0;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        final colors = Theme.of(dialogContext).colorScheme;
+        return AlertDialog(
+          title: Text(
+            '確認兌換',
+            style: GoogleFonts.notoSerifTc(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          content: Text(
+            itemType == 'flower' && rewardAmount > 0
+                ? '要使用 ${widget.currencyIcon} $price 兌換「$itemName」嗎？\n\n兌換後可獲得 $rewardAmount 花花。'
+                : '要使用 ${widget.currencyIcon} $price 兌換「$itemName」嗎？',
+            style: GoogleFonts.notoSerifTc(
+              height: 1.55,
+              color: colors.onSurface,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text('取消'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: const Text('確認兌換'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _redeemingItemIds.add(itemId));
+
+    try {
+      final callable = FirebaseFunctions.instanceFor(
+        region: 'asia-east1',
+      ).httpsCallable('redeemEventShopItem');
+
+      final result = await callable.call(<String, dynamic>{
+        'eventId': widget.eventId,
+        'itemId': itemId,
+      });
+
+      final resultData = Map<String, dynamic>.from(
+        result.data as Map,
+      );
+
+      if (!mounted) return;
+
+      final returnedReward = resultData['rewardAmount'] is num
+          ? (resultData['rewardAmount'] as num).toInt()
+          : 0;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            returnedReward > 0
+                ? '兌換成功！獲得 $returnedReward 花花'
+                : '兌換成功！「$itemName」已加入活動收藏',
+          ),
+        ),
+      );
+    } on FirebaseFunctionsException catch (error) {
+      if (!mounted) return;
+
+      String message = error.message ?? '兌換失敗';
+
+      if (error.code == 'already-exists') {
+        message = '這個商品已經兌換過了';
+      } else if (error.code == 'failed-precondition' &&
+          message.contains('貨幣不足')) {
+        message = '${widget.currencyName}不足';
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('兌換失敗：$error')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _redeemingItemIds.remove(itemId));
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final progressRef = _progressRef();
+
+    return Scaffold(
+      backgroundColor: colors.surface,
+      appBar: AppBar(
+        backgroundColor: colors.surface,
+        surfaceTintColor: colors.surface,
+        title: Text(
+          '活動商店',
+          style: GoogleFonts.notoSerifTc(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+      body: progressRef == null
+          ? Center(
+        child: Text(
+          '登入後即可使用活動商店',
+          style: GoogleFonts.notoSerifTc(
+            color: colors.onSurface.withValues(alpha: 0.58),
+          ),
+        ),
+      )
+          : StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+        stream: progressRef.snapshots(),
+        builder: (context, progressSnapshot) {
+          final progressData =
+              progressSnapshot.data?.data() ?? <String, dynamic>{};
+
+          final currency = progressData['currency'] is num
+              ? (progressData['currency'] as num).toInt()
+              : int.tryParse('${progressData['currency']}') ?? 0;
+
+          final rawRedeemed = progressData['redeemedShopItems'];
+          final redeemedShopItems = rawRedeemed is Map
+              ? Map<String, dynamic>.from(rawRedeemed)
+              : <String, dynamic>{};
+
+          return Column(
+            children: [
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.fromLTRB(20, 10, 20, 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 13,
+                ),
+                decoration: BoxDecoration(
+                  color: colors.primary.withValues(alpha: 0.06),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: colors.primary.withValues(alpha: 0.12),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Text(
+                      widget.currencyIcon,
+                      style: const TextStyle(fontSize: 21),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      widget.currencyName,
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 12,
+                        color:
+                        colors.onSurface.withValues(alpha: 0.62),
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      '$currency',
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        color: colors.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child:
+                StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                  stream: _itemsRef().orderBy('order').snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(
+                        child: CircularProgressIndicator(
+                          color: colors.primary,
+                          strokeWidth: 2.2,
+                        ),
+                      );
+                    }
+
+                    final docs = snapshot.data!.docs;
+
+                    if (docs.isEmpty) {
+                      return Center(
+                        child: Text(
+                          '目前沒有可兌換商品',
+                          style: GoogleFonts.notoSerifTc(
+                            color: colors.onSurface
+                                .withValues(alpha: 0.56),
+                          ),
+                        ),
+                      );
+                    }
+
+                    return GridView.builder(
+                      padding:
+                      const EdgeInsets.fromLTRB(20, 8, 20, 32),
+                      itemCount: docs.length,
+                      gridDelegate:
+                      const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 0.68,
+                      ),
+                      itemBuilder: (context, index) {
+                        final doc = docs[index];
+                        final data = doc.data();
+                        final price = data['price'] is num
+                            ? (data['price'] as num).toInt()
+                            : int.tryParse('${data['price']}') ?? 0;
+                        final redeemedCount =
+                        redeemedShopItems[doc.id] is num
+                            ? (redeemedShopItems[doc.id] as num)
+                            .toInt()
+                            : int.tryParse(
+                          '${redeemedShopItems[doc.id]}',
+                        ) ??
+                            0;
+                        final limitOne = data['limitOne'] == true;
+                        final alreadyRedeemed =
+                            limitOne && redeemedCount > 0;
+                        final insufficient = currency < price;
+
+                        return _ShopItemCard(
+                          itemId: doc.id,
+                          data: data,
+                          currencyIcon: widget.currencyIcon,
+                          redeemedCount: redeemedCount,
+                          isRedeeming:
+                          _redeemingItemIds.contains(doc.id),
+                          alreadyRedeemed: alreadyRedeemed,
+                          insufficient: insufficient,
+                          onRedeem: alreadyRedeemed || insufficient
+                              ? null
+                              : () => _redeemItem(
+                            itemId: doc.id,
+                            data: data,
+                            price: price,
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _ShopItemCard extends StatelessWidget {
+  final String itemId;
+  final Map<String, dynamic> data;
+  final String currencyIcon;
+  final int redeemedCount;
+  final bool isRedeeming;
+  final bool alreadyRedeemed;
+  final bool insufficient;
+  final VoidCallback? onRedeem;
+
+  const _ShopItemCard({
+    required this.itemId,
+    required this.data,
+    required this.currencyIcon,
+    required this.redeemedCount,
+    required this.isRedeeming,
+    required this.alreadyRedeemed,
+    required this.insufficient,
+    required this.onRedeem,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final imageUrl = (data['imageUrl'] ?? '').toString().trim();
+    final description = (data['description'] ?? '').toString().trim();
+    final itemType = (data['itemType'] ?? 'other').toString();
+    final rewardAmount = data['rewardAmount'] is num
+        ? (data['rewardAmount'] as num).toInt()
+        : int.tryParse('${data['rewardAmount']}') ?? 0;
+    final price = data['price'] is num
+        ? (data['price'] as num).toInt()
+        : int.tryParse('${data['price']}') ?? 0;
+
+    String buttonText = '兌換';
+    if (isRedeeming) {
+      buttonText = '兌換中';
+    } else if (alreadyRedeemed) {
+      buttonText = '已兌換';
+    } else if (insufficient) {
+      buttonText = '不足';
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: colors.outline.withValues(alpha: 0.10),
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: imageUrl.isNotEmpty
+                  ? CachedNetworkImage(
+                imageUrl: imageUrl,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                errorWidget: (_, __, ___) =>
+                    _ShopFallback(colors: colors),
+              )
+                  : _ShopFallback(colors: colors),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 9, 12, 11),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    (data['name'] ?? '限定商品').toString(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  if (description.isNotEmpty) ...[
+                    const SizedBox(height: 3),
+                    Text(
+                      description,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 9.8,
+                        height: 1.3,
+                        color: colors.onSurface.withValues(alpha: 0.48),
+                      ),
+                    ),
+                  ],
+                  if (itemType == 'flower' && rewardAmount > 0) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      '可獲得 $rewardAmount 花花',
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 10,
+                        color: colors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                  if (redeemedCount > 0 && !alreadyRedeemed) ...[
+                    const SizedBox(height: 3),
+                    Text(
+                      '已兌換 $redeemedCount 次',
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 9.5,
+                        color: colors.onSurface.withValues(alpha: 0.46),
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 7),
+                  Row(
+                    children: [
+                      Text(
+                        '$currencyIcon $price',
+                        style: GoogleFonts.notoSerifTc(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w700,
+                          color: colors.primary,
+                        ),
+                      ),
+                      const Spacer(),
+                      SizedBox(
+                        height: 32,
+                        child: FilledButton.tonal(
+                          onPressed: isRedeeming ? null : onRedeem,
+                          style: FilledButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 11,
+                            ),
+                          ),
+                          child: isRedeeming
+                              ? const SizedBox(
+                            width: 14,
+                            height: 14,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
+                          )
+                              : Text(
+                            buttonText,
+                            style: GoogleFonts.notoSerifTc(
+                              fontSize: 10.5,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ShopFallback extends StatelessWidget {
+  final ColorScheme colors;
+  const _ShopFallback({required this.colors});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: colors.primary.withValues(alpha: 0.05),
+      alignment: Alignment.center,
+      child: Icon(
+        Icons.card_giftcard_rounded,
+        color: colors.primary.withValues(alpha: 0.38),
+        size: 36,
+      ),
+    );
+  }
+}
+
+class _EventInfoCard extends StatelessWidget {
+  final String description;
+  const _EventInfoCard({required this.description});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colors.primary.withValues(alpha: 0.035),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.info_outline_rounded, size: 19, color: colors.primary),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '活動說明',
+                  style: GoogleFonts.notoSerifTc(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: colors.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  description,
+                  style: GoogleFonts.notoSerifTc(
+                    fontSize: 11.5,
+                    height: 1.7,
+                    color: colors.onSurface.withValues(alpha: 0.56),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CompactSectionMessage extends StatelessWidget {
+  final String label;
+  final Color accent;
+
+  const _CompactSectionMessage({
+    required this.label,
+    required this.accent,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.035),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Text(
+        label,
+        textAlign: TextAlign.center,
+        style: GoogleFonts.notoSerifTc(
+          fontSize: 10.8,
+          color: onSurface.withValues(alpha: 0.45),
+        ),
+      ),
+    );
+  }
+}
+
+class _SoftCard extends StatelessWidget {
+  final String label;
+  const _SoftCard({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      height: 82,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: colors.primary.withValues(alpha: 0.035),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Text(
+        label,
+        style: GoogleFonts.notoSerifTc(
+          fontSize: 11.5,
+          color: colors.onSurface.withValues(alpha: 0.46),
+        ),
+      ),
+    );
+  }
+}
+
+class _EventUnavailablePage extends StatelessWidget {
+  final String message;
+  const _EventUnavailablePage({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return SafeArea(
+      child: Column(
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: IconButton(
+              onPressed: () => Navigator.of(context).maybePop(),
+              icon: const Icon(Icons.arrow_back_rounded),
+            ),
+          ),
+          const Spacer(),
+          Icon(
+            Icons.event_busy_outlined,
+            size: 48,
+            color: colors.primary.withValues(alpha: 0.35),
+          ),
+          const SizedBox(height: 14),
+          Text(
+            message,
+            style: GoogleFonts.notoSerifTc(
+              fontSize: 14,
+              color: colors.onSurface.withValues(alpha: 0.58),
+            ),
+          ),
+          const Spacer(),
+        ],
+      ),
+    );
+  }
+}
