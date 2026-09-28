@@ -1531,6 +1531,149 @@ async function describeImageWithGemini(imageUrlOrPath) {
   }
 }
 
+// ============================================================
+// 🖼️ 後台：活動貼紙 AI 視覺分析
+// 只描述貼紙本身的視覺訊號，不替玩家判定聊天當下意圖。
+// 真正的「撒嬌 / 求和 / 反諷 / 挑釁」留到聊天上下文再判斷。
+// ============================================================
+exports.analyzeEventStickerImage = onCall(
+  {
+    region: REGION,
+    timeoutSeconds: 90,
+    memory: "512MiB",
+    secrets: [geminiApiKey],
+  },
+  async (request) => {
+    requireRewardCampaignAdmin(request);
+
+    const imageUrl = String(request.data?.imageUrl || "").trim();
+
+    if (!imageUrl) {
+      throw new HttpsError("invalid-argument", "請先提供貼紙圖片");
+    }
+
+    const media = await downloadMediaAsBase64(imageUrl);
+
+    if (!media) {
+      throw new HttpsError("failed-precondition", "讀取貼紙圖片失敗");
+    }
+
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${geminiApiKey.value()}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                role: "user",
+                parts: [
+                  {
+                    text: [
+                      "你正在替戀愛聊天 App 建立貼紙的『視覺 metadata』。",
+                      "請只根據圖片看得到的內容分析，不要替玩家推斷聊天當下真正意圖。",
+                      "例如畫面看起來害羞，可以描述臉紅、遮臉、躲避視線；",
+                      "但不要寫成『玩家在撒嬌』『玩家想求和』『玩家在挑釁』。",
+                      "真正語意會在聊天當下結合上下文另外判斷。",
+                      "",
+                      "請使用台灣繁體中文，輸出 JSON，欄位固定如下：",
+                      "stickerName: 2~8 字的貼紙名稱",
+                      "visualTags: 3~6 個簡短視覺標籤陣列",
+                      "baseEmotion: 1~3 個畫面直接呈現的基礎情緒，用頓號分隔",
+                      "visualDescription: 1~2 句，只描述人物表情、動作、姿勢、可見符號與整體視覺氛圍",
+                      "",
+                      "如果圖片資訊有限，就保守描述，不要補不存在的細節。",
+                    ].join("\n"),
+                  },
+                  {
+                    inline_data: {
+                      mime_type: media.mimeType,
+                      data: media.base64,
+                    },
+                  },
+                ],
+              },
+            ],
+            generationConfig: {
+              temperature: 0.2,
+              responseMimeType: "application/json",
+            },
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(
+          "❌ 活動貼紙 AI 分析失敗:",
+          response.status,
+          errorText
+        );
+        throw new HttpsError("internal", "貼紙 AI 分析失敗，請稍後再試");
+      }
+
+      const data = await response.json();
+      const rawText = (
+        data?.candidates?.[0]?.content?.parts
+          ?.map((part) => part.text || "")
+          .join("")
+          .trim() || ""
+      );
+
+      if (!rawText) {
+        throw new HttpsError("internal", "AI 沒有回傳貼紙分析結果");
+      }
+
+      let parsed;
+      try {
+        parsed = JSON.parse(rawText);
+      } catch (_) {
+        const cleaned = rawText
+          .replace(/^```json\s*/i, "")
+          .replace(/^```\s*/i, "")
+          .replace(/\s*```$/i, "")
+          .trim();
+        parsed = JSON.parse(cleaned);
+      }
+
+      const stickerName = String(parsed?.stickerName || "貼紙").trim();
+      const visualTags = Array.isArray(parsed?.visualTags)
+        ? parsed.visualTags
+            .map((value) => String(value || "").trim())
+            .filter(Boolean)
+            .slice(0, 6)
+        : [];
+      const baseEmotion = String(parsed?.baseEmotion || "").trim();
+      const visualDescription = String(
+        parsed?.visualDescription || ""
+      ).trim();
+
+      if (!visualDescription) {
+        throw new HttpsError("internal", "AI 無法可靠描述這張貼紙");
+      }
+
+      return {
+        success: true,
+        analysis: {
+          stickerName: stickerName.slice(0, 30),
+          visualTags,
+          baseEmotion: baseEmotion.slice(0, 80),
+          visualDescription: visualDescription.slice(0, 500),
+          analysisSource: "gemini_vision",
+        },
+      };
+    } catch (error) {
+      if (error instanceof HttpsError) throw error;
+
+      console.error("❌ analyzeEventStickerImage 發生錯誤:", error);
+      throw new HttpsError("internal", "貼紙 AI 分析失敗，請稍後再試");
+    }
+  }
+);
+
 async function transcribeAudioWithGemini(audioUrlOrPath) {
     const media = await downloadMediaAsBase64(audioUrlOrPath);
 
@@ -11395,6 +11538,371 @@ async function sendToUserDevices(userId, messageBase) {
         await Promise.all(deleteTasks);
     }
 }
+
+
+// ============================================================
+// ⏳ 通用活動：結束前推播提醒
+// - 每小時掃描一次啟用中的活動
+// - 結束前 3 天、24 小時各提醒一次
+// - 每個活動各階段只送一次
+// ============================================================
+function getEventEndingNotificationText(
+    locale,
+    {
+        eventName = "期間限定活動",
+        currencyName = "活動貨幣",
+        stage = "3d",
+    } = {}
+) {
+    const normalized =
+        normalizeNotificationLocale(locale);
+
+    const isOneDay =
+        stage === "1d";
+
+    const texts = {
+        zh_Hant: {
+            title: isOneDay
+                ? "最後一天啦！"
+                : "活動即將結束",
+            body: isOneDay
+                ? `「${eventName}」即將結束，別忘了使用剩下的${currencyName}。`
+                : `「${eventName}」只剩 3 天，還有想兌換的限定獎勵嗎？`,
+        },
+        zh_Hans: {
+            title: isOneDay
+                ? "最后一天啦！"
+                : "活动即将结束",
+            body: isOneDay
+                ? `“${eventName}”即将结束，别忘了使用剩下的${currencyName}。`
+                : `“${eventName}”只剩 3 天，还有想兑换的限定奖励吗？`,
+        },
+        en: {
+            title: isOneDay
+                ? "Last day!"
+                : "Event ending soon",
+            body: isOneDay
+                ? `"${eventName}" is ending soon. Don’t forget to use your remaining ${currencyName}.`
+                : `"${eventName}" has only 3 days left. Don’t miss the limited rewards.`,
+        },
+        ja: {
+            title: isOneDay
+                ? "いよいよ最終日！"
+                : "イベント終了間近",
+            body: isOneDay
+                ? `「${eventName}」はまもなく終了します。残りの${currencyName}をお忘れなく。`
+                : `「${eventName}」はあと3日。限定報酬の交換をお忘れなく。`,
+        },
+        ko: {
+            title: isOneDay
+                ? "마지막 날이에요!"
+                : "이벤트 종료 임박",
+            body: isOneDay
+                ? `「${eventName}」 이벤트가 곧 종료돼요. 남은 ${currencyName}을 잊지 말고 사용해 주세요.`
+                : `「${eventName}」 이벤트가 3일 남았어요. 한정 보상을 놓치지 마세요.`,
+        },
+    };
+
+    return texts[normalized] || texts.en;
+}
+
+async function sendEventEndingNotificationToAllUsers({
+    eventId,
+    eventName,
+    currencyName,
+    stage,
+}) {
+    const usersSnapshot =
+        await db.collection("users").get();
+
+    let successUsers = 0;
+    let failedUsers = 0;
+
+    const batchSize = 20;
+
+    for (
+        let start = 0;
+        start < usersSnapshot.docs.length;
+        start += batchSize
+    ) {
+        const batchDocs =
+            usersSnapshot.docs.slice(
+                start,
+                start + batchSize
+            );
+
+        const results =
+            await Promise.allSettled(
+                batchDocs.map(
+                    async (userDoc) => {
+                        const userId =
+                            userDoc.id;
+
+                        const userData =
+                            userDoc.data() || {};
+
+                        const locale =
+                            normalizeNotificationLocale(
+                                userData.notificationLocale ||
+                                userData.locale ||
+                                userData.languageCode ||
+                                userData.language ||
+                                "zh_Hant"
+                            );
+
+                        const text =
+                            getEventEndingNotificationText(
+                                locale,
+                                {
+                                    eventName,
+                                    currencyName,
+                                    stage,
+                                }
+                            );
+
+                        await sendToUserDevices(
+                            userId,
+                            {
+                                notification: {
+                                    title: text.title,
+                                    body: text.body,
+                                },
+                                data: {
+                                    type: "event_ending",
+                                    eventId:
+                                        String(eventId),
+                                    stage:
+                                        String(stage),
+                                    click_action:
+                                        "FLUTTER_NOTIFICATION_CLICK",
+                                },
+                                android: {
+                                    priority: "high",
+                                    notification: {
+                                        channelId:
+                                            "high_importance_channel",
+                                        sound: "default",
+                                        defaultVibrateTimings:
+                                            true,
+                                    },
+                                },
+                                apns: {
+                                    headers: {
+                                        "apns-priority": "10",
+                                    },
+                                    payload: {
+                                        aps: {
+                                            sound: "default",
+                                        },
+                                    },
+                                },
+                            }
+                        );
+                    }
+                )
+            );
+
+        for (const result of results) {
+            if (result.status === "fulfilled") {
+                successUsers++;
+            } else {
+                failedUsers++;
+                console.error(
+                    "❌ 活動結束提醒推播失敗：",
+                    result.reason?.message ||
+                    result.reason ||
+                    "unknown"
+                );
+            }
+        }
+    }
+
+    return {
+        successUsers,
+        failedUsers,
+        totalUsers:
+            usersSnapshot.size,
+    };
+}
+
+exports.processEventEndingNotifications =
+    onSchedule(
+        {
+            schedule: "every 1 hours",
+            timeZone: "Asia/Taipei",
+            region: REGION,
+            timeoutSeconds: 540,
+            memory: "512MiB",
+        },
+        async () => {
+            const now =
+                new Date();
+
+            const eventsSnapshot =
+                await db
+                    .collection("artifacts")
+                    .doc(APP_ID)
+                    .collection("events")
+                    .where(
+                        "isActive",
+                        "==",
+                        true
+                    )
+                    .limit(20)
+                    .get();
+
+            if (eventsSnapshot.empty) {
+                console.log(
+                    "⏳ 目前沒有啟用中的活動"
+                );
+                return null;
+            }
+
+            for (
+                const eventDoc
+                of eventsSnapshot.docs
+            ) {
+                const eventData =
+                    eventDoc.data() || {};
+
+                const endAt =
+                    eventData.endAt
+                        ?.toDate?.();
+
+                if (!endAt) continue;
+
+                const msLeft =
+                    endAt.getTime() -
+                    now.getTime();
+
+                if (msLeft <= 0) {
+                    continue;
+                }
+
+                const hoursLeft =
+                    msLeft /
+                    (60 * 60 * 1000);
+
+                let stage = null;
+                let sentField = null;
+
+                // 3 天提醒：48～72 小時區間內第一次掃到就送。
+                if (
+                    hoursLeft > 48 &&
+                    hoursLeft <= 72
+                ) {
+                    stage = "3d";
+                    sentField =
+                        "ending3DaysSentAt";
+                }
+                // 最後一天提醒：0～24 小時區間內第一次掃到就送。
+                else if (
+                    hoursLeft > 0 &&
+                    hoursLeft <= 24
+                ) {
+                    stage = "1d";
+                    sentField =
+                        "ending1DaySentAt";
+                }
+
+                if (!stage || !sentField) {
+                    continue;
+                }
+
+                const notificationState =
+                    eventData.notificationState &&
+                    typeof eventData
+                        .notificationState ===
+                        "object"
+                        ? eventData
+                            .notificationState
+                        : {};
+
+                if (
+                    notificationState[
+                        sentField
+                    ]
+                ) {
+                    continue;
+                }
+
+                const eventName =
+                    String(
+                        eventData.name ||
+                        "期間限定活動"
+                    ).trim();
+
+                const currencyName =
+                    String(
+                        eventData.currencyName ||
+                        "活動貨幣"
+                    ).trim();
+
+                console.log(
+                    "⏳ 準備發送活動結束提醒",
+                    {
+                        eventId:
+                            eventDoc.id,
+                        eventName,
+                        stage,
+                        hoursLeft:
+                            Number(
+                                hoursLeft
+                                    .toFixed(2)
+                            ),
+                    }
+                );
+
+                const result =
+                    await sendEventEndingNotificationToAllUsers(
+                        {
+                            eventId:
+                                eventDoc.id,
+                            eventName,
+                            currencyName,
+                            stage,
+                        }
+                    );
+
+                await eventDoc.ref.set(
+                    {
+                        notificationState: {
+                            ...notificationState,
+                            [sentField]:
+                                FieldValue
+                                    .serverTimestamp(),
+                            [`${stage}LastResult`]:
+                                {
+                                    ...result,
+                                    completedAt:
+                                        FieldValue
+                                            .serverTimestamp(),
+                                },
+                        },
+                        updatedAt:
+                            FieldValue
+                                .serverTimestamp(),
+                    },
+                    {
+                        merge: true,
+                    }
+                );
+
+                console.log(
+                    "✅ 活動結束提醒完成",
+                    {
+                        eventId:
+                            eventDoc.id,
+                        stage,
+                        ...result,
+                    }
+                );
+            }
+
+            return null;
+        }
+    );
+
 
 exports.notifyPlayerNewMessage = onDocumentCreated({
     region: "asia-east1",

@@ -31,13 +31,21 @@ class BackgroundSettingsPage extends StatefulWidget {
       _BackgroundSettingsPageState();
 }
 
-class _BackgroundSettingsPageState extends State<BackgroundSettingsPage> {
+class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
+    with SingleTickerProviderStateMixin {
   static const String _topRightFloralAsset =
       'assets/images/theme/theme_card_starlight1.png';
 
   final PageController _pageController = PageController();
+  late final TabController _tabController;
   int _currentPhotoIndex = 0;
   bool _didPrecacheDecorations = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
 
   @override
   void didChangeDependencies() {
@@ -54,6 +62,7 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage> {
   @override
   void dispose() {
     _pageController.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
@@ -120,94 +129,461 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage> {
               ),
             ),
           ),
-          StreamBuilder<DocumentSnapshot>(
-            stream: currentUserId == null
-                ? const Stream<DocumentSnapshot>.empty()
-                : FirebaseFirestore.instance
-                .collection('users')
-                .doc(currentUserId)
-                .collection('characters')
-                .doc(widget.characterId)
-                .snapshots(),
-            builder: (context, charSnapshot) {
-              int maxGlobalAffection = 0;
-
-              if (charSnapshot.hasData && charSnapshot.data!.exists) {
-                final charData =
-                charSnapshot.data!.data() as Map<String, dynamic>;
-                maxGlobalAffection =
-                    (charData['affection'] as num?)?.toInt() ?? 0;
-              }
-
-              return StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('artifacts')
-                    .doc(
-                  const String.fromEnvironment(
-                    'APP_ID',
-                    defaultValue: 'lianlianshiguang',
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(18, 6, 18, 2),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHighest
+                        .withValues(alpha: 0.42),
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                )
-                    .collection('public_characters')
-                    .doc(widget.characterId)
-                    .collection('photos')
-                    .orderBy('requiredAffection')
-                    .snapshots(),
-                builder: (context, photoSnapshot) {
-                  if (photoSnapshot.connectionState ==
-                      ConnectionState.waiting &&
-                      !photoSnapshot.hasData) {
-                    return Center(
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: primary,
-                      ),
-                    );
-                  }
-
-                  final cgList = _resolvePhotoList(context, photoSnapshot);
-                  if (cgList.isEmpty) return const SizedBox.shrink();
-
-                  final safeIndex =
-                  _currentPhotoIndex.clamp(0, cgList.length - 1);
-                  if (safeIndex != _currentPhotoIndex) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (!mounted) return;
-                      setState(() => _currentPhotoIndex = safeIndex);
-                      if (_pageController.hasClients) {
-                        _pageController.jumpToPage(safeIndex);
-                      }
-                    });
-                  }
-
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (!mounted) return;
-                    _precacheNearbyPhotos(cgList, safeIndex);
-                  });
-
-                  return SafeArea(
-                    top: false,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(22, 18, 22, 24),
-                      child: Center(
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(
-                            maxWidth: 520,
-                            maxHeight: 780,
-                          ),
-                          child: _buildAlbumCard(
-                            context: context,
-                            cgList: cgList,
-                            maxGlobalAffection: maxGlobalAffection,
-                            currentIndex: safeIndex,
-                          ),
-                        ),
-                      ),
+                  child: TabBar(
+                    controller: _tabController,
+                    dividerColor: Colors.transparent,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    indicator: BoxDecoration(
+                      color: primary.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(14),
                     ),
-                  );
-                },
+                    labelColor: primary,
+                    unselectedLabelColor:
+                    theme.colorScheme.onSurface.withValues(alpha: 0.52),
+                    labelStyle: GoogleFonts.notoSerifTc(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    unselectedLabelStyle: GoogleFonts.notoSerifTc(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    tabs: const [
+                      Tab(text: '專屬照片'),
+                      Tab(text: '限定背景'),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildExclusivePhotosTab(
+                      context,
+                      currentUserId: currentUserId,
+                      primary: primary,
+                    ),
+                    _buildLimitedBackgroundsTab(
+                      context,
+                      currentUserId: currentUserId,
+                      primary: primary,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildExclusivePhotosTab(
+      BuildContext context, {
+        required String? currentUserId,
+        required Color primary,
+      }) {
+    return StreamBuilder<DocumentSnapshot>(
+      stream: currentUserId == null
+          ? const Stream<DocumentSnapshot>.empty()
+          : FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUserId)
+          .collection('characters')
+          .doc(widget.characterId)
+          .snapshots(),
+      builder: (context, charSnapshot) {
+        int maxGlobalAffection = 0;
+
+        if (charSnapshot.hasData && charSnapshot.data!.exists) {
+          final charData =
+          charSnapshot.data!.data() as Map<String, dynamic>;
+          maxGlobalAffection =
+              (charData['affection'] as num?)?.toInt() ?? 0;
+        }
+
+        return StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('artifacts')
+              .doc(
+            const String.fromEnvironment(
+              'APP_ID',
+              defaultValue: 'lianlianshiguang',
+            ),
+          )
+              .collection('public_characters')
+              .doc(widget.characterId)
+              .collection('photos')
+              .orderBy('requiredAffection')
+              .snapshots(),
+          builder: (context, photoSnapshot) {
+            if (photoSnapshot.connectionState ==
+                ConnectionState.waiting &&
+                !photoSnapshot.hasData) {
+              return Center(
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: primary,
+                ),
+              );
+            }
+
+            final cgList = _resolvePhotoList(context, photoSnapshot);
+            if (cgList.isEmpty) {
+              return _buildEmptyLimitedState(
+                context,
+                icon: Icons.photo_library_outlined,
+                title: '目前沒有專屬照片',
+                subtitle: '之後解鎖的角色照片會出現在這裡。',
+              );
+            }
+
+            final safeIndex =
+            _currentPhotoIndex.clamp(0, cgList.length - 1);
+            if (safeIndex != _currentPhotoIndex) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!mounted) return;
+                setState(() => _currentPhotoIndex = safeIndex);
+                if (_pageController.hasClients) {
+                  _pageController.jumpToPage(safeIndex);
+                }
+              });
+            }
+
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted) return;
+              _precacheNearbyPhotos(cgList, safeIndex);
+            });
+
+            return SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(22, 18, 22, 24),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      maxWidth: 520,
+                      maxHeight: 780,
+                    ),
+                    child: _buildAlbumCard(
+                      context: context,
+                      cgList: cgList,
+                      maxGlobalAffection: maxGlobalAffection,
+                      currentIndex: safeIndex,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildLimitedBackgroundsTab(
+      BuildContext context, {
+        required String? currentUserId,
+        required Color primary,
+      }) {
+    if (currentUserId == null) {
+      return _buildEmptyLimitedState(
+        context,
+        icon: Icons.lock_outline_rounded,
+        title: '登入後即可查看限定背景',
+        subtitle: '活動兌換取得的聊天室背景會保存在這裡。',
+      );
+    }
+
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: FirebaseFirestore.instance
+          .collection('artifacts')
+          .doc(
+        const String.fromEnvironment(
+          'APP_ID',
+          defaultValue: 'lianlianshiguang',
+        ),
+      )
+          .collection('event_progress')
+          .doc(currentUserId)
+          .collection('events')
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting &&
+            !snapshot.hasData) {
+          return Center(
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: primary,
+            ),
+          );
+        }
+
+        final items = <_LimitedBackgroundItem>[];
+
+        for (final eventDoc in snapshot.data?.docs ??
+            <QueryDocumentSnapshot<Map<String, dynamic>>>[]) {
+          final data = eventDoc.data();
+          final rawOwned = data['ownedEventItems'];
+
+          if (rawOwned is! Map) continue;
+
+          final owned =
+          Map<String, dynamic>.from(rawOwned as Map);
+
+          for (final entry in owned.entries) {
+            if (entry.value is! Map) continue;
+
+            final item =
+            Map<String, dynamic>.from(entry.value as Map);
+            final itemType =
+            (item['itemType'] ?? '').toString().trim();
+
+            if (!_isLimitedBackgroundType(itemType)) continue;
+
+            final imageUrl =
+            (item['imageUrl'] ?? '').toString().trim();
+            if (imageUrl.isEmpty) continue;
+
+            items.add(
+              _LimitedBackgroundItem(
+                eventId:
+                (item['eventId'] ?? eventDoc.id).toString(),
+                itemId:
+                (item['itemId'] ?? entry.key).toString(),
+                name: (item['name'] ?? '限定背景').toString(),
+                description:
+                (item['description'] ?? '').toString(),
+                imageUrl: imageUrl,
+              ),
+            );
+          }
+        }
+
+        if (items.isEmpty) {
+          return _buildEmptyLimitedState(
+            context,
+            icon: Icons.wallpaper_outlined,
+            title: '還沒有取得限定背景',
+            subtitle: '活動商店兌換的聊天室背景，之後會出現在這裡。',
+          );
+        }
+
+        return SafeArea(
+          top: false,
+          child: GridView.builder(
+            padding: const EdgeInsets.fromLTRB(18, 18, 18, 28),
+            itemCount: items.length,
+            gridDelegate:
+            const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 14,
+              crossAxisSpacing: 12,
+              childAspectRatio: 0.76,
+            ),
+            itemBuilder: (context, index) {
+              return _buildLimitedBackgroundCard(
+                context,
+                item: items[index],
+                primary: primary,
               );
             },
+          ),
+        );
+      },
+    );
+  }
+
+  bool _isLimitedBackgroundType(String itemType) {
+    return itemType == 'background' ||
+        itemType == 'chat_background' ||
+        itemType == 'scene_background';
+  }
+
+  Widget _buildLimitedBackgroundCard(
+      BuildContext context, {
+        required _LimitedBackgroundItem item,
+        required Color primary,
+      }) {
+    final theme = Theme.of(context);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(22),
+        onTap: () => _showLimitedBackgroundConfirmDialog(
+          context,
+          item,
+        ),
+        child: Ink(
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(
+              color: primary.withValues(alpha: 0.12),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.045),
+                blurRadius: 14,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(22),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: _buildCachedImage(item.imageUrl),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.notoSerifTc(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        item.description.trim().isNotEmpty
+                            ? item.description
+                            : '活動限定聊天室背景',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.notoSerifTc(
+                          fontSize: 10,
+                          height: 1.4,
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.48),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyLimitedState(
+      BuildContext context, {
+        required IconData icon,
+        required String title,
+        required String subtitle,
+      }) {
+    final theme = Theme.of(context);
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 46,
+              color: theme.colorScheme.primary.withValues(alpha: 0.52),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.notoSerifTc(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.notoSerifTc(
+                fontSize: 11,
+                height: 1.6,
+                color:
+                theme.colorScheme.onSurface.withValues(alpha: 0.48),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showLimitedBackgroundConfirmDialog(
+      BuildContext pageContext,
+      _LimitedBackgroundItem item,
+      ) {
+    final l10n = AppLocalizations.of(pageContext)!;
+
+    showDialog(
+      context: pageContext,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(
+          l10n.change_chat_bg,
+          style: GoogleFonts.notoSerifTc(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        content: Text(
+          '要將「${item.name}」設為目前聊天室的背景嗎？',
+          style: GoogleFonts.notoSerifTc(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(
+              l10n.cancelButton,
+              style: GoogleFonts.notoSerifTc(
+                color: Colors.grey,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              await Provider.of<ThemeNotifier>(
+                pageContext,
+                listen: false,
+              ).setChatRoomBackground(
+                widget.sessionId,
+                item.imageUrl,
+              );
+
+              if (!dialogContext.mounted) return;
+              Navigator.pop(dialogContext);
+
+              if (pageContext.mounted) {
+                Navigator.pop(pageContext);
+              }
+            },
+            child: Text(
+              l10n.confirm_change,
+              style: GoogleFonts.notoSerifTc(),
+            ),
           ),
         ],
       ),
@@ -680,4 +1056,20 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage> {
       ),
     );
   }
+}
+
+class _LimitedBackgroundItem {
+  final String eventId;
+  final String itemId;
+  final String name;
+  final String description;
+  final String imageUrl;
+
+  const _LimitedBackgroundItem({
+    required this.eventId,
+    required this.itemId,
+    required this.name,
+    required this.description,
+    required this.imageUrl,
+  });
 }

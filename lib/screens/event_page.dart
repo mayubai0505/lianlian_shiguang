@@ -4,7 +4,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import '../services/toast_utils.dart';
 import '../services/app_constants.dart';
 import 'event_memory_page.dart';
 
@@ -219,9 +219,9 @@ class _EventContent extends StatelessWidget {
     String f(DateTime d) =>
         '${d.year}.${d.month.toString().padLeft(2, '0')}.${d.day.toString().padLeft(2, '0')}';
     if (start == null && end == null) return '';
-    if (start == null) return '～ ${f(end!)}';
-    if (end == null) return '${f(start)} ～';
-    return '${f(start)} ～ ${f(end)}';
+    if (start == null) return '~\n${f(end!)}';
+    if (end == null) return '${f(start)}\n~';
+    return '${f(start)}\n~\n${f(end)}';
   }
 
   Map<String, dynamic> _uiText() {
@@ -345,6 +345,9 @@ class _EventContent extends StatelessWidget {
                       dateLabel: _dateText(startAt, endAt),
                       currencyIcon: currencyIcon,
                       currencyName: currencyName,
+                      hasShop: hasShop,
+                      shopHeroImageUrl:
+                      (data['shopHeroImageUrl'] ?? '').toString(),
                       style: style,
                     ),
                     if (hasTasks) ...[
@@ -356,8 +359,6 @@ class _EventContent extends StatelessWidget {
                           'tasksSubtitle',
                           '完成任務，收集$currencyName，解鎖更多限定內容。',
                         ),
-                        icon: Icons.auto_awesome_rounded,
-                        headerImageUrl: style.tasksHeaderIconUrl,
                         child: _TaskList(
                           eventId: eventId,
                           ref: _subcollection('tasks'),
@@ -377,8 +378,6 @@ class _EventContent extends StatelessWidget {
                           'milestonesSubtitle',
                           '累積$currencyName，領取活動限定獎勵。',
                         ),
-                        icon: Icons.stars_rounded,
-                        headerImageUrl: style.milestonesHeaderIconUrl,
                         trailingDecorationUrl: style.progressDecorationUrl,
                         child: _MilestoneProgress(
                           ref: _subcollection('milestones'),
@@ -398,7 +397,6 @@ class _EventContent extends StatelessWidget {
                               child: _RichFeatureEntryCard(
                                 accent: style.accent,
                                 imageUrl: style.memoryFeatureImageUrl,
-                                icon: Icons.photo_library_outlined,
                                 title: _text('memoryTitle', '限定回憶'),
                                 subtitle: _text(
                                   'memorySubtitle',
@@ -421,7 +419,6 @@ class _EventContent extends StatelessWidget {
                               child: _RichFeatureEntryCard(
                                 accent: style.accent,
                                 imageUrl: style.shopFeatureImageUrl,
-                                icon: Icons.storefront_rounded,
                                 title: _text('shopTitle', '活動商店'),
                                 subtitle: _text(
                                   'shopSubtitle',
@@ -434,6 +431,8 @@ class _EventContent extends StatelessWidget {
                                         eventId: eventId,
                                         currencyName: currencyName,
                                         currencyIcon: currencyIcon,
+                                        shopHeroImageUrl:
+                                        (data['shopHeroImageUrl'] ?? '').toString(),
                                       ),
                                     ),
                                   );
@@ -451,7 +450,6 @@ class _EventContent extends StatelessWidget {
                           .toString(),
                       accent: style.accent,
                       cardColor: style.cardColor,
-                      headerImageUrl: style.infoHeaderIconUrl,
                       decorationImageUrl: style.infoDecorationUrl,
                     ),
                     if (style.pageBottomLeftUrl.isNotEmpty ||
@@ -504,6 +502,8 @@ class _EventHeroCard extends StatelessWidget {
   final String dateLabel;
   final String currencyIcon;
   final String currencyName;
+  final bool hasShop;
+  final String shopHeroImageUrl;
   final _EventVisualStyle style;
 
   const _EventHeroCard({
@@ -516,6 +516,8 @@ class _EventHeroCard extends StatelessWidget {
     required this.dateLabel,
     required this.currencyIcon,
     required this.currencyName,
+    required this.hasShop,
+    required this.shopHeroImageUrl,
     required this.style,
   });
 
@@ -530,7 +532,7 @@ class _EventHeroCard extends StatelessWidget {
     final hasImage = heroImageUrl.trim().isNotEmpty;
 
     Widget balancePill(int amount) {
-      return Container(
+      final content = Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.94),
@@ -556,155 +558,177 @@ class _EventHeroCard extends StatelessWidget {
                 color: style.accent,
               ),
             ),
-            const SizedBox(width: 2),
-            Icon(Icons.chevron_right_rounded, size: 20, color: style.accent),
+            if (hasShop) ...[
+              const SizedBox(width: 2),
+              Icon(
+                Icons.chevron_right_rounded,
+                size: 20,
+                color: style.accent,
+              ),
+            ],
           ],
+        ),
+      );
+
+      if (!hasShop) return content;
+
+      return Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(999),
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => EventShopPage(
+                  eventId: eventId,
+                  currencyName: currencyName,
+                  currencyIcon: currencyIcon,
+                  shopHeroImageUrl: shopHeroImageUrl,
+                ),
+              ),
+            );
+          },
+          child: content,
         ),
       );
     }
 
-    return Container(
+    return SizedBox(
       height: 300,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(28),
-        color: Color.lerp(style.cardColor, style.accent2, 0.22),
-        border: Border.all(color: style.accent.withValues(alpha: 0.12)),
-        boxShadow: [
-          BoxShadow(
-            color: style.accent.withValues(alpha: 0.10),
-            blurRadius: 24,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(28),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            if (hasImage)
-              CachedNetworkImage(
-                imageUrl: heroImageUrl.trim(),
-                fit: BoxFit.cover,
-                placeholder: (_, __) => Container(
-                  color: style.accent.withValues(alpha: 0.05),
-                ),
-                errorWidget: (_, __, ___) => Container(
-                  color: style.accent.withValues(alpha: 0.05),
-                ),
+      width: double.infinity,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          if (hasImage)
+            CachedNetworkImage(
+              imageUrl: heroImageUrl.trim(),
+              fit: BoxFit.cover,
+              placeholder: (_, __) => Container(
+                color: style.accent.withValues(alpha: 0.05),
               ),
+              errorWidget: (_, __, ___) => Container(
+                color: style.accent.withValues(alpha: 0.05),
+              ),
+            )
+          else
             DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: hasImage
-                      ? [
-                    Colors.black.withValues(alpha: 0.02),
-                    Colors.black.withValues(alpha: 0.18),
-                    Colors.black.withValues(alpha: 0.64),
-                  ]
-                      : [
+                  colors: [
                     style.accent2.withValues(alpha: 0.22),
                     style.cardColor,
                   ],
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Spacer(),
-                      _HeroChip(
-                        icon: Icons.hourglass_bottom_rounded,
-                        label: remainingLabel,
-                        accent: style.accent,
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-                  Text(
-                    name,
-                    style: GoogleFonts.notoSerifTc(
-                      fontSize: 29,
-                      height: 1.15,
-                      fontWeight: FontWeight.w700,
-                      color: hasImage ? Colors.white : onSurface,
-                      shadows: hasImage
-                          ? [
-                        Shadow(
-                          color: Colors.black.withValues(alpha: 0.25),
-                          blurRadius: 8,
-                        ),
-                      ]
-                          : null,
-                    ),
-                  ),
-                  const SizedBox(height: 7),
-                  Text(
-                    subtitle,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.notoSerifTc(
-                      fontSize: 12.5,
-                      height: 1.6,
-                      color: hasImage
-                          ? Colors.white.withValues(alpha: 0.92)
-                          : onSurface.withValues(alpha: 0.62),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      if (progressRef != null)
-                        StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                          stream: progressRef!.snapshots(),
-                          builder: (context, snapshot) {
-                            final amount = _intValue(
-                              snapshot.data?.data()?['currency'],
-                            );
-                            return balancePill(amount);
-                          },
-                        )
-                      else
-                        balancePill(0),
-                      const Spacer(),
-                      if (dateLabel.isNotEmpty)
-                        Flexible(
-                          child: Text(
-                            dateLabel,
-                            textAlign: TextAlign.right,
-                            style: GoogleFonts.notoSerifTc(
-                              fontSize: 10.5,
-                              color: hasImage
-                                  ? Colors.white.withValues(alpha: 0.78)
-                                  : onSurface.withValues(alpha: 0.46),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ],
+          if (hasImage)
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0x0A000000),
+                    Color(0x2E000000),
+                    Color(0xA3000000),
+                  ],
+                ),
               ),
             ),
-          ],
-        ),
+          Padding(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Spacer(),
+                    _HeroChip(
+                      label: remainingLabel,
+                      accent: style.accent,
+                    ),
+                  ],
+                ),
+                const Spacer(),
+                Text(
+                  name,
+                  style: GoogleFonts.notoSerifTc(
+                    fontSize: 29,
+                    height: 1.15,
+                    fontWeight: FontWeight.w700,
+                    color: hasImage ? Colors.white : onSurface,
+                    shadows: hasImage
+                        ? [
+                      Shadow(
+                        color: Colors.black.withValues(alpha: 0.25),
+                        blurRadius: 8,
+                      ),
+                    ]
+                        : null,
+                  ),
+                ),
+                const SizedBox(height: 7),
+                Text(
+                  subtitle,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.notoSerifTc(
+                    fontSize: 12.5,
+                    height: 1.6,
+                    color: hasImage
+                        ? Colors.white.withValues(alpha: 0.92)
+                        : onSurface.withValues(alpha: 0.62),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    if (progressRef != null)
+                      StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                        stream: progressRef!.snapshots(),
+                        builder: (context, snapshot) {
+                          final amount = _intValue(
+                            snapshot.data?.data()?['currency'],
+                          );
+                          return balancePill(amount);
+                        },
+                      )
+                    else
+                      balancePill(0),
+                    const Spacer(),
+                    if (dateLabel.isNotEmpty)
+                      Text(
+                        dateLabel,
+                        textAlign: TextAlign.right,
+                        maxLines: 3,
+                        softWrap: false,
+                        style: GoogleFonts.notoSerifTc(
+                          fontSize: 10.5,
+                          height: 1.28,
+                          color: hasImage
+                              ? Colors.white.withValues(alpha: 0.82)
+                              : onSurface.withValues(alpha: 0.46),
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
 class _HeroChip extends StatelessWidget {
-  final IconData? icon;
   final String label;
   final Color accent;
 
-  const _HeroChip({this.icon, required this.label, required this.accent});
+  const _HeroChip({required this.label, required this.accent});
 
   @override
   Widget build(BuildContext context) {
@@ -718,10 +742,6 @@ class _HeroChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (icon != null) ...[
-            Icon(icon, size: 15, color: accent),
-            const SizedBox(width: 5),
-          ],
           Text(
             label,
             style: GoogleFonts.notoSerifTc(
@@ -758,55 +778,10 @@ class _DecorationImage extends StatelessWidget {
   }
 }
 
-class _SectionHeaderVisual extends StatelessWidget {
-  final String imageUrl;
-  final IconData fallbackIcon;
-  final Color accent;
-  final double size;
-
-  const _SectionHeaderVisual({
-    required this.imageUrl,
-    required this.fallbackIcon,
-    required this.accent,
-    this.size = 36,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (imageUrl.trim().isNotEmpty) {
-      return SizedBox(
-        width: size,
-        height: size,
-        child: CachedNetworkImage(
-          imageUrl: imageUrl.trim(),
-          fit: BoxFit.contain,
-          fadeInDuration: const Duration(milliseconds: 120),
-          errorWidget: (_, __, ___) => Icon(
-            fallbackIcon,
-            color: accent,
-            size: size * 0.56,
-          ),
-        ),
-      );
-    }
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: accent.withValues(alpha: 0.10),
-      ),
-      child: Icon(fallbackIcon, color: accent, size: size * 0.56),
-    );
-  }
-}
-
 class _RichSectionShell extends StatelessWidget {
   final _EventVisualStyle style;
   final String title;
   final String subtitle;
-  final IconData icon;
-  final String headerImageUrl;
   final String trailingDecorationUrl;
   final Widget child;
 
@@ -814,8 +789,6 @@ class _RichSectionShell extends StatelessWidget {
     required this.style,
     required this.title,
     required this.subtitle,
-    required this.icon,
-    this.headerImageUrl = '',
     this.trailingDecorationUrl = '',
     required this.child,
   });
@@ -856,40 +829,22 @@ class _RichSectionShell extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _SectionHeaderVisual(
-                    imageUrl: headerImageUrl,
-                    fallbackIcon: icon,
-                    accent: style.accent,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          title,
-                          style: GoogleFonts.notoSerifTc(
-                            fontSize: 19,
-                            fontWeight: FontWeight.w700,
-                            color: onSurface,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          subtitle,
-                          style: GoogleFonts.notoSerifTc(
-                            fontSize: 10.8,
-                            height: 1.5,
-                            color: onSurface.withValues(alpha: 0.50),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+              Text(
+                title,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 19,
+                  fontWeight: FontWeight.w700,
+                  color: onSurface,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                subtitle,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 10.8,
+                  height: 1.5,
+                  color: onSurface.withValues(alpha: 0.50),
+                ),
               ),
               const SizedBox(height: 12),
               child,
@@ -970,36 +925,45 @@ class _TaskListState extends State<_TaskList> {
           : <String, dynamic>{};
 
       if (!mounted) return;
+
       final reward = _intValue(data['rewardAmount']);
       final currency = _intValue(data['currency']);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            reward > 0
-                ? '已領取 ${widget.currencyIcon} $reward ${widget.currencyName}，目前共有 $currency'
-                : '獎勵已領取',
-          ),
-        ),
+      ToastUtils.showCenterToast(
+        context,
+        reward > 0
+            ? '已領取 ${widget.currencyIcon} $reward ${widget.currencyName}，目前共有 $currency'
+            : '獎勵已領取',
+        customIcon: Icons.check_circle_rounded,
       );
     } on FirebaseFunctionsException catch (error) {
       if (!mounted) return;
+
       String message = error.message ?? '領取失敗';
+
       if (error.code == 'already-exists') {
         message = '這個任務已經領取過了';
       } else if (error.code == 'failed-precondition') {
         message = error.message ?? '任務尚未完成';
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
+
+      ToastUtils.showCenterToast(
+        context,
+        message,
+        isError: true,
       );
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('領取失敗：$error')),
+
+      ToastUtils.showCenterToast(
+        context,
+        '領取失敗：$error',
+        isError: true,
       );
     } finally {
-      if (mounted) setState(() => _claimingTaskIds.remove(taskId));
+      if (mounted) {
+        setState(() => _claimingTaskIds.remove(taskId));
+      }
     }
   }
 
@@ -1049,7 +1013,6 @@ class _TaskListState extends State<_TaskList> {
                   child: _TaskCard(
                     title: (data['title'] ?? '活動任務').toString(),
                     description: (data['description'] ?? '').toString(),
-                    actionType: (data['actionType'] ?? '').toString(),
                     rewardText:
                     '${widget.currencyIcon} ${widget.currencyName} ×$reward',
                     progress: progress,
@@ -1075,7 +1038,6 @@ class _TaskListState extends State<_TaskList> {
 class _TaskCard extends StatelessWidget {
   final String title;
   final String description;
-  final String actionType;
   final String rewardText;
   final int progress;
   final int target;
@@ -1088,7 +1050,6 @@ class _TaskCard extends StatelessWidget {
   const _TaskCard({
     required this.title,
     required this.description,
-    required this.actionType,
     required this.rewardText,
     required this.progress,
     required this.target,
@@ -1099,26 +1060,6 @@ class _TaskCard extends StatelessWidget {
     required this.onClaim,
   });
 
-  IconData _icon() {
-    switch (actionType) {
-      case 'any_chat':
-      case 'mode_gemini':
-      case 'mode_daily':
-        return Icons.chat_bubble_outline_rounded;
-      case 'mode_story':
-        return Icons.menu_book_rounded;
-      case 'mode_immersive':
-        return Icons.sports_esports_rounded;
-      case 'mode_resonance':
-        return Icons.favorite_border_rounded;
-      case 'gift':
-        return Icons.card_giftcard_rounded;
-      case 'interaction':
-        return Icons.touch_app_rounded;
-      default:
-        return Icons.auto_awesome_rounded;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -1141,20 +1082,6 @@ class _TaskCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
-              color: accent.withValues(alpha: 0.10),
-            ),
-            child: Icon(
-              claimed ? Icons.check_rounded : _icon(),
-              color: accent,
-              size: 21,
-            ),
-          ),
-          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1434,7 +1361,6 @@ class _MilestoneProgress extends StatelessWidget {
 class _RichFeatureEntryCard extends StatelessWidget {
   final Color accent;
   final String imageUrl;
-  final IconData icon;
   final String title;
   final String subtitle;
   final VoidCallback onTap;
@@ -1442,7 +1368,6 @@ class _RichFeatureEntryCard extends StatelessWidget {
   const _RichFeatureEntryCard({
     required this.accent,
     required this.imageUrl,
-    required this.icon,
     required this.title,
     required this.subtitle,
     required this.onTap,
@@ -1487,19 +1412,8 @@ class _RichFeatureEntryCard extends StatelessWidget {
                       ),
                       errorWidget: (_, __, ___) => Container(
                         color: accent.withValues(alpha: 0.035),
-                        alignment: Alignment.center,
-                        child: Icon(icon, color: accent, size: 28),
                       ),
                     ),
-                  )
-                else
-                  Container(
-                    height: 58,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: accent.withValues(alpha: 0.045),
-                    ),
-                    child: Icon(icon, color: accent, size: 27),
                   ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(13, 11, 11, 13),
@@ -1555,7 +1469,6 @@ class _RichEventInfoCard extends StatelessWidget {
   final String description;
   final Color accent;
   final Color cardColor;
-  final String headerImageUrl;
   final String decorationImageUrl;
 
   const _RichEventInfoCard({
@@ -1563,7 +1476,6 @@ class _RichEventInfoCard extends StatelessWidget {
     required this.description,
     required this.accent,
     required this.cardColor,
-    this.headerImageUrl = '',
     this.decorationImageUrl = '',
   });
 
@@ -1598,26 +1510,13 @@ class _RichEventInfoCard extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  _SectionHeaderVisual(
-                    imageUrl: headerImageUrl,
-                    fallbackIcon: Icons.description_outlined,
-                    accent: accent,
-                    size: 30,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      title,
-                      style: GoogleFonts.notoSerifTc(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: onSurface,
-                      ),
-                    ),
-                  ),
-                ],
+              Text(
+                title,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: onSurface,
+                ),
               ),
               if (text.isNotEmpty) ...[
                 const SizedBox(height: 12),
@@ -1647,12 +1546,14 @@ class EventShopPage extends StatefulWidget {
   final String eventId;
   final String currencyName;
   final String currencyIcon;
+  final String shopHeroImageUrl;
 
   const EventShopPage({
     super.key,
     required this.eventId,
     required this.currencyName,
     required this.currencyIcon,
+    this.shopHeroImageUrl = '',
   });
 
   @override
@@ -1755,14 +1656,12 @@ class _EventShopPageState extends State<EventShopPage> {
           ? (resultData['rewardAmount'] as num).toInt()
           : 0;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            returnedReward > 0
-                ? '兌換成功！獲得 $returnedReward 花花'
-                : '兌換成功！「$itemName」已加入活動收藏',
-          ),
-        ),
+      ToastUtils.showCenterToast(
+        context,
+        returnedReward > 0
+            ? '兌換成功！獲得 $returnedReward 花花'
+            : '兌換成功！「$itemName」已加入活動收藏',
+        customIcon: Icons.check_circle_rounded,
       );
     } on FirebaseFunctionsException catch (error) {
       if (!mounted) return;
@@ -1776,19 +1675,221 @@ class _EventShopPageState extends State<EventShopPage> {
         message = '${widget.currencyName}不足';
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
+      ToastUtils.showCenterToast(
+        context,
+        message,
+        isError: true,
       );
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('兌換失敗：$error')),
+      ToastUtils.showCenterToast(
+        context,
+        '兌換失敗：$error',
+        isError: true,
       );
     } finally {
       if (mounted) {
         setState(() => _redeemingItemIds.remove(itemId));
       }
     }
+  }
+
+  Future<void> _showShopItemDetail({
+    required String itemId,
+    required Map<String, dynamic> data,
+    required int price,
+    required int redeemedCount,
+    required bool alreadyRedeemed,
+    required bool insufficient,
+  }) async {
+    final colors = Theme.of(context).colorScheme;
+    final imageUrl = (data['imageUrl'] ?? '').toString().trim();
+    final name = (data['name'] ?? '限定商品').toString();
+    final description = (data['description'] ?? '').toString().trim();
+    final itemType = (data['itemType'] ?? 'other').toString();
+    final rewardAmount = data['rewardAmount'] is num
+        ? (data['rewardAmount'] as num).toInt()
+        : int.tryParse('${data['rewardAmount']}') ?? 0;
+
+    await showDialog<void>(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.58),
+      builder: (dialogContext) {
+        String buttonText = '兌換';
+        if (alreadyRedeemed) {
+          buttonText = '已兌換';
+        } else if (insufficient) {
+          buttonText = '${widget.currencyName}不足';
+        }
+
+        return Dialog(
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 18,
+            vertical: 24,
+          ),
+          backgroundColor: Colors.transparent,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: 520,
+              maxHeight: 760,
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                color: colors.surface,
+                borderRadius: BorderRadius.circular(28),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.18),
+                    blurRadius: 28,
+                    offset: const Offset(0, 12),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(28),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        width: double.infinity,
+                        color: colors.surfaceContainerHighest
+                            .withValues(alpha: 0.52),
+                        child: imageUrl.isNotEmpty
+                            ? Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: CachedNetworkImage(
+                            imageUrl: imageUrl,
+                            fit: BoxFit.contain,
+                            placeholder: (_, __) => const Center(
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
+                            ),
+                            errorWidget: (_, __, ___) =>
+                                _ShopFallback(colors: colors),
+                          ),
+                        )
+                            : _ShopFallback(colors: colors),
+                      ),
+                    ),
+                    Flexible(
+                      flex: 0,
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    name,
+                                    style: GoogleFonts.notoSerifTc(
+                                      fontSize: 20,
+                                      height: 1.35,
+                                      fontWeight: FontWeight.w800,
+                                      color: colors.onSurface,
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  tooltip: '關閉',
+                                  onPressed: () =>
+                                      Navigator.of(dialogContext).pop(),
+                                  icon: const Icon(Icons.close_rounded),
+                                ),
+                              ],
+                            ),
+                            if (description.isNotEmpty) ...[
+                              const SizedBox(height: 8),
+                              Text(
+                                description,
+                                style: GoogleFonts.notoSerifTc(
+                                  fontSize: 12,
+                                  height: 1.7,
+                                  color: colors.onSurface
+                                      .withValues(alpha: 0.62),
+                                ),
+                              ),
+                            ],
+                            if (itemType == 'flower' && rewardAmount > 0) ...[
+                              const SizedBox(height: 10),
+                              Text(
+                                '兌換後可獲得 $rewardAmount 花花',
+                                style: GoogleFonts.notoSerifTc(
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: colors.primary,
+                                ),
+                              ),
+                            ],
+                            if (redeemedCount > 0 && !alreadyRedeemed) ...[
+                              const SizedBox(height: 8),
+                              Text(
+                                '已兌換 $redeemedCount 次',
+                                style: GoogleFonts.notoSerifTc(
+                                  fontSize: 10.5,
+                                  color: colors.onSurface
+                                      .withValues(alpha: 0.48),
+                                ),
+                              ),
+                            ],
+                            const SizedBox(height: 18),
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: colors.primary
+                                        .withValues(alpha: 0.08),
+                                    borderRadius: BorderRadius.circular(999),
+                                  ),
+                                  child: Text(
+                                    '${widget.currencyIcon} $price',
+                                    style: GoogleFonts.notoSerifTc(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w800,
+                                      color: colors.primary,
+                                    ),
+                                  ),
+                                ),
+                                const Spacer(),
+                                FilledButton(
+                                  onPressed: alreadyRedeemed || insufficient
+                                      ? null
+                                      : () {
+                                    Navigator.of(dialogContext).pop();
+                                    _redeemItem(
+                                      itemId: itemId,
+                                      data: data,
+                                      price: price,
+                                    );
+                                  },
+                                  child: Text(
+                                    buttonText,
+                                    style: GoogleFonts.notoSerifTc(
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -1835,9 +1936,46 @@ class _EventShopPageState extends State<EventShopPage> {
 
           return Column(
             children: [
+              if (widget.shopHeroImageUrl.trim().isNotEmpty)
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: CachedNetworkImage(
+                        imageUrl: widget.shopHeroImageUrl.trim(),
+                        fit: BoxFit.cover,
+                        placeholder: (_, __) => Container(
+                          color: colors.primary.withValues(alpha: 0.04),
+                          alignment: Alignment.center,
+                          child: CircularProgressIndicator(
+                            color: colors.primary,
+                            strokeWidth: 2,
+                          ),
+                        ),
+                        errorWidget: (_, __, ___) => Container(
+                          color: colors.primary.withValues(alpha: 0.04),
+                          alignment: Alignment.center,
+                          child: Icon(
+                            Icons.storefront_rounded,
+                            size: 40,
+                            color: colors.primary.withValues(alpha: 0.35),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               Container(
                 width: double.infinity,
-                margin: const EdgeInsets.fromLTRB(20, 10, 20, 8),
+                margin: EdgeInsets.fromLTRB(
+                  20,
+                  widget.shopHeroImageUrl.trim().isNotEmpty ? 0 : 10,
+                  20,
+                  8,
+                ),
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 13,
@@ -1939,13 +2077,18 @@ class _EventShopPageState extends State<EventShopPage> {
                           data: data,
                           currencyIcon: widget.currencyIcon,
                           redeemedCount: redeemedCount,
-                          isRedeeming:
-                          _redeemingItemIds.contains(doc.id),
+                          isRedeeming: _redeemingItemIds.contains(doc.id),
                           alreadyRedeemed: alreadyRedeemed,
                           insufficient: insufficient,
-                          onRedeem: alreadyRedeemed || insufficient
-                              ? null
-                              : () => _redeemItem(
+                          onView: () => _showShopItemDetail(
+                            itemId: doc.id,
+                            data: data,
+                            price: price,
+                            redeemedCount: redeemedCount,
+                            alreadyRedeemed: alreadyRedeemed,
+                            insufficient: insufficient,
+                          ),
+                          onRedeem: () => _redeemItem(
                             itemId: doc.id,
                             data: data,
                             price: price,
@@ -1972,7 +2115,8 @@ class _ShopItemCard extends StatelessWidget {
   final bool isRedeeming;
   final bool alreadyRedeemed;
   final bool insufficient;
-  final VoidCallback? onRedeem;
+  final VoidCallback onView;
+  final VoidCallback onRedeem;
 
   const _ShopItemCard({
     required this.itemId,
@@ -1982,6 +2126,7 @@ class _ShopItemCard extends StatelessWidget {
     required this.isRedeeming,
     required this.alreadyRedeemed,
     required this.insufficient,
+    required this.onView,
     required this.onRedeem,
   });
 
@@ -1998,131 +2143,139 @@ class _ShopItemCard extends StatelessWidget {
         ? (data['price'] as num).toInt()
         : int.tryParse('${data['price']}') ?? 0;
 
-    String buttonText = '兌換';
-    if (isRedeeming) {
-      buttonText = '兌換中';
-    } else if (alreadyRedeemed) {
-      buttonText = '已兌換';
-    } else if (insufficient) {
-      buttonText = '不足';
-    }
-
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.surface,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: null,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: colors.outline.withValues(alpha: 0.10),
-        ),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: imageUrl.isNotEmpty
-                  ? CachedNetworkImage(
-                imageUrl: imageUrl,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                errorWidget: (_, __, ___) =>
-                    _ShopFallback(colors: colors),
-              )
-                  : _ShopFallback(colors: colors),
+        child: Ink(
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: colors.outline.withValues(alpha: 0.10),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 9, 12, 11),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    (data['name'] ?? '限定商品').toString(),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.notoSerifTc(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                    ),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: onView,
+                    child: imageUrl.isNotEmpty
+                        ? CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      errorWidget: (_, __, ___) =>
+                          _ShopFallback(colors: colors),
+                    )
+                        : _ShopFallback(colors: colors),
                   ),
-                  if (description.isNotEmpty) ...[
-                    const SizedBox(height: 3),
-                    Text(
-                      description,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.notoSerifTc(
-                        fontSize: 9.8,
-                        height: 1.3,
-                        color: colors.onSurface.withValues(alpha: 0.48),
-                      ),
-                    ),
-                  ],
-                  if (itemType == 'flower' && rewardAmount > 0) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      '可獲得 $rewardAmount 花花',
-                      style: GoogleFonts.notoSerifTc(
-                        fontSize: 10,
-                        color: colors.primary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                  if (redeemedCount > 0 && !alreadyRedeemed) ...[
-                    const SizedBox(height: 3),
-                    Text(
-                      '已兌換 $redeemedCount 次',
-                      style: GoogleFonts.notoSerifTc(
-                        fontSize: 9.5,
-                        color: colors.onSurface.withValues(alpha: 0.46),
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: 7),
-                  Row(
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 9, 12, 11),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '$currencyIcon $price',
+                        (data['name'] ?? '限定商品').toString(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.notoSerifTc(
-                          fontSize: 11.5,
+                          fontSize: 13,
                           fontWeight: FontWeight.w700,
-                          color: colors.primary,
                         ),
                       ),
-                      const Spacer(),
-                      SizedBox(
-                        height: 32,
-                        child: FilledButton.tonal(
-                          onPressed: isRedeeming ? null : onRedeem,
-                          style: FilledButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 11,
-                            ),
-                          ),
-                          child: isRedeeming
-                              ? const SizedBox(
-                            width: 14,
-                            height: 14,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                            ),
-                          )
-                              : Text(
-                            buttonText,
-                            style: GoogleFonts.notoSerifTc(
-                              fontSize: 10.5,
-                              fontWeight: FontWeight.w700,
-                            ),
+                      if (description.isNotEmpty) ...[
+                        const SizedBox(height: 3),
+                        Text(
+                          description,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.notoSerifTc(
+                            fontSize: 9.8,
+                            height: 1.3,
+                            color: colors.onSurface.withValues(alpha: 0.48),
                           ),
                         ),
+                      ],
+                      if (itemType == 'flower' && rewardAmount > 0) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          '可獲得 $rewardAmount 花花',
+                          style: GoogleFonts.notoSerifTc(
+                            fontSize: 10,
+                            color: colors.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                      if (redeemedCount > 0 && !alreadyRedeemed) ...[
+                        const SizedBox(height: 3),
+                        Text(
+                          '已兌換 $redeemedCount 次',
+                          style: GoogleFonts.notoSerifTc(
+                            fontSize: 9.5,
+                            color: colors.onSurface.withValues(alpha: 0.46),
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 7),
+                      Row(
+                        children: [
+                          Text(
+                            '$currencyIcon $price',
+                            style: GoogleFonts.notoSerifTc(
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.w700,
+                              color: colors.primary,
+                            ),
+                          ),
+                          const Spacer(),
+                          SizedBox(
+                            height: 32,
+                            child: FilledButton.tonal(
+                              onPressed: isRedeeming || alreadyRedeemed || insufficient
+                                  ? null
+                                  : onRedeem,
+                              style: FilledButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 11,
+                                ),
+                              ),
+                              child: isRedeeming
+                                  ? const SizedBox(
+                                width: 14,
+                                height: 14,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                                  : Text(
+                                alreadyRedeemed
+                                    ? '已兌換'
+                                    : insufficient
+                                    ? '不足'
+                                    : '兌換',
+                                style: GoogleFonts.notoSerifTc(
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

@@ -73,6 +73,8 @@ class _EventMemoryPerformancePageState
   bool _collecting = false;
   bool _isCollected = false;
   bool _markingViewed = false;
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
+  _collectionSubscription;
   _MemoryPhase _phase = _MemoryPhase.loading;
 
   late final AnimationController _photoMotionController;
@@ -87,6 +89,7 @@ class _EventMemoryPerformancePageState
       lowerBound: 0,
       upperBound: 1,
     );
+    _listenCollectionStatus();
     _loadMemory();
   }
 
@@ -94,6 +97,7 @@ class _EventMemoryPerformancePageState
   void dispose() {
     _typingTimer?.cancel();
     _openingTimer?.cancel();
+    _collectionSubscription?.cancel();
     _photoMotionController.dispose();
     super.dispose();
   }
@@ -430,12 +434,17 @@ class _EventMemoryPerformancePageState
                     ),
                     const SizedBox(height: 12),
                     FilledButton.icon(
-                      onPressed: (_collecting || _isCollected)
+                      onPressed: _collecting
                           ? null
                           : () async {
-                        final collected = await _collectMemory();
+                        if (_isCollected) {
+                          await _uncollectMemory();
+                        } else {
+                          await _collectMemory();
+                        }
+
                         if (!mounted || !sheetContext.mounted) return;
-                        if (collected) setSheetState(() {});
+                        setSheetState(() {});
                       },
                       icon: _collecting
                           ? const SizedBox(
@@ -450,7 +459,7 @@ class _EventMemoryPerformancePageState
                       ),
                       label: Text(
                         _collecting
-                            ? '正在收藏…'
+                            ? '處理中…'
                             : (_isCollected ? '已收藏' : '收藏這段回憶'),
                       ),
                       style: FilledButton.styleFrom(
@@ -505,6 +514,105 @@ class _EventMemoryPerformancePageState
     _finishing = false;
   }
 
+  DocumentReference<Map<String, dynamic>>? _collectionRef() {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return null;
+
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('event_memories')
+        .doc(_collectionDocumentId());
+  }
+
+  void _listenCollectionStatus() {
+    final ref = _collectionRef();
+    if (ref == null) return;
+
+    _collectionSubscription?.cancel();
+    _collectionSubscription = ref.snapshots().listen(
+          (snapshot) {
+        if (!mounted) return;
+
+        final collected = snapshot.exists;
+        if (_isCollected == collected) return;
+
+        setState(() => _isCollected = collected);
+      },
+      onError: (Object error) {
+        debugPrint('⚠️ 讀取限定回憶收藏狀態失敗：$error');
+      },
+    );
+  }
+
+  Future<bool> _confirmUncollectMemory() async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(
+            '取消收藏？',
+            style: GoogleFonts.notoSerifTc(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          content: Text(
+            '取消後，這段回憶會從「拾光收藏」中移除。之後仍然可以重新觀看並再次收藏。',
+            style: GoogleFonts.notoSerifTc(height: 1.55),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text('先不要'),
+            ),
+            FilledButton.tonal(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: const Text('取消收藏'),
+            ),
+          ],
+        );
+      },
+    );
+
+    return result == true;
+  }
+
+  Future<bool> _uncollectMemory() async {
+    if (_collecting || !_isCollected) return !_isCollected;
+
+    final confirmed = await _confirmUncollectMemory();
+    if (!confirmed || !mounted) return false;
+
+    final ref = _collectionRef();
+    if (ref == null) {
+      _showMessage('請先登入後再管理收藏', isError: true);
+      return false;
+    }
+
+    setState(() => _collecting = true);
+
+    try {
+      await ref.delete();
+
+      if (!mounted) return true;
+
+      setState(() => _isCollected = false);
+      _showMessage(
+        '已取消收藏',
+        customIcon: Icons.bookmark_remove_outlined,
+      );
+      return true;
+    } catch (e) {
+      debugPrint('❌ 取消限定回憶收藏失敗：$e');
+      _showMessage('取消收藏失敗，請稍後再試', isError: true);
+      return false;
+    } finally {
+      if (mounted) {
+        setState(() => _collecting = false);
+      }
+    }
+  }
+
   String _collectionDocumentId() {
     final raw =
         '${widget.eventId}__${widget.memoryId}__${widget.characterId}__${widget.playerProfileId}';
@@ -540,11 +648,11 @@ class _EventMemoryPerformancePageState
     setState(() => _collecting = true);
 
     try {
-      final ref = FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .collection('event_memories')
-          .doc(_collectionDocumentId());
+      final ref = _collectionRef();
+      if (ref == null) {
+        _showMessage('請先登入後再收藏這段回憶', isError: true);
+        return false;
+      }
 
       await ref.set({
         'eventId': widget.eventId,

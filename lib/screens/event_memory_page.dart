@@ -111,9 +111,8 @@ class EventMemoryPage extends StatelessWidget {
         bottom: false,
         child: Column(
           children: [
-            _MemoryAppBar(
+            const _MemoryAppBar(
               title: '限定回憶',
-              accent: visual.accent,
             ),
             Expanded(
               child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
@@ -485,11 +484,9 @@ class _MemoryVisual {
 
 class _MemoryAppBar extends StatelessWidget {
   final String title;
-  final Color accent;
 
   const _MemoryAppBar({
     required this.title,
-    required this.accent,
   });
 
   @override
@@ -511,7 +508,6 @@ class _MemoryAppBar extends StatelessWidget {
               ),
             ),
           ),
-          Icon(Icons.auto_awesome_rounded, color: accent, size: 20),
         ],
       ),
     );

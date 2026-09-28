@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -135,6 +136,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   TextEditingController(text: '🎃');
   final TextEditingController _eventBannerUrlController = TextEditingController();
   final TextEditingController _eventHeroUrlController = TextEditingController();
+  final TextEditingController _eventShopHeroUrlController = TextEditingController();
   final TextEditingController _eventAccentColorController = TextEditingController(text: '#8D6CC4');
   final TextEditingController _eventAccentColorLightController = TextEditingController(text: '#E9DFF7');
   final TextEditingController _eventBackgroundColorController = TextEditingController(text: '#FBF8FF');
@@ -212,11 +214,6 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       vsync: this,
     );
 
-    WidgetsBinding.instance.addPostFrameCallback(
-          (_) {
-        _loadRewardCampaigns();
-      },
-    );
   }
 
   @override
@@ -235,6 +232,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     _eventCurrencyIconController.dispose();
     _eventBannerUrlController.dispose();
     _eventHeroUrlController.dispose();
+    _eventShopHeroUrlController.dispose();
     _eventAccentColorController.dispose();
     _eventAccentColorLightController.dispose();
     _eventBackgroundColorController.dispose();
@@ -4005,10 +4003,15 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
           Expanded(
             child: TabBarView(
               children: [
-                _buildAnnouncementTab(),
-                _buildRewardCampaignTab(),
-                _buildReusableEventAdminTab(),
-                _buildCampaignSegmentationPlaceholder(),
+                _LazyAdminTab(builder: _buildAnnouncementTab),
+                _LazyAdminTab(
+                  builder: () => _RewardCampaignLazyLoader(
+                    onFirstBuild: _loadRewardCampaigns,
+                    childBuilder: _buildRewardCampaignTab,
+                  ),
+                ),
+                _LazyAdminTab(builder: _buildReusableEventAdminTab),
+                _LazyAdminTab(builder: _buildCampaignSegmentationPlaceholder),
               ],
             ),
           ),
@@ -4098,6 +4101,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       case 'banner':
         return const CropAspectRatio(ratioX: 8, ratioY: 3);
       case 'hero':
+      case 'shop_hero':
         return const CropAspectRatio(ratioX: 16, ratioY: 9);
       case 'memory_card':
       case 'shop_card':
@@ -4120,6 +4124,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         return '推薦頁活動卡（8:3）';
       case 'hero':
         return '活動主頁主視覺（16:9）';
+      case 'shop_hero':
+        return '活動商店主圖片（16:9）';
       case 'memory_card':
         return '限定回憶卡裝飾（4:3）';
       case 'memory_cover':
@@ -4154,53 +4160,68 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     if (_uploadingEventImageSlot != null) return null;
 
     try {
+      final bool keepOriginal = slot == 'shop_background';
       final bool preserveAlpha = slot == 'shop_frame' ||
           slot == 'memory_character' ||
           slot.endsWith('_icon') ||
           slot.contains('decor') ||
           slot.startsWith('page_');
+
       final picked = await ImagePicker().pickImage(
         source: ImageSource.gallery,
-        imageQuality: preserveAlpha ? null : 95,
-        maxWidth: preserveAlpha ? null : (slot == 'banner' ? 2400 : 2200),
+        imageQuality: (preserveAlpha || keepOriginal) ? null : 95,
+        maxWidth: (preserveAlpha || keepOriginal)
+            ? null
+            : (slot == 'banner' ? 2400 : 2200),
       );
       if (picked == null) return null;
 
-      final cropped = await ImageCropper().cropImage(
-        sourcePath: picked.path,
-        compressFormat: preserveAlpha
-            ? ImageCompressFormat.png
-            : ImageCompressFormat.jpg,
-        compressQuality: preserveAlpha ? 100 : 92,
-        aspectRatio: _eventCropAspectRatioForSlot(slot),
-        uiSettings: [
-          AndroidUiSettings(
-            toolbarTitle: _eventCropLabelForSlot(slot),
-            lockAspectRatio: true,
-            hideBottomControls: false,
-          ),
-          IOSUiSettings(
-            title: _eventCropLabelForSlot(slot),
-            aspectRatioLockEnabled: true,
-            resetAspectRatioEnabled: false,
-          ),
-          WebUiSettings(
-            context: context,
-          ),
-        ],
-      );
-      if (cropped == null) return null;
-
       if (mounted) setState(() => _uploadingEventImageSlot = slot);
 
-      final bytes = await cropped.readAsBytes();
-      if (bytes.isEmpty) throw Exception('裁切後的圖片檔案是空的');
+      late final Uint8List bytes;
+      late final String extension;
+      late final String contentType;
+
+      if (keepOriginal) {
+        bytes = await picked.readAsBytes();
+        extension = _eventImageExtension(picked);
+        contentType = _eventImageContentType(picked);
+      } else {
+        final cropped = await ImageCropper().cropImage(
+          sourcePath: picked.path,
+          compressFormat: preserveAlpha
+              ? ImageCompressFormat.png
+              : ImageCompressFormat.jpg,
+          compressQuality: preserveAlpha ? 100 : 92,
+          aspectRatio: _eventCropAspectRatioForSlot(slot),
+          uiSettings: [
+            AndroidUiSettings(
+              toolbarTitle: _eventCropLabelForSlot(slot),
+              lockAspectRatio: true,
+              hideBottomControls: false,
+            ),
+            IOSUiSettings(
+              title: _eventCropLabelForSlot(slot),
+              aspectRatioLockEnabled: true,
+              resetAspectRatioEnabled: false,
+            ),
+            WebUiSettings(
+              context: context,
+            ),
+          ],
+        );
+        if (cropped == null) return null;
+
+        bytes = await cropped.readAsBytes();
+        extension = preserveAlpha ? 'png' : 'jpg';
+        contentType = preserveAlpha ? 'image/png' : 'image/jpeg';
+      }
+
+      if (bytes.isEmpty) throw Exception('圖片檔案是空的');
 
       final rawEventId = _eventSlugify(_eventIdController.text);
       final safeEventId = rawEventId.isEmpty ? 'draft' : rawEventId;
       final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final String extension = preserveAlpha ? 'png' : 'jpg';
-      final String contentType = preserveAlpha ? 'image/png' : 'image/jpeg';
       final storageRef = FirebaseStorage.instance
           .ref()
           .child('artifacts/${AppConfig.appId}/events/$safeEventId/images')
@@ -4215,13 +4236,15 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       if (mounted) {
         ToastUtils.showCenterToast(
           context,
-          '裁切並上傳完成',
-          customIcon: Icons.crop_rounded,
+          keepOriginal ? '完整圖片已上傳' : '裁切並上傳完成',
+          customIcon: keepOriginal
+              ? Icons.photo_size_select_large_rounded
+              : Icons.crop_rounded,
         );
       }
       return url;
     } catch (error, stackTrace) {
-      debugPrint('❌ 活動圖片裁切／上傳失敗：$error');
+      debugPrint('❌ 活動圖片處理／上傳失敗：$error');
       debugPrintStack(stackTrace: stackTrace);
       if (mounted) {
         ToastUtils.showCenterToast(
@@ -4452,6 +4475,62 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     );
   }
 
+  Future<Map<String, dynamic>?> _analyzeEventStickerImage(
+      String imageUrl,
+      ) async {
+    final trimmed = imageUrl.trim();
+    if (trimmed.isEmpty) {
+      ToastUtils.showCenterToast(
+        context,
+        '請先上傳貼紙圖片',
+        isError: true,
+      );
+      return null;
+    }
+
+    try {
+      final callable = _functions.httpsCallable(
+        'analyzeEventStickerImage',
+        options: HttpsCallableOptions(
+          timeout: const Duration(seconds: 90),
+        ),
+      );
+
+      final result = await callable.call(<String, dynamic>{
+        'imageUrl': trimmed,
+      });
+
+      final raw = result.data;
+      if (raw is! Map) {
+        throw Exception('AI 回傳格式不正確');
+      }
+
+      final data = Map<String, dynamic>.from(raw);
+      final analysisRaw = data['analysis'];
+      if (analysisRaw is! Map) {
+        throw Exception('AI 沒有回傳分析結果');
+      }
+
+      return Map<String, dynamic>.from(analysisRaw);
+    } on FirebaseFunctionsException catch (error) {
+      if (!mounted) return null;
+      ToastUtils.showCenterToast(
+        context,
+        error.message ?? '貼紙 AI 分析失敗',
+        isError: true,
+      );
+      return null;
+    } catch (error) {
+      if (!mounted) return null;
+      ToastUtils.showCenterToast(
+        context,
+        '貼紙 AI 分析失敗：$error',
+        isError: true,
+      );
+      return null;
+    }
+  }
+
   Future<Map<String, dynamic>?> _showEventItemDialog({
     required String type,
     Map<String, dynamic>? initial,
@@ -4470,6 +4549,14 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     String taskTargetValue = (initial?['target'] ?? '1').toString();
     String shopRewardAmountValue =
     (initial?['rewardAmount'] ?? '10').toString();
+    String stickerNameValue = initial?['stickerName']?.toString() ?? '';
+    String stickerTagsValue = ((initial?['visualTags'] as List?) ?? const [])
+        .map((e) => e.toString())
+        .join('、');
+    String stickerBaseEmotionValue =
+        initial?['baseEmotion']?.toString() ?? '';
+    String stickerVisualDescriptionValue =
+        initial?['visualDescription']?.toString() ?? '';
 
     return showDialog<Map<String, dynamic>>(
       context: context,
@@ -4477,6 +4564,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         String itemType = initial?['itemType']?.toString() ?? 'flower';
         String taskType = initial?['taskType']?.toString() ?? 'any_chat';
         bool limited = initial?['limitOne'] == true;
+        bool analyzingSticker = false;
 
         return StatefulBuilder(
           builder: (context, setDialogState) {
@@ -4590,12 +4678,16 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                           DropdownMenuItem(value: 'avatar_frame', child: Text('頭像框')),
                           DropdownMenuItem(value: 'title', child: Text('稱號')),
                           DropdownMenuItem(
-                            value: 'special_background',
-                            child: Text('特殊背景'),
+                            value: 'chat_background',
+                            child: Text('聊天室限定背景'),
                           ),
                           DropdownMenuItem(
                             value: 'memory_card',
                             child: Text('限定回憶卡'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'sticker',
+                            child: Text('貼紙'),
                           ),
                           DropdownMenuItem(value: 'other', child: Text('其他')),
                         ],
@@ -4636,7 +4728,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                         onChanged: (value) => imageValue = value,
                         decoration: const InputDecoration(
                           labelText: '商品圖片 URL',
-                          hintText: '可貼 URL，或使用下方選圖並裁切',
+                          hintText: '可貼 URL；聊天室背景會保留原始完整比例',
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -4649,6 +4741,11 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                               : () async {
                             final imageSlot = itemType == 'avatar_frame'
                                 ? 'shop_frame'
+                                : (itemType == 'chat_background' ||
+                                itemType == 'background' ||
+                                itemType == 'scene_background' ||
+                                itemType == 'special_background')
+                                ? 'shop_background'
                                 : 'shop';
                             final uploaded =
                             await _pickAndUploadReusableEventImage(
@@ -4658,7 +4755,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                             setDialogState(() => imageValue = uploaded);
                           },
                           icon: (_uploadingEventImageSlot == 'shop' ||
-                              _uploadingEventImageSlot == 'shop_frame')
+                              _uploadingEventImageSlot == 'shop_frame' ||
+                              _uploadingEventImageSlot == 'shop_background')
                               ? const SizedBox(
                             width: 18,
                             height: 18,
@@ -4669,10 +4767,16 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                               : const Icon(Icons.photo_library_outlined),
                           label: Text(
                             (_uploadingEventImageSlot == 'shop' ||
-                                _uploadingEventImageSlot == 'shop_frame')
+                                _uploadingEventImageSlot == 'shop_frame' ||
+                                _uploadingEventImageSlot == 'shop_background')
                                 ? '上傳中'
                                 : (itemType == 'avatar_frame'
                                 ? '選透明 PNG 並裁切'
+                                : (itemType == 'chat_background' ||
+                                itemType == 'background' ||
+                                itemType == 'scene_background' ||
+                                itemType == 'special_background')
+                                ? '選完整背景圖（不裁切）'
                                 : '選圖並裁切'),
                           ),
                         ),
@@ -4689,7 +4793,30 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                             children: [
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(12),
-                                child: AspectRatio(
+                                child: (itemType == 'chat_background' ||
+                                    itemType == 'background' ||
+                                    itemType == 'scene_background' ||
+                                    itemType == 'special_background')
+                                    ? Container(
+                                  width: double.infinity,
+                                  constraints: const BoxConstraints(
+                                    minHeight: 220,
+                                    maxHeight: 360,
+                                  ),
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainerHighest,
+                                  alignment: Alignment.center,
+                                  child: Image.network(
+                                    imageValue.trim(),
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (_, __, ___) =>
+                                    const Center(
+                                      child: Text('商品圖片預覽失敗'),
+                                    ),
+                                  ),
+                                )
+                                    : AspectRatio(
                                   aspectRatio: 1,
                                   child: Image.network(
                                     imageValue.trim(),
@@ -4759,6 +4886,178 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                           ),
                         ),
                       ],
+                      if (itemType == 'sticker') ...[
+                        const SizedBox(height: 14),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerHighest
+                                .withValues(alpha: 0.42),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      'AI 貼紙語意資料',
+                                      style: GoogleFonts.notoSerifTc(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ),
+                                  FilledButton.tonalIcon(
+                                    onPressed: analyzingSticker
+                                        ? null
+                                        : () async {
+                                      setDialogState(
+                                            () => analyzingSticker = true,
+                                      );
+
+                                      final analysis =
+                                      await _analyzeEventStickerImage(
+                                        imageValue,
+                                      );
+
+                                      if (!mounted) return;
+
+                                      if (analysis != null) {
+                                        final tagsRaw =
+                                        analysis['visualTags'];
+                                        final tags = tagsRaw is List
+                                            ? tagsRaw
+                                            .map((e) => e.toString())
+                                            .where(
+                                              (e) => e.trim().isNotEmpty,
+                                        )
+                                            .toList()
+                                            : <String>[];
+
+                                        setDialogState(() {
+                                          stickerNameValue =
+                                              (analysis['stickerName'] ?? '')
+                                                  .toString();
+                                          stickerTagsValue =
+                                              tags.join('、');
+                                          stickerBaseEmotionValue =
+                                              (analysis['baseEmotion'] ?? '')
+                                                  .toString();
+                                          stickerVisualDescriptionValue =
+                                              (analysis['visualDescription'] ?? '')
+                                                  .toString();
+                                          analyzingSticker = false;
+                                        });
+
+                                        ToastUtils.showCenterToast(
+                                          context,
+                                          'AI 已完成貼紙分析，可再手動調整',
+                                          customIcon:
+                                          Icons.auto_awesome_rounded,
+                                        );
+                                      } else {
+                                        setDialogState(
+                                              () => analyzingSticker = false,
+                                        );
+                                      }
+                                    },
+                                    icon: analyzingSticker
+                                        ? const SizedBox.square(
+                                      dimension: 16,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                        : const Icon(
+                                      Icons.auto_awesome_rounded,
+                                    ),
+                                    label: Text(
+                                      analyzingSticker
+                                          ? '分析中…'
+                                          : 'AI 分析貼紙',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                'AI 只描述貼紙畫面與基礎情緒，不會把「撒嬌／求和／挑釁」等玩家意圖寫死；真正語意之後會交給聊天上下文判斷。',
+                                style: GoogleFonts.notoSerifTc(
+                                  fontSize: 10.5,
+                                  height: 1.5,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withValues(alpha: 0.55),
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              TextFormField(
+                                key: ValueKey(
+                                  'sticker_name_$stickerNameValue',
+                                ),
+                                initialValue: stickerNameValue,
+                                onChanged: (value) =>
+                                stickerNameValue = value,
+                                decoration: const InputDecoration(
+                                  labelText: '貼紙名稱',
+                                  hintText: '例如：害羞遮臉',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              TextFormField(
+                                key: ValueKey(
+                                  'sticker_tags_$stickerTagsValue',
+                                ),
+                                initialValue: stickerTagsValue,
+                                onChanged: (value) =>
+                                stickerTagsValue = value,
+                                decoration: const InputDecoration(
+                                  labelText: '視覺標籤',
+                                  hintText: '例如：臉紅、遮臉、躲避視線',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              TextFormField(
+                                key: ValueKey(
+                                  'sticker_emotion_$stickerBaseEmotionValue',
+                                ),
+                                initialValue: stickerBaseEmotionValue,
+                                onChanged: (value) =>
+                                stickerBaseEmotionValue = value,
+                                decoration: const InputDecoration(
+                                  labelText: '基礎情緒',
+                                  hintText: '例如：害羞、不好意思',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              TextFormField(
+                                key: ValueKey(
+                                  'sticker_desc_$stickerVisualDescriptionValue',
+                                ),
+                                initialValue: stickerVisualDescriptionValue,
+                                onChanged: (value) =>
+                                stickerVisualDescriptionValue = value,
+                                minLines: 2,
+                                maxLines: 4,
+                                decoration: const InputDecoration(
+                                  labelText: '畫面描述',
+                                  hintText: '只描述看得到的表情與動作',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                       SwitchListTile(
                         contentPadding: EdgeInsets.zero,
                         title: const Text('每位玩家限兌換 1 次'),
@@ -4825,6 +5124,24 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                         return;
                       }
 
+                      if (itemType == 'sticker') {
+                        if (imageValue.trim().isEmpty) {
+                          ScaffoldMessenger.of(dialogContext).showSnackBar(
+                            const SnackBar(content: Text('貼紙商品請先上傳貼紙圖片')),
+                          );
+                          return;
+                        }
+
+                        if (stickerVisualDescriptionValue.trim().isEmpty) {
+                          ScaffoldMessenger.of(dialogContext).showSnackBar(
+                            const SnackBar(
+                              content: Text('請先 AI 分析貼紙，或手動填寫畫面描述'),
+                            ),
+                          );
+                          return;
+                        }
+                      }
+
                       Navigator.of(dialogContext).pop({
                         'name': title,
                         'price': amount,
@@ -4834,6 +5151,18 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                         'description': descriptionValue.trim(),
                         'imageUrl': imageValue.trim(),
                         'limitOne': limited,
+                        if (itemType == 'sticker') ...{
+                          'stickerName': stickerNameValue.trim(),
+                          'visualTags': stickerTagsValue
+                              .split(RegExp(r'[,，、\n]'))
+                              .map((e) => e.trim())
+                              .where((e) => e.isNotEmpty)
+                              .toList(),
+                          'baseEmotion': stickerBaseEmotionValue.trim(),
+                          'visualDescription':
+                          stickerVisualDescriptionValue.trim(),
+                          'analysisSource': 'ai_or_manual',
+                        },
                       });
                     }
                   },
@@ -5586,6 +5915,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         _eventCurrencyIconController.text = data['currencyIcon']?.toString() ?? '🎃';
         _eventBannerUrlController.text = data['bannerImageUrl']?.toString() ?? '';
         _eventHeroUrlController.text = data['heroImageUrl']?.toString() ?? '';
+        _eventShopHeroUrlController.text = data['shopHeroImageUrl']?.toString() ?? '';
         final themeData = data['theme'] is Map
             ? Map<String, dynamic>.from(data['theme'] as Map)
             : <String, dynamic>{};
@@ -5663,6 +5993,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       _eventCurrencyIconController.text = '🎃';
       _eventBannerUrlController.clear();
       _eventHeroUrlController.clear();
+      _eventShopHeroUrlController.clear();
       _eventAccentColorController.text = '#8D6CC4';
       _eventAccentColorLightController.text = '#E9DFF7';
       _eventBackgroundColorController.text = '#FBF8FF';
@@ -5803,6 +6134,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
           'endAt': Timestamp.fromDate(_eventEndAt),
           'bannerImageUrl': _eventBannerUrlController.text.trim(),
           'heroImageUrl': _eventHeroUrlController.text.trim(),
+          'shopHeroImageUrl': _eventShopHeroUrlController.text.trim(),
           'theme': {
             'accentColor': _eventAccentColorController.text.trim(),
             'accentColor2': _eventAccentColorLightController.text.trim(),
@@ -6038,6 +6370,339 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     );
   }
 
+
+  Color _eventColorFromText(String raw, Color fallback) {
+    var value = raw.trim().replaceAll('#', '');
+    if (value.length == 6) value = 'FF$value';
+    if (value.length != 8) return fallback;
+    try {
+      return Color(int.parse(value, radix: 16));
+    } catch (_) {
+      return fallback;
+    }
+  }
+
+  String _eventColorToHex(Color color) {
+    final value = color.toARGB32() & 0xFFFFFF;
+    return '#${value.toRadixString(16).padLeft(6, '0').toUpperCase()}';
+  }
+
+  Future<void> _pickEventThemeColor({
+    required TextEditingController controller,
+    required String title,
+  }) async {
+    final fallback = Theme.of(context).colorScheme.primary;
+    Color selected = _eventColorFromText(controller.text, fallback);
+    HSVColor hsv = HSVColor.fromColor(selected);
+
+    const presets = <Color>[
+      Color(0xFF8D6CC4), Color(0xFFA888D9), Color(0xFFC7B0ED),
+      Color(0xFFE6D7FA), Color(0xFF6B5B95), Color(0xFF5B4B8A),
+      Color(0xFFD88FA3), Color(0xFFF0B7C7), Color(0xFFFFD6E2),
+      Color(0xFFE7A66D), Color(0xFFF2C48D), Color(0xFFF7D8A8),
+      Color(0xFF7DAE9B), Color(0xFFA8CFBA), Color(0xFFD5E9DE),
+      Color(0xFF6E9FBF), Color(0xFF9CC4DD), Color(0xFFD6EAF5),
+      Color(0xFF4D435F), Color(0xFF766A8A), Color(0xFFB5ACBF),
+      Color(0xFFF8F5FC), Color(0xFFFFFFFF), Color(0xFFF4EFE8),
+    ];
+
+    final picked = await showDialog<Color>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            void updateHsv(HSVColor next) {
+              setDialogState(() {
+                hsv = next;
+                selected = hsv.toColor();
+              });
+            }
+
+            return AlertDialog(
+              title: Text(title),
+              content: SizedBox(
+                width: 520,
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 58,
+                            height: 58,
+                            decoration: BoxDecoration(
+                              color: selected,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: Colors.black12),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              _eventColorToHex(selected),
+                              style: GoogleFonts.notoSerifTc(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Text('常用色', style: GoogleFonts.notoSerifTc(fontWeight: FontWeight.w700)),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: presets.map((color) {
+                          final active = _eventColorToHex(color) == _eventColorToHex(selected);
+                          return InkWell(
+                            onTap: () {
+                              setDialogState(() {
+                                selected = color;
+                                hsv = HSVColor.fromColor(color);
+                              });
+                            },
+                            borderRadius: BorderRadius.circular(999),
+                            child: Container(
+                              width: 34,
+                              height: 34,
+                              decoration: BoxDecoration(
+                                color: color,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: active ? Colors.black87 : Colors.black12,
+                                  width: active ? 2.2 : 1,
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 18),
+                      Text('色相', style: GoogleFonts.notoSerifTc(fontWeight: FontWeight.w700)),
+                      Slider(
+                        min: 0,
+                        max: 360,
+                        value: hsv.hue,
+                        onChanged: (value) => updateHsv(hsv.withHue(value)),
+                      ),
+                      Text('鮮豔度', style: GoogleFonts.notoSerifTc(fontWeight: FontWeight.w700)),
+                      Slider(
+                        min: 0,
+                        max: 1,
+                        value: hsv.saturation,
+                        onChanged: (value) => updateHsv(hsv.withSaturation(value)),
+                      ),
+                      Text('明暗', style: GoogleFonts.notoSerifTc(fontWeight: FontWeight.w700)),
+                      Slider(
+                        min: 0,
+                        max: 1,
+                        value: hsv.value,
+                        onChanged: (value) => updateHsv(hsv.withValue(value)),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  child: const Text('取消'),
+                ),
+                FilledButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(selected),
+                  child: const Text('套用顏色'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    if (picked == null || !mounted) return;
+    setState(() {
+      controller.text = _eventColorToHex(picked);
+    });
+  }
+
+  Widget _eventColorField({
+    required String label,
+    required TextEditingController controller,
+    required String hint,
+  }) {
+    final fallback = Theme.of(context).colorScheme.primary;
+    final color = _eventColorFromText(controller.text, fallback);
+    return SizedBox(
+      width: 210,
+      child: TextField(
+        controller: controller,
+        onChanged: (_) => setState(() {}),
+        decoration: InputDecoration(
+          labelText: label,
+          hintText: hint,
+          border: const OutlineInputBorder(),
+          prefixIcon: Padding(
+            padding: const EdgeInsets.all(11),
+            child: Container(
+              width: 22,
+              height: 22,
+              decoration: BoxDecoration(
+                color: color,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.black12),
+              ),
+            ),
+          ),
+          suffixIcon: IconButton(
+            tooltip: '選顏色',
+            icon: const Icon(Icons.palette_outlined),
+            onPressed: () => _pickEventThemeColor(
+              controller: controller,
+              title: '選擇$label',
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEventThemePreview() {
+    final colors = Theme.of(context).colorScheme;
+    final accent = _eventColorFromText(
+      _eventAccentColorController.text,
+      colors.primary,
+    );
+    final accent2 = _eventColorFromText(
+      _eventAccentColorLightController.text,
+      Color.lerp(accent, Colors.white, 0.62)!,
+    );
+    final background = _eventColorFromText(
+      _eventBackgroundColorController.text,
+      colors.surface,
+    );
+    final card = _eventColorFromText(
+      _eventCardColorController.text,
+      colors.surface,
+    );
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: accent.withValues(alpha: 0.18)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                '主題預覽',
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  color: accent,
+                ),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: accent2,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  '剩餘 12 天',
+                  style: GoogleFonts.notoSerifTc(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: accent,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: card,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: accent.withValues(alpha: 0.08),
+                  blurRadius: 14,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _eventNameController.text.trim().isEmpty
+                      ? '萬聖奇遇夜'
+                      : _eventNameController.text.trim(),
+                  style: GoogleFonts.notoSerifTc(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: colors.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(99),
+                        child: LinearProgressIndicator(
+                          minHeight: 7,
+                          value: 0.62,
+                          backgroundColor: accent.withValues(alpha: 0.10),
+                          valueColor: AlwaysStoppedAnimation<Color>(accent),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                      decoration: BoxDecoration(
+                        color: accent.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Text(
+                        '南瓜糖 128',
+                        style: GoogleFonts.notoSerifTc(
+                          fontWeight: FontWeight.w700,
+                          color: accent,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            '這裡只預覽主色、輔助淡色、頁面背景色與卡片底色；儲存後前端活動頁會使用同一組設定。',
+            style: GoogleFonts.notoSerifTc(
+              fontSize: 11,
+              color: colors.onSurface.withValues(alpha: 0.55),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildReusableEventAdminTab() {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
@@ -6171,6 +6836,13 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                       controller: _eventHeroUrlController,
                       aspectRatio: 16 / 9,
                     ),
+                    const SizedBox(height: 14),
+                    _eventImageUploadField(
+                      label: '活動商店主圖片',
+                      slot: 'shop_hero',
+                      controller: _eventShopHeroUrlController,
+                      aspectRatio: 16 / 9,
+                    ),
                     const SizedBox(height: 18),
                     Text(
                       '活動主題色',
@@ -6184,52 +6856,30 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                       spacing: 10,
                       runSpacing: 10,
                       children: [
-                        SizedBox(
-                          width: 190,
-                          child: TextField(
-                            controller: _eventAccentColorController,
-                            decoration: const InputDecoration(
-                              labelText: '主色',
-                              hintText: '#8D6CC4',
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
+                        _eventColorField(
+                          label: '主色',
+                          controller: _eventAccentColorController,
+                          hint: '#8D6CC4',
                         ),
-                        SizedBox(
-                          width: 190,
-                          child: TextField(
-                            controller: _eventAccentColorLightController,
-                            decoration: const InputDecoration(
-                              labelText: '輔助淡色',
-                              hintText: '#E9DFF7',
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
+                        _eventColorField(
+                          label: '輔助淡色',
+                          controller: _eventAccentColorLightController,
+                          hint: '#E9DFF7',
                         ),
-                        SizedBox(
-                          width: 190,
-                          child: TextField(
-                            controller: _eventBackgroundColorController,
-                            decoration: const InputDecoration(
-                              labelText: '頁面背景色',
-                              hintText: '#FBF8FF',
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
+                        _eventColorField(
+                          label: '頁面背景色',
+                          controller: _eventBackgroundColorController,
+                          hint: '#FBF8FF',
                         ),
-                        SizedBox(
-                          width: 190,
-                          child: TextField(
-                            controller: _eventCardColorController,
-                            decoration: const InputDecoration(
-                              labelText: '卡片底色',
-                              hintText: '#FFFFFF',
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
+                        _eventColorField(
+                          label: '卡片底色',
+                          controller: _eventCardColorController,
+                          hint: '#FFFFFF',
                         ),
                       ],
                     ),
+                    const SizedBox(height: 12),
+                    _buildEventThemePreview(),
                     const SizedBox(height: 18),
                     ExpansionTile(
                       tilePadding: EdgeInsets.zero,
@@ -6642,7 +7292,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
 
   Widget _buildAnalyticsTab() {
     return FutureBuilder<Map<String, dynamic>>(
-      future: _loadDashboardData(),
+      future: _dashboardFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -7284,13 +7934,13 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         body: TabBarView(
           controller: _tabController,
           children: [
-            _buildDashboardTab(),
-            _buildPlayersTab(),
-            _buildSupportCenterTab(),
-            _buildContentCenterTab(),
-            _buildCampaignCenterTab(),
-            _buildAnalyticsTab(),
-            _buildSystemHealthTab(),
+            _LazyAdminTab(builder: _buildDashboardTab),
+            _LazyAdminTab(builder: _buildPlayersTab),
+            _LazyAdminTab(builder: _buildSupportCenterTab),
+            _LazyAdminTab(builder: _buildContentCenterTab),
+            _LazyAdminTab(builder: _buildCampaignCenterTab),
+            _LazyAdminTab(builder: _buildAnalyticsTab),
+            _LazyAdminTab(builder: _buildSystemHealthTab),
           ],
         ),
       ),
@@ -10037,4 +10687,58 @@ class _AdminCharacterPlaceholder extends StatelessWidget {
       ],
     );
   }
+}
+
+class _LazyAdminTab extends StatefulWidget {
+  final Widget Function() builder;
+
+  const _LazyAdminTab({required this.builder});
+
+  @override
+  State<_LazyAdminTab> createState() => _LazyAdminTabState();
+}
+
+class _LazyAdminTabState extends State<_LazyAdminTab>
+    with AutomaticKeepAliveClientMixin {
+  Widget? _child;
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return _child ??= widget.builder();
+  }
+}
+
+class _RewardCampaignLazyLoader extends StatefulWidget {
+  final Future<void> Function() onFirstBuild;
+  final Widget Function() childBuilder;
+
+  const _RewardCampaignLazyLoader({
+    required this.onFirstBuild,
+    required this.childBuilder,
+  });
+
+  @override
+  State<_RewardCampaignLazyLoader> createState() =>
+      _RewardCampaignLazyLoaderState();
+}
+
+class _RewardCampaignLazyLoaderState extends State<_RewardCampaignLazyLoader> {
+  bool _started = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_started) return;
+    _started = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) widget.onFirstBuild();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.childBuilder();
 }
