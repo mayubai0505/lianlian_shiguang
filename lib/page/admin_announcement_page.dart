@@ -4010,7 +4010,10 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                     childBuilder: _buildRewardCampaignTab,
                   ),
                 ),
-                _LazyAdminTab(builder: _buildReusableEventAdminTab),
+                _LazyAdminTab(
+                  builder: _buildReusableEventAdminTab,
+                  cacheChild: false,
+                ),
                 _LazyAdminTab(builder: _buildCampaignSegmentationPlaceholder),
               ],
             ),
@@ -7938,7 +7941,10 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
             _LazyAdminTab(builder: _buildPlayersTab),
             _LazyAdminTab(builder: _buildSupportCenterTab),
             _LazyAdminTab(builder: _buildContentCenterTab),
-            _LazyAdminTab(builder: _buildCampaignCenterTab),
+            _LazyAdminTab(
+              builder: _buildCampaignCenterTab,
+              cacheChild: false,
+            ),
             _LazyAdminTab(builder: _buildAnalyticsTab),
             _LazyAdminTab(builder: _buildSystemHealthTab),
           ],
@@ -10691,8 +10697,12 @@ class _AdminCharacterPlaceholder extends StatelessWidget {
 
 class _LazyAdminTab extends StatefulWidget {
   final Widget Function() builder;
+  final bool cacheChild;
 
-  const _LazyAdminTab({required this.builder});
+  const _LazyAdminTab({
+    required this.builder,
+    this.cacheChild = true,
+  });
 
   @override
   State<_LazyAdminTab> createState() => _LazyAdminTabState();
@@ -10708,10 +10718,17 @@ class _LazyAdminTabState extends State<_LazyAdminTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
+    // 一般後台頁面繼續快取，避免每次切 Tab 都重新建立。
+    // 活動編輯頁需要即時反映 parent state，
+    // 所以 cacheChild = false 時每次重新 build。
+    if (!widget.cacheChild) {
+      return widget.builder();
+    }
+
     return _child ??= widget.builder();
   }
 }
-
 class _RewardCampaignLazyLoader extends StatefulWidget {
   final Future<void> Function() onFirstBuild;
   final Widget Function() childBuilder;

@@ -2449,6 +2449,38 @@ exports.redeemEventShopItem = onCall(
                         itemData.description || ""
                     ).trim();
 
+                // 🧩 活動貼紙 ownership metadata
+                // 貼紙 AI 只做視覺描述；真正聊天語意之後由聊天上下文判斷。
+                const stickerName =
+                    String(
+                        itemData.stickerName ||
+                        itemName ||
+                        ""
+                    ).trim();
+
+                const visualTags =
+                    Array.isArray(itemData.visualTags)
+                        ? itemData.visualTags
+                            .map((value) => String(value || "").trim())
+                            .filter(Boolean)
+                            .slice(0, 12)
+                        : [];
+
+                const baseEmotion =
+                    String(
+                        itemData.baseEmotion || ""
+                    ).trim();
+
+                const visualDescription =
+                    String(
+                        itemData.visualDescription || ""
+                    ).trim();
+
+                const analysisSource =
+                    String(
+                        itemData.analysisSource || ""
+                    ).trim();
+
                 const nextRedeemCount =
                     previousRedeemCount + 1;
 
@@ -2478,6 +2510,18 @@ exports.redeemEventShopItem = onCall(
                         name: itemName,
                         imageUrl,
                         description,
+
+                        ...(itemType === "sticker"
+                            ? {
+                                stickerName,
+                                visualTags,
+                                baseEmotion,
+                                visualDescription,
+                                analysisSource:
+                                    analysisSource || "manual",
+                              }
+                            : {}),
+
                         count: nextRedeemCount,
                         acquiredAt:
                             previousOwnedItem.acquiredAt ||
@@ -3299,6 +3343,7 @@ exports.getAiResponse = onRequest({
                 casualBillingVersion = 0,
                 paidChatConfirmed = false,
                 memoryScopeVersion = 0,
+                statusBarFields = [],
             } = body;
 
             // 🌸 只有新版 App 明確送出 billingType，才啟用新版計價。
@@ -3325,6 +3370,79 @@ exports.getAiResponse = onRequest({
             // 角色建立頁的測試聊天室
             // 只有明確傳入 true 才視為測試模式
             const isTestChat = isTestMode === true;
+
+            // =========================================================
+            // ☁️ 玩家自訂狀態欄（每聊天室獨立）
+            // =========================================================
+            const STATUS_BAR_FIELD_CONFIG = {
+                mood: { label: "心情", rule: "角色此刻最主要的情緒，簡短 2～12 字。" },
+                outfit: { label: "衣著", rule: "角色目前實際穿著；資訊不足時沿用上一輪，不得憑空換裝。" },
+                relationship: { label: "關係", rule: "角色與玩家目前已成立的關係。不得只因曖昧、親密接觸、吃醋或好感增加就自行升級；只有玩家明確建立關係，或本輪出現清楚且雙方成立的關係事件（例如告白被接受）才能改變。" },
+                thought: { label: "想法", rule: "角色當下最核心的一個念頭，只能一句短句；不得展開成長篇內心獨白。" },
+                weather: { label: "天氣", rule: "目前場景可確認的天候；資訊不足時沿用上一輪，沒有依據不得自行改變。" },
+                currentState: { label: "當前狀態", rule: "角色此刻整體處境或正在進行的事情，保持簡短。" },
+                action: { label: "動作", rule: "角色此刻具體姿勢或正在做的動作，必須符合本輪正文與物理連續性。" },
+                affinity: { label: "好感度", rule: "角色對玩家目前的情感親近狀態，只能使用自然文字，例如親近、信任、依賴、疏離、動搖、重新靠近中；禁止數字、百分比、等級或分數。" },
+            };
+
+            const requestedStatusBarFields = Array.isArray(statusBarFields)
+                ? statusBarFields.map((field) => String(field || "").trim())
+                : [];
+
+            const activeStatusBarFields = [
+                ...new Set(
+                    requestedStatusBarFields.filter((field) =>
+                        Object.prototype.hasOwnProperty.call(STATUS_BAR_FIELD_CONFIG, field)
+                    )
+                ),
+            ];
+
+            let previousStatusBar = {};
+
+            if (!isTestChat && sessionId && activeStatusBarFields.length > 0) {
+                try {
+                    const statusSessionSnap = await db
+                        .collection("artifacts")
+                        .doc(APP_ID)
+                        .collection("chat_sessions")
+                        .doc(String(sessionId))
+                        .get();
+
+                    const storedStatusBar = statusSessionSnap.data()?.latestStatusBar;
+                    if (storedStatusBar && typeof storedStatusBar === "object" && !Array.isArray(storedStatusBar)) {
+                        previousStatusBar = Object.fromEntries(
+                            Object.entries(storedStatusBar)
+                                .filter(([key]) => Object.prototype.hasOwnProperty.call(STATUS_BAR_FIELD_CONFIG, key))
+                                .map(([key, value]) => [key, String(value ?? "").trim()])
+                                .filter(([, value]) => value)
+                        );
+                    }
+                } catch (statusLoadError) {
+                    console.warn("⚠️ 讀取上一輪狀態欄失敗，改用空狀態：", statusLoadError);
+                }
+            }
+
+            const statusBarDirective = activeStatusBarFields.length === 0
+                ? ""
+                : `
+【玩家啟用的狀態欄｜必須輸出】
+玩家只開啟以下欄位：${activeStatusBarFields.map((field) => STATUS_BAR_FIELD_CONFIG[field].label).join("、")}。
+
+上一輪狀態（若有）：
+${activeStatusBarFields.map((field) => `- ${field}: ${previousStatusBar[field] || "未提供"}`).join("\n")}
+
+更新規則：
+${activeStatusBarFields.map((field) => `- ${field}（${STATUS_BAR_FIELD_CONFIG[field].label}）：${STATUS_BAR_FIELD_CONFIG[field].rule}`).join("\n")}
+- statusBar 只可包含玩家已開啟的欄位，不得額外加入未開啟欄位。
+- 每個值必須是簡短純文字，不得輸出 null、陣列、巢狀物件或 Markdown。
+- 若本輪沒有合理變化，沿用上一輪；不得為了看起來有更新而硬改。
+- 若資訊不足且沒有上一輪可沿用，填「未明確」。
+- 狀態欄是本輪結束後的最新狀態，必須與 response 正文一致。
+
+JSON 必須額外包含：
+"statusBar": {${activeStatusBarFields.map((field) => `"${field}": "狀態"`).join(", ")}}
+`;
+
             // =========================================================
             // 🎭 劇場：從目前聊天室讀取啟用中的場景
             // =========================================================
@@ -4346,7 +4464,7 @@ ${customOutputFormat}
 
 - 禁止在正文後追加角色狀態、所在地、服裝、姿勢、外觀特徵、
   關係、好感度或其他條列式人物資訊。
-- 第一行原本規定的「時間｜地點」不屬於結尾狀態欄，仍須正常輸出。
+- 前兩行固定的「時間／地點」不屬於結尾狀態欄，仍須正常輸出。
 `;
                 const narrativeRules = `
                 【玩家敘事規則】
@@ -4484,7 +4602,7 @@ ${customOutputFormat}
             const formattedTime = formatTimeDisplay(timeObj);
             const currentStoryTimeISO = timeObj.toISOString();
             const locationStringForPrompt = lastStoryLocation || "[由你推斷真實場景]";
-            const currentStoryTimeDisplay = `時間：${formattedTime} \n地點：${locationStringForPrompt}`;
+            const currentStoryTimeDisplay = formattedTime;
 
 let relationContext = "";
             if (characterProfile.relations && characterProfile.relations.length > 0) {
@@ -5472,7 +5590,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
 
             3. 每輪只處理一個主要話題，可以增加一個符合角色個性的小反應或自然延續，不要突然展開重大事件。
 
-            4. 正文通常控制在 60～160 個中文字，不計第一行時間標頭。
+            4. 正文通常控制在 60～160 個中文字，不計前兩行時間與地點標頭。
                若一句至兩句自然台詞已能完整回應玩家，不得為了湊字數硬塞動作、旁白、背景資訊或虛構事件。
 
             5. 通常使用一至三句角色台詞，必要時加入零至兩段簡短動作描寫。
@@ -5524,8 +5642,9 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
 
             - 使用玩家目前使用的語言及字體；繁體中文玩家須使用台灣繁體中文。
 
-            - response 第一行固定格式為：
+            - response 前兩行固定格式為：
               時間：${currentStoryTimeDisplay}
+              地點：${locationStringForPrompt}
 
             - 若最近對話已提供明確時間，必須沿用並依實際經過時間合理更新。
 
@@ -5694,7 +5813,9 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
         - 不要用重複的視線、呼吸、喉結、指尖、低笑或環境光線灌篇幅。
 
         【時間與場景】
-        - response 第一行固定：時間：${lastStoryTime || "根據當前情境自然承接"} | 地點：${lastStoryLocation || "當前地點"}
+        - response 前兩行固定：
+          時間：${lastStoryTime || "根據當前情境自然承接"}
+          地點：${lastStoryLocation || "當前地點"}
         - 沒有真正發生時間流逝或移動時，不要憑空跳時間或地點。
         - storyTime / storyLocation 是本輪結束後的最新故事狀態。
 
@@ -5780,7 +5901,9 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
             - 需要長度時，用真正的新互動、資訊、事件或關係變化增加內容，不用重複描寫灌字。
 
             【時間與場景連續】
-            - response 第一行固定：時間：${lastStoryTime || "根據當前情境自然承接"} | 地點：${lastStoryLocation || "當前地點"}
+            - response 前兩行固定：
+          時間：${lastStoryTime || "根據當前情境自然承接"}
+          地點：${lastStoryLocation || "當前地點"}
             - 第一行代表本輪開始時狀態；storyTime / storyLocation 代表本輪結束後狀態。
             - 沒有真正發生時間流逝或移動時，不要憑空跳時間或地點。
             - 承接最近對話的人物位置、物件位置與已完成動作，不要瞬移或重演上一輪。
@@ -5865,7 +5988,9 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
             - 正文建議約 700～1100 個中文字；這是寫作目標，不是後端硬性門檻。自然完整優先，但也不要因為「自然完成」而縮成只有一百多字的極短回覆。
 
             【時間與場景連續】
-            - response 第一行固定：時間：${lastStoryTime || "根據當前情境自然承接"} | 地點：${lastStoryLocation || "當前地點"}
+            - response 前兩行固定：
+          時間：${lastStoryTime || "根據當前情境自然承接"}
+          地點：${lastStoryLocation || "當前地點"}
             - storyTime / storyLocation 代表本輪結束後最新狀態。
             - 沒有真正流逝或移動時，不要自行跳時間或地點。
             - 承接最近對話的人物姿勢、位置、衣物與物件，不重演上一輪。
@@ -6053,6 +6178,8 @@ systemPrompt += `
           "affectionChange": 0,
           "voiceText": "手機訊息感短回覆"
         }
+
+        ${statusBarDirective}
         `;
         } else {
             systemPrompt += `
@@ -6073,6 +6200,8 @@ systemPrompt += `
           "affectionChange": 數字,
           "voiceText": "純台詞提取"
         }
+
+        ${statusBarDirective}
         `;
         }
 
@@ -6121,7 +6250,7 @@ systemPrompt += `
        【系統強制指令】
        1. 稱呼對方為「${playerName}」。
        2. 歷史連貫。
-       3. 首行含時間地點。`;
+       3. 前兩行依序包含時間與地點。`;
        }
 
                    const abortController = new AbortController();
@@ -6247,6 +6376,7 @@ systemPrompt += `
                                           modelId: config.modelId, characterName: name, characterId: characterProfile.id,
                                           temperature: config.temperature, maxTokens: maxTokens,
                                           systemPrompt: systemPrompt, chatHistory: trimmedHistory, finalUserMessage: finalUserMessage,
+                                          statusBarFields: activeStatusBarFields, previousStatusBar: previousStatusBar,
                                           newStoryTime: currentStoryTimeISO, newStoryLocation: locationStringForPrompt,
                                           cost: cost, isBirthdayFreebie: isBirthdayFreebie
                                       });
@@ -6259,6 +6389,8 @@ systemPrompt += `
                                    let finalAffectionChange = 0;
                                    let finalStoryTime = String(lastStoryTime || "").trim();
                                    let finalStoryLocation = String(lastStoryLocation || "").trim();
+                                   let finalStatusBar = {};
+                                   let finalStatusBarChanges = {};
                                    let loopCount = 0;
                                    // 🛡️ 總裁級防漏：確保 playerName 在迴圈執行時永遠有定義
                                    const safePlayerName = (typeof playerName !== 'undefined' && playerName && playerName !== '玩家') ? playerName : '你';
@@ -6887,6 +7019,7 @@ systemPrompt += `
                                                                                }
 
                                                                                return dialogueOnlySource
+                                                                                   .replace(/^時間：[^\r\n]*(?:\r?\n)地點：[^\r\n]*(?:\r?\n|$)/, "")
                                                                                    .replace(/^時間：.*?\|\s*地點：.*?(?:\r?\n|$)/, "")
                                                                                    .replace(/\s+/g, " ")
                                                                                    .trim()
@@ -6972,9 +7105,9 @@ systemPrompt += `
                                                                                                                                .replace(/\\n/g, "\n")
                                                                                                                                .replace(/\\"/g, '"');
 
-                                                                                                                           // 🌟🌟🌟 總裁專屬防線：自動偵測並砍掉中途重複出現的第二個「時間：... | 地點：...」！
+                                                                                                                           // 🌟🌟🌟 總裁專屬防線：自動偵測並砍掉中途重複出現的第二組「時間／地點」標頭！
                                                                                                                            // 原理：用正則找出第二次出現的時間地點標頭，直接把後面重複的截掉或合併
-                                                                                                                           const duplicateHeaderRegex = /(時間：[\s\S]*?\| 地點：[\s\S]*?)\n\n[\s\S]*?\1/;
+                                                                                                                           const duplicateHeaderRegex = /((?:時間：[^\r\n]*\r?\n地點：[^\r\n]*)|(?:時間：[^\r\n]*\|\s*地點：[^\r\n]*))\n\n[\s\S]*?\1/;
                                                                                                                            if (duplicateHeaderRegex.test(text)) {
                                                                                                                                // 如果抓到它自己複製貼上兩次，我們保留第一次，把第二次以後的雜訊清掉
                                                                                                                                text = text.replace(duplicateHeaderRegex, "$1");
@@ -7385,6 +7518,43 @@ try {
                                                                                    parsedData.voiceText = fixMojibake(parsedData.voiceText);
                                                                                }
 
+                                                                               // ☁️ 狀態欄：只接受玩家已啟用的欄位，值一律轉成短文字。
+                                                                               if (activeStatusBarFields.length > 0) {
+                                                                                   const rawStatusBar =
+                                                                                       parsedData?.statusBar &&
+                                                                                       typeof parsedData.statusBar === "object" &&
+                                                                                       !Array.isArray(parsedData.statusBar)
+                                                                                           ? parsedData.statusBar
+                                                                                           : {};
+
+                                                                                   const normalizedStatusBar = {};
+
+                                                                                   for (const field of activeStatusBarFields) {
+                                                                                       let value = String(rawStatusBar[field] ?? "").trim();
+                                                                                       value = value
+                                                                                           .replace(/[\r\n]+/g, " ")
+                                                                                           .replace(/\s{2,}/g, " ")
+                                                                                           .trim()
+                                                                                           .slice(0, 80);
+
+                                                                                       if (!value) {
+                                                                                           value = String(previousStatusBar[field] || "未明確").trim();
+                                                                                       }
+
+                                                                                       // 好感度禁止數字化；若模型仍回百分比／分數，保守沿用上一輪。
+                                                                                       if (field === "affinity" && /\d/.test(value)) {
+                                                                                           value = String(previousStatusBar[field] || "未明確").trim();
+                                                                                       }
+
+                                                                                       normalizedStatusBar[field] = value || "未明確";
+                                                                                   }
+
+                                                                                   parsedData.statusBar = normalizedStatusBar;
+                                                                                   finalStatusBar = normalizedStatusBar;
+                                                                               } else {
+                                                                                   finalStatusBar = {};
+                                                                               }
+
                                                                                console.log(
                                                                                    "🧪 PARSED RESPONSE:",
                                                                                    parsedData?.response?.slice(0, 500)
@@ -7678,7 +7848,7 @@ const residualWriterArtifacts =
                                                                                6. 玩家已完成的台詞與動作不得重新輸出、重新執行或改寫。
                                                                                7. 不得替玩家新增未明確輸入的重大台詞、心理、情緒、慾望、身體反應、意願或選擇。
                                                                                8. 必須維持物理連續性與生活常識，確認人物雙手、嘴部狀態、身體姿勢、衣物、距離及物件位置。
-                                                                               9. 第一行必須使用系統指定的完整時間與地點格式。
+                                                                               9. 前兩行必須依序使用系統指定的時間與地點格式。
                                                                                10. 所有非台詞正文必須完整放在全形括號（　）內；角色台詞使用「」並獨立成段。
                                                                                11. 同一位玩家不得混用「你／妳」。
                                                                                12. 若創作者設定了狀態欄或固定結尾格式，必須在正文結束後完整保留。每則回覆只能生成一次正文；狀態欄開始後不得重新輸出時間地點標頭、正文、台詞或動作段落。狀態欄只能整理當前狀態，不得複製、重演或改寫本輪正文。
@@ -7693,6 +7863,7 @@ const residualWriterArtifacts =
                                                                                15. 只回傳合法 JSON：
                                                                                {"response":"重新生成的完整高品質回覆","affectionChange":0,"voiceText":"適合語音播放的角色台詞","storyTime":"本輪結束後的故事時間","storyLocation":"本輪結束後人物實際所在位置"}
 
+                                                                               ${statusBarDirective}
                                                                                `;
                                                                                } else if (chatMode === "story") {
                                                                                    retryInstruction = `
@@ -7716,7 +7887,7 @@ const residualWriterArtifacts =
                                                                                8. 玩家已完成的台詞與動作不得重新輸出、重新執行或改寫。
                                                                                9. 不得替玩家新增未明確輸入的心理、情緒、意願、重大台詞、重大行動或選擇。
                                                                                10. 必須維持物理連續性與生活常識，確認人物雙手、嘴部狀態、身體姿勢、衣物、距離及物件位置。
-                                                                               11. 第一行必須使用系統指定的完整時間與地點格式，不得自行增加數分鐘。
+                                                                               11. 前兩行必須依序使用系統指定的時間與地點格式，不得自行增加數分鐘。
                                                                                12. 所有非台詞正文必須完整放在全形括號（　）內；角色台詞使用「」並獨立成段。
                                                                                13. 同一位玩家不得混用「你／妳」。
                                                                                14. 若創作者設定了狀態欄或固定結尾格式，必須在正文結束後完整保留。每則回覆只能生成一次正文；狀態欄開始後不得重新輸出時間地點標頭、正文、台詞或動作段落。狀態欄只能整理當前狀態，不得複製、重演或改寫本輪正文。
@@ -7730,6 +7901,7 @@ const residualWriterArtifacts =
 
                                                                                    只回傳合法 JSON：
                                                                                    {"response":"重新生成的完整劇情回覆","affectionChange":0,"voiceText":"適合語音播放的角色台詞","storyTime":"本輪結束後的故事時間","storyLocation":"本輪結束後人物實際所在位置"}
+                                                                               ${statusBarDirective}
                                                                                `;
                                                                                } else {
                                                                                    retryInstruction = `
@@ -7739,6 +7911,7 @@ const residualWriterArtifacts =
                                                                                上一份草稿內容過短，請重新回應上方玩家原始訊息。
                                                                                請維持角色設定、最近對話與玩家稱謂一致，並只回傳合法 JSON：
                                                                                {"response":"重新生成的完整回覆","affectionChange":0,"voiceText":"適合語音播放的角色台詞"}
+                                                                               ${statusBarDirective}
                                                                                `;
                                                                                }
 
@@ -8033,11 +8206,11 @@ if (sessionId) {
 
     // ==================================================
     // 防止模型在同一個 response 內重複產生完整正文
-    // 劇情／沉浸模式只允許第一行出現時間與地點
+    // 劇情／沉浸模式只允許開頭前兩行出現一組時間與地點
     // ==================================================
     if ((chatMode === "story" || chatMode === "immersive" || chatMode === "resonance")) {
         const storyHeaderRegex =
-            /^時間\s*[：:][^\r\n]*[|｜]\s*地點\s*[：:][^\r\n]*/gm;
+            /^時間\s*[：:][^\r\n]*(?:\r?\n)地點\s*[：:][^\r\n]*/gm;
 
         const storyHeaders = [
             ...cleanDisplayText.matchAll(storyHeaderRegex),
@@ -8481,11 +8654,12 @@ if (sessionId) {
             cleanDisplayText = safeDialogue;
         } else if (chatMode === "daily") {
             cleanDisplayText =
-                `時間：${currentStoryTimeDisplay || "現在"}\n\n` +
+                `時間：${currentStoryTimeDisplay || "現在"}\n` +
+                `地點：${locationStringForPrompt || "當前地點"}\n\n` +
                 `「${safeDialogue}」`;
         } else {
             cleanDisplayText =
-                `時間：${lastStoryTime || "現在"} | ` +
+                `時間：${lastStoryTime || "現在"}\n` +
                 `地點：${lastStoryLocation || "當前地點"}\n\n` +
                 `「${safeDialogue}」`;
         }
@@ -8528,6 +8702,23 @@ if (sessionId) {
 
     const appId =
         body.appId || "lianlianshiguang";
+
+    // ☁️ 計算本輪狀態變化。Flutter 可用來顯示「朋友 → 戀人」等單回合轉換。
+    finalStatusBarChanges = {};
+    if (activeStatusBarFields.length > 0) {
+        for (const field of activeStatusBarFields) {
+            const previousValue = String(previousStatusBar[field] || "").trim();
+            const currentValue = String(finalStatusBar[field] || "").trim();
+
+            if (previousValue && currentValue && previousValue !== currentValue) {
+                finalStatusBarChanges[field] = {
+                    previousValue,
+                    value: currentValue,
+                    changed: true,
+                };
+            }
+        }
+    }
 
     const sessionRef = db
         .collection("artifacts")
@@ -8760,6 +8951,14 @@ const sessionData =
                             chatMode,
                             billingType,
 
+                            // ☁️ 保存這一則 AI 回覆當時的狀態，舊訊息不會被最新狀態覆蓋。
+                            ...(activeStatusBarFields.length > 0
+                                ? {
+                                    statusBar: finalStatusBar,
+                                    statusBarChanges: finalStatusBarChanges,
+                                  }
+                                : {}),
+
                             // 🧭 Writer Router v2 內部觀測資料
                             writerTier: writerRoute.writerTier,
                             writerModelId: writerRoute.modelId,
@@ -8792,6 +8991,10 @@ const sessionData =
 
                                 characterName: name,
                                 lastMessage: cleanDisplayText,
+
+                                ...(activeStatusBarFields.length > 0
+                                    ? { latestStatusBar: finalStatusBar }
+                                    : {}),
 
                                 lastActivity:
                                     FieldValue.serverTimestamp(),
@@ -9337,6 +9540,8 @@ const resultPayload = {
                                        response: cleanDisplayText,
                                        voiceText: cleanVoiceText,
                                        affectionChange: finalAffectionChange,
+                                       statusBar: activeStatusBarFields.length > 0 ? finalStatusBar : {},
+                                       statusBarChanges: activeStatusBarFields.length > 0 ? finalStatusBarChanges : {},
                                        ...(
                                            supportsCasualBilling &&
                                            billingType === "chat" &&

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,10 +12,11 @@ import 'package:gal/gal.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../services/app_constants.dart';
 import '../services/toast_utils.dart';
 import '../utils/image_utils.dart';
+
+//拾光檔案
 
 class EventMemoryCollectionPage extends StatefulWidget {
   const EventMemoryCollectionPage({super.key});
@@ -28,32 +28,26 @@ class EventMemoryCollectionPage extends StatefulWidget {
 
 class _EventMemoryCollectionPageState
     extends State<EventMemoryCollectionPage> {
-  Future<void> _backfillLegacyCollectionDates() async {
+  static const int _collectionIntroVersion = 1;
+
+  Future<void> _showCollectionIntroIfNeeded() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
+    if (user == null || !mounted) return;
+
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid);
 
     try {
-      final callable = FirebaseFunctions.instanceFor(
-        region: 'asia-east1',
-      ).httpsCallable('backfillEventOwnedItemAcquiredAt');
+      final snapshot = await userRef.get();
+      final data = snapshot.data() ?? <String, dynamic>{};
 
-      await callable.call();
-    } on FirebaseFunctionsException catch (e) {
-      // 日期補正失敗不阻擋玩家使用收藏頁。
-      debugPrint(
-        '⚠️ 舊活動收藏日期補正失敗：${e.code} / ${e.message}',
-      );
-    } catch (e) {
-      debugPrint('⚠️ 舊活動收藏日期補正失敗：$e');
-    }
-  }
+      final seenVersion =
+          (data['collectionIntroVersion'] as num?)?.toInt() ?? 0;
 
-  @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!mounted) return;
+      if (seenVersion >= _collectionIntroVersion || !mounted) {
+        return;
+      }
 
       await showDialog<void>(
         context: context,
@@ -86,10 +80,50 @@ class _EventMemoryCollectionPageState
       );
 
       if (!mounted) return;
+
+      await userRef.set(
+        {
+          'collectionIntroVersion': _collectionIntroVersion,
+        },
+        SetOptions(merge: true),
+      );
+    } catch (e) {
+      debugPrint('⚠️ 拾光收藏說明狀態處理失敗：$e');
+    }
+  }
+  Future<void> _backfillLegacyCollectionDates() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    try {
+      final callable = FirebaseFunctions.instanceFor(
+        region: 'asia-east1',
+      ).httpsCallable('backfillEventOwnedItemAcquiredAt');
+
+      await callable.call();
+    } on FirebaseFunctionsException catch (e) {
+      // 日期補正失敗不阻擋玩家使用收藏頁。
+      debugPrint(
+        '⚠️ 舊活動收藏日期補正失敗：${e.code} / ${e.message}',
+      );
+    } catch (e) {
+      debugPrint('⚠️ 舊活動收藏日期補正失敗：$e');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+
+      await _showCollectionIntroIfNeeded();
+
+      if (!mounted) return;
       await _backfillLegacyCollectionDates();
     });
   }
-
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;

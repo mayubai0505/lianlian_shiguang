@@ -2,6 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:showcaseview/showcaseview.dart';
 
+class ChatHeaderModeOption {
+  final String id;
+  final String label;
+  final String? asset;
+  final IconData fallbackIcon;
+
+  const ChatHeaderModeOption({
+    required this.id,
+    required this.label,
+    this.asset,
+    required this.fallbackIcon,
+  });
+}
+
 class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
   final String characterName;
   final int friendship;
@@ -10,6 +24,12 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback onBack;
   final VoidCallback onFlowerTap;
   final VoidCallback onMenuTap;
+  final String currentModeId;
+  final String currentModeLabel;
+  final List<ChatHeaderModeOption> modeOptions;
+  final ValueChanged<String> onModeSelected;
+  final String callLabel;
+  final VoidCallback onCall;
   final GlobalKey? menuShowcaseKey;
   final String? menuShowcaseDescription;
 
@@ -22,6 +42,12 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
     required this.onBack,
     required this.onFlowerTap,
     required this.onMenuTap,
+    required this.currentModeId,
+    required this.currentModeLabel,
+    required this.modeOptions,
+    required this.onModeSelected,
+    required this.callLabel,
+    required this.onCall,
     this.menuShowcaseKey,
     this.menuShowcaseDescription,
   });
@@ -98,21 +124,21 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
                     const SizedBox(width: 3),
 
                     // 角色名字
-                    Flexible(
-                      flex: 4,
+                    // 角色名字：縮小、減輕字重，並保留最基本顯示空間。
+                    Expanded(
                       child: Text(
                         characterName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.notoSerifTc(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w700,
-                          color: onSurface,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          color: onSurface.withValues(alpha: 0.92),
                         ),
                       ),
                     ),
 
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 6),
 
                     // 好感度花 + 分數
                     SizedBox(
@@ -139,22 +165,22 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
                     Text(
                       '$friendship/$safeNextThreshold',
                       style: GoogleFonts.notoSerifTc(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
-                        color: primary.withValues(alpha: 0.80),
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w500,
+                        color: primary.withValues(alpha: 0.78),
                       ),
                     ),
 
-                    const Spacer(),
+                    // 稍微拉開好感度與花花的距離，讓好感度整組往左一些。
+                    const SizedBox(width: 12),
 
-                    // 花花點數
                     // 花花點數
                     InkWell(
                       onTap: onFlowerTap,
                       borderRadius: BorderRadius.circular(14),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 5,
+                          horizontal: 3,
                           vertical: 5,
                         ),
                         child: Row(
@@ -175,7 +201,7 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
                             ),
                             const SizedBox(width: 3),
                             ConstrainedBox(
-                              constraints: const BoxConstraints(maxWidth: 56),
+                              constraints: const BoxConstraints(maxWidth: 48),
                               child: Text(
                                 '$flowerPoints',
                                 maxLines: 1,
@@ -188,6 +214,165 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
                               ),
                             ),
                           ],
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(width: 4),
+
+                    // 回覆模型：花花右側顯示目前模式；
+                    // 展開後保留模式圖片，並把通話放在最下方。
+                    PopupMenuButton<String>(
+                      tooltip: '回覆模型',
+                      initialValue: currentModeId,
+                      onSelected: (value) {
+                        if (value == '__call__') {
+                          onCall();
+                          return;
+                        }
+                        onModeSelected(value);
+                      },
+                      position: PopupMenuPosition.under,
+                      offset: const Offset(0, 5),
+                      constraints: const BoxConstraints(
+                        minWidth: 188,
+                        maxWidth: 220,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      itemBuilder: (context) {
+                        final entries = <PopupMenuEntry<String>>[];
+
+                        for (final option in modeOptions) {
+                          final bool selected = option.id == currentModeId;
+
+                          entries.add(
+                            PopupMenuItem<String>(
+                              value: option.id,
+                              height: 48,
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 30,
+                                    height: 30,
+                                    child: option.asset == null
+                                        ? Icon(
+                                      option.fallbackIcon,
+                                      size: 21,
+                                      color: primary.withValues(alpha: 0.78),
+                                    )
+                                        : Image.asset(
+                                      option.asset!,
+                                      fit: BoxFit.contain,
+                                      color: primary,
+                                      colorBlendMode: BlendMode.srcIn,
+                                      errorBuilder: (_, __, ___) => Icon(
+                                        option.fallbackIcon,
+                                        size: 21,
+                                        color: primary.withValues(alpha: 0.78),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      option.label,
+                                      style: GoogleFonts.notoSerifTc(
+                                        fontSize: 13,
+                                        fontWeight: selected
+                                            ? FontWeight.w700
+                                            : FontWeight.w500,
+                                        color: selected ? primary : onSurface,
+                                      ),
+                                    ),
+                                  ),
+                                  if (selected)
+                                    Icon(
+                                      Icons.check_rounded,
+                                      size: 17,
+                                      color: primary,
+                                    ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+
+                        entries.add(const PopupMenuDivider(height: 1));
+
+                        entries.add(
+                          PopupMenuItem<String>(
+                            value: '__call__',
+                            height: 48,
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 30,
+                                  height: 30,
+                                  child: Image.asset(
+                                    'assets/images/chat/chat_menu_call_mask.png',
+                                    fit: BoxFit.contain,
+                                    color: primary,
+                                    colorBlendMode: BlendMode.srcIn,
+                                    errorBuilder: (_, __, ___) => Icon(
+                                      Icons.call_outlined,
+                                      size: 21,
+                                      color: primary.withValues(alpha: 0.78),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    callLabel,
+                                    style: GoogleFonts.notoSerifTc(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                      color: onSurface,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+
+                        return entries;
+                      },
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          minWidth: 42,
+                          maxWidth: 62,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 2,
+                            vertical: 5,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  currentModeLabel,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.notoSerifTc(
+                                    fontSize: 10.5,
+                                    fontWeight: FontWeight.w500,
+                                    color: onSurface.withValues(alpha: 0.80),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 1),
+                              Icon(
+                                Icons.keyboard_arrow_down_rounded,
+                                size: 16,
+                                color: onSurface.withValues(alpha: 0.68),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),

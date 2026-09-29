@@ -2587,6 +2587,90 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
     );
   }
 
+  Future<void> _showHeaderPhotoPreview(String imageUrl) async {
+    if (imageUrl.trim().isEmpty || !mounted) return;
+
+    await showGeneralDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: 'close image preview',
+      barrierColor: Colors.black.withValues(alpha: 0.92),
+      transitionDuration: const Duration(milliseconds: 180),
+      pageBuilder: (dialogContext, animation, secondaryAnimation) {
+        return Material(
+          color: Colors.transparent,
+          child: SafeArea(
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                // 點黑色背景即可關閉。
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => Navigator.of(dialogContext).pop(),
+                  child: const SizedBox.expand(),
+                ),
+
+                // 圖片本身支援雙指縮放與拖移。
+                Center(
+                  child: InteractiveViewer(
+                    minScale: 1.0,
+                    maxScale: 5.0,
+                    boundaryMargin: const EdgeInsets.all(48),
+                    child: GestureDetector(
+                      // 避免點圖片本身時把預覽關掉。
+                      onTap: () {},
+                      child: CachedNetworkImage(
+                        imageUrl: imageUrl,
+                        fit: BoxFit.contain,
+                        fadeInDuration: Duration.zero,
+                        fadeOutDuration: Duration.zero,
+                        placeholderFadeInDuration: Duration.zero,
+                        placeholder: (_, __) => const SizedBox(
+                          width: 34,
+                          height: 34,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white70,
+                          ),
+                        ),
+                        errorWidget: (_, __, ___) => const Icon(
+                          Icons.broken_image_outlined,
+                          size: 54,
+                          color: Colors.white54,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.42),
+                      shape: BoxShape.circle,
+                    ),
+                    child: IconButton(
+                      tooltip: MaterialLocalizations.of(dialogContext)
+                          .closeButtonTooltip,
+                      onPressed: () => Navigator.of(dialogContext).pop(),
+                      icon: const Icon(
+                        Icons.close_rounded,
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildHeaderPhotoCarousel({
     required bool isDesktop,
   }) {
@@ -2694,33 +2778,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
             ),
           ),
 
-        // 照片張數提示。
-        if (photoUrls.length > 1)
-          Positioned(
-            top: 16,
-            left: 16,
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: 6,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(
-                  alpha: 0.42,
-                ),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                '${_currentHeaderPhotoIndex + 1}'
-                    ' / ${photoUrls.length}',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
       ],
     );
   }
@@ -2769,148 +2826,156 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
       },
     );
 
-    return Container(
-      color: Colors.black,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          if (isDesktop) ...[
-            // 網頁版背景鋪滿並模糊，
-            // 中間主圖使用 contain，避免人物被裁切。
-            CachedNetworkImage(
-              imageUrl: imageUrl,
-              fit: BoxFit.cover,
-              alignment: Alignment.center,
-              memCacheWidth: 1600,
-              errorWidget: (
-                  context,
-                  url,
-                  error,
-                  ) =>
-                  Container(
-                    color: Colors.black,
-                  ),
-            ),
-
-            BackdropFilter(
-              filter: ImageFilter.blur(
-                sigmaX: 16,
-                sigmaY: 16,
-              ),
-              child: Container(
-                color: Colors.black.withValues(
-                  alpha: 0.34,
-                ),
-              ),
-            ),
-
-            Center(child: image),
-          ] else
-          // 手機版直接滿版。
-            image,
-
-          // 圖片底部柔霧淡出：讓角色照片像融進下方紙張內容，
-          // 不再是圖片與 TabBar 之間的硬切線。
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: IgnorePointer(
-              child: Container(
-                height: isDesktop ? 92 : 112,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      theme.scaffoldBackgroundColor.withValues(alpha: 0.0),
-                      theme.scaffoldBackgroundColor.withValues(alpha: 0.14),
-                      theme.scaffoldBackgroundColor.withValues(alpha: 0.48),
-                      theme.scaffoldBackgroundColor.withValues(alpha: 0.82),
-                      theme.scaffoldBackgroundColor,
-                    ],
-                    stops: const [
-                      0.00,
-                      0.24,
-                      0.52,
-                      0.78,
-                      1.00,
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          if (isLocked) ...[
-            // 鎖定照片模糊。
-            Positioned.fill(
-              child: ClipRect(
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(
-                    sigmaX: 18,
-                    sigmaY: 18,
-                  ),
-                  child: Container(
-                    color: Colors.black.withValues(
-                      alpha: 0.28,
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: isLocked
+          ? null
+          : () {
+        _showHeaderPhotoPreview(imageUrl);
+      },
+      child: Container(
+        color: Colors.black,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (isDesktop) ...[
+              // 網頁版背景鋪滿並模糊，
+              // 中間主圖使用 contain，避免人物被裁切。
+              CachedNetworkImage(
+                imageUrl: imageUrl,
+                fit: BoxFit.cover,
+                alignment: Alignment.center,
+                memCacheWidth: 1600,
+                errorWidget: (
+                    context,
+                    url,
+                    error,
+                    ) =>
+                    Container(
+                      color: Colors.black,
                     ),
-                  ),
-                ),
               ),
-            ),
 
-            // 中央鎖頭與提示。
-            Center(
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 22,
-                  vertical: 18,
+              BackdropFilter(
+                filter: ImageFilter.blur(
+                  sigmaX: 16,
+                  sigmaY: 16,
                 ),
-                decoration: BoxDecoration(
+                child: Container(
                   color: Colors.black.withValues(
-                    alpha: 0.48,
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: Colors.white.withValues(
-                      alpha: 0.18,
-                    ),
+                    alpha: 0.34,
                   ),
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.lock_rounded,
-                      color: Colors.white,
-                      size: 38,
+              ),
+
+              Center(child: image),
+            ] else
+            // 手機版直接滿版。
+              image,
+
+            // 圖片底部柔霧淡出：讓角色照片像融進下方紙張內容，
+            // 不再是圖片與 TabBar 之間的硬切線。
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: IgnorePointer(
+                child: Container(
+                  height: isDesktop ? 92 : 112,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        theme.scaffoldBackgroundColor.withValues(alpha: 0.0),
+                        theme.scaffoldBackgroundColor.withValues(alpha: 0.14),
+                        theme.scaffoldBackgroundColor.withValues(alpha: 0.48),
+                        theme.scaffoldBackgroundColor.withValues(alpha: 0.82),
+                        theme.scaffoldBackgroundColor,
+                      ],
+                      stops: const [
+                        0.00,
+                        0.24,
+                        0.52,
+                        0.78,
+                        1.00,
+                      ],
                     ),
-                    const SizedBox(height: 9),
-                    Text(
-                      l10n.exclusive_photo_number(photoIndex + 1),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      l10n.unlock_after_affection_increase,
-                      style: TextStyle(
-                        color: Colors.white.withValues(
-                          alpha: 0.75,
-                        ),
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
+
+            if (isLocked) ...[
+              // 鎖定照片模糊。
+              Positioned.fill(
+                child: ClipRect(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(
+                      sigmaX: 18,
+                      sigmaY: 18,
+                    ),
+                    child: Container(
+                      color: Colors.black.withValues(
+                        alpha: 0.28,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              // 中央鎖頭與提示。
+              Center(
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 22,
+                    vertical: 18,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(
+                      alpha: 0.48,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Colors.white.withValues(
+                        alpha: 0.18,
+                      ),
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.lock_rounded,
+                        color: Colors.white,
+                        size: 38,
+                      ),
+                      const SizedBox(height: 9),
+                      Text(
+                        l10n.exclusive_photo_number(photoIndex + 1),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        l10n.unlock_after_affection_increase,
+                        style: TextStyle(
+                          color: Colors.white.withValues(
+                            alpha: 0.75,
+                          ),
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

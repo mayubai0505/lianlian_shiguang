@@ -18,6 +18,7 @@ class ChatInputBar extends StatefulWidget {
 
   final ValueChanged<String> onChanged;
   final VoidCallback onToolbox;
+  final VoidCallback onSticker;
   final VoidCallback onRegenerate;
   final VoidCallback onContinue;
   final VoidCallback onStop;
@@ -39,6 +40,7 @@ class ChatInputBar extends StatefulWidget {
     this.continueShowcaseDescription,
     required this.onChanged,
     required this.onToolbox,
+    required this.onSticker,
     required this.onRegenerate,
     required this.onContinue,
     required this.onStop,
@@ -233,11 +235,10 @@ class _ChatInputBarState extends State<ChatInputBar>
                   Container(
                     constraints: const BoxConstraints(minHeight: 44),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.surface,
-                      borderRadius: BorderRadius.circular(22),
-                      border: Border.all(
-                        color: primary.withValues(alpha: 0.22),
-                      ),
+                      // LINE 類型：輸入框本身是一顆淡色圓角膠囊。
+                      color: theme.colorScheme.onSurface
+                          .withValues(alpha: 0.055),
+                      borderRadius: BorderRadius.circular(24),
                     ),
                     child: TextField(
                       controller: widget.controller,
@@ -245,7 +246,8 @@ class _ChatInputBarState extends State<ChatInputBar>
                       onChanged: (value) {
                         widget.onChanged(value);
 
-                        if (widget.focusNode.hasFocus && _toolsExpandedWhileFocused) {
+                        if (widget.focusNode.hasFocus &&
+                            _toolsExpandedWhileFocused) {
                           setState(() {
                             _toolsExpandedWhileFocused = false;
                           });
@@ -278,20 +280,54 @@ class _ChatInputBarState extends State<ChatInputBar>
               ),
             ),
             const SizedBox(width: 5),
+            // 最右側按鈕：
+// - AI 生成中：停止
+// - 輸入框聚焦，而且左邊工具仍收起：送出
+// - 按箭頭展開工具列：立刻切回貼紙
+// - 未聚焦：貼紙
             _BareIconButton(
-              tooltip: widget.isGenerating ? 'Stop' : 'Send',
+              tooltip: widget.isGenerating
+                  ? 'Stop'
+                  : (widget.focusNode.hasFocus &&
+                  !_toolsExpandedWhileFocused
+                  ? 'Send'
+                  : '貼紙'),
               icon: widget.isGenerating
                   ? Icons.stop_circle_outlined
-                  : null,
-              asset: widget.isGenerating
+                  : (widget.focusNode.hasFocus &&
+                  !_toolsExpandedWhileFocused
                   ? null
-                  : 'assets/images/chat/chat_send_plane_mask.png',
+                  : Icons.emoji_emotions_outlined),
+              asset: (!widget.isGenerating &&
+                  widget.focusNode.hasFocus &&
+                  !_toolsExpandedWhileFocused)
+                  ? 'assets/images/chat/chat_send_plane_mask.png'
+                  : null,
               assetSize: 30,
-              iconSize: 25,
-              iconColor: widget.isGenerating ? Colors.redAccent : primary,
+              iconSize: widget.isGenerating ? 25 : 27,
+              iconColor: widget.isGenerating
+                  ? Colors.redAccent
+                  : primary,
               onPressed: widget.isGenerating
                   ? widget.onStop
-                  : (widget.isLoading ? null : widget.onSend),
+                  : widget.isLoading
+                  ? null
+                  : (widget.focusNode.hasFocus &&
+                  !_toolsExpandedWhileFocused
+                  ? () {
+                // 按送出時立刻解除輸入框 focus，
+                // 所以飛機會馬上變回貼紙 icon。
+                widget.focusNode.unfocus();
+
+                if (mounted) {
+                  setState(() {
+                    _toolsExpandedWhileFocused = false;
+                  });
+                }
+
+                widget.onSend();
+              }
+                  : widget.onSticker),
             ),
           ],
         ),

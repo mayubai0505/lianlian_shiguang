@@ -75,6 +75,11 @@ class ChatMessage {
   final Timestamp timestamp;
   final bool isAI; // 方便 UI 判斷要靠左還是靠右
 
+  // ☁️ 這一則 AI 回覆當下的狀態欄快照。
+  // 舊訊息保存自己的狀態，不會被後續最新狀態覆蓋。
+  final Map<String, dynamic> statusBar;
+  final Map<String, dynamic> statusBarChanges;
+
   ChatMessage({
     required this.id,
     required this.sender,
@@ -83,11 +88,17 @@ class ChatMessage {
     this.path = '',
     required this.timestamp,
     required this.isAI,
+    this.statusBar = const <String, dynamic>{},
+    this.statusBarChanges = const <String, dynamic>{},
   });
 
   // ✨ 從 Firestore 轉回模型的方法 (如果您之後要讀取歷史紀錄會用到)
   factory ChatMessage.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+    final rawStatusBar = data['statusBar'];
+    final rawStatusBarChanges = data['statusBarChanges'];
+
     return ChatMessage(
       id: doc.id,
       sender: data['sender'] ?? '',
@@ -96,6 +107,12 @@ class ChatMessage {
       path: data['path'] ?? '',
       timestamp: data['timestamp'] ?? Timestamp.now(),
       isAI: data['sender'] == 'ai', // 如果發送者是 ai，那 isAI 就是 true
+      statusBar: rawStatusBar is Map
+          ? Map<String, dynamic>.from(rawStatusBar)
+          : const <String, dynamic>{},
+      statusBarChanges: rawStatusBarChanges is Map
+          ? Map<String, dynamic>.from(rawStatusBarChanges)
+          : const <String, dynamic>{},
     );
   }
 }
@@ -172,7 +189,14 @@ class _ChatPageState extends State<ChatPage> {
   int _maxRegenerateCount = 3;
   bool _isMultiSelectMode = false;
   static Set<String> generatingRooms = {};
-
+  bool _statusShowMood = false;
+  bool _statusShowOutfit = false;
+  bool _statusShowRelationship = false;
+  bool _statusShowThought = false;
+  bool _statusShowWeather = false;
+  bool _statusShowCurrentState = false;
+  bool _statusShowAction = false;
+  bool _statusShowAffinity = false;
   // 同一次 App 執行期間保留已看過的聊天室內容。
   // 玩家離開聊天室再回來時，先直接畫上次的訊息，
   // Firestore 再於背景接手同步，不需要每次都先看全螢幕轉圈。
@@ -224,7 +248,7 @@ class _ChatPageState extends State<ChatPage> {
   final ScrollController _chatScrollController = ScrollController();
   final ScrollController _menuScrollController = ScrollController();
   // 🚀 請確保您是這樣宣告的：
-  ChatMode? _currentMode;
+  ChatMode? _currentMode = ChatMode.gemini;
   int _currentFriendship = 0;
   FlutterSoundRecorder? _recorder;
   FlutterSoundPlayer? _player;
@@ -725,7 +749,7 @@ class _ChatPageState extends State<ChatPage> {
     if (widget.isTestMode) {
       _sessionId = _testSessionId;
       _currentCharacter = widget.character;
-      _currentMode = ChatMode.daily;
+      _currentMode = ChatMode.gemini;
 
       final DateTime now = DateTime.now();
 
@@ -1534,7 +1558,7 @@ class _ChatPageState extends State<ChatPage> {
   Future<void> _initializeChat() async {
     // 🌟 總裁補位：如果是測試模式，直接開門！
     if (widget.isTestMode) {
-      final String modeName = widget.chatMode ?? 'story';
+      const String modeName = 'gemini';
       if (mounted)
         setState(() {
           _currentMode = ChatMode.values.firstWhere((e) => e.name == modeName,
@@ -1553,7 +1577,7 @@ class _ChatPageState extends State<ChatPage> {
       await _loadExistingChat(widget.sessionId!);
     } else if (widget.forceNewRoom == true) {
       print("✨ 收到強制開新房指令，直接呼叫工程隊！");
-      final modeName = widget.chatMode ?? 'story';
+      const modeName = 'gemini';
       _currentMode = ChatMode.values
           .firstWhere((e) => e.name == modeName, orElse: () => ChatMode.story);
       await _createNewChat(modeName);
@@ -1577,7 +1601,7 @@ class _ChatPageState extends State<ChatPage> {
           await _loadExistingChat(existingSession.docs.first.id);
         } else {
           // 🏗️ 沒找到舊房間！管家現場直接呼叫工程隊蓋一間！
-          final modeName = widget.chatMode ?? 'story'; // 新版劇情聊天室預設使用 story
+          const modeName = 'gemini'; // 進入聊天室一律預設為閒聊
           _currentMode = ChatMode.values.firstWhere((e) => e.name == modeName,
               orElse: () => ChatMode.story);
           await _createNewChat(modeName);
@@ -1585,7 +1609,7 @@ class _ChatPageState extends State<ChatPage> {
       } catch (e) {
         print("❌ 管家尋找房間時發生錯誤: $e");
         // 萬一查資料庫出錯，為了不讓玩家卡住，強制蓋一間新房間給他！
-        final modeName = widget.chatMode ?? 'story';
+        const modeName = 'gemini';
         await _createNewChat(modeName);
       }
     }
@@ -1720,9 +1744,17 @@ class _ChatPageState extends State<ChatPage> {
 
         final bool qixiLetterSent = data['qixiLetterSent'] == true;
         int initialFriendship = data['friendshipScore'] ?? 0;
-        final modeName = data['chatMode'] ?? 'daily';
-        _currentMode = ChatMode.values.firstWhere((e) => e.name == modeName,
-            orElse: () => ChatMode.daily);
+        // 每次進聊天室都從「閒聊」開始；玩家本次切換後維持到離開聊天室。
+        const modeName = 'gemini';
+        _currentMode = ChatMode.gemini;
+        if (data['chatMode'] != modeName) {
+          unawaited(
+            sessionDocRef.set(
+              {'chatMode': modeName},
+              SetOptions(merge: true),
+            ),
+          );
+        }
 
         String resolvedProfileId =
             data['playerProfileId']?.toString().trim() ?? '';
@@ -1765,6 +1797,24 @@ class _ChatPageState extends State<ChatPage> {
               _currentStoryTime = data['lastStoryTime'];
               _currentStoryLocation = data['lastStoryLocation'];
 
+              // ☁️ 每個聊天室各自保存狀態欄顯示設定；舊房間沒有資料時全部預設關閉。
+              final rawStatusBarSettings = data['statusBarSettings'];
+              final Map<String, dynamic> statusBarSettings =
+              rawStatusBarSettings is Map
+                  ? Map<String, dynamic>.from(rawStatusBarSettings)
+                  : <String, dynamic>{};
+
+              _statusShowMood = statusBarSettings['mood'] == true;
+              _statusShowOutfit = statusBarSettings['outfit'] == true;
+              _statusShowRelationship =
+                  statusBarSettings['relationship'] == true;
+              _statusShowThought = statusBarSettings['thought'] == true;
+              _statusShowWeather = statusBarSettings['weather'] == true;
+              _statusShowCurrentState =
+                  statusBarSettings['currentState'] == true;
+              _statusShowAction = statusBarSettings['action'] == true;
+              _statusShowAffinity = statusBarSettings['affinity'] == true;
+
 // 七夕房間狀態
               _isQixiRoom = isQixiRoom;
               _qixiInteractionDates = qixiInteractionDates;
@@ -1803,8 +1853,7 @@ class _ChatPageState extends State<ChatPage> {
 
         // 1. 房間資料遺失時依入口重建：
         // 閒聊入口維持 gemini；其餘新版劇情入口預設 story。
-        final String fallbackMode =
-        widget.chatMode == 'gemini' ? 'gemini' : 'story';
+        const String fallbackMode = 'gemini';
         final String resolvedProfileId =
         await _resolvePlayerProfileIdForRoom(
           roomId: sessionId,
@@ -1817,6 +1866,17 @@ class _ChatPageState extends State<ChatPage> {
           'chatMode': fallbackMode,
           'playerProfileId': resolvedProfileId,
           'friendshipScore': 0,
+          // ☁️ 狀態欄預設全部關閉，玩家可在每個聊天室自行選擇。
+          'statusBarSettings': {
+            'mood': false,
+            'outfit': false,
+            'relationship': false,
+            'thought': false,
+            'weather': false,
+            'currentState': false,
+            'action': false,
+            'affinity': false,
+          },
           'createdAt': FieldValue.serverTimestamp(),
           'lastActivity': FieldValue.serverTimestamp(),
         });
@@ -2393,6 +2453,7 @@ class _ChatPageState extends State<ChatPage> {
     String text = '',
     String? imagePath,
     String? audioPath,
+    Map<String, dynamic>? stickerData,
     String? secretPrompt,
     bool showInChat = true,
     bool isContinue = false,
@@ -2531,6 +2592,7 @@ class _ChatPageState extends State<ChatPage> {
             clientRequestId: clientRequestId,
             imagePath: null,
             audioPath: null,
+            stickerData: stickerData,
             overridePrompt: l10n.chat_hidden_event_trigger(
               triggeredEgg.title,
               triggeredEgg.setScene,
@@ -2551,6 +2613,7 @@ class _ChatPageState extends State<ChatPage> {
             clientRequestId: clientRequestId,
             imagePath: null,
             audioPath: null,
+            stickerData: stickerData,
             secretPrompt: null,
             showInChat: false,
             isContinue: isContinue,
@@ -2568,6 +2631,7 @@ class _ChatPageState extends State<ChatPage> {
           clientRequestId: clientRequestId,
           imagePath: imagePath,
           audioPath: audioPath,
+          stickerData: stickerData,
           secretPrompt: secretPrompt,
           showInChat: showInChat,
           isContinue: isContinue,
@@ -2789,6 +2853,707 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
+  List<String> _normalizeStickerTags(dynamic rawTags) {
+    if (rawTags is! List) return const <String>[];
+
+    return rawTags
+        .map((item) => item?.toString().trim() ?? '')
+        .where((item) => item.isNotEmpty)
+        .take(12)
+        .toList();
+  }
+
+  String _buildStickerAiContext(Map<String, dynamic> sticker) {
+    final stickerName =
+    (sticker['stickerName'] ?? sticker['name'] ?? '貼紙')
+        .toString()
+        .trim();
+    final tags = _normalizeStickerTags(sticker['visualTags']);
+    final baseEmotion =
+    (sticker['baseEmotion'] ?? '').toString().trim();
+    final visualDescription =
+    (sticker['visualDescription'] ?? '').toString().trim();
+
+    final details = <String>[];
+
+    if (stickerName.isNotEmpty) {
+      details.add('貼紙名稱：$stickerName');
+    }
+    if (tags.isNotEmpty) {
+      details.add('可見標籤：${tags.join('、')}');
+    }
+    if (baseEmotion.isNotEmpty) {
+      details.add('表面情緒：$baseEmotion');
+    }
+    if (visualDescription.isNotEmpty) {
+      details.add('畫面描述：$visualDescription');
+    }
+
+    final detailText =
+    details.isEmpty ? '沒有額外視覺描述' : details.join('；');
+
+    return '[玩家傳送了一張貼紙。$detailText。'
+        '以上資訊只描述貼紙看得見的視覺特徵與表面情緒，'
+        '不代表玩家固定的真正意圖。'
+        '請結合最近對話、當前情境、你與玩家的關係及角色個性自行理解。'
+        '可能是玩笑、反諷、示弱、挑釁、撒嬌、轉移話題、和好或其他含義，'
+        '不得只因表面情緒就直接下定論。'
+        '貼紙是玩家當下的一種非文字反應，不是禮物。'
+        '除非情境真的合理，否則不要因為收到貼紙就道謝或稱讚貼紙本身。'
+        '貼紙名稱只用來幫助理解，不需要主動說出口。'
+        '除非貼紙名稱本身在當前情境中自然、有梗，或角色確實有理由注意到，'
+        '否則不要直接引用、重複或念出貼紙名稱。'
+        '請直接以角色身分自然回應，不要向玩家解釋你正在分析貼紙。]';
+  }
+
+  String _stickerPreferenceKey(Map<String, dynamic> sticker) {
+    final eventId = (sticker['eventId'] ?? '').toString().trim();
+    final itemId = (sticker['itemId'] ?? sticker['stickerId'] ?? '')
+        .toString()
+        .trim();
+
+    if (eventId.isNotEmpty && itemId.isNotEmpty) {
+      return '${eventId}__$itemId';
+    }
+
+    return itemId.isNotEmpty
+        ? itemId
+        : (sticker['imageUrl'] ?? '').toString().trim();
+  }
+
+  Future<void> _toggleStickerFavorite(
+      Map<String, dynamic> sticker,
+      bool nextValue,
+      ) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final key = _stickerPreferenceKey(sticker);
+    if (key.isEmpty) return;
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .set(
+      {
+        'stickerFavorites': {
+          key: nextValue,
+        },
+      },
+      SetOptions(merge: true),
+    );
+  }
+
+  Future<void> _recordStickerUsage(
+      Map<String, dynamic> sticker,
+      ) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final key = _stickerPreferenceKey(sticker);
+    if (key.isEmpty) return;
+
+    final userRef =
+    FirebaseFirestore.instance.collection('users').doc(user.uid);
+
+    try {
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        final snapshot = await transaction.get(userRef);
+        final data = snapshot.data() ?? <String, dynamic>{};
+
+        final rawUsage = data['stickerUsage'];
+        final usageMap = rawUsage is Map
+            ? Map<String, dynamic>.from(rawUsage)
+            : <String, dynamic>{};
+
+        final rawCurrent = usageMap[key];
+        final current = rawCurrent is Map
+            ? Map<String, dynamic>.from(rawCurrent)
+            : <String, dynamic>{};
+
+        final currentCount =
+            (current['useCount'] as num?)?.toInt() ?? 0;
+
+        usageMap[key] = {
+          'lastUsedAt': FieldValue.serverTimestamp(),
+          'useCount': currentCount + 1,
+        };
+
+        transaction.set(
+          userRef,
+          {
+            'stickerUsage': usageMap,
+          },
+          SetOptions(merge: true),
+        );
+      });
+    } catch (e) {
+      debugPrint('⚠️ 記錄貼紙使用失敗：$e');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> _loadOwnedStickers() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return const <Map<String, dynamic>>[];
+
+    final results = await Future.wait([
+      FirebaseFirestore.instance
+          .collection('artifacts')
+          .doc(_appId)
+          .collection('event_progress')
+          .doc(user.uid)
+          .collection('events')
+          .get(),
+
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get(),
+    ]);
+
+    final eventSnapshot =
+    results[0] as QuerySnapshot<Map<String, dynamic>>;
+
+    final userSnapshot =
+    results[1] as DocumentSnapshot<Map<String, dynamic>>;
+
+    final userData =
+        userSnapshot.data() ?? <String, dynamic>{};
+
+    final rawFavorites = userData['stickerFavorites'];
+    final favorites = rawFavorites is Map
+        ? Map<String, dynamic>.from(rawFavorites)
+        : <String, dynamic>{};
+
+    final rawUsage = userData['stickerUsage'];
+    final usage = rawUsage is Map
+        ? Map<String, dynamic>.from(rawUsage)
+        : <String, dynamic>{};
+
+    final stickers = <Map<String, dynamic>>[];
+
+    for (final eventDoc in eventSnapshot.docs) {
+      final data = eventDoc.data();
+      final rawOwnedItems = data['ownedEventItems'];
+
+      if (rawOwnedItems is! Map) continue;
+
+      for (final entry in rawOwnedItems.entries) {
+        if (entry.value is! Map) continue;
+
+        final item =
+        Map<String, dynamic>.from(entry.value as Map);
+
+        final itemType =
+        (item['itemType'] ?? '')
+            .toString()
+            .trim()
+            .toLowerCase();
+
+        if (itemType != 'sticker' &&
+            itemType != 'stickers') {
+          continue;
+        }
+
+        final imageUrl =
+        (item['imageUrl'] ?? '')
+            .toString()
+            .trim();
+
+        if (imageUrl.isEmpty) continue;
+
+        final enriched = <String, dynamic>{
+          ...item,
+          'eventId':
+          (item['eventId'] ?? eventDoc.id).toString(),
+          'itemId':
+          (item['itemId'] ?? entry.key).toString(),
+          'imageUrl': imageUrl,
+        };
+
+        final key = _stickerPreferenceKey(enriched);
+
+        final rawUsageItem = usage[key];
+
+        final usageItem = rawUsageItem is Map
+            ? Map<String, dynamic>.from(rawUsageItem)
+            : <String, dynamic>{};
+
+        enriched['isFavorite'] =
+            favorites[key] == true;
+
+        enriched['lastUsedAt'] =
+        usageItem['lastUsedAt'];
+
+        enriched['useCount'] =
+            (usageItem['useCount'] as num?)
+                ?.toInt() ??
+                0;
+
+        stickers.add(enriched);
+      }
+    }
+
+    int acquiredTime(Map<String, dynamic> item) {
+      final raw = item['acquiredAt'];
+
+      if (raw is Timestamp) {
+        return raw.millisecondsSinceEpoch;
+      }
+
+      return 0;
+    }
+
+    stickers.sort(
+          (a, b) =>
+          acquiredTime(b).compareTo(acquiredTime(a)),
+    );
+
+    return stickers;
+  }
+
+  Future<void> _showStickerPicker() async {
+    if (_isGenerating || _isLoading) return;
+
+    FocusScope.of(context).unfocus();
+
+    final ownedStickers =
+    await _loadOwnedStickers();
+
+    if (!mounted) return;
+
+    final selected =
+    await showModalBottomSheet<
+        Map<String, dynamic>>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        int selectedTab = 0;
+
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            final theme =
+            Theme.of(sheetContext);
+
+            final primary =
+                theme.colorScheme.primary;
+
+            final recent = ownedStickers
+                .where(
+                  (item) =>
+              item['lastUsedAt']
+              is Timestamp,
+            )
+                .toList()
+              ..sort((a, b) {
+                final aTime =
+                    (a['lastUsedAt']
+                    as Timestamp)
+                        .millisecondsSinceEpoch;
+
+                final bTime =
+                    (b['lastUsedAt']
+                    as Timestamp)
+                        .millisecondsSinceEpoch;
+
+                return bTime.compareTo(aTime);
+              });
+
+            final favorites =
+            ownedStickers
+                .where(
+                  (item) =>
+              item['isFavorite'] ==
+                  true,
+            )
+                .toList();
+
+            final visibleStickers =
+            selectedTab == 0
+                ? recent
+                : selectedTab == 1
+                ? favorites
+                : ownedStickers;
+
+            Widget buildTab(
+                String label,
+                int index,
+                ) {
+              final selected =
+                  selectedTab == index;
+
+              return Expanded(
+                child: InkWell(
+                  borderRadius:
+                  BorderRadius.circular(14),
+                  onTap: () {
+                    setSheetState(() {
+                      selectedTab = index;
+                    });
+                  },
+                  child: Container(
+                    padding:
+                    const EdgeInsets.symmetric(
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: selected
+                          ? primary.withValues(
+                        alpha: 0.10,
+                      )
+                          : Colors.transparent,
+                      borderRadius:
+                      BorderRadius.circular(
+                        14,
+                      ),
+                    ),
+                    child: Text(
+                      label,
+                      textAlign:
+                      TextAlign.center,
+                      style:
+                      GoogleFonts.notoSerifTc(
+                        fontSize: 13,
+                        fontWeight: selected
+                            ? FontWeight.w700
+                            : FontWeight.w500,
+                        color: selected
+                            ? primary
+                            : theme
+                            .colorScheme
+                            .onSurface
+                            .withValues(
+                          alpha: 0.55,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }
+
+            String emptyMessage() {
+              if (ownedStickers.isEmpty) {
+                return '目前還沒有可使用的貼紙。';
+              }
+
+              if (selectedTab == 0) {
+                return '還沒有最近使用的貼紙';
+              }
+
+              if (selectedTab == 1) {
+                return '還沒有喜愛的貼紙';
+              }
+
+              return '目前還沒有可使用的貼紙';
+            }
+
+            return SafeArea(
+              top: false,
+              child: Container(
+                height:
+                MediaQuery.sizeOf(
+                  sheetContext,
+                ).height *
+                    0.64,
+                decoration: BoxDecoration(
+                  color:
+                  theme.colorScheme.surface,
+                  borderRadius:
+                  const BorderRadius.vertical(
+                    top: Radius.circular(26),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 10),
+
+                    Container(
+                      width: 38,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: theme
+                            .colorScheme
+                            .onSurface
+                            .withValues(
+                          alpha: 0.16,
+                        ),
+                        borderRadius:
+                        BorderRadius.circular(
+                          99,
+                        ),
+                      ),
+                    ),
+
+                    Padding(
+                      padding:
+                      const EdgeInsets
+                          .fromLTRB(
+                        18,
+                        14,
+                        10,
+                        8,
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons
+                                .emoji_emotions_outlined,
+                            color: primary,
+                          ),
+
+                          const SizedBox(
+                            width: 8,
+                          ),
+
+                          Text(
+                            '我的貼紙',
+                            style: GoogleFonts
+                                .notoSerifTc(
+                              fontSize: 17,
+                              fontWeight:
+                              FontWeight.w700,
+                            ),
+                          ),
+
+                          const Spacer(),
+
+                          IconButton(
+                            onPressed: () =>
+                                Navigator.of(
+                                  sheetContext,
+                                ).pop(),
+                            icon: const Icon(
+                              Icons.close_rounded,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    Padding(
+                      padding:
+                      const EdgeInsets
+                          .fromLTRB(
+                        16,
+                        0,
+                        16,
+                        10,
+                      ),
+                      child: Row(
+                        children: [
+                          buildTab(
+                            '最近使用',
+                            0,
+                          ),
+
+                          const SizedBox(
+                            width: 6,
+                          ),
+
+                          buildTab(
+                            '喜愛',
+                            1,
+                          ),
+
+                          const SizedBox(
+                            width: 6,
+                          ),
+
+                          buildTab(
+                            '全部',
+                            2,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const Divider(height: 1),
+
+                    Expanded(
+                      child:
+                      visibleStickers.isEmpty
+                          ? Center(
+                        child: Text(
+                          emptyMessage(),
+                          style: GoogleFonts
+                              .notoSerifTc(
+                            color: theme
+                                .colorScheme
+                                .onSurface
+                                .withValues(
+                              alpha:
+                              0.5,
+                            ),
+                          ),
+                        ),
+                      )
+                          : GridView.builder(
+                        padding:
+                        const EdgeInsets
+                            .all(16),
+                        gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount:
+                          4,
+                          mainAxisSpacing:
+                          12,
+                          crossAxisSpacing:
+                          12,
+                        ),
+                        itemCount:
+                        visibleStickers
+                            .length,
+                        itemBuilder:
+                            (
+                            context,
+                            index,
+                            ) {
+                          final sticker =
+                          visibleStickers[
+                          index];
+
+                          final imageUrl =
+                          sticker[
+                          'imageUrl']
+                              .toString();
+
+                          final isFavorite =
+                              sticker[
+                              'isFavorite'] ==
+                                  true;
+
+                          return Stack(
+                            clipBehavior:
+                            Clip.none,
+                            children: [
+                              Positioned.fill(
+                                child:
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.of(
+                                      sheetContext,
+                                    ).pop(
+                                      sticker,
+                                    );
+                                  },
+                                  child:
+                                  CachedNetworkImage(
+                                    imageUrl:
+                                    imageUrl,
+                                    fit: BoxFit
+                                        .contain,
+                                  ),
+                                ),
+                              ),
+
+                              Positioned(
+                                top: -4,
+                                right: -4,
+                                child:
+                                IconButton(
+                                  iconSize: 18,
+                                  padding:
+                                  EdgeInsets
+                                      .zero,
+                                  constraints:
+                                  const BoxConstraints(
+                                    minWidth:
+                                    28,
+                                    minHeight:
+                                    28,
+                                  ),
+                                  icon: Icon(
+                                    isFavorite
+                                        ? Icons
+                                        .favorite_rounded
+                                        : Icons
+                                        .favorite_border_rounded,
+                                    color: isFavorite
+                                        ? primary
+                                        : theme
+                                        .colorScheme
+                                        .onSurface
+                                        .withValues(
+                                      alpha:
+                                      0.4,
+                                    ),
+                                  ),
+                                  onPressed:
+                                      () async {
+                                    final next =
+                                    !isFavorite;
+
+                                    setSheetState(
+                                          () {
+                                        sticker[
+                                        'isFavorite'] =
+                                            next;
+                                      },
+                                    );
+
+                                    try {
+                                      await _toggleStickerFavorite(
+                                        sticker,
+                                        next,
+                                      );
+                                    } catch (_) {
+                                      setSheetState(
+                                            () {
+                                          sticker[
+                                          'isFavorite'] =
+                                              isFavorite;
+                                        },
+                                      );
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+
+    if (selected == null || !mounted) {
+      return;
+    }
+
+    await _sendSticker(selected);
+  }
+
+  Future<void> _sendSticker(Map<String, dynamic> sticker) async {
+    final imageUrl =
+    (sticker['imageUrl'] ?? '').toString().trim();
+
+    if (imageUrl.isEmpty) {
+      _showCenterToast(
+        '這張貼紙目前無法使用',
+        isError: true,
+      );
+      return;
+    }
+
+    unawaited(
+      _recordStickerUsage(sticker),
+    );
+
+    await _sendMessage(
+      text: '[貼紙]',
+      stickerData: sticker,
+      showInChat: true,
+    );
+  }
+
   // ✨ VIP 無痕重新生成通道
   Future<bool> _regenerateAIResponse(
       String aiMessageId,
@@ -2877,7 +3642,13 @@ class _ChatPageState extends State<ChatPage> {
 
           final sender = data['sender']?.toString();
 
-          final text = data['text']?.toString().trim() ?? '';
+          String text = data['text']?.toString().trim() ?? '';
+          final messageType =
+              data['type']?.toString().trim() ?? 'text';
+
+          if (sender == 'user' && messageType == 'sticker') {
+            text = _buildStickerAiContext(data);
+          }
 
           final imageDescription =
               data['imageDescription']?.toString().trim() ?? '';
@@ -2978,6 +3749,19 @@ class _ChatPageState extends State<ChatPage> {
 
       await _ensureCharacterTranslationForChat();
 
+      // ☁️ 只把玩家在「這一間聊天室」啟用的狀態欄欄位送給後端。
+      // 全部關閉時會送空陣列，後端即可完全略過 statusBar 生成。
+      final List<String> statusBarFields = <String>[
+        if (_statusShowMood) 'mood',
+        if (_statusShowOutfit) 'outfit',
+        if (_statusShowRelationship) 'relationship',
+        if (_statusShowThought) 'thought',
+        if (_statusShowWeather) 'weather',
+        if (_statusShowCurrentState) 'currentState',
+        if (_statusShowAction) 'action',
+        if (_statusShowAffinity) 'affinity',
+      ];
+
       final Map<String, dynamic> requestBody = {
         'clientRequestId': clientRequestId,
         'language': _currentAiLanguageName(),
@@ -2985,6 +3769,7 @@ class _ChatPageState extends State<ChatPage> {
         'audioUrl': '',
         'userMessage': lastUserText,
         'chatMode': _currentMode?.name ?? 'daily',
+        'statusBarFields': statusBarFields,
 // 明確告訴後端這是免費重新生成，不能扣聊天花花。
         'isRegenerate': true,
         'isBirthdayFreebie': false,
@@ -4463,6 +5248,7 @@ class _ChatPageState extends State<ChatPage> {
     required String clientRequestId,
     String? imagePath,
     String? audioPath,
+    Map<String, dynamic>? stickerData,
     String? overridePrompt,
     String? secretPrompt,
     String? pendingMediaId,
@@ -4683,6 +5469,15 @@ class _ChatPageState extends State<ChatPage> {
       String messageType = 'text';
       String lastMessageText = userText.trim();
       String? storagePath;
+
+      // 🧩 貼紙使用活動商品既有的遠端圖片，不重新上傳。
+      if (stickerData != null) {
+        storagePath =
+            (stickerData['imageUrl'] ?? '').toString().trim();
+        messageType = 'sticker';
+        lastMessageText = '[貼紙]';
+      }
+
       // --- A. 處理媒體檔案上傳 ---
       if (imagePath != null) {
         storagePath = await _uploadFileToStorage(imagePath, 'image');
@@ -4736,14 +5531,47 @@ class _ChatPageState extends State<ChatPage> {
       // 🛡️ 防彈版：只要有集合存在，就直接寫入資料庫
       if (showInChat && !userMessageAlreadySaved) {
         if (_messagesCollection != null) {
-          final userMessageRef = await _messagesCollection!.add({
+          final userMessageData = <String, dynamic>{
             'sender': 'user',
-            'text': userText.trim(),
+            'text': stickerData != null ? '[貼紙]' : userText.trim(),
             'type': messageType,
             'path': storagePath ?? '',
             'imageDescription': '',
             'timestamp': FieldValue.serverTimestamp(),
-          });
+          };
+
+          if (stickerData != null) {
+            userMessageData.addAll({
+              'eventId':
+              (stickerData['eventId'] ?? '').toString(),
+              'itemId':
+              (stickerData['itemId'] ?? '').toString(),
+              'stickerId':
+              (stickerData['stickerId'] ??
+                  stickerData['itemId'] ??
+                  '')
+                  .toString(),
+              'stickerName':
+              (stickerData['stickerName'] ??
+                  stickerData['name'] ??
+                  '貼紙')
+                  .toString(),
+              'visualTags':
+              _normalizeStickerTags(stickerData['visualTags']),
+              'baseEmotion':
+              (stickerData['baseEmotion'] ?? '')
+                  .toString(),
+              'visualDescription':
+              (stickerData['visualDescription'] ?? '')
+                  .toString(),
+              'analysisSource':
+              (stickerData['analysisSource'] ?? '')
+                  .toString(),
+            });
+          }
+
+          final userMessageRef =
+          await _messagesCollection!.add(userMessageData);
 
           userMessageId = userMessageRef.id;
 // 真正訊息已經寫入 Firestore，移除本機 pending 泡泡
@@ -4783,7 +5611,8 @@ class _ChatPageState extends State<ChatPage> {
                   ChatMessage(
                     id: DateTime.now().millisecondsSinceEpoch.toString(),
                     sender: 'user',
-                    text: userText.trim(),
+                    text:
+                    stickerData != null ? '[貼紙]' : userText.trim(),
                     type: messageType,
                     path: storagePath ?? '',
                     timestamp: Timestamp.fromDate(DateTime.now()),
@@ -4827,6 +5656,12 @@ class _ChatPageState extends State<ChatPage> {
           final sender = data['sender'];
 
           String text = data['text']?.toString().trim() ?? '';
+          final messageType =
+              data['type']?.toString().trim() ?? 'text';
+
+          if (sender == 'user' && messageType == 'sticker') {
+            text = _buildStickerAiContext(data);
+          }
 
           final imageDescription =
               data['imageDescription']?.toString().trim() ?? '';
@@ -4911,7 +5746,9 @@ class _ChatPageState extends State<ChatPage> {
 
       String dynamicProfile = _buildDynamicUserProfileString();
 
-      final String effectiveUserMessage = isContinue
+      final String effectiveUserMessage = stickerData != null
+          ? _buildStickerAiContext(stickerData)
+          : isContinue
           ? l10n.hiddenPromptContinue
           : secretPrompt?.trim().isNotEmpty == true
           ? secretPrompt!.trim()
@@ -4929,6 +5766,19 @@ class _ChatPageState extends State<ChatPage> {
       _buildPlayerPronounGuide(playerGenderForAi);
       await _ensureCharacterTranslationForChat();
 
+      // ☁️ 只把玩家在「這一間聊天室」啟用的狀態欄欄位送給後端。
+      // 全部關閉時送空陣列，後端即可完全略過 statusBar 生成。
+      final List<String> statusBarFields = <String>[
+        if (_statusShowMood) 'mood',
+        if (_statusShowOutfit) 'outfit',
+        if (_statusShowRelationship) 'relationship',
+        if (_statusShowThought) 'thought',
+        if (_statusShowWeather) 'weather',
+        if (_statusShowCurrentState) 'currentState',
+        if (_statusShowAction) 'action',
+        if (_statusShowAffinity) 'affinity',
+      ];
+
       final Map<String, dynamic> requestBody = {
         "clientRequestId": clientRequestId,
         "language": _currentAiLanguageName(),
@@ -4942,9 +5792,33 @@ class _ChatPageState extends State<ChatPage> {
         "paidChatConfirmed": paidChatConfirmed,
         "imageUrl": hasImage ? (storagePath ?? "") : "",
         "audioUrl": hasAudio ? (storagePath ?? "") : "",
+        "stickerContext": stickerData == null
+            ? null
+            : {
+          "stickerId":
+          (stickerData['stickerId'] ??
+              stickerData['itemId'] ??
+              '')
+              .toString(),
+          "stickerName":
+          (stickerData['stickerName'] ??
+              stickerData['name'] ??
+              '貼紙')
+              .toString(),
+          "visualTags":
+          _normalizeStickerTags(stickerData['visualTags']),
+          "baseEmotion":
+          (stickerData['baseEmotion'] ?? '').toString(),
+          "visualDescription":
+          (stickerData['visualDescription'] ?? '')
+              .toString(),
+          "analysisSource":
+          (stickerData['analysisSource'] ?? '').toString(),
+        },
         "userMessage": effectiveUserMessage,
         "isContinue": isContinue,
         "chatMode": _currentMode?.name ?? "gemini",
+        "statusBarFields": statusBarFields,
         "isBirthdayFreebie": isFreeToday,
         "isQixiOpening": isQixiOpening,
         "overrideSystemPrompt": overridePrompt ?? "",
@@ -5172,6 +6046,18 @@ class _ChatPageState extends State<ChatPage> {
           final String newStoryLocation =
               responseData['storyLocation']?.toString().trim() ?? '';
 
+          final Map<String, dynamic> aiStatusBar =
+          responseData['statusBar'] is Map
+              ? Map<String, dynamic>.from(responseData['statusBar'] as Map)
+              : <String, dynamic>{};
+
+          final Map<String, dynamic> aiStatusBarChanges =
+          responseData['statusBarChanges'] is Map
+              ? Map<String, dynamic>.from(
+            responseData['statusBarChanges'] as Map,
+          )
+              : <String, dynamic>{};
+
           if (aiResponseText.isEmpty) {
             generatingRooms.remove(_roomLockKey);
 
@@ -5290,6 +6176,8 @@ class _ChatPageState extends State<ChatPage> {
                       DateTime.now(),
                     ),
                     isAI: true,
+                    statusBar: aiStatusBar,
+                    statusBarChanges: aiStatusBarChanges,
                   ),
                 );
               }
@@ -5771,43 +6659,15 @@ class _ChatPageState extends State<ChatPage> {
         HapticFeedback.vibrate();
       }
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        duration: const Duration(milliseconds: 1500),
-        backgroundColor: Colors.white.withValues(alpha: 0.95),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-          side: BorderSide(
-            color: isIncrease ? Colors.pinkAccent : Colors.blueGrey,
-            width: 2,
-          ),
-        ),
-        margin: EdgeInsets.only(
-          bottom: MediaQuery.of(context).size.height * 0.65,
-          left: 60,
-          right: 60,
-        ),
-        content: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              isIncrease ? Icons.favorite : Icons.heart_broken,
-              color: isIncrease ? Colors.pink : Colors.blueGrey,
-              size: 28,
-            ),
-            SizedBox(width: 12),
-            Text(
-              isIncrease ? l10n.chat_heartbeat_up : l10n.chat_heartbeat_down,
-              style: TextStyle(
-                color: isIncrease ? Colors.pink[700] : Colors.blueGrey[800],
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-          ],
-        ),
-      ),
+    // 聊天室底部有輸入框與鍵盤，floating SnackBar 若再加大 bottom margin
+    // 可能會被 Flutter 判定已經被推到畫面外。改用 App 既有的 root Overlay Toast。
+    if (!mounted) return;
+
+    ToastUtils.showCenterToast(
+      context,
+      isIncrease ? l10n.chat_heartbeat_up : l10n.chat_heartbeat_down,
+      type: isIncrease ? ToastType.success : ToastType.info,
+      customIcon: isIncrease ? Icons.favorite : Icons.heart_broken,
     );
   }
 
@@ -7011,19 +7871,19 @@ class _ChatPageState extends State<ChatPage> {
 
   // ✨ 4. 新增一個 getModeName 函式來處理多國語言
   String _getModeName(ChatMode mode) {
-    final l10n = AppLocalizations.of(context)!;
-
+    // Header 只顯示短名稱，避免模式文字過長把角色名字擠掉。
+    // 下拉選單仍可維持原本完整翻譯名稱。
     switch (mode) {
       case ChatMode.daily:
-        return l10n.chatModeDaily;
+        return '日常';
       case ChatMode.story:
-        return l10n.chatModeStory;
+        return '劇情';
       case ChatMode.immersive:
-        return l10n.chatModeImmersive;
+        return '沉浸';
       case ChatMode.resonance:
         return '共鳴';
       case ChatMode.gemini:
-        return l10n.chat_mode_gemini;
+        return '閒聊';
     }
   }
 
@@ -7855,6 +8715,16 @@ class _ChatPageState extends State<ChatPage> {
                                 },
                               ),
 
+                              // 8. 狀態欄
+                              _buildToolItem(
+                                'assets/images/chat/chat_tool_status_mask.png',
+                                '狀態欄',
+                                    () {
+                                  Navigator.pop(context);
+                                  _showStatusBarSettings();
+                                },
+                              ),
+
                               // 之後新增第 8、9... 個功能，
                               // 直接繼續加 _buildToolItem() 即可。
                               // BottomSheet 高度仍維持 370，
@@ -7874,7 +8744,358 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
+  void _showStatusBarSettings() {
+    bool tempShowMood = _statusShowMood;
+    bool tempShowOutfit = _statusShowOutfit;
+    bool tempShowRelationship = _statusShowRelationship;
+    bool tempShowThought = _statusShowThought;
+    bool tempShowWeather = _statusShowWeather;
+    bool tempShowCurrentState = _statusShowCurrentState;
+    bool tempShowAction = _statusShowAction;
+    bool tempShowAffinity = _statusShowAffinity;
 
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (BuildContext sheetContext) {
+        return StatefulBuilder(
+          builder: (
+              BuildContext context,
+              StateSetter sheetSetState,
+              ) {
+            final theme = Theme.of(context);
+
+            Widget buildStatusOption({
+              required IconData icon,
+              required String title,
+              required bool value,
+              required ValueChanged<bool> onChanged,
+            }) {
+              return InkWell(
+                borderRadius: BorderRadius.circular(18),
+                onTap: () => onChanged(!value),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 14,
+                  ),
+                  decoration: BoxDecoration(
+                    color: value
+                        ? theme.colorScheme.primaryContainer
+                        .withValues(alpha: 0.45)
+                        : theme.colorScheme.surfaceContainerHighest
+                        .withValues(alpha: 0.30),
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(
+                      color: value
+                          ? theme.colorScheme.primary.withValues(alpha: 0.30)
+                          : theme.dividerColor.withValues(alpha: 0.12),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        icon,
+                        size: 21,
+                        color: value
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 9),
+                      Expanded(
+                        child: Text(
+                          title,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: value
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.onSurface,
+                          ),
+                        ),
+                      ),
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 160),
+                        child: value
+                            ? Icon(
+                          Icons.check_circle_rounded,
+                          key: const ValueKey(true),
+                          size: 21,
+                          color: theme.colorScheme.primary,
+                        )
+                            : Icon(
+                          Icons.circle_outlined,
+                          key: const ValueKey(false),
+                          size: 21,
+                          color: theme.colorScheme.onSurfaceVariant
+                              .withValues(alpha: 0.55),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            return SafeArea(
+              top: false,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surface.withValues(alpha: 0.99),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
+                  ),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // 拖曳條
+                    Container(
+                      width: 42,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary
+                            .withValues(alpha: 0.28),
+                        borderRadius: BorderRadius.circular(99),
+                      ),
+                    ),
+
+                    const SizedBox(height: 18),
+
+                    Row(
+                      children: [
+                        Container(
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primaryContainer
+                                .withValues(alpha: 0.55),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.tune_rounded,
+                            color: theme.colorScheme.primary,
+                            size: 23,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '狀態欄',
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                '選擇想在聊天中顯示的資訊',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    GridView.count(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
+                      childAspectRatio: 2.35,
+                      children: [
+                        buildStatusOption(
+                          icon: Icons.sentiment_satisfied_alt_rounded,
+                          title: '心情',
+                          value: tempShowMood,
+                          onChanged: (value) {
+                            sheetSetState(() {
+                              tempShowMood = value;
+                            });
+                          },
+                        ),
+                        buildStatusOption(
+                          icon: Icons.checkroom_rounded,
+                          title: '衣著',
+                          value: tempShowOutfit,
+                          onChanged: (value) {
+                            sheetSetState(() {
+                              tempShowOutfit = value;
+                            });
+                          },
+                        ),
+                        buildStatusOption(
+                          icon: Icons.favorite_border_rounded,
+                          title: '關係',
+                          value: tempShowRelationship,
+                          onChanged: (value) {
+                            sheetSetState(() {
+                              tempShowRelationship = value;
+                            });
+                          },
+                        ),
+                        buildStatusOption(
+                          icon: Icons.psychology_alt_outlined,
+                          title: '想法',
+                          value: tempShowThought,
+                          onChanged: (value) {
+                            sheetSetState(() {
+                              tempShowThought = value;
+                            });
+                          },
+                        ),
+                        buildStatusOption(
+                          icon: Icons.cloud_outlined,
+                          title: '天氣',
+                          value: tempShowWeather,
+                          onChanged: (value) {
+                            sheetSetState(() {
+                              tempShowWeather = value;
+                            });
+                          },
+                        ),
+                        buildStatusOption(
+                          icon: Icons.bolt_rounded,
+                          title: '當前狀態',
+                          value: tempShowCurrentState,
+                          onChanged: (value) {
+                            sheetSetState(() {
+                              tempShowCurrentState = value;
+                            });
+                          },
+                        ),
+                        buildStatusOption(
+                          icon: Icons.accessibility_new_rounded,
+                          title: '動作',
+                          value: tempShowAction,
+                          onChanged: (value) {
+                            sheetSetState(() {
+                              tempShowAction = value;
+                            });
+                          },
+                        ),
+                        buildStatusOption(
+                          icon: Icons.auto_awesome_rounded,
+                          title: '好感度',
+                          value: tempShowAffinity,
+                          onChanged: (value) {
+                            sheetSetState(() {
+                              tempShowAffinity = value;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 22),
+
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: FilledButton(
+                        onPressed: () async {
+                          final Map<String, bool> newSettings = <String, bool>{
+                            'mood': tempShowMood,
+                            'outfit': tempShowOutfit,
+                            'relationship': tempShowRelationship,
+                            'thought': tempShowThought,
+                            'weather': tempShowWeather,
+                            'currentState': tempShowCurrentState,
+                            'action': tempShowAction,
+                            'affinity': tempShowAffinity,
+                          };
+
+                          // 先更新畫面，讓玩家按下完成後立即生效。
+                          if (mounted) {
+                            setState(() {
+                              _statusShowMood = tempShowMood;
+                              _statusShowOutfit = tempShowOutfit;
+                              _statusShowRelationship = tempShowRelationship;
+                              _statusShowThought = tempShowThought;
+                              _statusShowWeather = tempShowWeather;
+                              _statusShowCurrentState = tempShowCurrentState;
+                              _statusShowAction = tempShowAction;
+                              _statusShowAffinity = tempShowAffinity;
+                            });
+                          }
+
+                          Navigator.pop(sheetContext);
+
+                          // 再把設定寫進目前聊天室；不同 sessionId 互不影響。
+                          await _saveStatusBarSettings(newSettings);
+                        },
+                        style: FilledButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                        ),
+                        child: const Text(
+                          '完成',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _saveStatusBarSettings(
+      Map<String, bool> settings,
+      ) async {
+    // 測試聊天室沒有正式 Firestore chat session；保留本機狀態即可。
+    if (widget.isTestMode) {
+      debugPrint('🧪 測試聊天室：狀態欄設定僅保留於本機');
+      return;
+    }
+
+    final String sessionId = (_sessionId ?? widget.sessionId ?? '').trim();
+    if (sessionId.isEmpty) {
+      debugPrint('⚠️ 狀態欄設定未儲存：聊天室尚未取得 sessionId');
+      return;
+    }
+
+    try {
+      final DocumentReference<Map<String, dynamic>> sessionRef =
+      FirebaseFirestore.instance
+          .collection('artifacts')
+          .doc(_appId)
+          .collection('chat_sessions')
+          .doc(sessionId);
+
+      await sessionRef.set(
+        <String, dynamic>{
+          'statusBarSettings': settings,
+        },
+        SetOptions(merge: true),
+      );
+
+      // 如果目前已經有 session ref，也同步保持同一份參照。
+      _sessionDocRef ??= sessionRef;
+
+      debugPrint('☁️ 狀態欄設定已儲存：session=$sessionId, settings=$settings');
+    } catch (e) {
+      // 儲存失敗不能讓聊天室崩潰；目前畫面上的選擇仍維持。
+      debugPrint('⚠️ 儲存狀態欄設定失敗：$e');
+    }
+  }
 
   Widget _buildToolItem(
       String assetPath,
@@ -7903,6 +9124,17 @@ class _ChatPageState extends State<ChatPage> {
                 fit: BoxFit.contain,
                 color: iconColor,
                 colorBlendMode: BlendMode.srcIn,
+                errorBuilder: (context, error, stackTrace) {
+                  // 狀態欄正式圖片尚未加入時先用 Material icon 兜底，
+                  // 避免缺 asset 造成工具入口報錯；之後補圖即可自動恢復圖片。
+                  return Icon(
+                    assetPath.contains('chat_tool_status')
+                        ? Icons.tune_rounded
+                        : Icons.widgets_rounded,
+                    size: 30,
+                    color: iconColor,
+                  );
+                },
               ),
             ),
             const SizedBox(height: 7),
@@ -9844,7 +11076,7 @@ class _ChatPageState extends State<ChatPage> {
         resonanceLabel: '共鳴',
         callLabel: l10n.chat_voice_call,
         currentModeId: (_currentMode ?? ChatMode.story).name,
-        showModelSelector: true,
+        showModelSelector: false,
 
         onSearch: () {
           closeThen(() async {
@@ -10211,18 +11443,11 @@ class _ChatPageState extends State<ChatPage> {
     final userId = FirebaseAuth.instance.currentUser?.uid ?? 'guest';
     final prefs = await SharedPreferences.getInstance();
 
-    final menuPrefKey = 'chat_reply_model_menu_tip_shown_$userId';
     final bottomPrefKey = 'chat_bottom_actions_tip_shown_$userId';
 
-    final bool menuTipShown = prefs.getBool(menuPrefKey) == true;
     final bool bottomTipShown = prefs.getBool(bottomPrefKey) == true;
 
     final List<GlobalKey> tipsToShow = <GlobalKey>[];
-
-    if (!menuTipShown) {
-      tipsToShow.add(_replyModelMenuShowcaseKey);
-      await prefs.setBool(menuPrefKey, true);
-    }
 
     if (!bottomTipShown) {
       tipsToShow.add(_regenerateBottomShowcaseKey);
@@ -10296,10 +11521,42 @@ class _ChatPageState extends State<ChatPage> {
                   );
                 },
 
+                currentModeId: (_currentMode ?? ChatMode.gemini).name,
+                currentModeLabel: _getModeName(_currentMode ?? ChatMode.gemini),
+                modeOptions: [
+                  ChatHeaderModeOption(
+                    id: ChatMode.gemini.name,
+                    label: l10n.chat_mode_gemini,
+                    asset: 'assets/images/chat/chat_mode_daily_mask.png',
+                    fallbackIcon: Icons.chat_bubble_outline_rounded,
+                  ),
+                  ChatHeaderModeOption(
+                    id: ChatMode.story.name,
+                    label: l10n.chatModeStory,
+                    asset: 'assets/images/chat/chat_mode_story_mask.png',
+                    fallbackIcon: Icons.menu_book_rounded,
+                  ),
+                  ChatHeaderModeOption(
+                    id: ChatMode.immersive.name,
+                    label: l10n.chatModeImmersive,
+                    asset: 'assets/images/chat/chat_mode_immersive_mask.png',
+                    fallbackIcon: Icons.dark_mode_outlined,
+                  ),
+                  ChatHeaderModeOption(
+                    id: ChatMode.resonance.name,
+                    label: '共鳴',
+                    fallbackIcon: Icons.favorite_rounded,
+                  ),
+                ],
+                onModeSelected: (modeId) {
+                  unawaited(_switchChatModeFromDropdown(modeId));
+                },
+                callLabel: l10n.chat_voice_call,
+                onCall: () {
+                  _handleCallPress(context);
+                },
+
                 onMenuTap: _showChatSideMenu,
-                menuShowcaseKey: _replyModelMenuShowcaseKey,
-                menuShowcaseDescription:
-                l10n.chat_reply_model_menu_tip,
               ),
             ),
             // 👇 🌟 移除了原本擋在前面的內層背景，直接放 Column
@@ -10583,6 +11840,7 @@ class _ChatPageState extends State<ChatPage> {
                       l10n.chat_continue_bottom_tip,
                       onChanged: _saveDraft,
                       onToolbox: _showToolbox,
+                      onSticker: _showStickerPicker,
                       onRegenerate: _handleRegenerateButton,
                       onContinue: _handleContinueButton,
                       onStop: _stopGenerating,
@@ -10674,6 +11932,95 @@ class _ChatPageState extends State<ChatPage> {
   String _getTimeString(Timestamp ts) {
     final dt = ts.toDate(); // ✨ 轉換魔法
     return "${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}";
+  }
+
+  static const List<String> _statusBarDisplayOrder = <String>[
+    'mood',
+    'outfit',
+    'relationship',
+    'thought',
+    'weather',
+    'currentState',
+    'action',
+    'affinity',
+  ];
+
+  static const Map<String, String> _statusBarLabels = <String, String>{
+    'mood': '心情',
+    'outfit': '衣著',
+    'relationship': '關係',
+    'thought': '想法',
+    'weather': '天氣',
+    'currentState': '當前狀態',
+    'action': '動作',
+    'affinity': '好感度',
+  };
+
+  String _statusBarDisplayValue(ChatMessage message, String field) {
+    final rawValue = message.statusBar[field]?.toString().trim() ?? '';
+    final rawChange = message.statusBarChanges[field];
+
+    if (rawChange is Map) {
+      final change = Map<String, dynamic>.from(rawChange);
+      final bool changed = change['changed'] == true;
+      final previousValue =
+          change['previousValue']?.toString().trim() ?? '';
+      final currentValue = change['value']?.toString().trim() ?? rawValue;
+
+      if (changed &&
+          previousValue.isNotEmpty &&
+          currentValue.isNotEmpty &&
+          previousValue != currentValue) {
+        return '$previousValue → $currentValue';
+      }
+    }
+
+    return rawValue;
+  }
+
+  String _injectAiStatusLines(ChatMessage message, String displayText) {
+    if (!message.isAI || message.statusBar.isEmpty) {
+      return displayText;
+    }
+
+    final statusLines = <String>[];
+
+    for (final field in _statusBarDisplayOrder) {
+      if (!message.statusBar.containsKey(field)) continue;
+
+      final value = _statusBarDisplayValue(message, field);
+      if (value.isEmpty) continue;
+
+      final label = _statusBarLabels[field] ?? field;
+      statusLines.add('$label｜$value');
+    }
+
+    if (statusLines.isEmpty) {
+      return displayText;
+    }
+
+    final statusText = statusLines.join('\n');
+    final normalized = displayText.replaceAll('\r\n', '\n');
+
+    // 正常 Writer 回覆第一行固定是「時間：... | 地點：...」。
+    // 狀態欄純文字插在這一行之後，正文之前，不另加卡片或框線。
+    final firstLineBreak = normalized.indexOf('\n');
+    if (firstLineBreak >= 0) {
+      final firstLine = normalized.substring(0, firstLineBreak);
+      final rest = normalized.substring(firstLineBreak + 1).replaceFirst(
+        RegExp(r'^\s*'),
+        '',
+      );
+
+      if (firstLine.trimLeft().startsWith('時間：')) {
+        return rest.isEmpty
+            ? '$firstLine\n$statusText'
+            : '$firstLine\n$statusText\n\n$rest';
+      }
+    }
+
+    // 非故事格式或舊訊息沒有時間列時，狀態欄放在最前面。
+    return '$statusText\n\n$normalized';
   }
 
   Widget _buildMessageList(List<ChatMessage> messages) {
@@ -10911,10 +12258,53 @@ class _ChatPageState extends State<ChatPage> {
                   normalStyle: normalStyle,
                   actionStyle: actionStyle,
                 )
-                    : _buildStyledAiMessage(
-                  context,
-                  displayText,
-                  normalStyle,
+                    : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildStyledAiMessage(
+                      context,
+                      _injectAiStatusLines(message, displayText),
+                      normalStyle,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          } else if (type == 'sticker') {
+            final stickerPath = message.path.trim();
+
+            messageContent = SizedBox(
+              width: 138,
+              height: 138,
+              child: stickerPath.isEmpty
+                  ? Center(
+                child: Icon(
+                  Icons.emoji_emotions_outlined,
+                  size: 42,
+                  color: primary.withValues(alpha: 0.38),
+                ),
+              )
+                  : CachedNetworkImage(
+                imageUrl: stickerPath,
+                fit: BoxFit.contain,
+                memCacheWidth: 420,
+                placeholder: (_, __) => Center(
+                  child: SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 1.8,
+                      color: primary,
+                    ),
+                  ),
+                ),
+                errorWidget: (_, __, ___) => Center(
+                  child: Icon(
+                    Icons.broken_image_outlined,
+                    size: 34,
+                    color: onSurface.withValues(alpha: 0.36),
+                  ),
                 ),
               ),
             );
