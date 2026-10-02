@@ -3344,6 +3344,7 @@ exports.getAiResponse = onRequest({
                 paidChatConfirmed = false,
                 memoryScopeVersion = 0,
                 statusBarFields = [],
+                persistentInstructions = "",
             } = body;
 
             // 🌸 只有新版 App 明確送出 billingType，才啟用新版計價。
@@ -3435,13 +3436,86 @@ ${activeStatusBarFields.map((field) => `- ${field}: ${previousStatusBar[field] |
 ${activeStatusBarFields.map((field) => `- ${field}（${STATUS_BAR_FIELD_CONFIG[field].label}）：${STATUS_BAR_FIELD_CONFIG[field].rule}`).join("\n")}
 - statusBar 只可包含玩家已開啟的欄位，不得額外加入未開啟欄位。
 - 每個值必須是簡短純文字，不得輸出 null、陣列、巢狀物件或 Markdown。
-- 若本輪沒有合理變化，沿用上一輪；不得為了看起來有更新而硬改。
-- 若資訊不足且沒有上一輪可沿用，填「未明確」。
+- 生成狀態時，請依序綜合判斷：角色設定／已建立背景、目前聊天室歷史、本輪玩家輸入、你本輪實際寫出的 response。
+- 上一輪狀態只是「連續性參考」，不是固定答案；若本輪對話已顯示合理變化，應更新成最新狀態。
+- 若本輪沒有合理變化，可以沿用上一輪；不得為了看起來有更新而硬改。
+- 第一輪沒有上一輪狀態時，不得因為缺少 previousStatusBar 就填「未明確」；請直接根據目前對話脈絡做合理、保守、具體的推斷。
+- 心情、想法、當前狀態、動作等欄位，應優先反映本輪實際互動，不要寫成模糊佔位文字。
+- 關係欄可以依目前互動描述為「初識」「熟識」「朋友」「曖昧中」等非正式關係狀態；但「戀人」「伴侶」「夫妻」等正式關係，仍必須已有明確成立事件或已知設定，禁止僅憑親密、吃醋或曖昧自行升級。
 - 狀態欄是本輪結束後的最新狀態，必須與 response 正文一致。
 
 JSON 必須額外包含：
 "statusBar": {${activeStatusBarFields.map((field) => `"${field}": "狀態"`).join(", ")}}
 `;
+
+
+            // =========================================================
+            // 🧭 玩家持續聊天偏好（每聊天室獨立）
+            // =========================================================
+            // 只有玩家透過 UI 明確儲存的偏好才會進入這一層；
+            // 一般聊天中的「你不要鬧」之類臨時語句不會被永久化。
+            let activePersistentInstructions =
+                String(persistentInstructions || "").trim();
+
+            if (
+                !activePersistentInstructions &&
+                !isTestChat &&
+                sessionId
+            ) {
+                try {
+                    const preferenceSessionSnap = await db
+                        .collection("artifacts")
+                        .doc(APP_ID)
+                        .collection("chat_sessions")
+                        .doc(String(sessionId))
+                        .get();
+
+                    activePersistentInstructions = String(
+                        preferenceSessionSnap.data()?.persistentInstructions || ""
+                    ).trim();
+                } catch (preferenceLoadError) {
+                    console.warn(
+                        "⚠️ 讀取聊天室持續偏好失敗，改用空偏好：",
+                        preferenceLoadError
+                    );
+                }
+            }
+
+            // 防止過長文字無限膨脹 prompt。
+            activePersistentInstructions =
+                activePersistentInstructions.slice(0, 1200);
+
+            const playerAgencyAndNaturalnessDirective = `
+【🎭 玩家代理權與自然敘事規則｜全模式高優先】
+1. 玩家沒有明確寫出的台詞、重大行動、決定、立場、感情結論與內心想法，不得替玩家建立。
+2. 玩家只表達情緒時，不要習慣性把一句情緒擴寫成完整肢體演出。例如玩家只說「我害怕撞到嗚嗚嗚」，不得每次自動補成縮肩、抓衣角、眼眶泛紅、快哭出來等一整套反應。
+3. 為了讓互動自然，偶爾可以補「非常輕微、低承諾、容易撤回」的外顯反應，但只能在語意高度合理時使用，而且不可連續多輪使用。若不補也能成立，優先不補。
+4. 禁止補會改變玩家位置、身體接觸、重大姿勢、主動選擇、拒絕／接受、親密程度或事件結果的玩家動作。
+5. 角色可以觀察玩家已明確寫出的狀態；若只是推測，語氣必須保留不確定性，不能把推測寫成已發生事實。
+6. 禁止「AI／作者解說腔」。不要寫：
+   - 「這不是催促，只是把選擇權放回你手上」
+   - 「他沒有逼你，只是把決定交給你」
+   - 「沒有強迫，也沒有要求」
+   - 「選擇權依然在你手上」
+   - 以及任何在正文中解釋自己有沒有尊重玩家自主權、寫作目的或規則的句子。
+7. 尊重玩家選擇要用角色的實際行為呈現。例如讓角色停下、等待、換話題、留出空間；不要跳出故事解說「我正在給你選擇權」。
+8. 不要因為這些規則而變得僵硬、客服化或頻繁使用「如果你願意」「由你決定」等安全模板；角色仍要保持自己的人格、情緒與主動性。
+`;
+
+            const persistentPreferenceDirective =
+                activePersistentInstructions
+                    ? `
+【🧭 玩家在本聊天室明確設定的持續聊天偏好｜高優先】
+以下內容由玩家主動儲存，跨輪持續有效，直到玩家修改或清除：
+${activePersistentInstructions}
+
+執行規則：
+- 這些偏好優先於一般文風習慣、預設暱稱與可選寫法。
+- 若玩家要求「不要叫我寶貝」等稱呼限制，不得被其他「可使用親暱稱呼」規則覆蓋。
+- 若玩家要求回覆長短、敘事方式或特定禁用習慣，後續每一輪都要持續遵守。
+- 不要在正文中提到「你設定了偏好」「依照你的指令」或解釋自己正在遵守規則。
+`
+                    : "";
 
             // =========================================================
             // 🎭 劇場：從目前聊天室讀取啟用中的場景
@@ -3616,6 +3690,28 @@ const cancellationRef =
                 .replace(/[\/\\#?\[\]\s]/g, "_")
                 .slice(0, 150);
 
+            // 🛡️ v2.4.6.4：同一 clientRequestId 永遠對應同一則 AI 訊息。
+            // 防止前端／網路重送同一 request 時再次新增訊息或再次扣花。
+            const requestAiMessageId =
+                safeClientRequestId
+                    ? `req_${crypto
+                        .createHash("sha256")
+                        .update(`${userId}|${rawSessionId}|${safeClientRequestId}`)
+                        .digest("hex")
+                        .slice(0, 40)}`
+                    : "";
+
+            const requestAiMessageRef =
+                requestAiMessageId
+                    ? db
+                        .collection("artifacts")
+                        .doc(APP_ID)
+                        .collection("chat_sessions")
+                        .doc(rawSessionId)
+                        .collection("messages")
+                        .doc(requestAiMessageId)
+                    : null;
+
             const aiLockRef = userDocRef
                 .collection("locks")
                 .doc(`aiResponse_${safeSessionId}`);
@@ -3741,6 +3837,75 @@ const cancellationRef =
                     sessionId: rawSessionId,
                     lockId: aiLockId,
                 });
+
+                // ♻️ 同一 request 若先前已成功完成，直接回傳既有結果。
+                if (
+                    requestAiMessageRef &&
+                    isTestMode !== true &&
+                    isQixiOpeningRequest !== true
+                ) {
+                    const existingRequestMessage =
+                        await requestAiMessageRef.get();
+
+                    if (existingRequestMessage.exists) {
+                        const existingData =
+                            existingRequestMessage.data() || {};
+
+                        if (
+                            existingData.clientRequestId ===
+                            safeClientRequestId
+                        ) {
+                            console.warn(
+                                "♻️ 偵測到同一 AI request 被重送，直接回傳既有回覆",
+                                {
+                                    userId,
+                                    sessionId: rawSessionId,
+                                    clientRequestId:
+                                        safeClientRequestId,
+                                    messageId:
+                                        requestAiMessageId,
+                                }
+                            );
+
+                            await releaseAiLock();
+
+                            return res.status(200).json({
+                                status: "success",
+                                response:
+                                    String(
+                                        existingData.text ||
+                                        existingData.content ||
+                                        ""
+                                    ),
+                                voiceText:
+                                    String(
+                                        existingData.voiceText ||
+                                        ""
+                                    ),
+                                affectionChange: 0,
+                                storyTime:
+                                    String(
+                                        existingData.storyTime ||
+                                        ""
+                                    ),
+                                storyLocation:
+                                    String(
+                                        existingData.storyLocation ||
+                                        ""
+                                    ),
+                                statusBar:
+                                    existingData.statusBar || {},
+                                statusBarChanges:
+                                    existingData.statusBarChanges || {},
+                                charged: false,
+                                cost: 0,
+                                clientRequestId:
+                                    safeClientRequestId,
+                                idempotentReplay: true,
+                            });
+                        }
+                    }
+                }
             } catch (e) {
                 if (e.message === "AI_REQUEST_CANCELLED") {
                     console.log(
@@ -5333,7 +5498,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
 
                                                                                                 if (retrievedSharedMemories.length > 0) {
                                                                                                     sharedMemoriesText =
-                                                                                                        "\n【本輪相關共同回憶｜既定事實】\n" +
+                                                                                                        "\n【本輪可能相關的背景記憶｜不是本輪必須提及】\n" +
                                                                                                         retrievedSharedMemories
                                                                                                             .map(
                                                                                                                 (item, index) => {
@@ -6147,11 +6312,33 @@ systemPrompt += `
             `;
         }
 
-        //關於我們
+        // 🧠 記憶自然化：記得 ≠ 這一輪一定要拿出來說。
+        // RAG 只提供可能相關的背景事實；Writer 必須先服務當下對話，
+        // 不得為了「展示記憶力」強行把記憶變成物件、事件或台詞。
         if (sharedMemoriesText && sharedMemoriesText.trim() !== "") {
               systemPrompt += `
 
             ${sharedMemoriesText.trim()}
+
+            【🧠 記憶使用規則｜自然化最高優先級】
+            1. 上述記憶是「你已知的背景事實」，不是本輪任務，也不是要求你一定要提到的關鍵字。
+            2. 回覆時永遠先承接玩家最新一句話與當前場景；若某條記憶對本輪沒有自然且直接的作用，請安靜地記得，不要主動提起。
+            3. 「知道玩家喜歡某物」不代表該物此刻存在。禁止只因記憶中寫著喜歡巧克力、咖啡、花、某首歌等，就讓它突然出現在桌上、手中、房間裡，或讓角色無緣由立刻送出／準備它。
+            4. 偏好與習慣只能在場景本來就需要做選擇時自然影響選擇。例如正在點餐、挑禮物、安排活動時，才可以把已知偏好當作參考；不能為了使用記憶而主動創造點餐、送禮或新事件。
+            5. 不要刻意證明自己記得。避免頻繁使用「我記得你說過……」「你之前提過……」等提示語；除非玩家正在問記憶、回顧往事，或當下情境真的需要明確說出記得。
+            6. 可以讓記憶以細微方式影響角色反應，例如避開玩家明確討厭的東西、在需要選擇時偏向玩家喜歡的選項；但不要把記憶變成每輪話題中心。
+            7. 同一條記憶近期已經自然使用過時，不要連續數輪反覆提及；除非玩家自己再次把話題帶回來。
+            8. 玩家本輪最新明確說法若與舊記憶不同，以最新說法與當前對話為準，不要拿舊記憶糾正玩家。
+            9. Session／世界線記憶可以維持已建立的關係與故事事實，但仍不得憑記憶額外發明「現在正發生」的動作、物件或事件。
+            10. 最自然的記憶表現通常是「不說破但行為一致」。若不用記憶也能自然回答，預設不要硬塞記憶。
+
+            【例子】
+            - 記憶：玩家喜歡巧克力。玩家本輪說「今天好累」。
+              錯誤：桌上立刻出現巧克力，角色把巧克力推到玩家面前。
+              正確：先正常關心玩家累不累；除非場景本來就在甜點店、正在選零食或玩家主動提到吃東西，否則不需要使用巧克力記憶。
+            - 記憶：玩家不喝咖啡。場景正在點飲料。
+              可以：角色自然避開替玩家選咖啡，或詢問其他飲料。
+              不可以：在無關聊天中突然提醒「你不喝咖啡」。
             `;
         }
 
@@ -6204,6 +6391,13 @@ systemPrompt += `
         ${statusBarDirective}
         `;
         }
+
+       // 🧭 最後再壓一次玩家代理權與聊天室持續偏好，
+       // 避免模式內較早的「親暱稱呼／敘事習慣」覆蓋玩家明確設定。
+       systemPrompt += `
+${playerAgencyAndNaturalnessDirective}
+${persistentPreferenceDirective}
+`;
 
        // ✨ 偷天換日 1：隨機開局 (把「玩家」換成 `${playerName}`)
        const checkMsg = userMessage.trim().toLowerCase();
@@ -6571,6 +6765,39 @@ systemPrompt += `
                                   // ==========================================
                                   // 🧩 正式組裝 currentMessages
                                   // ==========================================
+
+                                  // 🛡️ 只比較本次 request 帶入的同聊天室歷史，
+                                  // 不會跨玩家、跨聊天室比對。
+                                  function duplicateReplyFingerprint(value) {
+                                      return String(value || "")
+                                          .replace(
+                                              /^\s*時間\s*[：:][^\r\n]*\r?\n\s*地點\s*[：:][^\r\n]*\r?\n?/i,
+                                              ""
+                                          )
+                                          .replace(/\s+/g, "")
+                                          .trim()
+                                          .slice(0, 360);
+                                  }
+
+                                  const recentAssistantFingerprints =
+                                      normalizedHistory
+                                          .filter(
+                                              (msg) =>
+                                                  msg.role === "assistant"
+                                          )
+                                          .slice(-5)
+                                          .map(
+                                              (msg) =>
+                                                  duplicateReplyFingerprint(
+                                                      msg.content
+                                                  )
+                                          )
+                                          .filter(
+                                              (fingerprint) =>
+                                                  fingerprint.length >= 120
+                                          );
+
+                                  let duplicateReplyRetryUsed = false;
 
                                   let currentMessages = [...normalizedHistory];
 
@@ -7538,15 +7765,20 @@ try {
                                                                                            .slice(0, 80);
 
                                                                                        if (!value) {
-                                                                                           value = String(previousStatusBar[field] || "未明確").trim();
+                                                                                           // 模型偶發漏欄位時，有上一輪才沿用。
+                                                                                           // 第一輪沒有歷史狀態時，不再硬塞「未明確」。
+                                                                                           value = String(previousStatusBar[field] || "").trim();
                                                                                        }
 
-                                                                                       // 好感度禁止數字化；若模型仍回百分比／分數，保守沿用上一輪。
+                                                                                       // 好感度禁止數字化；若模型仍回百分比／分數，
+                                                                                       // 有上一輪才沿用，否則略過該欄，不製造「未明確」佔位字。
                                                                                        if (field === "affinity" && /\d/.test(value)) {
-                                                                                           value = String(previousStatusBar[field] || "未明確").trim();
+                                                                                           value = String(previousStatusBar[field] || "").trim();
                                                                                        }
 
-                                                                                       normalizedStatusBar[field] = value || "未明確";
+                                                                                       if (value) {
+                                                                                           normalizedStatusBar[field] = value;
+                                                                                       }
                                                                                    }
 
                                                                                    parsedData.statusBar = normalizedStatusBar;
@@ -7640,7 +7872,83 @@ const residualWriterArtifacts =
                                                                                    MAX_RESPONSE_LENGTH
                                                                                );
 
-                                                                               console.log(
+                                                                               // 🛡️ 防止模型把同聊天室最近幾則 AI 長回覆整段搬回來。
+                                                                                const currentReplyFingerprint =
+                                                                                    duplicateReplyFingerprint(
+                                                                                        currentText
+                                                                                    );
+
+                                                                                const repeatedHistoryFingerprint =
+                                                                                    recentAssistantFingerprints.find(
+                                                                                        (oldFingerprint) => {
+                                                                                            if (
+                                                                                                currentReplyFingerprint.length < 120 ||
+                                                                                                oldFingerprint.length < 120
+                                                                                            ) {
+                                                                                                return false;
+                                                                                            }
+
+                                                                                            return (
+                                                                                                currentReplyFingerprint ===
+                                                                                                    oldFingerprint ||
+                                                                                                currentReplyFingerprint.startsWith(
+                                                                                                    oldFingerprint
+                                                                                                ) ||
+                                                                                                oldFingerprint.startsWith(
+                                                                                                    currentReplyFingerprint
+                                                                                                )
+                                                                                            );
+                                                                                        }
+                                                                                    );
+
+                                                                                if (
+                                                                                    repeatedHistoryFingerprint &&
+                                                                                    isRegenerateRequest !== true
+                                                                                ) {
+                                                                                    console.warn(
+                                                                                        "🔁 偵測到 AI 重複同聊天室近期舊回覆，啟動一次防重複重生",
+                                                                                        {
+                                                                                            chatMode,
+                                                                                            sessionId:
+                                                                                                rawSessionId,
+                                                                                            clientRequestId:
+                                                                                                safeClientRequestId,
+                                                                                        }
+                                                                                    );
+
+                                                                                    if (!duplicateReplyRetryUsed) {
+                                                                                        duplicateReplyRetryUsed = true;
+                                                                                        nextAiCallReason =
+                                                                                            "duplicate_recent_history_retry";
+
+                                                                                        const retryUserIndex =
+                                                                                            currentMessages.length - 1;
+
+                                                                                        currentMessages[
+                                                                                            retryUserIndex
+                                                                                        ] = {
+                                                                                            role: "user",
+                                                                                            content:
+                                                                                                `${safeFinalUserMessage}\n\n` +
+                                                                                                `【最高優先防重複指令】\n` +
+                                                                                                `你剛才準備輸出的內容與這個聊天室近期已經出現過的角色回覆高度重複，該草稿作廢。\n` +
+                                                                                                `請重新理解玩家這一次的最新訊息，生成新的回覆。禁止複製、重述或輕微改寫近期已出現過的整段內容；必須自然延續目前對話。`,
+                                                                                        };
+
+                                                                                        continue;
+                                                                                    }
+
+                                                                                    return res.status(400).json({
+                                                                                        error:
+                                                                                            "DUPLICATE_AI_RESPONSE",
+                                                                                        message:
+                                                                                            "這次回覆重複了先前內容，請再試一次。",
+                                                                                        charged: false,
+                                                                                        cost: 0,
+                                                                                    });
+                                                                                }
+
+                                                                                console.log(
                                                                                    "🧪 CURRENT TEXT:",
                                                                                    currentText?.slice(0, 500)
                                                                                );
@@ -8765,7 +9073,9 @@ if (sessionId) {
         const aiMessageRef =
             isQixiOpeningRequest
                 ? messagesRef.doc("qixi_opening_ai")
-                : messagesRef.doc();
+                : requestAiMessageId
+                    ? messagesRef.doc(requestAiMessageId)
+                    : messagesRef.doc();
         const flowerLogRef =
             cost > 0
                 ? userDocRef
@@ -8946,6 +9256,16 @@ const sessionData =
 
                             characterName: name,
                             role: "assistant",
+
+                            // 🛡️ request 冪等資訊。
+                            clientRequestId:
+                                safeClientRequestId,
+                            affectionChange:
+                                finalAffectionChange,
+                            storyTime:
+                                String(finalStoryTime || "").trim(),
+                            storyLocation:
+                                String(finalStoryLocation || "").trim(),
 
                             // 📊 營運統計用，不影響聊天室顯示
                             chatMode,

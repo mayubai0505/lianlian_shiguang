@@ -8420,4 +8420,87 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get languageSelectionSubtitle =>
       'वह भाषा चुनें जिसका उपयोग करना आपको सबसे सहज लगता है';
+
+  @override
+  String get chatStatusBarTitle => 'स्थिति';
+
+  @override
+  String get chatStatusBarSubtitle => 'चैट में दिखाने वाली जानकारी चुनें';
+
+  @override
+  String get chatStatusMood => 'मूड';
+
+  @override
+  String get chatStatusOutfit => 'पोशाक';
+
+  @override
+  String get chatStatusRelationship => 'रिश्ता';
+
+  @override
+  String get chatStatusThought => 'विचार';
+
+  @override
+  String get chatStatusWeather => 'मौसम';
+
+  @override
+  String get chatStatusCurrentState => 'वर्तमान स्थिति';
+
+  @override
+  String get chatStatusAction => 'क्रिया';
+
+  @override
+  String get chatStatusAffinity => 'लगाव';
+
+  @override
+  String get chatPreferenceTitle => 'चैट प्राथमिकताएँ';
+
+  @override
+  String get chatPreferenceSubtitle =>
+      'ये सेटिंग केवल इस चैट पर लागू होती हैं और तब तक सक्रिय रहेंगी जब तक आप उन्हें बदल या साफ़ नहीं करते।';
+
+  @override
+  String get chatPreferenceHint =>
+      'उदाहरण:\\nमुझे बेबी मत कहो\\nजवाब थोड़े छोटे रखो\\nमेरी ओर से बार-बार हरकतें या भाव न जोड़ो';
+
+  @override
+  String get chatPreferenceClear => 'साफ़ करें';
+
+  @override
+  String get chatSettingsDone => 'पूरा';
+
+  @override
+  String get chat_mode_resonance => 'अनुनाद';
+
+  @override
+  String get chat_mode_gemini_cost =>
+      'हर दिन पहली 10 बार मुफ्त, उसके बाद 1 अंक';
+
+  @override
+  String get chat_mode_gemini_desc =>
+      'हल्की-फुल्की बातचीत और रोज़मर्रा के साथ के लिए उपयुक्त।';
+
+  @override
+  String get chat_mode_story_cost => '5 अंक';
+
+  @override
+  String get chat_mode_immersive_cost => '7 अंक';
+
+  @override
+  String get chat_mode_resonance_cost => '10 अंक';
+
+  @override
+  String get chat_mode_resonance_desc =>
+      'भावनाओं, रिश्ते के तनाव और किरदार की प्रतिक्रियाओं को अधिक बारीकी से आगे बढ़ाता है।';
+
+  @override
+  String get chat_mode_gemini_cost_short => '1 फूल';
+
+  @override
+  String get chat_mode_story_cost_short => '5 फूल';
+
+  @override
+  String get chat_mode_immersive_cost_short => '7 फूल';
+
+  @override
+  String get chat_mode_resonance_cost_short => '10 फूल';
 }

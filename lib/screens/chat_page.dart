@@ -197,6 +197,12 @@ class _ChatPageState extends State<ChatPage> {
   bool _statusShowCurrentState = false;
   bool _statusShowAction = false;
   bool _statusShowAffinity = false;
+
+  // 🧭 每個聊天室自己的持續聊天偏好。
+  // 只有玩家明確在「聊天偏好」中儲存的內容才會跨輪生效，
+  // 不會把一般聊天中的臨時抱怨誤判成永久規則。
+  String _persistentInstructions = '';
+
   // 同一次 App 執行期間保留已看過的聊天室內容。
   // 玩家離開聊天室再回來時，先直接畫上次的訊息，
   // Firestore 再於背景接手同步，不需要每次都先看全螢幕轉圈。
@@ -1815,6 +1821,10 @@ class _ChatPageState extends State<ChatPage> {
               _statusShowAction = statusBarSettings['action'] == true;
               _statusShowAffinity = statusBarSettings['affinity'] == true;
 
+              // 🧭 每個聊天室各自保存玩家明確設定的持續聊天偏好。
+              _persistentInstructions =
+                  (data['persistentInstructions'] ?? '').toString().trim();
+
 // 七夕房間狀態
               _isQixiRoom = isQixiRoom;
               _qixiInteractionDates = qixiInteractionDates;
@@ -1877,6 +1887,8 @@ class _ChatPageState extends State<ChatPage> {
             'action': false,
             'affinity': false,
           },
+          // 🧭 新聊天室預設沒有持續指令，等玩家主動設定。
+          'persistentInstructions': '',
           'createdAt': FieldValue.serverTimestamp(),
           'lastActivity': FieldValue.serverTimestamp(),
         });
@@ -3770,6 +3782,7 @@ class _ChatPageState extends State<ChatPage> {
         'userMessage': lastUserText,
         'chatMode': _currentMode?.name ?? 'daily',
         'statusBarFields': statusBarFields,
+        'persistentInstructions': _persistentInstructions,
 // 明確告訴後端這是免費重新生成，不能扣聊天花花。
         'isRegenerate': true,
         'isBirthdayFreebie': false,
@@ -5819,6 +5832,7 @@ class _ChatPageState extends State<ChatPage> {
         "isContinue": isContinue,
         "chatMode": _currentMode?.name ?? "gemini",
         "statusBarFields": statusBarFields,
+        "persistentInstructions": _persistentInstructions,
         "isBirthdayFreebie": isFreeToday,
         "isQixiOpening": isQixiOpening,
         "overrideSystemPrompt": overridePrompt ?? "",
@@ -8717,15 +8731,25 @@ class _ChatPageState extends State<ChatPage> {
 
                               // 8. 狀態欄
                               _buildToolItem(
-                                'assets/images/chat/chat_tool_status_mask.png',
-                                '狀態欄',
+                                'assets/images/chat/chat_status_bar_mask.png',
+                                l10n.chatStatusBarTitle,
                                     () {
                                   Navigator.pop(context);
                                   _showStatusBarSettings();
                                 },
                               ),
 
-                              // 之後新增第 8、9... 個功能，
+                              // 9. 聊天偏好／持續指令
+                              _buildToolItem(
+                                'assets/images/chat/chat_preference_mask.png',
+                                l10n.chatPreferenceTitle,
+                                    () {
+                                  Navigator.pop(context);
+                                  _showPersistentInstructionSettings();
+                                },
+                              ),
+
+                              // 之後新增第 10、11... 個功能，
                               // 直接繼續加 _buildToolItem() 即可。
                               // BottomSheet 高度仍維持 370，
                               // 超出的內容會在這個 GridView 裡上下滑動。
@@ -8744,7 +8768,187 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
+  Future<void> _savePersistentInstructions(String value) async {
+    final normalized = value.trim();
+
+    if (mounted) {
+      setState(() {
+        _persistentInstructions = normalized;
+      });
+    } else {
+      _persistentInstructions = normalized;
+    }
+
+    // 測試聊天室沒有正式 session，只保留本機狀態即可。
+    if (widget.isTestMode) return;
+
+    final sessionId = (_sessionId ?? widget.sessionId ?? '').trim();
+    if (sessionId.isEmpty) return;
+
+    try {
+      final sessionRef = FirebaseFirestore.instance
+          .collection('artifacts')
+          .doc(_appId)
+          .collection('chat_sessions')
+          .doc(sessionId);
+
+      _sessionDocRef ??= sessionRef;
+
+      await sessionRef.set(
+        {
+          'persistentInstructions': normalized,
+          'persistentInstructionsUpdatedAt': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
+      );
+    } catch (e) {
+      debugPrint('⚠️ 儲存聊天偏好失敗：$e');
+    }
+  }
+
+  void _showPersistentInstructionSettings() {
+    final l10n = AppLocalizations.of(context)!;
+    String draftValue = _persistentInstructions;
+    int fieldResetVersion = 0;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (BuildContext sheetContext) {
+        return StatefulBuilder(
+          builder: (
+              BuildContext context,
+              StateSetter sheetSetState,
+              ) {
+            final theme = Theme.of(context);
+            final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+
+            return Padding(
+              padding: EdgeInsets.only(bottom: bottomInset),
+              child: SingleChildScrollView(
+                keyboardDismissBehavior:
+                ScrollViewKeyboardDismissBehavior.onDrag,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surface,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(26),
+                    ),
+                  ),
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+                  child: SafeArea(
+                    top: false,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Align(
+                          alignment: Alignment.center,
+                          child: Container(
+                            width: 42,
+                            height: 4,
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary
+                                  .withValues(alpha: 0.25),
+                              borderRadius: BorderRadius.circular(99),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        Text(
+                          l10n.chatPreferenceTitle,
+                          style: GoogleFonts.notoSerifTc(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: theme.colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          l10n.chatPreferenceSubtitle,
+                          style: GoogleFonts.notoSerifTc(
+                            fontSize: 12,
+                            height: 1.5,
+                            color: theme.colorScheme.onSurface
+                                .withValues(alpha: 0.62),
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        TextFormField(
+                          key: ValueKey(
+                            'persistent_instructions_$fieldResetVersion',
+                          ),
+                          initialValue: draftValue,
+                          minLines: 4,
+                          maxLines: 7,
+                          maxLength: 600,
+                          textInputAction: TextInputAction.newline,
+                          onChanged: (value) {
+                            draftValue = value;
+                          },
+                          decoration: InputDecoration(
+                            hintText:
+                            l10n.chatPreferenceHint,
+                            hintStyle: GoogleFonts.notoSerifTc(
+                              fontSize: 12,
+                              height: 1.55,
+                              color: theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.38),
+                            ),
+                            filled: true,
+                            fillColor: theme
+                                .colorScheme.surfaceContainerHighest
+                                .withValues(alpha: 0.30),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18),
+                              borderSide: BorderSide.none,
+                            ),
+                            contentPadding: const EdgeInsets.all(14),
+                          ),
+                          style: GoogleFonts.notoSerifTc(
+                            fontSize: 13,
+                            height: 1.55,
+                            color: theme.colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                sheetSetState(() {
+                                  draftValue = '';
+                                  fieldResetVersion++;
+                                });
+                              },
+                              child: Text(l10n.chatPreferenceClear),
+                            ),
+                            const Spacer(),
+                            FilledButton(
+                              onPressed: () async {
+                                final value = draftValue.trim();
+                                Navigator.of(sheetContext).pop();
+                                await _savePersistentInstructions(value);
+                              },
+                              child: Text(l10n.chatSettingsDone),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   void _showStatusBarSettings() {
+    final l10n = AppLocalizations.of(context)!;
     bool tempShowMood = _statusShowMood;
     bool tempShowOutfit = _statusShowOutfit;
     bool tempShowRelationship = _statusShowRelationship;
@@ -8887,14 +9091,14 @@ class _ChatPageState extends State<ChatPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '狀態欄',
+                                l10n.chatStatusBarTitle,
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                '選擇想在聊天中顯示的資訊',
+                                l10n.chatStatusBarSubtitle,
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: theme.colorScheme.onSurfaceVariant,
                                 ),
@@ -8917,7 +9121,7 @@ class _ChatPageState extends State<ChatPage> {
                       children: [
                         buildStatusOption(
                           icon: Icons.sentiment_satisfied_alt_rounded,
-                          title: '心情',
+                          title: l10n.chatStatusMood,
                           value: tempShowMood,
                           onChanged: (value) {
                             sheetSetState(() {
@@ -8927,7 +9131,7 @@ class _ChatPageState extends State<ChatPage> {
                         ),
                         buildStatusOption(
                           icon: Icons.checkroom_rounded,
-                          title: '衣著',
+                          title: l10n.chatStatusOutfit,
                           value: tempShowOutfit,
                           onChanged: (value) {
                             sheetSetState(() {
@@ -8937,7 +9141,7 @@ class _ChatPageState extends State<ChatPage> {
                         ),
                         buildStatusOption(
                           icon: Icons.favorite_border_rounded,
-                          title: '關係',
+                          title: l10n.chatStatusRelationship,
                           value: tempShowRelationship,
                           onChanged: (value) {
                             sheetSetState(() {
@@ -8947,7 +9151,7 @@ class _ChatPageState extends State<ChatPage> {
                         ),
                         buildStatusOption(
                           icon: Icons.psychology_alt_outlined,
-                          title: '想法',
+                          title: l10n.chatStatusThought,
                           value: tempShowThought,
                           onChanged: (value) {
                             sheetSetState(() {
@@ -8957,7 +9161,7 @@ class _ChatPageState extends State<ChatPage> {
                         ),
                         buildStatusOption(
                           icon: Icons.cloud_outlined,
-                          title: '天氣',
+                          title: l10n.chatStatusWeather,
                           value: tempShowWeather,
                           onChanged: (value) {
                             sheetSetState(() {
@@ -8967,7 +9171,7 @@ class _ChatPageState extends State<ChatPage> {
                         ),
                         buildStatusOption(
                           icon: Icons.bolt_rounded,
-                          title: '當前狀態',
+                          title: l10n.chatStatusCurrentState,
                           value: tempShowCurrentState,
                           onChanged: (value) {
                             sheetSetState(() {
@@ -8977,7 +9181,7 @@ class _ChatPageState extends State<ChatPage> {
                         ),
                         buildStatusOption(
                           icon: Icons.accessibility_new_rounded,
-                          title: '動作',
+                          title: l10n.chatStatusAction,
                           value: tempShowAction,
                           onChanged: (value) {
                             sheetSetState(() {
@@ -8987,7 +9191,7 @@ class _ChatPageState extends State<ChatPage> {
                         ),
                         buildStatusOption(
                           icon: Icons.auto_awesome_rounded,
-                          title: '好感度',
+                          title: l10n.chatStatusAffinity,
                           value: tempShowAffinity,
                           onChanged: (value) {
                             sheetSetState(() {
@@ -9039,9 +9243,9 @@ class _ChatPageState extends State<ChatPage> {
                             borderRadius: BorderRadius.circular(18),
                           ),
                         ),
-                        child: const Text(
-                          '完成',
-                          style: TextStyle(
+                        child: Text(
+                          l10n.chatSettingsDone,
+                          style: const TextStyle(
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -9128,7 +9332,7 @@ class _ChatPageState extends State<ChatPage> {
                   // 狀態欄正式圖片尚未加入時先用 Material icon 兜底，
                   // 避免缺 asset 造成工具入口報錯；之後補圖即可自動恢復圖片。
                   return Icon(
-                    assetPath.contains('chat_tool_status')
+                    assetPath.contains('chat_status_bar')
                         ? Icons.tune_rounded
                         : Icons.widgets_rounded,
                     size: 30,
@@ -9451,35 +9655,33 @@ class _ChatPageState extends State<ChatPage> {
       {
         'mode': ChatMode.gemini,
         'title': l10n.chat_mode_gemini,
-        'cost': '每日前 10 次免費，之後 1 點',
-        'desc': '適合輕鬆聊天與日常陪伴。',
+        'cost': l10n.chat_mode_gemini_cost,
+        'desc': l10n.chat_mode_gemini_desc,
         'icon': Icons.chat_bubble_outline_rounded,
         'color': Colors.green.shade200,
       },
       {
         'mode': ChatMode.story,
         'title': l10n.chatModeStory,
-        'cost': '5 點',
+        'cost': l10n.chat_mode_story_cost,
         'desc': l10n.chat_mode_story_desc,
         'icon': Icons.book,
-        // 📖 總裁指定：淡藍色 -> 我們用 Colors.blue.shade200，像晴空一樣的柔和藍色
         'color': Colors.blue.shade200,
       },
       {
         'mode': ChatMode.immersive,
         'title': l10n.chatModeImmersive,
-        'cost': '7 點',
+        'cost': l10n.chat_mode_immersive_cost,
         'desc': l10n.chat_mode_immersive_desc,
         'icon': Icons.auto_awesome,
-        // ✨ 總裁指定：淡黃色 -> 我們用 Colors.amber.shade200，自帶暖光卻不會刺眼
         'color': Colors.amber.shade200,
       },
       {
         'mode': ChatMode.resonance,
-        'title': '共鳴',
-        'cost': '10 點',
-        'desc': '更細膩地延伸情緒、關係張力與角色反應。',
-        'icon': Icons.favorite_rounded,
+        'title': l10n.chat_mode_resonance,
+        'cost': l10n.chat_mode_resonance_cost,
+        'desc': l10n.chat_mode_resonance_desc,
+        'asset': 'assets/images/chat/chat_mode_resonance_mask.png',
         'color': Colors.purple.shade200,
       },
     ];
@@ -9530,8 +9732,20 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                   child: Row(
                     children: [
-                      Icon(info['icon'] as IconData,
-                          color: info['color'] as Color, size: 28),
+                      info['asset'] != null
+                          ? Image.asset(
+                        info['asset'] as String,
+                        width: 28,
+                        height: 28,
+                        fit: BoxFit.contain,
+                        color: info['color'] as Color,
+                        colorBlendMode: BlendMode.srcIn,
+                      )
+                          : Icon(
+                        info['icon'] as IconData,
+                        color: info['color'] as Color,
+                        size: 28,
+                      ),
                       const SizedBox(width: 16),
                       Expanded(
                         child: Column(
@@ -11073,7 +11287,7 @@ class _ChatPageState extends State<ChatPage> {
         dailyLabel: l10n.chat_mode_gemini, // 新版：此欄位顯示『閒聊』
         storyLabel: l10n.chatModeStory,
         immersiveLabel: l10n.chatModeImmersive,
-        resonanceLabel: '共鳴',
+        resonanceLabel: l10n.chat_mode_resonance,
         callLabel: l10n.chat_voice_call,
         currentModeId: (_currentMode ?? ChatMode.story).name,
         showModelSelector: false,
@@ -11526,25 +11740,27 @@ class _ChatPageState extends State<ChatPage> {
                 modeOptions: [
                   ChatHeaderModeOption(
                     id: ChatMode.gemini.name,
-                    label: l10n.chat_mode_gemini,
+                    label: '${l10n.chat_mode_gemini} · ${l10n.chat_mode_gemini_cost_short}',
                     asset: 'assets/images/chat/chat_mode_daily_mask.png',
                     fallbackIcon: Icons.chat_bubble_outline_rounded,
                   ),
                   ChatHeaderModeOption(
                     id: ChatMode.story.name,
-                    label: l10n.chatModeStory,
+                    label: '${l10n.chatModeStory} · ${l10n.chat_mode_story_cost_short}',
                     asset: 'assets/images/chat/chat_mode_story_mask.png',
                     fallbackIcon: Icons.menu_book_rounded,
                   ),
                   ChatHeaderModeOption(
                     id: ChatMode.immersive.name,
-                    label: l10n.chatModeImmersive,
+                    label: '${l10n.chatModeImmersive} · ${l10n.chat_mode_immersive_cost_short}',
                     asset: 'assets/images/chat/chat_mode_immersive_mask.png',
                     fallbackIcon: Icons.dark_mode_outlined,
                   ),
                   ChatHeaderModeOption(
                     id: ChatMode.resonance.name,
-                    label: '共鳴',
+                    label:
+                    '${l10n.chat_mode_resonance} · ${l10n.chat_mode_resonance_cost}',
+                    asset: 'assets/images/chat/chat_mode_resonance_mask.png',
                     fallbackIcon: Icons.favorite_rounded,
                   ),
                 ],
@@ -11811,6 +12027,10 @@ class _ChatPageState extends State<ChatPage> {
                   )
                       : const SizedBox.shrink(),
 
+                  // 🖼️ 選圖後先在輸入框上方顯示預覽
+                  if (!_isMultiSelectMode)
+                    _buildSelectedChatImagePreview(),
+
                   // 🌟 多選模式 / 平常輸入框
                   if (_isMultiSelectMode)
                     _buildMultiSelectBottomBar()
@@ -11840,7 +12060,8 @@ class _ChatPageState extends State<ChatPage> {
                       l10n.chat_continue_bottom_tip,
                       onChanged: _saveDraft,
                       onToolbox: _showToolbox,
-                      onSticker: _showStickerPicker,
+                      // 🚧 送審版：貼圖功能底層保留，暫時隱藏入口。
+                      onSticker: null,
                       onRegenerate: _handleRegenerateButton,
                       onContinue: _handleContinueButton,
                       onStop: _stopGenerating,
@@ -11945,16 +12166,17 @@ class _ChatPageState extends State<ChatPage> {
     'affinity',
   ];
 
-  static const Map<String, String> _statusBarLabels = <String, String>{
-    'mood': '心情',
-    'outfit': '衣著',
-    'relationship': '關係',
-    'thought': '想法',
-    'weather': '天氣',
-    'currentState': '當前狀態',
-    'action': '動作',
-    'affinity': '好感度',
-  };
+  Map<String, String> _statusBarLabels(AppLocalizations l10n) =>
+      <String, String>{
+        'mood': l10n.chatStatusMood,
+        'outfit': l10n.chatStatusOutfit,
+        'relationship': l10n.chatStatusRelationship,
+        'thought': l10n.chatStatusThought,
+        'weather': l10n.chatStatusWeather,
+        'currentState': l10n.chatStatusCurrentState,
+        'action': l10n.chatStatusAction,
+        'affinity': l10n.chatStatusAffinity,
+      };
 
   String _statusBarDisplayValue(ChatMessage message, String field) {
     final rawValue = message.statusBar[field]?.toString().trim() ?? '';
@@ -11984,6 +12206,8 @@ class _ChatPageState extends State<ChatPage> {
     }
 
     final statusLines = <String>[];
+    final l10n = AppLocalizations.of(context)!;
+    final statusBarLabels = _statusBarLabels(l10n);
 
     for (final field in _statusBarDisplayOrder) {
       if (!message.statusBar.containsKey(field)) continue;
@@ -11991,7 +12215,7 @@ class _ChatPageState extends State<ChatPage> {
       final value = _statusBarDisplayValue(message, field);
       if (value.isEmpty) continue;
 
-      final label = _statusBarLabels[field] ?? field;
+      final label = statusBarLabels[field] ?? field;
       statusLines.add('$label｜$value');
     }
 
@@ -12180,18 +12404,15 @@ class _ChatPageState extends State<ChatPage> {
           } else if (type == 'text') {
             // 玩家改成「淡主題色泡泡＋深色文字」，
             // AI 則保留白/淡 surface，對話文字使用主題色。
-            final normalStyle = TextStyle(
-              color: isUserMessage
-                  ? onSurface.withValues(alpha: 0.90)
-                  : primary,
+            // 對話固定黑色；旁白／動作跟著聊天室主題色。
+            final normalStyle = const TextStyle(
+              color: Colors.black,
               fontSize: 15,
               height: 1.62,
             );
 
             final actionStyle = TextStyle(
-              color: onSurface.withValues(
-                alpha: isUserMessage ? 0.68 : 0.70,
-              ),
+              color: primary,
               fontSize: 15,
               height: 1.62,
             );
@@ -12642,22 +12863,25 @@ Future<void> _deleteMessagesFromDB(
 Widget _buildStyledAiMessage(
     BuildContext context,
     String message,
-    TextStyle dialogueStyle,
+    TextStyle baseDialogueStyle,
     ) {
   if (message.trim().isEmpty) {
     return const SizedBox.shrink();
   }
 
   final theme = Theme.of(context);
-  final actionStyle = TextStyle(
-    color: theme.colorScheme.onSurface,
+
+  // 對話固定黑色；旁白／動作跟著目前主題色。
+  final dialogueStyle = baseDialogueStyle.copyWith(
+    color: Colors.black,
     height: 1.55,
   );
 
-  final dialogueStyle = TextStyle(
+  final actionStyle = baseDialogueStyle.copyWith(
     color: theme.colorScheme.primary,
     height: 1.55,
   );
+
   final RegExp mixedRegex = RegExp(
     r'(「.*?」|“.*?”|".*?"|（.*?）|\(.*?\))',
     dotAll: true,
@@ -12666,7 +12890,7 @@ Widget _buildStyledAiMessage(
   final matches = mixedRegex.allMatches(message);
 
   if (matches.isEmpty) {
-    // 沒有動作括號時，視為純對話，使用目前主題色。
+    // 沒有標記時，視為一般對話文字。
     return Text(
       message,
       style: dialogueStyle,
@@ -12679,7 +12903,7 @@ Widget _buildStyledAiMessage(
   for (final match in matches) {
     final String matchedText = match.group(0) ?? '';
 
-    // 引號或括號前面的普通文字，例如時間、地點、狀態欄。
+    // 引號或括號前後的普通文字視為旁白／敘述。
     if (match.start > currentIndex) {
       spans.add(
         TextSpan(
@@ -12696,7 +12920,6 @@ Widget _buildStyledAiMessage(
         matchedText.startsWith('（') || matchedText.startsWith('(');
 
     if (isAction) {
-      // 只移除最外層括號，不修改資料庫中的原始訊息。
       final String actionText = matchedText.length >= 2
           ? matchedText.substring(
         1,
@@ -12711,7 +12934,6 @@ Widget _buildStyledAiMessage(
         ),
       );
     } else {
-      // 對話保留引號，並使用主題色。
       spans.add(
         TextSpan(
           text: matchedText,
@@ -12723,7 +12945,6 @@ Widget _buildStyledAiMessage(
     currentIndex = match.end;
   }
 
-  // 最後一段普通文字或狀態欄。
   if (currentIndex < message.length) {
     spans.add(
       TextSpan(

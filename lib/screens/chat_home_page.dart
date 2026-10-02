@@ -268,11 +268,18 @@ class _ChatHomePageState extends State<ChatHomePage> {
   // ✨ 將英文的 chatMode 轉換為多國語言標籤
   String _getModeLabel(String? mode, AppLocalizations l10n) {
     switch (mode) {
-      case 'daily': return l10n.chat_mode_daily;
-      case 'story': return l10n.chat_mode_story;
-      case 'immersive': return l10n.chat_mode_immersive;
-      case 'gemini': return l10n.chat_mode_gemini;
-      default: return l10n.chat_mode_daily;
+      case 'daily':
+        return l10n.chat_mode_daily;
+      case 'story':
+        return l10n.chat_mode_story;
+      case 'immersive':
+        return l10n.chat_mode_immersive;
+      case 'resonance':
+        return l10n.chat_mode_resonance;
+      case 'gemini':
+        return l10n.chat_mode_gemini;
+      default:
+        return l10n.chat_mode_daily;
     }
   }
 

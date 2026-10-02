@@ -163,7 +163,7 @@ class ReminderNotificationService {
     return memoId.hashCode & 0x7fffffff;
   }
 
-  static String _buildCharacterReminderBody({
+  static String buildCharacterReminderBody({
     required AppLocalizations l10n,
     required String memoContent,
     String? personalityType,
@@ -287,7 +287,7 @@ class ReminderNotificationService {
     );
 
     final String reminderBody =
-    _buildCharacterReminderBody(
+    buildCharacterReminderBody(
       l10n: l10n,
       memoContent: memoContent,
       personalityType: personalityType,

@@ -4571,5 +4571,79 @@
   "languageSelectionSubtitle": "Choose the language you're most comfortable with",
   "@languageSelectionSubtitle": {
     "description": "Subtitle shown below the language settings title."
-  }
+  },
+  "chatStatusBarTitle": "Status",
+  "chatStatusBarSubtitle": "Choose what to display in the chat",
+  "chatStatusMood": "Mood",
+  "chatStatusOutfit": "Outfit",
+  "chatStatusRelationship": "Relationship",
+  "chatStatusThought": "Thoughts",
+  "chatStatusWeather": "Weather",
+  "chatStatusCurrentState": "Current state",
+  "chatStatusAction": "Action",
+  "chatStatusAffinity": "Affection",
+  "chatPreferenceTitle": "Chat Preferences",
+  "chatPreferenceSubtitle": "These settings apply only to this chat and stay active until you edit or clear them.",
+  "chatPreferenceHint": "For example:\\nDon't call me baby\\nKeep replies shorter\\nDon't frequently add actions or expressions for me",
+  "chatPreferenceClear": "Clear",
+  "chatSettingsDone": "Done",
+  "@chatStatusBarTitle": {
+    "description": "Title for per-chat status display settings."
+  },
+  "@chatStatusBarSubtitle": {
+    "description": "Subtitle explaining status display settings."
+  },
+  "@chatStatusMood": {
+    "description": "Status field: mood."
+  },
+  "@chatStatusOutfit": {
+    "description": "Status field: outfit."
+  },
+  "@chatStatusRelationship": {
+    "description": "Status field: relationship."
+  },
+  "@chatStatusThought": {
+    "description": "Status field: thoughts."
+  },
+  "@chatStatusWeather": {
+    "description": "Status field: weather."
+  },
+  "@chatStatusCurrentState": {
+    "description": "Status field: current state."
+  },
+  "@chatStatusAction": {
+    "description": "Status field: action."
+  },
+  "@chatStatusAffinity": {
+    "description": "Status field: affection/affinity."
+  },
+  "@chatPreferenceTitle": {
+    "description": "Title for persistent chat preferences."
+  },
+  "@chatPreferenceSubtitle": {
+    "description": "Explanation for per-chat persistent preferences."
+  },
+  "@chatPreferenceHint": {
+    "description": "Example text shown in the persistent preference field."
+  },
+  "@chatPreferenceClear": {
+    "description": "Button to clear persistent chat preferences."
+  },
+  "@chatSettingsDone": {
+    "description": "Done button shared by chat settings sheets."
+  },
+  "chat_mode_resonance": "Resonance",
+  "@chat_mode_resonance": {
+    "description": "Label for the Resonance chat mode."
+  },
+  "chat_mode_gemini_cost": "First 10 per day free, then 1 point",
+  "chat_mode_gemini_desc": "Best for casual chats and everyday companionship.",
+  "chat_mode_story_cost": "5 points",
+  "chat_mode_immersive_cost": "7 points",
+  "chat_mode_resonance_cost": "10 points",
+  "chat_mode_resonance_desc": "Extends emotions, relationship tension, and character reactions with greater nuance.",
+  "chat_mode_gemini_cost_short": "1 Flower",
+  "chat_mode_story_cost_short": "5 Flowers",
+  "chat_mode_immersive_cost_short": "7 Flowers",
+  "chat_mode_resonance_cost_short": "10 Flowers"
 }

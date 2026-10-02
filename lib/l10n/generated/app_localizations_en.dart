@@ -8381,4 +8381,86 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get languageSelectionSubtitle =>
       'Choose the language you\'re most comfortable with';
+
+  @override
+  String get chatStatusBarTitle => 'Status';
+
+  @override
+  String get chatStatusBarSubtitle => 'Choose what to display in the chat';
+
+  @override
+  String get chatStatusMood => 'Mood';
+
+  @override
+  String get chatStatusOutfit => 'Outfit';
+
+  @override
+  String get chatStatusRelationship => 'Relationship';
+
+  @override
+  String get chatStatusThought => 'Thoughts';
+
+  @override
+  String get chatStatusWeather => 'Weather';
+
+  @override
+  String get chatStatusCurrentState => 'Current state';
+
+  @override
+  String get chatStatusAction => 'Action';
+
+  @override
+  String get chatStatusAffinity => 'Affection';
+
+  @override
+  String get chatPreferenceTitle => 'Chat Preferences';
+
+  @override
+  String get chatPreferenceSubtitle =>
+      'These settings apply only to this chat and stay active until you edit or clear them.';
+
+  @override
+  String get chatPreferenceHint =>
+      'For example:\\nDon\'t call me baby\\nKeep replies shorter\\nDon\'t frequently add actions or expressions for me';
+
+  @override
+  String get chatPreferenceClear => 'Clear';
+
+  @override
+  String get chatSettingsDone => 'Done';
+
+  @override
+  String get chat_mode_resonance => 'Resonance';
+
+  @override
+  String get chat_mode_gemini_cost => 'First 10 per day free, then 1 point';
+
+  @override
+  String get chat_mode_gemini_desc =>
+      'Best for casual chats and everyday companionship.';
+
+  @override
+  String get chat_mode_story_cost => '5 points';
+
+  @override
+  String get chat_mode_immersive_cost => '7 points';
+
+  @override
+  String get chat_mode_resonance_cost => '10 points';
+
+  @override
+  String get chat_mode_resonance_desc =>
+      'Extends emotions, relationship tension, and character reactions with greater nuance.';
+
+  @override
+  String get chat_mode_gemini_cost_short => '1 Flower';
+
+  @override
+  String get chat_mode_story_cost_short => '5 Flowers';
+
+  @override
+  String get chat_mode_immersive_cost_short => '7 Flowers';
+
+  @override
+  String get chat_mode_resonance_cost_short => '10 Flowers';
 }

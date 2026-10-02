@@ -18,7 +18,7 @@ class ChatInputBar extends StatefulWidget {
 
   final ValueChanged<String> onChanged;
   final VoidCallback onToolbox;
-  final VoidCallback onSticker;
+  final VoidCallback? onSticker;
   final VoidCallback onRegenerate;
   final VoidCallback onContinue;
   final VoidCallback onStop;
@@ -279,56 +279,58 @@ class _ChatInputBarState extends State<ChatInputBar>
                 ],
               ),
             ),
-            const SizedBox(width: 5),
             // 最右側按鈕：
-// - AI 生成中：停止
-// - 輸入框聚焦，而且左邊工具仍收起：送出
-// - 按箭頭展開工具列：立刻切回貼紙
-// - 未聚焦：貼紙
-            _BareIconButton(
-              tooltip: widget.isGenerating
-                  ? 'Stop'
-                  : (widget.focusNode.hasFocus &&
-                  !_toolsExpandedWhileFocused
-                  ? 'Send'
-                  : '貼紙'),
-              icon: widget.isGenerating
-                  ? Icons.stop_circle_outlined
-                  : (widget.focusNode.hasFocus &&
-                  !_toolsExpandedWhileFocused
-                  ? null
-                  : Icons.emoji_emotions_outlined),
-              asset: (!widget.isGenerating &&
-                  widget.focusNode.hasFocus &&
-                  !_toolsExpandedWhileFocused)
-                  ? 'assets/images/chat/chat_send_plane_mask.png'
-                  : null,
-              assetSize: 30,
-              iconSize: widget.isGenerating ? 25 : 27,
-              iconColor: widget.isGenerating
-                  ? Colors.redAccent
-                  : primary,
-              onPressed: widget.isGenerating
-                  ? widget.onStop
-                  : widget.isLoading
-                  ? null
-                  : (widget.focusNode.hasFocus &&
-                  !_toolsExpandedWhileFocused
-                  ? () {
-                // 按送出時立刻解除輸入框 focus，
-                // 所以飛機會馬上變回貼紙 icon。
-                widget.focusNode.unfocus();
+            // - AI 生成中：停止
+            // - 輸入框聚焦，而且左邊工具仍收起：送出
+            // - 其他狀態：只有有提供 onSticker 時才顯示貼圖
+            if (widget.isGenerating ||
+                (widget.focusNode.hasFocus &&
+                    !_toolsExpandedWhileFocused) ||
+                widget.onSticker != null) ...[
+              const SizedBox(width: 5),
+              _BareIconButton(
+                tooltip: widget.isGenerating
+                    ? 'Stop'
+                    : (widget.focusNode.hasFocus &&
+                    !_toolsExpandedWhileFocused
+                    ? 'Send'
+                    : '貼紙'),
+                icon: widget.isGenerating
+                    ? Icons.stop_circle_outlined
+                    : (widget.focusNode.hasFocus &&
+                    !_toolsExpandedWhileFocused
+                    ? null
+                    : Icons.emoji_emotions_outlined),
+                asset: (!widget.isGenerating &&
+                    widget.focusNode.hasFocus &&
+                    !_toolsExpandedWhileFocused)
+                    ? 'assets/images/chat/chat_send_plane_mask.png'
+                    : null,
+                assetSize: 30,
+                iconSize: widget.isGenerating ? 25 : 27,
+                iconColor:
+                widget.isGenerating ? Colors.redAccent : primary,
+                onPressed: widget.isGenerating
+                    ? widget.onStop
+                    : widget.isLoading
+                    ? null
+                    : (widget.focusNode.hasFocus &&
+                    !_toolsExpandedWhileFocused
+                    ? () {
+                  // 按送出時立刻解除輸入框 focus。
+                  widget.focusNode.unfocus();
 
-                if (mounted) {
-                  setState(() {
-                    _toolsExpandedWhileFocused = false;
-                  });
+                  if (mounted) {
+                    setState(() {
+                      _toolsExpandedWhileFocused = false;
+                    });
+                  }
+
+                  widget.onSend();
                 }
-
-                widget.onSend();
-              }
-                  : widget.onSticker),
-            ),
+                    : widget.onSticker),
+              ),
+            ],
           ],
         ),
       ),

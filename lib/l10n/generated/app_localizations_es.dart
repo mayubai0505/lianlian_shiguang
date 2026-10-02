@@ -8508,4 +8508,88 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get languageSelectionSubtitle =>
       'Elige el idioma con el que te sientas más cómodo';
+
+  @override
+  String get chatStatusBarTitle => 'Estado';
+
+  @override
+  String get chatStatusBarSubtitle =>
+      'Elige la información que quieres mostrar en el chat';
+
+  @override
+  String get chatStatusMood => 'Ánimo';
+
+  @override
+  String get chatStatusOutfit => 'Ropa';
+
+  @override
+  String get chatStatusRelationship => 'Relación';
+
+  @override
+  String get chatStatusThought => 'Pensamientos';
+
+  @override
+  String get chatStatusWeather => 'Clima';
+
+  @override
+  String get chatStatusCurrentState => 'Estado actual';
+
+  @override
+  String get chatStatusAction => 'Acción';
+
+  @override
+  String get chatStatusAffinity => 'Afinidad';
+
+  @override
+  String get chatPreferenceTitle => 'Preferencias del chat';
+
+  @override
+  String get chatPreferenceSubtitle =>
+      'Estos ajustes solo se aplican a este chat y seguirán activos hasta que los edites o borres.';
+
+  @override
+  String get chatPreferenceHint =>
+      'Por ejemplo:\\nNo me llames cariño\\nResponde más breve\\nNo añadas con frecuencia acciones o expresiones por mí';
+
+  @override
+  String get chatPreferenceClear => 'Borrar';
+
+  @override
+  String get chatSettingsDone => 'Listo';
+
+  @override
+  String get chat_mode_resonance => 'Resonancia';
+
+  @override
+  String get chat_mode_gemini_cost =>
+      'Las primeras 10 veces al día son gratis, luego 1 punto';
+
+  @override
+  String get chat_mode_gemini_desc =>
+      'Ideal para conversaciones relajadas y compañía diaria.';
+
+  @override
+  String get chat_mode_story_cost => '5 puntos';
+
+  @override
+  String get chat_mode_immersive_cost => '7 puntos';
+
+  @override
+  String get chat_mode_resonance_cost => '10 puntos';
+
+  @override
+  String get chat_mode_resonance_desc =>
+      'Desarrolla con más matices las emociones, la tensión de la relación y las reacciones del personaje.';
+
+  @override
+  String get chat_mode_gemini_cost_short => '1 flor';
+
+  @override
+  String get chat_mode_story_cost_short => '5 flores';
+
+  @override
+  String get chat_mode_immersive_cost_short => '7 flores';
+
+  @override
+  String get chat_mode_resonance_cost_short => '10 flores';
 }

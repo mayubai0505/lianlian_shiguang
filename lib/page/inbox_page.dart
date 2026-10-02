@@ -8,6 +8,146 @@ import '../screens/moment_detail_page.dart'; // 🌟 記得匯入這頁！
 class InboxPage extends StatelessWidget {
   const InboxPage({super.key});
 
+
+  Future<void> _openMailboxItem(
+      BuildContext context, {
+        required Map<String, dynamic> data,
+        required AppLocalizations l10n,
+      }) async {
+    final String type = (data['type'] ?? '').toString();
+    final String reportId = (data['reportId'] ?? '').toString().trim();
+
+    // 一般通知維持原本行為；客服信才進完整信件內容。
+    if (type != 'cs_received' && type != 'cs_reply') {
+      return;
+    }
+
+    Map<String, dynamic> reportData = <String, dynamic>{};
+
+    if (reportId.isNotEmpty) {
+      try {
+        final reportSnapshot = await FirebaseFirestore.instance
+            .collection('reports')
+            .doc(reportId)
+            .get();
+
+        reportData = reportSnapshot.data() ?? <String, dynamic>{};
+      } catch (e) {
+        debugPrint('⚠️ 讀取客服案件原始內容失敗：$e');
+      }
+    }
+
+    if (!context.mounted) return;
+
+    final String reportTitle = (
+        reportData['title'] ??
+            reportData['subject'] ??
+            reportData['categoryLabel'] ??
+            reportData['reason'] ??
+            ''
+    ).toString().trim();
+
+    final String reportReason =
+    (reportData['reason'] ?? '').toString().trim();
+
+    final String originalTitle = reportTitle.isNotEmpty
+        ? (reportReason.isNotEmpty &&
+        reportReason != reportTitle
+        ? '$reportTitle－$reportReason'
+        : reportTitle)
+        : '客服回報';
+
+    final String originalBody =
+    (reportData['content'] ??
+        reportData['body'] ??
+        reportData['message'] ??
+        '')
+        .toString()
+        .trim();
+
+    final String replyBody =
+    type == 'cs_reply'
+        ? (data['body'] ?? '').toString().trim()
+        : (reportData['adminReply'] ?? '').toString().trim();
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        final theme = Theme.of(dialogContext);
+
+        Widget label(String text) {
+          return Text(
+            text,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: theme.colorScheme.primary,
+            ),
+          );
+        }
+
+        Widget contentText(String text) {
+          return SelectableText(
+            text.isEmpty ? '—' : text,
+            style: TextStyle(
+              fontSize: 15,
+              height: 1.65,
+              color: theme.colorScheme.onSurface,
+            ),
+          );
+        }
+
+        return AlertDialog(
+          title: Text(
+            type == 'cs_reply' ? '客服回覆' : '已送出的客服信件',
+            style: const TextStyle(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          content: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: 520,
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment:
+                CrossAxisAlignment.start,
+                children: [
+                  label('玩家送出的標題'),
+                  const SizedBox(height: 6),
+                  contentText(originalTitle),
+
+                  const SizedBox(height: 18),
+
+                  label('玩家送出的內容'),
+                  const SizedBox(height: 6),
+                  contentText(originalBody),
+
+                  if (replyBody.isNotEmpty) ...[
+                    const SizedBox(height: 22),
+                    const Divider(),
+                    const SizedBox(height: 14),
+
+                    label('客服回覆'),
+                    const SizedBox(height: 6),
+                    contentText(replyBody),
+                  ],
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () =>
+                  Navigator.pop(dialogContext),
+              child: const Text('關閉'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -138,29 +278,42 @@ class InboxPage extends StatelessWidget {
                   }
 
                   // ========================================================
-                  // ✨ 總裁特製：點擊信件的「時空傳送門」
+                  // ✨ 點擊信件
                   // ========================================================
-                  final String type = data['type'] ?? '';
-                  final String postId = data['postId'] ?? '';
+                  final String type =
+                  (data['type'] ?? '').toString();
+                  final String postId =
+                  (data['postId'] ?? '').toString();
 
-                  // 🖼️ 情況 A：如果是按讚、留言，或是【創作者發新文】！
-                  if (type == 'like' || type == 'comment' || type == 'new_post') {
+                  if (type == 'like' ||
+                      type == 'comment' ||
+                      type == 'new_post') {
                     if (postId.isNotEmpty) {
-                      debugPrint("🚀 傳送門啟動：前往貼文 $postId");
+                      debugPrint(
+                        "🚀 傳送門啟動：前往貼文 $postId",
+                      );
 
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => MomentDetailPage(postId: postId),
+                          builder: (context) =>
+                              MomentDetailPage(
+                                postId: postId,
+                              ),
                         ),
                       );
                     }
-                  }
-                  // 👩‍❤️‍👨 情況 B：如果是被新粉絲「關注」了
-                  else if (type == 'follow') {
-                    debugPrint("🚀 傳送門啟動：有人關注我，看看他是誰");
-
-                    // 這裡可以選擇跳轉到該粉絲的個人檔案，或是直接留在信箱
+                  } else if (type == 'follow') {
+                    debugPrint(
+                      "🚀 傳送門啟動：有人關注我，看看他是誰",
+                    );
+                  } else if (type == 'cs_received' ||
+                      type == 'cs_reply') {
+                    _openMailboxItem(
+                      context,
+                      data: data,
+                      l10n: l10n,
+                    );
                   }
                 },
               );

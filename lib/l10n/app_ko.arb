@@ -4586,5 +4586,79 @@
   "languageSelectionSubtitle": "익숙한 언어를 선택해 주세요",
   "@languageSelectionSubtitle": {
     "description": "Subtitle shown below the language settings title."
-  }
+  },
+  "chatStatusBarTitle": "상태 표시",
+  "chatStatusBarSubtitle": "채팅에 표시할 정보를 선택하세요",
+  "chatStatusMood": "기분",
+  "chatStatusOutfit": "옷차림",
+  "chatStatusRelationship": "관계",
+  "chatStatusThought": "생각",
+  "chatStatusWeather": "날씨",
+  "chatStatusCurrentState": "현재 상태",
+  "chatStatusAction": "행동",
+  "chatStatusAffinity": "호감도",
+  "chatPreferenceTitle": "채팅 환경설정",
+  "chatPreferenceSubtitle": "이 설정은 현재 채팅방에만 적용되며 수정하거나 지울 때까지 계속 유지됩니다.",
+  "chatPreferenceHint": "예:\\n나를 자기야라고 부르지 마\\n답변을 조금 짧게 해줘\\n내 행동이나 표정을 자주 대신 만들지 마",
+  "chatPreferenceClear": "지우기",
+  "chatSettingsDone": "완료",
+  "@chatStatusBarTitle": {
+    "description": "Title for per-chat status display settings."
+  },
+  "@chatStatusBarSubtitle": {
+    "description": "Subtitle explaining status display settings."
+  },
+  "@chatStatusMood": {
+    "description": "Status field: mood."
+  },
+  "@chatStatusOutfit": {
+    "description": "Status field: outfit."
+  },
+  "@chatStatusRelationship": {
+    "description": "Status field: relationship."
+  },
+  "@chatStatusThought": {
+    "description": "Status field: thoughts."
+  },
+  "@chatStatusWeather": {
+    "description": "Status field: weather."
+  },
+  "@chatStatusCurrentState": {
+    "description": "Status field: current state."
+  },
+  "@chatStatusAction": {
+    "description": "Status field: action."
+  },
+  "@chatStatusAffinity": {
+    "description": "Status field: affection/affinity."
+  },
+  "@chatPreferenceTitle": {
+    "description": "Title for persistent chat preferences."
+  },
+  "@chatPreferenceSubtitle": {
+    "description": "Explanation for per-chat persistent preferences."
+  },
+  "@chatPreferenceHint": {
+    "description": "Example text shown in the persistent preference field."
+  },
+  "@chatPreferenceClear": {
+    "description": "Button to clear persistent chat preferences."
+  },
+  "@chatSettingsDone": {
+    "description": "Done button shared by chat settings sheets."
+  },
+  "chat_mode_resonance": "공명",
+  "@chat_mode_resonance": {
+    "description": "Label for the Resonance chat mode."
+  },
+  "chat_mode_gemini_cost": "하루 첫 10회 무료, 이후 1포인트",
+  "chat_mode_gemini_desc": "가벼운 대화와 일상적인 동행에 적합해요.",
+  "chat_mode_story_cost": "5포인트",
+  "chat_mode_immersive_cost": "7포인트",
+  "chat_mode_resonance_cost": "10포인트",
+  "chat_mode_resonance_desc": "감정, 관계의 긴장감, 캐릭터 반응을 더 섬세하게 확장해요.",
+  "chat_mode_gemini_cost_short": "꽃 1개",
+  "chat_mode_story_cost_short": "꽃 5개",
+  "chat_mode_immersive_cost_short": "꽃 7개",
+  "chat_mode_resonance_cost_short": "꽃 10개"
 }

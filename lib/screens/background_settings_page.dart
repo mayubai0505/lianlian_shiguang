@@ -44,7 +44,7 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 1, vsync: this);
   }
 
   @override
@@ -160,7 +160,6 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
                     ),
                     tabs: const [
                       Tab(text: '專屬照片'),
-                      Tab(text: '限定背景'),
                     ],
                   ),
                 ),
@@ -170,11 +169,6 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
                   controller: _tabController,
                   children: [
                     _buildExclusivePhotosTab(
-                      context,
-                      currentUserId: currentUserId,
-                      primary: primary,
-                    ),
-                    _buildLimitedBackgroundsTab(
                       context,
                       currentUserId: currentUserId,
                       primary: primary,
@@ -1073,3 +1067,4 @@ class _LimitedBackgroundItem {
     required this.imageUrl,
   });
 }
+

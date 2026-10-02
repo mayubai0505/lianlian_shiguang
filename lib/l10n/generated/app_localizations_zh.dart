@@ -7813,6 +7813,84 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get languageSelectionSubtitle => '選擇你習慣的語言';
+
+  @override
+  String get chatStatusBarTitle => '狀態欄';
+
+  @override
+  String get chatStatusBarSubtitle => '選擇想在聊天中顯示的資訊';
+
+  @override
+  String get chatStatusMood => '心情';
+
+  @override
+  String get chatStatusOutfit => '衣著';
+
+  @override
+  String get chatStatusRelationship => '關係';
+
+  @override
+  String get chatStatusThought => '想法';
+
+  @override
+  String get chatStatusWeather => '天氣';
+
+  @override
+  String get chatStatusCurrentState => '當前狀態';
+
+  @override
+  String get chatStatusAction => '動作';
+
+  @override
+  String get chatStatusAffinity => '好感度';
+
+  @override
+  String get chatPreferenceTitle => '聊天偏好';
+
+  @override
+  String get chatPreferenceSubtitle => '這些設定只套用在目前聊天室，會持續生效，直到你修改或清除。';
+
+  @override
+  String get chatPreferenceHint => '例如：\\n不要叫我寶貝\\n回覆短一點\\n不要頻繁替我補動作或表情';
+
+  @override
+  String get chatPreferenceClear => '清除';
+
+  @override
+  String get chatSettingsDone => '完成';
+
+  @override
+  String get chat_mode_resonance => '共鳴';
+
+  @override
+  String get chat_mode_gemini_cost => '每日前 10 次免費，之後 1 點';
+
+  @override
+  String get chat_mode_gemini_desc => '適合輕鬆聊天與日常陪伴。';
+
+  @override
+  String get chat_mode_story_cost => '5 點';
+
+  @override
+  String get chat_mode_immersive_cost => '7 點';
+
+  @override
+  String get chat_mode_resonance_cost => '10 點';
+
+  @override
+  String get chat_mode_resonance_desc => '更細膩地延伸情緒、關係張力與角色反應。';
+
+  @override
+  String get chat_mode_gemini_cost_short => '1花';
+
+  @override
+  String get chat_mode_story_cost_short => '5花';
+
+  @override
+  String get chat_mode_immersive_cost_short => '7花';
+
+  @override
+  String get chat_mode_resonance_cost_short => '10花';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -15620,6 +15698,84 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get languageSelectionSubtitle => '选择你习惯的语言';
+
+  @override
+  String get chatStatusBarTitle => '状态栏';
+
+  @override
+  String get chatStatusBarSubtitle => '选择想在聊天中显示的信息';
+
+  @override
+  String get chatStatusMood => '心情';
+
+  @override
+  String get chatStatusOutfit => '穿着';
+
+  @override
+  String get chatStatusRelationship => '关系';
+
+  @override
+  String get chatStatusThought => '想法';
+
+  @override
+  String get chatStatusWeather => '天气';
+
+  @override
+  String get chatStatusCurrentState => '当前状态';
+
+  @override
+  String get chatStatusAction => '动作';
+
+  @override
+  String get chatStatusAffinity => '好感度';
+
+  @override
+  String get chatPreferenceTitle => '聊天偏好';
+
+  @override
+  String get chatPreferenceSubtitle => '这些设置只应用于当前聊天室，并会持续生效，直到你修改或清除。';
+
+  @override
+  String get chatPreferenceHint => '例如：\\n不要叫我宝贝\\n回复短一点\\n不要频繁替我补动作或表情';
+
+  @override
+  String get chatPreferenceClear => '清除';
+
+  @override
+  String get chatSettingsDone => '完成';
+
+  @override
+  String get chat_mode_resonance => '共鸣';
+
+  @override
+  String get chat_mode_gemini_cost => '每天前 10 次免费，之后 1 点';
+
+  @override
+  String get chat_mode_gemini_desc => '适合轻松聊天与日常陪伴。';
+
+  @override
+  String get chat_mode_story_cost => '5 点';
+
+  @override
+  String get chat_mode_immersive_cost => '7 点';
+
+  @override
+  String get chat_mode_resonance_cost => '10 点';
+
+  @override
+  String get chat_mode_resonance_desc => '更细腻地延伸情绪、关系张力与角色反应。';
+
+  @override
+  String get chat_mode_gemini_cost_short => '1朵花';
+
+  @override
+  String get chat_mode_story_cost_short => '5朵花';
+
+  @override
+  String get chat_mode_immersive_cost_short => '7朵花';
+
+  @override
+  String get chat_mode_resonance_cost_short => '10朵花';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -23431,4 +23587,82 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get languageSelectionSubtitle => '選擇你習慣的語言';
+
+  @override
+  String get chatStatusBarTitle => '狀態欄';
+
+  @override
+  String get chatStatusBarSubtitle => '選擇想在聊天中顯示的資訊';
+
+  @override
+  String get chatStatusMood => '心情';
+
+  @override
+  String get chatStatusOutfit => '衣著';
+
+  @override
+  String get chatStatusRelationship => '關係';
+
+  @override
+  String get chatStatusThought => '想法';
+
+  @override
+  String get chatStatusWeather => '天氣';
+
+  @override
+  String get chatStatusCurrentState => '當前狀態';
+
+  @override
+  String get chatStatusAction => '動作';
+
+  @override
+  String get chatStatusAffinity => '好感度';
+
+  @override
+  String get chatPreferenceTitle => '聊天偏好';
+
+  @override
+  String get chatPreferenceSubtitle => '這些設定只套用在目前聊天室，會持續生效，直到你修改或清除。';
+
+  @override
+  String get chatPreferenceHint => '例如：\\n不要叫我寶貝\\n回覆短一點\\n不要頻繁替我補動作或表情';
+
+  @override
+  String get chatPreferenceClear => '清除';
+
+  @override
+  String get chatSettingsDone => '完成';
+
+  @override
+  String get chat_mode_resonance => '共鳴';
+
+  @override
+  String get chat_mode_gemini_cost => '每日前 10 次免費，之後 1 點';
+
+  @override
+  String get chat_mode_gemini_desc => '適合輕鬆聊天與日常陪伴。';
+
+  @override
+  String get chat_mode_story_cost => '5 點';
+
+  @override
+  String get chat_mode_immersive_cost => '7 點';
+
+  @override
+  String get chat_mode_resonance_cost => '10 點';
+
+  @override
+  String get chat_mode_resonance_desc => '更細膩地延伸情緒、關係張力與角色反應。';
+
+  @override
+  String get chat_mode_gemini_cost_short => '1花';
+
+  @override
+  String get chat_mode_story_cost_short => '5花';
+
+  @override
+  String get chat_mode_immersive_cost_short => '7花';
+
+  @override
+  String get chat_mode_resonance_cost_short => '10花';
 }

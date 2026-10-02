@@ -4586,5 +4586,79 @@
   "languageSelectionSubtitle": "Pilih bahasa yang paling selesa anda gunakan",
   "@languageSelectionSubtitle": {
     "description": "Subtitle shown below the language settings title."
-  }
+  },
+  "chatStatusBarTitle": "Status",
+  "chatStatusBarSubtitle": "Pilih maklumat yang mahu dipaparkan dalam sembang",
+  "chatStatusMood": "Perasaan",
+  "chatStatusOutfit": "Pakaian",
+  "chatStatusRelationship": "Hubungan",
+  "chatStatusThought": "Fikiran",
+  "chatStatusWeather": "Cuaca",
+  "chatStatusCurrentState": "Keadaan semasa",
+  "chatStatusAction": "Tindakan",
+  "chatStatusAffinity": "Keakraban",
+  "chatPreferenceTitle": "Keutamaan Sembang",
+  "chatPreferenceSubtitle": "Tetapan ini hanya digunakan untuk sembang semasa dan kekal aktif sehingga anda mengubah atau mengosongkannya.",
+  "chatPreferenceHint": "Contoh:\\nJangan panggil saya sayang\\nPendekkan balasan\\nJangan kerap menambah tindakan atau ekspresi untuk saya",
+  "chatPreferenceClear": "Kosongkan",
+  "chatSettingsDone": "Selesai",
+  "@chatStatusBarTitle": {
+    "description": "Title for per-chat status display settings."
+  },
+  "@chatStatusBarSubtitle": {
+    "description": "Subtitle explaining status display settings."
+  },
+  "@chatStatusMood": {
+    "description": "Status field: mood."
+  },
+  "@chatStatusOutfit": {
+    "description": "Status field: outfit."
+  },
+  "@chatStatusRelationship": {
+    "description": "Status field: relationship."
+  },
+  "@chatStatusThought": {
+    "description": "Status field: thoughts."
+  },
+  "@chatStatusWeather": {
+    "description": "Status field: weather."
+  },
+  "@chatStatusCurrentState": {
+    "description": "Status field: current state."
+  },
+  "@chatStatusAction": {
+    "description": "Status field: action."
+  },
+  "@chatStatusAffinity": {
+    "description": "Status field: affection/affinity."
+  },
+  "@chatPreferenceTitle": {
+    "description": "Title for persistent chat preferences."
+  },
+  "@chatPreferenceSubtitle": {
+    "description": "Explanation for per-chat persistent preferences."
+  },
+  "@chatPreferenceHint": {
+    "description": "Example text shown in the persistent preference field."
+  },
+  "@chatPreferenceClear": {
+    "description": "Button to clear persistent chat preferences."
+  },
+  "@chatSettingsDone": {
+    "description": "Done button shared by chat settings sheets."
+  },
+  "chat_mode_resonance": "Resonans",
+  "@chat_mode_resonance": {
+    "description": "Label for the Resonance chat mode."
+  },
+  "chat_mode_gemini_cost": "10 kali pertama setiap hari percuma, kemudian 1 mata",
+  "chat_mode_gemini_desc": "Sesuai untuk sembang santai dan teman harian.",
+  "chat_mode_story_cost": "5 mata",
+  "chat_mode_immersive_cost": "7 mata",
+  "chat_mode_resonance_cost": "10 mata",
+  "chat_mode_resonance_desc": "Mengembangkan emosi, ketegangan hubungan dan reaksi watak dengan lebih halus.",
+  "chat_mode_gemini_cost_short": "1 Bunga",
+  "chat_mode_story_cost_short": "5 Bunga",
+  "chat_mode_immersive_cost_short": "7 Bunga",
+  "chat_mode_resonance_cost_short": "10 Bunga"
 }

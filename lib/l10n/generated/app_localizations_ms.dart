@@ -8440,4 +8440,88 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get languageSelectionSubtitle =>
       'Pilih bahasa yang paling selesa anda gunakan';
+
+  @override
+  String get chatStatusBarTitle => 'Status';
+
+  @override
+  String get chatStatusBarSubtitle =>
+      'Pilih maklumat yang mahu dipaparkan dalam sembang';
+
+  @override
+  String get chatStatusMood => 'Perasaan';
+
+  @override
+  String get chatStatusOutfit => 'Pakaian';
+
+  @override
+  String get chatStatusRelationship => 'Hubungan';
+
+  @override
+  String get chatStatusThought => 'Fikiran';
+
+  @override
+  String get chatStatusWeather => 'Cuaca';
+
+  @override
+  String get chatStatusCurrentState => 'Keadaan semasa';
+
+  @override
+  String get chatStatusAction => 'Tindakan';
+
+  @override
+  String get chatStatusAffinity => 'Keakraban';
+
+  @override
+  String get chatPreferenceTitle => 'Keutamaan Sembang';
+
+  @override
+  String get chatPreferenceSubtitle =>
+      'Tetapan ini hanya digunakan untuk sembang semasa dan kekal aktif sehingga anda mengubah atau mengosongkannya.';
+
+  @override
+  String get chatPreferenceHint =>
+      'Contoh:\\nJangan panggil saya sayang\\nPendekkan balasan\\nJangan kerap menambah tindakan atau ekspresi untuk saya';
+
+  @override
+  String get chatPreferenceClear => 'Kosongkan';
+
+  @override
+  String get chatSettingsDone => 'Selesai';
+
+  @override
+  String get chat_mode_resonance => 'Resonans';
+
+  @override
+  String get chat_mode_gemini_cost =>
+      '10 kali pertama setiap hari percuma, kemudian 1 mata';
+
+  @override
+  String get chat_mode_gemini_desc =>
+      'Sesuai untuk sembang santai dan teman harian.';
+
+  @override
+  String get chat_mode_story_cost => '5 mata';
+
+  @override
+  String get chat_mode_immersive_cost => '7 mata';
+
+  @override
+  String get chat_mode_resonance_cost => '10 mata';
+
+  @override
+  String get chat_mode_resonance_desc =>
+      'Mengembangkan emosi, ketegangan hubungan dan reaksi watak dengan lebih halus.';
+
+  @override
+  String get chat_mode_gemini_cost_short => '1 Bunga';
+
+  @override
+  String get chat_mode_story_cost_short => '5 Bunga';
+
+  @override
+  String get chat_mode_immersive_cost_short => '7 Bunga';
+
+  @override
+  String get chat_mode_resonance_cost_short => '10 Bunga';
 }

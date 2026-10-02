@@ -7987,4 +7987,84 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get languageSelectionSubtitle => '익숙한 언어를 선택해 주세요';
+
+  @override
+  String get chatStatusBarTitle => '상태 표시';
+
+  @override
+  String get chatStatusBarSubtitle => '채팅에 표시할 정보를 선택하세요';
+
+  @override
+  String get chatStatusMood => '기분';
+
+  @override
+  String get chatStatusOutfit => '옷차림';
+
+  @override
+  String get chatStatusRelationship => '관계';
+
+  @override
+  String get chatStatusThought => '생각';
+
+  @override
+  String get chatStatusWeather => '날씨';
+
+  @override
+  String get chatStatusCurrentState => '현재 상태';
+
+  @override
+  String get chatStatusAction => '행동';
+
+  @override
+  String get chatStatusAffinity => '호감도';
+
+  @override
+  String get chatPreferenceTitle => '채팅 환경설정';
+
+  @override
+  String get chatPreferenceSubtitle =>
+      '이 설정은 현재 채팅방에만 적용되며 수정하거나 지울 때까지 계속 유지됩니다.';
+
+  @override
+  String get chatPreferenceHint =>
+      '예:\\n나를 자기야라고 부르지 마\\n답변을 조금 짧게 해줘\\n내 행동이나 표정을 자주 대신 만들지 마';
+
+  @override
+  String get chatPreferenceClear => '지우기';
+
+  @override
+  String get chatSettingsDone => '완료';
+
+  @override
+  String get chat_mode_resonance => '공명';
+
+  @override
+  String get chat_mode_gemini_cost => '하루 첫 10회 무료, 이후 1포인트';
+
+  @override
+  String get chat_mode_gemini_desc => '가벼운 대화와 일상적인 동행에 적합해요.';
+
+  @override
+  String get chat_mode_story_cost => '5포인트';
+
+  @override
+  String get chat_mode_immersive_cost => '7포인트';
+
+  @override
+  String get chat_mode_resonance_cost => '10포인트';
+
+  @override
+  String get chat_mode_resonance_desc => '감정, 관계의 긴장감, 캐릭터 반응을 더 섬세하게 확장해요.';
+
+  @override
+  String get chat_mode_gemini_cost_short => '꽃 1개';
+
+  @override
+  String get chat_mode_story_cost_short => '꽃 5개';
+
+  @override
+  String get chat_mode_immersive_cost_short => '꽃 7개';
+
+  @override
+  String get chat_mode_resonance_cost_short => '꽃 10개';
 }

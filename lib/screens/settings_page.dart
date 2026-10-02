@@ -16,6 +16,7 @@ import '../page/character_management_page.dart';
 import '../page/admin_announcement_page.dart';
 import '../page/app_texts.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+import 'desktop_widget_settings_page.dart';
 //設定
 
 class SettingsPage extends StatefulWidget { // ✨ 改成 StatefulWidget
@@ -296,7 +297,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
   // 無卡片設計：以留白與細分隔線取代大量圓角框。
   Widget _buildSettingsTile({
-    required String maskAsset,
+    String? maskAsset,
+    IconData? iconData,
     required String title,
     String? subtitle,
     Widget? trailing,
@@ -322,9 +324,15 @@ class _SettingsPageState extends State<SettingsPage> {
                     width: 42,
                     child: Align(
                       alignment: Alignment.centerLeft,
-                      child: _buildTintedSettingAsset(
+                      child: maskAsset != null
+                          ? _buildTintedSettingAsset(
                         maskAsset: maskAsset,
                         color: primaryColor,
+                      )
+                          : Icon(
+                        iconData ?? Icons.tune_rounded,
+                        size: 29,
+                        color: primaryColor.withValues(alpha: 0.82),
                       ),
                     ),
                   ),
@@ -496,6 +504,8 @@ class _SettingsPageState extends State<SettingsPage> {
                     onTap: () => _showResetDialog(context, themeNotifier),
                     theme: theme,
                   ),
+
+                  // 🚧 送審版：桌面小工具仍在開發中，暫時隱藏入口。
 
                   _buildSettingsTile(
                     maskAsset:

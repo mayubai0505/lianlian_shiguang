@@ -14487,6 +14487,162 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'選擇你習慣的語言'**
   String get languageSelectionSubtitle;
+
+  /// Title for per-chat status display settings.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'狀態欄'**
+  String get chatStatusBarTitle;
+
+  /// Subtitle explaining status display settings.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選擇想在聊天中顯示的資訊'**
+  String get chatStatusBarSubtitle;
+
+  /// Status field: mood.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'心情'**
+  String get chatStatusMood;
+
+  /// Status field: outfit.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'衣著'**
+  String get chatStatusOutfit;
+
+  /// Status field: relationship.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'關係'**
+  String get chatStatusRelationship;
+
+  /// Status field: thoughts.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'想法'**
+  String get chatStatusThought;
+
+  /// Status field: weather.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'天氣'**
+  String get chatStatusWeather;
+
+  /// Status field: current state.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'當前狀態'**
+  String get chatStatusCurrentState;
+
+  /// Status field: action.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'動作'**
+  String get chatStatusAction;
+
+  /// Status field: affection/affinity.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'好感度'**
+  String get chatStatusAffinity;
+
+  /// Title for persistent chat preferences.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'聊天偏好'**
+  String get chatPreferenceTitle;
+
+  /// Explanation for per-chat persistent preferences.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這些設定只套用在目前聊天室，會持續生效，直到你修改或清除。'**
+  String get chatPreferenceSubtitle;
+
+  /// Example text shown in the persistent preference field.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'例如：\\n不要叫我寶貝\\n回覆短一點\\n不要頻繁替我補動作或表情'**
+  String get chatPreferenceHint;
+
+  /// Button to clear persistent chat preferences.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'清除'**
+  String get chatPreferenceClear;
+
+  /// Done button shared by chat settings sheets.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'完成'**
+  String get chatSettingsDone;
+
+  /// Label for the Resonance chat mode.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'共鳴'**
+  String get chat_mode_resonance;
+
+  /// No description provided for @chat_mode_gemini_cost.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'每日前 10 次免費，之後 1 點'**
+  String get chat_mode_gemini_cost;
+
+  /// No description provided for @chat_mode_gemini_desc.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'適合輕鬆聊天與日常陪伴。'**
+  String get chat_mode_gemini_desc;
+
+  /// No description provided for @chat_mode_story_cost.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'5 點'**
+  String get chat_mode_story_cost;
+
+  /// No description provided for @chat_mode_immersive_cost.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'7 點'**
+  String get chat_mode_immersive_cost;
+
+  /// No description provided for @chat_mode_resonance_cost.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'10 點'**
+  String get chat_mode_resonance_cost;
+
+  /// No description provided for @chat_mode_resonance_desc.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'更細膩地延伸情緒、關係張力與角色反應。'**
+  String get chat_mode_resonance_desc;
+
+  /// No description provided for @chat_mode_gemini_cost_short.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'1花'**
+  String get chat_mode_gemini_cost_short;
+
+  /// No description provided for @chat_mode_story_cost_short.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'5花'**
+  String get chat_mode_story_cost_short;
+
+  /// No description provided for @chat_mode_immersive_cost_short.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'7花'**
+  String get chat_mode_immersive_cost_short;
+
+  /// No description provided for @chat_mode_resonance_cost_short.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'10花'**
+  String get chat_mode_resonance_cost_short;
 }
 
 class _AppLocalizationsDelegate

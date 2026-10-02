@@ -24,6 +24,7 @@ import 'screens/character_model.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'services/reminder_notification_service.dart';
+import 'package:home_widget/home_widget.dart';
 
 String? globalActiveCharacterId;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -276,6 +277,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  StreamSubscription<Uri?>? _homeWidgetClickSubscription;
+  String? _lastHomeWidgetLaunchUri;
+  DateTime? _lastHomeWidgetLaunchAt;
   String? _lastSyncedNotificationLocale;
 
   String _notificationLocaleCode(Locale locale) {
@@ -320,10 +324,13 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
     WidgetsBinding.instance.addObserver(this);
 
+    _homeWidgetClickSubscription =
+        HomeWidget.widgetClicked.listen(_handleHomeWidgetLaunch);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // 這些都不是顯示首頁的必要條件，全部留在第一幀之後背景處理。
       unawaited(_initializeAfterAppStarted());
+      unawaited(_checkInitialHomeWidgetLaunch());
 
       unawaited(
         _initializeBackgroundServices().catchError((e, stackTrace) {
@@ -336,8 +343,136 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    _homeWidgetClickSubscription?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  Future<void> _checkInitialHomeWidgetLaunch() async {
+    try {
+      final uri =
+      await HomeWidget.initiallyLaunchedFromHomeWidget();
+
+      if (!mounted) return;
+      _handleHomeWidgetLaunch(uri);
+    } catch (error, stackTrace) {
+      debugPrint('⚠️ 讀取桌面小工具啟動資訊失敗：$error');
+      debugPrintStack(stackTrace: stackTrace);
+    }
+  }
+
+  void _handleHomeWidgetLaunch(Uri? uri) {
+    if (!mounted || uri == null) return;
+
+    if (uri.scheme != 'lianlian' ||
+        uri.host != 'widget' ||
+        uri.path != '/chat') {
+      return;
+    }
+
+    final characterId =
+        uri.queryParameters['characterId']?.trim() ?? '';
+
+    if (characterId.isEmpty) {
+      debugPrint('⚠️ 桌面小工具缺少 characterId');
+      return;
+    }
+
+    final now = DateTime.now();
+    final uriText = uri.toString();
+    final isDuplicate =
+        _lastHomeWidgetLaunchUri == uriText &&
+            _lastHomeWidgetLaunchAt != null &&
+            now.difference(_lastHomeWidgetLaunchAt!).inSeconds < 2;
+
+    if (isDuplicate) return;
+
+    _lastHomeWidgetLaunchUri = uriText;
+    _lastHomeWidgetLaunchAt = now;
+
+    if (FirebaseAuth.instance.currentUser == null) {
+      debugPrint('⚠️ 玩家尚未登入，桌面小工具先停留在登入頁。');
+      return;
+    }
+
+    unawaited(
+      _openLatestCharacterChatFromWidget(characterId),
+    );
+  }
+
+  Future<void> _openLatestCharacterChatFromWidget(
+      String characterId,
+      ) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null || !mounted) return;
+
+    String sessionId = '';
+
+    try {
+      final appId = const String.fromEnvironment(
+        'APP_ID',
+        defaultValue: 'lianlianshiguang',
+      );
+
+      final snapshot = await FirebaseFirestore.instance
+          .collection('artifacts')
+          .doc(appId)
+          .collection('chat_sessions')
+          .where(
+        'userId',
+        isEqualTo: user.uid,
+      )
+          .get();
+
+      final matchingDocs = snapshot.docs.where((doc) {
+        final data = doc.data();
+
+        return data['characterId']
+            ?.toString()
+            .trim() ==
+            characterId;
+      }).toList();
+
+      if (matchingDocs.isNotEmpty) {
+        // 跟聊天室首頁同一套邏輯：
+        // 同角色有多個聊天室時，以 lastActivity 最新者為準。
+        matchingDocs.sort((a, b) {
+          final aData = a.data();
+          final bData = b.data();
+
+          final Timestamp? aTime =
+          aData['lastActivity'] as Timestamp?;
+          final Timestamp? bTime =
+          bData['lastActivity'] as Timestamp?;
+
+          if (aTime == null && bTime == null) return 0;
+          if (aTime == null) return 1;
+          if (bTime == null) return -1;
+
+          return bTime.compareTo(aTime);
+        });
+
+        sessionId = matchingDocs.first.id;
+      }
+    } catch (error, stackTrace) {
+      debugPrint(
+        '⚠️ 桌面小工具尋找角色最新聊天室失敗：$error',
+      );
+      debugPrintStack(stackTrace: stackTrace);
+    }
+
+    if (!mounted) return;
+
+    // 如果這個角色真的還沒有聊天室，才交給既有 route
+    // 使用 session_$characterId 建立／載入預設聊天室。
+    navigatorKey.currentState?.pushNamedAndRemoveUntil(
+      '/chat',
+          (route) => route.isFirst,
+      arguments: {
+        'characterId': characterId,
+        'sessionId': sessionId,
+      },
+    );
   }
 
   @override

@@ -4586,5 +4586,79 @@
   "languageSelectionSubtitle": "เลือกภาษาที่คุณถนัด",
   "@languageSelectionSubtitle": {
     "description": "Subtitle shown below the language settings title."
-  }
+  },
+  "chatStatusBarTitle": "สถานะ",
+  "chatStatusBarSubtitle": "เลือกข้อมูลที่ต้องการแสดงในแชต",
+  "chatStatusMood": "อารมณ์",
+  "chatStatusOutfit": "การแต่งตัว",
+  "chatStatusRelationship": "ความสัมพันธ์",
+  "chatStatusThought": "ความคิด",
+  "chatStatusWeather": "สภาพอากาศ",
+  "chatStatusCurrentState": "สถานะปัจจุบัน",
+  "chatStatusAction": "การกระทำ",
+  "chatStatusAffinity": "ความสนิทสนม",
+  "chatPreferenceTitle": "การตั้งค่าแชต",
+  "chatPreferenceSubtitle": "การตั้งค่านี้ใช้เฉพาะห้องแชตปัจจุบัน และจะมีผลจนกว่าคุณจะแก้ไขหรือล้างค่า",
+  "chatPreferenceHint": "ตัวอย่าง:\\nอย่าเรียกฉันว่าที่รัก\\nตอบให้สั้นลงหน่อย\\nอย่าเพิ่มการกระทำหรือสีหน้าให้ฉันบ่อยเกินไป",
+  "chatPreferenceClear": "ล้าง",
+  "chatSettingsDone": "เสร็จสิ้น",
+  "@chatStatusBarTitle": {
+    "description": "Title for per-chat status display settings."
+  },
+  "@chatStatusBarSubtitle": {
+    "description": "Subtitle explaining status display settings."
+  },
+  "@chatStatusMood": {
+    "description": "Status field: mood."
+  },
+  "@chatStatusOutfit": {
+    "description": "Status field: outfit."
+  },
+  "@chatStatusRelationship": {
+    "description": "Status field: relationship."
+  },
+  "@chatStatusThought": {
+    "description": "Status field: thoughts."
+  },
+  "@chatStatusWeather": {
+    "description": "Status field: weather."
+  },
+  "@chatStatusCurrentState": {
+    "description": "Status field: current state."
+  },
+  "@chatStatusAction": {
+    "description": "Status field: action."
+  },
+  "@chatStatusAffinity": {
+    "description": "Status field: affection/affinity."
+  },
+  "@chatPreferenceTitle": {
+    "description": "Title for persistent chat preferences."
+  },
+  "@chatPreferenceSubtitle": {
+    "description": "Explanation for per-chat persistent preferences."
+  },
+  "@chatPreferenceHint": {
+    "description": "Example text shown in the persistent preference field."
+  },
+  "@chatPreferenceClear": {
+    "description": "Button to clear persistent chat preferences."
+  },
+  "@chatSettingsDone": {
+    "description": "Done button shared by chat settings sheets."
+  },
+  "chat_mode_resonance": "การสั่นพ้อง",
+  "@chat_mode_resonance": {
+    "description": "Label for the Resonance chat mode."
+  },
+  "chat_mode_gemini_cost": "10 ครั้งแรกต่อวันฟรี จากนั้น 1 แต้ม",
+  "chat_mode_gemini_desc": "เหมาะสำหรับคุยสบาย ๆ และการอยู่เป็นเพื่อนในชีวิตประจำวัน",
+  "chat_mode_story_cost": "5 แต้ม",
+  "chat_mode_immersive_cost": "7 แต้ม",
+  "chat_mode_resonance_cost": "10 แต้ม",
+  "chat_mode_resonance_desc": "ขยายอารมณ์ ความตึงเครียดของความสัมพันธ์ และปฏิกิริยาของตัวละครได้ละเอียดขึ้น",
+  "chat_mode_gemini_cost_short": "1 ดอก",
+  "chat_mode_story_cost_short": "5 ดอก",
+  "chat_mode_immersive_cost_short": "7 ดอก",
+  "chat_mode_resonance_cost_short": "10 ดอก"
 }

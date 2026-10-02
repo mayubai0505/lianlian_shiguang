@@ -7960,4 +7960,83 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get languageSelectionSubtitle => '使い慣れた言語を選んでください';
+
+  @override
+  String get chatStatusBarTitle => 'ステータス';
+
+  @override
+  String get chatStatusBarSubtitle => 'チャットに表示する情報を選択';
+
+  @override
+  String get chatStatusMood => '気分';
+
+  @override
+  String get chatStatusOutfit => '服装';
+
+  @override
+  String get chatStatusRelationship => '関係';
+
+  @override
+  String get chatStatusThought => '考え';
+
+  @override
+  String get chatStatusWeather => '天気';
+
+  @override
+  String get chatStatusCurrentState => '現在の状態';
+
+  @override
+  String get chatStatusAction => '動作';
+
+  @override
+  String get chatStatusAffinity => '好感度';
+
+  @override
+  String get chatPreferenceTitle => 'チャット設定';
+
+  @override
+  String get chatPreferenceSubtitle => 'この設定は現在のチャットだけに適用され、変更または削除するまで有効です。';
+
+  @override
+  String get chatPreferenceHint =>
+      '例：\\n「ベイビー」と呼ばないで\\n返事を短めにして\\n私の行動や表情を頻繁に補わないで';
+
+  @override
+  String get chatPreferenceClear => 'クリア';
+
+  @override
+  String get chatSettingsDone => '完了';
+
+  @override
+  String get chat_mode_resonance => '共鳴';
+
+  @override
+  String get chat_mode_gemini_cost => '1日最初の10回は無料、その後1ポイント';
+
+  @override
+  String get chat_mode_gemini_desc => '気軽な会話や日常の寄り添いにおすすめ。';
+
+  @override
+  String get chat_mode_story_cost => '5ポイント';
+
+  @override
+  String get chat_mode_immersive_cost => '7ポイント';
+
+  @override
+  String get chat_mode_resonance_cost => '10ポイント';
+
+  @override
+  String get chat_mode_resonance_desc => '感情や関係性の緊張感、キャラクターの反応をより繊細に広げます。';
+
+  @override
+  String get chat_mode_gemini_cost_short => '花1個';
+
+  @override
+  String get chat_mode_story_cost_short => '花5個';
+
+  @override
+  String get chat_mode_immersive_cost_short => '花7個';
+
+  @override
+  String get chat_mode_resonance_cost_short => '花10個';
 }

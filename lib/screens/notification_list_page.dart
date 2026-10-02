@@ -272,9 +272,59 @@ class _NotificationListPageState extends State<NotificationListPage> {
     String mailTheme = '',
     String characterAvatarPath = '',
     List<String> interactionDates = const [],
+    String mailType = '',
+    String reportId = '',
   }) async {
     if (!isRead) {
       await _markAsRead(userId, docId);
+    }
+
+    if (!context.mounted) return;
+
+    String supportSubject = '';
+    String supportContent = '';
+    String supportReportedContent = '';
+    String supportImageUrl = '';
+    String supportReply = '';
+
+    if ((mailType == 'cs_received' || mailType == 'cs_reply') &&
+        reportId.trim().isNotEmpty) {
+      try {
+        final reportSnapshot = await FirebaseFirestore.instance
+            .collection('reports')
+            .doc(reportId.trim())
+            .get();
+
+        final reportData =
+            reportSnapshot.data() ?? <String, dynamic>{};
+
+        final categoryLabel =
+            reportData['categoryLabel']?.toString().trim() ?? '';
+        final reason =
+            reportData['reason']?.toString().trim() ?? '';
+
+        supportSubject = [
+          categoryLabel,
+          reason,
+        ].where((value) => value.isNotEmpty).join('・');
+
+        supportContent =
+            reportData['content']?.toString().trim() ?? '';
+        supportReportedContent =
+            reportData['reportedContent']?.toString().trim() ?? '';
+        supportImageUrl =
+            reportData['imageUrl']?.toString().trim() ?? '';
+
+        final storedReply =
+            reportData['adminReply']?.toString().trim() ?? '';
+
+        supportReply = storedReply.isNotEmpty
+            ? storedReply
+            : (mailType == 'cs_reply' ? body.trim() : '');
+      } catch (error, stackTrace) {
+        debugPrint('⚠️ 讀取客服案件內容失敗：$error');
+        debugPrintStack(stackTrace: stackTrace);
+      }
     }
 
     if (!context.mounted) return;
@@ -296,6 +346,13 @@ class _NotificationListPageState extends State<NotificationListPage> {
           mailTheme: mailTheme,
           characterAvatarPath: characterAvatarPath,
           interactionDates: interactionDates,
+          mailType: mailType,
+          reportId: reportId,
+          supportSubject: supportSubject,
+          supportContent: supportContent,
+          supportReportedContent: supportReportedContent,
+          supportImageUrl: supportImageUrl,
+          supportReply: supportReply,
         ),
       ),
     );
@@ -1004,6 +1061,9 @@ class _NotificationListPageState extends State<NotificationListPage> {
                             interactionDates: List<String>.from(
                               data['interactionDates'] ?? const <String>[],
                             ),
+                            mailType: type,
+                            reportId:
+                            data['reportId']?.toString().trim() ?? '',
                           );
                         },
                         child: Padding(
@@ -1423,6 +1483,13 @@ class _MailDetailPage extends StatefulWidget {
   final String mailTheme;
   final String characterAvatarPath;
   final List<String> interactionDates;
+  final String mailType;
+  final String reportId;
+  final String supportSubject;
+  final String supportContent;
+  final String supportReportedContent;
+  final String supportImageUrl;
+  final String supportReply;
 
   const _MailDetailPage({
     required this.userId,
@@ -1438,6 +1505,13 @@ class _MailDetailPage extends StatefulWidget {
     required this.mailTheme,
     required this.characterAvatarPath,
     required this.interactionDates,
+    this.mailType = '',
+    this.reportId = '',
+    this.supportSubject = '',
+    this.supportContent = '',
+    this.supportReportedContent = '',
+    this.supportImageUrl = '',
+    this.supportReply = '',
   });
 
   @override
@@ -1975,6 +2049,180 @@ class _MailDetailPageState extends State<_MailDetailPage> {
     );
   }
 
+  bool get _isCustomerServiceMail =>
+      widget.mailType == 'cs_received' ||
+          widget.mailType == 'cs_reply';
+
+  Widget _buildSupportSection({
+    required ThemeData theme,
+    required String label,
+    required String content,
+  }) {
+    if (content.trim().isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primary.withValues(alpha: 0.045),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: theme.colorScheme.primary.withValues(alpha: 0.12),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.notoSerifTc(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: theme.colorScheme.primary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          SelectableText(
+            content,
+            style: GoogleFonts.notoSerifTc(
+              fontSize: 14.5,
+              height: 1.7,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.82),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCustomerServiceMail(
+      ThemeData theme,
+      AppLocalizations l10n,
+      ) {
+    final bool hasReply = widget.supportReply.trim().isNotEmpty;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          l10n.mailDetailTitle,
+          style: GoogleFonts.notoSerifTc(
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        elevation: 0,
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.title,
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              if (widget.timeText.isNotEmpty) ...[
+                const SizedBox(height: 10),
+                Text(
+                  widget.timeText,
+                  style: TextStyle(
+                    color: theme.colorScheme.onSurface
+                        .withValues(alpha: 0.5),
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+              if (widget.caseNumber.isNotEmpty) ...[
+                const SizedBox(height: 24),
+                _buildCaseNumberCard(theme, l10n),
+              ],
+
+              const SizedBox(height: 22),
+
+              _buildSupportSection(
+                theme: theme,
+                label: '玩家送出的標題',
+                content: widget.supportSubject,
+              ),
+
+              if (widget.supportContent.trim().isNotEmpty) ...[
+                const SizedBox(height: 14),
+                _buildSupportSection(
+                  theme: theme,
+                  label: '玩家送出的內容',
+                  content: widget.supportContent,
+                ),
+              ],
+
+              if (widget.supportReportedContent.trim().isNotEmpty) ...[
+                const SizedBox(height: 14),
+                _buildSupportSection(
+                  theme: theme,
+                  label: '被回報的內容',
+                  content: widget.supportReportedContent,
+                ),
+              ],
+
+              if (widget.supportImageUrl.trim().isNotEmpty) ...[
+                const SizedBox(height: 14),
+                Text(
+                  '玩家附加圖片',
+                  style: GoogleFonts.notoSerifTc(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: CachedNetworkImage(
+                    imageUrl: widget.supportImageUrl,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    placeholder: (_, __) => Container(
+                      height: 180,
+                      alignment: Alignment.center,
+                      color: theme.colorScheme.primary
+                          .withValues(alpha: 0.04),
+                      child: const CircularProgressIndicator(),
+                    ),
+                    errorWidget: (_, __, ___) => Container(
+                      height: 120,
+                      alignment: Alignment.center,
+                      color: theme.colorScheme.primary
+                          .withValues(alpha: 0.04),
+                      child: const Icon(Icons.broken_image_outlined),
+                    ),
+                  ),
+                ),
+              ],
+
+              if (hasReply) ...[
+                const SizedBox(height: 24),
+                Divider(
+                  color: theme.colorScheme.primary
+                      .withValues(alpha: 0.18),
+                ),
+                const SizedBox(height: 18),
+                _buildSupportSection(
+                  theme: theme,
+                  label: '客服回覆',
+                  content: widget.supportReply,
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildNormalMail(
       ThemeData theme,
       AppLocalizations l10n,
@@ -2435,6 +2683,10 @@ class _MailDetailPageState extends State<_MailDetailPage> {
 
     if (_isQixiLetter) {
       return _buildQixiMail(theme, l10n);
+    }
+
+    if (_isCustomerServiceMail) {
+      return _buildCustomerServiceMail(theme, l10n);
     }
 
     return _buildNormalMail(theme, l10n);

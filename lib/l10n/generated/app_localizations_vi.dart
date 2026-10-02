@@ -8439,4 +8439,88 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get languageSelectionSubtitle => 'Chọn ngôn ngữ bạn quen dùng';
+
+  @override
+  String get chatStatusBarTitle => 'Trạng thái';
+
+  @override
+  String get chatStatusBarSubtitle =>
+      'Chọn thông tin muốn hiển thị trong cuộc trò chuyện';
+
+  @override
+  String get chatStatusMood => 'Tâm trạng';
+
+  @override
+  String get chatStatusOutfit => 'Trang phục';
+
+  @override
+  String get chatStatusRelationship => 'Mối quan hệ';
+
+  @override
+  String get chatStatusThought => 'Suy nghĩ';
+
+  @override
+  String get chatStatusWeather => 'Thời tiết';
+
+  @override
+  String get chatStatusCurrentState => 'Trạng thái hiện tại';
+
+  @override
+  String get chatStatusAction => 'Hành động';
+
+  @override
+  String get chatStatusAffinity => 'Độ thân mật';
+
+  @override
+  String get chatPreferenceTitle => 'Tùy chọn trò chuyện';
+
+  @override
+  String get chatPreferenceSubtitle =>
+      'Các cài đặt này chỉ áp dụng cho cuộc trò chuyện hiện tại và sẽ duy trì cho đến khi bạn sửa hoặc xóa.';
+
+  @override
+  String get chatPreferenceHint =>
+      'Ví dụ:\\nĐừng gọi tôi là cưng\\nTrả lời ngắn hơn\\nĐừng thường xuyên tự thêm hành động hoặc biểu cảm cho tôi';
+
+  @override
+  String get chatPreferenceClear => 'Xóa';
+
+  @override
+  String get chatSettingsDone => 'Xong';
+
+  @override
+  String get chat_mode_resonance => 'Cộng hưởng';
+
+  @override
+  String get chat_mode_gemini_cost =>
+      '10 lượt đầu mỗi ngày miễn phí, sau đó 1 điểm';
+
+  @override
+  String get chat_mode_gemini_desc =>
+      'Phù hợp cho trò chuyện nhẹ nhàng và đồng hành hằng ngày.';
+
+  @override
+  String get chat_mode_story_cost => '5 điểm';
+
+  @override
+  String get chat_mode_immersive_cost => '7 điểm';
+
+  @override
+  String get chat_mode_resonance_cost => '10 điểm';
+
+  @override
+  String get chat_mode_resonance_desc =>
+      'Mở rộng cảm xúc, căng thẳng trong mối quan hệ và phản ứng nhân vật tinh tế hơn.';
+
+  @override
+  String get chat_mode_gemini_cost_short => '1 Hoa';
+
+  @override
+  String get chat_mode_story_cost_short => '5 Hoa';
+
+  @override
+  String get chat_mode_immersive_cost_short => '7 Hoa';
+
+  @override
+  String get chat_mode_resonance_cost_short => '10 Hoa';
 }

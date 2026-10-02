@@ -8565,4 +8565,88 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get languageSelectionSubtitle =>
       'Choisissez la langue que vous préférez utiliser';
+
+  @override
+  String get chatStatusBarTitle => 'Statut';
+
+  @override
+  String get chatStatusBarSubtitle =>
+      'Choisissez les informations à afficher dans le chat';
+
+  @override
+  String get chatStatusMood => 'Humeur';
+
+  @override
+  String get chatStatusOutfit => 'Tenue';
+
+  @override
+  String get chatStatusRelationship => 'Relation';
+
+  @override
+  String get chatStatusThought => 'Pensées';
+
+  @override
+  String get chatStatusWeather => 'Météo';
+
+  @override
+  String get chatStatusCurrentState => 'État actuel';
+
+  @override
+  String get chatStatusAction => 'Action';
+
+  @override
+  String get chatStatusAffinity => 'Affinité';
+
+  @override
+  String get chatPreferenceTitle => 'Préférences de chat';
+
+  @override
+  String get chatPreferenceSubtitle =>
+      'Ces réglages s’appliquent uniquement à ce chat et restent actifs jusqu’à ce que vous les modifiiez ou les effaciez.';
+
+  @override
+  String get chatPreferenceHint =>
+      'Par exemple :\\nNe m’appelle pas bébé\\nFais des réponses plus courtes\\nN’ajoute pas trop souvent mes actions ou expressions';
+
+  @override
+  String get chatPreferenceClear => 'Effacer';
+
+  @override
+  String get chatSettingsDone => 'Terminé';
+
+  @override
+  String get chat_mode_resonance => 'Résonance';
+
+  @override
+  String get chat_mode_gemini_cost =>
+      'Les 10 premières fois par jour sont gratuites, puis 1 point';
+
+  @override
+  String get chat_mode_gemini_desc =>
+      'Idéal pour des échanges légers et une présence au quotidien.';
+
+  @override
+  String get chat_mode_story_cost => '5 points';
+
+  @override
+  String get chat_mode_immersive_cost => '7 points';
+
+  @override
+  String get chat_mode_resonance_cost => '10 points';
+
+  @override
+  String get chat_mode_resonance_desc =>
+      'Développe plus finement les émotions, la tension relationnelle et les réactions du personnage.';
+
+  @override
+  String get chat_mode_gemini_cost_short => '1 fleur';
+
+  @override
+  String get chat_mode_story_cost_short => '5 fleurs';
+
+  @override
+  String get chat_mode_immersive_cost_short => '7 fleurs';
+
+  @override
+  String get chat_mode_resonance_cost_short => '10 fleurs';
 }

@@ -4586,5 +4586,79 @@
   "languageSelectionSubtitle": "वह भाषा चुनें जिसका उपयोग करना आपको सबसे सहज लगता है",
   "@languageSelectionSubtitle": {
     "description": "Subtitle shown below the language settings title."
-  }
+  },
+  "chatStatusBarTitle": "स्थिति",
+  "chatStatusBarSubtitle": "चैट में दिखाने वाली जानकारी चुनें",
+  "chatStatusMood": "मूड",
+  "chatStatusOutfit": "पोशाक",
+  "chatStatusRelationship": "रिश्ता",
+  "chatStatusThought": "विचार",
+  "chatStatusWeather": "मौसम",
+  "chatStatusCurrentState": "वर्तमान स्थिति",
+  "chatStatusAction": "क्रिया",
+  "chatStatusAffinity": "लगाव",
+  "chatPreferenceTitle": "चैट प्राथमिकताएँ",
+  "chatPreferenceSubtitle": "ये सेटिंग केवल इस चैट पर लागू होती हैं और तब तक सक्रिय रहेंगी जब तक आप उन्हें बदल या साफ़ नहीं करते।",
+  "chatPreferenceHint": "उदाहरण:\\nमुझे बेबी मत कहो\\nजवाब थोड़े छोटे रखो\\nमेरी ओर से बार-बार हरकतें या भाव न जोड़ो",
+  "chatPreferenceClear": "साफ़ करें",
+  "chatSettingsDone": "पूरा",
+  "@chatStatusBarTitle": {
+    "description": "Title for per-chat status display settings."
+  },
+  "@chatStatusBarSubtitle": {
+    "description": "Subtitle explaining status display settings."
+  },
+  "@chatStatusMood": {
+    "description": "Status field: mood."
+  },
+  "@chatStatusOutfit": {
+    "description": "Status field: outfit."
+  },
+  "@chatStatusRelationship": {
+    "description": "Status field: relationship."
+  },
+  "@chatStatusThought": {
+    "description": "Status field: thoughts."
+  },
+  "@chatStatusWeather": {
+    "description": "Status field: weather."
+  },
+  "@chatStatusCurrentState": {
+    "description": "Status field: current state."
+  },
+  "@chatStatusAction": {
+    "description": "Status field: action."
+  },
+  "@chatStatusAffinity": {
+    "description": "Status field: affection/affinity."
+  },
+  "@chatPreferenceTitle": {
+    "description": "Title for persistent chat preferences."
+  },
+  "@chatPreferenceSubtitle": {
+    "description": "Explanation for per-chat persistent preferences."
+  },
+  "@chatPreferenceHint": {
+    "description": "Example text shown in the persistent preference field."
+  },
+  "@chatPreferenceClear": {
+    "description": "Button to clear persistent chat preferences."
+  },
+  "@chatSettingsDone": {
+    "description": "Done button shared by chat settings sheets."
+  },
+  "chat_mode_resonance": "अनुनाद",
+  "@chat_mode_resonance": {
+    "description": "Label for the Resonance chat mode."
+  },
+  "chat_mode_gemini_cost": "हर दिन पहली 10 बार मुफ्त, उसके बाद 1 अंक",
+  "chat_mode_gemini_desc": "हल्की-फुल्की बातचीत और रोज़मर्रा के साथ के लिए उपयुक्त।",
+  "chat_mode_story_cost": "5 अंक",
+  "chat_mode_immersive_cost": "7 अंक",
+  "chat_mode_resonance_cost": "10 अंक",
+  "chat_mode_resonance_desc": "भावनाओं, रिश्ते के तनाव और किरदार की प्रतिक्रियाओं को अधिक बारीकी से आगे बढ़ाता है।",
+  "chat_mode_gemini_cost_short": "1 फूल",
+  "chat_mode_story_cost_short": "5 फूल",
+  "chat_mode_immersive_cost_short": "7 फूल",
+  "chat_mode_resonance_cost_short": "10 फूल"
 }

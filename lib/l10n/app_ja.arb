@@ -4586,5 +4586,79 @@
   "languageSelectionSubtitle": "使い慣れた言語を選んでください",
   "@languageSelectionSubtitle": {
     "description": "Subtitle shown below the language settings title."
-  }
+  },
+  "chatStatusBarTitle": "ステータス",
+  "chatStatusBarSubtitle": "チャットに表示する情報を選択",
+  "chatStatusMood": "気分",
+  "chatStatusOutfit": "服装",
+  "chatStatusRelationship": "関係",
+  "chatStatusThought": "考え",
+  "chatStatusWeather": "天気",
+  "chatStatusCurrentState": "現在の状態",
+  "chatStatusAction": "動作",
+  "chatStatusAffinity": "好感度",
+  "chatPreferenceTitle": "チャット設定",
+  "chatPreferenceSubtitle": "この設定は現在のチャットだけに適用され、変更または削除するまで有効です。",
+  "chatPreferenceHint": "例：\\n「ベイビー」と呼ばないで\\n返事を短めにして\\n私の行動や表情を頻繁に補わないで",
+  "chatPreferenceClear": "クリア",
+  "chatSettingsDone": "完了",
+  "@chatStatusBarTitle": {
+    "description": "Title for per-chat status display settings."
+  },
+  "@chatStatusBarSubtitle": {
+    "description": "Subtitle explaining status display settings."
+  },
+  "@chatStatusMood": {
+    "description": "Status field: mood."
+  },
+  "@chatStatusOutfit": {
+    "description": "Status field: outfit."
+  },
+  "@chatStatusRelationship": {
+    "description": "Status field: relationship."
+  },
+  "@chatStatusThought": {
+    "description": "Status field: thoughts."
+  },
+  "@chatStatusWeather": {
+    "description": "Status field: weather."
+  },
+  "@chatStatusCurrentState": {
+    "description": "Status field: current state."
+  },
+  "@chatStatusAction": {
+    "description": "Status field: action."
+  },
+  "@chatStatusAffinity": {
+    "description": "Status field: affection/affinity."
+  },
+  "@chatPreferenceTitle": {
+    "description": "Title for persistent chat preferences."
+  },
+  "@chatPreferenceSubtitle": {
+    "description": "Explanation for per-chat persistent preferences."
+  },
+  "@chatPreferenceHint": {
+    "description": "Example text shown in the persistent preference field."
+  },
+  "@chatPreferenceClear": {
+    "description": "Button to clear persistent chat preferences."
+  },
+  "@chatSettingsDone": {
+    "description": "Done button shared by chat settings sheets."
+  },
+  "chat_mode_resonance": "共鳴",
+  "@chat_mode_resonance": {
+    "description": "Label for the Resonance chat mode."
+  },
+  "chat_mode_gemini_cost": "1日最初の10回は無料、その後1ポイント",
+  "chat_mode_gemini_desc": "気軽な会話や日常の寄り添いにおすすめ。",
+  "chat_mode_story_cost": "5ポイント",
+  "chat_mode_immersive_cost": "7ポイント",
+  "chat_mode_resonance_cost": "10ポイント",
+  "chat_mode_resonance_desc": "感情や関係性の緊張感、キャラクターの反応をより繊細に広げます。",
+  "chat_mode_gemini_cost_short": "花1個",
+  "chat_mode_story_cost_short": "花5個",
+  "chat_mode_immersive_cost_short": "花7個",
+  "chat_mode_resonance_cost_short": "花10個"
 }

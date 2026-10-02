@@ -4606,5 +4606,79 @@
   "languageSelectionSubtitle": "选择你习惯的语言",
   "@languageSelectionSubtitle": {
     "description": "Subtitle shown below the language settings title."
-  }
+  },
+  "chatStatusBarTitle": "状态栏",
+  "chatStatusBarSubtitle": "选择想在聊天中显示的信息",
+  "chatStatusMood": "心情",
+  "chatStatusOutfit": "穿着",
+  "chatStatusRelationship": "关系",
+  "chatStatusThought": "想法",
+  "chatStatusWeather": "天气",
+  "chatStatusCurrentState": "当前状态",
+  "chatStatusAction": "动作",
+  "chatStatusAffinity": "好感度",
+  "chatPreferenceTitle": "聊天偏好",
+  "chatPreferenceSubtitle": "这些设置只应用于当前聊天室，并会持续生效，直到你修改或清除。",
+  "chatPreferenceHint": "例如：\\n不要叫我宝贝\\n回复短一点\\n不要频繁替我补动作或表情",
+  "chatPreferenceClear": "清除",
+  "chatSettingsDone": "完成",
+  "@chatStatusBarTitle": {
+    "description": "Title for per-chat status display settings."
+  },
+  "@chatStatusBarSubtitle": {
+    "description": "Subtitle explaining status display settings."
+  },
+  "@chatStatusMood": {
+    "description": "Status field: mood."
+  },
+  "@chatStatusOutfit": {
+    "description": "Status field: outfit."
+  },
+  "@chatStatusRelationship": {
+    "description": "Status field: relationship."
+  },
+  "@chatStatusThought": {
+    "description": "Status field: thoughts."
+  },
+  "@chatStatusWeather": {
+    "description": "Status field: weather."
+  },
+  "@chatStatusCurrentState": {
+    "description": "Status field: current state."
+  },
+  "@chatStatusAction": {
+    "description": "Status field: action."
+  },
+  "@chatStatusAffinity": {
+    "description": "Status field: affection/affinity."
+  },
+  "@chatPreferenceTitle": {
+    "description": "Title for persistent chat preferences."
+  },
+  "@chatPreferenceSubtitle": {
+    "description": "Explanation for per-chat persistent preferences."
+  },
+  "@chatPreferenceHint": {
+    "description": "Example text shown in the persistent preference field."
+  },
+  "@chatPreferenceClear": {
+    "description": "Button to clear persistent chat preferences."
+  },
+  "@chatSettingsDone": {
+    "description": "Done button shared by chat settings sheets."
+  },
+  "chat_mode_resonance": "共鸣",
+  "@chat_mode_resonance": {
+    "description": "Label for the Resonance chat mode."
+  },
+  "chat_mode_gemini_cost": "每天前 10 次免费，之后 1 点",
+  "chat_mode_gemini_desc": "适合轻松聊天与日常陪伴。",
+  "chat_mode_story_cost": "5 点",
+  "chat_mode_immersive_cost": "7 点",
+  "chat_mode_resonance_cost": "10 点",
+  "chat_mode_resonance_desc": "更细腻地延伸情绪、关系张力与角色反应。",
+  "chat_mode_gemini_cost_short": "1朵花",
+  "chat_mode_story_cost_short": "5朵花",
+  "chat_mode_immersive_cost_short": "7朵花",
+  "chat_mode_resonance_cost_short": "10朵花"
 }

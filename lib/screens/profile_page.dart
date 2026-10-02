@@ -2209,24 +2209,7 @@ class _ProfilePageState extends State<ProfilePage>
                         ),
                       ),
                     ),
-                    IconButton(
-                      tooltip: '拾光收藏',
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                            const EventMemoryCollectionPage(),
-                          ),
-                        );
-                      },
-                      icon: Icon(
-                        Icons.collections_bookmark_outlined,
-                        color: theme.colorScheme.primary
-                            .withValues(alpha: 0.62),
-                        size: 25,
-                      ),
-                    ),
+                    // 🚧 送審版：拾光收藏暫時隱藏入口；功能程式保留。
 
                     IconButton(
                       tooltip: l10n.profile_tooltip_settings,

@@ -8307,4 +8307,87 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get languageSelectionSubtitle => 'اختر اللغة التي تفضل استخدامها';
+
+  @override
+  String get chatStatusBarTitle => 'الحالة';
+
+  @override
+  String get chatStatusBarSubtitle =>
+      'اختر المعلومات التي تريد إظهارها في الدردشة';
+
+  @override
+  String get chatStatusMood => 'المزاج';
+
+  @override
+  String get chatStatusOutfit => 'الملابس';
+
+  @override
+  String get chatStatusRelationship => 'العلاقة';
+
+  @override
+  String get chatStatusThought => 'الأفكار';
+
+  @override
+  String get chatStatusWeather => 'الطقس';
+
+  @override
+  String get chatStatusCurrentState => 'الحالة الحالية';
+
+  @override
+  String get chatStatusAction => 'الفعل';
+
+  @override
+  String get chatStatusAffinity => 'الألفة';
+
+  @override
+  String get chatPreferenceTitle => 'تفضيلات الدردشة';
+
+  @override
+  String get chatPreferenceSubtitle =>
+      'تنطبق هذه الإعدادات على هذه الدردشة فقط وتظل فعالة حتى تعدّلها أو تمسحها.';
+
+  @override
+  String get chatPreferenceHint =>
+      'مثال:\\nلا تنادني بحبيبتي\\nاجعل الردود أقصر\\nلا تضف أفعالي أو تعابيري بشكل متكرر';
+
+  @override
+  String get chatPreferenceClear => 'مسح';
+
+  @override
+  String get chatSettingsDone => 'تم';
+
+  @override
+  String get chat_mode_resonance => 'التناغم';
+
+  @override
+  String get chat_mode_gemini_cost =>
+      'أول 10 مرات يوميًا مجانًا، ثم نقطة واحدة';
+
+  @override
+  String get chat_mode_gemini_desc => 'مناسب للدردشة الخفيفة والرفقة اليومية.';
+
+  @override
+  String get chat_mode_story_cost => '5 نقاط';
+
+  @override
+  String get chat_mode_immersive_cost => '7 نقاط';
+
+  @override
+  String get chat_mode_resonance_cost => '10 نقاط';
+
+  @override
+  String get chat_mode_resonance_desc =>
+      'يوسّع المشاعر وتوتر العلاقة وردود فعل الشخصية بدقة أكبر.';
+
+  @override
+  String get chat_mode_gemini_cost_short => 'زهرة 1';
+
+  @override
+  String get chat_mode_story_cost_short => '5 زهور';
+
+  @override
+  String get chat_mode_immersive_cost_short => '7 زهور';
+
+  @override
+  String get chat_mode_resonance_cost_short => '10 زهور';
 }
