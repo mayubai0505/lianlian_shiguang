@@ -124,7 +124,7 @@
     "placeholders": {
         "version": {
             "type": "String",
-            "example": "1.0.0"
+            "example": "1.7.73"
         }
     }
               },

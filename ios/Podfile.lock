@@ -15,11 +15,14 @@ PODS:
     - Flutter
     - flutter_sound_core (= 9.30.0)
   - flutter_sound_core (9.30.0)
+  - printing (1.0.0):
+    - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_facebook_auth (from `.symlinks/plugins/flutter_facebook_auth/ios`)
   - flutter_sound (from `.symlinks/plugins/flutter_sound/ios`)
+  - printing (from `.symlinks/plugins/printing/ios`)
 
 SPEC REPOS:
   trunk:
@@ -36,6 +39,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_facebook_auth/ios"
   flutter_sound:
     :path: ".symlinks/plugins/flutter_sound/ios"
+  printing:
+    :path: ".symlinks/plugins/printing/ios"
 
 SPEC CHECKSUMS:
   FBAEMKit: 56a4f5a9607957b547b6458b17a98c5bb2736367
@@ -46,6 +51,7 @@ SPEC CHECKSUMS:
   flutter_facebook_auth: fa3b69b1df0831d2178fe87a05ee2d7d0156db70
   flutter_sound: d95194f6476c9ad211d22b3a414d852c12c7ca44
   flutter_sound_core: 7f2626d249d3a57bfa6da892ef7e22d234482c1a
+  printing: 54ff03f28fe9ba3aa93358afb80a8595a071dd07
 
 PODFILE CHECKSUM: 53a6aebc29ccee84c41f92f409fc20cd4ca011f1
 
