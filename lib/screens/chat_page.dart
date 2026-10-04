@@ -41,6 +41,7 @@ import 'backpack_page.dart';
 import 'background_settings_page.dart';
 import '../widgets/dice_duel_overlay.dart';
 import '../services/app_constants.dart';
+import 'desktop_widget_service.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
@@ -6160,6 +6161,33 @@ class _ChatPageState extends State<ChatPage> {
             }
           }
 
+          // 🖼️ 桌面小工具：AI 回覆成功後，把這一輪最新狀態同步到桌面。
+          // 測試聊天室不更新正式 Widget。
+          if (!widget.isTestMode && aiStatusBar.isNotEmpty) {
+            unawaited(
+              DesktopWidgetNativeService
+                  .refreshCharacterStatusWidgetsForCharacter(
+                characterId: characterId,
+                statusBar: aiStatusBar,
+                statusBarChanges: aiStatusBarChanges,
+                location: newStoryLocation.isNotEmpty
+                    ? newStoryLocation
+                    : (_currentStoryLocation ?? ''),
+              ),
+            );
+          }
+
+          // 💬 桌面小工具「今日一句」：從這次 AI 回覆擷取角色真正說出口的台詞。
+          if (!widget.isTestMode && aiResponseText.trim().isNotEmpty) {
+            unawaited(
+              DesktopWidgetNativeService.refreshDailyQuoteWidgetsForCharacter(
+                characterId: characterId,
+                aiText: aiResponseText,
+                timestamp: DateTime.now(),
+              ),
+            );
+          }
+
           // ========================================================
           // 🟡 第二區：【UI 溫室防線】只有當玩家還在房間畫面上，才需要處理 setState 與升級動畫
           // ========================================================
@@ -10782,10 +10810,17 @@ class _ChatPageState extends State<ChatPage> {
                       ? msg.text
                       : _getCleanAiMessage(msg.text);
 
-                  final String displayText = rawDisplayText
+                  final String baseDisplayText = rawDisplayText
                       .replaceAll('(玩家名字)', _playerNickname)
                       .replaceAll('{{玩家名字}}', _playerNickname)
                       .replaceAll('【玩家名字】', _playerNickname);
+
+                  // 📸 截圖必須忠實包含這則訊息目前顯示的所有內容。
+                  // AI 訊息若帶有狀態欄快照，就沿用聊天室同一套注入邏輯，
+                  // 避免畫面看得到狀態欄、分享圖卻漏掉。
+                  final String displayText = isUser || isSystem
+                      ? baseDisplayText
+                      : _injectAiStatusLines(msg, baseDisplayText);
 
                   Widget messageBody;
 
@@ -11104,10 +11139,26 @@ class _ChatPageState extends State<ChatPage> {
       }
 
       // 🚀 字數與換行【極致緊緻版】高度精算
+      // 截圖高度也要用「實際會輸出的文字」計算，包含 AI 狀態欄，
+      // 否則狀態欄加進去後可能被底部裁掉。
       double canvasHeight = 150.0;
       for (var msg in msgsToExport) {
         canvasHeight += 45.0;
-        List<String> paragraphs = msg.text.split('\n');
+
+        final bool isUser = msg.sender == 'user';
+        final bool isSystem = msg.sender == 'system';
+        final String rawDisplayText = isUser
+            ? msg.text
+            : _getCleanAiMessage(msg.text);
+        final String baseDisplayText = rawDisplayText
+            .replaceAll('(玩家名字)', _playerNickname)
+            .replaceAll('{{玩家名字}}', _playerNickname)
+            .replaceAll('【玩家名字】', _playerNickname);
+        final String exportText = isUser || isSystem
+            ? baseDisplayText
+            : _injectAiStatusLines(msg, baseDisplayText);
+
+        final List<String> paragraphs = exportText.split('\n');
         for (var p in paragraphs) {
           int lines = (p.length / 18).ceil();
           if (lines == 0) lines = 1;
@@ -12871,9 +12922,10 @@ Widget _buildStyledAiMessage(
 
   final theme = Theme.of(context);
 
-  // 對話固定黑色；旁白／動作跟著目前主題色。
+  // 台詞文字要跟著目前主題的可讀文字色切換：
+  // 淺色主題為深色字、深色主題自動改成淺色字，避免黑底黑字。
   final dialogueStyle = baseDialogueStyle.copyWith(
-    color: Colors.black,
+    color: theme.colorScheme.onSurface,
     height: 1.55,
   );
 

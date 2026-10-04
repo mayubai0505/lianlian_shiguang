@@ -976,12 +976,49 @@ function formatAiCostTraceLine(cost) {
 function isAiContentFiltered(result) {
   return (
     result?.choices?.some(
-      (choice) =>
-        String(
+      (choice) => {
+        const finishReason = String(
           choice?.finish_reason || ""
-        ).toLowerCase() === "content_filter"
+        ).toLowerCase();
+
+        return (
+          finishReason.includes("content_filter") ||
+          finishReason.includes("prohibited_content") ||
+          finishReason.includes("safety")
+        );
+      }
     ) === true
   );
+}
+
+function hasUsableAiContent(result) {
+  if (!result?.choices?.length) return false;
+
+  return result.choices.some((choice) => {
+    const content = choice?.message?.content;
+
+    if (typeof content === "string") {
+      return content.trim().length > 0;
+    }
+
+    if (Array.isArray(content)) {
+      return content.some((part) => {
+        if (typeof part === "string") {
+          return part.trim().length > 0;
+        }
+
+        const text = String(
+          part?.text ||
+          part?.content ||
+          ""
+        ).trim();
+
+        return text.length > 0;
+      });
+    }
+
+    return false;
+  });
 }
 
 function isAiTimeoutError(error) {
@@ -1167,7 +1204,7 @@ async function callAiWithRetry({
       };
     }
 
-    return await callOpenRouter({
+    const result = await callOpenRouter({
       apiUrl:
         providerConfig.apiUrl,
 
@@ -1181,6 +1218,61 @@ async function callAiWithRetry({
       abortController,
       timeoutMs,
     });
+
+    // HTTP 200 不代表模型真的成功產生內容。
+    // Gemini 會用 200 + finish_reason=content_filter: PROHIBITED_CONTENT 擋掉回覆；
+    // 其他 provider 也可能回 choices 但 content 為空。
+    // 這兩種情況都必須在這一層視為 provider failure，
+    // 才能讓所有模式統一進入 fallback，而不是外層一直重撞同一模型。
+    if (isAiContentFiltered(result)) {
+      const finishReasons = (result?.choices || [])
+        .map((choice) => String(choice?.finish_reason || ""))
+        .filter(Boolean);
+
+      const error = new Error("AI_CONTENT_FILTERED");
+      error.code = "AI_CONTENT_FILTERED";
+      error.result = result;
+      error.provider = providerConfig.provider;
+      error.modelId = targetModelId;
+      error.finishReasons = finishReasons;
+
+      console.warn(
+        "🛡️ AI provider content filter，改走 fallback:",
+        {
+          provider: providerConfig.provider,
+          modelId: targetModelId,
+          finishReasons,
+        }
+      );
+
+      throw error;
+    }
+
+    if (!hasUsableAiContent(result)) {
+      const finishReasons = (result?.choices || [])
+        .map((choice) => String(choice?.finish_reason || ""))
+        .filter(Boolean);
+
+      const error = new Error("AI_EMPTY_RESPONSE");
+      error.code = "AI_EMPTY_RESPONSE";
+      error.result = result;
+      error.provider = providerConfig.provider;
+      error.modelId = targetModelId;
+      error.finishReasons = finishReasons;
+
+      console.warn(
+        "🫥 AI provider 回傳空內容，改走 fallback:",
+        {
+          provider: providerConfig.provider,
+          modelId: targetModelId,
+          finishReasons,
+        }
+      );
+
+      throw error;
+    }
+
+    return result;
   }
 
   async function finishSuccess(
@@ -1234,14 +1326,17 @@ async function callAiWithRetry({
 
       usedFallback,
 
-      contentFiltered: false,
+      contentFiltered:
+        error?.code === "AI_CONTENT_FILTERED" ||
+        isAiContentFiltered(error?.result),
 
       timedOut:
         isAiTimeoutError(error),
 
       cancelled,
 
-      result: null,
+      result:
+        error?.result || null,
 
       modelId:
         finalModelId,
@@ -1293,7 +1388,11 @@ async function callAiWithRetry({
         ) ||
         error.message?.includes(
           "AI 斷線或沒有回傳 choices"
-        );
+        ) ||
+        error?.code === "AI_CONTENT_FILTERED" ||
+        error?.code === "AI_EMPTY_RESPONSE" ||
+        error?.message === "AI_CONTENT_FILTERED" ||
+        error?.message === "AI_EMPTY_RESPONSE";
 
       if (!retryable) {
         return await finishFailure(
@@ -1322,8 +1421,12 @@ async function callAiWithRetry({
             fallbackModelId,
             message:
               error?.message,
+            code:
+              error?.code || "",
             statusCode:
               error?.statusCode,
+            finishReasons:
+              error?.finishReasons || [],
           }
         );
 
@@ -1344,8 +1447,12 @@ async function callAiWithRetry({
               fallbackModelId,
               message:
                 fallbackError?.message,
+              code:
+                fallbackError?.code || "",
               statusCode:
                 fallbackError?.statusCode,
+              finishReasons:
+                fallbackError?.finishReasons || [],
             }
           );
 
@@ -7657,25 +7764,42 @@ ${persistentPreferenceDirective}
                                                                                    // 抓出到底是哪個關鍵字觸發的
                                                                                    const triggeredKeyword = safetyKeywords.find(keyword => rawContent.includes(keyword));
 
-                                                                                   const isRefused = triggeredKeyword || rawContent.trim() === "";
+                                                                                   const isEmptyContent = rawContent.trim() === "";
+                                                                                   const isRefused = Boolean(triggeredKeyword) || isEmptyContent;
+
                                                                                   if (isRefused) {
                                                                                       console.warn(
                                                                                           `🛑 [防禦系統] 偵測到 AI 審查擋刀或發呆！` +
                                                                                           `(觸發原因: ${triggeredKeyword ? `關鍵字 [${triggeredKeyword}]` : "回傳為空"})`
                                                                                       );
 
+                                                                                      // v2.4.7：空回覆已經在 callAiWithRetry 內統一切 fallback。
+                                                                                      // 理論上不應再走到這裡；若仍抵達，代表 fallback 本身回了異常格式，
+                                                                                      // 不再把相同上下文反覆送回原模型燒 token。
+                                                                                      if (isEmptyContent) {
+                                                                                          console.warn(
+                                                                                              "🛑 fallback 後仍為空回覆，停止本輪並攔截寫入／扣款"
+                                                                                          );
+
+                                                                                          return res.status(400).json({
+                                                                                              error: "AI_EMPTY_RESPONSE",
+                                                                                              message: "他目前在忙，請稍後再試一次喔！"
+                                                                                          });
+                                                                                      }
+
+                                                                                      // 真正有文字但屬於模型拒答時，保留既有少量 rescue。
                                                                                       if (retryCount < MAX_AI_RETRIES) {
                                                                                           retryCount++;
-                                                                                          nextAiCallReason = "empty_or_refusal_retry";
+                                                                                          nextAiCallReason = "refusal_text_retry";
 
                                                                                           console.log(
-                                                                                              `🔄 AI 空回覆／拒答，自動重試 ${retryCount}/${MAX_AI_RETRIES}`
+                                                                                              `🔄 AI 文字拒答，自動 rescue ${retryCount}/${MAX_AI_RETRIES}`
                                                                                           );
 
                                                                                           continue;
                                                                                       }
 
-                                                                                      console.warn("🛑 AI 重試次數已達上限，攔截寫入與扣款");
+                                                                                      console.warn("🛑 AI rescue 次數已達上限，攔截寫入與扣款");
 
                                                                                       return res.status(400).json({
                                                                                           error: "CENSORED",

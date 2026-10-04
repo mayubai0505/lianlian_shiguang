@@ -1865,7 +1865,81 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    // 🚧 送審版：活動頭像框底層仍保留，暫時隱藏選擇入口。
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: _openAvatarFramePicker,
+                        borderRadius: BorderRadius.circular(14),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 8,
+                          ),
+                          child: Row(
+                            children: [
+                              SizedBox.square(
+                                dimension: 54,
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 23,
+                                      backgroundImage:
+                                      _getEditableAvatarProvider(_avatarPath),
+                                    ),
+                                    if (_equippedAvatarFrameImageUrl.isNotEmpty)
+                                      Positioned.fill(
+                                        child: IgnorePointer(
+                                          child: Image(
+                                            image: getAvatarImageProvider(
+                                              _equippedAvatarFrameImageUrl,
+                                            ),
+                                            fit: BoxFit.contain,
+                                            errorBuilder: (_, __, ___) =>
+                                            const SizedBox.shrink(),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '頭像框',
+                                      style: GoogleFonts.notoSerifTc(
+                                        fontSize: 13.5,
+                                        fontWeight: FontWeight.w600,
+                                        color: onSurface,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      _equippedAvatarFrameName.isEmpty
+                                          ? '目前未使用'
+                                          : _equippedAvatarFrameName,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: GoogleFonts.notoSerifTc(
+                                        fontSize: 11.5,
+                                        color: onSurface.withValues(alpha: 0.5),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Icon(
+                                Icons.chevron_right_rounded,
+                                color: onSurface.withValues(alpha: 0.32),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 18),
                   ],
 

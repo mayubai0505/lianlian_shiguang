@@ -782,8 +782,7 @@ class RecommendationPageState extends State<RecommendationPage> {
                     ],
                   ),
                   const SizedBox(height: 10),
-                  // 🚧 送審版：活動功能仍保留，但暫時隱藏入口。
-                  // const _ActiveEventEntry(),
+                  const _ActiveEventEntry(),
                   if (_preferredTags.isNotEmpty) ...[
                     const SizedBox(height: 14),
                     const SizedBox(height: 14),

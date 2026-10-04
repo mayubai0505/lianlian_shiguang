@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -12,6 +13,7 @@ import 'package:flutter/foundation.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../services/toast_utils.dart';
+import 'desktop_widget_service.dart';
 import 'character_model.dart';
 import '../utils/image_utils.dart';
 import '../utils/moment_search_utils.dart';
@@ -137,6 +139,22 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
         // 暫時先把這個標記設為 false，等我們改完大廳再來處理身分問題
         'isCreatorPost': widget.isCreatorPost,
       });
+
+      // 🖼️ 桌面小工具：角色本人發新動態後，立即刷新該角色的「最新貼文」Widget。
+      // 創作者本人貼文使用 creator_xxx 身分，不屬於角色 Widget，因此略過。
+      if (!widget.isCreatorPost) {
+        unawaited(
+          DesktopWidgetNativeService.refreshLatestPostWidgetsForCharacter(
+            characterId: widget.authorId,
+            content: content,
+            imageUrl: imageUrl ?? '',
+            createdAt: DateTime.now(),
+            likeCount: 0,
+            commentCount: 0,
+          ),
+        );
+      }
+
       if (mounted) {
         Navigator.pop(context);
       }
@@ -1432,5 +1450,4 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
       ),
     );
   }
-
 }

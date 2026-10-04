@@ -505,7 +505,20 @@ class _SettingsPageState extends State<SettingsPage> {
                     theme: theme,
                   ),
 
-                  // 🚧 送審版：桌面小工具仍在開發中，暫時隱藏入口。
+                  _buildSettingsTile(
+                    iconData: Icons.widgets_rounded,
+                    title: '桌面小工具',
+                    subtitle: '讓喜歡的角色陪妳出現在每一天',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const DesktopWidgetSettingsPage(),
+                        ),
+                      );
+                    },
+                    theme: theme,
+                  ),
 
                   _buildSettingsTile(
                     maskAsset:

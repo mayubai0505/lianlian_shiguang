@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:table_calendar/table_calendar.dart';
 
 import '../services/theme_notifier.dart';
 import '../services/toast_utils.dart';
+import 'desktop_widget_service.dart';
 import 'character_model.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
@@ -608,6 +610,11 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
 
       await batch.commit();
 
+      // 🩷 生理期資料更新後，同步刷新所有桌面的「生理期陪伴」Widget。
+      unawaited(
+        DesktopWidgetNativeService.refreshPeriodCareWidgets(),
+      );
+
       if (!mounted) return;
       setState(() {
         _selectedAction = _PeriodAction.none;
@@ -663,6 +670,11 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
 
     if (confirm == true) {
       await _recordsCollection.doc(recordId).delete();
+
+      // 刪除週期紀錄後也要讓桌面內容重新計算。
+      unawaited(
+        DesktopWidgetNativeService.refreshPeriodCareWidgets(),
+      );
     }
   }
 

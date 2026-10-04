@@ -2981,16 +2981,62 @@ class _DesktopWidgetPreviewPageState
       final widgetConfigId = widget.editingWidgetId ??
           '${DateTime.now().microsecondsSinceEpoch}_${widget.characterId}';
 
+      List<String> displayLines;
+      String displayImageUrl = widget.imageUrl;
+
+      if (widget.info.type == DesktopWidgetType.characterStatus) {
+        displayLines =
+        await DesktopWidgetNativeService.loadCharacterStatusLines(
+          characterId: widget.characterId,
+          settings: widget.settings,
+        );
+      } else if (widget.info.type == DesktopWidgetType.latestPost) {
+        final latestPost =
+        await DesktopWidgetNativeService.loadLatestPostWidgetData(
+          characterId: widget.characterId,
+          settings: widget.settings,
+          fallbackImageUrl: widget.imageUrl,
+        );
+
+        final rawLines = latestPost['lines'];
+        displayLines = rawLines is List
+            ? rawLines.map((e) => e.toString()).toList()
+            : const <String>['目前還沒有角色動態'];
+
+        displayImageUrl =
+            latestPost['imageUrl']?.toString().trim() ?? widget.imageUrl;
+      } else if (widget.info.type == DesktopWidgetType.dailyQuote) {
+        displayLines =
+        await DesktopWidgetNativeService.loadDailyQuoteWidgetData(
+          characterId: widget.characterId,
+          settings: widget.settings,
+        );
+      } else if (widget.info.type == DesktopWidgetType.periodCare) {
+        displayLines =
+        await DesktopWidgetNativeService.loadPeriodCareWidgetData(
+          settings: widget.settings,
+        );
+      } else if (widget.info.type == DesktopWidgetType.anniversary) {
+        displayLines =
+        await DesktopWidgetNativeService.loadAnniversaryWidgetData(
+          characterId: widget.characterId,
+          characterData: widget.characterData,
+          settings: widget.settings,
+        );
+      } else {
+        displayLines = _sampleLines();
+      }
+
       await DesktopWidgetNativeService.saveAndRefresh(
         widgetConfigId: widgetConfigId,
         widgetType: _nativeWidgetType,
         characterId: widget.characterId,
         characterName: characterName,
-        imageUrl: widget.imageUrl,
+        imageUrl: displayImageUrl,
         size: _size,
         layout: _layout,
         settings: widget.settings,
-        displayLines: _sampleLines(),
+        displayLines: displayLines,
         requestPin: widget.editingWidgetId == null,
       );
 
