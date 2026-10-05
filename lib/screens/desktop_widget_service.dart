@@ -780,6 +780,105 @@ class DesktopWidgetNativeService {
     );
   }
 
+  static Future<void> refreshDailyQuoteWidgetsOnAppOpen() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_registryPrefsKey);
+
+      if (raw == null || raw.trim().isEmpty) return;
+
+      final decoded = jsonDecode(raw);
+      if (decoded is! List) return;
+
+      final now = DateTime.now();
+      final todayKey =
+          '${now.year.toString().padLeft(4, '0')}-'
+          '${now.month.toString().padLeft(2, '0')}-'
+          '${now.day.toString().padLeft(2, '0')}';
+
+      bool didUpdateAny = false;
+      final String? groupId =
+      Platform.isIOS ? appGroupId : null;
+
+      if (Platform.isIOS) {
+        await HomeWidget.setAppGroupId(appGroupId);
+      }
+
+      for (final item in decoded.whereType<Map>()) {
+        final data = Map<String, dynamic>.from(item);
+
+        if (data['widgetType']?.toString() != 'daily_quote') {
+          continue;
+        }
+
+        final widgetConfigId =
+            data['id']?.toString().trim() ?? '';
+        final characterId =
+            data['characterId']?.toString().trim() ?? '';
+
+        if (widgetConfigId.isEmpty || characterId.isEmpty) {
+          continue;
+        }
+
+        final settings = data['settings'] is Map
+            ? Map<String, dynamic>.from(data['settings'] as Map)
+            : <String, dynamic>{};
+
+        final refreshMode =
+            settings['refreshMode']?.toString() ?? 'daily';
+
+        // daily：跨日才更新。
+        // app_open：每次冷啟動 / 回前景都讀最新一句。
+        if (refreshMode == 'daily') {
+          final lastDate = prefs.getString(
+            'desktop_widget_daily_quote_date_$widgetConfigId',
+          );
+
+          if (lastDate == todayKey) {
+            continue;
+          }
+        }
+
+        final latest = await _findLatestAiQuoteForCharacter(
+          characterId,
+        );
+
+        final lines = buildDailyQuoteLines(
+          settings: settings,
+          quote: latest['quote']?.toString() ?? '',
+          timestamp: latest['timestamp'],
+        );
+
+        for (int i = 0; i < 4; i++) {
+          await HomeWidget.saveWidgetData<String>(
+            _key(widgetConfigId, 'line_${i + 1}'),
+            i < lines.length ? lines[i] : '',
+            appGroupId: groupId,
+          );
+        }
+
+        await prefs.setString(
+          'desktop_widget_daily_quote_date_$widgetConfigId',
+          todayKey,
+        );
+
+        didUpdateAny = true;
+      }
+
+      if (!didUpdateAny) return;
+
+      await HomeWidget.updateWidget(
+        name: androidProviderName,
+        androidName: androidProviderName,
+        qualifiedAndroidName: androidQualifiedProviderName,
+        iOSName: iosWidgetKind,
+      );
+    } catch (error) {
+      debugPrint('⚠️ Widget App 開啟刷新今日一句失敗：$error');
+    }
+  }
+
+
   static Future<void> refreshDailyQuoteWidgetsForCharacter({
     required String characterId,
     required String aiText,

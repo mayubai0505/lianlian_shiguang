@@ -141,6 +141,9 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   final TextEditingController _eventAccentColorLightController = TextEditingController(text: '#E9DFF7');
   final TextEditingController _eventBackgroundColorController = TextEditingController(text: '#FBF8FF');
   final TextEditingController _eventCardColorController = TextEditingController(text: '#FFFFFF');
+  final TextEditingController _eventTextPrimaryColorController = TextEditingController(text: '#3B3340');
+  final TextEditingController _eventTextSecondaryColorController = TextEditingController(text: '#6F6673');
+  final TextEditingController _eventTextMutedColorController = TextEditingController(text: '#948A98');
 
   final TextEditingController _eventTasksHeaderIconUrlController = TextEditingController();
   final TextEditingController _eventMilestonesHeaderIconUrlController = TextEditingController();
@@ -237,6 +240,9 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     _eventAccentColorLightController.dispose();
     _eventBackgroundColorController.dispose();
     _eventCardColorController.dispose();
+    _eventTextPrimaryColorController.dispose();
+    _eventTextSecondaryColorController.dispose();
+    _eventTextMutedColorController.dispose();
     _eventTasksHeaderIconUrlController.dispose();
     _eventMilestonesHeaderIconUrlController.dispose();
     _eventMemoryCardImageUrlController.dispose();
@@ -677,17 +683,28 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                 const SizedBox(height: 15),
                 TextField(
                   controller: replyController,
-                  maxLines: 4,
+                  minLines: 3,
+                  maxLines: 5,
+                  textInputAction: TextInputAction.newline,
+                  onTapOutside: (_) =>
+                      FocusManager.instance.primaryFocus?.unfocus(),
                   decoration: const InputDecoration(
                     labelText: '回覆內容',
                     hintText: '輸入回覆內容...',
+                    alignLabelWithHint: true,
                     border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.chat_bubble_outline_rounded),
                   ),
                 ),
                 const SizedBox(height: 10),
                 TextField(
                   controller: flowerController,
                   keyboardType: TextInputType.number,
+                  textInputAction: TextInputAction.done,
+                  onTapOutside: (_) =>
+                      FocusManager.instance.primaryFocus?.unfocus(),
+                  onSubmitted: (_) =>
+                      FocusManager.instance.primaryFocus?.unfocus(),
                   decoration: const InputDecoration(
                     labelText: '補償花花點數（選填）',
                     hintText: '不補償可留空，例如：5',
@@ -711,6 +728,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
           actions: [
             TextButton(
               onPressed: () {
+                FocusManager.instance.primaryFocus?.unfocus();
                 Navigator.of(
                   dialogContext,
                 ).pop();
@@ -719,8 +737,10 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                 l10n.cancelButton,
               ),
             ),
-            ElevatedButton(
+            FilledButton.icon(
               onPressed: () {
+                FocusManager.instance.primaryFocus?.unfocus();
+
                 final replyText = replyController.text.trim();
 
                 if (replyText.isEmpty) {
@@ -778,7 +798,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                   'flowerAmount': flowerAmount,
                 });
               },
-              child: const Text('確認回覆'),
+              icon: const Icon(Icons.send_rounded, size: 18),
+              label: const Text('送出回覆'),
             ),
           ],
         );
@@ -3672,11 +3693,37 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   }
 
   Future<void> _setReportStatus(String reportId, String status) async {
+    FocusManager.instance.primaryFocus?.unfocus();
+
     await FirebaseFirestore.instance.collection('reports').doc(reportId).set({
       'status': status,
       'adminUpdatedAt': FieldValue.serverTimestamp(),
       'adminUpdatedBy': FirebaseAuth.instance.currentUser?.uid ?? '',
     }, SetOptions(merge: true));
+
+    if (!mounted) return;
+
+    // 待處理案件改成「處理中」後，直接切到處理中清單，
+    // 避免案件看起來像突然消失。
+    if (status == 'processing' && _supportStatus != 'processing') {
+      setState(() {
+        _supportStatus = 'processing';
+      });
+    }
+
+    ToastUtils.showCenterToast(
+      context,
+      status == 'processing'
+          ? '案件已移到「處理中」，仍可繼續回覆玩家'
+          : status == 'rejected'
+          ? '案件已標記為駁回'
+          : '案件狀態已更新',
+      customIcon: status == 'processing'
+          ? Icons.hourglass_top_rounded
+          : status == 'rejected'
+          ? Icons.do_not_disturb_alt_rounded
+          : Icons.check_circle_outline_rounded,
+    );
   }
 
   Widget _buildSupportCenterTab() {
@@ -3703,15 +3750,39 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
             child: Row(
               children: statusOptions.entries.map((entry) {
                 final selected = _supportStatus == entry.key;
+
                 return Padding(
                   padding: const EdgeInsets.only(right: 8),
-                  child: ChoiceChip(
-                    label: Text(entry.value),
-                    selected: selected,
-                    showCheckmark: false,
-                    selectedColor: primary.withValues(alpha: 0.14),
-                    side: BorderSide(color: primary.withValues(alpha: selected ? 0.42 : 0.14)),
-                    onSelected: (_) => setState(() => _supportStatus = entry.key),
+                  child: selected
+                      ? FilledButton(
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
+                      visualDensity: VisualDensity.compact,
+                    ),
+                    onPressed: () {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                    },
+                    child: Text(entry.value),
+                  )
+                      : OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
+                      visualDensity: VisualDensity.compact,
+                      side: BorderSide(
+                        color: primary.withValues(alpha: 0.22),
+                      ),
+                    ),
+                    onPressed: () {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                      setState(() => _supportStatus = entry.key);
+                    },
+                    child: Text(entry.value),
                   ),
                 );
               }).toList(),
@@ -3721,11 +3792,26 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
           child: TextField(
-            decoration: const InputDecoration(
-              prefixIcon: Icon(Icons.search_rounded),
+            textInputAction: TextInputAction.done,
+            decoration: InputDecoration(
+              prefixIcon: const Icon(Icons.search_rounded),
               hintText: '搜尋 UID / 案件編號 / 客服內容',
+              suffixIcon: _supportSearch.isEmpty
+                  ? null
+                  : IconButton(
+                tooltip: '清除搜尋',
+                onPressed: () {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  setState(() => _supportSearch = '');
+                },
+                icon: const Icon(Icons.close_rounded),
+              ),
             ),
-            onChanged: (value) => setState(() => _supportSearch = value.trim().toLowerCase()),
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            onSubmitted: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            onChanged: (value) => setState(
+                  () => _supportSearch = value.trim().toLowerCase(),
+            ),
           ),
         ),
         Expanded(
@@ -3864,31 +3950,81 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                                 spacing: 8,
                                 runSpacing: 8,
                                 children: [
-                                  if (!resolved)
+                                  if (!resolved && _supportStatus != 'rejected')
                                     FilledButton.icon(
+                                      style: FilledButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 14,
+                                          vertical: 11,
+                                        ),
+                                      ),
                                       onPressed: uid.isEmpty
                                           ? null
-                                          : () => _showReplyDialog(doc.id, uid, text),
+                                          : () {
+                                        FocusManager.instance.primaryFocus?.unfocus();
+                                        _showReplyDialog(doc.id, uid, text);
+                                      },
                                       icon: const Icon(Icons.reply_rounded, size: 17),
-                                      label: const Text('回覆'),
+                                      label: Text(
+                                        _supportStatus == 'processing'
+                                            ? '回覆玩家'
+                                            : '直接回覆',
+                                      ),
                                     ),
                                   if (_supportStatus == 'pending')
                                     OutlinedButton.icon(
-                                      onPressed: () => _setReportStatus(doc.id, 'processing'),
-                                      icon: const Icon(Icons.hourglass_top_rounded, size: 17),
-                                      label: const Text('處理中'),
+                                      style: OutlinedButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 13,
+                                          vertical: 11,
+                                        ),
+                                      ),
+                                      onPressed: () =>
+                                          _setReportStatus(doc.id, 'processing'),
+                                      icon: const Icon(
+                                        Icons.hourglass_top_rounded,
+                                        size: 17,
+                                      ),
+                                      label: const Text('開始處理'),
                                     ),
                                   if (!resolved && _supportStatus != 'rejected')
                                     OutlinedButton.icon(
-                                      onPressed: () => _setReportStatus(doc.id, 'rejected'),
-                                      icon: const Icon(Icons.do_not_disturb_alt_outlined, size: 17),
+                                      style: OutlinedButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 13,
+                                          vertical: 11,
+                                        ),
+                                        foregroundColor:
+                                        theme.colorScheme.onSurface.withValues(alpha: 0.72),
+                                      ),
+                                      onPressed: () =>
+                                          _setReportStatus(doc.id, 'rejected'),
+                                      icon: const Icon(
+                                        Icons.do_not_disturb_alt_outlined,
+                                        size: 17,
+                                      ),
                                       label: const Text('駁回'),
                                     ),
                                   if (_supportStatus == 'pending')
                                     TextButton.icon(
-                                      style: TextButton.styleFrom(foregroundColor: Colors.redAccent),
-                                      onPressed: () => _deletePendingReport(reportId: doc.id, preview: text),
-                                      icon: const Icon(Icons.delete_outline_rounded, size: 17),
+                                      style: TextButton.styleFrom(
+                                        foregroundColor: Colors.redAccent,
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 11,
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        FocusManager.instance.primaryFocus?.unfocus();
+                                        _deletePendingReport(
+                                          reportId: doc.id,
+                                          preview: text,
+                                        );
+                                      },
+                                      icon: const Icon(
+                                        Icons.delete_outline_rounded,
+                                        size: 17,
+                                      ),
                                       label: const Text('刪除'),
                                     ),
                                 ],
@@ -5932,6 +6068,12 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         _eventBackgroundColorController.text = themeData['backgroundColor']?.toString() ??
             themeData['pageBackgroundColor']?.toString() ?? '#FBF8FF';
         _eventCardColorController.text = themeData['cardColor']?.toString() ?? '#FFFFFF';
+        _eventTextPrimaryColorController.text =
+            themeData['textPrimaryColor']?.toString() ?? '#3B3340';
+        _eventTextSecondaryColorController.text =
+            themeData['textSecondaryColor']?.toString() ?? '#6F6673';
+        _eventTextMutedColorController.text =
+            themeData['textMutedColor']?.toString() ?? '#948A98';
 
         _eventTasksHeaderIconUrlController.text = decorationData['tasksHeaderIconUrl']?.toString() ?? '';
         _eventMilestonesHeaderIconUrlController.text = decorationData['milestonesHeaderIconUrl']?.toString() ?? '';
@@ -6001,6 +6143,9 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       _eventAccentColorLightController.text = '#E9DFF7';
       _eventBackgroundColorController.text = '#FBF8FF';
       _eventCardColorController.text = '#FFFFFF';
+      _eventTextPrimaryColorController.text = '#3B3340';
+      _eventTextSecondaryColorController.text = '#6F6673';
+      _eventTextMutedColorController.text = '#948A98';
       _eventTasksHeaderIconUrlController.clear();
       _eventMilestonesHeaderIconUrlController.clear();
       _eventMemoryCardImageUrlController.clear();
@@ -6145,6 +6290,9 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
             'pageBackgroundColor': _eventBackgroundColorController.text.trim(),
             'backgroundColor': _eventBackgroundColorController.text.trim(),
             'cardColor': _eventCardColorController.text.trim(),
+            'textPrimaryColor': _eventTextPrimaryColorController.text.trim(),
+            'textSecondaryColor': _eventTextSecondaryColorController.text.trim(),
+            'textMutedColor': _eventTextMutedColorController.text.trim(),
           },
           'decorations': {
             'tasksHeaderIconUrl': _eventTasksHeaderIconUrlController.text.trim(),
@@ -6591,6 +6739,18 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       _eventCardColorController.text,
       colors.surface,
     );
+    final textPrimary = _eventColorFromText(
+      _eventTextPrimaryColorController.text,
+      const Color(0xFF3B3340),
+    );
+    final textSecondary = _eventColorFromText(
+      _eventTextSecondaryColorController.text,
+      const Color(0xFF6F6673),
+    );
+    final textMuted = _eventColorFromText(
+      _eventTextMutedColorController.text,
+      const Color(0xFF948A98),
+    );
 
     return Container(
       width: double.infinity,
@@ -6656,7 +6816,23 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                   style: GoogleFonts.notoSerifTc(
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
-                    color: colors.onSurface,
+                    color: textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '這是一段活動次要說明文字',
+                  style: GoogleFonts.notoSerifTc(
+                    fontSize: 11.5,
+                    color: textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  '日期、備註等淡化資訊',
+                  style: GoogleFonts.notoSerifTc(
+                    fontSize: 10.5,
+                    color: textMuted,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -6695,7 +6871,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
           ),
           const SizedBox(height: 10),
           Text(
-            '這裡只預覽主色、輔助淡色、頁面背景色與卡片底色；儲存後前端活動頁會使用同一組設定。',
+            '這裡預覽活動主色、背景／卡片底色，以及主要、次要、淡化文字色；儲存後前端活動頁會使用同一組設定。',
             style: GoogleFonts.notoSerifTc(
               fontSize: 11,
               color: colors.onSurface.withValues(alpha: 0.55),
@@ -6878,6 +7054,21 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                           label: '卡片底色',
                           controller: _eventCardColorController,
                           hint: '#FFFFFF',
+                        ),
+                        _eventColorField(
+                          label: '主要文字色',
+                          controller: _eventTextPrimaryColorController,
+                          hint: '#3B3340',
+                        ),
+                        _eventColorField(
+                          label: '次要文字色',
+                          controller: _eventTextSecondaryColorController,
+                          hint: '#6F6673',
+                        ),
+                        _eventColorField(
+                          label: '淡化文字色',
+                          controller: _eventTextMutedColorController,
+                          hint: '#948A98',
                         ),
                       ],
                     ),
@@ -7875,79 +8066,84 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
 
     return Theme(
       data: adminTheme,
-      child: Scaffold(
-        backgroundColor: adminTheme.scaffoldBackgroundColor,
-        appBar: AppBar(
-          toolbarHeight: 68,
-          titleSpacing: 20,
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: Scaffold(
+          backgroundColor: adminTheme.scaffoldBackgroundColor,
+          appBar: AppBar(
+            toolbarHeight: 68,
+            titleSpacing: 20,
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '拾光管理',
+                  style: GoogleFonts.notoSerifTc(
+                    fontSize: 21,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.7,
+                    color: onSurface,
+                  ),
+                ),
+                Text(
+                  'Administration',
+                  style: GoogleFonts.notoSerifTc(
+                    fontSize: 10.5,
+                    letterSpacing: 1.2,
+                    color: onSurface.withValues(alpha: 0.38),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: adminTheme.scaffoldBackgroundColor,
+            surfaceTintColor: Colors.transparent,
+            elevation: 0,
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(48),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: TabBar(
+                  controller: _tabController,
+                  isScrollable: true,
+                  onTap: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+                  tabAlignment: TabAlignment.start,
+                  dividerColor: Colors.transparent,
+                  indicatorSize: TabBarIndicatorSize.label,
+                  indicatorWeight: 1.8,
+                  indicatorColor: primary,
+                  labelColor: primary,
+                  unselectedLabelColor: onSurface.withValues(alpha: 0.48),
+                  labelStyle: GoogleFonts.notoSerifTc(fontSize: 12.5, fontWeight: FontWeight.w700),
+                  unselectedLabelStyle: GoogleFonts.notoSerifTc(fontSize: 12.5),
+                  tabs: const [
+                    Tab(text: '總覽'),
+                    Tab(text: '玩家'),
+                    Tab(text: '客服'),
+                    Tab(text: '內容'),
+                    Tab(text: '營運'),
+                    Tab(text: '分析'),
+                    Tab(text: '系統'),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          body: TabBarView(
+            controller: _tabController,
             children: [
-              Text(
-                '拾光管理',
-                style: GoogleFonts.notoSerifTc(
-                  fontSize: 21,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.7,
-                  color: onSurface,
-                ),
+              _LazyAdminTab(builder: _buildDashboardTab),
+              _LazyAdminTab(builder: _buildPlayersTab),
+              _LazyAdminTab(builder: _buildSupportCenterTab),
+              _LazyAdminTab(builder: _buildContentCenterTab),
+              _LazyAdminTab(
+                builder: _buildCampaignCenterTab,
+                cacheChild: false,
               ),
-              Text(
-                'Administration',
-                style: GoogleFonts.notoSerifTc(
-                  fontSize: 10.5,
-                  letterSpacing: 1.2,
-                  color: onSurface.withValues(alpha: 0.38),
-                ),
-              ),
+              _LazyAdminTab(builder: _buildAnalyticsTab),
+              _LazyAdminTab(builder: _buildSystemHealthTab),
             ],
           ),
-          backgroundColor: adminTheme.scaffoldBackgroundColor,
-          surfaceTintColor: Colors.transparent,
-          elevation: 0,
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(48),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: TabBar(
-                controller: _tabController,
-                isScrollable: true,
-                tabAlignment: TabAlignment.start,
-                dividerColor: Colors.transparent,
-                indicatorSize: TabBarIndicatorSize.label,
-                indicatorWeight: 1.8,
-                indicatorColor: primary,
-                labelColor: primary,
-                unselectedLabelColor: onSurface.withValues(alpha: 0.48),
-                labelStyle: GoogleFonts.notoSerifTc(fontSize: 12.5, fontWeight: FontWeight.w700),
-                unselectedLabelStyle: GoogleFonts.notoSerifTc(fontSize: 12.5),
-                tabs: const [
-                  Tab(text: '總覽'),
-                  Tab(text: '玩家'),
-                  Tab(text: '客服'),
-                  Tab(text: '內容'),
-                  Tab(text: '營運'),
-                  Tab(text: '分析'),
-                  Tab(text: '系統'),
-                ],
-              ),
-            ),
-          ),
-        ),
-        body: TabBarView(
-          controller: _tabController,
-          children: [
-            _LazyAdminTab(builder: _buildDashboardTab),
-            _LazyAdminTab(builder: _buildPlayersTab),
-            _LazyAdminTab(builder: _buildSupportCenterTab),
-            _LazyAdminTab(builder: _buildContentCenterTab),
-            _LazyAdminTab(
-              builder: _buildCampaignCenterTab,
-              cacheChild: false,
-            ),
-            _LazyAdminTab(builder: _buildAnalyticsTab),
-            _LazyAdminTab(builder: _buildSystemHealthTab),
-          ],
         ),
       ),
     );

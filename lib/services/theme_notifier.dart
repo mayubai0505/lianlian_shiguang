@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:google_fonts/google_fonts.dart';
 //主題切換
 
 enum AppTheme {
@@ -15,6 +16,37 @@ enum AppTheme {
   greenGradient,
   custom, // ✨ 自定義主題
 }
+
+enum AppFont {
+  notoSerifTc,
+  notoSansTc,
+  system,
+}
+
+extension AppFontLabel on AppFont {
+  String get label {
+    switch (this) {
+      case AppFont.notoSerifTc:
+        return '拾光宋體';
+      case AppFont.notoSansTc:
+        return '清雅黑體';
+      case AppFont.system:
+        return '系統字體';
+    }
+  }
+
+  String get description {
+    switch (this) {
+      case AppFont.notoSerifTc:
+        return '文青柔和，適合沉浸閱讀';
+      case AppFont.notoSansTc:
+        return '清楚俐落，長時間閱讀較輕鬆';
+      case AppFont.system:
+        return '跟隨手機系統預設字體';
+    }
+  }
+}
+
 
 // 文青淡霧主題：背景以白色為主，只有互動元素與裝飾跟著主題色。
 const Color _literaryText = Color(0xFF302B31);
@@ -245,10 +277,14 @@ BoxDecoration _solidBackground(Color color) => BoxDecoration(color: color);
 class ThemeNotifier extends ChangeNotifier {
   // 載入 SharedPreferences 前先顯示拾光紫，避免啟動畫面短暫閃成藍色。
   AppTheme _currentThemeEnum = AppTheme.light;
+  AppFont _currentFont = AppFont.notoSerifTc;
+  double _fontScale = 1.0;
   Color _customColor = const Color(0xFF8D76BE);
   String? _backgroundImagePath; // 📸 私藏背景路徑
   String? _activeCharacterBackground;
   AppTheme get currentThemeEnum => _currentThemeEnum;
+  AppFont get currentFont => _currentFont;
+  double get fontScale => _fontScale;
   Color get customColor => _customColor;
   String? get backgroundImagePath => _backgroundImagePath;
   String? get activeCharacterBackground => _activeCharacterBackground;
@@ -262,18 +298,64 @@ class ThemeNotifier extends ChangeNotifier {
     );
   }
 
+  ThemeData _applySelectedFont(ThemeData baseTheme) {
+    final TextTheme textTheme;
+    final TextTheme primaryTextTheme;
+
+    switch (_currentFont) {
+      case AppFont.notoSerifTc:
+        textTheme = GoogleFonts.notoSerifTcTextTheme(baseTheme.textTheme);
+        primaryTextTheme =
+            GoogleFonts.notoSerifTcTextTheme(baseTheme.primaryTextTheme);
+        break;
+      case AppFont.notoSansTc:
+        textTheme = GoogleFonts.notoSansTcTextTheme(baseTheme.textTheme);
+        primaryTextTheme =
+            GoogleFonts.notoSansTcTextTheme(baseTheme.primaryTextTheme);
+        break;
+      case AppFont.system:
+        textTheme = baseTheme.textTheme;
+        primaryTextTheme = baseTheme.primaryTextTheme;
+        break;
+    }
+
+    return baseTheme.copyWith(
+      textTheme: textTheme,
+      primaryTextTheme: primaryTextTheme,
+    );
+  }
+
   ThemeData get currentThemeData {
+    late final ThemeData baseTheme;
+
     switch (_currentThemeEnum) {
       case AppTheme.custom:
-        return _buildCustomTheme(_customColor);
-      case AppTheme.light: return _lightTheme;
-      case AppTheme.dark: return _darkTheme;
-      case AppTheme.pinkGradient: return _pinkGradientTheme;
-      case AppTheme.blueGradient: return _blueGradientTheme;
-      case AppTheme.orangeGradient: return _orangeGradientTheme;
-      case AppTheme.yellowGradient: return _yellowGradientTheme;
-      case AppTheme.greenGradient: return _greenGradientTheme;
+        baseTheme = _buildCustomTheme(_customColor);
+        break;
+      case AppTheme.light:
+        baseTheme = _lightTheme;
+        break;
+      case AppTheme.dark:
+        baseTheme = _darkTheme;
+        break;
+      case AppTheme.pinkGradient:
+        baseTheme = _pinkGradientTheme;
+        break;
+      case AppTheme.blueGradient:
+        baseTheme = _blueGradientTheme;
+        break;
+      case AppTheme.orangeGradient:
+        baseTheme = _orangeGradientTheme;
+        break;
+      case AppTheme.yellowGradient:
+        baseTheme = _yellowGradientTheme;
+        break;
+      case AppTheme.greenGradient:
+        baseTheme = _greenGradientTheme;
+        break;
     }
+
+    return _applySelectedFont(baseTheme);
   }
 
   // ✨ 核心合併邏輯：背景顯示順序
@@ -485,6 +567,28 @@ class ThemeNotifier extends ChangeNotifier {
     notifyListeners();
     _saveTheme(theme);
   }
+  Future<void> setFont(AppFont font) async {
+    if (_currentFont == font) return;
+
+    _currentFont = font;
+    notifyListeners();
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('app_font', font.name);
+  }
+
+  Future<void> setFontScale(double scale) async {
+    final safeScale = scale.clamp(0.9, 1.35).toDouble();
+
+    if ((_fontScale - safeScale).abs() < 0.001) return;
+
+    _fontScale = safeScale;
+    notifyListeners();
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('app_font_scale', safeScale);
+  }
+
   ThemeNotifier() {
     loadTheme();
   }
@@ -493,6 +597,8 @@ class ThemeNotifier extends ChangeNotifier {
   Future<void> resetToDefault() async {
     // 1. 恢復預設數值 (切換回我們剛剛強化的 light 主題)
     _currentThemeEnum = AppTheme.light;
+    _currentFont = AppFont.notoSerifTc;
+    _fontScale = 1.0;
     _backgroundImagePath = null;
     _customColor = const Color(0xFF8D76BE);
 
@@ -501,6 +607,8 @@ class ThemeNotifier extends ChangeNotifier {
     await prefs.remove('background_image_path');
     await prefs.remove('custom_color_value');
     await prefs.setString('app_theme', _currentThemeEnum.name);
+    await prefs.setString('app_font', _currentFont.name);
+    await prefs.setDouble('app_font_scale', _fontScale);
 
     // 3. ✨ 廣播通知全宇宙換衣服！
     notifyListeners();
@@ -526,6 +634,16 @@ class ThemeNotifier extends ChangeNotifier {
             (e) => e.name == themeName,
         orElse: () => AppTheme.light
     );
+
+    final fontName = prefs.getString('app_font') ?? AppFont.notoSerifTc.name;
+    _currentFont = AppFont.values.firstWhere(
+          (e) => e.name == fontName,
+      orElse: () => AppFont.notoSerifTc,
+    );
+
+    _fontScale =
+        (prefs.getDouble('app_font_scale') ?? 1.0).clamp(0.9, 1.35).toDouble();
+
     notifyListeners();
   }
 }

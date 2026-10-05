@@ -48,7 +48,7 @@ class _StorePageState extends State<StorePage> {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: theme.colorScheme.surface,
         body: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) {
@@ -136,10 +136,10 @@ class _StorePageState extends State<StorePage> {
                                     child: IconButton(
                                       onPressed: () =>
                                           Navigator.of(context).maybePop(),
-                                      icon: const Icon(
+                                      icon: Icon(
                                         Icons.arrow_back_ios_new_rounded,
                                         size: 22,
-                                        color: Colors.black87,
+                                        color: theme.colorScheme.onSurface,
                                       ),
                                       padding: EdgeInsets.zero,
                                     ),
@@ -300,7 +300,7 @@ class _StorePageState extends State<StorePage> {
             minHeight: screenWidth < 430 ? 180 : 200,
           ),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.96),
+            color: theme.colorScheme.surface.withValues(alpha: 0.96),
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
               color: primary.withValues(alpha: 0.10),
@@ -979,7 +979,7 @@ class MonthlyCardBanner extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(16, 18, 16, 18),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.97),
+        color: theme.colorScheme.surface.withValues(alpha: 0.97),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: primary.withValues(alpha: 0.10),
@@ -1232,8 +1232,8 @@ class _PerkTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primary =
-        Theme.of(context).colorScheme.primary;
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
 
     return Container(
       width: double.infinity,
@@ -1242,7 +1242,7 @@ class _PerkTile extends StatelessWidget {
         vertical: 9,
       ),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: primary.withValues(alpha: 0.09),
@@ -1391,7 +1391,7 @@ class ProductCard extends StatelessWidget {
         },
         child: Ink(
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.97),
+            color: theme.colorScheme.surface.withValues(alpha: 0.97),
             borderRadius: BorderRadius.circular(22),
             border: Border.all(
               color: primary.withValues(alpha: 0.09),
@@ -1584,8 +1584,8 @@ class _HistoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primary =
-        Theme.of(context).colorScheme.primary;
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -1594,7 +1594,7 @@ class _HistoryCard extends StatelessWidget {
         vertical: 12,
       ),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.97),
+        color: theme.colorScheme.surface.withValues(alpha: 0.97),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color: primary.withValues(alpha: 0.07),
@@ -1635,7 +1635,7 @@ class _HistoryCard extends StatelessWidget {
                   style: GoogleFonts.notoSerifTc(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black87,
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 4),

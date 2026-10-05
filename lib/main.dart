@@ -590,6 +590,16 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           navigatorKey: navigatorKey,
           title: '戀戀拾光',
           theme: themeNotifier.currentThemeData,
+          builder: (context, child) {
+            final mediaQuery = MediaQuery.of(context);
+
+            return MediaQuery(
+              data: mediaQuery.copyWith(
+                textScaler: TextScaler.linear(themeNotifier.fontScale),
+              ),
+              child: child ?? const SizedBox.shrink(),
+            );
+          },
           locale: localeNotifier.locale,
           debugShowCheckedModeBanner: false,
           localizationsDelegates: const [

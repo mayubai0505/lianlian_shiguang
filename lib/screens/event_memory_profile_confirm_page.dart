@@ -34,13 +34,34 @@ class _EventMemoryProfileConfirmPageState
     extends State<EventMemoryProfileConfirmPage> {
   bool _loading = true;
   String? _error;
+  _ProfileConfirmVisual _visual = const _ProfileConfirmVisual();
   List<Map<String, dynamic>> _profiles = [];
   Map<String, dynamic>? _selectedProfile;
 
   @override
   void initState() {
     super.initState();
+    _loadEventVisual();
     _loadProfiles();
+  }
+
+  Future<void> _loadEventVisual() async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('artifacts')
+          .doc(AppConfig.appId)
+          .collection('events')
+          .doc(widget.eventId)
+          .get();
+      if (!mounted || !doc.exists) return;
+      setState(() {
+        _visual = _ProfileConfirmVisual.fromEvent(
+          doc.data() ?? <String, dynamic>{},
+        );
+      });
+    } catch (_) {
+      // 活動配色讀取失敗時保留安全預設，不影響流程。
+    }
   }
 
   Timestamp? _asTimestamp(dynamic value) {
@@ -190,13 +211,14 @@ class _EventMemoryProfileConfirmPageState
       backgroundColor: Colors.transparent,
       builder: (sheetContext) {
         final theme = Theme.of(sheetContext);
+        final visual = _visual;
         return Container(
           constraints: BoxConstraints(
             maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.72,
           ),
           margin: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: theme.colorScheme.surface,
+            color: visual.cardColor,
             borderRadius: BorderRadius.circular(28),
           ),
           child: Column(
@@ -207,7 +229,7 @@ class _EventMemoryProfileConfirmPageState
                 width: 42,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.outlineVariant,
+                  color: visual.accent.withValues(alpha: 0.18),
                   borderRadius: BorderRadius.circular(999),
                 ),
               ),
@@ -220,6 +242,7 @@ class _EventMemoryProfileConfirmPageState
                     style: GoogleFonts.notoSerifTc(
                       fontSize: 19,
                       fontWeight: FontWeight.w700,
+                      color: visual.textPrimaryColor,
                     ),
                   ),
                 ),
@@ -241,11 +264,11 @@ class _EventMemoryProfileConfirmPageState
                         borderRadius: BorderRadius.circular(18),
                       ),
                       tileColor: selected
-                          ? theme.colorScheme.primary.withValues(alpha: 0.08)
+                          ? visual.accent.withValues(alpha: 0.08)
                           : null,
                       leading: CircleAvatar(
                         backgroundColor:
-                        theme.colorScheme.secondaryContainer,
+                        visual.accent.withValues(alpha: 0.12),
                         child: Text(
                           _profileDisplayName(profile).isNotEmpty
                               ? _profileDisplayName(profile)[0]
@@ -265,7 +288,7 @@ class _EventMemoryProfileConfirmPageState
                       trailing: selected
                           ? Icon(
                         Icons.check_circle_rounded,
-                        color: theme.colorScheme.primary,
+                        color: visual.accent,
                       )
                           : null,
                       onTap: () => Navigator.of(sheetContext).pop(profile),
@@ -308,16 +331,22 @@ class _EventMemoryProfileConfirmPageState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final visual = _visual;
     final profile = _selectedProfile;
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: visual.background,
       appBar: AppBar(
         elevation: 0,
+        backgroundColor: visual.background,
+        foregroundColor: visual.textPrimaryColor,
         surfaceTintColor: Colors.transparent,
         title: Text(
           '確認拾光檔案',
-          style: GoogleFonts.notoSerifTc(fontWeight: FontWeight.w700),
+          style: GoogleFonts.notoSerifTc(
+            fontWeight: FontWeight.w700,
+            color: visual.textPrimaryColor,
+          ),
         ),
       ),
       body: SafeArea(
@@ -340,6 +369,7 @@ class _EventMemoryProfileConfirmPageState
               style: GoogleFonts.notoSerifTc(
                 fontSize: 22,
                 fontWeight: FontWeight.w800,
+                color: visual.textPrimaryColor,
               ),
             ),
             const SizedBox(height: 8),
@@ -348,18 +378,17 @@ class _EventMemoryProfileConfirmPageState
               style: GoogleFonts.notoSerifTc(
                 fontSize: 12,
                 height: 1.6,
-                color: theme.colorScheme.onSurface
-                    .withValues(alpha: 0.52),
+                color: visual.textSecondaryColor,
               ),
             ),
             const SizedBox(height: 26),
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerLowest,
+                color: visual.cardColor,
                 borderRadius: BorderRadius.circular(28),
                 border: Border.all(
-                  color: theme.colorScheme.outlineVariant,
+                  color: visual.accent.withValues(alpha: 0.16),
                 ),
               ),
               child: Column(
@@ -370,6 +399,7 @@ class _EventMemoryProfileConfirmPageState
                       _MemoryAvatar(
                         path: widget.characterAvatarPath,
                         size: 74,
+                        accent: visual.accent,
                       ),
                       Transform.translate(
                         offset: const Offset(-4, 0),
@@ -377,17 +407,16 @@ class _EventMemoryProfileConfirmPageState
                           width: 32,
                           height: 32,
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.surface,
+                            color: visual.cardColor,
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color:
-                              theme.colorScheme.outlineVariant,
+                              color: visual.accent.withValues(alpha: 0.18),
                             ),
                           ),
                           child: Icon(
                             Icons.favorite_rounded,
                             size: 16,
-                            color: theme.colorScheme.primary,
+                            color: visual.accent,
                           ),
                         ),
                       ),
@@ -396,8 +425,7 @@ class _EventMemoryProfileConfirmPageState
                         child: CircleAvatar(
                           radius: 37,
                           backgroundColor:
-                          theme.colorScheme.primary
-                              .withValues(alpha: 0.10),
+                          visual.accent.withValues(alpha: 0.10),
                           child: Text(
                             _profileDisplayName(profile).isNotEmpty
                                 ? _profileDisplayName(profile)[0]
@@ -405,7 +433,7 @@ class _EventMemoryProfileConfirmPageState
                             style: GoogleFonts.notoSerifTc(
                               fontSize: 25,
                               fontWeight: FontWeight.w800,
-                              color: theme.colorScheme.primary,
+                              color: visual.accent,
                             ),
                           ),
                         ),
@@ -421,6 +449,7 @@ class _EventMemoryProfileConfirmPageState
                       fontSize: 15,
                       height: 1.6,
                       fontWeight: FontWeight.w700,
+                      color: visual.textPrimaryColor,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -429,7 +458,7 @@ class _EventMemoryProfileConfirmPageState
                     textAlign: TextAlign.center,
                     style: GoogleFonts.notoSerifTc(
                       fontSize: 12,
-                      color: theme.colorScheme.primary,
+                      color: visual.accent,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -440,15 +469,14 @@ class _EventMemoryProfileConfirmPageState
                       vertical: 7,
                     ),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.primary
-                          .withValues(alpha: 0.07),
+                      color: visual.accent.withValues(alpha: 0.07),
                       borderRadius: BorderRadius.circular(999),
                     ),
                     child: Text(
                       _profileLabel(profile),
                       style: GoogleFonts.notoSerifTc(
                         fontSize: 10.5,
-                        color: theme.colorScheme.primary,
+                        color: visual.accent,
                       ),
                     ),
                   ),
@@ -477,13 +505,60 @@ class _EventMemoryProfileConfirmPageState
   }
 }
 
+
+class _ProfileConfirmVisual {
+  final Color accent;
+  final Color background;
+  final Color cardColor;
+  final Color textPrimaryColor;
+  final Color textSecondaryColor;
+  final Color textMutedColor;
+
+  const _ProfileConfirmVisual({
+    this.accent = const Color(0xFF8D6CC4),
+    this.background = const Color(0xFFFBF8FF),
+    this.cardColor = const Color(0xFFFFFFFF),
+    this.textPrimaryColor = const Color(0xFF3B3340),
+    this.textSecondaryColor = const Color(0xFF6F6673),
+    this.textMutedColor = const Color(0xFF948A98),
+  });
+
+  factory _ProfileConfirmVisual.fromEvent(Map<String, dynamic> data) {
+    final theme = data['theme'] is Map
+        ? Map<String, dynamic>.from(data['theme'] as Map)
+        : <String, dynamic>{};
+    return _ProfileConfirmVisual(
+      accent: _hex(theme['accentColor']) ?? const Color(0xFF8D6CC4),
+      background: _hex(theme['pageBackgroundColor'] ?? theme['backgroundColor']) ??
+          const Color(0xFFFBF8FF),
+      cardColor: _hex(theme['cardColor']) ?? const Color(0xFFFFFFFF),
+      textPrimaryColor: _hex(theme['textPrimaryColor']) ?? const Color(0xFF3B3340),
+      textSecondaryColor: _hex(theme['textSecondaryColor']) ?? const Color(0xFF6F6673),
+      textMutedColor: _hex(theme['textMutedColor']) ?? const Color(0xFF948A98),
+    );
+  }
+
+  static Color? _hex(dynamic raw) {
+    final value = (raw ?? '').toString().trim().replaceAll('#', '');
+    if (value.length != 6 && value.length != 8) return null;
+    try {
+      final number = int.parse(value, radix: 16);
+      return Color(value.length == 6 ? 0xFF000000 | number : number);
+    } catch (_) {
+      return null;
+    }
+  }
+}
+
 class _MemoryAvatar extends StatelessWidget {
   final String path;
   final double size;
+  final Color accent;
 
   const _MemoryAvatar({
     required this.path,
     required this.size,
+    this.accent = const Color(0xFF8D6CC4),
   });
 
   @override
@@ -501,9 +576,9 @@ class _MemoryAvatar extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Theme.of(context).colorScheme.secondaryContainer,
+        color: accent.withValues(alpha: 0.12),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outlineVariant,
+          color: accent.withValues(alpha: 0.18),
         ),
         image: provider == null
             ? null

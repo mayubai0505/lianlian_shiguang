@@ -12,6 +12,7 @@ import 'language_selection_page.dart'; // ✨ 引入語言選擇頁面
 import 'change_password_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../page/theme_selection_page.dart';
+import '../page/font_selection_page.dart';
 import '../page/character_management_page.dart';
 import '../page/admin_announcement_page.dart';
 import '../page/app_texts.dart';
@@ -45,7 +46,7 @@ class _SettingsPageState extends State<SettingsPage> {
       padding: const EdgeInsets.fromLTRB(6, 34, 6, 14),
       child: Text(
         title,
-        style: GoogleFonts.notoSerifTc(
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(
           fontSize: 16,
           fontWeight: FontWeight.w600,
           letterSpacing: 1.2,
@@ -492,6 +493,21 @@ class _SettingsPageState extends State<SettingsPage> {
                     onTap: () =>
                         Navigator.push(context, MaterialPageRoute(
                             builder: (context) => const ThemeSelectionPage())),
+                    theme: theme,
+                  ),
+
+                  _buildSettingsTile(
+                    iconData: Icons.text_fields_rounded,
+                    title: '字體',
+                    subtitle: '${themeNotifier.currentFont.label}・${(themeNotifier.fontScale * 100).round()}%',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const FontSelectionPage(),
+                        ),
+                      );
+                    },
                     theme: theme,
                   ),
 

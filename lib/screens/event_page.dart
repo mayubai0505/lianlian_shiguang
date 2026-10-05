@@ -8,6 +8,11 @@ import '../services/toast_utils.dart';
 import '../services/app_constants.dart';
 import 'event_memory_page.dart';
 
+const Color _eventDefaultTextPrimary = Color(0xFF3B3340);
+const Color _eventDefaultTextSecondary = Color(0xFF6F6673);
+const Color _eventDefaultTextMuted = Color(0xFF948A98);
+
+
 /// Reusable event page v4
 ///
 /// Event-specific visuals are driven by Firestore config instead of hardcoded
@@ -69,6 +74,9 @@ class _EventVisualStyle {
   final Color accent2;
   final Color pageBackground;
   final Color cardColor;
+  final Color textPrimaryColor;
+  final Color textSecondaryColor;
+  final Color textMutedColor;
   final String pageBackgroundImageUrl;
   final String memoryFeatureImageUrl;
   final String shopFeatureImageUrl;
@@ -87,6 +95,9 @@ class _EventVisualStyle {
     required this.accent2,
     required this.pageBackground,
     required this.cardColor,
+    required this.textPrimaryColor,
+    required this.textSecondaryColor,
+    required this.textMutedColor,
     required this.pageBackgroundImageUrl,
     required this.memoryFeatureImageUrl,
     required this.shopFeatureImageUrl,
@@ -146,12 +157,24 @@ class _EventVisualStyle {
             Color.lerp(colors.surface, accent, 0.035)!;
     final cardColor =
         _hex(theme['cardColor'] ?? data['cardColor']) ?? colors.surface;
+    final textPrimaryColor =
+        _hex(theme['textPrimaryColor'] ?? data['textPrimaryColor']) ??
+            _eventDefaultTextPrimary;
+    final textSecondaryColor =
+        _hex(theme['textSecondaryColor'] ?? data['textSecondaryColor']) ??
+            _eventDefaultTextSecondary;
+    final textMutedColor =
+        _hex(theme['textMutedColor'] ?? data['textMutedColor']) ??
+            _eventDefaultTextMuted;
 
     return _EventVisualStyle(
       accent: accent,
       accent2: accent2,
       pageBackground: pageBackground,
       cardColor: cardColor,
+      textPrimaryColor: textPrimaryColor,
+      textSecondaryColor: textSecondaryColor,
+      textMutedColor: textMutedColor,
       pageBackgroundImageUrl: value('pageBackgroundImageUrl'),
       memoryFeatureImageUrl: decorationValue(
         'memoryCardImageUrl',
@@ -240,8 +263,6 @@ class _EventContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final style = _EventVisualStyle.fromData(context, data);
-    final colors = Theme.of(context).colorScheme;
-    final onSurface = colors.onSurface;
 
     final name = (data['name'] ?? '期間限定活動').toString();
     final subtitle =
@@ -318,38 +339,27 @@ class _EventContent extends StatelessWidget {
             ),
           CustomScrollView(
             slivers: [
-              SliverAppBar(
-                pinned: true,
-                backgroundColor: style.pageBackground.withValues(alpha: 0.93),
-                surfaceTintColor: Colors.transparent,
-                title: Text(
-                  name,
-                  style: GoogleFonts.notoSerifTc(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: onSurface,
-                  ),
+              SliverToBoxAdapter(
+                child: _EventHeroCard(
+                  eventId: eventId,
+                  progressRef: progressRef,
+                  name: name,
+                  subtitle: subtitle,
+                  heroImageUrl: heroImageUrl,
+                  remainingLabel: _remaining(endAt),
+                  dateLabel: _dateText(startAt, endAt),
+                  currencyIcon: currencyIcon,
+                  currencyName: currencyName,
+                  hasShop: hasShop,
+                  shopHeroImageUrl:
+                  (data['shopHeroImageUrl'] ?? '').toString(),
+                  style: style,
                 ),
               ),
               SliverPadding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 36),
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 36),
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
-                    _EventHeroCard(
-                      eventId: eventId,
-                      progressRef: progressRef,
-                      name: name,
-                      subtitle: subtitle,
-                      heroImageUrl: heroImageUrl,
-                      remainingLabel: _remaining(endAt),
-                      dateLabel: _dateText(startAt, endAt),
-                      currencyIcon: currencyIcon,
-                      currencyName: currencyName,
-                      hasShop: hasShop,
-                      shopHeroImageUrl:
-                      (data['shopHeroImageUrl'] ?? '').toString(),
-                      style: style,
-                    ),
                     if (hasTasks) ...[
                       const SizedBox(height: 14),
                       _RichSectionShell(
@@ -366,6 +376,8 @@ class _EventContent extends StatelessWidget {
                           currencyName: currencyName,
                           accent: style.accent,
                           cardColor: style.cardColor,
+                          textPrimaryColor: style.textPrimaryColor,
+                          textSecondaryColor: style.textSecondaryColor,
                         ),
                       ),
                     ],
@@ -384,6 +396,7 @@ class _EventContent extends StatelessWidget {
                           progressRef: progressRef,
                           currencyIcon: currencyIcon,
                           accent: style.accent,
+                          textMutedColor: style.textMutedColor,
                         ),
                       ),
                     ],
@@ -396,6 +409,8 @@ class _EventContent extends StatelessWidget {
                             Expanded(
                               child: _RichFeatureEntryCard(
                                 accent: style.accent,
+                                textPrimaryColor: style.textPrimaryColor,
+                                textSecondaryColor: style.textSecondaryColor,
                                 imageUrl: style.memoryFeatureImageUrl,
                                 title: _text('memoryTitle', '限定回憶'),
                                 subtitle: _text(
@@ -418,6 +433,8 @@ class _EventContent extends StatelessWidget {
                             Expanded(
                               child: _RichFeatureEntryCard(
                                 accent: style.accent,
+                                textPrimaryColor: style.textPrimaryColor,
+                                textSecondaryColor: style.textSecondaryColor,
                                 imageUrl: style.shopFeatureImageUrl,
                                 title: _text('shopTitle', '活動商店'),
                                 subtitle: _text(
@@ -433,6 +450,12 @@ class _EventContent extends StatelessWidget {
                                         currencyIcon: currencyIcon,
                                         shopHeroImageUrl:
                                         (data['shopHeroImageUrl'] ?? '').toString(),
+                                        textPrimaryColor: style.textPrimaryColor,
+                                        textSecondaryColor: style.textSecondaryColor,
+                                        textMutedColor: style.textMutedColor,
+                                        accentColor: style.accent,
+                                        pageBackgroundColor: style.pageBackground,
+                                        cardColor: style.cardColor,
                                       ),
                                     ),
                                   );
@@ -450,6 +473,8 @@ class _EventContent extends StatelessWidget {
                           .toString(),
                       accent: style.accent,
                       cardColor: style.cardColor,
+                      textPrimaryColor: style.textPrimaryColor,
+                      textSecondaryColor: style.textSecondaryColor,
                       decorationImageUrl: style.infoDecorationUrl,
                     ),
                     if (style.pageBottomLeftUrl.isNotEmpty ||
@@ -528,7 +553,7 @@ class _EventHeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final onSurface = Theme.of(context).colorScheme.onSurface;
+    final onSurface = style.textPrimaryColor;
     final hasImage = heroImageUrl.trim().isNotEmpty;
 
     Widget balancePill(int amount) {
@@ -555,7 +580,7 @@ class _EventHeroCard extends StatelessWidget {
               style: GoogleFonts.notoSerifTc(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
-                color: style.accent,
+                color: onSurface,
               ),
             ),
             if (hasShop) ...[
@@ -563,7 +588,7 @@ class _EventHeroCard extends StatelessWidget {
               Icon(
                 Icons.chevron_right_rounded,
                 size: 20,
-                color: style.accent,
+                color: onSurface.withValues(alpha: 0.72),
               ),
             ],
           ],
@@ -584,6 +609,12 @@ class _EventHeroCard extends StatelessWidget {
                   currencyName: currencyName,
                   currencyIcon: currencyIcon,
                   shopHeroImageUrl: shopHeroImageUrl,
+                  textPrimaryColor: style.textPrimaryColor,
+                  textSecondaryColor: style.textSecondaryColor,
+                  textMutedColor: style.textMutedColor,
+                  accentColor: style.accent,
+                  pageBackgroundColor: style.pageBackground,
+                  cardColor: style.cardColor,
                 ),
               ),
             );
@@ -594,7 +625,7 @@ class _EventHeroCard extends StatelessWidget {
     }
 
     return SizedBox(
-      height: 300,
+      height: 320,
       width: double.infinity,
       child: Stack(
         fit: StackFit.expand,
@@ -637,8 +668,30 @@ class _EventHeroCard extends StatelessWidget {
                 ),
               ),
             ),
+          Positioned(
+            left: 14,
+            top: MediaQuery.of(context).padding.top + 10,
+            child: Material(
+              color: Colors.black.withValues(alpha: 0.36),
+              shape: const CircleBorder(),
+              child: SizedBox(
+                width: 38,
+                height: 38,
+                child: IconButton(
+                  tooltip: '返回',
+                  padding: EdgeInsets.zero,
+                  onPressed: () => Navigator.of(context).maybePop(),
+                  icon: const Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    size: 17,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
           Padding(
-            padding: const EdgeInsets.all(18),
+            padding: EdgeInsets.fromLTRB(18, MediaQuery.of(context).padding.top + 58, 18, 18),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -648,6 +701,7 @@ class _EventHeroCard extends StatelessWidget {
                     _HeroChip(
                       label: remainingLabel,
                       accent: style.accent,
+                      textColor: style.textPrimaryColor,
                     ),
                   ],
                 ),
@@ -679,7 +733,7 @@ class _EventHeroCard extends StatelessWidget {
                     height: 1.6,
                     color: hasImage
                         ? Colors.white.withValues(alpha: 0.92)
-                        : onSurface.withValues(alpha: 0.62),
+                        : style.textSecondaryColor,
                   ),
                 ),
                 const SizedBox(height: 14),
@@ -710,7 +764,7 @@ class _EventHeroCard extends StatelessWidget {
                           height: 1.28,
                           color: hasImage
                               ? Colors.white.withValues(alpha: 0.82)
-                              : onSurface.withValues(alpha: 0.46),
+                              : style.textMutedColor,
                         ),
                       ),
                   ],
@@ -727,8 +781,13 @@ class _EventHeroCard extends StatelessWidget {
 class _HeroChip extends StatelessWidget {
   final String label;
   final Color accent;
+  final Color textColor;
 
-  const _HeroChip({required this.label, required this.accent});
+  const _HeroChip({
+    required this.label,
+    required this.accent,
+    required this.textColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -747,7 +806,7 @@ class _HeroChip extends StatelessWidget {
             style: GoogleFonts.notoSerifTc(
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: accent,
+              color: textColor,
             ),
           ),
         ],
@@ -795,7 +854,7 @@ class _RichSectionShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final onSurface = Theme.of(context).colorScheme.onSurface;
+    final onSurface = style.textPrimaryColor;
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
       decoration: BoxDecoration(
@@ -843,7 +902,7 @@ class _RichSectionShell extends StatelessWidget {
                 style: GoogleFonts.notoSerifTc(
                   fontSize: 10.8,
                   height: 1.5,
-                  color: onSurface.withValues(alpha: 0.50),
+                  color: style.textSecondaryColor,
                 ),
               ),
               const SizedBox(height: 12),
@@ -863,6 +922,8 @@ class _TaskList extends StatefulWidget {
   final String currencyName;
   final Color accent;
   final Color cardColor;
+  final Color textPrimaryColor;
+  final Color textSecondaryColor;
 
   const _TaskList({
     required this.eventId,
@@ -871,6 +932,8 @@ class _TaskList extends StatefulWidget {
     required this.currencyName,
     required this.accent,
     required this.cardColor,
+    required this.textPrimaryColor,
+    required this.textSecondaryColor,
   });
 
   @override
@@ -1021,6 +1084,8 @@ class _TaskListState extends State<_TaskList> {
                     claiming: claiming,
                     accent: widget.accent,
                     cardColor: widget.cardColor,
+                    textPrimaryColor: widget.textPrimaryColor,
+                    textSecondaryColor: widget.textSecondaryColor,
                     onClaim: completed && !claimed && !claiming
                         ? () => _claimTask(doc.id)
                         : null,
@@ -1045,6 +1110,8 @@ class _TaskCard extends StatelessWidget {
   final bool claiming;
   final Color accent;
   final Color cardColor;
+  final Color textPrimaryColor;
+  final Color textSecondaryColor;
   final VoidCallback? onClaim;
 
   const _TaskCard({
@@ -1057,13 +1124,15 @@ class _TaskCard extends StatelessWidget {
     required this.claiming,
     required this.accent,
     required this.cardColor,
+    required this.textPrimaryColor,
+    required this.textSecondaryColor,
     required this.onClaim,
   });
 
 
   @override
   Widget build(BuildContext context) {
-    final onSurface = Theme.of(context).colorScheme.onSurface;
+    final onSurface = textPrimaryColor;
     final completed = progress >= target;
     final progressValue = target <= 0 ? 0.0 : (progress / target).clamp(0.0, 1.0);
 
@@ -1104,7 +1173,7 @@ class _TaskCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.notoSerifTc(
                       fontSize: 9.8,
-                      color: onSurface.withValues(alpha: 0.43),
+                      color: textSecondaryColor,
                     ),
                   ),
                 ],
@@ -1194,12 +1263,14 @@ class _MilestoneProgress extends StatelessWidget {
   final DocumentReference<Map<String, dynamic>>? progressRef;
   final String currencyIcon;
   final Color accent;
+  final Color textMutedColor;
 
   const _MilestoneProgress({
     required this.ref,
     required this.progressRef,
     required this.currencyIcon,
     required this.accent,
+    required this.textMutedColor,
   });
 
   int _intValue(dynamic raw) {
@@ -1327,10 +1398,7 @@ class _MilestoneProgress extends StatelessWidget {
                             style: GoogleFonts.notoSerifTc(
                               fontSize: 9.5,
                               height: 1.3,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurface
-                                  .withValues(alpha: 0.58),
+                              color: textMutedColor,
                             ),
                           ),
                         ],
@@ -1360,6 +1428,8 @@ class _MilestoneProgress extends StatelessWidget {
 
 class _RichFeatureEntryCard extends StatelessWidget {
   final Color accent;
+  final Color textPrimaryColor;
+  final Color textSecondaryColor;
   final String imageUrl;
   final String title;
   final String subtitle;
@@ -1367,6 +1437,8 @@ class _RichFeatureEntryCard extends StatelessWidget {
 
   const _RichFeatureEntryCard({
     required this.accent,
+    required this.textPrimaryColor,
+    required this.textSecondaryColor,
     required this.imageUrl,
     required this.title,
     required this.subtitle,
@@ -1375,7 +1447,7 @@ class _RichFeatureEntryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final onSurface = Theme.of(context).colorScheme.onSurface;
+    final onSurface = textPrimaryColor;
     final hasImage = imageUrl.trim().isNotEmpty;
 
     return Material(
@@ -1449,7 +1521,7 @@ class _RichFeatureEntryCard extends StatelessWidget {
                         style: GoogleFonts.notoSerifTc(
                           fontSize: 10.2,
                           height: 1.45,
-                          color: onSurface.withValues(alpha: 0.50),
+                          color: textSecondaryColor,
                         ),
                       ),
                     ],
@@ -1469,6 +1541,8 @@ class _RichEventInfoCard extends StatelessWidget {
   final String description;
   final Color accent;
   final Color cardColor;
+  final Color textPrimaryColor;
+  final Color textSecondaryColor;
   final String decorationImageUrl;
 
   const _RichEventInfoCard({
@@ -1476,12 +1550,14 @@ class _RichEventInfoCard extends StatelessWidget {
     required this.description,
     required this.accent,
     required this.cardColor,
+    required this.textPrimaryColor,
+    required this.textSecondaryColor,
     this.decorationImageUrl = '',
   });
 
   @override
   Widget build(BuildContext context) {
-    final onSurface = Theme.of(context).colorScheme.onSurface;
+    final onSurface = textPrimaryColor;
     final text = description.trim();
 
     return Container(
@@ -1529,7 +1605,7 @@ class _RichEventInfoCard extends StatelessWidget {
                     style: GoogleFonts.notoSerifTc(
                       fontSize: 11,
                       height: 1.7,
-                      color: onSurface.withValues(alpha: 0.60),
+                      color: textSecondaryColor,
                     ),
                   ),
                 ),
@@ -1547,6 +1623,12 @@ class EventShopPage extends StatefulWidget {
   final String currencyName;
   final String currencyIcon;
   final String shopHeroImageUrl;
+  final Color accentColor;
+  final Color pageBackgroundColor;
+  final Color cardColor;
+  final Color textPrimaryColor;
+  final Color textSecondaryColor;
+  final Color textMutedColor;
 
   const EventShopPage({
     super.key,
@@ -1554,6 +1636,12 @@ class EventShopPage extends StatefulWidget {
     required this.currencyName,
     required this.currencyIcon,
     this.shopHeroImageUrl = '',
+    required this.accentColor,
+    required this.pageBackgroundColor,
+    required this.cardColor,
+    this.textPrimaryColor = _eventDefaultTextPrimary,
+    this.textSecondaryColor = _eventDefaultTextSecondary,
+    this.textMutedColor = _eventDefaultTextMuted,
   });
 
   @override
@@ -1601,7 +1689,6 @@ class _EventShopPageState extends State<EventShopPage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
-        final colors = Theme.of(dialogContext).colorScheme;
         return AlertDialog(
           title: Text(
             '確認兌換',
@@ -1615,7 +1702,7 @@ class _EventShopPageState extends State<EventShopPage> {
                 : '要使用 ${widget.currencyIcon} $price 兌換「$itemName」嗎？',
             style: GoogleFonts.notoSerifTc(
               height: 1.55,
-              color: colors.onSurface,
+              color: widget.textPrimaryColor,
             ),
           ),
           actions: [
@@ -1735,7 +1822,7 @@ class _EventShopPageState extends State<EventShopPage> {
             ),
             child: Container(
               decoration: BoxDecoration(
-                color: colors.surface,
+                color: widget.cardColor,
                 borderRadius: BorderRadius.circular(28),
                 boxShadow: [
                   BoxShadow(
@@ -1789,7 +1876,7 @@ class _EventShopPageState extends State<EventShopPage> {
                                       fontSize: 20,
                                       height: 1.35,
                                       fontWeight: FontWeight.w800,
-                                      color: colors.onSurface,
+                                      color: widget.textPrimaryColor,
                                     ),
                                   ),
                                 ),
@@ -1820,7 +1907,7 @@ class _EventShopPageState extends State<EventShopPage> {
                                 style: GoogleFonts.notoSerifTc(
                                   fontSize: 11.5,
                                   fontWeight: FontWeight.w600,
-                                  color: colors.primary,
+                                  color: widget.accentColor,
                                 ),
                               ),
                             ],
@@ -1853,7 +1940,7 @@ class _EventShopPageState extends State<EventShopPage> {
                                     style: GoogleFonts.notoSerifTc(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w800,
-                                      color: colors.primary,
+                                      color: widget.accentColor,
                                     ),
                                   ),
                                 ),
@@ -1898,15 +1985,17 @@ class _EventShopPageState extends State<EventShopPage> {
     final progressRef = _progressRef();
 
     return Scaffold(
-      backgroundColor: colors.surface,
+      backgroundColor: widget.pageBackgroundColor,
       appBar: AppBar(
-        backgroundColor: colors.surface,
-        surfaceTintColor: colors.surface,
+        backgroundColor: widget.pageBackgroundColor,
+        foregroundColor: widget.textPrimaryColor,
+        surfaceTintColor: Colors.transparent,
         title: Text(
           '活動商店',
           style: GoogleFonts.notoSerifTc(
             fontSize: 18,
             fontWeight: FontWeight.w700,
+            color: widget.textPrimaryColor,
           ),
         ),
       ),
@@ -1915,7 +2004,7 @@ class _EventShopPageState extends State<EventShopPage> {
         child: Text(
           '登入後即可使用活動商店',
           style: GoogleFonts.notoSerifTc(
-            color: colors.onSurface.withValues(alpha: 0.58),
+            color: widget.textSecondaryColor,
           ),
         ),
       )
@@ -1948,20 +2037,20 @@ class _EventShopPageState extends State<EventShopPage> {
                         imageUrl: widget.shopHeroImageUrl.trim(),
                         fit: BoxFit.cover,
                         placeholder: (_, __) => Container(
-                          color: colors.primary.withValues(alpha: 0.04),
+                          color: widget.accentColor.withValues(alpha: 0.04),
                           alignment: Alignment.center,
                           child: CircularProgressIndicator(
-                            color: colors.primary,
+                            color: widget.accentColor,
                             strokeWidth: 2,
                           ),
                         ),
                         errorWidget: (_, __, ___) => Container(
-                          color: colors.primary.withValues(alpha: 0.04),
+                          color: widget.accentColor.withValues(alpha: 0.04),
                           alignment: Alignment.center,
                           child: Icon(
                             Icons.storefront_rounded,
                             size: 40,
-                            color: colors.primary.withValues(alpha: 0.35),
+                            color: widget.accentColor.withValues(alpha: 0.35),
                           ),
                         ),
                       ),
@@ -1981,10 +2070,10 @@ class _EventShopPageState extends State<EventShopPage> {
                   vertical: 13,
                 ),
                 decoration: BoxDecoration(
-                  color: colors.primary.withValues(alpha: 0.06),
+                  color: widget.accentColor.withValues(alpha: 0.06),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: colors.primary.withValues(alpha: 0.12),
+                    color: widget.accentColor.withValues(alpha: 0.12),
                   ),
                 ),
                 child: Row(
@@ -1999,7 +2088,7 @@ class _EventShopPageState extends State<EventShopPage> {
                       style: GoogleFonts.notoSerifTc(
                         fontSize: 12,
                         color:
-                        colors.onSurface.withValues(alpha: 0.62),
+                        widget.textSecondaryColor,
                       ),
                     ),
                     const Spacer(),
@@ -2008,7 +2097,7 @@ class _EventShopPageState extends State<EventShopPage> {
                       style: GoogleFonts.notoSerifTc(
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
-                        color: colors.primary,
+                        color: widget.accentColor,
                       ),
                     ),
                   ],
@@ -2022,7 +2111,7 @@ class _EventShopPageState extends State<EventShopPage> {
                     if (!snapshot.hasData) {
                       return Center(
                         child: CircularProgressIndicator(
-                          color: colors.primary,
+                          color: widget.accentColor,
                           strokeWidth: 2.2,
                         ),
                       );
@@ -2035,8 +2124,7 @@ class _EventShopPageState extends State<EventShopPage> {
                         child: Text(
                           '目前沒有可兌換商品',
                           style: GoogleFonts.notoSerifTc(
-                            color: colors.onSurface
-                                .withValues(alpha: 0.56),
+                            color: widget.textMutedColor,
                           ),
                         ),
                       );
@@ -2080,6 +2168,11 @@ class _EventShopPageState extends State<EventShopPage> {
                           isRedeeming: _redeemingItemIds.contains(doc.id),
                           alreadyRedeemed: alreadyRedeemed,
                           insufficient: insufficient,
+                          textPrimaryColor: widget.textPrimaryColor,
+                          textSecondaryColor: widget.textSecondaryColor,
+                          textMutedColor: widget.textMutedColor,
+                          accentColor: widget.accentColor,
+                          cardColor: widget.cardColor,
                           onView: () => _showShopItemDetail(
                             itemId: doc.id,
                             data: data,
@@ -2115,6 +2208,11 @@ class _ShopItemCard extends StatelessWidget {
   final bool isRedeeming;
   final bool alreadyRedeemed;
   final bool insufficient;
+  final Color textPrimaryColor;
+  final Color textSecondaryColor;
+  final Color textMutedColor;
+  final Color accentColor;
+  final Color cardColor;
   final VoidCallback onView;
   final VoidCallback onRedeem;
 
@@ -2126,6 +2224,11 @@ class _ShopItemCard extends StatelessWidget {
     required this.isRedeeming,
     required this.alreadyRedeemed,
     required this.insufficient,
+    required this.textPrimaryColor,
+    required this.textSecondaryColor,
+    required this.textMutedColor,
+    required this.accentColor,
+    required this.cardColor,
     required this.onView,
     required this.onRedeem,
   });
@@ -2150,10 +2253,10 @@ class _ShopItemCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         child: Ink(
           decoration: BoxDecoration(
-            color: colors.surface,
+            color: cardColor,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: colors.outline.withValues(alpha: 0.10),
+              color: accentColor.withValues(alpha: 0.10),
             ),
           ),
           child: ClipRRect(
@@ -2188,6 +2291,7 @@ class _ShopItemCard extends StatelessWidget {
                         style: GoogleFonts.notoSerifTc(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
+                          color: textPrimaryColor,
                         ),
                       ),
                       if (description.isNotEmpty) ...[
@@ -2199,7 +2303,7 @@ class _ShopItemCard extends StatelessWidget {
                           style: GoogleFonts.notoSerifTc(
                             fontSize: 9.8,
                             height: 1.3,
-                            color: colors.onSurface.withValues(alpha: 0.48),
+                            color: textMutedColor,
                           ),
                         ),
                       ],
@@ -2209,7 +2313,7 @@ class _ShopItemCard extends StatelessWidget {
                           '可獲得 $rewardAmount 花花',
                           style: GoogleFonts.notoSerifTc(
                             fontSize: 10,
-                            color: colors.primary,
+                            color: accentColor,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -2220,7 +2324,7 @@ class _ShopItemCard extends StatelessWidget {
                           '已兌換 $redeemedCount 次',
                           style: GoogleFonts.notoSerifTc(
                             fontSize: 9.5,
-                            color: colors.onSurface.withValues(alpha: 0.46),
+                            color: textMutedColor,
                           ),
                         ),
                       ],
@@ -2232,7 +2336,7 @@ class _ShopItemCard extends StatelessWidget {
                             style: GoogleFonts.notoSerifTc(
                               fontSize: 11.5,
                               fontWeight: FontWeight.w700,
-                              color: colors.primary,
+                              color: accentColor,
                             ),
                           ),
                           const Spacer(),
@@ -2295,54 +2399,6 @@ class _ShopFallback extends StatelessWidget {
         Icons.card_giftcard_rounded,
         color: colors.primary.withValues(alpha: 0.38),
         size: 36,
-      ),
-    );
-  }
-}
-
-class _EventInfoCard extends StatelessWidget {
-  final String description;
-  const _EventInfoCard({required this.description});
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colors.primary.withValues(alpha: 0.035),
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(Icons.info_outline_rounded, size: 19, color: colors.primary),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '活動說明',
-                  style: GoogleFonts.notoSerifTc(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: colors.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  description,
-                  style: GoogleFonts.notoSerifTc(
-                    fontSize: 11.5,
-                    height: 1.7,
-                    color: colors.onSurface.withValues(alpha: 0.56),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

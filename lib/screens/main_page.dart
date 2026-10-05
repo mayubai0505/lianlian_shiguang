@@ -15,6 +15,7 @@ import 'recommendation_page.dart';
 import 'dart:async'; // ✨ 加上這一行，超時功能就能用了！
 import '../services/app_constants.dart';
 import '../services/app_update_service.dart';
+import 'desktop_widget_service.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 //主介面
@@ -76,6 +77,9 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
       _checkDailyCheckIn();
       _checkAndTriggerBirthdayEvent();
 
+      // 桌面小工具：冷啟動時刷新一次。
+      unawaited(_refreshDesktopWidgetsOnAppOpen());
+
       // App 進入主介面後再檢查更新，避免與登入 / 首頁初始化搶畫面。
       AppUpdateService.checkForUpdate(context);
     });
@@ -94,8 +98,25 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed && mounted) {
       _performDailyTasks();
+
+      // App 從背景回來也要刷新 Widget。
+      // 今日一句的 app_open 模式每次都會更新；
+      // daily 模式只會在跨日後更新。
+      unawaited(_refreshDesktopWidgetsOnAppOpen());
     }
   }
+  Future<void> _refreshDesktopWidgetsOnAppOpen() async {
+    try {
+      await Future.wait<void>([
+        DesktopWidgetNativeService.refreshDailyQuoteWidgetsOnAppOpen(),
+        DesktopWidgetNativeService.refreshAnniversaryWidgets(),
+      ]);
+    } catch (error) {
+      // Widget 刷新失敗不能影響主頁啟動。
+      debugPrint('⚠️ App 開啟刷新桌面小工具失敗：$error');
+    }
+  }
+
   String? get _currentUserId => FirebaseAuth.instance.currentUser?.uid;
 
   String? get _lastMainTabKey {

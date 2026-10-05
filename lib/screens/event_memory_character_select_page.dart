@@ -28,6 +28,7 @@ class _EventMemoryCharacterSelectPageState
     extends State<EventMemoryCharacterSelectPage> {
   bool _loading = true;
   String? _error;
+  _CharacterSelectVisual _visual = const _CharacterSelectVisual();
   final List<_SelectableMemoryCharacter> _myCharacters = [];
   final List<_SelectableMemoryCharacter> _friendCharacters = [];
   String? _selectedId;
@@ -35,7 +36,27 @@ class _EventMemoryCharacterSelectPageState
   @override
   void initState() {
     super.initState();
+    _loadEventVisual();
     _loadCharacters();
+  }
+
+  Future<void> _loadEventVisual() async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('artifacts')
+          .doc(AppConfig.appId)
+          .collection('events')
+          .doc(widget.eventId)
+          .get();
+      if (!mounted || !doc.exists) return;
+      setState(() {
+        _visual = _CharacterSelectVisual.fromEvent(
+          doc.data() ?? <String, dynamic>{},
+        );
+      });
+    } catch (_) {
+      // 配色讀取失敗時保留安全預設，不影響角色選擇流程。
+    }
   }
 
   String _avatarFromData(Map<String, dynamic> data) {
@@ -208,16 +229,22 @@ class _EventMemoryCharacterSelectPageState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final accent = theme.colorScheme.primary;
+    final visual = _visual;
+    final accent = visual.accent;
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: visual.background,
       appBar: AppBar(
         elevation: 0,
+        backgroundColor: visual.background,
+        foregroundColor: visual.textPrimaryColor,
         surfaceTintColor: Colors.transparent,
         title: Text(
           '選擇角色',
-          style: GoogleFonts.notoSerifTc(fontWeight: FontWeight.w700),
+          style: GoogleFonts.notoSerifTc(
+            fontWeight: FontWeight.w700,
+            color: visual.textPrimaryColor,
+          ),
         ),
       ),
       body: SafeArea(
@@ -255,6 +282,7 @@ class _EventMemoryCharacterSelectPageState
                               style: GoogleFonts.notoSerifTc(
                                 fontSize: 21,
                                 fontWeight: FontWeight.w800,
+                                color: visual.textPrimaryColor,
                               ),
                             ),
                             const SizedBox(height: 6),
@@ -263,8 +291,7 @@ class _EventMemoryCharacterSelectPageState
                               style: GoogleFonts.notoSerifTc(
                                 fontSize: 12,
                                 height: 1.55,
-                                color: theme.colorScheme.onSurface
-                                    .withValues(alpha: 0.52),
+                                color: visual.textSecondaryColor,
                               ),
                             ),
                             const SizedBox(height: 10),
@@ -299,10 +326,12 @@ class _EventMemoryCharacterSelectPageState
                         title: '我的角色',
                         count: _myCharacters.length,
                         icon: Icons.auto_awesome_rounded,
+                        visual: visual,
                       ),
                       _CharacterGrid(
                         characters: _myCharacters,
                         selectedId: _selectedId,
+                        visual: visual,
                         onSelected: (character) {
                           setState(() => _selectedId = character.id);
                         },
@@ -313,10 +342,12 @@ class _EventMemoryCharacterSelectPageState
                         title: '好友角色',
                         count: _friendCharacters.length,
                         icon: Icons.favorite_border_rounded,
+                        visual: visual,
                       ),
                       _CharacterGrid(
                         characters: _friendCharacters,
                         selectedId: _selectedId,
+                        visual: visual,
                         onSelected: (character) {
                           setState(() => _selectedId = character.id);
                         },
@@ -343,6 +374,7 @@ class _EventMemoryCharacterSelectPageState
                                   style: GoogleFonts.notoSerifTc(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700,
+                                    color: visual.textPrimaryColor,
                                   ),
                                 ),
                                 const SizedBox(height: 6),
@@ -352,8 +384,7 @@ class _EventMemoryCharacterSelectPageState
                                   style: GoogleFonts.notoSerifTc(
                                     fontSize: 12,
                                     height: 1.55,
-                                    color: theme.colorScheme.onSurface
-                                        .withValues(alpha: 0.48),
+                                    color: visual.textMutedColor,
                                   ),
                                 ),
                               ],
@@ -377,10 +408,10 @@ class _EventMemoryCharacterSelectPageState
                   12 + MediaQuery.paddingOf(context).bottom,
                 ),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surface,
+                  color: visual.cardColor,
                   border: Border(
                     top: BorderSide(
-                      color: theme.colorScheme.outlineVariant,
+                      color: visual.accent.withValues(alpha: 0.16),
                     ),
                   ),
                 ),
@@ -401,6 +432,51 @@ class _EventMemoryCharacterSelectPageState
         ),
       ),
     );
+  }
+}
+
+
+class _CharacterSelectVisual {
+  final Color accent;
+  final Color background;
+  final Color cardColor;
+  final Color textPrimaryColor;
+  final Color textSecondaryColor;
+  final Color textMutedColor;
+
+  const _CharacterSelectVisual({
+    this.accent = const Color(0xFF8D6CC4),
+    this.background = const Color(0xFFFBF8FF),
+    this.cardColor = const Color(0xFFFFFFFF),
+    this.textPrimaryColor = const Color(0xFF3B3340),
+    this.textSecondaryColor = const Color(0xFF6F6673),
+    this.textMutedColor = const Color(0xFF948A98),
+  });
+
+  factory _CharacterSelectVisual.fromEvent(Map<String, dynamic> data) {
+    final theme = data['theme'] is Map
+        ? Map<String, dynamic>.from(data['theme'] as Map)
+        : <String, dynamic>{};
+    return _CharacterSelectVisual(
+      accent: _hex(theme['accentColor']) ?? const Color(0xFF8D6CC4),
+      background: _hex(theme['pageBackgroundColor'] ?? theme['backgroundColor']) ??
+          const Color(0xFFFBF8FF),
+      cardColor: _hex(theme['cardColor']) ?? const Color(0xFFFFFFFF),
+      textPrimaryColor: _hex(theme['textPrimaryColor']) ?? const Color(0xFF3B3340),
+      textSecondaryColor: _hex(theme['textSecondaryColor']) ?? const Color(0xFF6F6673),
+      textMutedColor: _hex(theme['textMutedColor']) ?? const Color(0xFF948A98),
+    );
+  }
+
+  static Color? _hex(dynamic raw) {
+    final value = (raw ?? '').toString().trim().replaceAll('#', '');
+    if (value.length != 6 && value.length != 8) return null;
+    try {
+      final number = int.parse(value, radix: 16);
+      return Color(value.length == 6 ? 0xFF000000 | number : number);
+    } catch (_) {
+      return null;
+    }
   }
 }
 
@@ -426,11 +502,13 @@ class _SectionHeader extends StatelessWidget {
   final String title;
   final int count;
   final IconData icon;
+  final _CharacterSelectVisual visual;
 
   const _SectionHeader({
     required this.title,
     required this.count,
     required this.icon,
+    this.visual = const _CharacterSelectVisual(),
   });
 
   @override
@@ -441,13 +519,14 @@ class _SectionHeader extends StatelessWidget {
       sliver: SliverToBoxAdapter(
         child: Row(
           children: [
-            Icon(icon, size: 19, color: theme.colorScheme.primary),
+            Icon(icon, size: 19, color: visual.accent),
             const SizedBox(width: 7),
             Text(
               title,
               style: GoogleFonts.notoSerifTc(
                 fontSize: 17,
                 fontWeight: FontWeight.w700,
+                color: visual.textPrimaryColor,
               ),
             ),
             const SizedBox(width: 7),
@@ -455,8 +534,7 @@ class _SectionHeader extends StatelessWidget {
               '$count',
               style: GoogleFonts.notoSerifTc(
                 fontSize: 11,
-                color:
-                theme.colorScheme.onSurface.withValues(alpha: 0.38),
+                color: visual.textMutedColor,
               ),
             ),
           ],
@@ -469,11 +547,13 @@ class _SectionHeader extends StatelessWidget {
 class _CharacterGrid extends StatelessWidget {
   final List<_SelectableMemoryCharacter> characters;
   final String? selectedId;
+  final _CharacterSelectVisual visual;
   final ValueChanged<_SelectableMemoryCharacter> onSelected;
 
   const _CharacterGrid({
     required this.characters,
     required this.selectedId,
+    this.visual = const _CharacterSelectVisual(),
     required this.onSelected,
   });
 
@@ -488,6 +568,7 @@ class _CharacterGrid extends StatelessWidget {
             return _CharacterCard(
               character: character,
               selected: selectedId == character.id,
+              visual: visual,
               onTap: () => onSelected(character),
             );
           },
@@ -509,18 +590,20 @@ class _CharacterGrid extends StatelessWidget {
 class _CharacterCard extends StatelessWidget {
   final _SelectableMemoryCharacter character;
   final bool selected;
+  final _CharacterSelectVisual visual;
   final VoidCallback onTap;
 
   const _CharacterCard({
     required this.character,
     required this.selected,
+    this.visual = const _CharacterSelectVisual(),
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final accent = theme.colorScheme.primary;
+    final accent = visual.accent;
 
     return Material(
       color: Colors.transparent,
@@ -533,12 +616,12 @@ class _CharacterCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: selected
                 ? accent.withValues(alpha: 0.08)
-                : theme.colorScheme.surfaceContainerLowest,
+                : visual.cardColor,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: selected
                   ? accent.withValues(alpha: 0.70)
-                  : theme.colorScheme.outlineVariant,
+                  : visual.accent.withValues(alpha: 0.16),
               width: selected ? 1.6 : 1,
             ),
             boxShadow: selected
@@ -559,6 +642,8 @@ class _CharacterCard extends StatelessWidget {
                   _Avatar(
                     avatarPath: character.avatarPath,
                     size: 66,
+                    accent: visual.accent,
+                    cardColor: visual.cardColor,
                   ),
                   if (selected)
                     Positioned(
@@ -571,7 +656,7 @@ class _CharacterCard extends StatelessWidget {
                           shape: BoxShape.circle,
                           color: accent,
                           border: Border.all(
-                            color: theme.colorScheme.surface,
+                            color: visual.cardColor,
                             width: 2,
                           ),
                         ),
@@ -593,6 +678,7 @@ class _CharacterCard extends StatelessWidget {
                 style: GoogleFonts.notoSerifTc(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w700,
+                  color: visual.textPrimaryColor,
                 ),
               ),
               const SizedBox(height: 4),
@@ -629,10 +715,14 @@ class _CharacterCard extends StatelessWidget {
 class _Avatar extends StatelessWidget {
   final String avatarPath;
   final double size;
+  final Color accent;
+  final Color cardColor;
 
   const _Avatar({
     required this.avatarPath,
     required this.size,
+    this.accent = const Color(0xFF8D6CC4),
+    this.cardColor = const Color(0xFFFFFFFF),
   });
 
   @override
@@ -654,9 +744,9 @@ class _Avatar extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: theme.colorScheme.secondaryContainer,
+        color: accent.withValues(alpha: 0.12),
         border: Border.all(
-          color: theme.colorScheme.outlineVariant,
+          color: accent.withValues(alpha: 0.18),
         ),
         image: provider == null
             ? null
@@ -670,7 +760,7 @@ class _Avatar extends StatelessWidget {
           ? Icon(
         Icons.person_rounded,
         size: size * 0.43,
-        color: theme.colorScheme.onSecondaryContainer,
+        color: accent,
       )
           : null,
     );

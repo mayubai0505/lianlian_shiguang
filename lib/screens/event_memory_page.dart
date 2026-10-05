@@ -111,8 +111,10 @@ class EventMemoryPage extends StatelessWidget {
         bottom: false,
         child: Column(
           children: [
-            const _MemoryAppBar(
+            _MemoryAppBar(
               title: '限定回憶',
+              textColor: visual.textPrimaryColor,
+              accent: visual.accent,
             ),
             Expanded(
               child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
@@ -217,6 +219,9 @@ class EventMemoryPage extends StatelessWidget {
                                     totalCount: memories.length,
                                     accent: visual.accent,
                                     accentSoft: visual.accentSoft,
+                                    cardColor: visual.cardColor,
+                                    textPrimaryColor: visual.textPrimaryColor,
+                                    textSecondaryColor: visual.textSecondaryColor,
                                   ),
                                 ),
                               ),
@@ -225,6 +230,7 @@ class EventMemoryPage extends StatelessWidget {
                                   hasScrollBody: false,
                                   child: _EmptyMemoryState(
                                     accent: visual.accent,
+                                    textColor: visual.textMutedColor,
                                   ),
                                 )
                               else
@@ -265,6 +271,10 @@ class EventMemoryPage extends StatelessWidget {
                                         ),
                                         accent: visual.accent,
                                         accentSoft: visual.accentSoft,
+                                        cardColor: visual.cardColor,
+                                        textPrimaryColor: visual.textPrimaryColor,
+                                        textSecondaryColor: visual.textSecondaryColor,
+                                        textMutedColor: visual.textMutedColor,
                                         onTap: () {
                                           if (status == _MemoryChapterStatus.locked) {
                                             ScaffoldMessenger.of(context)
@@ -439,11 +449,19 @@ class _MemoryVisual {
   final Color accent;
   final Color accentSoft;
   final Color background;
+  final Color cardColor;
+  final Color textPrimaryColor;
+  final Color textSecondaryColor;
+  final Color textMutedColor;
 
   const _MemoryVisual({
     required this.accent,
     required this.accentSoft,
     required this.background,
+    required this.cardColor,
+    required this.textPrimaryColor,
+    required this.textSecondaryColor,
+    required this.textMutedColor,
   });
 
   factory _MemoryVisual.fromEvent(
@@ -453,20 +471,31 @@ class _MemoryVisual {
     final theme = data['theme'] is Map
         ? Map<String, dynamic>.from(data['theme'] as Map)
         : <String, dynamic>{};
-    final colors = Theme.of(context).colorScheme;
-
-    final accent = _hex(theme['accentColor']) ?? colors.primary;
+    final accent =
+        _hex(theme['accentColor']) ?? const Color(0xFF8D6CC4);
     final accentSoft = _hex(theme['accentColor2'] ??
         theme['accentColorLight']) ??
-        Color.lerp(accent, Colors.white, 0.72)!;
+        const Color(0xFFE9DFF7);
     final background = _hex(theme['pageBackgroundColor'] ??
         theme['backgroundColor']) ??
-        Color.lerp(colors.surface, accent, 0.035)!;
+        const Color(0xFFFBF8FF);
+    final cardColor =
+        _hex(theme['cardColor']) ?? const Color(0xFFFFFFFF);
+    final textPrimaryColor =
+        _hex(theme['textPrimaryColor']) ?? const Color(0xFF3B3340);
+    final textSecondaryColor =
+        _hex(theme['textSecondaryColor']) ?? const Color(0xFF6F6673);
+    final textMutedColor =
+        _hex(theme['textMutedColor']) ?? const Color(0xFF948A98);
 
     return _MemoryVisual(
       accent: accent,
       accentSoft: accentSoft,
       background: background,
+      cardColor: cardColor,
+      textPrimaryColor: textPrimaryColor,
+      textSecondaryColor: textSecondaryColor,
+      textMutedColor: textMutedColor,
     );
   }
 
@@ -484,9 +513,13 @@ class _MemoryVisual {
 
 class _MemoryAppBar extends StatelessWidget {
   final String title;
+  final Color textColor;
+  final Color accent;
 
   const _MemoryAppBar({
     required this.title,
+    required this.textColor,
+    required this.accent,
   });
 
   @override
@@ -497,7 +530,10 @@ class _MemoryAppBar extends StatelessWidget {
         children: [
           IconButton(
             onPressed: () => Navigator.of(context).maybePop(),
-            icon: const Icon(Icons.arrow_back_ios_new_rounded),
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: textColor,
+            ),
           ),
           Expanded(
             child: Text(
@@ -505,9 +541,11 @@ class _MemoryAppBar extends StatelessWidget {
               style: GoogleFonts.notoSerifTc(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
+                color: textColor,
               ),
             ),
           ),
+          Icon(Icons.auto_awesome_rounded, color: accent, size: 20),
         ],
       ),
     );
@@ -521,6 +559,9 @@ class _MemoryHero extends StatelessWidget {
   final int totalCount;
   final Color accent;
   final Color accentSoft;
+  final Color cardColor;
+  final Color textPrimaryColor;
+  final Color textSecondaryColor;
 
   const _MemoryHero({
     required this.eventName,
@@ -529,6 +570,9 @@ class _MemoryHero extends StatelessWidget {
     required this.totalCount,
     required this.accent,
     required this.accentSoft,
+    required this.cardColor,
+    required this.textPrimaryColor,
+    required this.textSecondaryColor,
   });
 
   @override
@@ -570,7 +614,7 @@ class _MemoryHero extends StatelessWidget {
                   ]
                       : [
                     accentSoft.withValues(alpha: 0.20),
-                    Colors.white.withValues(alpha: 0.75),
+                    cardColor.withValues(alpha: 0.92),
                   ],
                 ),
               ),
@@ -588,7 +632,7 @@ class _MemoryHero extends StatelessWidget {
                     style: GoogleFonts.notoSerifTc(
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
-                      color: hasImage ? Colors.white : Colors.black87,
+                      color: hasImage ? Colors.white : textPrimaryColor,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -598,7 +642,7 @@ class _MemoryHero extends StatelessWidget {
                       fontSize: 11.5,
                       color: hasImage
                           ? Colors.white.withValues(alpha: 0.88)
-                          : Colors.black.withValues(alpha: 0.52),
+                          : textSecondaryColor,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -606,7 +650,7 @@ class _MemoryHero extends StatelessWidget {
                     padding:
                     const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.92),
+                      color: cardColor.withValues(alpha: 0.94),
                       borderRadius: BorderRadius.circular(999),
                     ),
                     child: Text(
@@ -645,6 +689,10 @@ class _MemoryChapterCard extends StatelessWidget {
   final String unlockLabel;
   final Color accent;
   final Color accentSoft;
+  final Color cardColor;
+  final Color textPrimaryColor;
+  final Color textSecondaryColor;
+  final Color textMutedColor;
   final VoidCallback onTap;
 
   const _MemoryChapterCard({
@@ -657,12 +705,15 @@ class _MemoryChapterCard extends StatelessWidget {
     required this.unlockLabel,
     required this.accent,
     required this.accentSoft,
+    required this.cardColor,
+    required this.textPrimaryColor,
+    required this.textSecondaryColor,
+    required this.textMutedColor,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final onSurface = Theme.of(context).colorScheme.onSurface;
     final hasImage = coverImageUrl.trim().isNotEmpty;
     final unlocked = status != _MemoryChapterStatus.locked;
 
@@ -712,7 +763,7 @@ class _MemoryChapterCard extends StatelessWidget {
         onTap: onTap,
         child: Ink(
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
+            color: cardColor,
             borderRadius: BorderRadius.circular(22),
             border: Border.all(
               color: accent.withValues(alpha: unlocked ? 0.15 : 0.08),
@@ -807,7 +858,7 @@ class _MemoryChapterCard extends StatelessWidget {
                                   fontWeight: FontWeight.w600,
                                   color: unlocked
                                       ? accent
-                                      : onSurface.withValues(alpha: 0.42),
+                                      : textMutedColor,
                                 ),
                               ),
                             ),
@@ -821,7 +872,7 @@ class _MemoryChapterCard extends StatelessWidget {
                           style: GoogleFonts.notoSerifTc(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
-                            color: onSurface,
+                            color: textPrimaryColor,
                           ),
                         ),
                         if (subtitle.trim().isNotEmpty) ...[
@@ -833,7 +884,7 @@ class _MemoryChapterCard extends StatelessWidget {
                             style: GoogleFonts.notoSerifTc(
                               fontSize: 10.5,
                               height: 1.45,
-                              color: onSurface.withValues(alpha: 0.48),
+                              color: textSecondaryColor,
                             ),
                           ),
                         ],
@@ -850,7 +901,7 @@ class _MemoryChapterCard extends StatelessWidget {
                                   height: 1.35,
                                   color: unlocked
                                       ? accent
-                                      : onSurface.withValues(alpha: 0.40),
+                                      : textMutedColor,
                                 ),
                               ),
                             ),
@@ -859,7 +910,7 @@ class _MemoryChapterCard extends StatelessWidget {
                               trailingIcon(),
                               color: unlocked
                                   ? accent
-                                  : onSurface.withValues(alpha: 0.28),
+                                  : textMutedColor.withValues(alpha: 0.72),
                             ),
                           ],
                         ),
@@ -878,8 +929,12 @@ class _MemoryChapterCard extends StatelessWidget {
 
 class _EmptyMemoryState extends StatelessWidget {
   final Color accent;
+  final Color textColor;
 
-  const _EmptyMemoryState({required this.accent});
+  const _EmptyMemoryState({
+    required this.accent,
+    required this.textColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -900,10 +955,7 @@ class _EmptyMemoryState extends StatelessWidget {
               textAlign: TextAlign.center,
               style: GoogleFonts.notoSerifTc(
                 fontSize: 14,
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withValues(alpha: 0.56),
+                color: textColor,
               ),
             ),
           ],
