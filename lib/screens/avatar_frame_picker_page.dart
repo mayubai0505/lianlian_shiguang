@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/app_constants.dart';
 import '../utils/image_utils.dart';
+import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 
 class AvatarFramePickerPage extends StatefulWidget {
   final String avatarPath;
@@ -70,7 +71,7 @@ class _AvatarFramePickerPageState extends State<AvatarFramePickerPage> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('已裝備「${frame.name}」')),
+        SnackBar(content: Text(appL10n.avatar_frame_equipped_message(frame.name))),
       );
       Navigator.of(context).pop(true);
     } catch (e) {
@@ -98,7 +99,7 @@ class _AvatarFramePickerPageState extends State<AvatarFramePickerPage> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('已卸下頭像框')),
+        SnackBar(content: Text(appL10n.avatar_frame_unequip_frame_snackbar)),
       );
       Navigator.of(context).pop(true);
     } catch (e) {
@@ -132,7 +133,7 @@ class _AvatarFramePickerPageState extends State<AvatarFramePickerPage> {
         final eventId = (item['eventId'] ?? eventDoc.id).toString().trim();
         final itemId = (item['itemId'] ?? entry.key).toString().trim();
         final imageUrl = (item['imageUrl'] ?? '').toString().trim();
-        final name = (item['name'] ?? '活動頭像框').toString().trim();
+        final name = (item['name'] ?? appL10n.avatar_frame_unequip_frame_message_event).toString().trim();
         final description = (item['description'] ?? '').toString().trim();
 
         if (eventId.isEmpty || itemId.isEmpty || imageUrl.isEmpty) continue;
@@ -205,7 +206,7 @@ class _AvatarFramePickerPageState extends State<AvatarFramePickerPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          '頭像框',
+          appL10n.avatar_frame_message,
           style: GoogleFonts.notoSerifTc(fontWeight: FontWeight.w600),
         ),
       ),
@@ -233,7 +234,11 @@ class _AvatarFramePickerPageState extends State<AvatarFramePickerPage> {
                 return Center(
                   child: Padding(
                     padding: const EdgeInsets.all(24),
-                    child: Text('讀取頭像框失敗：${progressSnapshot.error}'),
+                    child: Text(
+                      appL10n.avatar_frame_load_failed(
+                        progressSnapshot.error?.toString() ?? '',
+                      ),
+                    ),
                   ),
                 );
               }
@@ -246,7 +251,7 @@ class _AvatarFramePickerPageState extends State<AvatarFramePickerPage> {
                 padding: const EdgeInsets.fromLTRB(20, 18, 20, 40),
                 children: [
                   Text(
-                    '選擇你想使用的頭像框',
+                    appL10n.avatar_frame_parse_frames_message_select,
                     style: GoogleFonts.notoSerifTc(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -254,7 +259,7 @@ class _AvatarFramePickerPageState extends State<AvatarFramePickerPage> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    '活動取得後永久保留，可隨時更換或卸下。',
+                    appL10n.avatar_frame_parse_frames_message_event,
                     style: TextStyle(
                       fontSize: 12,
                       color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
@@ -263,8 +268,8 @@ class _AvatarFramePickerPageState extends State<AvatarFramePickerPage> {
                   const SizedBox(height: 18),
                   _FrameOptionCard(
                     selected: equippedEventId.isEmpty || equippedItemId.isEmpty,
-                    title: '不使用頭像框',
-                    subtitle: '顯示原本的頭像',
+                    title: appL10n.avatar_frame_parse_frames_title,
+                    subtitle: appL10n.avatar_frame_parse_frames_subtitle_avatar,
                     preview: _avatarPreview(size: 76),
                     busy: _savingKey == '__none__',
                     onTap: _savingKey == null ? _unequipFrame : null,
@@ -277,8 +282,8 @@ class _AvatarFramePickerPageState extends State<AvatarFramePickerPage> {
                         color: theme.colorScheme.primary.withValues(alpha: 0.045),
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: const Text(
-                        '目前還沒有已擁有的頭像框。\n活動商店兌換後會出現在這裡。',
+                      child: Text(
+                        appL10n.avatar_frame_parse_frames_message_event_shop_redeem_current,
                         textAlign: TextAlign.center,
                       ),
                     )
@@ -291,7 +296,7 @@ class _AvatarFramePickerPageState extends State<AvatarFramePickerPage> {
                           selected: key == equippedKey,
                           title: frame.name,
                           subtitle: frame.description.isEmpty
-                              ? '活動限定頭像框'
+                              ? appL10n.avatar_frame_parse_frames_message_event_variant_b
                               : frame.description,
                           preview: _avatarPreview(
                             frameUrl: frame.imageUrl,

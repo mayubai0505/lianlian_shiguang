@@ -10,6 +10,9 @@ class LocaleNotifier extends ChangeNotifier {
   Locale _locale = _defaultLocale;
   Locale get locale => _locale;
 
+  static Locale _currentLocale = _defaultLocale;
+  static Locale get currentLocale => _currentLocale;
+
   int _changeVersion = 0;
 
   LocaleNotifier() {
@@ -23,6 +26,7 @@ class LocaleNotifier extends ChangeNotifier {
     // 避免舊設定稍後讀完又把新語言覆蓋掉。
     _changeVersion++;
     _locale = normalized;
+    _currentLocale = normalized;
     notifyListeners();
 
     // 不阻塞 UI；完整保存 language + script。
@@ -126,6 +130,7 @@ class LocaleNotifier extends ChangeNotifier {
     if (loadVersion != _changeVersion) return;
 
     _locale = loadedLocale;
+    _currentLocale = loadedLocale;
     notifyListeners();
   }
 }

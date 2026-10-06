@@ -18,6 +18,7 @@ import '../services/toast_utils.dart';
 import 'desktop_widget_service.dart';
 import '../services/reminder_notification_service.dart';
 import 'character_model.dart';
+import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 
 
 class _SavedDesktopWidget {
@@ -170,46 +171,46 @@ class DesktopWidgetTypeInfo {
   final DesktopWidgetType type;
   final String title;
   final String subtitle;
-  final IconData icon;
+  final String iconAsset;
 
   const DesktopWidgetTypeInfo({
     required this.type,
     required this.title,
     required this.subtitle,
-    required this.icon,
+    required this.iconAsset,
   });
 }
 
-const List<DesktopWidgetTypeInfo> desktopWidgetTypes = [
+List<DesktopWidgetTypeInfo> get desktopWidgetTypes => [
   DesktopWidgetTypeInfo(
     type: DesktopWidgetType.latestPost,
-    title: '角色最新貼文',
-    subtitle: '不用打開 App，也能看到他的最新動態。',
-    icon: Icons.dynamic_feed_rounded,
+    title: appL10n.widget_settings_remove_title_character_latest,
+    subtitle: appL10n.widget_settings_remove_subtitle_moment_latest,
+    iconAsset: 'assets/icons/icon_widget_latest_post.png',
   ),
   DesktopWidgetTypeInfo(
     type: DesktopWidgetType.periodCare,
-    title: '生理期陪伴',
-    subtitle: '快到、進行中與結束後，都多一點角色的關心。',
-    icon: Icons.favorite_outline_rounded,
+    title: appL10n.widget_settings_remove_title_period,
+    subtitle: appL10n.widget_settings_remove_subtitle_character_end,
+    iconAsset: 'assets/icons/icon_widget_period_companion.png',
   ),
   DesktopWidgetTypeInfo(
     type: DesktopWidgetType.dailyQuote,
-    title: '今日一句',
-    subtitle: '每天打開手機，都有一句話在桌面等著妳。',
-    icon: Icons.auto_awesome_rounded,
+    title: appL10n.widget_settings_remove_title,
+    subtitle: appL10n.widget_settings_remove_subtitle_days,
+    iconAsset: 'assets/icons/icon_widget_daily_quote.png',
   ),
   DesktopWidgetTypeInfo(
     type: DesktopWidgetType.anniversary,
-    title: '紀念日／提醒',
-    subtitle: '一起記住相遇、生日，也讓角色提醒妳重要的事。',
-    icon: Icons.calendar_month_rounded,
+    title: appL10n.widget_settings_remove_title_reminder,
+    subtitle: appL10n.widget_settings_remove_subtitle_character_birthday_reminder,
+    iconAsset: 'assets/icons/icon_widget_anniversary.png',
   ),
   DesktopWidgetTypeInfo(
     type: DesktopWidgetType.characterStatus,
-    title: '角色狀態',
-    subtitle: '把聊天室最新的心情、狀態與地點帶到桌面。',
-    icon: Icons.favorite_rounded,
+    title: appL10n.widget_settings_remove_title_character,
+    subtitle: appL10n.widget_settings_remove_subtitle_chat_latest_mood,
+    iconAsset: 'assets/icons/icon_widget_character_status.png',
   ),
 ];
 
@@ -278,7 +279,7 @@ class _DesktopWidgetSettingsPageState
       case 'large':
         return '大';
       default:
-        return '中';
+        return appL10n.widget_settings_size_label;
     }
   }
 
@@ -293,7 +294,7 @@ class _DesktopWidgetSettingsPageState
 
       ToastUtils.showCenterToast(
         context,
-        '已送出新增到桌面的請求。',
+        appL10n.widget_settings_size_label_message_send,
         customIcon: Icons.add_to_home_screen_rounded,
       );
     } catch (error, stackTrace) {
@@ -306,7 +307,7 @@ class _DesktopWidgetSettingsPageState
 
       ToastUtils.showCenterToast(
         context,
-        '新增到桌面失敗，請稍後再試。',
+        appL10n.widget_settings_size_label_message_try_again_later_failed,
         isError: true,
       );
     }
@@ -317,7 +318,7 @@ class _DesktopWidgetSettingsPageState
     if (info == null) {
       ToastUtils.showCenterToast(
         context,
-        '舊版「角色待辦提醒」已併入「紀念日／提醒」，請重新建立。',
+        appL10n.widget_settings_edit_saved_widget_message_character_reminder_again,
         isError: true,
       );
       return;
@@ -350,9 +351,9 @@ class _DesktopWidgetSettingsPageState
       builder: (dialogContext) {
         final theme = Theme.of(dialogContext);
         return AlertDialog(
-          title: const Text('刪除小工具？'),
+          title: Text(appL10n.widget_settings_delete_saved_widget_title_delete_small),
           content: Text(
-            '確定要刪除「${item.characterName}・${item.widgetTitle}」嗎？\n\n刪除後，桌面上的這顆小工具會停止顯示角色內容，並提示玩家長按桌面移除。',
+            appL10n.widget_settings_delete_saved_widget_message_stop_display_long_press_home_after_delete(item.characterName, item.widgetTitle),
           ),
           actions: [
             TextButton(
@@ -390,7 +391,7 @@ class _DesktopWidgetSettingsPageState
 
     ToastUtils.showCenterToast(
       context,
-      '已刪除小工具設定；桌面上的對應小工具已停用。',
+      appL10n.widget_settings_delete_saved_widget_message_delete_settings_small,
       customIcon: Icons.delete_outline_rounded,
     );
   }
@@ -413,7 +414,7 @@ class _DesktopWidgetSettingsPageState
           surfaceTintColor: Colors.transparent,
           iconTheme: IconThemeData(color: onSurface),
           title: Text(
-            '桌面小工具',
+            appL10n.widget_settings_message_desktop_widget,
             style: GoogleFonts.notoSerifTc(
               color: onSurface,
               fontSize: 22,
@@ -431,7 +432,7 @@ class _DesktopWidgetSettingsPageState
               padding: const EdgeInsets.fromLTRB(22, 8, 22, 36),
               children: [
                 Text(
-                  '讓喜歡的角色陪妳出現在每一天。',
+                  appL10n.widget_settings_message_character_days,
                   style: GoogleFonts.notoSerifTc(
                     fontSize: 14,
                     height: 1.6,
@@ -441,14 +442,16 @@ class _DesktopWidgetSettingsPageState
                 const SizedBox(height: 24),
                 Row(
                   children: [
-                    Icon(
-                      Icons.widgets_outlined,
+                    ImageIcon(
+                      const AssetImage(
+                        'assets/icons/icon_settings_widget.png',
+                      ),
                       size: 19,
                       color: primary,
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      '我的小工具',
+                      appL10n.widget_settings_message_small,
                       style: GoogleFonts.notoSerifTc(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -486,15 +489,17 @@ class _DesktopWidgetSettingsPageState
                             color: primary.withValues(alpha: 0.09),
                             shape: BoxShape.circle,
                           ),
-                          child: Icon(
-                            Icons.widgets_rounded,
+                          child: ImageIcon(
+                            const AssetImage(
+                              'assets/icons/icon_settings_widget.png',
+                            ),
                             size: 30,
                             color: primary.withValues(alpha: 0.78),
                           ),
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          '還沒有桌面小工具',
+                          appL10n.widget_settings_message_desktop_widget_variant_b,
                           style: GoogleFonts.notoSerifTc(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -503,7 +508,7 @@ class _DesktopWidgetSettingsPageState
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          '選一個喜歡的角色，讓他的提醒、貼文或狀態出現在桌面上。',
+                          appL10n.widget_settings_message_character_reminder,
                           textAlign: TextAlign.center,
                           style: GoogleFonts.notoSerifTc(
                             fontSize: 12.5,
@@ -599,7 +604,7 @@ class _DesktopWidgetSettingsPageState
                                     ),
                                     const SizedBox(height: 3),
                                     Text(
-                                      '${_sizeLabel(item.size)}尺寸',
+                                      appL10n.widget_settings_message_size(_sizeLabel(item.size)),
                                       style:
                                       GoogleFonts.notoSerifTc(
                                         fontSize: 11,
@@ -618,7 +623,7 @@ class _DesktopWidgetSettingsPageState
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   IconButton(
-                                    tooltip: '新增到桌面',
+                                    tooltip: appL10n.widget_settings_tooltip,
                                     onPressed: () =>
                                         _addSavedWidgetBackToDesktop(item),
                                     visualDensity: VisualDensity.compact,
@@ -629,7 +634,7 @@ class _DesktopWidgetSettingsPageState
                                     ),
                                   ),
                                   IconButton(
-                                    tooltip: '編輯小工具',
+                                    tooltip: appL10n.widget_settings_tooltip_small,
                                     onPressed: () => _editSavedWidget(item),
                                     visualDensity: VisualDensity.compact,
                                     icon: Icon(
@@ -639,7 +644,7 @@ class _DesktopWidgetSettingsPageState
                                     ),
                                   ),
                                   IconButton(
-                                    tooltip: '刪除小工具',
+                                    tooltip: appL10n.widget_settings_tooltip_delete_small,
                                     onPressed: () => _deleteSavedWidget(item),
                                     visualDensity: VisualDensity.compact,
                                     icon: Icon(
@@ -680,7 +685,7 @@ class _DesktopWidgetSettingsPageState
                     ),
                     icon: const Icon(Icons.add_rounded),
                     label: Text(
-                      '新增桌面小工具',
+                      appL10n.widget_settings_message_desktop_widget_variant_c,
                       style: GoogleFonts.notoSerifTc(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -710,7 +715,7 @@ class _DesktopWidgetSettingsPageState
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          '每個小工具都可以獨立選擇角色、角色照片與顯示內容，也可以同時放多個角色在桌面上。',
+                          appL10n.widget_settings_message_character_photo_content_select_small,
                           style: GoogleFonts.notoSerifTc(
                             fontSize: 12.5,
                             height: 1.55,
@@ -752,7 +757,7 @@ class DesktopWidgetTypeSelectionPage extends StatelessWidget {
           surfaceTintColor: Colors.transparent,
           iconTheme: IconThemeData(color: onSurface),
           title: Text(
-            '選擇小工具',
+            appL10n.widget_settings_desktop_type_selection_message_select_small,
             style: GoogleFonts.notoSerifTc(
               color: onSurface,
               fontSize: 21,
@@ -767,7 +772,7 @@ class DesktopWidgetTypeSelectionPage extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 10, 20, 36),
             children: [
               Text(
-                '先選擇妳想放到桌面的陪伴方式。',
+                appL10n.widget_settings_desktop_type_selection_message_select,
                 style: GoogleFonts.notoSerifTc(
                   fontSize: 13.5,
                   height: 1.5,
@@ -809,8 +814,8 @@ class DesktopWidgetTypeSelectionPage extends StatelessWidget {
                                 color: primary.withValues(alpha: 0.09),
                                 borderRadius: BorderRadius.circular(15),
                               ),
-                              child: Icon(
-                                item.icon,
+                              child: ImageIcon(
+                                AssetImage(item.iconAsset),
                                 size: 25,
                                 color: primary.withValues(alpha: 0.82),
                               ),
@@ -1301,7 +1306,7 @@ class _DesktopWidgetSetupStartPageState
 
       ToastUtils.showCenterToast(
         context,
-        '角色照片載入失敗，請稍後再試。',
+        appL10n.widget_settings_go_to_photo_step_message_try_again_later_failed_load_character_photo,
         isError: true,
       );
     }
@@ -1379,7 +1384,7 @@ class _DesktopWidgetSetupStartPageState
                               CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  '選擇角色',
+                                  appL10n.widget_settings_message_character_select,
                                   style: GoogleFonts.notoSerifTc(
                                     fontSize: 15.5,
                                     fontWeight: FontWeight.w600,
@@ -1388,7 +1393,7 @@ class _DesktopWidgetSetupStartPageState
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  '只顯示妳已加好友或曾經聊過天的角色。',
+                                  appL10n.widget_settings_message_character_friend_days,
                                   style: GoogleFonts.notoSerifTc(
                                     fontSize: 12,
                                     color: onSurface.withValues(alpha: 0.5),
@@ -1405,7 +1410,7 @@ class _DesktopWidgetSetupStartPageState
                       controller: _searchController,
                       style: TextStyle(color: onSurface),
                       decoration: InputDecoration(
-                        hintText: '搜尋角色',
+                        hintText: appL10n.widget_settings_hint_character_search,
                         hintStyle: TextStyle(
                           color: onSurface.withValues(alpha: 0.45),
                         ),
@@ -1467,7 +1472,7 @@ class _DesktopWidgetSetupStartPageState
                     if (snapshot.hasError) {
                       return Center(
                         child: Text(
-                          '角色載入失敗，請稍後再試。',
+                          appL10n.widget_settings_message_try_again_later_failed_load_character,
                           style: GoogleFonts.notoSerifTc(
                             color:
                             onSurface.withValues(alpha: 0.62),
@@ -1486,7 +1491,7 @@ class _DesktopWidgetSetupStartPageState
                     if (docs.isEmpty) {
                       return Center(
                         child: Text(
-                          '目前沒有符合的角色。先和角色聊聊天，或把他加入好友吧。',
+                          appL10n.widget_settings_message_current_character_chat_friend_add,
                           style: GoogleFonts.notoSerifTc(
                             color:
                             onSurface.withValues(alpha: 0.55),
@@ -1691,7 +1696,7 @@ class _DesktopWidgetSetupStartPageState
                         ),
                       ),
                       child: Text(
-                        '下一步・選擇角色照片',
+                        appL10n.widget_settings_message_character_photo_select,
                         style: GoogleFonts.notoSerifTc(
                           fontSize: 14.5,
                           fontWeight: FontWeight.w600,
@@ -1784,7 +1789,7 @@ class _DesktopWidgetPhotoSelectionPageState
           surfaceTintColor: Colors.transparent,
           iconTheme: IconThemeData(color: onSurface),
           title: Text(
-            '選擇角色照片',
+            appL10n.widget_settings_desktop_photo_selection_message_character_photo_select,
             style: GoogleFonts.notoSerifTc(
               color: onSurface,
               fontSize: 20,
@@ -1834,7 +1839,7 @@ class _DesktopWidgetPhotoSelectionPageState
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            '目前好感度 ${widget.currentAffection}・已解鎖的照片可以直接使用。',
+                            appL10n.widget_settings_desktop_photo_selection_message_current_affection_unlocked_photo(widget.currentAffection),
                             style: GoogleFonts.notoSerifTc(
                               fontSize: 12,
                               color: onSurface.withValues(
@@ -1852,7 +1857,7 @@ class _DesktopWidgetPhotoSelectionPageState
                 child: photos.isEmpty
                     ? Center(
                   child: Text(
-                    '這個角色目前沒有可用照片。',
+                    appL10n.widget_settings_desktop_photo_selection_message_current_character_photo,
                     style: GoogleFonts.notoSerifTc(
                       color: onSurface.withValues(
                         alpha: 0.55,
@@ -1892,7 +1897,7 @@ class _DesktopWidgetPhotoSelectionPageState
                             .showSnackBar(
                           SnackBar(
                             content: Text(
-                              '需要好感度 ${photo.requiredAffection} 才能解鎖這張照片。',
+                              appL10n.widget_settings_desktop_photo_selection_message_required_affection_unlock_photo(photo.requiredAffection),
                             ),
                           ),
                         );
@@ -1972,10 +1977,10 @@ class _DesktopWidgetPhotoSelectionPageState
                                 bottom: 9,
                                 child: Text(
                                   photo.requiredAffection <= 0
-                                      ? '公開照片'
+                                      ? appL10n.widget_settings_message_photo_public
                                       : isLocked
-                                      ? '好感 ${photo.requiredAffection} 解鎖'
-                                      : '已解鎖・好感 ${photo.requiredAffection}',
+                                      ? appL10n.widget_settings_message_unlock(photo.requiredAffection)
+                                      : appL10n.widget_settings_message_unlocked(photo.requiredAffection),
                                   style:
                                   GoogleFonts.notoSerifTc(
                                     color: Colors.white,
@@ -2092,7 +2097,7 @@ class _DesktopWidgetPhotoSelectionPageState
                           ),
                         ),
                         child: Text(
-                          '下一步・設定顯示內容',
+                          appL10n.widget_settings_message_content_settings,
                           style: GoogleFonts.notoSerifTc(
                             fontSize: 14.5,
                             fontWeight: FontWeight.w600,
@@ -2250,7 +2255,7 @@ class _DesktopWidgetDisplaySettingsPageState
         (_selectedMemoId == null || _selectedMemoDate == null)) {
       ToastUtils.showCenterToast(
         context,
-        '請先選擇一個玩家建立的事件／待辦。',
+        appL10n.widget_settings_open_preview_message_player_select,
         isError: true,
       );
       return;
@@ -2279,7 +2284,7 @@ class _DesktopWidgetDisplaySettingsPageState
       if (!mounted) return;
       ToastUtils.showCenterToast(
         context,
-        '請先登入帳號。',
+        appL10n.widget_settings_pick_custom_memo_event_message_login_account,
         isError: true,
       );
       return;
@@ -2318,7 +2323,7 @@ class _DesktopWidgetDisplaySettingsPageState
       if (events.isEmpty) {
         ToastUtils.showCenterToast(
           context,
-          '這個角色目前還沒有建立任何事件／備忘錄。',
+          appL10n.widget_settings_pick_custom_memo_event_message_memo_current_character,
         );
         return;
       }
@@ -2349,7 +2354,7 @@ class _DesktopWidgetDisplaySettingsPageState
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
-                            '選擇玩家建立的事件',
+                            appL10n.widget_settings_pick_custom_memo_event_message_player_select,
                             style: GoogleFonts.notoSerifTc(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
@@ -2502,7 +2507,7 @@ class _DesktopWidgetDisplaySettingsPageState
       if (!mounted) return;
       ToastUtils.showCenterToast(
         context,
-        '事件讀取失敗，請稍後再試。',
+        appL10n.widget_settings_message_try_again_later_failed_load,
         isError: true,
       );
     }
@@ -2528,7 +2533,7 @@ class _DesktopWidgetDisplaySettingsPageState
           surfaceTintColor: Colors.transparent,
           iconTheme: IconThemeData(color: onSurface),
           title: Text(
-            '設定顯示內容',
+            appL10n.widget_settings_message_content_settings_variant_b,
             style: GoogleFonts.notoSerifTc(
               color: onSurface,
               fontSize: 20,
@@ -2548,7 +2553,7 @@ class _DesktopWidgetDisplaySettingsPageState
                     _StepHeader(
                       number: '3',
                       title: widget.info.title,
-                      subtitle: '調整妳想在桌面上看到的內容。',
+                      subtitle: appL10n.widget_settings_subtitle_content,
                       primary: primary,
                       onSurface: onSurface,
                     ),
@@ -2584,7 +2589,7 @@ class _DesktopWidgetDisplaySettingsPageState
                         ),
                       ),
                       child: Text(
-                        '下一步・預覽小工具',
+                        appL10n.widget_settings_message_small_variant_b,
                         style: GoogleFonts.notoSerifTc(
                           fontSize: 14.5,
                           fontWeight: FontWeight.w600,
@@ -2613,14 +2618,14 @@ class _DesktopWidgetDisplaySettingsPageState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _SettingsSectionTitle(
-              title: '貼文顯示',
+              title: appL10n.widget_settings_title,
               primary: primary,
             ),
             _SettingsCard(
               children: [
                 SwitchListTile.adaptive(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('顯示貼文圖片'),
+                  title: Text(appL10n.widget_settings_title_variant_b),
                   value: _postShowImage,
                   onChanged: (value) {
                     setState(() => _postShowImage = value);
@@ -2629,7 +2634,7 @@ class _DesktopWidgetDisplaySettingsPageState
                 _divider(primary),
                 SwitchListTile.adaptive(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('顯示心動數'),
+                  title: Text(appL10n.widget_settings_title_variant_c),
                   value: _postShowLikes,
                   onChanged: (value) {
                     setState(() => _postShowLikes = value);
@@ -2638,7 +2643,7 @@ class _DesktopWidgetDisplaySettingsPageState
                 _divider(primary),
                 SwitchListTile.adaptive(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('顯示留言數'),
+                  title: Text(appL10n.widget_settings_title_comment),
                   value: _postShowComments,
                   onChanged: (value) {
                     setState(() => _postShowComments = value);
@@ -2654,14 +2659,14 @@ class _DesktopWidgetDisplaySettingsPageState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _SettingsSectionTitle(
-              title: '隱私與陪伴',
+              title: appL10n.widget_settings_title_variant_d,
               primary: primary,
             ),
             _ChoiceCard(
               selected: _periodPrivacyMode,
               icon: Icons.visibility_off_outlined,
-              title: '隱私模式',
-              subtitle: '桌面只顯示角色關心，不直接寫出生理期資訊。',
+              title: appL10n.widget_settings_title_variant_e,
+              subtitle: appL10n.widget_settings_subtitle_period_character,
               onTap: () {
                 setState(() {
                   _periodPrivacyMode = true;
@@ -2674,8 +2679,8 @@ class _DesktopWidgetDisplaySettingsPageState
             _ChoiceCard(
               selected: !_periodPrivacyMode,
               icon: Icons.calendar_today_outlined,
-              title: '詳細模式',
-              subtitle: '可顯示快到了、進行中或剛結束等週期狀態。',
+              title: appL10n.widget_settings_title_variant_f,
+              subtitle: appL10n.widget_settings_subtitle_end,
               onTap: () {
                 setState(() {
                   _periodPrivacyMode = false;
@@ -2690,7 +2695,7 @@ class _DesktopWidgetDisplaySettingsPageState
                 children: [
                   SwitchListTile.adaptive(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('顯示週期狀態'),
+                    title: Text(appL10n.widget_settings_title_variant_g),
                     value: _periodShowCycleStatus,
                     onChanged: (value) {
                       setState(() => _periodShowCycleStatus = value);
@@ -2714,7 +2719,7 @@ class _DesktopWidgetDisplaySettingsPageState
               children: [
                 SwitchListTile.adaptive(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('顯示時間'),
+                  title: Text(appL10n.widget_settings_title_time),
                   value: _dailyQuoteShowTime,
                   onChanged: (value) {
                     setState(() => _dailyQuoteShowTime = value);
@@ -2723,25 +2728,25 @@ class _DesktopWidgetDisplaySettingsPageState
                 _divider(primary),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('更新方式'),
+                  title: Text(appL10n.widget_settings_title_update),
                   subtitle: Text(
                     _dailyQuoteRefreshMode == 'daily'
-                        ? '每天更新一次'
-                        : '每次打開 App 後更新',
+                        ? appL10n.widget_settings_message_update_days
+                        : appL10n.widget_settings_message_update,
                   ),
                   trailing: PopupMenuButton<String>(
                     initialValue: _dailyQuoteRefreshMode,
                     onSelected: (value) {
                       setState(() => _dailyQuoteRefreshMode = value);
                     },
-                    itemBuilder: (_) => const [
+                    itemBuilder: (_) => [
                       PopupMenuItem(
                         value: 'daily',
                         child: Text('每天更新一次'),
                       ),
                       PopupMenuItem(
                         value: 'app_open',
-                        child: Text('打開 App 後更新'),
+                        child: Text(appL10n.widget_settings_text_update),
                       ),
                     ],
                   ),
@@ -2756,15 +2761,15 @@ class _DesktopWidgetDisplaySettingsPageState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _SettingsSectionTitle(
-              title: '紀念日內容',
+              title: appL10n.widget_settings_title_content,
               primary: primary,
             ),
             _ChoiceCard(
               selected:
               _anniversaryEventType == 'relationship_days',
               icon: Icons.favorite_border_rounded,
-              title: '相遇天數',
-              subtitle: '顯示妳和角色認識到今天的天數。',
+              title: appL10n.widget_settings_title_days,
+              subtitle: appL10n.widget_settings_subtitle_character_today_days,
               onTap: () {
                 setState(() {
                   _anniversaryEventType = 'relationship_days';
@@ -2777,7 +2782,7 @@ class _DesktopWidgetDisplaySettingsPageState
               selected: _anniversaryEventType == 'birthday',
               icon: Icons.cake_outlined,
               title: '角色生日',
-              subtitle: '顯示距離角色生日還有多久。',
+              subtitle: appL10n.widget_settings_subtitle_character_birthday,
               onTap: () {
                 setState(() {
                   _anniversaryEventType = 'birthday';
@@ -2789,10 +2794,10 @@ class _DesktopWidgetDisplaySettingsPageState
             _ChoiceCard(
               selected: _anniversaryEventType == 'custom',
               icon: Icons.event_note_outlined,
-              title: '玩家建立的事件／待辦',
+              title: appL10n.widget_settings_title_player,
               subtitle: _selectedMemoContent == null
-                  ? '從這個角色的備忘錄／提醒中選擇一個事件或待辦。'
-                  : '已選：$_selectedMemoContent',
+                  ? appL10n.widget_settings_message_memo_character_select_reminder
+                  : appL10n.widget_settings_message_selected(_selectedMemoContent ?? ''),
               onTap: _pickCustomMemoEvent,
               primary: primary,
             ),
@@ -2859,7 +2864,7 @@ class _DesktopWidgetDisplaySettingsPageState
               primary: primary,
             ),
             Text(
-              '最多選擇 3 項',
+              appL10n.widget_settings_message_select,
               style: GoogleFonts.notoSerifTc(
                 fontSize: 12,
                 color: onSurface.withValues(alpha: 0.50),
@@ -2880,7 +2885,7 @@ class _DesktopWidgetDisplaySettingsPageState
                       if (_statusFields.length >= 3) {
                         ToastUtils.showCenterToast(
                           context,
-                          '角色狀態最多顯示 3 項。',
+                          appL10n.widget_settings_message_character,
                         );
                         return;
                       }
@@ -3106,7 +3111,7 @@ class _DesktopWidgetPreviewPageState
           surfaceTintColor: Colors.transparent,
           iconTheme: IconThemeData(color: onSurface),
           title: Text(
-            '預覽小工具',
+            appL10n.widget_settings_message_small_variant_c,
             style: GoogleFonts.notoSerifTc(
               color: onSurface,
               fontSize: 20,
@@ -3125,8 +3130,8 @@ class _DesktopWidgetPreviewPageState
                   children: [
                     _StepHeader(
                       number: '4',
-                      title: '最後確認',
-                      subtitle: '先看看放到桌面上大概會長什麼樣子。',
+                      title: appL10n.widget_settings_title_confirm,
+                      subtitle: appL10n.widget_settings_subtitle_large,
                       primary: primary,
                       onSurface: onSurface,
                     ),
@@ -3137,7 +3142,7 @@ class _DesktopWidgetPreviewPageState
                     ),
                     const SizedBox(height: 20),
                     _SettingsSectionTitle(
-                      title: '尺寸',
+                      title: appL10n.widget_settings_title_size,
                       primary: primary,
                     ),
                     Wrap(
@@ -3162,21 +3167,21 @@ class _DesktopWidgetPreviewPageState
                     ),
                     const SizedBox(height: 18),
                     _SettingsSectionTitle(
-                      title: '版型',
+                      title: appL10n.widget_settings_title_variant_h,
                       primary: primary,
                     ),
                     Wrap(
                       spacing: 8,
                       children: [
                         _ChoiceChipButton(
-                          label: '滿版照片',
+                          label: appL10n.widget_settings_label_photo,
                           selected: _layout == 'full_background',
                           onTap: () => setState(
                                 () => _layout = 'full_background',
                           ),
                         ),
                         _ChoiceChipButton(
-                          label: '角色卡式',
+                          label: appL10n.widget_settings_label_character,
                           selected: _layout == 'character_card',
                           onTap: () => setState(
                                 () => _layout = 'character_card',
@@ -3215,8 +3220,8 @@ class _DesktopWidgetPreviewPageState
                           : const Icon(Icons.widgets_rounded),
                       label: Text(
                         _isAddingToHomeScreen
-                            ? '正在同步…'
-                            : '加入桌面小工具',
+                            ? appL10n.widget_settings_message_sync
+                            : appL10n.widget_settings_message_desktop_widget_add,
                         style: GoogleFonts.notoSerifTc(
                           fontSize: 14.5,
                           fontWeight: FontWeight.w600,
@@ -3384,19 +3389,19 @@ class _DesktopWidgetPreviewPageState
       case DesktopWidgetType.latestPost:
         return [
           '剛剛更新了動態',
-          '「今天比預想中早一點結束。」',
+          appL10n.widget_settings_sample_lines_message_today_end,
         ];
 
       case DesktopWidgetType.periodCare:
         final privacy =
             widget.settings['privacyMode'] as bool? ?? true;
         return privacy
-            ? ['「這幾天別太勉強自己。」']
-            : ['生理期進行中', '「今天多休息一點。」'];
+            ? [appL10n.widget_settings_sample_lines_message_days]
+            : [appL10n.widget_settings_sample_lines_message_period, appL10n.widget_settings_sample_lines_message_today];
 
       case DesktopWidgetType.dailyQuote:
         return [
-          '「今天也別忘了好好吃飯。」',
+          appL10n.widget_settings_sample_lines_message_today_variant_b,
           if (widget.settings['showTime'] == true) '09:18',
         ];
 
@@ -3404,7 +3409,7 @@ class _DesktopWidgetPreviewPageState
         final type =
             widget.settings['eventType']?.toString() ?? '';
         if (type == 'birthday') {
-          return ['距離他的生日', '還有 12 天'];
+          return [appL10n.widget_settings_sample_lines_label_birthday_countdown, appL10n.widget_settings_sample_lines_label_days];
         }
         if (type == 'custom') {
           final content =
@@ -3448,23 +3453,23 @@ class _DesktopWidgetPreviewPageState
             if (reminder.isNotEmpty) reminder,
           ];
         }
-        return ['和他相遇', '128 天'];
+        return ['和他相遇', appL10n.widget_settings_sample_lines_label_days_variant_b];
 
       case DesktopWidgetType.characterStatus:
         final fields = List<String>.from(
           widget.settings['fields'] ?? const <String>[],
         );
 
-        const samples = <String, String>{
-          'mood': '心情｜有點疲倦',
-          'currentState': '狀態｜剛結束工作',
-          'location': '地點｜公司樓下',
-          'relationship': '關係｜戀人',
-          'outfit': '衣著｜淺灰色針織衫',
-          'weather': '天氣｜微涼',
-          'thought': '想法｜想早點見到妳',
-          'action': '動作｜正在收拾桌面',
-          'affinity': '好感度｜安定而親近',
+        final samples = <String, String>{
+          'mood': appL10n.widget_settings_sample_lines_message_mood,
+          'currentState': appL10n.widget_settings_sample_lines_message_end,
+          'location': appL10n.widget_settings_sample_lines_message,
+          'relationship': appL10n.widget_settings_sample_lines_message_variant_b,
+          'outfit': appL10n.widget_settings_sample_lines_message_variant_c,
+          'weather': appL10n.widget_settings_sample_lines_message_days_variant_b,
+          'thought': appL10n.widget_settings_sample_lines_message_variant_d,
+          'action': appL10n.widget_settings_sample_lines_message_variant_e,
+          'affinity': appL10n.widget_settings_sample_lines_message_affection,
         };
 
         return fields

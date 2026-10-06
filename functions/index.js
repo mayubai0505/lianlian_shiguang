@@ -7,6 +7,7 @@ const admin = require("firebase-admin");
 const { initializeApp, getApps } = require("firebase-admin/app");
 const OpenCC = require('opencc-js');
 const { getAuth } = require("firebase-admin/auth");
+const { getMessaging } = require("firebase-admin/messaging");
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const functions = require("firebase-functions");
 const axios = require('axios');
@@ -2523,16 +2524,39 @@ exports.redeemEventShopItem = onCall(
                         )
                     );
 
-                const limitOne =
-                    itemData.limitOne === true;
+                // 新版：maxRedemptions = 0 代表無限次，正整數代表每位玩家上限。
+                // 舊資料若只有 limitOne，true 自動視為上限 1；false / 未設定視為無限。
+                const rawMaxRedemptions =
+                    itemData.maxRedemptions;
+
+                const parsedMaxRedemptions =
+                    rawMaxRedemptions === undefined ||
+                    rawMaxRedemptions === null ||
+                    rawMaxRedemptions === ""
+                        ? (itemData.limitOne === true ? 1 : 0)
+                        : Math.trunc(Number(rawMaxRedemptions));
 
                 if (
-                    limitOne &&
-                    previousRedeemCount > 0
+                    !Number.isFinite(parsedMaxRedemptions) ||
+                    parsedMaxRedemptions < 0 ||
+                    parsedMaxRedemptions > 1000000
+                ) {
+                    throw new HttpsError(
+                        "failed-precondition",
+                        "商品兌換次數上限設定異常"
+                    );
+                }
+
+                const maxRedemptions =
+                    parsedMaxRedemptions;
+
+                if (
+                    maxRedemptions > 0 &&
+                    previousRedeemCount >= maxRedemptions
                 ) {
                     throw new HttpsError(
                         "already-exists",
-                        "這個商品已經兌換過"
+                        `這個商品每位玩家最多可兌換 ${maxRedemptions} 次`
                     );
                 }
 
@@ -2719,6 +2743,7 @@ exports.redeemEventShopItem = onCall(
                             flowerRewardAmount,
                         redeemCount:
                             nextRedeemCount,
+                        maxRedemptions,
                         currencyName:
                             String(
                                 eventData.currencyName ||
@@ -2771,6 +2796,7 @@ exports.redeemEventShopItem = onCall(
                         nextCurrency,
                     redeemCount:
                         nextRedeemCount,
+                    maxRedemptions,
                     rewardAmount:
                         flowerRewardAmount,
                     flowerPoints:
@@ -12147,7 +12173,7 @@ async function sendToUserDevices(userId, messageBase) {
         return;
     }
 
-    const response = await admin.messaging().sendEachForMulticast({
+    const response = await getMessaging().sendEachForMulticast({
         tokens,
         notification: messageBase.notification,
         data: messageBase.data || {},
@@ -12165,7 +12191,10 @@ async function sendToUserDevices(userId, messageBase) {
             const code = result.error?.code || "";
             const badToken = tokens[index];
 
-            console.error(`❌ 推播 token 失敗 user=${userId}, code=${code}`);
+            console.error(
+                `❌ 推播 token 失敗 user=${userId}, code=${code}, ` +
+                `message=${result.error?.message || ""}`
+            );
 
             if (
                 code === "messaging/registration-token-not-registered" ||
@@ -12653,16 +12682,24 @@ for (const doc of unreadSnapshot.docs) {
         // ==========================================
         // 🚀 【修正 3：將正確的名字與圖片塞入 Payload】
         // ==========================================
+        const safeNotificationImageUrl =
+            typeof charAvatar === "string" &&
+            /^https?:\/\//i.test(charAvatar.trim())
+                ? charAvatar.trim()
+                : "";
+
         const payload = {
             notification: {
-                title: charName,    // 👈 這裡現在會顯示「程安」或「霍君耀」
-                body: previewText,  // 👈 這裡現在會顯示「(視線從蛋糕移到你...)」
-                image: charAvatar   // 👈 【修正】：推播右側會顯示角色的頭像
+                title: charName,
+                body: previewText,
+                ...(safeNotificationImageUrl
+                    ? { imageUrl: safeNotificationImageUrl }
+                    : {}),
             },
             data: {
                 type: 'chat',
-                characterId: String(charId),
-                sessionId: String(sessionId),
+                characterId: String(charId || ""),
+                sessionId: String(sessionId || ""),
                 click_action: 'FLUTTER_NOTIFICATION_CLICK',
             },
             android: {
@@ -19030,6 +19067,239 @@ function requireRewardCampaignAdmin(request) {
 
   return uid;
 }
+
+
+// ============================================================
+// 🌐 通用活動：後台繁中內容自動翻譯
+// - 後台只需要輸入 zh_Hant。
+// - 翻譯結果跟活動資料一起存 Firestore，不寫死在 l10n。
+// - 只有管理員可呼叫，避免任何登入玩家濫用翻譯額度。
+// ============================================================
+const EVENT_TRANSLATION_TARGETS = {
+  zh_Hant: null,
+  zh_Hans: "zh-CN",
+  en: "en",
+  ja: "ja",
+  ko: "ko",
+  vi: "vi",
+  id: "id",
+  th: "th",
+  ar: "ar",
+  fr: "fr",
+  ms: "ms",
+  es: "es",
+  hi: "hi",
+  pt: "pt",
+};
+
+function eventTextRecord(source, keys) {
+  const result = {};
+
+  for (const key of keys) {
+    const value = source?.[key];
+
+    if (typeof value === "string" && value.trim()) {
+      result[key] = value.trim();
+    }
+  }
+
+  return result;
+}
+
+async function translateEventTextRecord(record, targetLanguage) {
+  const entries = Object.entries(record || {})
+    .filter(([, value]) => typeof value === "string" && value.trim());
+
+  if (entries.length === 0) return {};
+
+  if (!targetLanguage) {
+    return Object.fromEntries(entries);
+  }
+
+  if (!translateClient) {
+    translateClient = new Translate();
+  }
+
+  const sourceTexts = entries.map(([, value]) => value);
+
+  const [translatedRaw] =
+    await translateClient.translate(
+      sourceTexts,
+      targetLanguage
+    );
+
+  const translatedTexts =
+    Array.isArray(translatedRaw)
+      ? translatedRaw
+      : [translatedRaw];
+
+  const result = {};
+
+  entries.forEach(([key], index) => {
+    result[key] =
+      String(
+        translatedTexts[index] ??
+        sourceTexts[index] ??
+        ""
+      ).trim();
+  });
+
+  return result;
+}
+
+exports.translateEventContent = onCall(
+  {
+    region: REGION,
+    timeoutSeconds: 300,
+    memory: "512MiB",
+  },
+  async (request) => {
+    requireRewardCampaignAdmin(request);
+
+    const data = request.data || {};
+
+    const eventSource =
+      eventTextRecord(
+        data.event,
+        [
+          "name",
+          "subtitle",
+          "description",
+          "currencyName",
+        ]
+      );
+
+    const taskSources =
+      Array.isArray(data.tasks)
+        ? data.tasks.map((item) =>
+            eventTextRecord(
+              item,
+              ["title", "description"]
+            )
+          )
+        : [];
+
+    const milestoneSources =
+      Array.isArray(data.milestones)
+        ? data.milestones.map((item) =>
+            eventTextRecord(
+              item,
+              ["title", "description"]
+            )
+          )
+        : [];
+
+    const shopSources =
+      Array.isArray(data.shopItems)
+        ? data.shopItems.map((item) =>
+            eventTextRecord(
+              item,
+              ["title", "name", "description"]
+            )
+          )
+        : [];
+
+    const memorySources =
+      Array.isArray(data.memories)
+        ? data.memories.map((memory) => ({
+            content: eventTextRecord(
+              memory,
+              ["title", "subtitle", "description"]
+            ),
+            scenes:
+              Array.isArray(memory?.scenes)
+                ? memory.scenes.map((scene) =>
+                    eventTextRecord(
+                      scene,
+                      ["text"]
+                    )
+                  )
+                : [],
+          }))
+        : [];
+
+    const localized = {
+      event: {},
+      tasks: taskSources.map(() => ({})),
+      milestones: milestoneSources.map(() => ({})),
+      shopItems: shopSources.map(() => ({})),
+      memories: memorySources.map((memory) => ({
+        scenes: memory.scenes.map(() => ({})),
+      })),
+    };
+
+    for (
+      const [localeKey, targetLanguage]
+      of Object.entries(EVENT_TRANSLATION_TARGETS)
+    ) {
+      localized.event[localeKey] =
+        await translateEventTextRecord(
+          eventSource,
+          targetLanguage
+        );
+
+      for (let i = 0; i < taskSources.length; i++) {
+        localized.tasks[i][localeKey] =
+          await translateEventTextRecord(
+            taskSources[i],
+            targetLanguage
+          );
+      }
+
+      for (let i = 0; i < milestoneSources.length; i++) {
+        localized.milestones[i][localeKey] =
+          await translateEventTextRecord(
+            milestoneSources[i],
+            targetLanguage
+          );
+      }
+
+      for (let i = 0; i < shopSources.length; i++) {
+        localized.shopItems[i][localeKey] =
+          await translateEventTextRecord(
+            shopSources[i],
+            targetLanguage
+          );
+      }
+
+      for (let i = 0; i < memorySources.length; i++) {
+        localized.memories[i][localeKey] =
+          await translateEventTextRecord(
+            memorySources[i].content,
+            targetLanguage
+          );
+
+        for (
+          let j = 0;
+          j < memorySources[i].scenes.length;
+          j++
+        ) {
+          localized.memories[i].scenes[j][localeKey] =
+            await translateEventTextRecord(
+              memorySources[i].scenes[j],
+              targetLanguage
+            );
+        }
+      }
+    }
+
+    console.log("✅ 活動多語翻譯完成", {
+      eventName: eventSource.name || "",
+      locales:
+        Object.keys(EVENT_TRANSLATION_TARGETS),
+      taskCount: taskSources.length,
+      milestoneCount: milestoneSources.length,
+      shopItemCount: shopSources.length,
+      memoryCount: memorySources.length,
+    });
+
+    return {
+      success: true,
+      sourceLocale: "zh_Hant",
+      localized,
+    };
+  }
+);
 
 // ==================================================
 // 📊 管理後台：營運總覽 / 聊天室活動 / 分析

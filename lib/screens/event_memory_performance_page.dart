@@ -15,6 +15,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../services/app_constants.dart';
 import '../services/toast_utils.dart';
 import '../utils/image_utils.dart';
+import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 
 class EventMemoryPerformancePage extends StatefulWidget {
   final String eventId;
@@ -391,7 +392,7 @@ class _EventMemoryPerformancePageState
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      '這段回憶，留下來了。',
+                      appL10n.event_memory_performance_finish_message_memory,
                       style: GoogleFonts.notoSerifTc(
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
@@ -422,7 +423,7 @@ class _EventMemoryPerformancePageState
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      '收藏會保留在遊戲內；只有儲存到手機相簿時，才會向系統要求相簿權限。',
+                      appL10n.event_memory_performance_finish_message_save_collection,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.notoSerifTc(
                         fontSize: 11,
@@ -459,8 +460,8 @@ class _EventMemoryPerformancePageState
                       ),
                       label: Text(
                         _collecting
-                            ? '處理中…'
-                            : (_isCollected ? '已收藏' : '收藏這段回憶'),
+                            ? appL10n.event_memory_performance_finish_message
+                            : (_isCollected ? '已收藏' : appL10n.event_memory_performance_finish_message_collection_memory),
                       ),
                       style: FilledButton.styleFrom(
                         minimumSize: const Size.fromHeight(50),
@@ -557,7 +558,7 @@ class _EventMemoryPerformancePageState
             ),
           ),
           content: Text(
-            '取消後，這段回憶會從「拾光收藏」中移除。之後仍然可以重新觀看並再次收藏。',
+            appL10n.event_memory_performance_confirm_uncollect_memory_message_collection_cancel_memory_again_remove,
             style: GoogleFonts.notoSerifTc(height: 1.55),
           ),
           actions: [
@@ -585,7 +586,7 @@ class _EventMemoryPerformancePageState
 
     final ref = _collectionRef();
     if (ref == null) {
-      _showMessage('請先登入後再管理收藏', isError: true);
+      _showMessage(appL10n.event_memory_performance_uncollect_memory_message_collection_login, isError: true);
       return false;
     }
 
@@ -641,7 +642,7 @@ class _EventMemoryPerformancePageState
 
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) {
-      _showMessage('請先登入後再收藏這段回憶', isError: true);
+      _showMessage(appL10n.event_memory_performance_collect_memory_message_collection_login_memory, isError: true);
       return false;
     }
 
@@ -673,13 +674,13 @@ class _EventMemoryPerformancePageState
 
       setState(() => _isCollected = true);
       _showMessage(
-        '已收藏這段回憶 ♡',
+        appL10n.event_memory_performance_collect_memory_message_collection_memory,
         customIcon: Icons.bookmark_added_rounded,
       );
       return true;
     } catch (e) {
       debugPrint('❌ 收藏限定回憶失敗：$e');
-      _showMessage('收藏失敗，請稍後再試', isError: true);
+      _showMessage(appL10n.event_memory_performance_collect_memory_message_try_again_later_collection_failed, isError: true);
       return false;
     } finally {
       if (mounted) {
@@ -940,7 +941,7 @@ class _EventMemoryPerformancePageState
             alignment: Alignment.centerRight,
             child: Text(
               _typingDone
-                  ? (_index == _scenes.length - 1 ? '點擊完成' : '點擊繼續')
+                  ? (_index == _scenes.length - 1 ? appL10n.event_memory_performance_text_panel_message_complete : '點擊繼續')
                   : '點擊顯示全文',
               style: GoogleFonts.notoSerifTc(
                 color: Colors.white.withValues(alpha: 0.58),
@@ -1023,8 +1024,8 @@ class _EventMemoryPerformancePageState
                       ),
                       TextButton(
                         onPressed: _skip,
-                        child: const Text(
-                          '跳過',
+                        child: Text(
+                          appL10n.event_memory_performance_build_performance_message,
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
@@ -1061,7 +1062,7 @@ class _EventMemoryPerformancePageState
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
-            child: Text(_error ?? '沒有可播放的 Scene'),
+            child: Text(_error ?? appL10n.event_memory_performance_text_play),
           ),
         ),
       );

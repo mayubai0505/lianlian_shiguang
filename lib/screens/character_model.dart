@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart'; // 為了 XFile
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 
 // ✨ 定義單張照片的資料結構
 class CharacterPhoto {
@@ -147,7 +148,7 @@ class Character {
     required this.worldSetting,
     required this.createdAt,
     DateTime? lastChatTime,
-    this.creatorName = '神祕創作者',
+    String? creatorName,
     required this.playCount,
     required this.age,
     required this.occupation,
@@ -190,7 +191,10 @@ class Character {
     this.translations,
     this.relationships,
     this.npcCharacters = const [],
-  }) : this.lastChatTime = lastChatTime ?? DateTime.fromMillisecondsSinceEpoch(0);
+  })  : this.lastChatTime =
+      lastChatTime ?? DateTime.fromMillisecondsSinceEpoch(0),
+        this.creatorName =
+            creatorName ?? appL10n.character_to_map_message_creator;
 
 
   Map<String, dynamic>? translationForLocale(String localeKey) {
@@ -663,27 +667,27 @@ Character getCharacterById(String id) {
     birthday: "...",
     height: "...",
     personalityTags: [],
-    storySummary: "背景故事載入中...",
-    initialStory: "初始劇情同步中...",
-    firstLine: "正在準備開場白...",
-    background: "正在加載背景...",
-    worldSetting: "世界觀載入中...",
-    coreCharacterSetting: "正在載入角色核心設定...",
-    detailedPersonality: "正在加載性格...",
-    appearance: "外貌描述加載中...",
+    storySummary: appL10n.character_get_character_by_id_message_load_background_story,
+    initialStory: appL10n.character_get_character_by_id_message_sync,
+    firstLine: appL10n.character_get_character_by_id_message,
+    background: appL10n.character_get_character_by_id_message_background,
+    worldSetting: appL10n.character_get_character_by_id_message_load,
+    coreCharacterSetting: appL10n.character_get_character_by_id_message_load_settings,
+    detailedPersonality: appL10n.character_get_character_by_id_message_variant_b,
+    appearance: appL10n.character_get_character_by_id_message_appearance,
     gender: "未知",
     isPublic: false,
-    toneAndStyle: "正在加載語氣...",
+    toneAndStyle: appL10n.character_get_character_by_id_message_variant_c,
     likes: "...",
-    dislikes: "尚未讀取",
+    dislikes: appL10n.character_get_character_by_id_message_load_variant_b,
     secrets: "...",
-    initialRelationship: "陌生人",
-    dialogueExamples: "對話範例讀取中...",
+    initialRelationship: appL10n.character_get_character_by_id_message_variant_d,
+    dialogueExamples: appL10n.character_get_character_by_id_message_load_variant_c,
     extraInfoItems: [],
     // 以下為妳 model 裡的選填或預設欄位
-    stageStranger: "初識",
-    stageAcquaintance: "熟識",
-    stageIntimate: "曖昧",
+    stageStranger: appL10n.character_get_character_by_id_message_variant_e,
+    stageAcquaintance: appL10n.character_get_character_by_id_message_variant_f,
+    stageIntimate: appL10n.character_get_character_by_id_message_variant_g,
     socialInteraction: "",
     playerIdentity: "",
     identities: [],

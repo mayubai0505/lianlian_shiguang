@@ -6,6 +6,8 @@ class Comment {
   final String authorId;
   final String authorName;
   final String authorAvatar;
+  final String imageUrl;
+  final String imageStoragePath;
   final Timestamp createdAt;
   final String? parentCommentId; // 紀錄它是回覆哪一則留言的 ID
   final String? replyToName;     // 紀錄被回覆的人的名字
@@ -16,6 +18,8 @@ class Comment {
     required this.authorId,
     required this.authorName,
     required this.authorAvatar,
+    this.imageUrl = '',
+    this.imageStoragePath = '',
     required this.createdAt,
     this.parentCommentId,
     this.replyToName,
@@ -27,6 +31,8 @@ class Comment {
     String? content,
     String? authorName,
     String? authorAvatar,
+    String? imageUrl,
+    String? imageStoragePath,
     String? parentCommentId, // ✨ 新增
     String? replyToName,     // ✨ 新增
   }) {
@@ -36,6 +42,8 @@ class Comment {
       authorId: authorId,
       authorName: authorName ?? this.authorName,
       authorAvatar: authorAvatar ?? this.authorAvatar,
+      imageUrl: imageUrl ?? this.imageUrl,
+      imageStoragePath: imageStoragePath ?? this.imageStoragePath,
       createdAt: createdAt,
       parentCommentId: parentCommentId ?? this.parentCommentId,
       replyToName: replyToName ?? this.replyToName,
@@ -50,6 +58,8 @@ class Comment {
       authorId: data['authorId'] ?? '',
       authorName: data['authorName'] ?? '神秘玩家',
       authorAvatar: data['authorAvatar'] ?? '',
+      imageUrl: data['imageUrl']?.toString() ?? '',
+      imageStoragePath: data['imageStoragePath']?.toString() ?? '',
       createdAt: data['createdAt'] ?? Timestamp.now(),
       // ✨ 這裡也要讀取，解決「Getter isn't defined」報錯
       parentCommentId: data['parentCommentId'],
@@ -63,6 +73,8 @@ class Comment {
       'authorId': authorId,
       'authorName': authorName,
       'authorAvatar': authorAvatar,
+      'imageUrl': imageUrl,
+      'imageStoragePath': imageStoragePath,
       'createdAt': createdAt,
       'parentCommentId': parentCommentId,
       'replyToName': replyToName,

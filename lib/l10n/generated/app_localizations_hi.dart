@@ -8503,4 +8503,1523 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get chat_mode_resonance_cost_short => '10 फूल';
+
+  @override
+  String get notification_channel_chat_description =>
+      'किरदारों के नवीनतम जवाब और गेम रिमाइंडर प्राप्त करने के लिए उपयोग किया जाता है।';
+
+  @override
+  String get subscription_star_contract_name =>
+      'Lianlian Shiguang · स्टार कॉन्ट्रैक्ट';
+
+  @override
+  String moment_notification_comment_on_your_post(
+      Object commentText, Object senderNickname) {
+    return '$senderNickname ने आपकी पोस्ट पर टिप्पणी की: “$commentText”';
+  }
+
+  @override
+  String get moment_notification_new_reply_title =>
+      'आपकी पोस्ट पर नया जवाब! 💬';
+
+  @override
+  String get moment_notification_character_popularity_title =>
+      'किरदार की लोकप्रियता तेजी से बढ़ रही है! 🔥';
+
+  @override
+  String get font_size_small => 'छोटा';
+
+  @override
+  String get font_size_standard => 'मानक';
+
+  @override
+  String get font_size_slightly_large => 'थोड़ा बड़ा';
+
+  @override
+  String get font_size_large => 'बड़ा';
+
+  @override
+  String get font_size_extra_large => 'बहुत बड़ा';
+
+  @override
+  String get font_selection_title => 'फ़ॉन्ट';
+
+  @override
+  String get font_selection_description =>
+      'कहानियाँ पढ़ने और चैट करने के लिए सबसे आरामदायक फ़ॉन्ट चुनें।';
+
+  @override
+  String get font_size_title => 'फ़ॉन्ट आकार';
+
+  @override
+  String get font_selection_tagline =>
+      'जिसे आप पसंद करते हैं, उसके साथ अपनी कहानी एक बार फिर लिखें।';
+
+  @override
+  String font_selection_applied_message(Object value1) {
+    return '“$value1” लागू किया गया';
+  }
+
+  @override
+  String get font_selection_local_storage_note =>
+      'फ़ॉन्ट और आकार तुरंत लागू होकर इस डिवाइस पर सहेजे जाएंगे। डिफ़ॉल्ट रूप वापस करने पर सेटिंग “Shiguang Serif + मानक” पर लौट जाएगी।';
+
+  @override
+  String get inbox_customer_service_report => 'ग्राहक सहायता रिपोर्ट';
+
+  @override
+  String get inbox_content_text_message_player_title_send =>
+      'खिलाड़ी द्वारा भेजा गया शीर्षक';
+
+  @override
+  String get inbox_content_text_message_player_content_send =>
+      'खिलाड़ी द्वारा भेजी गई सामग्री';
+
+  @override
+  String avatar_frame_equipped_message(Object value1) {
+    return '“$value1” लगाया गया';
+  }
+
+  @override
+  String get avatar_frame_unequip_frame_snackbar => 'अवतार फ़्रेम हटाया गया';
+
+  @override
+  String get avatar_frame_unequip_frame_message_event => 'इवेंट अवतार फ़्रेम';
+
+  @override
+  String get avatar_frame_message => 'अवतार फ़्रेम';
+
+  @override
+  String avatar_frame_load_failed(Object value1) {
+    return 'अवतार फ़्रेम लोड करने में विफल: $value1';
+  }
+
+  @override
+  String get avatar_frame_parse_frames_message_select =>
+      'वह अवतार फ़्रेम चुनें जिसे आप उपयोग करना चाहते हैं';
+
+  @override
+  String get avatar_frame_parse_frames_message_event =>
+      'इवेंट से मिले अवतार फ़्रेम स्थायी रूप से रखे जाते हैं और किसी भी समय बदले या हटाए जा सकते हैं।';
+
+  @override
+  String get avatar_frame_parse_frames_title => 'अवतार फ़्रेम का उपयोग न करें';
+
+  @override
+  String get avatar_frame_parse_frames_subtitle_avatar => 'मूल अवतार दिखाएँ';
+
+  @override
+  String get avatar_frame_parse_frames_message_event_shop_redeem_current =>
+      'आपके पास अभी कोई अवतार फ़्रेम नहीं है।\nइवेंट शॉप से रिडीम किए गए फ़्रेम यहाँ दिखाई देंगे।';
+
+  @override
+  String get avatar_frame_parse_frames_message_event_variant_b =>
+      'सीमित इवेंट अवतार फ़्रेम';
+
+  @override
+  String get background_settings_message => 'सीमित बैकग्राउंड';
+
+  @override
+  String get background_title_exclusive_photo_current =>
+      'अभी कोई विशेष फ़ोटो नहीं है';
+
+  @override
+  String get background_subtitle_unlock_character_photo =>
+      'बाद में अनलॉक की गई किरदार फ़ोटो यहाँ दिखाई देंगी।';
+
+  @override
+  String get background_title_login =>
+      'सीमित बैकग्राउंड देखने के लिए लॉग इन करें';
+
+  @override
+  String get background_subtitle_redeem_chat_event =>
+      'इवेंट से मिले चैट बैकग्राउंड यहाँ सहेजे जाएंगे।';
+
+  @override
+  String get background_title =>
+      'आपने अभी कोई सीमित बैकग्राउंड प्राप्त नहीं किया है';
+
+  @override
+  String get background_subtitle_event_shop_redeem_chat =>
+      'इवेंट शॉप से रिडीम किए गए चैट बैकग्राउंड यहाँ दिखाई देंगे।';
+
+  @override
+  String get background_is_limited_background_type_message_chat_event =>
+      'सीमित इवेंट चैट बैकग्राउंड';
+
+  @override
+  String background_is_limited_background_type_message_current_chat(
+      Object value1) {
+    return '“$value1” को मौजूदा चैट का बैकग्राउंड बनाना चाहते हैं?';
+  }
+
+  @override
+  String character_edit_message_character_settings(Object value1) {
+    return '【角色性格與設定】\n$value1';
+  }
+
+  @override
+  String character_edit_message(Object value1) {
+    return '【說話語氣與風格】\n$value1';
+  }
+
+  @override
+  String character_edit_message_variant_b(Object value1) {
+    return '【社交與環境互動】\n$value1';
+  }
+
+  @override
+  String character_edit_save_to_draft_message_current_character(Object value1) {
+    return 'मौजूदा मुख्य किरदार: 【$value1】\n';
+  }
+
+  @override
+  String character_edit_message_back(Object result) {
+    return '🚪 返回原本的 ProfilePage：$result';
+  }
+
+  @override
+  String character_edit_save_character_message(Object value1) {
+    return '📦 準備搬移 $value1 則記憶碎片：';
+  }
+
+  @override
+  String character_edit_message_complete(Object value1) {
+    return '✅ 已完成搬移 $value1 則記憶碎片';
+  }
+
+  @override
+  String character_edit_preload_first_voice_sample_message_background_start(
+      Object voiceId) {
+    return '⏳ 開始背景預載第一個 Voice：$voiceId';
+  }
+
+  @override
+  String get character_edit_preload_first_voice_sample_message_update =>
+      '⚠️ Voice 清單已更新，略過舊的預載結果';
+
+  @override
+  String
+      get character_edit_preload_first_voice_sample_message_background_complete =>
+          '✅ 第一個 Voice 已背景預載完成';
+
+  @override
+  String get character_edit_preload_first_voice_sample_message_failed =>
+      '⚠️ 第一個 Voice 預載失敗：';
+
+  @override
+  String character_edit_preload_first_voice_sample_message(Object value1) {
+    return '✅ matchVoiceFromBank 回傳：$value1';
+  }
+
+  @override
+  String get character_edit_error_voice => '語音服務回傳格式錯誤';
+
+  @override
+  String get character_edit_error_voice_variant_b => '語音服務沒有回傳 previews';
+
+  @override
+  String character_edit_message_success_voice_match(Object value1) {
+    return '✅ 成功配對 $value1 個 Voice Bank 聲音';
+  }
+
+  @override
+  String get character_edit_message_failed_match =>
+      '========== Voice Bank 配對失敗 ==========';
+
+  @override
+  String get character_edit_message_error_match =>
+      '========== Voice Bank 配對未知錯誤 ==========';
+
+  @override
+  String get character_edit_preview_voice_sample_error_preview => '試聽服務回傳格式錯誤';
+
+  @override
+  String get character_edit_preview_voice_sample_error_preview_variant_b =>
+      '試聽音訊資料為空';
+
+  @override
+  String get character_edit_preview_voice_sample_error_failed_preview =>
+      '試聽音訊解析失敗';
+
+  @override
+  String get character_edit_test_voice_settings_message_failed =>
+      '========== testVoiceSettings 失敗 ==========';
+
+  @override
+  String character_edit_confirm_voice_selection_message_selected(
+      Object realVoiceId) {
+    return '✅ Voice選定正式 Voice ID：$realVoiceId';
+  }
+
+  @override
+  String
+      get character_edit_confirm_voice_selection_message_save_failed_select =>
+          '========== 儲存 Voice Bank 選擇失敗 ==========';
+
+  @override
+  String
+      get character_edit_confirm_voice_selection_message_failed_voice_selected =>
+          '========== 選定 Voice Bank 聲音失敗 ==========';
+
+  @override
+  String get character_to_map_message_creator => 'रहस्यमय क्रिएटर';
+
+  @override
+  String get character_get_character_by_id_message_load_background_story =>
+      'बैकस्टोरी लोड हो रही है...';
+
+  @override
+  String get character_get_character_by_id_message_sync =>
+      'शुरुआती कहानी सिंक हो रही है...';
+
+  @override
+  String get character_get_character_by_id_message =>
+      'पहली पंक्ति तैयार की जा रही है...';
+
+  @override
+  String get character_get_character_by_id_message_background =>
+      'बैकग्राउंड लोड हो रहा है...';
+
+  @override
+  String get character_get_character_by_id_message_load =>
+      'विश्व सेटिंग लोड हो रही है...';
+
+  @override
+  String get character_get_character_by_id_message_load_settings =>
+      'किरदार की मुख्य सेटिंग लोड हो रही है...';
+
+  @override
+  String get character_get_character_by_id_message_variant_b =>
+      'व्यक्तित्व लोड हो रहा है...';
+
+  @override
+  String get character_get_character_by_id_message_appearance =>
+      'दिखावट का विवरण लोड हो रहा है...';
+
+  @override
+  String get character_get_character_by_id_message_variant_c =>
+      'बोलने का अंदाज़ लोड हो रहा है...';
+
+  @override
+  String get character_get_character_by_id_message_load_variant_b =>
+      'अभी लोड नहीं हुआ';
+
+  @override
+  String get character_get_character_by_id_message_variant_d => 'अजनबी';
+
+  @override
+  String get character_get_character_by_id_message_load_variant_c =>
+      'संवाद उदाहरण लोड हो रहे हैं...';
+
+  @override
+  String get character_get_character_by_id_message_variant_e => 'पहली मुलाकात';
+
+  @override
+  String get character_get_character_by_id_message_variant_f => 'परिचित';
+
+  @override
+  String get character_get_character_by_id_message_variant_g => 'नज़दीकियाँ';
+
+  @override
+  String get chat_input_message_sticker => 'स्टिकर';
+
+  @override
+  String get chat_text => 'आज की मुफ़्त कैज़ुअल चैट सीमा पूरी हो गई है';
+
+  @override
+  String get chat_message_flowers_today_continue =>
+      'आज की 10 मुफ़्त कैज़ुअल चैट पूरी हो चुकी हैं।\n\nअब हर कैज़ुअल चैट के लिए 1 फूल लगेगा। जारी रखें?';
+
+  @override
+  String get chat_text_continue => 'सहमत होकर जारी रखें';
+
+  @override
+  String get chat_empty_message_label_current_sticker =>
+      'अभी उपयोग के लिए कोई स्टिकर उपलब्ध नहीं है।';
+
+  @override
+  String get chat_empty_message_label_sticker =>
+      'हाल में उपयोग किए गए कोई स्टिकर नहीं हैं';
+
+  @override
+  String get chat_empty_message_label_sticker_variant_b =>
+      'कोई पसंदीदा स्टिकर नहीं हैं';
+
+  @override
+  String get chat_empty_message_label_current_sticker_variant_b =>
+      'अभी उपयोग के लिए कोई स्टिकर उपलब्ध नहीं है';
+
+  @override
+  String get chat_empty_message_sticker => 'मेरे स्टिकर';
+
+  @override
+  String get chat_empty_message => 'हाल में उपयोग किए गए';
+
+  @override
+  String get chat_empty_message_variant_b => 'पसंदीदा';
+
+  @override
+  String get chat_send_sticker_message_current_unavailable_sticker =>
+      'यह स्टिकर अभी उपलब्ध नहीं है';
+
+  @override
+  String chat_message_theater(Object sceneTitle) {
+    return '—— थिएटर・$sceneTitle ——';
+  }
+
+  @override
+  String get chat_handle_regenerate_button_message_character_reply_again =>
+      'किरदार का पिछला जवाब फिर से बनाया जाएगा।';
+
+  @override
+  String creator_profile_reason_tile_message_report_select_reason(
+      Object creatorName) {
+    return '“$creatorName” की रिपोर्ट करने का कारण चुनें:';
+  }
+
+  @override
+  String get widget_key_message => 'स्थिति';
+
+  @override
+  String get widget_key_message_variant_b => 'स्थान';
+
+  @override
+  String get widget_label_character => 'अभी किरदार की कोई स्थिति नहीं है';
+
+  @override
+  String get widget_format_post_time_label_moment_latest => 'नवीनतम पोस्ट';
+
+  @override
+  String get widget_format_post_time_label_update_moment =>
+      'अभी-अभी पोस्ट अपडेट की';
+
+  @override
+  String widget_format_post_time_label_minutes_ago_update_moment(
+      Object value1) {
+    return '$value1 मिनट पहले पोस्ट अपडेट की';
+  }
+
+  @override
+  String widget_format_post_time_label_hours_ago_update_moment(Object value1) {
+    return '$value1 घंटे पहले पोस्ट अपडेट की';
+  }
+
+  @override
+  String get widget_format_post_time_label_update_moment_days =>
+      'कल पोस्ट अपडेट की';
+
+  @override
+  String widget_format_post_time_label_update_moment_days_ago(Object value1) {
+    return '$value1 दिन पहले पोस्ट अपडेट की';
+  }
+
+  @override
+  String widget_format_post_time_label_update_moment_variant_b(
+      Object value1, Object value2) {
+    return '$value1/$value2 को पोस्ट अपडेट की';
+  }
+
+  @override
+  String get widget_format_post_time_message_share_photo => 'एक फ़ोटो साझा की';
+
+  @override
+  String get widget_format_post_time_message_update_moment =>
+      'एक पोस्ट अपडेट की';
+
+  @override
+  String get widget_format_post_time_message_current_character_moment =>
+      'अभी किरदार की कोई पोस्ट नहीं है';
+
+  @override
+  String get widget_extract_daily_quote_message => 'स्थान:';
+
+  @override
+  String get widget_format_daily_quote_time_message_today =>
+      'आज की पंक्ति अभी नहीं है';
+
+  @override
+  String get widget_load_period_care_state_message_today =>
+      '“आज खुद पर बहुत ज़ोर मत डालो। मैं तुम्हारे साथ हूँ, धीरे-धीरे चलते हैं।”';
+
+  @override
+  String widget_load_period_care_state_message_period_days(Object dayCount) {
+    return 'पीरियड का दिन $dayCount';
+  }
+
+  @override
+  String get widget_load_period_care_state_message_days =>
+      '“इन दिनों थोड़ा जल्दी आराम करने की कोशिश करो। खुद को बहुत मत थकाओ।”';
+
+  @override
+  String get widget_load_period_care_state_message_today_start =>
+      'आज शुरू होने की उम्मीद';
+
+  @override
+  String widget_load_period_care_state_message_days_variant_b(
+      Object daysUntil) {
+    return 'लगभग $daysUntil दिन बाकी';
+  }
+
+  @override
+  String get widget_load_period_care_state_message_today_variant_b =>
+      '“तुमने बहुत मेहनत की है। आज अपना अच्छी तरह ख़याल रखना।”';
+
+  @override
+  String get widget_load_period_care_state_message_period_end =>
+      'पीरियड अभी-अभी समाप्त हुआ';
+
+  @override
+  String get widget_load_period_care_state_message_today_variant_c =>
+      '“आज भी अपना अच्छी तरह ख़याल रखना मत भूलना।”';
+
+  @override
+  String get widget_load_period_care_state_message_current_reminder =>
+      'अभी कोई विशेष चक्र रिमाइंडर नहीं है';
+
+  @override
+  String get widget_load_period_care_state_message =>
+      'अभी पर्याप्त चक्र रिकॉर्ड नहीं हैं';
+
+  @override
+  String get widget_parse_character_birthday_message => 'वर्ष';
+
+  @override
+  String get widget_parse_character_birthday_message_variant_b => 'माह';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_character_birthday =>
+      'किरदार का जन्मदिन';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_birthday_settings =>
+      'जन्मदिन सेट नहीं है';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_birthday_countdown(
+      Object birthdayLabel) {
+    return 'उसके जन्मदिन तक・$birthdayLabel';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_today => 'आज ही है';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_days(Object days) {
+    return '$days दिन बाकी';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message => 'उससे मिले हुए';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_variant_b =>
+      'अभी मुलाकात का कोई रिकॉर्ड नहीं है';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_days_variant_b(
+      Object value1) {
+    return '$value1 दिन';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_variant_c =>
+      'महत्वपूर्ण दिन';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_date_select =>
+      'कोई तारीख नहीं चुनी गई';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_elapsed_days(
+      Object value1) {
+    return '$value1 दिन बीत चुके';
+  }
+
+  @override
+  String get widget_settings_remove_title_character_latest =>
+      'किरदार की नवीनतम पोस्ट';
+
+  @override
+  String get widget_settings_remove_subtitle_moment_latest =>
+      'ऐप खोले बिना उसकी नवीनतम अपडेट देखें।';
+
+  @override
+  String get widget_settings_remove_title_period => 'पीरियड के दौरान साथ';
+
+  @override
+  String get widget_settings_remove_subtitle_character_end =>
+      'पीरियड से पहले, दौरान और बाद में किरदार की थोड़ी और देखभाल।';
+
+  @override
+  String get widget_settings_remove_title => 'आज की पंक्ति';
+
+  @override
+  String get widget_settings_remove_subtitle_days =>
+      'हर दिन होम स्क्रीन पर एक पंक्ति आपका इंतज़ार करेगी।';
+
+  @override
+  String get widget_settings_remove_title_reminder => 'सालगिरह / रिमाइंडर';
+
+  @override
+  String get widget_settings_remove_subtitle_character_birthday_reminder =>
+      'मुलाकात और जन्मदिन साथ में याद रखें, और किरदार को ज़रूरी बातें याद दिलाने दें।';
+
+  @override
+  String get widget_settings_remove_title_character => 'किरदार की स्थिति';
+
+  @override
+  String get widget_settings_remove_subtitle_chat_latest_mood =>
+      'चैट का नवीनतम मूड, स्थिति और स्थान होम स्क्रीन पर दिखाएँ।';
+
+  @override
+  String get widget_settings_size_label => 'मध्यम';
+
+  @override
+  String get widget_settings_size_label_message_send =>
+      'होम स्क्रीन पर जोड़ने का अनुरोध भेज दिया गया है।';
+
+  @override
+  String get widget_settings_size_label_message_try_again_later_failed =>
+      'होम स्क्रीन पर जोड़ने में विफल। बाद में फिर कोशिश करें।';
+
+  @override
+  String get widget_settings_edit_saved_widget_message_character_reminder_again =>
+      'पुराना “किरदार टू-डू रिमाइंडर” अब “सालगिरह / रिमाइंडर” में शामिल है। कृपया इसे फिर से बनाएँ।';
+
+  @override
+  String get widget_settings_delete_saved_widget_title_delete_small =>
+      'विजेट हटाएँ?';
+
+  @override
+  String
+      widget_settings_delete_saved_widget_message_stop_display_long_press_home_after_delete(
+          Object value1, Object value2) {
+    return '“$value1・$value2” हटाएँ?\n\nहटाने के बाद यह विजेट किरदार की सामग्री दिखाना बंद कर देगा और खिलाड़ी को होम स्क्रीन पर लंबे समय तक दबाकर इसे हटाने का संकेत देगा।';
+  }
+
+  @override
+  String get widget_settings_delete_saved_widget_message_delete_settings_small =>
+      'विजेट सेटिंग हटा दी गई हैं; संबंधित होम स्क्रीन विजेट निष्क्रिय कर दिया गया है।';
+
+  @override
+  String get widget_settings_message_desktop_widget => 'होम स्क्रीन विजेट';
+
+  @override
+  String get widget_settings_message_character_days =>
+      'अपने पसंदीदा किरदार को हर दिन अपने साथ रखें।';
+
+  @override
+  String get widget_settings_message_small => 'मेरे विजेट';
+
+  @override
+  String get widget_settings_message_desktop_widget_variant_b =>
+      'अभी कोई होम स्क्रीन विजेट नहीं है';
+
+  @override
+  String get widget_settings_message_character_reminder =>
+      'पसंदीदा किरदार चुनें और उसके रिमाइंडर, पोस्ट या स्थिति होम स्क्रीन पर दिखाएँ।';
+
+  @override
+  String widget_settings_message_size(Object value1) {
+    return '$value1 आकार';
+  }
+
+  @override
+  String get widget_settings_tooltip => 'होम स्क्रीन पर जोड़ें';
+
+  @override
+  String get widget_settings_tooltip_small => 'विजेट संपादित करें';
+
+  @override
+  String get widget_settings_tooltip_delete_small => 'विजेट हटाएँ';
+
+  @override
+  String get widget_settings_message_desktop_widget_variant_c =>
+      'होम स्क्रीन विजेट जोड़ें';
+
+  @override
+  String get widget_settings_message_character_photo_content_select_small =>
+      'हर विजेट के लिए किरदार, किरदार की फ़ोटो और दिखाई जाने वाली सामग्री अलग-अलग चुनी जा सकती है। आप होम स्क्रीन पर एक साथ कई किरदार भी रख सकते हैं।';
+
+  @override
+  String get widget_settings_desktop_type_selection_message_select_small =>
+      'विजेट चुनें';
+
+  @override
+  String get widget_settings_desktop_type_selection_message_select =>
+      'पहले चुनें कि आप होम स्क्रीन पर किरदार को किस तरह अपने साथ रखना चाहते हैं।';
+
+  @override
+  String
+      get widget_settings_go_to_photo_step_message_try_again_later_failed_load_character_photo =>
+          'किरदार की फ़ोटो लोड करने में विफल। बाद में फिर कोशिश करें।';
+
+  @override
+  String get widget_settings_message_character_select => 'किरदार चुनें';
+
+  @override
+  String get widget_settings_message_character_friend_days =>
+      'केवल वे किरदार दिखाए जाते हैं जिन्हें आपने मित्र बनाया है या जिनसे पहले चैट की है।';
+
+  @override
+  String get widget_settings_hint_character_search => 'किरदार खोजें';
+
+  @override
+  String get widget_settings_message_try_again_later_failed_load_character =>
+      'किरदार लोड करने में विफल। बाद में फिर कोशिश करें।';
+
+  @override
+  String get widget_settings_message_current_character_chat_friend_add =>
+      'अभी कोई मेल खाता किरदार नहीं है। पहले किसी किरदार से चैट करें या उसे मित्र बनाएँ।';
+
+  @override
+  String get widget_settings_message_character_photo_select =>
+      'अगला・किरदार की फ़ोटो चुनें';
+
+  @override
+  String
+      get widget_settings_desktop_photo_selection_message_character_photo_select =>
+          'किरदार की फ़ोटो चुनें';
+
+  @override
+  String
+      widget_settings_desktop_photo_selection_message_current_affection_unlocked_photo(
+          Object value1) {
+    return 'मौजूदा लगाव $value1・अनलॉक फ़ोटो सीधे इस्तेमाल की जा सकती हैं।';
+  }
+
+  @override
+  String
+      get widget_settings_desktop_photo_selection_message_current_character_photo =>
+          'इस किरदार के पास अभी कोई उपलब्ध फ़ोटो नहीं है।';
+
+  @override
+  String
+      widget_settings_desktop_photo_selection_message_required_affection_unlock_photo(
+          Object value1) {
+    return 'इस फ़ोटो को अनलॉक करने के लिए लगाव $value1 चाहिए।';
+  }
+
+  @override
+  String get widget_settings_message_photo_public => 'सार्वजनिक फ़ोटो';
+
+  @override
+  String widget_settings_message_unlock(Object value1) {
+    return 'लगाव $value1 पर अनलॉक';
+  }
+
+  @override
+  String widget_settings_message_unlocked(Object value1) {
+    return 'अनलॉक・लगाव $value1';
+  }
+
+  @override
+  String get widget_settings_message_content_settings =>
+      'अगला・दिखाई जाने वाली सामग्री सेट करें';
+
+  @override
+  String get widget_settings_open_preview_message_player_select =>
+      'पहले खिलाड़ी द्वारा बनाया गया कोई इवेंट / टू-डू चुनें।';
+
+  @override
+  String get widget_settings_pick_custom_memo_event_message_login_account =>
+      'कृपया पहले लॉग इन करें।';
+
+  @override
+  String
+      get widget_settings_pick_custom_memo_event_message_memo_current_character =>
+          'इस किरदार के पास अभी कोई इवेंट / मेमो नहीं है।';
+
+  @override
+  String get widget_settings_pick_custom_memo_event_message_player_select =>
+      'खिलाड़ी द्वारा बनाया गया इवेंट चुनें';
+
+  @override
+  String get widget_settings_message_try_again_later_failed_load =>
+      'इवेंट लोड करने में विफल। बाद में फिर कोशिश करें।';
+
+  @override
+  String get widget_settings_message_content_settings_variant_b =>
+      'दिखाई जाने वाली सामग्री सेट करें';
+
+  @override
+  String get widget_settings_subtitle_content =>
+      'होम स्क्रीन पर जो देखना चाहते हैं उसे समायोजित करें।';
+
+  @override
+  String get widget_settings_message_small_variant_b =>
+      'अगला・विजेट पूर्वावलोकन';
+
+  @override
+  String get widget_settings_title => 'पोस्ट प्रदर्शन';
+
+  @override
+  String get widget_settings_title_variant_b => 'पोस्ट की तस्वीर दिखाएँ';
+
+  @override
+  String get widget_settings_title_variant_c => 'लाइक की संख्या दिखाएँ';
+
+  @override
+  String get widget_settings_title_comment => 'टिप्पणियों की संख्या दिखाएँ';
+
+  @override
+  String get widget_settings_title_variant_d => 'गोपनीयता और साथ';
+
+  @override
+  String get widget_settings_title_variant_e => 'गोपनीयता मोड';
+
+  @override
+  String get widget_settings_subtitle_period_character =>
+      'होम स्क्रीन पर केवल किरदार की देखभाल दिखाएँ, पीरियड की जानकारी सीधे न दिखाएँ।';
+
+  @override
+  String get widget_settings_title_variant_f => 'विस्तृत मोड';
+
+  @override
+  String get widget_settings_subtitle_end =>
+      'चक्र की स्थिति जैसे जल्द शुरू होने वाला, जारी या अभी समाप्त हुआ दिखा सकता है।';
+
+  @override
+  String get widget_settings_title_variant_g => 'चक्र स्थिति दिखाएँ';
+
+  @override
+  String get widget_settings_title_time => 'समय दिखाएँ';
+
+  @override
+  String get widget_settings_title_update => 'अपडेट तरीका';
+
+  @override
+  String get widget_settings_message_update_days => 'दिन में एक बार अपडेट';
+
+  @override
+  String get widget_settings_message_update => 'हर बार ऐप खोलने पर अपडेट';
+
+  @override
+  String get widget_settings_text_update => 'ऐप खोलने के बाद अपडेट';
+
+  @override
+  String get widget_settings_title_content => 'सालगिरह सामग्री';
+
+  @override
+  String get widget_settings_title_days => 'मुलाकात से अब तक के दिन';
+
+  @override
+  String get widget_settings_subtitle_character_today_days =>
+      'आप और किरदार के मिलने से आज तक के दिनों की संख्या दिखाएँ।';
+
+  @override
+  String get widget_settings_subtitle_character_birthday =>
+      'किरदार के जन्मदिन तक कितना समय बाकी है, दिखाएँ।';
+
+  @override
+  String get widget_settings_title_player =>
+      'खिलाड़ी द्वारा बनाया गया इवेंट / टू-डू';
+
+  @override
+  String get widget_settings_message_memo_character_select_reminder =>
+      'इस किरदार के मेमो / रिमाइंडर से कोई इवेंट या टू-डू चुनें।';
+
+  @override
+  String widget_settings_message_selected(Object _selectedMemoContent) {
+    return 'चुना गया: $_selectedMemoContent';
+  }
+
+  @override
+  String get widget_settings_message_select => 'अधिकतम 3 आइटम चुनें';
+
+  @override
+  String get widget_settings_message_character =>
+      'किरदार की स्थिति अधिकतम 3 आइटम दिखा सकती है।';
+
+  @override
+  String get widget_settings_message_small_variant_c => 'विजेट पूर्वावलोकन';
+
+  @override
+  String get widget_settings_title_confirm => 'अंतिम पुष्टि';
+
+  @override
+  String get widget_settings_subtitle_large =>
+      'पहले देखें कि होम स्क्रीन पर यह लगभग कैसा दिखेगा।';
+
+  @override
+  String get widget_settings_title_size => 'आकार';
+
+  @override
+  String get widget_settings_title_variant_h => 'लेआउट';
+
+  @override
+  String get widget_settings_label_photo => 'फुल-स्क्रीन फ़ोटो';
+
+  @override
+  String get widget_settings_label_character => 'किरदार कार्ड';
+
+  @override
+  String get widget_settings_message_sync => 'सिंक हो रहा है…';
+
+  @override
+  String get widget_settings_message_desktop_widget_add =>
+      'होम स्क्रीन विजेट जोड़ें';
+
+  @override
+  String get widget_settings_sample_lines_message_today_end =>
+      '“आज उम्मीद से थोड़ा पहले काम खत्म हो गया।”';
+
+  @override
+  String get widget_settings_sample_lines_message_days =>
+      '“इन दिनों खुद पर बहुत ज़ोर मत डालो।”';
+
+  @override
+  String get widget_settings_sample_lines_message_period => 'पीरियड जारी है';
+
+  @override
+  String get widget_settings_sample_lines_message_today =>
+      '“आज थोड़ा और आराम करो।”';
+
+  @override
+  String get widget_settings_sample_lines_message_today_variant_b =>
+      '“आज भी ठीक से खाना मत भूलना।”';
+
+  @override
+  String get widget_settings_sample_lines_label_birthday_countdown =>
+      'उसके जन्मदिन तक';
+
+  @override
+  String get widget_settings_sample_lines_label_days => '12 दिन बाकी';
+
+  @override
+  String get widget_settings_sample_lines_label_days_variant_b => '128 दिन';
+
+  @override
+  String get widget_settings_sample_lines_message_mood => 'मूड｜थोड़ा थका हुआ';
+
+  @override
+  String get widget_settings_sample_lines_message_end =>
+      'स्थिति｜अभी काम खत्म किया';
+
+  @override
+  String get widget_settings_sample_lines_message => 'स्थान｜ऑफ़िस के नीचे';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_b => 'रिश्ता｜प्रेमी';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_c =>
+      'पोशाक｜हल्का ग्रे निट स्वेटर';
+
+  @override
+  String get widget_settings_sample_lines_message_days_variant_b =>
+      'मौसम｜थोड़ा ठंडा';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_d =>
+      'विचार｜तुमसे जल्दी मिलना चाहता हूँ';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_e =>
+      'क्रिया｜डेस्क समेट रहा है';
+
+  @override
+  String get widget_settings_sample_lines_message_affection =>
+      'लगाव｜स्थिर और करीब';
+
+  @override
+  String get edit_profile_message => 'प्रोफ़ाइल सजावट';
+
+  @override
+  String get edit_profile_message_current => 'अभी उपयोग में नहीं';
+
+  @override
+  String
+      get event_memory_character_load_characters_message_login_character_select =>
+          'किरदार चुनने से पहले लॉग इन करें';
+
+  @override
+  String get event_memory_character_center_message_memory_select =>
+      'चुनें कि आप यह याद किसके साथ सहेजना चाहते हैं';
+
+  @override
+  String get event_memory_character_center_message_character_friend_add =>
+      'यहाँ केवल आपके बनाए किरदार और मित्र के रूप में जोड़े गए किरदार दिखेंगे।';
+
+  @override
+  String get event_memory_character_center_message_current_character_select =>
+      'अभी चुनने के लिए कोई किरदार उपलब्ध नहीं है';
+
+  @override
+  String get event_memory_character_center_message_public_character_character_friend_add =>
+      'अपना किरदार बनाएँ या किसी पसंदीदा सार्वजनिक किरदार को पहले मित्र बनाएँ।';
+
+  @override
+  String get event_memory_character_message_character_select =>
+      'कृपया पहले किरदार चुनें';
+
+  @override
+  String event_memory_character_message_continue(Object value1) {
+    return '$value1 के साथ जारी रखें';
+  }
+
+  @override
+  String get event_memory_character_card_message_private => 'मेरा・निजी';
+
+  @override
+  String get event_memory_character_error_label_load_again => 'फिर से लोड करें';
+
+  @override
+  String
+      get event_memory_collection_show_collection_intro_if_needed_message_collection =>
+          'Shiguang संग्रह';
+
+  @override
+  String get event_memory_collection_show_collection_intro_if_needed_message_collection_content =>
+      'यह आपकी संग्रह सूची है, जहाँ आप अपनी सभी सहेजी गई चीज़ें देख सकते हैं।';
+
+  @override
+  String get event_memory_collection_text_collection_login =>
+      'संग्रह देखने के लिए लॉग इन करें';
+
+  @override
+  String get event_memory_collection_message_memory => 'यादें';
+
+  @override
+  String get event_memory_collection_message_chat_background =>
+      'चैट बैकग्राउंड';
+
+  @override
+  String get event_memory_collection_message_avatar_frame_collection =>
+      'अभी कोई अवतार फ़्रेम संग्रहित नहीं है';
+
+  @override
+  String get event_memory_collection_message_avatar_frame =>
+      'बाद में मिलने वाले सीमित अवतार फ़्रेम यहाँ दिखाई देंगे।';
+
+  @override
+  String get event_memory_collection_message_collection_sticker =>
+      'अभी कोई स्टिकर संग्रहित नहीं है';
+
+  @override
+  String get event_memory_collection_message_sticker =>
+      'बाद में इकट्ठा किए गए स्टिकर यहाँ रखे जाएंगे।';
+
+  @override
+  String get event_memory_collection_message_collection_chat_background =>
+      'अभी कोई चैट बैकग्राउंड संग्रहित नहीं है';
+
+  @override
+  String get event_memory_collection_message_chat_background_variant_b =>
+      'बाद में मिलने वाले सीमित चैट बैकग्राउंड यहाँ दिखाई देंगे।';
+
+  @override
+  String get event_memory_collection_tab_title_collection_temporary =>
+      'अभी संग्रह लोड नहीं किया जा सकता';
+
+  @override
+  String get event_memory_collection_tab_title_collection_memory =>
+      'अभी कोई याद संग्रहित नहीं है';
+
+  @override
+  String get event_memory_collection_tab_subtitle_limited_memory_complete =>
+      'सीमित याद पूरी करने के बाद, आप अपने पसंदीदा पल यहाँ रख सकते हैं।';
+
+  @override
+  String get event_memory_collection_item_card_label => 'सीमित आइटम';
+
+  @override
+  String get event_memory_collection_confirm_delete_owned_item_message_delete =>
+      'सीमित आइटम हटाएँ?';
+
+  @override
+  String
+      event_memory_collection_confirm_delete_owned_item_message_after_delete_unavailable(
+          Object _itemTypeLabel) {
+    return 'हटाने के बाद आप इस $_itemTypeLabel का उपयोग नहीं कर पाएँगे,';
+  }
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_collection =>
+          'और यह “Shiguang संग्रह” में भी दिखाई नहीं देगा।\n\n';
+
+  @override
+  String get event_memory_collection_confirm_delete_owned_item_message_unavailable =>
+      'इसका मतलब है कि आप इस बार मिले सीमित आइटम को छोड़ देंगे, और यह कार्रवाई वापस नहीं की जा सकती।\n\n';
+
+  @override
+  String
+      event_memory_collection_confirm_delete_owned_item_message_delete_variant_b(
+          Object value1) {
+    return 'क्या आप वाकई “$value1” हटाना चाहते हैं?';
+  }
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_delete_variant_c =>
+          'सीमित आइटम हटा दिया गया';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_not_found_delete =>
+          'यह सीमित आइटम नहीं मिला; हो सकता है इसे पहले ही हटा दिया गया हो';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_collection_current_delete =>
+          'यह संग्रह अभी हटाया नहीं जा सकता';
+
+  @override
+  String get event_memory_collection_show_preview_message =>
+      'चित्र तैयार किया जा रहा है';
+
+  @override
+  String get event_memory_collection_show_preview_message_failed_load =>
+      'चित्र लोड करने में विफल';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save_current =>
+      'वेब संस्करण में अभी फ़ोन की फ़ोटो गैलरी में सीधे सहेजना समर्थित नहीं है';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save_memory =>
+      'इस याद को सहेजने के लिए फ़ोटो गैलरी की अनुमति चाहिए';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_memory =>
+      'याद की तस्वीर अभी तैयार नहीं है। फिर कोशिश करें।';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_failed_memory =>
+      'याद की तस्वीर बनाने में विफल';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save =>
+      'फ़ोन की फ़ोटो गैलरी में सहेजा गया ♡';
+
+  @override
+  String
+      get event_memory_collection_save_to_gallery_message_save_confirm_failed =>
+          'सहेजने में विफल। फ़ोटो गैलरी की अनुमति जाँचें और फिर कोशिश करें।';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_title_collection_cancel =>
+          'संग्रह से हटाएँ?';
+
+  @override
+  String get event_memory_collection_delete_collection_message_collection_cancel_memory =>
+      'संग्रह से हटाने के बाद यह याद “Shiguang संग्रह” में दिखाई नहीं देगी।\n\nक्या आप वाकई इसे संग्रह से हटाना चाहते हैं?';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_message_try_again_later_collection_cancel_failed =>
+          'संग्रह से हटाने में विफल। बाद में फिर कोशिश करें।';
+
+  @override
+  String get event_memory_collection_message_collection_memory =>
+      'यादों का संग्रह';
+
+  @override
+  String get event_memory_collection_label_play => 'फिर से चलाएँ';
+
+  @override
+  String get event_memory_collection_label_save => 'सहेजा जा रहा है…';
+
+  @override
+  String get event_memory_collection_label_save_variant_b =>
+      'फ़ोटो गैलरी में सहेजें';
+
+  @override
+  String get event_memory_collection_collected_card_message_limited_memory =>
+      'Lianlian Shiguang・सीमित याद';
+
+  @override
+  String get event_memory_collection_create_state_message_end_story =>
+      'कुछ पल\nसिर्फ कहानी खत्म होने से गायब नहीं होते।';
+
+  @override
+  String get event_memory_collection_text_collection =>
+      'इस सहेजी गई याद में दोबारा चलाने योग्य कोई Scene नहीं है';
+
+  @override
+  String get event_memory_collection_message => 'छोड़ें';
+
+  @override
+  String get event_memory_collection_message_end =>
+      'समाप्त करने के लिए टैप करें';
+
+  @override
+  String get event_memory_collection_message_continue =>
+      'जारी रखने के लिए टैप करें';
+
+  @override
+  String get event_memory_collection_message_variant_b =>
+      'पूरा टेक्स्ट दिखाने के लिए टैप करें';
+
+  @override
+  String get event_memory_collection_collected_label_collection =>
+      'अभी संग्रहित किया';
+
+  @override
+  String get event_memory_collection_collected_item_label_collection_date =>
+      'संग्रह की तारीख दर्ज नहीं है';
+
+  @override
+  String event_memory_collection_collected_item_label_collection(
+      Object day, Object month, Object value1) {
+    return '$value1/$month/$day को संग्रहित';
+  }
+
+  @override
+  String get event_memory_text_not_found_event => 'इवेंट डेटा नहीं मिला';
+
+  @override
+  String get event_memory_message_limited_memory_failed_load =>
+      'सीमित यादें लोड करने में विफल';
+
+  @override
+  String get event_memory_as_map_label_unlocked => 'अनलॉक';
+
+  @override
+  String event_memory_as_map_label_unlock(Object currencyIcon,
+      Object currencyName, Object currentValue, Object requiredValue) {
+    return 'अनलॉक करने के लिए $currencyIcon $requiredValue $currencyName जमा करें ($currentValue / $requiredValue)';
+  }
+
+  @override
+  String get event_memory_as_map_label_unlock_task_event_complete =>
+      'निर्धारित इवेंट कार्य पूरा करने के बाद अनलॉक';
+
+  @override
+  String get event_memory_as_map_label_redeem_unlock_event =>
+      'निर्धारित इवेंट आइटम रिडीम करने के बाद अनलॉक';
+
+  @override
+  String get event_memory_as_map_label_unlock_variant_b => 'अभी अनलॉक नहीं';
+
+  @override
+  String get event_memory_hero_message =>
+      'इस मौसम में एक ऐसा पल सहेजें जो केवल आप दोनों का हो।';
+
+  @override
+  String event_memory_hero_message_limited_memory(
+      Object totalCount, Object unlockedCount) {
+    return 'सीमित यादें  $unlockedCount / $totalCount';
+  }
+
+  @override
+  String get event_memory_status_label_unlocked => 'अनलॉक・अभी नहीं देखा';
+
+  @override
+  String get event_memory_status_label => 'देखा गया';
+
+  @override
+  String get event_memory_status_label_collection => 'संग्रहित';
+
+  @override
+  String get event_memory_footer_label_memory_start =>
+      'आप यह याद शुरू कर सकते हैं';
+
+  @override
+  String get event_memory_footer_label => 'आप इसे फिर देख सकते हैं';
+
+  @override
+  String get event_memory_footer_label_collection =>
+      'Shiguang संग्रह में सहेजा गया';
+
+  @override
+  String get event_memory_empty_message_limited_memory_event_public =>
+      'इस इवेंट के लिए अभी कोई सीमित याद प्रकाशित नहीं हुई है';
+
+  @override
+  String get event_memory_performance_finish_message_memory =>
+      'यह याद सहेज ली गई है।';
+
+  @override
+  String get event_memory_performance_finish_message_save_collection =>
+      'संग्रह गेम के भीतर रहेगा। फ़ोटो गैलरी की अनुमति केवल फ़ोन में सहेजते समय माँगी जाएगी।';
+
+  @override
+  String get event_memory_performance_finish_message => 'प्रोसेस हो रहा है…';
+
+  @override
+  String get event_memory_performance_finish_message_collection_memory =>
+      'इस याद को संग्रहित करें';
+
+  @override
+  String get event_memory_performance_confirm_uncollect_memory_message_collection_cancel_memory_again_remove =>
+      'हटाने के बाद यह याद “Shiguang संग्रह” से हटा दी जाएगी। बाद में आप इसे फिर देख और दोबारा संग्रहित कर सकते हैं।';
+
+  @override
+  String
+      get event_memory_performance_uncollect_memory_message_collection_login =>
+          'संग्रह प्रबंधित करने से पहले लॉग इन करें';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_collection_login_memory =>
+          'इस याद को संग्रहित करने से पहले लॉग इन करें';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_collection_memory =>
+          'याद संग्रहित की गई ♡';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_try_again_later_collection_failed =>
+          'संग्रहित करने में विफल। बाद में फिर कोशिश करें।';
+
+  @override
+  String get event_memory_performance_text_panel_message_complete =>
+      'समाप्त करने के लिए टैप करें';
+
+  @override
+  String get event_memory_performance_build_performance_message => 'छोड़ें';
+
+  @override
+  String get event_memory_performance_text_play =>
+      'चलाने के लिए कोई Scene उपलब्ध नहीं है';
+
+  @override
+  String get event_memory_profile_change_profile_message_profile =>
+      'Shiguang प्रोफ़ाइल बदलें';
+
+  @override
+  String get event_memory_profile_message_profile_confirm =>
+      'Shiguang प्रोफ़ाइल की पुष्टि करें';
+
+  @override
+  String get event_memory_profile_center_text_profile_not_found =>
+      'कोई उपयोग योग्य Shiguang प्रोफ़ाइल नहीं मिली';
+
+  @override
+  String get event_memory_profile_center_message_memory =>
+      'इस याद में आप किस रूप में रहेंगे?';
+
+  @override
+  String get event_memory_profile_center_message_profile_character_start =>
+      'इस किरदार के साथ सबसे हाल में उपयोग की गई Shiguang प्रोफ़ाइल पहले चुनी गई है। शुरू करने से पहले आप इसे बदल सकते हैं।';
+
+  @override
+  String event_memory_profile_center_message(Object value1) {
+    return '“$value1” के रूप में';
+  }
+
+  @override
+  String event_memory_profile_center_message_memory_variant_b(Object value1) {
+    return '“$value1” के साथ यह याद';
+  }
+
+  @override
+  String get event_memory_profile_center_label_memory_start => 'याद शुरू करें';
+
+  @override
+  String get event_message_failed_load => 'इवेंट डेटा लोड करने में विफल';
+
+  @override
+  String get event_message_not_found => 'इवेंट नहीं मिला';
+
+  @override
+  String get event_remaining_label => 'इवेंट जारी है';
+
+  @override
+  String event_remaining_label_days(Object value1) {
+    return '$value1 दिन बाकी';
+  }
+
+  @override
+  String event_remaining_label_hours(Object value1) {
+    return '$value1 घंटे बाकी';
+  }
+
+  @override
+  String get event_remaining_label_end => 'जल्द समाप्त होगा';
+
+  @override
+  String get event_balance_pill_tooltip_back => 'वापस';
+
+  @override
+  String event_claim_task_message_claim_current(
+      Object currency, Object reward, Object value1, Object value2) {
+    return '$value1 $reward $value2 प्राप्त हुआ। अब आपके पास $currency है';
+  }
+
+  @override
+  String get event_claim_task_message_reward_claim => 'इनाम प्राप्त हुआ';
+
+  @override
+  String get event_claim_task_message_claim_failed => 'प्राप्त करने में विफल';
+
+  @override
+  String get event_claim_task_message_task_claim =>
+      'इस कार्य का इनाम पहले ही लिया जा चुका है';
+
+  @override
+  String get event_claim_task_message_incomplete_task =>
+      'कार्य अभी पूरा नहीं हुआ है';
+
+  @override
+  String get event_task_list_label_task_load => 'कार्य लोड हो रहे हैं…';
+
+  @override
+  String get event_task_list_label_task_current => 'अभी कोई कार्य नहीं है';
+
+  @override
+  String get event_task_list_label_task_login_progress =>
+      'इवेंट कार्य की प्रगति देखने के लिए लॉग इन करें';
+
+  @override
+  String get event_milestone_progress_label_reward_load =>
+      'संचित इनाम लोड हो रहे हैं…';
+
+  @override
+  String get event_milestone_progress_label_reward_current =>
+      'अभी कोई संचित इनाम नहीं है';
+
+  @override
+  String event_build_with_total_message_current(Object totalEarned) {
+    return 'वर्तमान  $totalEarned';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_confirm =>
+      'रिडीम की पुष्टि करें';
+
+  @override
+  String event_progress_ref_message_redeem_flowers(
+      Object itemName, Object price, Object rewardAmount, Object value1) {
+    return '“$itemName” को रिडीम करने के लिए $value1 $price उपयोग करें?\n\nरिडीम के बाद आपको $rewardAmount फूल मिलेंगे।';
+  }
+
+  @override
+  String event_progress_ref_message_redeem(
+      Object itemName, Object price, Object value1) {
+    return '“$itemName” को रिडीम करने के लिए $value1 $price उपयोग करें?';
+  }
+
+  @override
+  String event_progress_ref_message_redeem_success_flowers(
+      Object returnedReward) {
+    return 'रिडीम सफल! $returnedReward फूल मिले';
+  }
+
+  @override
+  String event_progress_ref_message_event_collection_redeem_success_add(
+      Object itemName) {
+    return 'रिडीम सफल! “$itemName” इवेंट संग्रह में जोड़ दिया गया';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_failed => 'रिडीम विफल';
+
+  @override
+  String get event_progress_ref_message_redeem_variant_b =>
+      'यह आइटम पहले ही रिडीम हो चुका है';
+
+  @override
+  String get event_progress_ref_message_insufficient =>
+      'मुद्रा पर्याप्त नहीं है';
+
+  @override
+  String event_progress_ref_message_insufficient_variant_b(Object value1) {
+    return '$value1 पर्याप्त नहीं है';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_variant_c => 'रिडीम';
+
+  @override
+  String get event_progress_ref_message_redeem_variant_d => 'रिडीम किया गया';
+
+  @override
+  String event_message_redeem_flowers(Object rewardAmount) {
+    return 'रिडीम के बाद आपको $rewardAmount फूल मिलेंगे';
+  }
+
+  @override
+  String event_message_redeem(Object redeemedCount) {
+    return '$redeemedCount बार रिडीम किया गया';
+  }
+
+  @override
+  String get event_message_event_shop_login =>
+      'इवेंट शॉप उपयोग करने के लिए लॉग इन करें';
+
+  @override
+  String get event_message_redeem_current =>
+      'अभी रिडीम करने के लिए कोई आइटम उपलब्ध नहीं है';
+
+  @override
+  String event_shop_item_card_message_flowers(Object rewardAmount) {
+    return '$rewardAmount फूल प्राप्त करें';
+  }
+
+  @override
+  String get event_message_insufficient => 'अपर्याप्त';
+
+  @override
+  String get notification_message_player => 'खिलाड़ी द्वारा संलग्न चित्र';
+
+  @override
+  String notification_message_qixi_letter(Object value1) {
+    return '$value1 से Qixi पत्र';
+  }
+
+  @override
+  String recommendation_remaining_label_days(Object value1) {
+    return '$value1 दिन बाकी';
+  }
+
+  @override
+  String recommendation_remaining_label_hours(Object value1) {
+    return '$value1 घंटे बाकी';
+  }
+
+  @override
+  String get settings_subtitle_character_days =>
+      'अपने पसंदीदा किरदार को हर दिन अपने साथ रखें';
+
+  @override
+  String moment_notification_comment_on_character_post(
+      Object authorName, Object commentText, Object senderNickname) {
+    return '$senderNickname ने $authorName के लिए टिप्पणी छोड़ी: “$commentText”';
+  }
+
+  @override
+  String get inbox_content_text_message_customer_service_message_send =>
+      'भेजे गए ग्राहक सहायता संदेश';
+
+  @override
+  String get character_edit_relationship_none_label => 'कोई नहीं';
+
+  @override
+  String get auth_cancel_account_deletion_failed =>
+      'खाता हटाना रद्द करने में विफल। बाद में फिर कोशिश करें।';
+
+  @override
+  String get auth_delete_account_failed => 'खाता हटाने में विफल';
+
+  @override
+  String get auth_request_account_deletion_failed =>
+      'खाता हटाने का अनुरोध करने में विफल। बाद में फिर कोशिश करें।';
+
+  @override
+  String get theme_font_shiguang_serif => 'Shiguang Serif';
+
+  @override
+  String get theme_font_clean_sans => 'क्लीन सैन्स';
+
+  @override
+  String get theme_font_system => 'सिस्टम फ़ॉन्ट';
+
+  @override
+  String get theme_font_shiguang_serif_description =>
+      'मुलायम और साहित्यिक, डूबकर पढ़ने के लिए उपयुक्त';
+
+  @override
+  String get theme_font_clean_sans_description =>
+      'साफ़ और स्पष्ट, लंबे समय तक पढ़ने में आरामदायक';
+
+  @override
+  String get theme_font_system_description =>
+      'डिवाइस के डिफ़ॉल्ट सिस्टम फ़ॉन्ट का अनुसरण करें';
 }

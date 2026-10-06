@@ -14643,6 +14643,2347 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'10花'**
   String get chat_mode_resonance_cost_short;
+
+  /// No description provided for @notification_channel_chat_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'用於接收角色的最新回覆與遊戲提醒。'**
+  String get notification_channel_chat_description;
+
+  /// No description provided for @subscription_star_contract_name.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'戀戀拾光．星之契約'**
+  String get subscription_star_contract_name;
+
+  /// No description provided for @moment_notification_comment_on_your_post.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{senderNickname}在妳的動態下留言：「{commentText}」'**
+  String moment_notification_comment_on_your_post(
+      Object commentText, Object senderNickname);
+
+  /// No description provided for @moment_notification_new_reply_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'動態有新回應！💬'**
+  String get moment_notification_new_reply_title;
+
+  /// No description provided for @moment_notification_character_popularity_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色人氣爆發！🔥'**
+  String get moment_notification_character_popularity_title;
+
+  /// No description provided for @font_size_small.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'小'**
+  String get font_size_small;
+
+  /// No description provided for @font_size_standard.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'標準'**
+  String get font_size_standard;
+
+  /// No description provided for @font_size_slightly_large.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'稍大'**
+  String get font_size_slightly_large;
+
+  /// No description provided for @font_size_large.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'大'**
+  String get font_size_large;
+
+  /// No description provided for @font_size_extra_large.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'特大'**
+  String get font_size_extra_large;
+
+  /// No description provided for @font_selection_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'字體'**
+  String get font_selection_title;
+
+  /// No description provided for @font_selection_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選一種最適合妳閱讀故事與聊天的字體。'**
+  String get font_selection_description;
+
+  /// No description provided for @font_size_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'字體大小'**
+  String get font_size_title;
+
+  /// No description provided for @font_selection_tagline.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'與你喜歡的他，再次寫下屬於你們的故事。'**
+  String get font_selection_tagline;
+
+  /// No description provided for @font_selection_applied_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已套用「{value1}」'**
+  String font_selection_applied_message(Object value1);
+
+  /// No description provided for @font_selection_local_storage_note.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'字體與字級會立即套用並保存在這台裝置；恢復預設外觀時會回到「拾光宋體＋標準大小」。'**
+  String get font_selection_local_storage_note;
+
+  /// No description provided for @inbox_customer_service_report.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'客服回報'**
+  String get inbox_customer_service_report;
+
+  /// No description provided for @inbox_content_text_message_player_title_send.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'玩家送出的標題'**
+  String get inbox_content_text_message_player_title_send;
+
+  /// No description provided for @inbox_content_text_message_player_content_send.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'玩家送出的內容'**
+  String get inbox_content_text_message_player_content_send;
+
+  /// No description provided for @avatar_frame_equipped_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已裝備「{value1}」'**
+  String avatar_frame_equipped_message(Object value1);
+
+  /// No description provided for @avatar_frame_unequip_frame_snackbar.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已卸下頭像框'**
+  String get avatar_frame_unequip_frame_snackbar;
+
+  /// No description provided for @avatar_frame_unequip_frame_message_event.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'活動頭像框'**
+  String get avatar_frame_unequip_frame_message_event;
+
+  /// No description provided for @avatar_frame_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'頭像框'**
+  String get avatar_frame_message;
+
+  /// No description provided for @avatar_frame_load_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'讀取頭像框失敗：{value1}'**
+  String avatar_frame_load_failed(Object value1);
+
+  /// No description provided for @avatar_frame_parse_frames_message_select.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選擇你想使用的頭像框'**
+  String get avatar_frame_parse_frames_message_select;
+
+  /// No description provided for @avatar_frame_parse_frames_message_event.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'活動取得後永久保留，可隨時更換或卸下。'**
+  String get avatar_frame_parse_frames_message_event;
+
+  /// No description provided for @avatar_frame_parse_frames_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'不使用頭像框'**
+  String get avatar_frame_parse_frames_title;
+
+  /// No description provided for @avatar_frame_parse_frames_subtitle_avatar.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'顯示原本的頭像'**
+  String get avatar_frame_parse_frames_subtitle_avatar;
+
+  /// No description provided for @avatar_frame_parse_frames_message_event_shop_redeem_current.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前還沒有已擁有的頭像框。\n活動商店兌換後會出現在這裡。'**
+  String get avatar_frame_parse_frames_message_event_shop_redeem_current;
+
+  /// No description provided for @avatar_frame_parse_frames_message_event_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'活動限定頭像框'**
+  String get avatar_frame_parse_frames_message_event_variant_b;
+
+  /// No description provided for @background_settings_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'限定背景'**
+  String get background_settings_message;
+
+  /// No description provided for @background_title_exclusive_photo_current.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前沒有專屬照片'**
+  String get background_title_exclusive_photo_current;
+
+  /// No description provided for @background_subtitle_unlock_character_photo.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'之後解鎖的角色照片會出現在這裡。'**
+  String get background_subtitle_unlock_character_photo;
+
+  /// No description provided for @background_title_login.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'登入後即可查看限定背景'**
+  String get background_title_login;
+
+  /// No description provided for @background_subtitle_redeem_chat_event.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'活動兌換取得的聊天室背景會保存在這裡。'**
+  String get background_subtitle_redeem_chat_event;
+
+  /// No description provided for @background_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'還沒有取得限定背景'**
+  String get background_title;
+
+  /// No description provided for @background_subtitle_event_shop_redeem_chat.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'活動商店兌換的聊天室背景，之後會出現在這裡。'**
+  String get background_subtitle_event_shop_redeem_chat;
+
+  /// No description provided for @background_is_limited_background_type_message_chat_event.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'活動限定聊天室背景'**
+  String get background_is_limited_background_type_message_chat_event;
+
+  /// No description provided for @background_is_limited_background_type_message_current_chat.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'要將「{value1}」設為目前聊天室的背景嗎？'**
+  String background_is_limited_background_type_message_current_chat(
+      Object value1);
+
+  /// No description provided for @character_edit_message_character_settings.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'【角色性格與設定】\n{value1}'**
+  String character_edit_message_character_settings(Object value1);
+
+  /// No description provided for @character_edit_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'【說話語氣與風格】\n{value1}'**
+  String character_edit_message(Object value1);
+
+  /// No description provided for @character_edit_message_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'【社交與環境互動】\n{value1}'**
+  String character_edit_message_variant_b(Object value1);
+
+  /// No description provided for @character_edit_save_to_draft_message_current_character.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前主要角色：【{value1}】\n'**
+  String character_edit_save_to_draft_message_current_character(Object value1);
+
+  /// No description provided for @character_edit_message_back.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'🚪 返回原本的 ProfilePage：{result}'**
+  String character_edit_message_back(Object result);
+
+  /// No description provided for @character_edit_save_character_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'📦 準備搬移 {value1} 則記憶碎片：'**
+  String character_edit_save_character_message(Object value1);
+
+  /// No description provided for @character_edit_message_complete.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'✅ 已完成搬移 {value1} 則記憶碎片'**
+  String character_edit_message_complete(Object value1);
+
+  /// No description provided for @character_edit_preload_first_voice_sample_message_background_start.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'⏳ 開始背景預載第一個 Voice：{voiceId}'**
+  String character_edit_preload_first_voice_sample_message_background_start(
+      Object voiceId);
+
+  /// No description provided for @character_edit_preload_first_voice_sample_message_update.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'⚠️ Voice 清單已更新，略過舊的預載結果'**
+  String get character_edit_preload_first_voice_sample_message_update;
+
+  /// No description provided for @character_edit_preload_first_voice_sample_message_background_complete.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'✅ 第一個 Voice 已背景預載完成'**
+  String
+      get character_edit_preload_first_voice_sample_message_background_complete;
+
+  /// No description provided for @character_edit_preload_first_voice_sample_message_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'⚠️ 第一個 Voice 預載失敗：'**
+  String get character_edit_preload_first_voice_sample_message_failed;
+
+  /// No description provided for @character_edit_preload_first_voice_sample_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'✅ matchVoiceFromBank 回傳：{value1}'**
+  String character_edit_preload_first_voice_sample_message(Object value1);
+
+  /// No description provided for @character_edit_error_voice.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'語音服務回傳格式錯誤'**
+  String get character_edit_error_voice;
+
+  /// No description provided for @character_edit_error_voice_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'語音服務沒有回傳 previews'**
+  String get character_edit_error_voice_variant_b;
+
+  /// No description provided for @character_edit_message_success_voice_match.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'✅ 成功配對 {value1} 個 Voice Bank 聲音'**
+  String character_edit_message_success_voice_match(Object value1);
+
+  /// No description provided for @character_edit_message_failed_match.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'========== Voice Bank 配對失敗 =========='**
+  String get character_edit_message_failed_match;
+
+  /// No description provided for @character_edit_message_error_match.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'========== Voice Bank 配對未知錯誤 =========='**
+  String get character_edit_message_error_match;
+
+  /// No description provided for @character_edit_preview_voice_sample_error_preview.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'試聽服務回傳格式錯誤'**
+  String get character_edit_preview_voice_sample_error_preview;
+
+  /// No description provided for @character_edit_preview_voice_sample_error_preview_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'試聽音訊資料為空'**
+  String get character_edit_preview_voice_sample_error_preview_variant_b;
+
+  /// No description provided for @character_edit_preview_voice_sample_error_failed_preview.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'試聽音訊解析失敗'**
+  String get character_edit_preview_voice_sample_error_failed_preview;
+
+  /// No description provided for @character_edit_test_voice_settings_message_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'========== testVoiceSettings 失敗 =========='**
+  String get character_edit_test_voice_settings_message_failed;
+
+  /// No description provided for @character_edit_confirm_voice_selection_message_selected.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'✅ Voice選定正式 Voice ID：{realVoiceId}'**
+  String character_edit_confirm_voice_selection_message_selected(
+      Object realVoiceId);
+
+  /// No description provided for @character_edit_confirm_voice_selection_message_save_failed_select.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'========== 儲存 Voice Bank 選擇失敗 =========='**
+  String get character_edit_confirm_voice_selection_message_save_failed_select;
+
+  /// No description provided for @character_edit_confirm_voice_selection_message_failed_voice_selected.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'========== 選定 Voice Bank 聲音失敗 =========='**
+  String
+      get character_edit_confirm_voice_selection_message_failed_voice_selected;
+
+  /// No description provided for @character_to_map_message_creator.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'神祕創作者'**
+  String get character_to_map_message_creator;
+
+  /// No description provided for @character_get_character_by_id_message_load_background_story.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'背景故事載入中...'**
+  String get character_get_character_by_id_message_load_background_story;
+
+  /// No description provided for @character_get_character_by_id_message_sync.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'初始劇情同步中...'**
+  String get character_get_character_by_id_message_sync;
+
+  /// No description provided for @character_get_character_by_id_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'正在準備開場白...'**
+  String get character_get_character_by_id_message;
+
+  /// No description provided for @character_get_character_by_id_message_background.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'正在加載背景...'**
+  String get character_get_character_by_id_message_background;
+
+  /// No description provided for @character_get_character_by_id_message_load.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'世界觀載入中...'**
+  String get character_get_character_by_id_message_load;
+
+  /// No description provided for @character_get_character_by_id_message_load_settings.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'正在載入角色核心設定...'**
+  String get character_get_character_by_id_message_load_settings;
+
+  /// No description provided for @character_get_character_by_id_message_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'正在加載性格...'**
+  String get character_get_character_by_id_message_variant_b;
+
+  /// No description provided for @character_get_character_by_id_message_appearance.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'外貌描述加載中...'**
+  String get character_get_character_by_id_message_appearance;
+
+  /// No description provided for @character_get_character_by_id_message_variant_c.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'正在加載語氣...'**
+  String get character_get_character_by_id_message_variant_c;
+
+  /// No description provided for @character_get_character_by_id_message_load_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'尚未讀取'**
+  String get character_get_character_by_id_message_load_variant_b;
+
+  /// No description provided for @character_get_character_by_id_message_variant_d.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'陌生人'**
+  String get character_get_character_by_id_message_variant_d;
+
+  /// No description provided for @character_get_character_by_id_message_load_variant_c.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'對話範例讀取中...'**
+  String get character_get_character_by_id_message_load_variant_c;
+
+  /// No description provided for @character_get_character_by_id_message_variant_e.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'初識'**
+  String get character_get_character_by_id_message_variant_e;
+
+  /// No description provided for @character_get_character_by_id_message_variant_f.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'熟識'**
+  String get character_get_character_by_id_message_variant_f;
+
+  /// No description provided for @character_get_character_by_id_message_variant_g.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'曖昧'**
+  String get character_get_character_by_id_message_variant_g;
+
+  /// No description provided for @chat_input_message_sticker.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'貼紙'**
+  String get chat_input_message_sticker;
+
+  /// No description provided for @chat_text.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今日免費閒聊已達上限'**
+  String get chat_text;
+
+  /// No description provided for @chat_message_flowers_today_continue.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今天的 10 次免費閒聊已使用完畢。\n\n接下來每次閒聊需支付 1 朵花花，是否繼續？'**
+  String get chat_message_flowers_today_continue;
+
+  /// No description provided for @chat_text_continue.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'同意並繼續'**
+  String get chat_text_continue;
+
+  /// No description provided for @chat_empty_message_label_current_sticker.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前還沒有可使用的貼紙。'**
+  String get chat_empty_message_label_current_sticker;
+
+  /// No description provided for @chat_empty_message_label_sticker.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'還沒有最近使用的貼紙'**
+  String get chat_empty_message_label_sticker;
+
+  /// No description provided for @chat_empty_message_label_sticker_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'還沒有喜愛的貼紙'**
+  String get chat_empty_message_label_sticker_variant_b;
+
+  /// No description provided for @chat_empty_message_label_current_sticker_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前還沒有可使用的貼紙'**
+  String get chat_empty_message_label_current_sticker_variant_b;
+
+  /// No description provided for @chat_empty_message_sticker.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我的貼紙'**
+  String get chat_empty_message_sticker;
+
+  /// No description provided for @chat_empty_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'最近使用'**
+  String get chat_empty_message;
+
+  /// No description provided for @chat_empty_message_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'喜愛'**
+  String get chat_empty_message_variant_b;
+
+  /// No description provided for @chat_send_sticker_message_current_unavailable_sticker.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這張貼紙目前無法使用'**
+  String get chat_send_sticker_message_current_unavailable_sticker;
+
+  /// No description provided for @chat_message_theater.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'—— 劇場・{sceneTitle} ——'**
+  String chat_message_theater(Object sceneTitle);
+
+  /// No description provided for @chat_handle_regenerate_button_message_character_reply_again.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'將重新產生角色上一則回覆。'**
+  String get chat_handle_regenerate_button_message_character_reply_again;
+
+  /// No description provided for @creator_profile_reason_tile_message_report_select_reason.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請選擇檢舉「{creatorName}」的原因：'**
+  String creator_profile_reason_tile_message_report_select_reason(
+      Object creatorName);
+
+  /// No description provided for @widget_key_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'狀態'**
+  String get widget_key_message;
+
+  /// No description provided for @widget_key_message_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'地點'**
+  String get widget_key_message_variant_b;
+
+  /// No description provided for @widget_label_character.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'尚未有角色狀態'**
+  String get widget_label_character;
+
+  /// No description provided for @widget_format_post_time_label_moment_latest.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'最新動態'**
+  String get widget_format_post_time_label_moment_latest;
+
+  /// No description provided for @widget_format_post_time_label_update_moment.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'剛剛更新了動態'**
+  String get widget_format_post_time_label_update_moment;
+
+  /// No description provided for @widget_format_post_time_label_minutes_ago_update_moment.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{value1} 分鐘前更新了動態'**
+  String widget_format_post_time_label_minutes_ago_update_moment(Object value1);
+
+  /// No description provided for @widget_format_post_time_label_hours_ago_update_moment.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{value1} 小時前更新了動態'**
+  String widget_format_post_time_label_hours_ago_update_moment(Object value1);
+
+  /// No description provided for @widget_format_post_time_label_update_moment_days.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'昨天更新了動態'**
+  String get widget_format_post_time_label_update_moment_days;
+
+  /// No description provided for @widget_format_post_time_label_update_moment_days_ago.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{value1} 天前更新了動態'**
+  String widget_format_post_time_label_update_moment_days_ago(Object value1);
+
+  /// No description provided for @widget_format_post_time_label_update_moment_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{value1}/{value2} 更新了動態'**
+  String widget_format_post_time_label_update_moment_variant_b(
+      Object value1, Object value2);
+
+  /// No description provided for @widget_format_post_time_message_share_photo.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'分享了一張照片'**
+  String get widget_format_post_time_message_share_photo;
+
+  /// No description provided for @widget_format_post_time_message_update_moment.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'更新了一則動態'**
+  String get widget_format_post_time_message_update_moment;
+
+  /// No description provided for @widget_format_post_time_message_current_character_moment.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前還沒有角色動態'**
+  String get widget_format_post_time_message_current_character_moment;
+
+  /// No description provided for @widget_extract_daily_quote_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'地點：'**
+  String get widget_extract_daily_quote_message;
+
+  /// No description provided for @widget_format_daily_quote_time_message_today.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'還沒有留下今天的一句話'**
+  String get widget_format_daily_quote_time_message_today;
+
+  /// No description provided for @widget_load_period_care_state_message_today.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'「今天別太勉強自己，我陪妳慢慢來。」'**
+  String get widget_load_period_care_state_message_today;
+
+  /// No description provided for @widget_load_period_care_state_message_period_days.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'生理期第 {dayCount} 天'**
+  String widget_load_period_care_state_message_period_days(Object dayCount);
+
+  /// No description provided for @widget_load_period_care_state_message_days.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'「這幾天記得早點休息，別把自己累壞。」'**
+  String get widget_load_period_care_state_message_days;
+
+  /// No description provided for @widget_load_period_care_state_message_today_start.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'預計今天開始'**
+  String get widget_load_period_care_state_message_today_start;
+
+  /// No description provided for @widget_load_period_care_state_message_days_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'預計還有 {daysUntil} 天'**
+  String widget_load_period_care_state_message_days_variant_b(Object daysUntil);
+
+  /// No description provided for @widget_load_period_care_state_message_today_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'「辛苦了，今天也要好好照顧自己。」'**
+  String get widget_load_period_care_state_message_today_variant_b;
+
+  /// No description provided for @widget_load_period_care_state_message_period_end.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'生理期剛結束'**
+  String get widget_load_period_care_state_message_period_end;
+
+  /// No description provided for @widget_load_period_care_state_message_today_variant_c.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'「今天也記得好好照顧自己。」'**
+  String get widget_load_period_care_state_message_today_variant_c;
+
+  /// No description provided for @widget_load_period_care_state_message_current_reminder.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前沒有特別的週期提醒'**
+  String get widget_load_period_care_state_message_current_reminder;
+
+  /// No description provided for @widget_load_period_care_state_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'尚未有足夠的週期紀錄'**
+  String get widget_load_period_care_state_message;
+
+  /// No description provided for @widget_parse_character_birthday_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'年'**
+  String get widget_parse_character_birthday_message;
+
+  /// No description provided for @widget_parse_character_birthday_message_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'月'**
+  String get widget_parse_character_birthday_message_variant_b;
+
+  /// No description provided for @widget_build_birthday_countdown_lines_message_character_birthday.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色生日'**
+  String get widget_build_birthday_countdown_lines_message_character_birthday;
+
+  /// No description provided for @widget_build_birthday_countdown_lines_message_birthday_settings.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'尚未設定生日'**
+  String get widget_build_birthday_countdown_lines_message_birthday_settings;
+
+  /// No description provided for @widget_build_birthday_countdown_lines_message_birthday_countdown.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'距離他的生日・{birthdayLabel}'**
+  String widget_build_birthday_countdown_lines_message_birthday_countdown(
+      Object birthdayLabel);
+
+  /// No description provided for @widget_build_birthday_countdown_lines_message_today.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'就是今天'**
+  String get widget_build_birthday_countdown_lines_message_today;
+
+  /// No description provided for @widget_build_birthday_countdown_lines_message_days.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'還有 {days} 天'**
+  String widget_build_birthday_countdown_lines_message_days(Object days);
+
+  /// No description provided for @widget_build_birthday_countdown_lines_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'和他相遇'**
+  String get widget_build_birthday_countdown_lines_message;
+
+  /// No description provided for @widget_build_birthday_countdown_lines_message_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'尚未有相遇紀錄'**
+  String get widget_build_birthday_countdown_lines_message_variant_b;
+
+  /// No description provided for @widget_build_birthday_countdown_lines_message_days_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{value1} 天'**
+  String widget_build_birthday_countdown_lines_message_days_variant_b(
+      Object value1);
+
+  /// No description provided for @widget_build_birthday_countdown_lines_message_variant_c.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'重要的日子'**
+  String get widget_build_birthday_countdown_lines_message_variant_c;
+
+  /// No description provided for @widget_build_birthday_countdown_lines_message_date_select.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'尚未選擇日期'**
+  String get widget_build_birthday_countdown_lines_message_date_select;
+
+  /// No description provided for @widget_build_birthday_countdown_lines_message_elapsed_days.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已過 {value1} 天'**
+  String widget_build_birthday_countdown_lines_message_elapsed_days(
+      Object value1);
+
+  /// No description provided for @widget_settings_remove_title_character_latest.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色最新貼文'**
+  String get widget_settings_remove_title_character_latest;
+
+  /// No description provided for @widget_settings_remove_subtitle_moment_latest.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'不用打開 App，也能看到他的最新動態。'**
+  String get widget_settings_remove_subtitle_moment_latest;
+
+  /// No description provided for @widget_settings_remove_title_period.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'生理期陪伴'**
+  String get widget_settings_remove_title_period;
+
+  /// No description provided for @widget_settings_remove_subtitle_character_end.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'快到、進行中與結束後，都多一點角色的關心。'**
+  String get widget_settings_remove_subtitle_character_end;
+
+  /// No description provided for @widget_settings_remove_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今日一句'**
+  String get widget_settings_remove_title;
+
+  /// No description provided for @widget_settings_remove_subtitle_days.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'每天打開手機，都有一句話在桌面等著妳。'**
+  String get widget_settings_remove_subtitle_days;
+
+  /// No description provided for @widget_settings_remove_title_reminder.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'紀念日／提醒'**
+  String get widget_settings_remove_title_reminder;
+
+  /// No description provided for @widget_settings_remove_subtitle_character_birthday_reminder.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'一起記住相遇、生日，也讓角色提醒妳重要的事。'**
+  String get widget_settings_remove_subtitle_character_birthday_reminder;
+
+  /// No description provided for @widget_settings_remove_title_character.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色狀態'**
+  String get widget_settings_remove_title_character;
+
+  /// No description provided for @widget_settings_remove_subtitle_chat_latest_mood.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'把聊天室最新的心情、狀態與地點帶到桌面。'**
+  String get widget_settings_remove_subtitle_chat_latest_mood;
+
+  /// No description provided for @widget_settings_size_label.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'中'**
+  String get widget_settings_size_label;
+
+  /// No description provided for @widget_settings_size_label_message_send.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已送出新增到桌面的請求。'**
+  String get widget_settings_size_label_message_send;
+
+  /// No description provided for @widget_settings_size_label_message_try_again_later_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'新增到桌面失敗，請稍後再試。'**
+  String get widget_settings_size_label_message_try_again_later_failed;
+
+  /// No description provided for @widget_settings_edit_saved_widget_message_character_reminder_again.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'舊版「角色待辦提醒」已併入「紀念日／提醒」，請重新建立。'**
+  String get widget_settings_edit_saved_widget_message_character_reminder_again;
+
+  /// No description provided for @widget_settings_delete_saved_widget_title_delete_small.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除小工具？'**
+  String get widget_settings_delete_saved_widget_title_delete_small;
+
+  /// No description provided for @widget_settings_delete_saved_widget_message_stop_display_long_press_home_after_delete.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確定要刪除「{value1}・{value2}」嗎？\n\n刪除後，桌面上的這顆小工具會停止顯示角色內容，並提示玩家長按桌面移除。'**
+  String
+      widget_settings_delete_saved_widget_message_stop_display_long_press_home_after_delete(
+          Object value1, Object value2);
+
+  /// No description provided for @widget_settings_delete_saved_widget_message_delete_settings_small.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已刪除小工具設定；桌面上的對應小工具已停用。'**
+  String get widget_settings_delete_saved_widget_message_delete_settings_small;
+
+  /// No description provided for @widget_settings_message_desktop_widget.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'桌面小工具'**
+  String get widget_settings_message_desktop_widget;
+
+  /// No description provided for @widget_settings_message_character_days.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'讓喜歡的角色陪妳出現在每一天。'**
+  String get widget_settings_message_character_days;
+
+  /// No description provided for @widget_settings_message_small.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我的小工具'**
+  String get widget_settings_message_small;
+
+  /// No description provided for @widget_settings_message_desktop_widget_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'還沒有桌面小工具'**
+  String get widget_settings_message_desktop_widget_variant_b;
+
+  /// No description provided for @widget_settings_message_character_reminder.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選一個喜歡的角色，讓他的提醒、貼文或狀態出現在桌面上。'**
+  String get widget_settings_message_character_reminder;
+
+  /// No description provided for @widget_settings_message_size.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{value1}尺寸'**
+  String widget_settings_message_size(Object value1);
+
+  /// No description provided for @widget_settings_tooltip.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'新增到桌面'**
+  String get widget_settings_tooltip;
+
+  /// No description provided for @widget_settings_tooltip_small.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'編輯小工具'**
+  String get widget_settings_tooltip_small;
+
+  /// No description provided for @widget_settings_tooltip_delete_small.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除小工具'**
+  String get widget_settings_tooltip_delete_small;
+
+  /// No description provided for @widget_settings_message_desktop_widget_variant_c.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'新增桌面小工具'**
+  String get widget_settings_message_desktop_widget_variant_c;
+
+  /// No description provided for @widget_settings_message_character_photo_content_select_small.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'每個小工具都可以獨立選擇角色、角色照片與顯示內容，也可以同時放多個角色在桌面上。'**
+  String get widget_settings_message_character_photo_content_select_small;
+
+  /// No description provided for @widget_settings_desktop_type_selection_message_select_small.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選擇小工具'**
+  String get widget_settings_desktop_type_selection_message_select_small;
+
+  /// No description provided for @widget_settings_desktop_type_selection_message_select.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'先選擇妳想放到桌面的陪伴方式。'**
+  String get widget_settings_desktop_type_selection_message_select;
+
+  /// No description provided for @widget_settings_go_to_photo_step_message_try_again_later_failed_load_character_photo.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色照片載入失敗，請稍後再試。'**
+  String
+      get widget_settings_go_to_photo_step_message_try_again_later_failed_load_character_photo;
+
+  /// No description provided for @widget_settings_message_character_select.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選擇角色'**
+  String get widget_settings_message_character_select;
+
+  /// No description provided for @widget_settings_message_character_friend_days.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'只顯示妳已加好友或曾經聊過天的角色。'**
+  String get widget_settings_message_character_friend_days;
+
+  /// No description provided for @widget_settings_hint_character_search.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'搜尋角色'**
+  String get widget_settings_hint_character_search;
+
+  /// No description provided for @widget_settings_message_try_again_later_failed_load_character.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色載入失敗，請稍後再試。'**
+  String get widget_settings_message_try_again_later_failed_load_character;
+
+  /// No description provided for @widget_settings_message_current_character_chat_friend_add.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前沒有符合的角色。先和角色聊聊天，或把他加入好友吧。'**
+  String get widget_settings_message_current_character_chat_friend_add;
+
+  /// No description provided for @widget_settings_message_character_photo_select.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'下一步・選擇角色照片'**
+  String get widget_settings_message_character_photo_select;
+
+  /// No description provided for @widget_settings_desktop_photo_selection_message_character_photo_select.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選擇角色照片'**
+  String
+      get widget_settings_desktop_photo_selection_message_character_photo_select;
+
+  /// No description provided for @widget_settings_desktop_photo_selection_message_current_affection_unlocked_photo.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前好感度 {value1}・已解鎖的照片可以直接使用。'**
+  String
+      widget_settings_desktop_photo_selection_message_current_affection_unlocked_photo(
+          Object value1);
+
+  /// No description provided for @widget_settings_desktop_photo_selection_message_current_character_photo.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這個角色目前沒有可用照片。'**
+  String
+      get widget_settings_desktop_photo_selection_message_current_character_photo;
+
+  /// No description provided for @widget_settings_desktop_photo_selection_message_required_affection_unlock_photo.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'需要好感度 {value1} 才能解鎖這張照片。'**
+  String
+      widget_settings_desktop_photo_selection_message_required_affection_unlock_photo(
+          Object value1);
+
+  /// No description provided for @widget_settings_message_photo_public.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'公開照片'**
+  String get widget_settings_message_photo_public;
+
+  /// No description provided for @widget_settings_message_unlock.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'好感 {value1} 解鎖'**
+  String widget_settings_message_unlock(Object value1);
+
+  /// No description provided for @widget_settings_message_unlocked.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已解鎖・好感 {value1}'**
+  String widget_settings_message_unlocked(Object value1);
+
+  /// No description provided for @widget_settings_message_content_settings.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'下一步・設定顯示內容'**
+  String get widget_settings_message_content_settings;
+
+  /// No description provided for @widget_settings_open_preview_message_player_select.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先選擇一個玩家建立的事件／待辦。'**
+  String get widget_settings_open_preview_message_player_select;
+
+  /// No description provided for @widget_settings_pick_custom_memo_event_message_login_account.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先登入帳號。'**
+  String get widget_settings_pick_custom_memo_event_message_login_account;
+
+  /// No description provided for @widget_settings_pick_custom_memo_event_message_memo_current_character.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這個角色目前還沒有建立任何事件／備忘錄。'**
+  String
+      get widget_settings_pick_custom_memo_event_message_memo_current_character;
+
+  /// No description provided for @widget_settings_pick_custom_memo_event_message_player_select.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選擇玩家建立的事件'**
+  String get widget_settings_pick_custom_memo_event_message_player_select;
+
+  /// No description provided for @widget_settings_message_try_again_later_failed_load.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'事件讀取失敗，請稍後再試。'**
+  String get widget_settings_message_try_again_later_failed_load;
+
+  /// No description provided for @widget_settings_message_content_settings_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'設定顯示內容'**
+  String get widget_settings_message_content_settings_variant_b;
+
+  /// No description provided for @widget_settings_subtitle_content.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'調整妳想在桌面上看到的內容。'**
+  String get widget_settings_subtitle_content;
+
+  /// No description provided for @widget_settings_message_small_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'下一步・預覽小工具'**
+  String get widget_settings_message_small_variant_b;
+
+  /// No description provided for @widget_settings_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'貼文顯示'**
+  String get widget_settings_title;
+
+  /// No description provided for @widget_settings_title_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'顯示貼文圖片'**
+  String get widget_settings_title_variant_b;
+
+  /// No description provided for @widget_settings_title_variant_c.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'顯示心動數'**
+  String get widget_settings_title_variant_c;
+
+  /// No description provided for @widget_settings_title_comment.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'顯示留言數'**
+  String get widget_settings_title_comment;
+
+  /// No description provided for @widget_settings_title_variant_d.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'隱私與陪伴'**
+  String get widget_settings_title_variant_d;
+
+  /// No description provided for @widget_settings_title_variant_e.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'隱私模式'**
+  String get widget_settings_title_variant_e;
+
+  /// No description provided for @widget_settings_subtitle_period_character.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'桌面只顯示角色關心，不直接寫出生理期資訊。'**
+  String get widget_settings_subtitle_period_character;
+
+  /// No description provided for @widget_settings_title_variant_f.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'詳細模式'**
+  String get widget_settings_title_variant_f;
+
+  /// No description provided for @widget_settings_subtitle_end.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'可顯示快到了、進行中或剛結束等週期狀態。'**
+  String get widget_settings_subtitle_end;
+
+  /// No description provided for @widget_settings_title_variant_g.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'顯示週期狀態'**
+  String get widget_settings_title_variant_g;
+
+  /// No description provided for @widget_settings_title_time.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'顯示時間'**
+  String get widget_settings_title_time;
+
+  /// No description provided for @widget_settings_title_update.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'更新方式'**
+  String get widget_settings_title_update;
+
+  /// No description provided for @widget_settings_message_update_days.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'每天更新一次'**
+  String get widget_settings_message_update_days;
+
+  /// No description provided for @widget_settings_message_update.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'每次打開 App 後更新'**
+  String get widget_settings_message_update;
+
+  /// No description provided for @widget_settings_text_update.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'打開 App 後更新'**
+  String get widget_settings_text_update;
+
+  /// No description provided for @widget_settings_title_content.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'紀念日內容'**
+  String get widget_settings_title_content;
+
+  /// No description provided for @widget_settings_title_days.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'相遇天數'**
+  String get widget_settings_title_days;
+
+  /// No description provided for @widget_settings_subtitle_character_today_days.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'顯示妳和角色認識到今天的天數。'**
+  String get widget_settings_subtitle_character_today_days;
+
+  /// No description provided for @widget_settings_subtitle_character_birthday.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'顯示距離角色生日還有多久。'**
+  String get widget_settings_subtitle_character_birthday;
+
+  /// No description provided for @widget_settings_title_player.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'玩家建立的事件／待辦'**
+  String get widget_settings_title_player;
+
+  /// No description provided for @widget_settings_message_memo_character_select_reminder.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'從這個角色的備忘錄／提醒中選擇一個事件或待辦。'**
+  String get widget_settings_message_memo_character_select_reminder;
+
+  /// No description provided for @widget_settings_message_selected.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已選：{_selectedMemoContent}'**
+  String widget_settings_message_selected(Object _selectedMemoContent);
+
+  /// No description provided for @widget_settings_message_select.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'最多選擇 3 項'**
+  String get widget_settings_message_select;
+
+  /// No description provided for @widget_settings_message_character.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色狀態最多顯示 3 項。'**
+  String get widget_settings_message_character;
+
+  /// No description provided for @widget_settings_message_small_variant_c.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'預覽小工具'**
+  String get widget_settings_message_small_variant_c;
+
+  /// No description provided for @widget_settings_title_confirm.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'最後確認'**
+  String get widget_settings_title_confirm;
+
+  /// No description provided for @widget_settings_subtitle_large.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'先看看放到桌面上大概會長什麼樣子。'**
+  String get widget_settings_subtitle_large;
+
+  /// No description provided for @widget_settings_title_size.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'尺寸'**
+  String get widget_settings_title_size;
+
+  /// No description provided for @widget_settings_title_variant_h.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'版型'**
+  String get widget_settings_title_variant_h;
+
+  /// No description provided for @widget_settings_label_photo.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'滿版照片'**
+  String get widget_settings_label_photo;
+
+  /// No description provided for @widget_settings_label_character.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色卡式'**
+  String get widget_settings_label_character;
+
+  /// No description provided for @widget_settings_message_sync.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'正在同步…'**
+  String get widget_settings_message_sync;
+
+  /// No description provided for @widget_settings_message_desktop_widget_add.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'加入桌面小工具'**
+  String get widget_settings_message_desktop_widget_add;
+
+  /// No description provided for @widget_settings_sample_lines_message_today_end.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'「今天比預想中早一點結束。」'**
+  String get widget_settings_sample_lines_message_today_end;
+
+  /// No description provided for @widget_settings_sample_lines_message_days.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'「這幾天別太勉強自己。」'**
+  String get widget_settings_sample_lines_message_days;
+
+  /// No description provided for @widget_settings_sample_lines_message_period.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'生理期進行中'**
+  String get widget_settings_sample_lines_message_period;
+
+  /// No description provided for @widget_settings_sample_lines_message_today.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'「今天多休息一點。」'**
+  String get widget_settings_sample_lines_message_today;
+
+  /// No description provided for @widget_settings_sample_lines_message_today_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'「今天也別忘了好好吃飯。」'**
+  String get widget_settings_sample_lines_message_today_variant_b;
+
+  /// No description provided for @widget_settings_sample_lines_label_birthday_countdown.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'距離他的生日'**
+  String get widget_settings_sample_lines_label_birthday_countdown;
+
+  /// No description provided for @widget_settings_sample_lines_label_days.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'還有 12 天'**
+  String get widget_settings_sample_lines_label_days;
+
+  /// No description provided for @widget_settings_sample_lines_label_days_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'128 天'**
+  String get widget_settings_sample_lines_label_days_variant_b;
+
+  /// No description provided for @widget_settings_sample_lines_message_mood.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'心情｜有點疲倦'**
+  String get widget_settings_sample_lines_message_mood;
+
+  /// No description provided for @widget_settings_sample_lines_message_end.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'狀態｜剛結束工作'**
+  String get widget_settings_sample_lines_message_end;
+
+  /// No description provided for @widget_settings_sample_lines_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'地點｜公司樓下'**
+  String get widget_settings_sample_lines_message;
+
+  /// No description provided for @widget_settings_sample_lines_message_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'關係｜戀人'**
+  String get widget_settings_sample_lines_message_variant_b;
+
+  /// No description provided for @widget_settings_sample_lines_message_variant_c.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'衣著｜淺灰色針織衫'**
+  String get widget_settings_sample_lines_message_variant_c;
+
+  /// No description provided for @widget_settings_sample_lines_message_days_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'天氣｜微涼'**
+  String get widget_settings_sample_lines_message_days_variant_b;
+
+  /// No description provided for @widget_settings_sample_lines_message_variant_d.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'想法｜想早點見到妳'**
+  String get widget_settings_sample_lines_message_variant_d;
+
+  /// No description provided for @widget_settings_sample_lines_message_variant_e.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'動作｜正在收拾桌面'**
+  String get widget_settings_sample_lines_message_variant_e;
+
+  /// No description provided for @widget_settings_sample_lines_message_affection.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'好感度｜安定而親近'**
+  String get widget_settings_sample_lines_message_affection;
+
+  /// No description provided for @edit_profile_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'個人裝扮'**
+  String get edit_profile_message;
+
+  /// No description provided for @edit_profile_message_current.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前未使用'**
+  String get edit_profile_message_current;
+
+  /// No description provided for @event_memory_character_load_characters_message_login_character_select.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先登入後再選擇角色'**
+  String
+      get event_memory_character_load_characters_message_login_character_select;
+
+  /// No description provided for @event_memory_character_center_message_memory_select.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選擇想一起留下這段回憶的人'**
+  String get event_memory_character_center_message_memory_select;
+
+  /// No description provided for @event_memory_character_center_message_character_friend_add.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'只有你自己建立的角色，以及已加入好友的角色會出現在這裡。'**
+  String get event_memory_character_center_message_character_friend_add;
+
+  /// No description provided for @event_memory_character_center_message_current_character_select.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前沒有可以選擇的角色'**
+  String get event_memory_character_center_message_current_character_select;
+
+  /// No description provided for @event_memory_character_center_message_public_character_character_friend_add.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'建立自己的角色，或先將喜歡的公開角色加入好友。'**
+  String
+      get event_memory_character_center_message_public_character_character_friend_add;
+
+  /// No description provided for @event_memory_character_message_character_select.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先選擇角色'**
+  String get event_memory_character_message_character_select;
+
+  /// No description provided for @event_memory_character_message_continue.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'與 {value1} 繼續'**
+  String event_memory_character_message_continue(Object value1);
+
+  /// No description provided for @event_memory_character_card_message_private.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我的・私人'**
+  String get event_memory_character_card_message_private;
+
+  /// No description provided for @event_memory_character_error_label_load_again.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'重新讀取'**
+  String get event_memory_character_error_label_load_again;
+
+  /// No description provided for @event_memory_collection_show_collection_intro_if_needed_message_collection.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'拾光收藏'**
+  String
+      get event_memory_collection_show_collection_intro_if_needed_message_collection;
+
+  /// No description provided for @event_memory_collection_show_collection_intro_if_needed_message_collection_content.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這裡是收藏列表，可以看看自己所有收藏的內容'**
+  String
+      get event_memory_collection_show_collection_intro_if_needed_message_collection_content;
+
+  /// No description provided for @event_memory_collection_text_collection_login.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先登入後查看收藏'**
+  String get event_memory_collection_text_collection_login;
+
+  /// No description provided for @event_memory_collection_message_memory.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'回憶'**
+  String get event_memory_collection_message_memory;
+
+  /// No description provided for @event_memory_collection_message_chat_background.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'聊天室背景'**
+  String get event_memory_collection_message_chat_background;
+
+  /// No description provided for @event_memory_collection_message_avatar_frame_collection.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'還沒有收藏頭像框喔'**
+  String get event_memory_collection_message_avatar_frame_collection;
+
+  /// No description provided for @event_memory_collection_message_avatar_frame.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'之後獲得的限定頭像框會出現在這裡。'**
+  String get event_memory_collection_message_avatar_frame;
+
+  /// No description provided for @event_memory_collection_message_collection_sticker.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'還沒有收藏貼紙喔'**
+  String get event_memory_collection_message_collection_sticker;
+
+  /// No description provided for @event_memory_collection_message_sticker.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'之後收集到的貼紙都會放在這裡。'**
+  String get event_memory_collection_message_sticker;
+
+  /// No description provided for @event_memory_collection_message_collection_chat_background.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'還沒有收藏聊天室背景喔'**
+  String get event_memory_collection_message_collection_chat_background;
+
+  /// No description provided for @event_memory_collection_message_chat_background_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'之後獲得的限定聊天室背景會出現在這裡。'**
+  String get event_memory_collection_message_chat_background_variant_b;
+
+  /// No description provided for @event_memory_collection_tab_title_collection_temporary.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'暫時讀不到收藏'**
+  String get event_memory_collection_tab_title_collection_temporary;
+
+  /// No description provided for @event_memory_collection_tab_title_collection_memory.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'還沒有收藏回憶喔'**
+  String get event_memory_collection_tab_title_collection_memory;
+
+  /// No description provided for @event_memory_collection_tab_subtitle_limited_memory_complete.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'完成限定回憶後，可以把喜歡的片段留在這裡。'**
+  String get event_memory_collection_tab_subtitle_limited_memory_complete;
+
+  /// No description provided for @event_memory_collection_item_card_label.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'限定物品'**
+  String get event_memory_collection_item_card_label;
+
+  /// No description provided for @event_memory_collection_confirm_delete_owned_item_message_delete.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除限定物品？'**
+  String get event_memory_collection_confirm_delete_owned_item_message_delete;
+
+  /// No description provided for @event_memory_collection_confirm_delete_owned_item_message_after_delete_unavailable.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除後將無法再使用這個{_itemTypeLabel}，'**
+  String
+      event_memory_collection_confirm_delete_owned_item_message_after_delete_unavailable(
+          Object _itemTypeLabel);
+
+  /// No description provided for @event_memory_collection_confirm_delete_owned_item_message_collection.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'也不會再出現在「拾光收藏」中。\n\n'**
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_collection;
+
+  /// No description provided for @event_memory_collection_confirm_delete_owned_item_message_unavailable.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這代表你將放棄這次取得的限定物品，且此操作無法復原。\n\n'**
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_unavailable;
+
+  /// No description provided for @event_memory_collection_confirm_delete_owned_item_message_delete_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確定要刪除「{value1}」嗎？'**
+  String
+      event_memory_collection_confirm_delete_owned_item_message_delete_variant_b(
+          Object value1);
+
+  /// No description provided for @event_memory_collection_confirm_delete_owned_item_message_delete_variant_c.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已刪除限定物品'**
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_delete_variant_c;
+
+  /// No description provided for @event_memory_collection_confirm_delete_owned_item_message_not_found_delete.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'找不到這個限定物品，可能已經刪除了'**
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_not_found_delete;
+
+  /// No description provided for @event_memory_collection_confirm_delete_owned_item_message_collection_current_delete.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這個收藏目前不能刪除'**
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_collection_current_delete;
+
+  /// No description provided for @event_memory_collection_show_preview_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'圖片準備中'**
+  String get event_memory_collection_show_preview_message;
+
+  /// No description provided for @event_memory_collection_show_preview_message_failed_load.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'圖片載入失敗'**
+  String get event_memory_collection_show_preview_message_failed_load;
+
+  /// No description provided for @event_memory_collection_save_to_gallery_message_save_current.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'網頁版目前不支援直接儲存到手機相簿'**
+  String get event_memory_collection_save_to_gallery_message_save_current;
+
+  /// No description provided for @event_memory_collection_save_to_gallery_message_save_memory.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'需要相簿權限才能儲存這段回憶'**
+  String get event_memory_collection_save_to_gallery_message_save_memory;
+
+  /// No description provided for @event_memory_collection_save_to_gallery_message_memory.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'回憶圖片還沒準備好，請再試一次'**
+  String get event_memory_collection_save_to_gallery_message_memory;
+
+  /// No description provided for @event_memory_collection_save_to_gallery_message_failed_memory.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'產生回憶圖片失敗'**
+  String get event_memory_collection_save_to_gallery_message_failed_memory;
+
+  /// No description provided for @event_memory_collection_save_to_gallery_message_save.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已儲存到手機相簿 ♡'**
+  String get event_memory_collection_save_to_gallery_message_save;
+
+  /// No description provided for @event_memory_collection_save_to_gallery_message_save_confirm_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'儲存失敗，請確認相簿權限後再試一次'**
+  String
+      get event_memory_collection_save_to_gallery_message_save_confirm_failed;
+
+  /// No description provided for @event_memory_collection_delete_collection_title_collection_cancel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'取消收藏？'**
+  String get event_memory_collection_delete_collection_title_collection_cancel;
+
+  /// No description provided for @event_memory_collection_delete_collection_message_collection_cancel_memory.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'取消收藏後，這段回憶將不會再出現在「拾光收藏」中。\n\n確定要取消收藏嗎？'**
+  String
+      get event_memory_collection_delete_collection_message_collection_cancel_memory;
+
+  /// No description provided for @event_memory_collection_delete_collection_message_try_again_later_collection_cancel_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'取消收藏失敗，請稍後再試'**
+  String
+      get event_memory_collection_delete_collection_message_try_again_later_collection_cancel_failed;
+
+  /// No description provided for @event_memory_collection_message_collection_memory.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'回憶收藏'**
+  String get event_memory_collection_message_collection_memory;
+
+  /// No description provided for @event_memory_collection_label_play.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'再次播放'**
+  String get event_memory_collection_label_play;
+
+  /// No description provided for @event_memory_collection_label_save.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'正在儲存…'**
+  String get event_memory_collection_label_save;
+
+  /// No description provided for @event_memory_collection_label_save_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'儲存到手機相簿'**
+  String get event_memory_collection_label_save_variant_b;
+
+  /// No description provided for @event_memory_collection_collected_card_message_limited_memory.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'戀戀拾光・限定回憶'**
+  String get event_memory_collection_collected_card_message_limited_memory;
+
+  /// No description provided for @event_memory_collection_create_state_message_end_story.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'有些瞬間，\n並不會因為故事結束而消失。'**
+  String get event_memory_collection_create_state_message_end_story;
+
+  /// No description provided for @event_memory_collection_text_collection.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這段收藏沒有可重播的 Scene'**
+  String get event_memory_collection_text_collection;
+
+  /// No description provided for @event_memory_collection_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'略過'**
+  String get event_memory_collection_message;
+
+  /// No description provided for @event_memory_collection_message_end.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'點擊結束'**
+  String get event_memory_collection_message_end;
+
+  /// No description provided for @event_memory_collection_message_continue.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'點擊繼續'**
+  String get event_memory_collection_message_continue;
+
+  /// No description provided for @event_memory_collection_message_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'點擊顯示全文'**
+  String get event_memory_collection_message_variant_b;
+
+  /// No description provided for @event_memory_collection_collected_label_collection.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'剛剛收藏'**
+  String get event_memory_collection_collected_label_collection;
+
+  /// No description provided for @event_memory_collection_collected_item_label_collection_date.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'收藏日期未記錄'**
+  String get event_memory_collection_collected_item_label_collection_date;
+
+  /// No description provided for @event_memory_collection_collected_item_label_collection.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'收藏於 {value1}/{month}/{day}'**
+  String event_memory_collection_collected_item_label_collection(
+      Object day, Object month, Object value1);
+
+  /// No description provided for @event_memory_text_not_found_event.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'找不到活動資料'**
+  String get event_memory_text_not_found_event;
+
+  /// No description provided for @event_memory_message_limited_memory_failed_load.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'限定回憶讀取失敗'**
+  String get event_memory_message_limited_memory_failed_load;
+
+  /// No description provided for @event_memory_as_map_label_unlocked.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已解鎖'**
+  String get event_memory_as_map_label_unlocked;
+
+  /// No description provided for @event_memory_as_map_label_unlock.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'累積 {currencyIcon} {requiredValue} {currencyName} 解鎖（{currentValue} / {requiredValue}）'**
+  String event_memory_as_map_label_unlock(Object currencyIcon,
+      Object currencyName, Object currentValue, Object requiredValue);
+
+  /// No description provided for @event_memory_as_map_label_unlock_task_event_complete.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'完成指定活動任務後解鎖'**
+  String get event_memory_as_map_label_unlock_task_event_complete;
+
+  /// No description provided for @event_memory_as_map_label_redeem_unlock_event.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'兌換指定活動商品後解鎖'**
+  String get event_memory_as_map_label_redeem_unlock_event;
+
+  /// No description provided for @event_memory_as_map_label_unlock_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'尚未解鎖'**
+  String get event_memory_as_map_label_unlock_variant_b;
+
+  /// No description provided for @event_memory_hero_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'把只屬於你們的片段，留在這個季節裡。'**
+  String get event_memory_hero_message;
+
+  /// No description provided for @event_memory_hero_message_limited_memory.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'限定回憶  {unlockedCount} / {totalCount}'**
+  String event_memory_hero_message_limited_memory(
+      Object totalCount, Object unlockedCount);
+
+  /// No description provided for @event_memory_status_label_unlocked.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已解鎖・尚未觀看'**
+  String get event_memory_status_label_unlocked;
+
+  /// No description provided for @event_memory_status_label.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已觀看'**
+  String get event_memory_status_label;
+
+  /// No description provided for @event_memory_status_label_collection.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已收藏'**
+  String get event_memory_status_label_collection;
+
+  /// No description provided for @event_memory_footer_label_memory_start.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'可以開始這段回憶'**
+  String get event_memory_footer_label_memory_start;
+
+  /// No description provided for @event_memory_footer_label.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'可以再次觀看'**
+  String get event_memory_footer_label;
+
+  /// No description provided for @event_memory_footer_label_collection.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已收藏至拾光收藏'**
+  String get event_memory_footer_label_collection;
+
+  /// No description provided for @event_memory_empty_message_limited_memory_event_public.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這次活動還沒有公開限定回憶'**
+  String get event_memory_empty_message_limited_memory_event_public;
+
+  /// No description provided for @event_memory_performance_finish_message_memory.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這段回憶，留下來了。'**
+  String get event_memory_performance_finish_message_memory;
+
+  /// No description provided for @event_memory_performance_finish_message_save_collection.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'收藏會保留在遊戲內；只有儲存到手機相簿時，才會向系統要求相簿權限。'**
+  String get event_memory_performance_finish_message_save_collection;
+
+  /// No description provided for @event_memory_performance_finish_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'處理中…'**
+  String get event_memory_performance_finish_message;
+
+  /// No description provided for @event_memory_performance_finish_message_collection_memory.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'收藏這段回憶'**
+  String get event_memory_performance_finish_message_collection_memory;
+
+  /// No description provided for @event_memory_performance_confirm_uncollect_memory_message_collection_cancel_memory_again_remove.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'取消後，這段回憶會從「拾光收藏」中移除。之後仍然可以重新觀看並再次收藏。'**
+  String
+      get event_memory_performance_confirm_uncollect_memory_message_collection_cancel_memory_again_remove;
+
+  /// No description provided for @event_memory_performance_uncollect_memory_message_collection_login.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先登入後再管理收藏'**
+  String get event_memory_performance_uncollect_memory_message_collection_login;
+
+  /// No description provided for @event_memory_performance_collect_memory_message_collection_login_memory.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先登入後再收藏這段回憶'**
+  String
+      get event_memory_performance_collect_memory_message_collection_login_memory;
+
+  /// No description provided for @event_memory_performance_collect_memory_message_collection_memory.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已收藏這段回憶 ♡'**
+  String get event_memory_performance_collect_memory_message_collection_memory;
+
+  /// No description provided for @event_memory_performance_collect_memory_message_try_again_later_collection_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'收藏失敗，請稍後再試'**
+  String
+      get event_memory_performance_collect_memory_message_try_again_later_collection_failed;
+
+  /// No description provided for @event_memory_performance_text_panel_message_complete.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'點擊完成'**
+  String get event_memory_performance_text_panel_message_complete;
+
+  /// No description provided for @event_memory_performance_build_performance_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'跳過'**
+  String get event_memory_performance_build_performance_message;
+
+  /// No description provided for @event_memory_performance_text_play.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'沒有可播放的 Scene'**
+  String get event_memory_performance_text_play;
+
+  /// No description provided for @event_memory_profile_change_profile_message_profile.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'更換拾光檔案'**
+  String get event_memory_profile_change_profile_message_profile;
+
+  /// No description provided for @event_memory_profile_message_profile_confirm.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確認拾光檔案'**
+  String get event_memory_profile_message_profile_confirm;
+
+  /// No description provided for @event_memory_profile_center_text_profile_not_found.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'找不到可使用的拾光檔案'**
+  String get event_memory_profile_center_text_profile_not_found;
+
+  /// No description provided for @event_memory_profile_center_message_memory.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這段回憶，會以誰的身分留下？'**
+  String get event_memory_profile_center_message_memory;
+
+  /// No description provided for @event_memory_profile_center_message_profile_character_start.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已優先使用你與這個角色最近使用的拾光檔案，也可以在開始前更換。'**
+  String get event_memory_profile_center_message_profile_character_start;
+
+  /// No description provided for @event_memory_profile_center_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'將以「{value1}」與'**
+  String event_memory_profile_center_message(Object value1);
+
+  /// No description provided for @event_memory_profile_center_message_memory_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'「{value1}」留下這段回憶'**
+  String event_memory_profile_center_message_memory_variant_b(Object value1);
+
+  /// No description provided for @event_memory_profile_center_label_memory_start.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'開始回憶'**
+  String get event_memory_profile_center_label_memory_start;
+
+  /// No description provided for @event_message_failed_load.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'活動資料讀取失敗'**
+  String get event_message_failed_load;
+
+  /// No description provided for @event_message_not_found.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'找不到這個活動'**
+  String get event_message_not_found;
+
+  /// No description provided for @event_remaining_label.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'活動進行中'**
+  String get event_remaining_label;
+
+  /// No description provided for @event_remaining_label_days.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'剩餘 {value1} 天'**
+  String event_remaining_label_days(Object value1);
+
+  /// No description provided for @event_remaining_label_hours.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'剩餘 {value1} 小時'**
+  String event_remaining_label_hours(Object value1);
+
+  /// No description provided for @event_remaining_label_end.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'即將結束'**
+  String get event_remaining_label_end;
+
+  /// No description provided for @event_balance_pill_tooltip_back.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'返回'**
+  String get event_balance_pill_tooltip_back;
+
+  /// No description provided for @event_claim_task_message_claim_current.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已領取 {value1} {reward} {value2}，目前共有 {currency}'**
+  String event_claim_task_message_claim_current(
+      Object currency, Object reward, Object value1, Object value2);
+
+  /// No description provided for @event_claim_task_message_reward_claim.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'獎勵已領取'**
+  String get event_claim_task_message_reward_claim;
+
+  /// No description provided for @event_claim_task_message_claim_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'領取失敗'**
+  String get event_claim_task_message_claim_failed;
+
+  /// No description provided for @event_claim_task_message_task_claim.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這個任務已經領取過了'**
+  String get event_claim_task_message_task_claim;
+
+  /// No description provided for @event_claim_task_message_incomplete_task.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'任務尚未完成'**
+  String get event_claim_task_message_incomplete_task;
+
+  /// No description provided for @event_task_list_label_task_load.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'讀取任務中…'**
+  String get event_task_list_label_task_load;
+
+  /// No description provided for @event_task_list_label_task_current.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前沒有任務'**
+  String get event_task_list_label_task_current;
+
+  /// No description provided for @event_task_list_label_task_login_progress.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'登入後即可查看活動任務進度'**
+  String get event_task_list_label_task_login_progress;
+
+  /// No description provided for @event_milestone_progress_label_reward_load.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'讀取累積獎勵中…'**
+  String get event_milestone_progress_label_reward_load;
+
+  /// No description provided for @event_milestone_progress_label_reward_current.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前沒有累積獎勵'**
+  String get event_milestone_progress_label_reward_current;
+
+  /// No description provided for @event_build_with_total_message_current.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前  {totalEarned}'**
+  String event_build_with_total_message_current(Object totalEarned);
+
+  /// No description provided for @event_progress_ref_message_redeem_confirm.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確認兌換'**
+  String get event_progress_ref_message_redeem_confirm;
+
+  /// No description provided for @event_progress_ref_message_redeem_flowers.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'要使用 {value1} {price} 兌換「{itemName}」嗎？\n\n兌換後可獲得 {rewardAmount} 花花。'**
+  String event_progress_ref_message_redeem_flowers(
+      Object itemName, Object price, Object rewardAmount, Object value1);
+
+  /// No description provided for @event_progress_ref_message_redeem.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'要使用 {value1} {price} 兌換「{itemName}」嗎？'**
+  String event_progress_ref_message_redeem(
+      Object itemName, Object price, Object value1);
+
+  /// No description provided for @event_progress_ref_message_redeem_success_flowers.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'兌換成功！獲得 {returnedReward} 花花'**
+  String event_progress_ref_message_redeem_success_flowers(
+      Object returnedReward);
+
+  /// No description provided for @event_progress_ref_message_event_collection_redeem_success_add.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'兌換成功！「{itemName}」已加入活動收藏'**
+  String event_progress_ref_message_event_collection_redeem_success_add(
+      Object itemName);
+
+  /// No description provided for @event_progress_ref_message_redeem_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'兌換失敗'**
+  String get event_progress_ref_message_redeem_failed;
+
+  /// No description provided for @event_progress_ref_message_redeem_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這個商品已經兌換過了'**
+  String get event_progress_ref_message_redeem_variant_b;
+
+  /// No description provided for @event_progress_ref_message_insufficient.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'貨幣不足'**
+  String get event_progress_ref_message_insufficient;
+
+  /// No description provided for @event_progress_ref_message_insufficient_variant_b.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{value1}不足'**
+  String event_progress_ref_message_insufficient_variant_b(Object value1);
+
+  /// No description provided for @event_progress_ref_message_redeem_variant_c.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'兌換'**
+  String get event_progress_ref_message_redeem_variant_c;
+
+  /// No description provided for @event_progress_ref_message_redeem_variant_d.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已兌換'**
+  String get event_progress_ref_message_redeem_variant_d;
+
+  /// No description provided for @event_message_redeem_flowers.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'兌換後可獲得 {rewardAmount} 花花'**
+  String event_message_redeem_flowers(Object rewardAmount);
+
+  /// No description provided for @event_message_redeem.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已兌換 {redeemedCount} 次'**
+  String event_message_redeem(Object redeemedCount);
+
+  /// No description provided for @event_message_event_shop_login.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'登入後即可使用活動商店'**
+  String get event_message_event_shop_login;
+
+  /// No description provided for @event_message_redeem_current.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前沒有可兌換商品'**
+  String get event_message_redeem_current;
+
+  /// No description provided for @event_shop_item_card_message_flowers.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'可獲得 {rewardAmount} 花花'**
+  String event_shop_item_card_message_flowers(Object rewardAmount);
+
+  /// No description provided for @event_message_insufficient.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'不足'**
+  String get event_message_insufficient;
+
+  /// No description provided for @notification_message_player.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'玩家附加圖片'**
+  String get notification_message_player;
+
+  /// No description provided for @notification_message_qixi_letter.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'來自 {value1} 的七夕信'**
+  String notification_message_qixi_letter(Object value1);
+
+  /// No description provided for @recommendation_remaining_label_days.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'剩 {value1} 天'**
+  String recommendation_remaining_label_days(Object value1);
+
+  /// No description provided for @recommendation_remaining_label_hours.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'剩 {value1} 小時'**
+  String recommendation_remaining_label_hours(Object value1);
+
+  /// No description provided for @settings_subtitle_character_days.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'讓喜歡的角色陪妳出現在每一天'**
+  String get settings_subtitle_character_days;
+
+  /// No description provided for @moment_notification_comment_on_character_post.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{senderNickname}給{authorName}留了話：「{commentText}」'**
+  String moment_notification_comment_on_character_post(
+      Object authorName, Object commentText, Object senderNickname);
+
+  /// No description provided for @inbox_content_text_message_customer_service_message_send.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已送出的客服信件'**
+  String get inbox_content_text_message_customer_service_message_send;
+
+  /// No description provided for @character_edit_relationship_none_label.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'无'**
+  String get character_edit_relationship_none_label;
+
+  /// No description provided for @auth_cancel_account_deletion_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'取消刪除帳號失敗，請稍後再試'**
+  String get auth_cancel_account_deletion_failed;
+
+  /// No description provided for @auth_delete_account_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除帳號失敗'**
+  String get auth_delete_account_failed;
+
+  /// No description provided for @auth_request_account_deletion_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'申請刪除帳號失敗，請稍後再試'**
+  String get auth_request_account_deletion_failed;
+
+  /// No description provided for @theme_font_shiguang_serif.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'拾光宋體'**
+  String get theme_font_shiguang_serif;
+
+  /// No description provided for @theme_font_clean_sans.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'清雅黑體'**
+  String get theme_font_clean_sans;
+
+  /// No description provided for @theme_font_system.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'系統字體'**
+  String get theme_font_system;
+
+  /// No description provided for @theme_font_shiguang_serif_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'文青柔和，適合沉浸閱讀'**
+  String get theme_font_shiguang_serif_description;
+
+  /// No description provided for @theme_font_clean_sans_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'清楚俐落，長時間閱讀較輕鬆'**
+  String get theme_font_clean_sans_description;
+
+  /// No description provided for @theme_font_system_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'跟隨手機系統預設字體'**
+  String get theme_font_system_description;
 }
 
 class _AppLocalizationsDelegate

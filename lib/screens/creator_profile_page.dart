@@ -16,6 +16,7 @@ import 'edit_moment_page.dart';
 import '../services/toast_utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:intl/intl.dart';
 
 //創作者公開頁面
 class CreatorProfilePage extends StatelessWidget {
@@ -2141,6 +2142,46 @@ class CreatorProfilePage extends StatelessWidget {
                         ),
                       ),
                     ],
+                  ),
+                ),
+
+                Positioned(
+                  top: 12,
+                  left: 12,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.4),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          '💬',
+                          style: TextStyle(
+                            fontSize: 13,
+                            height: 1,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          NumberFormat('#,##0').format(
+                            characterObj.playCount < 0
+                                ? 0
+                                : characterObj.playCount,
+                          ),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
 

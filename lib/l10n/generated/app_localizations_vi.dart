@@ -8523,4 +8523,1528 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get chat_mode_resonance_cost_short => '10 Hoa';
+
+  @override
+  String get notification_channel_chat_description =>
+      'Dùng để nhận phản hồi mới nhất từ nhân vật và lời nhắc trong trò chơi.';
+
+  @override
+  String get subscription_star_contract_name =>
+      'Lianlian Shiguang · Khế Ước Sao';
+
+  @override
+  String moment_notification_comment_on_your_post(
+      Object commentText, Object senderNickname) {
+    return '$senderNickname đã bình luận bài viết của bạn: “$commentText”';
+  }
+
+  @override
+  String get moment_notification_new_reply_title =>
+      'Có phản hồi mới trong bài viết của bạn! 💬';
+
+  @override
+  String get moment_notification_character_popularity_title =>
+      'Độ nổi tiếng của nhân vật đang tăng vọt! 🔥';
+
+  @override
+  String get font_size_small => 'Nhỏ';
+
+  @override
+  String get font_size_standard => 'Tiêu chuẩn';
+
+  @override
+  String get font_size_slightly_large => 'Hơi lớn';
+
+  @override
+  String get font_size_large => 'Lớn';
+
+  @override
+  String get font_size_extra_large => 'Rất lớn';
+
+  @override
+  String get font_selection_title => 'Phông chữ';
+
+  @override
+  String get font_selection_description =>
+      'Chọn phông chữ phù hợp nhất để đọc truyện và trò chuyện.';
+
+  @override
+  String get font_size_title => 'Cỡ chữ';
+
+  @override
+  String get font_selection_tagline =>
+      'Một lần nữa, hãy viết nên câu chuyện của hai người cùng người bạn yêu thích.';
+
+  @override
+  String font_selection_applied_message(Object value1) {
+    return 'Đã áp dụng “$value1”';
+  }
+
+  @override
+  String get font_selection_local_storage_note =>
+      'Phông chữ và cỡ chữ sẽ được áp dụng ngay và lưu trên thiết bị này. Khi khôi phục giao diện mặc định, thiết lập sẽ trở về “Shiguang Serif + Tiêu chuẩn”.';
+
+  @override
+  String get inbox_customer_service_report => 'Báo cáo hỗ trợ khách hàng';
+
+  @override
+  String get inbox_content_text_message_player_title_send =>
+      'Tiêu đề do người chơi gửi';
+
+  @override
+  String get inbox_content_text_message_player_content_send =>
+      'Nội dung do người chơi gửi';
+
+  @override
+  String avatar_frame_equipped_message(Object value1) {
+    return 'Đã trang bị “$value1”';
+  }
+
+  @override
+  String get avatar_frame_unequip_frame_snackbar =>
+      'Đã tháo khung ảnh đại diện';
+
+  @override
+  String get avatar_frame_unequip_frame_message_event =>
+      'Khung ảnh đại diện sự kiện';
+
+  @override
+  String get avatar_frame_message => 'Khung ảnh đại diện';
+
+  @override
+  String avatar_frame_load_failed(Object value1) {
+    return 'Không thể tải khung ảnh đại diện: $value1';
+  }
+
+  @override
+  String get avatar_frame_parse_frames_message_select =>
+      'Chọn khung ảnh đại diện bạn muốn sử dụng';
+
+  @override
+  String get avatar_frame_parse_frames_message_event =>
+      'Khung ảnh đại diện nhận từ sự kiện sẽ được giữ vĩnh viễn và có thể đổi hoặc tháo bất cứ lúc nào.';
+
+  @override
+  String get avatar_frame_parse_frames_title => 'Không dùng khung ảnh đại diện';
+
+  @override
+  String get avatar_frame_parse_frames_subtitle_avatar =>
+      'Hiển thị ảnh đại diện gốc';
+
+  @override
+  String get avatar_frame_parse_frames_message_event_shop_redeem_current =>
+      'Bạn chưa sở hữu khung ảnh đại diện nào.\nKhung đổi trong cửa hàng sự kiện sẽ xuất hiện tại đây.';
+
+  @override
+  String get avatar_frame_parse_frames_message_event_variant_b =>
+      'Khung ảnh đại diện giới hạn sự kiện';
+
+  @override
+  String get background_settings_message => 'Hình nền giới hạn';
+
+  @override
+  String get background_title_exclusive_photo_current =>
+      'Chưa có ảnh độc quyền';
+
+  @override
+  String get background_subtitle_unlock_character_photo =>
+      'Ảnh nhân vật mở khóa sau này sẽ xuất hiện tại đây.';
+
+  @override
+  String get background_title_login => 'Đăng nhập để xem hình nền giới hạn';
+
+  @override
+  String get background_subtitle_redeem_chat_event =>
+      'Hình nền trò chuyện nhận từ sự kiện sẽ được lưu tại đây.';
+
+  @override
+  String get background_title => 'Bạn chưa nhận được hình nền giới hạn nào';
+
+  @override
+  String get background_subtitle_event_shop_redeem_chat =>
+      'Hình nền trò chuyện đổi trong cửa hàng sự kiện sẽ xuất hiện tại đây.';
+
+  @override
+  String get background_is_limited_background_type_message_chat_event =>
+      'Hình nền trò chuyện giới hạn sự kiện';
+
+  @override
+  String background_is_limited_background_type_message_current_chat(
+      Object value1) {
+    return 'Đặt “$value1” làm hình nền cho cuộc trò chuyện hiện tại?';
+  }
+
+  @override
+  String character_edit_message_character_settings(Object value1) {
+    return '【角色性格與設定】\n$value1';
+  }
+
+  @override
+  String character_edit_message(Object value1) {
+    return '【說話語氣與風格】\n$value1';
+  }
+
+  @override
+  String character_edit_message_variant_b(Object value1) {
+    return '【社交與環境互動】\n$value1';
+  }
+
+  @override
+  String character_edit_save_to_draft_message_current_character(Object value1) {
+    return 'Nhân vật chính hiện tại: 【$value1】\n';
+  }
+
+  @override
+  String character_edit_message_back(Object result) {
+    return '🚪 返回原本的 ProfilePage：$result';
+  }
+
+  @override
+  String character_edit_save_character_message(Object value1) {
+    return '📦 準備搬移 $value1 則記憶碎片：';
+  }
+
+  @override
+  String character_edit_message_complete(Object value1) {
+    return '✅ 已完成搬移 $value1 則記憶碎片';
+  }
+
+  @override
+  String character_edit_preload_first_voice_sample_message_background_start(
+      Object voiceId) {
+    return '⏳ 開始背景預載第一個 Voice：$voiceId';
+  }
+
+  @override
+  String get character_edit_preload_first_voice_sample_message_update =>
+      '⚠️ Voice 清單已更新，略過舊的預載結果';
+
+  @override
+  String
+      get character_edit_preload_first_voice_sample_message_background_complete =>
+          '✅ 第一個 Voice 已背景預載完成';
+
+  @override
+  String get character_edit_preload_first_voice_sample_message_failed =>
+      '⚠️ 第一個 Voice 預載失敗：';
+
+  @override
+  String character_edit_preload_first_voice_sample_message(Object value1) {
+    return '✅ matchVoiceFromBank 回傳：$value1';
+  }
+
+  @override
+  String get character_edit_error_voice => '語音服務回傳格式錯誤';
+
+  @override
+  String get character_edit_error_voice_variant_b => '語音服務沒有回傳 previews';
+
+  @override
+  String character_edit_message_success_voice_match(Object value1) {
+    return '✅ 成功配對 $value1 個 Voice Bank 聲音';
+  }
+
+  @override
+  String get character_edit_message_failed_match =>
+      '========== Voice Bank 配對失敗 ==========';
+
+  @override
+  String get character_edit_message_error_match =>
+      '========== Voice Bank 配對未知錯誤 ==========';
+
+  @override
+  String get character_edit_preview_voice_sample_error_preview => '試聽服務回傳格式錯誤';
+
+  @override
+  String get character_edit_preview_voice_sample_error_preview_variant_b =>
+      '試聽音訊資料為空';
+
+  @override
+  String get character_edit_preview_voice_sample_error_failed_preview =>
+      '試聽音訊解析失敗';
+
+  @override
+  String get character_edit_test_voice_settings_message_failed =>
+      '========== testVoiceSettings 失敗 ==========';
+
+  @override
+  String character_edit_confirm_voice_selection_message_selected(
+      Object realVoiceId) {
+    return '✅ Voice選定正式 Voice ID：$realVoiceId';
+  }
+
+  @override
+  String
+      get character_edit_confirm_voice_selection_message_save_failed_select =>
+          '========== 儲存 Voice Bank 選擇失敗 ==========';
+
+  @override
+  String
+      get character_edit_confirm_voice_selection_message_failed_voice_selected =>
+          '========== 選定 Voice Bank 聲音失敗 ==========';
+
+  @override
+  String get character_to_map_message_creator => 'Nhà sáng tạo bí ẩn';
+
+  @override
+  String get character_get_character_by_id_message_load_background_story =>
+      'Đang tải câu chuyện nền...';
+
+  @override
+  String get character_get_character_by_id_message_sync =>
+      'Đang đồng bộ cốt truyện mở đầu...';
+
+  @override
+  String get character_get_character_by_id_message =>
+      'Đang chuẩn bị câu mở đầu...';
+
+  @override
+  String get character_get_character_by_id_message_background =>
+      'Đang tải hình nền...';
+
+  @override
+  String get character_get_character_by_id_message_load =>
+      'Đang tải thế giới quan...';
+
+  @override
+  String get character_get_character_by_id_message_load_settings =>
+      'Đang tải thiết lập cốt lõi của nhân vật...';
+
+  @override
+  String get character_get_character_by_id_message_variant_b =>
+      'Đang tải tính cách...';
+
+  @override
+  String get character_get_character_by_id_message_appearance =>
+      'Đang tải mô tả ngoại hình...';
+
+  @override
+  String get character_get_character_by_id_message_variant_c =>
+      'Đang tải giọng điệu...';
+
+  @override
+  String get character_get_character_by_id_message_load_variant_b => 'Chưa tải';
+
+  @override
+  String get character_get_character_by_id_message_variant_d => 'Người lạ';
+
+  @override
+  String get character_get_character_by_id_message_load_variant_c =>
+      'Đang tải ví dụ hội thoại...';
+
+  @override
+  String get character_get_character_by_id_message_variant_e => 'Lần đầu gặp';
+
+  @override
+  String get character_get_character_by_id_message_variant_f => 'Đã quen';
+
+  @override
+  String get character_get_character_by_id_message_variant_g => 'Mập mờ';
+
+  @override
+  String get chat_input_message_sticker => 'Nhãn dán';
+
+  @override
+  String get chat_text =>
+      'Bạn đã đạt giới hạn trò chuyện thường miễn phí hôm nay';
+
+  @override
+  String get chat_message_flowers_today_continue =>
+      'Bạn đã dùng hết 10 lượt trò chuyện thường miễn phí hôm nay.\n\nTừ bây giờ, mỗi lượt trò chuyện thường cần 1 Hoa. Tiếp tục?';
+
+  @override
+  String get chat_text_continue => 'Đồng ý và tiếp tục';
+
+  @override
+  String get chat_empty_message_label_current_sticker =>
+      'Hiện chưa có nhãn dán nào có thể sử dụng.';
+
+  @override
+  String get chat_empty_message_label_sticker =>
+      'Chưa có nhãn dán dùng gần đây';
+
+  @override
+  String get chat_empty_message_label_sticker_variant_b =>
+      'Chưa có nhãn dán yêu thích';
+
+  @override
+  String get chat_empty_message_label_current_sticker_variant_b =>
+      'Hiện chưa có nhãn dán nào có thể sử dụng';
+
+  @override
+  String get chat_empty_message_sticker => 'Nhãn dán của tôi';
+
+  @override
+  String get chat_empty_message => 'Dùng gần đây';
+
+  @override
+  String get chat_empty_message_variant_b => 'Yêu thích';
+
+  @override
+  String get chat_send_sticker_message_current_unavailable_sticker =>
+      'Nhãn dán này hiện không thể sử dụng';
+
+  @override
+  String chat_message_theater(Object sceneTitle) {
+    return '—— Nhà hát・$sceneTitle ——';
+  }
+
+  @override
+  String get chat_handle_regenerate_button_message_character_reply_again =>
+      'Phản hồi trước đó của nhân vật sẽ được tạo lại.';
+
+  @override
+  String creator_profile_reason_tile_message_report_select_reason(
+      Object creatorName) {
+    return 'Chọn lý do báo cáo “$creatorName”:';
+  }
+
+  @override
+  String get widget_key_message => 'Trạng thái';
+
+  @override
+  String get widget_key_message_variant_b => 'Vị trí';
+
+  @override
+  String get widget_label_character => 'Chưa có trạng thái nhân vật';
+
+  @override
+  String get widget_format_post_time_label_moment_latest => 'Bài viết mới nhất';
+
+  @override
+  String get widget_format_post_time_label_update_moment =>
+      'Vừa cập nhật bài viết';
+
+  @override
+  String widget_format_post_time_label_minutes_ago_update_moment(
+      Object value1) {
+    return 'Đã cập nhật bài viết $value1 phút trước';
+  }
+
+  @override
+  String widget_format_post_time_label_hours_ago_update_moment(Object value1) {
+    return 'Đã cập nhật bài viết $value1 giờ trước';
+  }
+
+  @override
+  String get widget_format_post_time_label_update_moment_days =>
+      'Đã cập nhật bài viết hôm qua';
+
+  @override
+  String widget_format_post_time_label_update_moment_days_ago(Object value1) {
+    return 'Đã cập nhật bài viết $value1 ngày trước';
+  }
+
+  @override
+  String widget_format_post_time_label_update_moment_variant_b(
+      Object value1, Object value2) {
+    return 'Đã cập nhật bài viết vào $value1/$value2';
+  }
+
+  @override
+  String get widget_format_post_time_message_share_photo =>
+      'Đã chia sẻ một ảnh';
+
+  @override
+  String get widget_format_post_time_message_update_moment =>
+      'Đã cập nhật một bài viết';
+
+  @override
+  String get widget_format_post_time_message_current_character_moment =>
+      'Chưa có bài viết của nhân vật';
+
+  @override
+  String get widget_extract_daily_quote_message => 'Vị trí:';
+
+  @override
+  String get widget_format_daily_quote_time_message_today =>
+      'Hôm nay chưa có một câu nào';
+
+  @override
+  String get widget_load_period_care_state_message_today =>
+      '“Hôm nay đừng cố quá. Anh sẽ ở bên em, mình cứ từ từ thôi.”';
+
+  @override
+  String widget_load_period_care_state_message_period_days(Object dayCount) {
+    return 'Ngày thứ $dayCount của kỳ kinh';
+  }
+
+  @override
+  String get widget_load_period_care_state_message_days =>
+      '“Mấy hôm nay nhớ nghỉ sớm một chút. Đừng để bản thân quá mệt.”';
+
+  @override
+  String get widget_load_period_care_state_message_today_start =>
+      'Dự kiến bắt đầu hôm nay';
+
+  @override
+  String widget_load_period_care_state_message_days_variant_b(
+      Object daysUntil) {
+    return 'Dự kiến còn $daysUntil ngày';
+  }
+
+  @override
+  String get widget_load_period_care_state_message_today_variant_b =>
+      '“Em đã cố gắng nhiều rồi. Hôm nay nhớ chăm sóc bản thân thật tốt.”';
+
+  @override
+  String get widget_load_period_care_state_message_period_end =>
+      'Kỳ kinh vừa kết thúc';
+
+  @override
+  String get widget_load_period_care_state_message_today_variant_c =>
+      '“Hôm nay cũng nhớ chăm sóc bản thân thật tốt nhé.”';
+
+  @override
+  String get widget_load_period_care_state_message_current_reminder =>
+      'Hiện không có lời nhắc chu kỳ đặc biệt';
+
+  @override
+  String get widget_load_period_care_state_message =>
+      'Chưa có đủ dữ liệu chu kỳ';
+
+  @override
+  String get widget_parse_character_birthday_message => 'Năm';
+
+  @override
+  String get widget_parse_character_birthday_message_variant_b => 'Tháng';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_character_birthday =>
+      'Sinh nhật nhân vật';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_birthday_settings =>
+      'Chưa đặt sinh nhật';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_birthday_countdown(
+      Object birthdayLabel) {
+    return 'Đến sinh nhật của anh ấy・$birthdayLabel';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_today =>
+      'Chính là hôm nay';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_days(Object days) {
+    return 'Còn $days ngày';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message =>
+      'Từ ngày gặp anh ấy';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_variant_b =>
+      'Chưa có ghi chép lần gặp';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_days_variant_b(
+      Object value1) {
+    return '$value1 ngày';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_variant_c =>
+      'Ngày quan trọng';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_date_select =>
+      'Chưa chọn ngày';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_elapsed_days(
+      Object value1) {
+    return 'Đã qua $value1 ngày';
+  }
+
+  @override
+  String get widget_settings_remove_title_character_latest =>
+      'Bài viết mới nhất của nhân vật';
+
+  @override
+  String get widget_settings_remove_subtitle_moment_latest =>
+      'Xem cập nhật mới nhất của anh ấy mà không cần mở app.';
+
+  @override
+  String get widget_settings_remove_title_period => 'Đồng hành trong kỳ kinh';
+
+  @override
+  String get widget_settings_remove_subtitle_character_end =>
+      'Thêm một chút quan tâm từ nhân vật trước, trong và sau kỳ kinh.';
+
+  @override
+  String get widget_settings_remove_title => 'Một câu hôm nay';
+
+  @override
+  String get widget_settings_remove_subtitle_days =>
+      'Mỗi ngày, một câu sẽ chờ bạn trên màn hình chính.';
+
+  @override
+  String get widget_settings_remove_title_reminder => 'Kỷ niệm / Nhắc nhở';
+
+  @override
+  String get widget_settings_remove_subtitle_character_birthday_reminder =>
+      'Cùng ghi nhớ ngày gặp nhau và sinh nhật, đồng thời để nhân vật nhắc bạn những điều quan trọng.';
+
+  @override
+  String get widget_settings_remove_title_character => 'Trạng thái nhân vật';
+
+  @override
+  String get widget_settings_remove_subtitle_chat_latest_mood =>
+      'Đưa tâm trạng, trạng thái và vị trí mới nhất trong cuộc trò chuyện ra màn hình chính.';
+
+  @override
+  String get widget_settings_size_label => 'Vừa';
+
+  @override
+  String get widget_settings_size_label_message_send =>
+      'Đã gửi yêu cầu thêm vào màn hình chính.';
+
+  @override
+  String get widget_settings_size_label_message_try_again_later_failed =>
+      'Không thể thêm vào màn hình chính. Vui lòng thử lại sau.';
+
+  @override
+  String get widget_settings_edit_saved_widget_message_character_reminder_again =>
+      '“Nhắc việc của nhân vật” phiên bản cũ đã được gộp vào “Kỷ niệm / Nhắc nhở”. Vui lòng tạo lại.';
+
+  @override
+  String get widget_settings_delete_saved_widget_title_delete_small =>
+      'Xóa tiện ích?';
+
+  @override
+  String
+      widget_settings_delete_saved_widget_message_stop_display_long_press_home_after_delete(
+          Object value1, Object value2) {
+    return 'Bạn có chắc muốn xóa “$value1・$value2”?\n\nSau khi xóa, tiện ích này trên màn hình chính sẽ ngừng hiển thị nội dung nhân vật và nhắc người chơi nhấn giữ màn hình chính để gỡ bỏ.';
+  }
+
+  @override
+  String get widget_settings_delete_saved_widget_message_delete_settings_small =>
+      'Đã xóa cài đặt tiện ích; tiện ích tương ứng trên màn hình chính đã bị vô hiệu hóa.';
+
+  @override
+  String get widget_settings_message_desktop_widget =>
+      'Tiện ích màn hình chính';
+
+  @override
+  String get widget_settings_message_character_days =>
+      'Để nhân vật bạn yêu thích đồng hành cùng bạn mỗi ngày.';
+
+  @override
+  String get widget_settings_message_small => 'Tiện ích của tôi';
+
+  @override
+  String get widget_settings_message_desktop_widget_variant_b =>
+      'Chưa có tiện ích màn hình chính';
+
+  @override
+  String get widget_settings_message_character_reminder =>
+      'Chọn một nhân vật bạn thích và hiển thị lời nhắc, bài viết hoặc trạng thái của họ trên màn hình chính.';
+
+  @override
+  String widget_settings_message_size(Object value1) {
+    return 'Kích thước $value1';
+  }
+
+  @override
+  String get widget_settings_tooltip => 'Thêm vào màn hình chính';
+
+  @override
+  String get widget_settings_tooltip_small => 'Chỉnh sửa tiện ích';
+
+  @override
+  String get widget_settings_tooltip_delete_small => 'Xóa tiện ích';
+
+  @override
+  String get widget_settings_message_desktop_widget_variant_c =>
+      'Thêm tiện ích màn hình chính';
+
+  @override
+  String get widget_settings_message_character_photo_content_select_small =>
+      'Mỗi tiện ích có thể chọn riêng nhân vật, ảnh nhân vật và nội dung hiển thị. Bạn cũng có thể đặt nhiều nhân vật cùng lúc trên màn hình chính.';
+
+  @override
+  String get widget_settings_desktop_type_selection_message_select_small =>
+      'Chọn tiện ích';
+
+  @override
+  String get widget_settings_desktop_type_selection_message_select =>
+      'Trước tiên, hãy chọn cách bạn muốn nhân vật đồng hành cùng mình trên màn hình chính.';
+
+  @override
+  String
+      get widget_settings_go_to_photo_step_message_try_again_later_failed_load_character_photo =>
+          'Không thể tải ảnh nhân vật. Vui lòng thử lại sau.';
+
+  @override
+  String get widget_settings_message_character_select => 'Chọn nhân vật';
+
+  @override
+  String get widget_settings_message_character_friend_days =>
+      'Chỉ hiển thị những nhân vật bạn đã kết bạn hoặc từng trò chuyện.';
+
+  @override
+  String get widget_settings_hint_character_search => 'Tìm nhân vật';
+
+  @override
+  String get widget_settings_message_try_again_later_failed_load_character =>
+      'Không thể tải nhân vật. Vui lòng thử lại sau.';
+
+  @override
+  String get widget_settings_message_current_character_chat_friend_add =>
+      'Hiện không có nhân vật phù hợp. Hãy trò chuyện với nhân vật trước hoặc thêm họ làm bạn.';
+
+  @override
+  String get widget_settings_message_character_photo_select =>
+      'Tiếp theo・Chọn ảnh nhân vật';
+
+  @override
+  String
+      get widget_settings_desktop_photo_selection_message_character_photo_select =>
+          'Chọn ảnh nhân vật';
+
+  @override
+  String
+      widget_settings_desktop_photo_selection_message_current_affection_unlocked_photo(
+          Object value1) {
+    return 'Độ thân mật hiện tại $value1・Ảnh đã mở khóa có thể dùng ngay.';
+  }
+
+  @override
+  String
+      get widget_settings_desktop_photo_selection_message_current_character_photo =>
+          'Nhân vật này hiện không có ảnh khả dụng.';
+
+  @override
+  String
+      widget_settings_desktop_photo_selection_message_required_affection_unlock_photo(
+          Object value1) {
+    return 'Cần độ thân mật $value1 để mở khóa ảnh này.';
+  }
+
+  @override
+  String get widget_settings_message_photo_public => 'Ảnh công khai';
+
+  @override
+  String widget_settings_message_unlock(Object value1) {
+    return 'Mở khóa ở độ thân mật $value1';
+  }
+
+  @override
+  String widget_settings_message_unlocked(Object value1) {
+    return 'Đã mở khóa・Độ thân mật $value1';
+  }
+
+  @override
+  String get widget_settings_message_content_settings =>
+      'Tiếp theo・Thiết lập nội dung hiển thị';
+
+  @override
+  String get widget_settings_open_preview_message_player_select =>
+      'Vui lòng chọn trước một sự kiện / việc cần làm do người chơi tạo.';
+
+  @override
+  String get widget_settings_pick_custom_memo_event_message_login_account =>
+      'Vui lòng đăng nhập trước.';
+
+  @override
+  String
+      get widget_settings_pick_custom_memo_event_message_memo_current_character =>
+          'Nhân vật này hiện chưa có sự kiện / ghi chú nào.';
+
+  @override
+  String get widget_settings_pick_custom_memo_event_message_player_select =>
+      'Chọn sự kiện do người chơi tạo';
+
+  @override
+  String get widget_settings_message_try_again_later_failed_load =>
+      'Không thể tải sự kiện. Vui lòng thử lại sau.';
+
+  @override
+  String get widget_settings_message_content_settings_variant_b =>
+      'Thiết lập nội dung hiển thị';
+
+  @override
+  String get widget_settings_subtitle_content =>
+      'Điều chỉnh nội dung bạn muốn thấy trên màn hình chính.';
+
+  @override
+  String get widget_settings_message_small_variant_b =>
+      'Tiếp theo・Xem trước tiện ích';
+
+  @override
+  String get widget_settings_title => 'Hiển thị bài viết';
+
+  @override
+  String get widget_settings_title_variant_b => 'Hiển thị ảnh bài viết';
+
+  @override
+  String get widget_settings_title_variant_c => 'Hiển thị số lượt thích';
+
+  @override
+  String get widget_settings_title_comment => 'Hiển thị số bình luận';
+
+  @override
+  String get widget_settings_title_variant_d => 'Riêng tư & Đồng hành';
+
+  @override
+  String get widget_settings_title_variant_e => 'Chế độ riêng tư';
+
+  @override
+  String get widget_settings_subtitle_period_character =>
+      'Trên màn hình chính chỉ hiển thị sự quan tâm của nhân vật, không hiển thị trực tiếp thông tin kỳ kinh.';
+
+  @override
+  String get widget_settings_title_variant_f => 'Chế độ chi tiết';
+
+  @override
+  String get widget_settings_subtitle_end =>
+      'Có thể hiển thị trạng thái chu kỳ như sắp đến, đang diễn ra hoặc vừa kết thúc.';
+
+  @override
+  String get widget_settings_title_variant_g => 'Hiển thị trạng thái chu kỳ';
+
+  @override
+  String get widget_settings_title_time => 'Hiển thị thời gian';
+
+  @override
+  String get widget_settings_title_update => 'Cách cập nhật';
+
+  @override
+  String get widget_settings_message_update_days => 'Cập nhật mỗi ngày một lần';
+
+  @override
+  String get widget_settings_message_update => 'Cập nhật mỗi khi mở app';
+
+  @override
+  String get widget_settings_text_update => 'Cập nhật sau khi mở app';
+
+  @override
+  String get widget_settings_title_content => 'Nội dung kỷ niệm';
+
+  @override
+  String get widget_settings_title_days => 'Số ngày từ lần gặp';
+
+  @override
+  String get widget_settings_subtitle_character_today_days =>
+      'Hiển thị số ngày từ khi bạn và nhân vật gặp nhau đến hôm nay.';
+
+  @override
+  String get widget_settings_subtitle_character_birthday =>
+      'Hiển thị còn bao lâu nữa đến sinh nhật nhân vật.';
+
+  @override
+  String get widget_settings_title_player =>
+      'Sự kiện / Việc cần làm do người chơi tạo';
+
+  @override
+  String get widget_settings_message_memo_character_select_reminder =>
+      'Chọn một sự kiện hoặc việc cần làm từ ghi chú / lời nhắc của nhân vật này.';
+
+  @override
+  String widget_settings_message_selected(Object _selectedMemoContent) {
+    return 'Đã chọn: $_selectedMemoContent';
+  }
+
+  @override
+  String get widget_settings_message_select => 'Chọn tối đa 3 mục';
+
+  @override
+  String get widget_settings_message_character =>
+      'Trạng thái nhân vật có thể hiển thị tối đa 3 mục.';
+
+  @override
+  String get widget_settings_message_small_variant_c => 'Xem trước tiện ích';
+
+  @override
+  String get widget_settings_title_confirm => 'Xác nhận cuối';
+
+  @override
+  String get widget_settings_subtitle_large =>
+      'Hãy xem trước sơ bộ diện mạo trên màn hình chính.';
+
+  @override
+  String get widget_settings_title_size => 'Kích thước';
+
+  @override
+  String get widget_settings_title_variant_h => 'Bố cục';
+
+  @override
+  String get widget_settings_label_photo => 'Ảnh toàn màn hình';
+
+  @override
+  String get widget_settings_label_character => 'Thẻ nhân vật';
+
+  @override
+  String get widget_settings_message_sync => 'Đang đồng bộ…';
+
+  @override
+  String get widget_settings_message_desktop_widget_add =>
+      'Thêm tiện ích màn hình chính';
+
+  @override
+  String get widget_settings_sample_lines_message_today_end =>
+      '“Hôm nay kết thúc sớm hơn dự kiến một chút.”';
+
+  @override
+  String get widget_settings_sample_lines_message_days =>
+      '“Mấy hôm nay đừng cố quá.”';
+
+  @override
+  String get widget_settings_sample_lines_message_period =>
+      'Đang trong kỳ kinh';
+
+  @override
+  String get widget_settings_sample_lines_message_today =>
+      '“Hôm nay nghỉ ngơi thêm một chút nhé.”';
+
+  @override
+  String get widget_settings_sample_lines_message_today_variant_b =>
+      '“Hôm nay cũng đừng quên ăn uống đầy đủ.”';
+
+  @override
+  String get widget_settings_sample_lines_label_birthday_countdown =>
+      'Đến sinh nhật của anh ấy';
+
+  @override
+  String get widget_settings_sample_lines_label_days => 'Còn 12 ngày';
+
+  @override
+  String get widget_settings_sample_lines_label_days_variant_b => '128 ngày';
+
+  @override
+  String get widget_settings_sample_lines_message_mood => 'Tâm trạng｜Hơi mệt';
+
+  @override
+  String get widget_settings_sample_lines_message_end =>
+      'Trạng thái｜Vừa tan làm';
+
+  @override
+  String get widget_settings_sample_lines_message =>
+      'Vị trí｜Dưới tòa nhà công ty';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_b =>
+      'Quan hệ｜Người yêu';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_c =>
+      'Trang phục｜Áo len xám nhạt';
+
+  @override
+  String get widget_settings_sample_lines_message_days_variant_b =>
+      'Thời tiết｜Hơi se lạnh';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_d =>
+      'Suy nghĩ｜Muốn gặp em sớm hơn';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_e =>
+      'Hành động｜Đang dọn bàn';
+
+  @override
+  String get widget_settings_sample_lines_message_affection =>
+      'Độ thân mật｜Ổn định và gần gũi';
+
+  @override
+  String get edit_profile_message => 'Trang trí hồ sơ';
+
+  @override
+  String get edit_profile_message_current => 'Hiện không sử dụng';
+
+  @override
+  String
+      get event_memory_character_load_characters_message_login_character_select =>
+          'Vui lòng đăng nhập trước khi chọn nhân vật';
+
+  @override
+  String get event_memory_character_center_message_memory_select =>
+      'Chọn người bạn muốn cùng lưu giữ ký ức này';
+
+  @override
+  String get event_memory_character_center_message_character_friend_add =>
+      'Chỉ những nhân vật bạn tự tạo và nhân vật đã kết bạn mới xuất hiện ở đây.';
+
+  @override
+  String get event_memory_character_center_message_current_character_select =>
+      'Hiện không có nhân vật nào để chọn';
+
+  @override
+  String get event_memory_character_center_message_public_character_character_friend_add =>
+      'Hãy tạo nhân vật của riêng bạn hoặc thêm một nhân vật công khai bạn thích làm bạn trước.';
+
+  @override
+  String get event_memory_character_message_character_select =>
+      'Vui lòng chọn nhân vật trước';
+
+  @override
+  String event_memory_character_message_continue(Object value1) {
+    return 'Tiếp tục cùng $value1';
+  }
+
+  @override
+  String get event_memory_character_card_message_private => 'Của tôi・Riêng tư';
+
+  @override
+  String get event_memory_character_error_label_load_again => 'Tải lại';
+
+  @override
+  String
+      get event_memory_collection_show_collection_intro_if_needed_message_collection =>
+          'Bộ sưu tập Shiguang';
+
+  @override
+  String
+      get event_memory_collection_show_collection_intro_if_needed_message_collection_content =>
+          'Đây là danh sách bộ sưu tập, nơi bạn có thể xem mọi nội dung đã lưu.';
+
+  @override
+  String get event_memory_collection_text_collection_login =>
+      'Vui lòng đăng nhập để xem bộ sưu tập';
+
+  @override
+  String get event_memory_collection_message_memory => 'Ký ức';
+
+  @override
+  String get event_memory_collection_message_chat_background =>
+      'Hình nền trò chuyện';
+
+  @override
+  String get event_memory_collection_message_avatar_frame_collection =>
+      'Chưa sưu tập khung ảnh đại diện nào';
+
+  @override
+  String get event_memory_collection_message_avatar_frame =>
+      'Khung ảnh đại diện giới hạn bạn nhận được sau này sẽ xuất hiện ở đây.';
+
+  @override
+  String get event_memory_collection_message_collection_sticker =>
+      'Chưa sưu tập nhãn dán nào';
+
+  @override
+  String get event_memory_collection_message_sticker =>
+      'Nhãn dán bạn sưu tập sau này sẽ được lưu ở đây.';
+
+  @override
+  String get event_memory_collection_message_collection_chat_background =>
+      'Chưa sưu tập hình nền trò chuyện nào';
+
+  @override
+  String get event_memory_collection_message_chat_background_variant_b =>
+      'Hình nền trò chuyện giới hạn bạn nhận được sau này sẽ xuất hiện ở đây.';
+
+  @override
+  String get event_memory_collection_tab_title_collection_temporary =>
+      'Tạm thời không thể tải bộ sưu tập';
+
+  @override
+  String get event_memory_collection_tab_title_collection_memory =>
+      'Chưa sưu tập ký ức nào';
+
+  @override
+  String get event_memory_collection_tab_subtitle_limited_memory_complete =>
+      'Sau khi hoàn thành ký ức giới hạn, bạn có thể giữ lại những khoảnh khắc mình thích ở đây.';
+
+  @override
+  String get event_memory_collection_item_card_label => 'Vật phẩm giới hạn';
+
+  @override
+  String get event_memory_collection_confirm_delete_owned_item_message_delete =>
+      'Xóa vật phẩm giới hạn?';
+
+  @override
+  String
+      event_memory_collection_confirm_delete_owned_item_message_after_delete_unavailable(
+          Object _itemTypeLabel) {
+    return 'Sau khi xóa, bạn sẽ không thể sử dụng $_itemTypeLabel này nữa,';
+  }
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_collection =>
+          'và nó cũng sẽ không còn xuất hiện trong “Bộ sưu tập Shiguang”.\n\n';
+
+  @override
+  String get event_memory_collection_confirm_delete_owned_item_message_unavailable =>
+      'Điều này có nghĩa bạn sẽ từ bỏ vật phẩm giới hạn đã nhận lần này, và thao tác này không thể hoàn tác.\n\n';
+
+  @override
+  String
+      event_memory_collection_confirm_delete_owned_item_message_delete_variant_b(
+          Object value1) {
+    return 'Bạn có chắc muốn xóa “$value1”?';
+  }
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_delete_variant_c =>
+          'Đã xóa vật phẩm giới hạn';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_not_found_delete =>
+          'Không tìm thấy vật phẩm giới hạn này, có thể nó đã bị xóa';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_collection_current_delete =>
+          'Hiện không thể xóa bộ sưu tập này';
+
+  @override
+  String get event_memory_collection_show_preview_message =>
+      'Đang chuẩn bị ảnh';
+
+  @override
+  String get event_memory_collection_show_preview_message_failed_load =>
+      'Không thể tải ảnh';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save_current =>
+      'Phiên bản web hiện chưa hỗ trợ lưu trực tiếp vào thư viện ảnh trên điện thoại';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save_memory =>
+      'Cần quyền truy cập thư viện ảnh để lưu ký ức này';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_memory =>
+      'Ảnh ký ức chưa sẵn sàng. Vui lòng thử lại.';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_failed_memory =>
+      'Không thể tạo ảnh ký ức';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save =>
+      'Đã lưu vào thư viện ảnh trên điện thoại ♡';
+
+  @override
+  String
+      get event_memory_collection_save_to_gallery_message_save_confirm_failed =>
+          'Lưu thất bại. Hãy kiểm tra quyền thư viện ảnh rồi thử lại.';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_title_collection_cancel =>
+          'Bỏ khỏi bộ sưu tập?';
+
+  @override
+  String get event_memory_collection_delete_collection_message_collection_cancel_memory =>
+      'Sau khi bỏ khỏi bộ sưu tập, ký ức này sẽ không còn xuất hiện trong “Bộ sưu tập Shiguang”.\n\nBạn có chắc muốn bỏ sưu tập?';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_message_try_again_later_collection_cancel_failed =>
+          'Không thể bỏ khỏi bộ sưu tập. Vui lòng thử lại sau.';
+
+  @override
+  String get event_memory_collection_message_collection_memory =>
+      'Bộ sưu tập ký ức';
+
+  @override
+  String get event_memory_collection_label_play => 'Phát lại';
+
+  @override
+  String get event_memory_collection_label_save => 'Đang lưu…';
+
+  @override
+  String get event_memory_collection_label_save_variant_b =>
+      'Lưu vào thư viện ảnh';
+
+  @override
+  String get event_memory_collection_collected_card_message_limited_memory =>
+      'Lianlian Shiguang・Ký ức giới hạn';
+
+  @override
+  String get event_memory_collection_create_state_message_end_story =>
+      'Có những khoảnh khắc\nkhông biến mất chỉ vì câu chuyện đã kết thúc.';
+
+  @override
+  String get event_memory_collection_text_collection =>
+      'Ký ức đã lưu này không có Scene nào có thể phát lại';
+
+  @override
+  String get event_memory_collection_message => 'Bỏ qua';
+
+  @override
+  String get event_memory_collection_message_end => 'Chạm để kết thúc';
+
+  @override
+  String get event_memory_collection_message_continue => 'Chạm để tiếp tục';
+
+  @override
+  String get event_memory_collection_message_variant_b =>
+      'Chạm để hiển thị toàn bộ văn bản';
+
+  @override
+  String get event_memory_collection_collected_label_collection =>
+      'Vừa sưu tập';
+
+  @override
+  String get event_memory_collection_collected_item_label_collection_date =>
+      'Chưa ghi nhận ngày sưu tập';
+
+  @override
+  String event_memory_collection_collected_item_label_collection(
+      Object day, Object month, Object value1) {
+    return 'Đã sưu tập vào $value1/$month/$day';
+  }
+
+  @override
+  String get event_memory_text_not_found_event =>
+      'Không tìm thấy dữ liệu sự kiện';
+
+  @override
+  String get event_memory_message_limited_memory_failed_load =>
+      'Không thể tải ký ức giới hạn';
+
+  @override
+  String get event_memory_as_map_label_unlocked => 'Đã mở khóa';
+
+  @override
+  String event_memory_as_map_label_unlock(Object currencyIcon,
+      Object currencyName, Object currentValue, Object requiredValue) {
+    return 'Tích lũy $currencyIcon $requiredValue $currencyName để mở khóa ($currentValue / $requiredValue)';
+  }
+
+  @override
+  String get event_memory_as_map_label_unlock_task_event_complete =>
+      'Mở khóa sau khi hoàn thành nhiệm vụ sự kiện được chỉ định';
+
+  @override
+  String get event_memory_as_map_label_redeem_unlock_event =>
+      'Mở khóa sau khi đổi vật phẩm sự kiện được chỉ định';
+
+  @override
+  String get event_memory_as_map_label_unlock_variant_b => 'Chưa mở khóa';
+
+  @override
+  String get event_memory_hero_message =>
+      'Hãy lưu lại trong mùa này một khoảnh khắc chỉ thuộc về hai người.';
+
+  @override
+  String event_memory_hero_message_limited_memory(
+      Object totalCount, Object unlockedCount) {
+    return 'Ký ức giới hạn  $unlockedCount / $totalCount';
+  }
+
+  @override
+  String get event_memory_status_label_unlocked => 'Đã mở khóa・Chưa xem';
+
+  @override
+  String get event_memory_status_label => 'Đã xem';
+
+  @override
+  String get event_memory_status_label_collection => 'Đã sưu tập';
+
+  @override
+  String get event_memory_footer_label_memory_start =>
+      'Bạn có thể bắt đầu ký ức này';
+
+  @override
+  String get event_memory_footer_label => 'Bạn có thể xem lại';
+
+  @override
+  String get event_memory_footer_label_collection =>
+      'Đã lưu vào Bộ sưu tập Shiguang';
+
+  @override
+  String get event_memory_empty_message_limited_memory_event_public =>
+      'Sự kiện này chưa công bố ký ức giới hạn nào';
+
+  @override
+  String get event_memory_performance_finish_message_memory =>
+      'Ký ức này đã được lưu lại.';
+
+  @override
+  String get event_memory_performance_finish_message_save_collection =>
+      'Bộ sưu tập được giữ trong trò chơi. Chỉ khi lưu vào điện thoại, hệ thống mới yêu cầu quyền thư viện ảnh.';
+
+  @override
+  String get event_memory_performance_finish_message => 'Đang xử lý…';
+
+  @override
+  String get event_memory_performance_finish_message_collection_memory =>
+      'Sưu tập ký ức này';
+
+  @override
+  String get event_memory_performance_confirm_uncollect_memory_message_collection_cancel_memory_again_remove =>
+      'Sau khi bỏ sưu tập, ký ức này sẽ bị xóa khỏi “Bộ sưu tập Shiguang”. Sau này bạn vẫn có thể xem lại và sưu tập lại.';
+
+  @override
+  String
+      get event_memory_performance_uncollect_memory_message_collection_login =>
+          'Vui lòng đăng nhập trước khi quản lý bộ sưu tập';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_collection_login_memory =>
+          'Vui lòng đăng nhập trước khi sưu tập ký ức này';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_collection_memory =>
+          'Đã sưu tập ký ức này ♡';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_try_again_later_collection_failed =>
+          'Sưu tập thất bại. Vui lòng thử lại sau.';
+
+  @override
+  String get event_memory_performance_text_panel_message_complete =>
+      'Chạm để hoàn tất';
+
+  @override
+  String get event_memory_performance_build_performance_message => 'Bỏ qua';
+
+  @override
+  String get event_memory_performance_text_play => 'Không có Scene nào để phát';
+
+  @override
+  String get event_memory_profile_change_profile_message_profile =>
+      'Đổi Hồ sơ Shiguang';
+
+  @override
+  String get event_memory_profile_message_profile_confirm =>
+      'Xác nhận Hồ sơ Shiguang';
+
+  @override
+  String get event_memory_profile_center_text_profile_not_found =>
+      'Không tìm thấy Hồ sơ Shiguang khả dụng';
+
+  @override
+  String get event_memory_profile_center_message_memory =>
+      'Bạn sẽ là ai trong ký ức này?';
+
+  @override
+  String get event_memory_profile_center_message_profile_character_start =>
+      'Hồ sơ Shiguang bạn dùng gần đây nhất với nhân vật này đã được ưu tiên chọn. Bạn có thể đổi trước khi bắt đầu.';
+
+  @override
+  String event_memory_profile_center_message(Object value1) {
+    return 'Với tư cách “$value1” cùng';
+  }
+
+  @override
+  String event_memory_profile_center_message_memory_variant_b(Object value1) {
+    return '“$value1” trong ký ức này';
+  }
+
+  @override
+  String get event_memory_profile_center_label_memory_start => 'Bắt đầu ký ức';
+
+  @override
+  String get event_message_failed_load => 'Không thể tải dữ liệu sự kiện';
+
+  @override
+  String get event_message_not_found => 'Không tìm thấy sự kiện';
+
+  @override
+  String get event_remaining_label => 'Sự kiện đang diễn ra';
+
+  @override
+  String event_remaining_label_days(Object value1) {
+    return 'Còn $value1 ngày';
+  }
+
+  @override
+  String event_remaining_label_hours(Object value1) {
+    return 'Còn $value1 giờ';
+  }
+
+  @override
+  String get event_remaining_label_end => 'Sắp kết thúc';
+
+  @override
+  String get event_balance_pill_tooltip_back => 'Quay lại';
+
+  @override
+  String event_claim_task_message_claim_current(
+      Object currency, Object reward, Object value1, Object value2) {
+    return 'Đã nhận $value1 $reward $value2. Hiện bạn có $currency';
+  }
+
+  @override
+  String get event_claim_task_message_reward_claim => 'Đã nhận phần thưởng';
+
+  @override
+  String get event_claim_task_message_claim_failed => 'Nhận thất bại';
+
+  @override
+  String get event_claim_task_message_task_claim =>
+      'Nhiệm vụ này đã được nhận thưởng';
+
+  @override
+  String get event_claim_task_message_incomplete_task =>
+      'Nhiệm vụ chưa hoàn thành';
+
+  @override
+  String get event_task_list_label_task_load => 'Đang tải nhiệm vụ…';
+
+  @override
+  String get event_task_list_label_task_current => 'Hiện không có nhiệm vụ';
+
+  @override
+  String get event_task_list_label_task_login_progress =>
+      'Đăng nhập để xem tiến độ nhiệm vụ sự kiện';
+
+  @override
+  String get event_milestone_progress_label_reward_load =>
+      'Đang tải phần thưởng tích lũy…';
+
+  @override
+  String get event_milestone_progress_label_reward_current =>
+      'Hiện không có phần thưởng tích lũy';
+
+  @override
+  String event_build_with_total_message_current(Object totalEarned) {
+    return 'Hiện tại  $totalEarned';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_confirm => 'Xác nhận đổi';
+
+  @override
+  String event_progress_ref_message_redeem_flowers(
+      Object itemName, Object price, Object rewardAmount, Object value1) {
+    return 'Dùng $value1 $price để đổi “$itemName”?\n\nSau khi đổi, bạn sẽ nhận $rewardAmount Hoa.';
+  }
+
+  @override
+  String event_progress_ref_message_redeem(
+      Object itemName, Object price, Object value1) {
+    return 'Dùng $value1 $price để đổi “$itemName”?';
+  }
+
+  @override
+  String event_progress_ref_message_redeem_success_flowers(
+      Object returnedReward) {
+    return 'Đổi thành công! Nhận $returnedReward Hoa';
+  }
+
+  @override
+  String event_progress_ref_message_event_collection_redeem_success_add(
+      Object itemName) {
+    return 'Đổi thành công! “$itemName” đã được thêm vào Bộ sưu tập sự kiện';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_failed => 'Đổi thất bại';
+
+  @override
+  String get event_progress_ref_message_redeem_variant_b =>
+      'Vật phẩm này đã được đổi rồi';
+
+  @override
+  String get event_progress_ref_message_insufficient => 'Không đủ tiền tệ';
+
+  @override
+  String event_progress_ref_message_insufficient_variant_b(Object value1) {
+    return 'Không đủ $value1';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_variant_c => 'Đổi';
+
+  @override
+  String get event_progress_ref_message_redeem_variant_d => 'Đã đổi';
+
+  @override
+  String event_message_redeem_flowers(Object rewardAmount) {
+    return 'Sau khi đổi, bạn sẽ nhận $rewardAmount Hoa';
+  }
+
+  @override
+  String event_message_redeem(Object redeemedCount) {
+    return 'Đã đổi $redeemedCount lần';
+  }
+
+  @override
+  String get event_message_event_shop_login =>
+      'Đăng nhập để sử dụng cửa hàng sự kiện';
+
+  @override
+  String get event_message_redeem_current =>
+      'Hiện không có vật phẩm nào có thể đổi';
+
+  @override
+  String event_shop_item_card_message_flowers(Object rewardAmount) {
+    return 'Nhận $rewardAmount Hoa';
+  }
+
+  @override
+  String get event_message_insufficient => 'Không đủ';
+
+  @override
+  String get notification_message_player => 'Ảnh đính kèm của người chơi';
+
+  @override
+  String notification_message_qixi_letter(Object value1) {
+    return 'Thư Thất Tịch từ $value1';
+  }
+
+  @override
+  String recommendation_remaining_label_days(Object value1) {
+    return 'Còn $value1 ngày';
+  }
+
+  @override
+  String recommendation_remaining_label_hours(Object value1) {
+    return 'Còn $value1 giờ';
+  }
+
+  @override
+  String get settings_subtitle_character_days =>
+      'Để nhân vật bạn yêu thích đồng hành cùng bạn mỗi ngày';
+
+  @override
+  String moment_notification_comment_on_character_post(
+      Object authorName, Object commentText, Object senderNickname) {
+    return '$senderNickname đã để lại lời nhắn cho $authorName: “$commentText”';
+  }
+
+  @override
+  String get inbox_content_text_message_customer_service_message_send =>
+      'Tin nhắn hỗ trợ khách hàng đã gửi';
+
+  @override
+  String get character_edit_relationship_none_label => 'Không có';
+
+  @override
+  String get auth_cancel_account_deletion_failed =>
+      'Không thể hủy xóa tài khoản. Vui lòng thử lại sau.';
+
+  @override
+  String get auth_delete_account_failed => 'Không thể xóa tài khoản';
+
+  @override
+  String get auth_request_account_deletion_failed =>
+      'Không thể yêu cầu xóa tài khoản. Vui lòng thử lại sau.';
+
+  @override
+  String get theme_font_shiguang_serif => 'Shiguang Serif';
+
+  @override
+  String get theme_font_clean_sans => 'Sans Thanh Nhã';
+
+  @override
+  String get theme_font_system => 'Phông hệ thống';
+
+  @override
+  String get theme_font_shiguang_serif_description =>
+      'Mềm mại và giàu chất văn, phù hợp để đọc nhập tâm';
+
+  @override
+  String get theme_font_clean_sans_description =>
+      'Rõ ràng, gọn gàng, thoải mái khi đọc lâu';
+
+  @override
+  String get theme_font_system_description =>
+      'Dùng phông hệ thống mặc định của thiết bị';
 }

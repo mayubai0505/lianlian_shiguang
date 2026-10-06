@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 //主題切換
 
 enum AppTheme {
@@ -27,22 +28,22 @@ extension AppFontLabel on AppFont {
   String get label {
     switch (this) {
       case AppFont.notoSerifTc:
-        return '拾光宋體';
+        return appL10n.theme_font_shiguang_serif;
       case AppFont.notoSansTc:
-        return '清雅黑體';
+        return appL10n.theme_font_clean_sans;
       case AppFont.system:
-        return '系統字體';
+        return appL10n.theme_font_system;
     }
   }
 
   String get description {
     switch (this) {
       case AppFont.notoSerifTc:
-        return '文青柔和，適合沉浸閱讀';
+        return appL10n.theme_font_shiguang_serif_description;
       case AppFont.notoSansTc:
-        return '清楚俐落，長時間閱讀較輕鬆';
+        return appL10n.theme_font_clean_sans_description;
       case AppFont.system:
-        return '跟隨手機系統預設字體';
+        return appL10n.theme_font_system_description;
     }
   }
 }

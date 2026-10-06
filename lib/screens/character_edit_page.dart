@@ -25,6 +25,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/services.dart';
 import 'package:characters/characters.dart';
 import 'package:intl/intl.dart';
+import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 
 // ✨ 這是一個既能「創建」也能「編輯」的萬能頁面
 class CharacterEditPage extends StatefulWidget {
@@ -59,7 +60,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     if (locale.startsWith('pt')) return 'Nenhuma';
     if (locale.startsWith('th')) return 'ไม่มี';
     if (locale.startsWith('vi')) return 'Không có';
-    if (locale.contains('hans') || locale == 'zh_cn') return '无';
+    if (locale.contains('hans') || locale == 'zh_cn') return appL10n.character_edit_relationship_none_label;
     return '無';
   }
 
@@ -665,7 +666,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       }
 
       // 🌟 總裁補位：動態產生給後端看的多角色【名字與關係】對照字串！
-      String multiCharactersString = "目前主要角色：【${_nameController.text.trim()}】\n";
+      String multiCharactersString = appL10n.character_edit_save_to_draft_message_current_character(_nameController.text.trim());
       _relationships.forEach((targetId, description) {
         final targetChar = _myCharacters.firstWhere(
               (c) => c.id == targetId,

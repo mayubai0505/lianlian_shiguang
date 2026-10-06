@@ -8430,4 +8430,1517 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get chat_mode_resonance_cost_short => '10 ดอก';
+
+  @override
+  String get notification_channel_chat_description =>
+      'ใช้สำหรับรับคำตอบล่าสุดจากตัวละครและการแจ้งเตือนในเกม';
+
+  @override
+  String get subscription_star_contract_name =>
+      'Lianlian Shiguang · พันธสัญญาแห่งดวงดาว';
+
+  @override
+  String moment_notification_comment_on_your_post(
+      Object commentText, Object senderNickname) {
+    return '$senderNickname แสดงความคิดเห็นในโพสต์ของคุณ: “$commentText”';
+  }
+
+  @override
+  String get moment_notification_new_reply_title =>
+      'มีการตอบกลับใหม่ในโพสต์ของคุณ! 💬';
+
+  @override
+  String get moment_notification_character_popularity_title =>
+      'ความนิยมของตัวละครกำลังพุ่งสูง! 🔥';
+
+  @override
+  String get font_size_small => 'เล็ก';
+
+  @override
+  String get font_size_standard => 'มาตรฐาน';
+
+  @override
+  String get font_size_slightly_large => 'ใหญ่ขึ้นเล็กน้อย';
+
+  @override
+  String get font_size_large => 'ใหญ่';
+
+  @override
+  String get font_size_extra_large => 'ใหญ่มาก';
+
+  @override
+  String get font_selection_title => 'แบบอักษร';
+
+  @override
+  String get font_selection_description =>
+      'เลือกแบบอักษรที่อ่านเรื่องราวและแชตได้สบายที่สุด';
+
+  @override
+  String get font_size_title => 'ขนาดตัวอักษร';
+
+  @override
+  String get font_selection_tagline =>
+      'เขียนเรื่องราวของคุณกับคนที่ชอบอีกครั้ง';
+
+  @override
+  String font_selection_applied_message(Object value1) {
+    return 'ใช้ “$value1” แล้ว';
+  }
+
+  @override
+  String get font_selection_local_storage_note =>
+      'แบบอักษรและขนาดจะถูกใช้ทันทีและบันทึกไว้ในอุปกรณ์นี้ เมื่อคืนค่ารูปลักษณ์เริ่มต้น ระบบจะกลับไปเป็น “Shiguang Serif + มาตรฐาน”';
+
+  @override
+  String get inbox_customer_service_report => 'รายงานถึงฝ่ายบริการลูกค้า';
+
+  @override
+  String get inbox_content_text_message_player_title_send =>
+      'หัวข้อที่ผู้เล่นส่ง';
+
+  @override
+  String get inbox_content_text_message_player_content_send =>
+      'เนื้อหาที่ผู้เล่นส่ง';
+
+  @override
+  String avatar_frame_equipped_message(Object value1) {
+    return 'ติดตั้ง “$value1” แล้ว';
+  }
+
+  @override
+  String get avatar_frame_unequip_frame_snackbar => 'ถอดกรอบอวาตาร์แล้ว';
+
+  @override
+  String get avatar_frame_unequip_frame_message_event => 'กรอบอวาตาร์กิจกรรม';
+
+  @override
+  String get avatar_frame_message => 'กรอบอวาตาร์';
+
+  @override
+  String avatar_frame_load_failed(Object value1) {
+    return 'โหลดกรอบอวาตาร์ไม่สำเร็จ: $value1';
+  }
+
+  @override
+  String get avatar_frame_parse_frames_message_select =>
+      'เลือกกรอบอวาตาร์ที่ต้องการใช้';
+
+  @override
+  String get avatar_frame_parse_frames_message_event =>
+      'กรอบอวาตาร์ที่ได้รับจากกิจกรรมจะถูกเก็บถาวร และสามารถเปลี่ยนหรือถอดได้ทุกเมื่อ';
+
+  @override
+  String get avatar_frame_parse_frames_title => 'ไม่ใช้กรอบอวาตาร์';
+
+  @override
+  String get avatar_frame_parse_frames_subtitle_avatar => 'แสดงอวาตาร์เดิม';
+
+  @override
+  String get avatar_frame_parse_frames_message_event_shop_redeem_current =>
+      'ยังไม่มีกรอบอวาตาร์ที่เป็นเจ้าของ\nกรอบที่แลกจากร้านค้ากิจกรรมจะปรากฏที่นี่';
+
+  @override
+  String get avatar_frame_parse_frames_message_event_variant_b =>
+      'กรอบอวาตาร์จำกัดกิจกรรม';
+
+  @override
+  String get background_settings_message => 'พื้นหลังจำกัด';
+
+  @override
+  String get background_title_exclusive_photo_current => 'ยังไม่มีรูปภาพเฉพาะ';
+
+  @override
+  String get background_subtitle_unlock_character_photo =>
+      'รูปตัวละครที่ปลดล็อกภายหลังจะปรากฏที่นี่';
+
+  @override
+  String get background_title_login => 'เข้าสู่ระบบเพื่อดูพื้นหลังจำกัด';
+
+  @override
+  String get background_subtitle_redeem_chat_event =>
+      'พื้นหลังแชตที่ได้รับจากกิจกรรมจะถูกบันทึกไว้ที่นี่';
+
+  @override
+  String get background_title => 'ยังไม่ได้รับพื้นหลังจำกัด';
+
+  @override
+  String get background_subtitle_event_shop_redeem_chat =>
+      'พื้นหลังแชตที่แลกจากร้านค้ากิจกรรมจะปรากฏที่นี่';
+
+  @override
+  String get background_is_limited_background_type_message_chat_event =>
+      'พื้นหลังแชตจำกัดกิจกรรม';
+
+  @override
+  String background_is_limited_background_type_message_current_chat(
+      Object value1) {
+    return 'ตั้ง “$value1” เป็นพื้นหลังของแชตปัจจุบันหรือไม่?';
+  }
+
+  @override
+  String character_edit_message_character_settings(Object value1) {
+    return '【角色性格與設定】\n$value1';
+  }
+
+  @override
+  String character_edit_message(Object value1) {
+    return '【說話語氣與風格】\n$value1';
+  }
+
+  @override
+  String character_edit_message_variant_b(Object value1) {
+    return '【社交與環境互動】\n$value1';
+  }
+
+  @override
+  String character_edit_save_to_draft_message_current_character(Object value1) {
+    return 'ตัวละครหลักปัจจุบัน: 【$value1】\n';
+  }
+
+  @override
+  String character_edit_message_back(Object result) {
+    return '🚪 返回原本的 ProfilePage：$result';
+  }
+
+  @override
+  String character_edit_save_character_message(Object value1) {
+    return '📦 準備搬移 $value1 則記憶碎片：';
+  }
+
+  @override
+  String character_edit_message_complete(Object value1) {
+    return '✅ 已完成搬移 $value1 則記憶碎片';
+  }
+
+  @override
+  String character_edit_preload_first_voice_sample_message_background_start(
+      Object voiceId) {
+    return '⏳ 開始背景預載第一個 Voice：$voiceId';
+  }
+
+  @override
+  String get character_edit_preload_first_voice_sample_message_update =>
+      '⚠️ Voice 清單已更新，略過舊的預載結果';
+
+  @override
+  String
+      get character_edit_preload_first_voice_sample_message_background_complete =>
+          '✅ 第一個 Voice 已背景預載完成';
+
+  @override
+  String get character_edit_preload_first_voice_sample_message_failed =>
+      '⚠️ 第一個 Voice 預載失敗：';
+
+  @override
+  String character_edit_preload_first_voice_sample_message(Object value1) {
+    return '✅ matchVoiceFromBank 回傳：$value1';
+  }
+
+  @override
+  String get character_edit_error_voice => '語音服務回傳格式錯誤';
+
+  @override
+  String get character_edit_error_voice_variant_b => '語音服務沒有回傳 previews';
+
+  @override
+  String character_edit_message_success_voice_match(Object value1) {
+    return '✅ 成功配對 $value1 個 Voice Bank 聲音';
+  }
+
+  @override
+  String get character_edit_message_failed_match =>
+      '========== Voice Bank 配對失敗 ==========';
+
+  @override
+  String get character_edit_message_error_match =>
+      '========== Voice Bank 配對未知錯誤 ==========';
+
+  @override
+  String get character_edit_preview_voice_sample_error_preview => '試聽服務回傳格式錯誤';
+
+  @override
+  String get character_edit_preview_voice_sample_error_preview_variant_b =>
+      '試聽音訊資料為空';
+
+  @override
+  String get character_edit_preview_voice_sample_error_failed_preview =>
+      '試聽音訊解析失敗';
+
+  @override
+  String get character_edit_test_voice_settings_message_failed =>
+      '========== testVoiceSettings 失敗 ==========';
+
+  @override
+  String character_edit_confirm_voice_selection_message_selected(
+      Object realVoiceId) {
+    return '✅ Voice選定正式 Voice ID：$realVoiceId';
+  }
+
+  @override
+  String
+      get character_edit_confirm_voice_selection_message_save_failed_select =>
+          '========== 儲存 Voice Bank 選擇失敗 ==========';
+
+  @override
+  String
+      get character_edit_confirm_voice_selection_message_failed_voice_selected =>
+          '========== 選定 Voice Bank 聲音失敗 ==========';
+
+  @override
+  String get character_to_map_message_creator => 'ครีเอเตอร์ลึกลับ';
+
+  @override
+  String get character_get_character_by_id_message_load_background_story =>
+      'กำลังโหลดเรื่องราวเบื้องหลัง...';
+
+  @override
+  String get character_get_character_by_id_message_sync =>
+      'กำลังซิงก์เรื่องราวเริ่มต้น...';
+
+  @override
+  String get character_get_character_by_id_message =>
+      'กำลังเตรียมประโยคเปิด...';
+
+  @override
+  String get character_get_character_by_id_message_background =>
+      'กำลังโหลดพื้นหลัง...';
+
+  @override
+  String get character_get_character_by_id_message_load =>
+      'กำลังโหลดโลกของเรื่อง...';
+
+  @override
+  String get character_get_character_by_id_message_load_settings =>
+      'กำลังโหลดการตั้งค่าหลักของตัวละคร...';
+
+  @override
+  String get character_get_character_by_id_message_variant_b =>
+      'กำลังโหลดบุคลิก...';
+
+  @override
+  String get character_get_character_by_id_message_appearance =>
+      'กำลังโหลดคำอธิบายรูปลักษณ์...';
+
+  @override
+  String get character_get_character_by_id_message_variant_c =>
+      'กำลังโหลดสไตล์การพูด...';
+
+  @override
+  String get character_get_character_by_id_message_load_variant_b =>
+      'ยังไม่ได้โหลด';
+
+  @override
+  String get character_get_character_by_id_message_variant_d => 'คนแปลกหน้า';
+
+  @override
+  String get character_get_character_by_id_message_load_variant_c =>
+      'กำลังโหลดตัวอย่างบทสนทนา...';
+
+  @override
+  String get character_get_character_by_id_message_variant_e => 'พบกันครั้งแรก';
+
+  @override
+  String get character_get_character_by_id_message_variant_f => 'รู้จักกันแล้ว';
+
+  @override
+  String get character_get_character_by_id_message_variant_g =>
+      'ความสัมพันธ์คลุมเครือ';
+
+  @override
+  String get chat_input_message_sticker => 'สติกเกอร์';
+
+  @override
+  String get chat_text => 'ถึงขีดจำกัดแชตทั่วไปฟรีของวันนี้แล้ว';
+
+  @override
+  String get chat_message_flowers_today_continue =>
+      'คุณใช้แชตทั่วไปฟรีครบ 10 ครั้งของวันนี้แล้ว\n\nหลังจากนี้ แชตทั่วไปแต่ละครั้งจะใช้ดอกไม้ 1 ดอก ต้องการดำเนินการต่อหรือไม่?';
+
+  @override
+  String get chat_text_continue => 'ยอมรับและดำเนินการต่อ';
+
+  @override
+  String get chat_empty_message_label_current_sticker =>
+      'ขณะนี้ยังไม่มีสติกเกอร์ที่ใช้ได้';
+
+  @override
+  String get chat_empty_message_label_sticker =>
+      'ยังไม่มีสติกเกอร์ที่ใช้ล่าสุด';
+
+  @override
+  String get chat_empty_message_label_sticker_variant_b =>
+      'ยังไม่มีสติกเกอร์รายการโปรด';
+
+  @override
+  String get chat_empty_message_label_current_sticker_variant_b =>
+      'ขณะนี้ยังไม่มีสติกเกอร์ที่ใช้ได้';
+
+  @override
+  String get chat_empty_message_sticker => 'สติกเกอร์ของฉัน';
+
+  @override
+  String get chat_empty_message => 'ใช้ล่าสุด';
+
+  @override
+  String get chat_empty_message_variant_b => 'รายการโปรด';
+
+  @override
+  String get chat_send_sticker_message_current_unavailable_sticker =>
+      'สติกเกอร์นี้ไม่สามารถใช้ได้ในขณะนี้';
+
+  @override
+  String chat_message_theater(Object sceneTitle) {
+    return '—— โรงละคร・$sceneTitle ——';
+  }
+
+  @override
+  String get chat_handle_regenerate_button_message_character_reply_again =>
+      'ระบบจะสร้างคำตอบก่อนหน้าของตัวละครใหม่';
+
+  @override
+  String creator_profile_reason_tile_message_report_select_reason(
+      Object creatorName) {
+    return 'เลือกเหตุผลในการรายงาน “$creatorName”:';
+  }
+
+  @override
+  String get widget_key_message => 'สถานะ';
+
+  @override
+  String get widget_key_message_variant_b => 'ตำแหน่ง';
+
+  @override
+  String get widget_label_character => 'ยังไม่มีสถานะตัวละคร';
+
+  @override
+  String get widget_format_post_time_label_moment_latest => 'โพสต์ล่าสุด';
+
+  @override
+  String get widget_format_post_time_label_update_moment => 'เพิ่งอัปเดตโพสต์';
+
+  @override
+  String widget_format_post_time_label_minutes_ago_update_moment(
+      Object value1) {
+    return 'อัปเดตโพสต์เมื่อ $value1 นาทีที่แล้ว';
+  }
+
+  @override
+  String widget_format_post_time_label_hours_ago_update_moment(Object value1) {
+    return 'อัปเดตโพสต์เมื่อ $value1 ชั่วโมงที่แล้ว';
+  }
+
+  @override
+  String get widget_format_post_time_label_update_moment_days =>
+      'อัปเดตโพสต์เมื่อวาน';
+
+  @override
+  String widget_format_post_time_label_update_moment_days_ago(Object value1) {
+    return 'อัปเดตโพสต์เมื่อ $value1 วันที่แล้ว';
+  }
+
+  @override
+  String widget_format_post_time_label_update_moment_variant_b(
+      Object value1, Object value2) {
+    return 'อัปเดตโพสต์เมื่อ $value1/$value2';
+  }
+
+  @override
+  String get widget_format_post_time_message_share_photo =>
+      'แชร์รูปภาพหนึ่งรูป';
+
+  @override
+  String get widget_format_post_time_message_update_moment =>
+      'อัปเดตโพสต์หนึ่งรายการ';
+
+  @override
+  String get widget_format_post_time_message_current_character_moment =>
+      'ยังไม่มีโพสต์ของตัวละคร';
+
+  @override
+  String get widget_extract_daily_quote_message => 'ตำแหน่ง:';
+
+  @override
+  String get widget_format_daily_quote_time_message_today =>
+      'ยังไม่มีประโยคของวันนี้';
+
+  @override
+  String get widget_load_period_care_state_message_today =>
+      '“วันนี้อย่าฝืนตัวเองมากเกินไปนะ ฉันจะอยู่ข้าง ๆ และค่อย ๆ ไปด้วยกัน”';
+
+  @override
+  String widget_load_period_care_state_message_period_days(Object dayCount) {
+    return 'วันที่ $dayCount ของประจำเดือน';
+  }
+
+  @override
+  String get widget_load_period_care_state_message_days =>
+      '“ช่วงนี้พักให้เร็วขึ้นหน่อยนะ อย่าทำให้ตัวเองเหนื่อยเกินไป”';
+
+  @override
+  String get widget_load_period_care_state_message_today_start =>
+      'คาดว่าจะเริ่มวันนี้';
+
+  @override
+  String widget_load_period_care_state_message_days_variant_b(
+      Object daysUntil) {
+    return 'คาดว่าอีก $daysUntil วัน';
+  }
+
+  @override
+  String get widget_load_period_care_state_message_today_variant_b =>
+      '“คุณพยายามมามากแล้ว วันนี้ดูแลตัวเองให้ดีนะ”';
+
+  @override
+  String get widget_load_period_care_state_message_period_end =>
+      'ประจำเดือนเพิ่งหมด';
+
+  @override
+  String get widget_load_period_care_state_message_today_variant_c =>
+      '“วันนี้ก็อย่าลืมดูแลตัวเองให้ดีนะ”';
+
+  @override
+  String get widget_load_period_care_state_message_current_reminder =>
+      'ขณะนี้ไม่มีการเตือนรอบเดือนเป็นพิเศษ';
+
+  @override
+  String get widget_load_period_care_state_message =>
+      'ยังมีบันทึกรอบเดือนไม่เพียงพอ';
+
+  @override
+  String get widget_parse_character_birthday_message => 'ปี';
+
+  @override
+  String get widget_parse_character_birthday_message_variant_b => 'เดือน';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_character_birthday =>
+      'วันเกิดตัวละคร';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_birthday_settings =>
+      'ยังไม่ได้ตั้งวันเกิด';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_birthday_countdown(
+      Object birthdayLabel) {
+    return 'จนถึงวันเกิดของเขา・$birthdayLabel';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_today =>
+      'วันนี้พอดี';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_days(Object days) {
+    return 'เหลืออีก $days วัน';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message => 'ตั้งแต่ได้พบเขา';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_variant_b =>
+      'ยังไม่มีบันทึกการพบกัน';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_days_variant_b(
+      Object value1) {
+    return '$value1 วัน';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_variant_c =>
+      'วันสำคัญ';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_date_select =>
+      'ยังไม่ได้เลือกวันที่';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_elapsed_days(
+      Object value1) {
+    return 'ผ่านมาแล้ว $value1 วัน';
+  }
+
+  @override
+  String get widget_settings_remove_title_character_latest =>
+      'โพสต์ล่าสุดของตัวละคร';
+
+  @override
+  String get widget_settings_remove_subtitle_moment_latest =>
+      'ดูอัปเดตล่าสุดของเขาได้โดยไม่ต้องเปิดแอป';
+
+  @override
+  String get widget_settings_remove_title_period => 'การดูแลช่วงมีประจำเดือน';
+
+  @override
+  String get widget_settings_remove_subtitle_character_end =>
+      'รับความใส่ใจจากตัวละครเพิ่มขึ้นอีกนิด ทั้งก่อน ระหว่าง และหลังมีประจำเดือน';
+
+  @override
+  String get widget_settings_remove_title => 'ประโยคของวันนี้';
+
+  @override
+  String get widget_settings_remove_subtitle_days =>
+      'ทุกวันจะมีหนึ่งประโยครอคุณอยู่บนหน้าจอหลัก';
+
+  @override
+  String get widget_settings_remove_title_reminder => 'วันครบรอบ / การเตือน';
+
+  @override
+  String get widget_settings_remove_subtitle_character_birthday_reminder =>
+      'จดจำวันที่พบกันและวันเกิดไปด้วยกัน และให้ตัวละครช่วยเตือนเรื่องสำคัญ';
+
+  @override
+  String get widget_settings_remove_title_character => 'สถานะตัวละคร';
+
+  @override
+  String get widget_settings_remove_subtitle_chat_latest_mood =>
+      'นำอารมณ์ สถานะ และตำแหน่งล่าสุดจากแชตมาแสดงบนหน้าจอหลัก';
+
+  @override
+  String get widget_settings_size_label => 'กลาง';
+
+  @override
+  String get widget_settings_size_label_message_send =>
+      'ส่งคำขอเพิ่มไปยังหน้าจอหลักแล้ว';
+
+  @override
+  String get widget_settings_size_label_message_try_again_later_failed =>
+      'เพิ่มไปยังหน้าจอหลักไม่สำเร็จ โปรดลองอีกครั้งภายหลัง';
+
+  @override
+  String get widget_settings_edit_saved_widget_message_character_reminder_again =>
+      '“การเตือนงานของตัวละคร” เวอร์ชันเก่าถูกรวมไว้ใน “วันครบรอบ / การเตือน” แล้ว โปรดสร้างใหม่';
+
+  @override
+  String get widget_settings_delete_saved_widget_title_delete_small =>
+      'ลบวิดเจ็ตหรือไม่?';
+
+  @override
+  String
+      widget_settings_delete_saved_widget_message_stop_display_long_press_home_after_delete(
+          Object value1, Object value2) {
+    return 'ต้องการลบ “$value1・$value2” หรือไม่?\n\nหลังจากลบ วิดเจ็ตนี้จะหยุดแสดงเนื้อหาของตัวละคร และจะแจ้งให้ผู้เล่นกดหน้าจอหลักค้างไว้เพื่อลบวิดเจ็ตออก';
+  }
+
+  @override
+  String get widget_settings_delete_saved_widget_message_delete_settings_small =>
+      'ลบการตั้งค่าวิดเจ็ตแล้ว วิดเจ็ตที่เกี่ยวข้องบนหน้าจอหลักถูกปิดใช้งาน';
+
+  @override
+  String get widget_settings_message_desktop_widget => 'วิดเจ็ตหน้าจอหลัก';
+
+  @override
+  String get widget_settings_message_character_days =>
+      'ให้ตัวละครที่คุณชอบอยู่กับคุณในทุกวัน';
+
+  @override
+  String get widget_settings_message_small => 'วิดเจ็ตของฉัน';
+
+  @override
+  String get widget_settings_message_desktop_widget_variant_b =>
+      'ยังไม่มีวิดเจ็ตบนหน้าจอหลัก';
+
+  @override
+  String get widget_settings_message_character_reminder =>
+      'เลือกตัวละครที่ชอบ แล้วแสดงการเตือน โพสต์ หรือสถานะของเขาบนหน้าจอหลัก';
+
+  @override
+  String widget_settings_message_size(Object value1) {
+    return 'ขนาด $value1';
+  }
+
+  @override
+  String get widget_settings_tooltip => 'เพิ่มไปยังหน้าจอหลัก';
+
+  @override
+  String get widget_settings_tooltip_small => 'แก้ไขวิดเจ็ต';
+
+  @override
+  String get widget_settings_tooltip_delete_small => 'ลบวิดเจ็ต';
+
+  @override
+  String get widget_settings_message_desktop_widget_variant_c =>
+      'เพิ่มวิดเจ็ตหน้าจอหลัก';
+
+  @override
+  String get widget_settings_message_character_photo_content_select_small =>
+      'แต่ละวิดเจ็ตสามารถเลือกตัวละคร รูปตัวละคร และเนื้อหาที่แสดงได้อย่างอิสระ และสามารถวางหลายตัวละครบนหน้าจอหลักพร้อมกันได้';
+
+  @override
+  String get widget_settings_desktop_type_selection_message_select_small =>
+      'เลือกวิดเจ็ต';
+
+  @override
+  String get widget_settings_desktop_type_selection_message_select =>
+      'ก่อนอื่น เลือกรูปแบบที่คุณอยากให้ตัวละครอยู่เป็นเพื่อนบนหน้าจอหลัก';
+
+  @override
+  String
+      get widget_settings_go_to_photo_step_message_try_again_later_failed_load_character_photo =>
+          'โหลดรูปตัวละครไม่สำเร็จ โปรดลองอีกครั้งภายหลัง';
+
+  @override
+  String get widget_settings_message_character_select => 'เลือกตัวละคร';
+
+  @override
+  String get widget_settings_message_character_friend_days =>
+      'จะแสดงเฉพาะตัวละครที่คุณเพิ่มเป็นเพื่อนหรือเคยแชตด้วย';
+
+  @override
+  String get widget_settings_hint_character_search => 'ค้นหาตัวละคร';
+
+  @override
+  String get widget_settings_message_try_again_later_failed_load_character =>
+      'โหลดตัวละครไม่สำเร็จ โปรดลองอีกครั้งภายหลัง';
+
+  @override
+  String get widget_settings_message_current_character_chat_friend_add =>
+      'ขณะนี้ไม่มีตัวละครที่ตรงกัน ลองแชตกับตัวละครก่อน หรือเพิ่มเขาเป็นเพื่อน';
+
+  @override
+  String get widget_settings_message_character_photo_select =>
+      'ถัดไป・เลือกรูปตัวละคร';
+
+  @override
+  String
+      get widget_settings_desktop_photo_selection_message_character_photo_select =>
+          'เลือกรูปตัวละคร';
+
+  @override
+  String
+      widget_settings_desktop_photo_selection_message_current_affection_unlocked_photo(
+          Object value1) {
+    return 'ค่าความสนิทปัจจุบัน $value1・รูปที่ปลดล็อกแล้วสามารถใช้ได้ทันที';
+  }
+
+  @override
+  String
+      get widget_settings_desktop_photo_selection_message_current_character_photo =>
+          'ขณะนี้ตัวละครนี้ไม่มีรูปที่ใช้ได้';
+
+  @override
+  String
+      widget_settings_desktop_photo_selection_message_required_affection_unlock_photo(
+          Object value1) {
+    return 'ต้องมีค่าความสนิท $value1 เพื่อปลดล็อกรูปนี้';
+  }
+
+  @override
+  String get widget_settings_message_photo_public => 'รูปสาธารณะ';
+
+  @override
+  String widget_settings_message_unlock(Object value1) {
+    return 'ปลดล็อกเมื่อค่าความสนิท $value1';
+  }
+
+  @override
+  String widget_settings_message_unlocked(Object value1) {
+    return 'ปลดล็อกแล้ว・ค่าความสนิท $value1';
+  }
+
+  @override
+  String get widget_settings_message_content_settings =>
+      'ถัดไป・ตั้งค่าเนื้อหาที่แสดง';
+
+  @override
+  String get widget_settings_open_preview_message_player_select =>
+      'โปรดเลือกกิจกรรม / งานที่ผู้เล่นสร้างก่อน';
+
+  @override
+  String get widget_settings_pick_custom_memo_event_message_login_account =>
+      'โปรดเข้าสู่ระบบก่อน';
+
+  @override
+  String
+      get widget_settings_pick_custom_memo_event_message_memo_current_character =>
+          'ตัวละครนี้ยังไม่มีกิจกรรม / บันทึกใด ๆ';
+
+  @override
+  String get widget_settings_pick_custom_memo_event_message_player_select =>
+      'เลือกกิจกรรมที่ผู้เล่นสร้าง';
+
+  @override
+  String get widget_settings_message_try_again_later_failed_load =>
+      'โหลดกิจกรรมไม่สำเร็จ โปรดลองอีกครั้งภายหลัง';
+
+  @override
+  String get widget_settings_message_content_settings_variant_b =>
+      'ตั้งค่าเนื้อหาที่แสดง';
+
+  @override
+  String get widget_settings_subtitle_content =>
+      'ปรับเนื้อหาที่คุณต้องการเห็นบนหน้าจอหลัก';
+
+  @override
+  String get widget_settings_message_small_variant_b =>
+      'ถัดไป・ดูตัวอย่างวิดเจ็ต';
+
+  @override
+  String get widget_settings_title => 'การแสดงโพสต์';
+
+  @override
+  String get widget_settings_title_variant_b => 'แสดงรูปโพสต์';
+
+  @override
+  String get widget_settings_title_variant_c => 'แสดงจำนวนถูกใจ';
+
+  @override
+  String get widget_settings_title_comment => 'แสดงจำนวนความคิดเห็น';
+
+  @override
+  String get widget_settings_title_variant_d =>
+      'ความเป็นส่วนตัวและการอยู่เป็นเพื่อน';
+
+  @override
+  String get widget_settings_title_variant_e => 'โหมดความเป็นส่วนตัว';
+
+  @override
+  String get widget_settings_subtitle_period_character =>
+      'บนหน้าจอหลักจะแสดงเฉพาะความใส่ใจจากตัวละคร โดยไม่แสดงข้อมูลประจำเดือนโดยตรง';
+
+  @override
+  String get widget_settings_title_variant_f => 'โหมดรายละเอียด';
+
+  @override
+  String get widget_settings_subtitle_end =>
+      'สามารถแสดงสถานะรอบเดือน เช่น ใกล้เริ่ม กำลังอยู่ในช่วง หรือเพิ่งจบ';
+
+  @override
+  String get widget_settings_title_variant_g => 'แสดงสถานะรอบเดือน';
+
+  @override
+  String get widget_settings_title_time => 'แสดงเวลา';
+
+  @override
+  String get widget_settings_title_update => 'วิธีอัปเดต';
+
+  @override
+  String get widget_settings_message_update_days => 'อัปเดตวันละครั้ง';
+
+  @override
+  String get widget_settings_message_update => 'อัปเดตทุกครั้งที่เปิดแอป';
+
+  @override
+  String get widget_settings_text_update => 'อัปเดตหลังเปิดแอป';
+
+  @override
+  String get widget_settings_title_content => 'เนื้อหาวันครบรอบ';
+
+  @override
+  String get widget_settings_title_days => 'จำนวนวันตั้งแต่พบกัน';
+
+  @override
+  String get widget_settings_subtitle_character_today_days =>
+      'แสดงจำนวนวันตั้งแต่คุณกับตัวละครพบกันจนถึงวันนี้';
+
+  @override
+  String get widget_settings_subtitle_character_birthday =>
+      'แสดงว่าเหลืออีกนานเท่าไรถึงวันเกิดของตัวละคร';
+
+  @override
+  String get widget_settings_title_player => 'กิจกรรม / งานที่ผู้เล่นสร้าง';
+
+  @override
+  String get widget_settings_message_memo_character_select_reminder =>
+      'เลือกกิจกรรมหรืองานจากบันทึก / การเตือนของตัวละครนี้';
+
+  @override
+  String widget_settings_message_selected(Object _selectedMemoContent) {
+    return 'เลือกแล้ว: $_selectedMemoContent';
+  }
+
+  @override
+  String get widget_settings_message_select => 'เลือกได้สูงสุด 3 รายการ';
+
+  @override
+  String get widget_settings_message_character =>
+      'สถานะตัวละครแสดงได้สูงสุด 3 รายการ';
+
+  @override
+  String get widget_settings_message_small_variant_c => 'ดูตัวอย่างวิดเจ็ต';
+
+  @override
+  String get widget_settings_title_confirm => 'ยืนยันขั้นสุดท้าย';
+
+  @override
+  String get widget_settings_subtitle_large =>
+      'ดูก่อนคร่าว ๆ ว่าเมื่อวางบนหน้าจอหลักจะเป็นอย่างไร';
+
+  @override
+  String get widget_settings_title_size => 'ขนาด';
+
+  @override
+  String get widget_settings_title_variant_h => 'เลย์เอาต์';
+
+  @override
+  String get widget_settings_label_photo => 'รูปเต็มหน้าจอ';
+
+  @override
+  String get widget_settings_label_character => 'การ์ดตัวละคร';
+
+  @override
+  String get widget_settings_message_sync => 'กำลังซิงก์…';
+
+  @override
+  String get widget_settings_message_desktop_widget_add =>
+      'เพิ่มวิดเจ็ตหน้าจอหลัก';
+
+  @override
+  String get widget_settings_sample_lines_message_today_end =>
+      '“วันนี้เสร็จเร็วกว่าที่คิดนิดหน่อย”';
+
+  @override
+  String get widget_settings_sample_lines_message_days =>
+      '“ช่วงนี้อย่าฝืนตัวเองมากเกินไปนะ”';
+
+  @override
+  String get widget_settings_sample_lines_message_period => 'กำลังมีประจำเดือน';
+
+  @override
+  String get widget_settings_sample_lines_message_today =>
+      '“วันนี้พักให้มากขึ้นอีกหน่อยนะ”';
+
+  @override
+  String get widget_settings_sample_lines_message_today_variant_b =>
+      '“วันนี้ก็อย่าลืมกินข้าวให้ดีนะ”';
+
+  @override
+  String get widget_settings_sample_lines_label_birthday_countdown =>
+      'จนถึงวันเกิดของเขา';
+
+  @override
+  String get widget_settings_sample_lines_label_days => 'เหลืออีก 12 วัน';
+
+  @override
+  String get widget_settings_sample_lines_label_days_variant_b => '128 วัน';
+
+  @override
+  String get widget_settings_sample_lines_message_mood =>
+      'อารมณ์｜เหนื่อยนิดหน่อย';
+
+  @override
+  String get widget_settings_sample_lines_message_end => 'สถานะ｜เพิ่งเลิกงาน';
+
+  @override
+  String get widget_settings_sample_lines_message =>
+      'ตำแหน่ง｜ชั้นล่างของออฟฟิศ';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_b =>
+      'ความสัมพันธ์｜คนรัก';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_c =>
+      'การแต่งกาย｜เสื้อไหมพรมสีเทาอ่อน';
+
+  @override
+  String get widget_settings_sample_lines_message_days_variant_b =>
+      'อากาศ｜เย็นเล็กน้อย';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_d =>
+      'ความคิด｜อยากเจอคุณเร็วขึ้น';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_e =>
+      'การกระทำ｜กำลังจัดโต๊ะ';
+
+  @override
+  String get widget_settings_sample_lines_message_affection =>
+      'ค่าความสนิท｜มั่นคงและใกล้ชิด';
+
+  @override
+  String get edit_profile_message => 'ตกแต่งโปรไฟล์';
+
+  @override
+  String get edit_profile_message_current => 'ขณะนี้ไม่ได้ใช้งาน';
+
+  @override
+  String
+      get event_memory_character_load_characters_message_login_character_select =>
+          'โปรดเข้าสู่ระบบก่อนเลือกตัวละคร';
+
+  @override
+  String get event_memory_character_center_message_memory_select =>
+      'เลือกคนที่คุณอยากเก็บความทรงจำนี้ไว้ด้วย';
+
+  @override
+  String get event_memory_character_center_message_character_friend_add =>
+      'จะแสดงเฉพาะตัวละครที่คุณสร้างเอง และตัวละครที่เพิ่มเป็นเพื่อนแล้ว';
+
+  @override
+  String get event_memory_character_center_message_current_character_select =>
+      'ขณะนี้ไม่มีตัวละครให้เลือก';
+
+  @override
+  String
+      get event_memory_character_center_message_public_character_character_friend_add =>
+          'สร้างตัวละครของคุณเอง หรือเพิ่มตัวละครสาธารณะที่ชอบเป็นเพื่อนก่อน';
+
+  @override
+  String get event_memory_character_message_character_select =>
+      'โปรดเลือกตัวละครก่อน';
+
+  @override
+  String event_memory_character_message_continue(Object value1) {
+    return 'ดำเนินการต่อกับ $value1';
+  }
+
+  @override
+  String get event_memory_character_card_message_private => 'ของฉัน・ส่วนตัว';
+
+  @override
+  String get event_memory_character_error_label_load_again => 'โหลดใหม่';
+
+  @override
+  String
+      get event_memory_collection_show_collection_intro_if_needed_message_collection =>
+          'คอลเลกชัน Shiguang';
+
+  @override
+  String
+      get event_memory_collection_show_collection_intro_if_needed_message_collection_content =>
+          'นี่คือรายการคอลเลกชันของคุณ ซึ่งสามารถดูทุกสิ่งที่บันทึกไว้ได้';
+
+  @override
+  String get event_memory_collection_text_collection_login =>
+      'โปรดเข้าสู่ระบบเพื่อดูคอลเลกชัน';
+
+  @override
+  String get event_memory_collection_message_memory => 'ความทรงจำ';
+
+  @override
+  String get event_memory_collection_message_chat_background => 'พื้นหลังแชต';
+
+  @override
+  String get event_memory_collection_message_avatar_frame_collection =>
+      'ยังไม่มีกรอบอวาตาร์ที่สะสมไว้';
+
+  @override
+  String get event_memory_collection_message_avatar_frame =>
+      'กรอบอวาตาร์จำกัดที่ได้รับในภายหลังจะปรากฏที่นี่';
+
+  @override
+  String get event_memory_collection_message_collection_sticker =>
+      'ยังไม่มีสติกเกอร์ที่สะสมไว้';
+
+  @override
+  String get event_memory_collection_message_sticker =>
+      'สติกเกอร์ที่สะสมภายหลังจะถูกเก็บไว้ที่นี่';
+
+  @override
+  String get event_memory_collection_message_collection_chat_background =>
+      'ยังไม่มีพื้นหลังแชตที่สะสมไว้';
+
+  @override
+  String get event_memory_collection_message_chat_background_variant_b =>
+      'พื้นหลังแชตจำกัดที่ได้รับในภายหลังจะปรากฏที่นี่';
+
+  @override
+  String get event_memory_collection_tab_title_collection_temporary =>
+      'ไม่สามารถโหลดคอลเลกชันได้ชั่วคราว';
+
+  @override
+  String get event_memory_collection_tab_title_collection_memory =>
+      'ยังไม่มีความทรงจำที่สะสมไว้';
+
+  @override
+  String get event_memory_collection_tab_subtitle_limited_memory_complete =>
+      'หลังจากจบความทรงจำจำกัด คุณสามารถเก็บช่วงเวลาที่ชอบไว้ที่นี่ได้';
+
+  @override
+  String get event_memory_collection_item_card_label => 'ไอเทมจำกัด';
+
+  @override
+  String get event_memory_collection_confirm_delete_owned_item_message_delete =>
+      'ลบไอเทมจำกัดหรือไม่?';
+
+  @override
+  String
+      event_memory_collection_confirm_delete_owned_item_message_after_delete_unavailable(
+          Object _itemTypeLabel) {
+    return 'หลังจากลบ คุณจะไม่สามารถใช้ $_itemTypeLabel นี้ได้อีก';
+  }
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_collection =>
+          'และจะไม่ปรากฏใน “คอลเลกชัน Shiguang” อีกต่อไป\n\n';
+
+  @override
+  String get event_memory_collection_confirm_delete_owned_item_message_unavailable =>
+      'นั่นหมายความว่าคุณจะสละไอเทมจำกัดที่ได้รับครั้งนี้ และการดำเนินการนี้ไม่สามารถย้อนกลับได้\n\n';
+
+  @override
+  String
+      event_memory_collection_confirm_delete_owned_item_message_delete_variant_b(
+          Object value1) {
+    return 'แน่ใจหรือว่าต้องการลบ “$value1”?';
+  }
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_delete_variant_c =>
+          'ลบไอเทมจำกัดแล้ว';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_not_found_delete =>
+          'ไม่พบไอเทมจำกัดนี้ อาจถูกลบไปแล้ว';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_collection_current_delete =>
+          'ขณะนี้ไม่สามารถลบคอลเลกชันนี้ได้';
+
+  @override
+  String get event_memory_collection_show_preview_message =>
+      'กำลังเตรียมรูปภาพ';
+
+  @override
+  String get event_memory_collection_show_preview_message_failed_load =>
+      'โหลดรูปภาพไม่สำเร็จ';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save_current =>
+      'ขณะนี้เวอร์ชันเว็บยังไม่รองรับการบันทึกไปยังคลังรูปในโทรศัพท์โดยตรง';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save_memory =>
+      'ต้องได้รับสิทธิ์เข้าถึงคลังรูปเพื่อบันทึกความทรงจำนี้';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_memory =>
+      'รูปความทรงจำยังไม่พร้อม โปรดลองอีกครั้ง';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_failed_memory =>
+      'สร้างรูปความทรงจำไม่สำเร็จ';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save =>
+      'บันทึกไปยังคลังรูปในโทรศัพท์แล้ว ♡';
+
+  @override
+  String
+      get event_memory_collection_save_to_gallery_message_save_confirm_failed =>
+          'บันทึกไม่สำเร็จ โปรดตรวจสอบสิทธิ์คลังรูปแล้วลองอีกครั้ง';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_title_collection_cancel =>
+          'นำออกจากคอลเลกชันหรือไม่?';
+
+  @override
+  String get event_memory_collection_delete_collection_message_collection_cancel_memory =>
+      'หลังจากนำออก ความทรงจำนี้จะไม่ปรากฏใน “คอลเลกชัน Shiguang” อีกต่อไป\n\nแน่ใจหรือว่าต้องการนำออก?';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_message_try_again_later_collection_cancel_failed =>
+          'นำออกจากคอลเลกชันไม่สำเร็จ โปรดลองอีกครั้งภายหลัง';
+
+  @override
+  String get event_memory_collection_message_collection_memory =>
+      'คอลเลกชันความทรงจำ';
+
+  @override
+  String get event_memory_collection_label_play => 'เล่นอีกครั้ง';
+
+  @override
+  String get event_memory_collection_label_save => 'กำลังบันทึก…';
+
+  @override
+  String get event_memory_collection_label_save_variant_b =>
+      'บันทึกไปยังคลังรูป';
+
+  @override
+  String get event_memory_collection_collected_card_message_limited_memory =>
+      'Lianlian Shiguang・ความทรงจำจำกัด';
+
+  @override
+  String get event_memory_collection_create_state_message_end_story =>
+      'มีบางช่วงเวลาที่\nไม่หายไปเพียงเพราะเรื่องราวจบลง';
+
+  @override
+  String get event_memory_collection_text_collection =>
+      'ความทรงจำที่บันทึกนี้ไม่มี Scene ที่สามารถเล่นซ้ำได้';
+
+  @override
+  String get event_memory_collection_message => 'ข้าม';
+
+  @override
+  String get event_memory_collection_message_end => 'แตะเพื่อจบ';
+
+  @override
+  String get event_memory_collection_message_continue => 'แตะเพื่อดำเนินการต่อ';
+
+  @override
+  String get event_memory_collection_message_variant_b =>
+      'แตะเพื่อแสดงข้อความทั้งหมด';
+
+  @override
+  String get event_memory_collection_collected_label_collection =>
+      'เพิ่งบันทึกเข้าคอลเลกชัน';
+
+  @override
+  String get event_memory_collection_collected_item_label_collection_date =>
+      'ไม่ได้บันทึกวันที่เก็บ';
+
+  @override
+  String event_memory_collection_collected_item_label_collection(
+      Object day, Object month, Object value1) {
+    return 'บันทึกเมื่อ $value1/$month/$day';
+  }
+
+  @override
+  String get event_memory_text_not_found_event => 'ไม่พบข้อมูลกิจกรรม';
+
+  @override
+  String get event_memory_message_limited_memory_failed_load =>
+      'โหลดความทรงจำจำกัดไม่สำเร็จ';
+
+  @override
+  String get event_memory_as_map_label_unlocked => 'ปลดล็อกแล้ว';
+
+  @override
+  String event_memory_as_map_label_unlock(Object currencyIcon,
+      Object currencyName, Object currentValue, Object requiredValue) {
+    return 'สะสม $currencyIcon $requiredValue $currencyName เพื่อปลดล็อก ($currentValue / $requiredValue)';
+  }
+
+  @override
+  String get event_memory_as_map_label_unlock_task_event_complete =>
+      'ปลดล็อกหลังจากทำภารกิจกิจกรรมที่กำหนดสำเร็จ';
+
+  @override
+  String get event_memory_as_map_label_redeem_unlock_event =>
+      'ปลดล็อกหลังจากแลกไอเทมกิจกรรมที่กำหนด';
+
+  @override
+  String get event_memory_as_map_label_unlock_variant_b => 'ยังไม่ปลดล็อก';
+
+  @override
+  String get event_memory_hero_message =>
+      'เก็บช่วงเวลาที่เป็นของคุณสองคนเท่านั้นไว้ในฤดูกาลนี้';
+
+  @override
+  String event_memory_hero_message_limited_memory(
+      Object totalCount, Object unlockedCount) {
+    return 'ความทรงจำจำกัด  $unlockedCount / $totalCount';
+  }
+
+  @override
+  String get event_memory_status_label_unlocked => 'ปลดล็อกแล้ว・ยังไม่ได้ดู';
+
+  @override
+  String get event_memory_status_label => 'ดูแล้ว';
+
+  @override
+  String get event_memory_status_label_collection => 'เก็บแล้ว';
+
+  @override
+  String get event_memory_footer_label_memory_start =>
+      'คุณสามารถเริ่มความทรงจำนี้ได้';
+
+  @override
+  String get event_memory_footer_label => 'คุณสามารถดูอีกครั้งได้';
+
+  @override
+  String get event_memory_footer_label_collection =>
+      'บันทึกไว้ในคอลเลกชัน Shiguang';
+
+  @override
+  String get event_memory_empty_message_limited_memory_event_public =>
+      'กิจกรรมนี้ยังไม่มีความทรงจำจำกัดที่เผยแพร่';
+
+  @override
+  String get event_memory_performance_finish_message_memory =>
+      'ความทรงจำนี้ถูกเก็บไว้แล้ว';
+
+  @override
+  String get event_memory_performance_finish_message_save_collection =>
+      'คอลเลกชันจะถูกเก็บไว้ในเกม ระบบจะขอสิทธิ์คลังรูปเฉพาะเมื่อบันทึกลงโทรศัพท์';
+
+  @override
+  String get event_memory_performance_finish_message => 'กำลังประมวลผล…';
+
+  @override
+  String get event_memory_performance_finish_message_collection_memory =>
+      'เก็บความทรงจำนี้';
+
+  @override
+  String get event_memory_performance_confirm_uncollect_memory_message_collection_cancel_memory_again_remove =>
+      'หลังจากนำออก ความทรงจำนี้จะถูกลบออกจาก “คอลเลกชัน Shiguang” ภายหลังคุณยังสามารถดูและเก็บอีกครั้งได้';
+
+  @override
+  String
+      get event_memory_performance_uncollect_memory_message_collection_login =>
+          'โปรดเข้าสู่ระบบก่อนจัดการคอลเลกชัน';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_collection_login_memory =>
+          'โปรดเข้าสู่ระบบก่อนเก็บความทรงจำนี้';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_collection_memory =>
+          'เก็บความทรงจำนี้แล้ว ♡';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_try_again_later_collection_failed =>
+          'เก็บไม่สำเร็จ โปรดลองอีกครั้งภายหลัง';
+
+  @override
+  String get event_memory_performance_text_panel_message_complete =>
+      'แตะเพื่อเสร็จสิ้น';
+
+  @override
+  String get event_memory_performance_build_performance_message => 'ข้าม';
+
+  @override
+  String get event_memory_performance_text_play => 'ไม่มี Scene ที่เล่นได้';
+
+  @override
+  String get event_memory_profile_change_profile_message_profile =>
+      'เปลี่ยนโปรไฟล์ Shiguang';
+
+  @override
+  String get event_memory_profile_message_profile_confirm =>
+      'ยืนยันโปรไฟล์ Shiguang';
+
+  @override
+  String get event_memory_profile_center_text_profile_not_found =>
+      'ไม่พบโปรไฟล์ Shiguang ที่ใช้ได้';
+
+  @override
+  String get event_memory_profile_center_message_memory =>
+      'คุณจะเป็นใครในความทรงจำนี้?';
+
+  @override
+  String get event_memory_profile_center_message_profile_character_start =>
+      'ระบบเลือกโปรไฟล์ Shiguang ที่คุณใช้ล่าสุดกับตัวละครนี้ก่อน คุณสามารถเปลี่ยนได้ก่อนเริ่ม';
+
+  @override
+  String event_memory_profile_center_message(Object value1) {
+    return 'ในฐานะ “$value1” กับ';
+  }
+
+  @override
+  String event_memory_profile_center_message_memory_variant_b(Object value1) {
+    return '“$value1” ในความทรงจำนี้';
+  }
+
+  @override
+  String get event_memory_profile_center_label_memory_start => 'เริ่มความทรงจำ';
+
+  @override
+  String get event_message_failed_load => 'โหลดข้อมูลกิจกรรมไม่สำเร็จ';
+
+  @override
+  String get event_message_not_found => 'ไม่พบกิจกรรม';
+
+  @override
+  String get event_remaining_label => 'กิจกรรมกำลังดำเนินอยู่';
+
+  @override
+  String event_remaining_label_days(Object value1) {
+    return 'เหลือ $value1 วัน';
+  }
+
+  @override
+  String event_remaining_label_hours(Object value1) {
+    return 'เหลือ $value1 ชั่วโมง';
+  }
+
+  @override
+  String get event_remaining_label_end => 'ใกล้สิ้นสุด';
+
+  @override
+  String get event_balance_pill_tooltip_back => 'กลับ';
+
+  @override
+  String event_claim_task_message_claim_current(
+      Object currency, Object reward, Object value1, Object value2) {
+    return 'ได้รับ $value1 $reward $value2 แล้ว ขณะนี้มี $currency';
+  }
+
+  @override
+  String get event_claim_task_message_reward_claim => 'รับรางวัลแล้ว';
+
+  @override
+  String get event_claim_task_message_claim_failed => 'รับไม่สำเร็จ';
+
+  @override
+  String get event_claim_task_message_task_claim => 'ภารกิจนี้รับรางวัลไปแล้ว';
+
+  @override
+  String get event_claim_task_message_incomplete_task => 'ภารกิจยังไม่สำเร็จ';
+
+  @override
+  String get event_task_list_label_task_load => 'กำลังโหลดภารกิจ…';
+
+  @override
+  String get event_task_list_label_task_current => 'ขณะนี้ไม่มีภารกิจ';
+
+  @override
+  String get event_task_list_label_task_login_progress =>
+      'เข้าสู่ระบบเพื่อดูความคืบหน้าภารกิจกิจกรรม';
+
+  @override
+  String get event_milestone_progress_label_reward_load =>
+      'กำลังโหลดรางวัลสะสม…';
+
+  @override
+  String get event_milestone_progress_label_reward_current =>
+      'ขณะนี้ไม่มีรางวัลสะสม';
+
+  @override
+  String event_build_with_total_message_current(Object totalEarned) {
+    return 'ปัจจุบัน  $totalEarned';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_confirm => 'ยืนยันการแลก';
+
+  @override
+  String event_progress_ref_message_redeem_flowers(
+      Object itemName, Object price, Object rewardAmount, Object value1) {
+    return 'ใช้ $value1 $price เพื่อแลก “$itemName” หรือไม่?\n\nหลังแลกจะได้รับดอกไม้ $rewardAmount ดอก';
+  }
+
+  @override
+  String event_progress_ref_message_redeem(
+      Object itemName, Object price, Object value1) {
+    return 'ใช้ $value1 $price เพื่อแลก “$itemName” หรือไม่?';
+  }
+
+  @override
+  String event_progress_ref_message_redeem_success_flowers(
+      Object returnedReward) {
+    return 'แลกสำเร็จ! ได้รับดอกไม้ $returnedReward ดอก';
+  }
+
+  @override
+  String event_progress_ref_message_event_collection_redeem_success_add(
+      Object itemName) {
+    return 'แลกสำเร็จ! เพิ่ม “$itemName” ไปยังคอลเลกชันกิจกรรมแล้ว';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_failed => 'แลกไม่สำเร็จ';
+
+  @override
+  String get event_progress_ref_message_redeem_variant_b =>
+      'ไอเทมนี้ถูกแลกไปแล้ว';
+
+  @override
+  String get event_progress_ref_message_insufficient => 'สกุลเงินไม่เพียงพอ';
+
+  @override
+  String event_progress_ref_message_insufficient_variant_b(Object value1) {
+    return '$value1 ไม่เพียงพอ';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_variant_c => 'แลก';
+
+  @override
+  String get event_progress_ref_message_redeem_variant_d => 'แลกแล้ว';
+
+  @override
+  String event_message_redeem_flowers(Object rewardAmount) {
+    return 'หลังแลกจะได้รับดอกไม้ $rewardAmount ดอก';
+  }
+
+  @override
+  String event_message_redeem(Object redeemedCount) {
+    return 'แลกแล้ว $redeemedCount ครั้ง';
+  }
+
+  @override
+  String get event_message_event_shop_login =>
+      'เข้าสู่ระบบเพื่อใช้ร้านค้ากิจกรรม';
+
+  @override
+  String get event_message_redeem_current => 'ขณะนี้ไม่มีไอเทมที่สามารถแลกได้';
+
+  @override
+  String event_shop_item_card_message_flowers(Object rewardAmount) {
+    return 'รับดอกไม้ $rewardAmount ดอก';
+  }
+
+  @override
+  String get event_message_insufficient => 'ไม่เพียงพอ';
+
+  @override
+  String get notification_message_player => 'รูปภาพที่ผู้เล่นแนบ';
+
+  @override
+  String notification_message_qixi_letter(Object value1) {
+    return 'จดหมายเทศกาลชีซีจาก $value1';
+  }
+
+  @override
+  String recommendation_remaining_label_days(Object value1) {
+    return 'เหลือ $value1 วัน';
+  }
+
+  @override
+  String recommendation_remaining_label_hours(Object value1) {
+    return 'เหลือ $value1 ชั่วโมง';
+  }
+
+  @override
+  String get settings_subtitle_character_days =>
+      'ให้ตัวละครที่คุณชอบอยู่กับคุณในทุกวัน';
+
+  @override
+  String moment_notification_comment_on_character_post(
+      Object authorName, Object commentText, Object senderNickname) {
+    return '$senderNickname ฝากความคิดเห็นถึง $authorName: “$commentText”';
+  }
+
+  @override
+  String get inbox_content_text_message_customer_service_message_send =>
+      'ข้อความถึงฝ่ายบริการลูกค้าที่ส่งแล้ว';
+
+  @override
+  String get character_edit_relationship_none_label => 'ไม่มี';
+
+  @override
+  String get auth_cancel_account_deletion_failed =>
+      'ยกเลิกการลบบัญชีไม่สำเร็จ โปรดลองอีกครั้งภายหลัง';
+
+  @override
+  String get auth_delete_account_failed => 'ลบบัญชีไม่สำเร็จ';
+
+  @override
+  String get auth_request_account_deletion_failed =>
+      'ส่งคำขอลบบัญชีไม่สำเร็จ โปรดลองอีกครั้งภายหลัง';
+
+  @override
+  String get theme_font_shiguang_serif => 'Shiguang Serif';
+
+  @override
+  String get theme_font_clean_sans => 'Sans สะอาด';
+
+  @override
+  String get theme_font_system => 'แบบอักษรระบบ';
+
+  @override
+  String get theme_font_shiguang_serif_description =>
+      'นุ่มนวลและมีบรรยากาศวรรณกรรม เหมาะกับการอ่านแบบดื่มด่ำ';
+
+  @override
+  String get theme_font_clean_sans_description =>
+      'ชัดเจนและเรียบง่าย อ่านนานได้สบาย';
+
+  @override
+  String get theme_font_system_description =>
+      'ใช้แบบอักษรระบบเริ่มต้นของอุปกรณ์';
 }

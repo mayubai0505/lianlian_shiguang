@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../services/app_constants.dart';
 import '../utils/image_utils.dart';
 import 'event_memory_performance_page.dart';
+import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 
 class EventMemoryProfileConfirmPage extends StatefulWidget {
   final String eventId;
@@ -238,7 +239,7 @@ class _EventMemoryProfileConfirmPageState
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    '更換拾光檔案',
+                    appL10n.event_memory_profile_change_profile_message_profile,
                     style: GoogleFonts.notoSerifTc(
                       fontSize: 19,
                       fontWeight: FontWeight.w700,
@@ -342,7 +343,7 @@ class _EventMemoryProfileConfirmPageState
         foregroundColor: visual.textPrimaryColor,
         surfaceTintColor: Colors.transparent,
         title: Text(
-          '確認拾光檔案',
+          appL10n.event_memory_profile_message_profile_confirm,
           style: GoogleFonts.notoSerifTc(
             fontWeight: FontWeight.w700,
             color: visual.textPrimaryColor,
@@ -360,12 +361,12 @@ class _EventMemoryProfileConfirmPageState
           ),
         )
             : profile == null
-            ? const Center(child: Text('找不到可使用的拾光檔案'))
+            ? Center(child: Text(appL10n.event_memory_profile_center_text_profile_not_found))
             : ListView(
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
           children: [
             Text(
-              '這段回憶，會以誰的身分留下？',
+              appL10n.event_memory_profile_center_message_memory,
               style: GoogleFonts.notoSerifTc(
                 fontSize: 22,
                 fontWeight: FontWeight.w800,
@@ -374,7 +375,7 @@ class _EventMemoryProfileConfirmPageState
             ),
             const SizedBox(height: 8),
             Text(
-              '已優先使用你與這個角色最近使用的拾光檔案，也可以在開始前更換。',
+              appL10n.event_memory_profile_center_message_profile_character_start,
               style: GoogleFonts.notoSerifTc(
                 fontSize: 12,
                 height: 1.6,
@@ -442,8 +443,8 @@ class _EventMemoryProfileConfirmPageState
                   ),
                   const SizedBox(height: 22),
                   Text(
-                    '將以「${_profileDisplayName(profile)}」與'
-                        '「${widget.characterName}」留下這段回憶',
+                    appL10n.event_memory_profile_center_message(_profileDisplayName(profile)) +
+                        appL10n.event_memory_profile_center_message_memory_variant_b(widget.characterName),
                     textAlign: TextAlign.center,
                     style: GoogleFonts.notoSerifTc(
                       fontSize: 15,
@@ -493,7 +494,7 @@ class _EventMemoryProfileConfirmPageState
             FilledButton.icon(
               onPressed: _startMemory,
               icon: const Icon(Icons.auto_stories_rounded),
-              label: const Text('開始回憶'),
+              label: Text(appL10n.event_memory_profile_center_label_memory_start),
               style: FilledButton.styleFrom(
                 minimumSize: const Size.fromHeight(52),
               ),

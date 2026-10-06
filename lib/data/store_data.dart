@@ -1,3 +1,4 @@
+import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 class GameProduct {
   final String id;
   final String name;
@@ -15,7 +16,7 @@ class GameProduct {
 // ✨ 核心對照表！ ✨
 // key 是您在 Google Play Console 設定的商品 ID
 // value 是上面定義的 GameProduct 物件
-final Map<String, GameProduct> storeProducts = {
+Map<String, GameProduct> get storeProducts => {
   'points_package_30': const GameProduct(id: 'points_package_30', name: '初見禮包', points: 90, bonusTag: '+10%'),
   'points_package_70': const GameProduct(id: 'points_package_70', name: '曖昧禮包', points: 215, bonusTag: '+15%'),
   'points_package_120': const GameProduct(id: 'points_package_120', name: '心動禮包', points: 370, bonusTag: '+20%'),
@@ -35,5 +36,5 @@ final Map<String, GameProduct> storeProducts = {
   'points_package_1930': const GameProduct(id: 'points_package_1930', name: '誓約禮包', points: 6400, bonusTag: '+55%'),
   'points_package_2990': const GameProduct(id: 'points_package_2990', name: '永恆戀人包', points: 10000, bonusTag: '+60%'),
   // 月卡 (訂閱商品)
-  'monthly_subscription_star_contract': const GameProduct(id: 'monthly_subscription_star_contract', name: '戀戀拾光．星之契約', points: 250),
+  'monthly_subscription_star_contract': GameProduct(id: 'monthly_subscription_star_contract', name: appL10n.subscription_star_contract_name, points: 250),
 };

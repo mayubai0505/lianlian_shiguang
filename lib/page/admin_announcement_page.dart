@@ -4702,7 +4702,13 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       builder: (dialogContext) {
         String itemType = initial?['itemType']?.toString() ?? 'flower';
         String taskType = initial?['taskType']?.toString() ?? 'any_chat';
-        bool limited = initial?['limitOne'] == true;
+        final rawMaxRedemptions = initial?['maxRedemptions'];
+        final int initialMaxRedemptions = rawMaxRedemptions is num
+            ? rawMaxRedemptions.toInt()
+            : int.tryParse(rawMaxRedemptions?.toString() ?? '') ??
+            (initial?['limitOne'] == true ? 1 : 0);
+        String maxRedemptionsValue =
+        (initialMaxRedemptions < 0 ? 0 : initialMaxRedemptions).toString();
         bool analyzingSticker = false;
 
         return StatefulBuilder(
@@ -4711,502 +4717,537 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
             String amountLabel;
 
             if (type == 'task') {
-              dialogTitle = '新增每日任務';
+              dialogTitle = initial == null ? '新增每日任務' : '編輯每日任務';
               amountLabel = '獎勵活動貨幣';
             } else if (type == 'milestone') {
-              dialogTitle = '新增累積獎勵';
+              dialogTitle = initial == null ? '新增累積獎勵' : '編輯累積獎勵';
               amountLabel = '達成門檻';
             } else {
-              dialogTitle = '新增商店商品';
+              dialogTitle = initial == null ? '新增商店商品' : '編輯商店商品';
               amountLabel = '兌換價格';
             }
 
             return AlertDialog(
+              insetPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 24,
+              ),
+              titlePadding: const EdgeInsets.fromLTRB(24, 22, 24, 10),
+              contentPadding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
+              actionsPadding: const EdgeInsets.fromLTRB(16, 10, 16, 18),
               title: Text(dialogTitle),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextFormField(
-                      initialValue: titleValue,
-                      onChanged: (value) => titleValue = value,
-                      decoration: InputDecoration(
-                        labelText: type == 'shop' ? '商品名稱' : '名稱',
-                        border: const OutlineInputBorder(),
-                      ),
-                    ),
-                    if (type == 'task') ...[
-                      const SizedBox(height: 12),
-                      DropdownButtonFormField<String>(
-                        initialValue: taskType,
-                        decoration: const InputDecoration(
-                          labelText: '任務條件',
-                          border: OutlineInputBorder(),
-                        ),
-                        items: const [
-                          DropdownMenuItem(
-                            value: 'any_chat',
-                            child: Text('任意聊天回覆'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'mode_gemini',
-                            child: Text('閒聊'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'mode_daily',
-                            child: Text('日常（舊模式）'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'mode_story',
-                            child: Text('劇情'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'mode_immersive',
-                            child: Text('沉浸'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'mode_resonance',
-                            child: Text('共鳴'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'interaction',
-                            child: Text('小互動'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'gift',
-                            child: Text('送禮'),
-                          ),
-                        ],
-                        onChanged: (value) {
-                          if (value == null) return;
-                          setDialogState(() => taskType = value);
-                        },
-                      ),
-                      const SizedBox(height: 12),
+              content: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 520),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
                       TextFormField(
-                        initialValue: taskTargetValue,
-                        onChanged: (value) => taskTargetValue = value,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          labelText: '完成次數',
-                          hintText: '例如：5',
-                          border: OutlineInputBorder(),
+                        initialValue: titleValue,
+                        onChanged: (value) => titleValue = value,
+                        decoration: InputDecoration(
+                          labelText: type == 'shop' ? '商品名稱' : '名稱',
+                          border: const OutlineInputBorder(),
                         ),
                       ),
-                    ],
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      initialValue: amountValue,
-                      onChanged: (value) => amountValue = value,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: amountLabel,
-                        border: const OutlineInputBorder(),
-                      ),
-                    ),
-                    if (type == 'shop') ...[
-                      const SizedBox(height: 12),
-                      DropdownButtonFormField<String>(
-                        initialValue: itemType,
-                        decoration: const InputDecoration(
-                          labelText: '商品類型',
-                          border: OutlineInputBorder(),
+                      if (type == 'task') ...[
+                        const SizedBox(height: 12),
+                        DropdownButtonFormField<String>(
+                          initialValue: taskType,
+                          decoration: const InputDecoration(
+                            labelText: '任務條件',
+                            border: OutlineInputBorder(),
+                          ),
+                          items: const [
+                            DropdownMenuItem(
+                              value: 'any_chat',
+                              child: Text('任意聊天回覆'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'mode_gemini',
+                              child: Text('閒聊'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'mode_daily',
+                              child: Text('日常（舊模式）'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'mode_story',
+                              child: Text('劇情'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'mode_immersive',
+                              child: Text('沉浸'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'mode_resonance',
+                              child: Text('共鳴'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'interaction',
+                              child: Text('小互動'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'gift',
+                              child: Text('送禮'),
+                            ),
+                          ],
+                          onChanged: (value) {
+                            if (value == null) return;
+                            setDialogState(() => taskType = value);
+                          },
                         ),
-                        items: const [
-                          DropdownMenuItem(value: 'flower', child: Text('花花')),
-                          DropdownMenuItem(value: 'avatar_frame', child: Text('頭像框')),
-                          DropdownMenuItem(value: 'title', child: Text('稱號')),
-                          DropdownMenuItem(
-                            value: 'chat_background',
-                            child: Text('聊天室限定背景'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'memory_card',
-                            child: Text('限定回憶卡'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'sticker',
-                            child: Text('貼紙'),
-                          ),
-                          DropdownMenuItem(value: 'other', child: Text('其他')),
-                        ],
-                        onChanged: (value) {
-                          if (value == null) return;
-                          setDialogState(() => itemType = value);
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      if (itemType == 'flower') ...[
+                        const SizedBox(height: 12),
                         TextFormField(
-                          initialValue: shopRewardAmountValue,
-                          onChanged: (value) =>
-                          shopRewardAmountValue = value,
+                          initialValue: taskTargetValue,
+                          onChanged: (value) => taskTargetValue = value,
                           keyboardType: TextInputType.number,
                           decoration: const InputDecoration(
-                            labelText: '發放花花數量',
-                            hintText: '例如：20',
+                            labelText: '完成次數',
+                            hintText: '例如：5',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        initialValue: amountValue,
+                        onChanged: (value) => amountValue = value,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          labelText: amountLabel,
+                          border: const OutlineInputBorder(),
+                        ),
+                      ),
+                      if (type == 'shop') ...[
+                        const SizedBox(height: 12),
+                        DropdownButtonFormField<String>(
+                          initialValue: itemType,
+                          decoration: const InputDecoration(
+                            labelText: '商品類型',
+                            border: OutlineInputBorder(),
+                          ),
+                          items: const [
+                            DropdownMenuItem(value: 'flower', child: Text('花花')),
+                            DropdownMenuItem(value: 'avatar_frame', child: Text('頭像框')),
+                            DropdownMenuItem(value: 'title', child: Text('稱號')),
+                            DropdownMenuItem(
+                              value: 'chat_background',
+                              child: Text('聊天室限定背景'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'memory_card',
+                              child: Text('限定回憶卡'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'sticker',
+                              child: Text('貼紙'),
+                            ),
+                            DropdownMenuItem(value: 'other', child: Text('其他')),
+                          ],
+                          onChanged: (value) {
+                            if (value == null) return;
+                            setDialogState(() => itemType = value);
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        if (itemType == 'flower') ...[
+                          TextFormField(
+                            initialValue: shopRewardAmountValue,
+                            onChanged: (value) =>
+                            shopRewardAmountValue = value,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              labelText: '發放花花數量',
+                              hintText: '例如：20',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+                        TextFormField(
+                          initialValue: descriptionValue,
+                          onChanged: (value) => descriptionValue = value,
+                          minLines: 2,
+                          maxLines: 3,
+                          decoration: const InputDecoration(
+                            labelText: '商品說明',
                             border: OutlineInputBorder(),
                           ),
                         ),
                         const SizedBox(height: 12),
-                      ],
-                      TextFormField(
-                        initialValue: descriptionValue,
-                        onChanged: (value) => descriptionValue = value,
-                        minLines: 2,
-                        maxLines: 3,
-                        decoration: const InputDecoration(
-                          labelText: '商品說明',
-                          border: OutlineInputBorder(),
+                        TextFormField(
+                          key: ValueKey('shop_image_$imageValue'),
+                          initialValue: imageValue,
+                          onChanged: (value) => imageValue = value,
+                          decoration: const InputDecoration(
+                            labelText: '商品圖片 URL',
+                            hintText: '可貼 URL；聊天室背景會保留原始完整比例',
+                            border: OutlineInputBorder(),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      TextFormField(
-                        key: ValueKey('shop_image_$imageValue'),
-                        initialValue: imageValue,
-                        onChanged: (value) => imageValue = value,
-                        decoration: const InputDecoration(
-                          labelText: '商品圖片 URL',
-                          hintText: '可貼 URL；聊天室背景會保留原始完整比例',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: FilledButton.tonalIcon(
-                          onPressed: _uploadingEventImageSlot != null
-                              ? null
-                              : () async {
-                            final imageSlot = itemType == 'avatar_frame'
-                                ? 'shop_frame'
-                                : (itemType == 'chat_background' ||
-                                itemType == 'background' ||
-                                itemType == 'scene_background' ||
-                                itemType == 'special_background')
-                                ? 'shop_background'
-                                : 'shop';
-                            final uploaded =
-                            await _pickAndUploadReusableEventImage(
-                              slot: imageSlot,
-                            );
-                            if (uploaded == null || !mounted) return;
-                            setDialogState(() => imageValue = uploaded);
-                          },
-                          icon: (_uploadingEventImageSlot == 'shop' ||
-                              _uploadingEventImageSlot == 'shop_frame' ||
-                              _uploadingEventImageSlot == 'shop_background')
-                              ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                            ),
-                          )
-                              : const Icon(Icons.photo_library_outlined),
-                          label: Text(
-                            (_uploadingEventImageSlot == 'shop' ||
+                        const SizedBox(height: 8),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: FilledButton.tonalIcon(
+                            onPressed: _uploadingEventImageSlot != null
+                                ? null
+                                : () async {
+                              final imageSlot = itemType == 'avatar_frame'
+                                  ? 'shop_frame'
+                                  : (itemType == 'chat_background' ||
+                                  itemType == 'background' ||
+                                  itemType == 'scene_background' ||
+                                  itemType == 'special_background')
+                                  ? 'shop_background'
+                                  : 'shop';
+                              final uploaded =
+                              await _pickAndUploadReusableEventImage(
+                                slot: imageSlot,
+                              );
+                              if (uploaded == null || !mounted) return;
+                              setDialogState(() => imageValue = uploaded);
+                            },
+                            icon: (_uploadingEventImageSlot == 'shop' ||
                                 _uploadingEventImageSlot == 'shop_frame' ||
                                 _uploadingEventImageSlot == 'shop_background')
-                                ? '上傳中'
-                                : (itemType == 'avatar_frame'
-                                ? '選透明 PNG 並裁切'
-                                : (itemType == 'chat_background' ||
-                                itemType == 'background' ||
-                                itemType == 'scene_background' ||
-                                itemType == 'special_background')
-                                ? '選完整背景圖（不裁切）'
-                                : '選圖並裁切'),
+                                ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
+                            )
+                                : const Icon(Icons.photo_library_outlined),
+                            label: Text(
+                              (_uploadingEventImageSlot == 'shop' ||
+                                  _uploadingEventImageSlot == 'shop_frame' ||
+                                  _uploadingEventImageSlot == 'shop_background')
+                                  ? '上傳中'
+                                  : (itemType == 'avatar_frame'
+                                  ? '選透明 PNG 並裁切'
+                                  : (itemType == 'chat_background' ||
+                                  itemType == 'background' ||
+                                  itemType == 'scene_background' ||
+                                  itemType == 'special_background')
+                                  ? '選完整背景圖（不裁切）'
+                                  : '選圖並裁切'),
+                            ),
                           ),
                         ),
-                      ),
-                      if (imageValue.trim().isNotEmpty) ...[
-                        const SizedBox(height: 10),
-                        InkWell(
-                          borderRadius: BorderRadius.circular(12),
-                          onTap: () => _showReusableEventImagePreview(
-                            imageUrl: imageValue.trim(),
-                            title: '商店商品圖片',
-                          ),
-                          child: Stack(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: (itemType == 'chat_background' ||
-                                    itemType == 'background' ||
-                                    itemType == 'scene_background' ||
-                                    itemType == 'special_background')
-                                    ? Container(
-                                  width: double.infinity,
-                                  constraints: const BoxConstraints(
-                                    minHeight: 220,
-                                    maxHeight: 360,
-                                  ),
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .surfaceContainerHighest,
-                                  alignment: Alignment.center,
-                                  child: Image.network(
-                                    imageValue.trim(),
-                                    fit: BoxFit.contain,
-                                    errorBuilder: (_, __, ___) =>
-                                    const Center(
-                                      child: Text('商品圖片預覽失敗'),
+                        if (imageValue.trim().isNotEmpty) ...[
+                          const SizedBox(height: 10),
+                          InkWell(
+                            borderRadius: BorderRadius.circular(12),
+                            onTap: () => _showReusableEventImagePreview(
+                              imageUrl: imageValue.trim(),
+                              title: '商店商品圖片',
+                            ),
+                            child: Stack(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: (itemType == 'chat_background' ||
+                                      itemType == 'background' ||
+                                      itemType == 'scene_background' ||
+                                      itemType == 'special_background')
+                                      ? Container(
+                                    width: double.infinity,
+                                    constraints: const BoxConstraints(
+                                      minHeight: 180,
+                                      maxHeight: 240,
                                     ),
-                                  ),
-                                )
-                                    : AspectRatio(
-                                  aspectRatio: 1,
-                                  child: Image.network(
-                                    imageValue.trim(),
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => Container(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .surfaceContainerHighest,
-                                      alignment: Alignment.center,
-                                      child: const Text('商品圖片預覽失敗'),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                right: 9,
-                                top: 9,
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.all(7),
-                                      decoration: BoxDecoration(
-                                        color: Colors.black.withValues(alpha: 0.58),
-                                        borderRadius: BorderRadius.circular(99),
-                                      ),
-                                      child: const Icon(
-                                        Icons.zoom_out_map_rounded,
-                                        size: 17,
-                                        color: Colors.white,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .surfaceContainerHighest,
+                                    alignment: Alignment.center,
+                                    child: Image.network(
+                                      imageValue.trim(),
+                                      fit: BoxFit.contain,
+                                      errorBuilder: (_, __, ___) =>
+                                      const Center(
+                                        child: Text('商品圖片預覽失敗'),
                                       ),
                                     ),
-                                    const SizedBox(width: 7),
-                                    Material(
-                                      color: Colors.black.withValues(alpha: 0.58),
-                                      shape: const CircleBorder(),
-                                      child: InkWell(
-                                        customBorder: const CircleBorder(),
-                                        onTap: () {
-                                          setDialogState(() => imageValue = '');
-                                        },
-                                        child: const Padding(
-                                          padding: EdgeInsets.all(7),
-                                          child: Icon(
-                                            Icons.close_rounded,
-                                            size: 17,
-                                            color: Colors.white,
+                                  )
+                                      : Center(
+                                    child: SizedBox.square(
+                                      dimension: 230,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: Image.network(
+                                          imageValue.trim(),
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (_, __, ___) => Container(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .surfaceContainerHighest,
+                                            alignment: Alignment.center,
+                                            child: const Text('商品圖片預覽失敗'),
                                           ),
                                         ),
                                       ),
                                     ),
+                                  ),
+                                ),
+                                Positioned(
+                                  right: 9,
+                                  top: 9,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(7),
+                                        decoration: BoxDecoration(
+                                          color: Colors.black.withValues(alpha: 0.58),
+                                          borderRadius: BorderRadius.circular(99),
+                                        ),
+                                        child: const Icon(
+                                          Icons.zoom_out_map_rounded,
+                                          size: 17,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 7),
+                                      Material(
+                                        color: Colors.black.withValues(alpha: 0.58),
+                                        shape: const CircleBorder(),
+                                        child: InkWell(
+                                          customBorder: const CircleBorder(),
+                                          onTap: () {
+                                            setDialogState(() => imageValue = '');
+                                          },
+                                          child: const Padding(
+                                            padding: EdgeInsets.all(7),
+                                            child: Icon(
+                                              Icons.close_rounded,
+                                              size: 17,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            '點圖片可放大預覽 · 商店商品圖固定 1:1 裁切',
+                            style: GoogleFonts.notoSerifTc(
+                              fontSize: 10.5,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withValues(alpha: 0.48),
+                            ),
+                          ),
+                        ],
+                        if (itemType == 'sticker') ...[
+                          const SizedBox(height: 14),
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHighest
+                                  .withValues(alpha: 0.42),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        'AI 貼紙語意資料',
+                                        style: GoogleFonts.notoSerifTc(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ),
+                                    FilledButton.tonalIcon(
+                                      onPressed: analyzingSticker
+                                          ? null
+                                          : () async {
+                                        setDialogState(
+                                              () => analyzingSticker = true,
+                                        );
+
+                                        final analysis =
+                                        await _analyzeEventStickerImage(
+                                          imageValue,
+                                        );
+
+                                        if (!mounted) return;
+
+                                        if (analysis != null) {
+                                          final tagsRaw =
+                                          analysis['visualTags'];
+                                          final tags = tagsRaw is List
+                                              ? tagsRaw
+                                              .map((e) => e.toString())
+                                              .where(
+                                                (e) => e.trim().isNotEmpty,
+                                          )
+                                              .toList()
+                                              : <String>[];
+
+                                          setDialogState(() {
+                                            stickerNameValue =
+                                                (analysis['stickerName'] ?? '')
+                                                    .toString();
+                                            stickerTagsValue =
+                                                tags.join('、');
+                                            stickerBaseEmotionValue =
+                                                (analysis['baseEmotion'] ?? '')
+                                                    .toString();
+                                            stickerVisualDescriptionValue =
+                                                (analysis['visualDescription'] ?? '')
+                                                    .toString();
+                                            analyzingSticker = false;
+                                          });
+
+                                          ToastUtils.showCenterToast(
+                                            context,
+                                            'AI 已完成貼紙分析，可再手動調整',
+                                            customIcon:
+                                            Icons.auto_awesome_rounded,
+                                          );
+                                        } else {
+                                          setDialogState(
+                                                () => analyzingSticker = false,
+                                          );
+                                        }
+                                      },
+                                      icon: analyzingSticker
+                                          ? const SizedBox.square(
+                                        dimension: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                          : const Icon(
+                                        Icons.auto_awesome_rounded,
+                                      ),
+                                      label: Text(
+                                        analyzingSticker
+                                            ? '分析中…'
+                                            : 'AI 分析貼紙',
+                                      ),
+                                    ),
                                   ],
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          '點圖片可放大預覽 · 商店商品圖固定 1:1 裁切',
-                          style: GoogleFonts.notoSerifTc(
-                            fontSize: 10.5,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withValues(alpha: 0.48),
-                          ),
-                        ),
-                      ],
-                      if (itemType == 'sticker') ...[
-                        const SizedBox(height: 14),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .surfaceContainerHighest
-                                .withValues(alpha: 0.42),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      'AI 貼紙語意資料',
-                                      style: GoogleFonts.notoSerifTc(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  'AI 只描述貼紙畫面與基礎情緒，不會把「撒嬌／求和／挑釁」等玩家意圖寫死；真正語意之後會交給聊天上下文判斷。',
+                                  style: GoogleFonts.notoSerifTc(
+                                    fontSize: 10.5,
+                                    height: 1.5,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withValues(alpha: 0.55),
                                   ),
-                                  FilledButton.tonalIcon(
-                                    onPressed: analyzingSticker
-                                        ? null
-                                        : () async {
-                                      setDialogState(
-                                            () => analyzingSticker = true,
-                                      );
-
-                                      final analysis =
-                                      await _analyzeEventStickerImage(
-                                        imageValue,
-                                      );
-
-                                      if (!mounted) return;
-
-                                      if (analysis != null) {
-                                        final tagsRaw =
-                                        analysis['visualTags'];
-                                        final tags = tagsRaw is List
-                                            ? tagsRaw
-                                            .map((e) => e.toString())
-                                            .where(
-                                              (e) => e.trim().isNotEmpty,
-                                        )
-                                            .toList()
-                                            : <String>[];
-
-                                        setDialogState(() {
-                                          stickerNameValue =
-                                              (analysis['stickerName'] ?? '')
-                                                  .toString();
-                                          stickerTagsValue =
-                                              tags.join('、');
-                                          stickerBaseEmotionValue =
-                                              (analysis['baseEmotion'] ?? '')
-                                                  .toString();
-                                          stickerVisualDescriptionValue =
-                                              (analysis['visualDescription'] ?? '')
-                                                  .toString();
-                                          analyzingSticker = false;
-                                        });
-
-                                        ToastUtils.showCenterToast(
-                                          context,
-                                          'AI 已完成貼紙分析，可再手動調整',
-                                          customIcon:
-                                          Icons.auto_awesome_rounded,
-                                        );
-                                      } else {
-                                        setDialogState(
-                                              () => analyzingSticker = false,
-                                        );
-                                      }
-                                    },
-                                    icon: analyzingSticker
-                                        ? const SizedBox.square(
-                                      dimension: 16,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                        : const Icon(
-                                      Icons.auto_awesome_rounded,
-                                    ),
-                                    label: Text(
-                                      analyzingSticker
-                                          ? '分析中…'
-                                          : 'AI 分析貼紙',
-                                    ),
+                                ),
+                                const SizedBox(height: 12),
+                                TextFormField(
+                                  key: ValueKey(
+                                    'sticker_name_$stickerNameValue',
                                   ),
-                                ],
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                'AI 只描述貼紙畫面與基礎情緒，不會把「撒嬌／求和／挑釁」等玩家意圖寫死；真正語意之後會交給聊天上下文判斷。',
-                                style: GoogleFonts.notoSerifTc(
-                                  fontSize: 10.5,
-                                  height: 1.5,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurface
-                                      .withValues(alpha: 0.55),
+                                  initialValue: stickerNameValue,
+                                  onChanged: (value) =>
+                                  stickerNameValue = value,
+                                  decoration: const InputDecoration(
+                                    labelText: '貼紙名稱',
+                                    hintText: '例如：害羞遮臉',
+                                    border: OutlineInputBorder(),
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 12),
-                              TextFormField(
-                                key: ValueKey(
-                                  'sticker_name_$stickerNameValue',
+                                const SizedBox(height: 10),
+                                TextFormField(
+                                  key: ValueKey(
+                                    'sticker_tags_$stickerTagsValue',
+                                  ),
+                                  initialValue: stickerTagsValue,
+                                  onChanged: (value) =>
+                                  stickerTagsValue = value,
+                                  decoration: const InputDecoration(
+                                    labelText: '視覺標籤',
+                                    hintText: '例如：臉紅、遮臉、躲避視線',
+                                    border: OutlineInputBorder(),
+                                  ),
                                 ),
-                                initialValue: stickerNameValue,
-                                onChanged: (value) =>
-                                stickerNameValue = value,
-                                decoration: const InputDecoration(
-                                  labelText: '貼紙名稱',
-                                  hintText: '例如：害羞遮臉',
-                                  border: OutlineInputBorder(),
+                                const SizedBox(height: 10),
+                                TextFormField(
+                                  key: ValueKey(
+                                    'sticker_emotion_$stickerBaseEmotionValue',
+                                  ),
+                                  initialValue: stickerBaseEmotionValue,
+                                  onChanged: (value) =>
+                                  stickerBaseEmotionValue = value,
+                                  decoration: const InputDecoration(
+                                    labelText: '基礎情緒',
+                                    hintText: '例如：害羞、不好意思',
+                                    border: OutlineInputBorder(),
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 10),
-                              TextFormField(
-                                key: ValueKey(
-                                  'sticker_tags_$stickerTagsValue',
+                                const SizedBox(height: 10),
+                                TextFormField(
+                                  key: ValueKey(
+                                    'sticker_desc_$stickerVisualDescriptionValue',
+                                  ),
+                                  initialValue: stickerVisualDescriptionValue,
+                                  onChanged: (value) =>
+                                  stickerVisualDescriptionValue = value,
+                                  minLines: 2,
+                                  maxLines: 4,
+                                  decoration: const InputDecoration(
+                                    labelText: '畫面描述',
+                                    hintText: '只描述看得到的表情與動作',
+                                    border: OutlineInputBorder(),
+                                  ),
                                 ),
-                                initialValue: stickerTagsValue,
-                                onChanged: (value) =>
-                                stickerTagsValue = value,
-                                decoration: const InputDecoration(
-                                  labelText: '視覺標籤',
-                                  hintText: '例如：臉紅、遮臉、躲避視線',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              TextFormField(
-                                key: ValueKey(
-                                  'sticker_emotion_$stickerBaseEmotionValue',
-                                ),
-                                initialValue: stickerBaseEmotionValue,
-                                onChanged: (value) =>
-                                stickerBaseEmotionValue = value,
-                                decoration: const InputDecoration(
-                                  labelText: '基礎情緒',
-                                  hintText: '例如：害羞、不好意思',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              TextFormField(
-                                key: ValueKey(
-                                  'sticker_desc_$stickerVisualDescriptionValue',
-                                ),
-                                initialValue: stickerVisualDescriptionValue,
-                                onChanged: (value) =>
-                                stickerVisualDescriptionValue = value,
-                                minLines: 2,
-                                maxLines: 4,
-                                decoration: const InputDecoration(
-                                  labelText: '畫面描述',
-                                  hintText: '只描述看得到的表情與動作',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          initialValue: maxRedemptionsValue,
+                          onChanged: (value) => maxRedemptionsValue = value,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            labelText: '每位玩家兌換上限',
+                            hintText: '0 = 無限次，例如：5',
+                            border: OutlineInputBorder(),
+                            prefixIcon: Icon(Icons.repeat_rounded),
                           ),
                         ),
+                        const SizedBox(height: 7),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            '輸入 0 代表不限次數；輸入 1、2、5…代表每位玩家最多可兌換幾次。',
+                            style: GoogleFonts.notoSerifTc(
+                              fontSize: 10.5,
+                              height: 1.45,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withValues(alpha: 0.52),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
                       ],
-                      SwitchListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: const Text('每位玩家限兌換 1 次'),
-                        value: limited,
-                        onChanged: (value) {
-                          setDialogState(() => limited = value);
-                        },
-                      ),
                     ],
-                  ],
+                  ),
                 ),
               ),
               actions: [
@@ -5263,6 +5304,20 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                         return;
                       }
 
+                      final maxRedemptions =
+                      int.tryParse(maxRedemptionsValue.trim());
+
+                      if (maxRedemptions == null ||
+                          maxRedemptions < 0 ||
+                          maxRedemptions > 1000000) {
+                        ScaffoldMessenger.of(dialogContext).showSnackBar(
+                          const SnackBar(
+                            content: Text('兌換上限請輸入 0～1000000 的整數；0 代表無限次'),
+                          ),
+                        );
+                        return;
+                      }
+
                       if (itemType == 'sticker') {
                         if (imageValue.trim().isEmpty) {
                           ScaffoldMessenger.of(dialogContext).showSnackBar(
@@ -5289,7 +5344,10 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                         itemType == 'flower' ? shopRewardAmount : 0,
                         'description': descriptionValue.trim(),
                         'imageUrl': imageValue.trim(),
-                        'limitOne': limited,
+                        'maxRedemptions': maxRedemptions,
+                        // 舊版 App 相容：只有上限恰好是 1 時維持 limitOne=true。
+                        // 其他上限由新版欄位 + Cloud Function 強制驗證。
+                        'limitOne': maxRedemptions == 1,
                         if (itemType == 'sticker') ...{
                           'stickerName': stickerNameValue.trim(),
                           'visualTags': stickerTagsValue
@@ -5305,7 +5363,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                       });
                     }
                   },
-                  child: const Text('加入'),
+                  child: Text(initial == null ? '加入' : '儲存修改'),
                 ),
               ],
             );
@@ -6171,6 +6229,156 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     });
   }
 
+
+  Map<String, dynamic> _eventZhHantContent({
+    required String name,
+    required String subtitle,
+    required String description,
+    required String currencyName,
+  }) {
+    return <String, dynamic>{
+      'name': name,
+      'subtitle': subtitle,
+      'description': description,
+      'currencyName': currencyName,
+    };
+  }
+
+  Future<Map<String, dynamic>> _translateReusableEventContent({
+    required String name,
+    required String subtitle,
+    required String description,
+    required String currencyName,
+  }) async {
+    final fallback = <String, dynamic>{
+      'event': <String, dynamic>{
+        'zh_Hant': _eventZhHantContent(
+          name: name,
+          subtitle: subtitle,
+          description: description,
+          currencyName: currencyName,
+        ),
+      },
+      'tasks': _eventTaskDrafts
+          .map((item) => <String, dynamic>{
+        'zh_Hant': <String, dynamic>{
+          if (item['title'] != null) 'title': item['title'].toString(),
+          if (item['description'] != null)
+            'description': item['description'].toString(),
+        },
+      })
+          .toList(),
+      'milestones': _eventMilestoneDrafts
+          .map((item) => <String, dynamic>{
+        'zh_Hant': <String, dynamic>{
+          if (item['title'] != null) 'title': item['title'].toString(),
+          if (item['description'] != null)
+            'description': item['description'].toString(),
+        },
+      })
+          .toList(),
+      'shopItems': _eventShopDrafts
+          .map((item) => <String, dynamic>{
+        'zh_Hant': <String, dynamic>{
+          if (item['title'] != null) 'title': item['title'].toString(),
+          if (item['name'] != null) 'name': item['name'].toString(),
+          if (item['description'] != null)
+            'description': item['description'].toString(),
+        },
+      })
+          .toList(),
+      'memories': _eventMemoryDrafts
+          .map((memory) => <String, dynamic>{
+        'zh_Hant': <String, dynamic>{
+          if (memory['title'] != null)
+            'title': memory['title'].toString(),
+          if (memory['subtitle'] != null)
+            'subtitle': memory['subtitle'].toString(),
+          if (memory['description'] != null)
+            'description': memory['description'].toString(),
+        },
+        'scenes': ((memory['scenes'] is List)
+            ? (memory['scenes'] as List)
+            .whereType<Map>()
+            .map((scene) => <String, dynamic>{
+          'zh_Hant': <String, dynamic>{
+            if (scene['text'] != null)
+              'text': scene['text'].toString(),
+          },
+        })
+            .toList()
+            : <Map<String, dynamic>>[]),
+      })
+          .toList(),
+    };
+
+    try {
+      final callable = _functions.httpsCallable(
+        'translateEventContent',
+        options: HttpsCallableOptions(
+          timeout: const Duration(minutes: 5),
+        ),
+      );
+
+      final result = await callable.call({
+        'sourceLocale': 'zh_Hant',
+        'event': {
+          'name': name,
+          'subtitle': subtitle,
+          'description': description,
+          'currencyName': currencyName,
+        },
+        'tasks': _eventTaskDrafts,
+        'milestones': _eventMilestoneDrafts,
+        'shopItems': _eventShopDrafts,
+        'memories': _eventMemoryDrafts,
+      });
+
+      final data = result.data is Map
+          ? Map<String, dynamic>.from(result.data as Map)
+          : <String, dynamic>{};
+
+      final rawLocalized = data['localized'];
+      if (rawLocalized is! Map) {
+        return fallback;
+      }
+
+      final localized = Map<String, dynamic>.from(rawLocalized);
+
+      // 無論後端回什麼，都強制保留繁中原文當 fallback。
+      final eventMap = localized['event'] is Map
+          ? Map<String, dynamic>.from(localized['event'] as Map)
+          : <String, dynamic>{};
+      eventMap['zh_Hant'] = fallback['event']['zh_Hant'];
+      localized['event'] = eventMap;
+
+      return localized;
+    } catch (error, stackTrace) {
+      debugPrint('⚠️ 活動自動翻譯失敗，先以繁中內容儲存：$error');
+      debugPrintStack(stackTrace: stackTrace);
+      return fallback;
+    }
+  }
+
+  Map<String, dynamic> _localizedListItem(
+      dynamic rawList,
+      int index,
+      Map<String, dynamic> fallback,
+      ) {
+    if (rawList is List && index >= 0 && index < rawList.length) {
+      final raw = rawList[index];
+      if (raw is Map) {
+        final result = Map<String, dynamic>.from(raw);
+        result['zh_Hant'] = fallback;
+        return result;
+      }
+    }
+
+    return <String, dynamic>{
+      'zh_Hant': fallback,
+    };
+  }
+
   Future<void> _saveReusableEvent() async {
     if (_isSavingEvent) return;
 
@@ -6238,6 +6446,13 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     setState(() => _isSavingEvent = true);
 
     try {
+      final localized = await _translateReusableEventContent(
+        name: name,
+        subtitle: subtitle,
+        description: description,
+        currencyName: currencyName,
+      );
+
       final db = FirebaseFirestore.instance;
       final eventRef = _eventAdminCollection().doc(eventId);
 
@@ -6277,6 +6492,18 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
           'name': name,
           'subtitle': subtitle,
           'description': description,
+          // 動態活動文案不寫死在 l10n；各語系跟著活動資料一起存。
+          // 舊欄位 name/subtitle/description/currencyName 繼續保留，舊版 App 可照常讀。
+          'content': localized['event'] is Map
+              ? Map<String, dynamic>.from(localized['event'] as Map)
+              : <String, dynamic>{
+            'zh_Hant': _eventZhHantContent(
+              name: name,
+              subtitle: subtitle,
+              description: description,
+              currencyName: currencyName,
+            ),
+          },
           'isActive': _eventIsActive,
           'startAt': Timestamp.fromDate(_eventStartAt),
           'endAt': Timestamp.fromDate(_eventEndAt),
@@ -6326,8 +6553,18 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       for (int i = 0; i < _eventTaskDrafts.length; i++) {
         final item = _eventTaskDrafts[i];
         final ref = eventRef.collection('tasks').doc('task_${i + 1}');
+        final fallbackContent = <String, dynamic>{
+          if (item['title'] != null) 'title': item['title'].toString(),
+          if (item['description'] != null)
+            'description': item['description'].toString(),
+        };
         batch.set(ref, {
           ...item,
+          'content': _localizedListItem(
+            localized['tasks'],
+            i,
+            fallbackContent,
+          ),
           'order': i + 1,
           'updatedAt': FieldValue.serverTimestamp(),
         });
@@ -6336,8 +6573,18 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       for (int i = 0; i < _eventMilestoneDrafts.length; i++) {
         final item = _eventMilestoneDrafts[i];
         final ref = eventRef.collection('milestones').doc('milestone_${i + 1}');
+        final fallbackContent = <String, dynamic>{
+          if (item['title'] != null) 'title': item['title'].toString(),
+          if (item['description'] != null)
+            'description': item['description'].toString(),
+        };
         batch.set(ref, {
           ...item,
+          'content': _localizedListItem(
+            localized['milestones'],
+            i,
+            fallbackContent,
+          ),
           'order': i + 1,
           'updatedAt': FieldValue.serverTimestamp(),
         });
@@ -6346,8 +6593,19 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       for (int i = 0; i < _eventShopDrafts.length; i++) {
         final item = _eventShopDrafts[i];
         final ref = eventRef.collection('shop_items').doc('item_${i + 1}');
+        final fallbackContent = <String, dynamic>{
+          if (item['title'] != null) 'title': item['title'].toString(),
+          if (item['name'] != null) 'name': item['name'].toString(),
+          if (item['description'] != null)
+            'description': item['description'].toString(),
+        };
         batch.set(ref, {
           ...item,
+          'content': _localizedListItem(
+            localized['shopItems'],
+            i,
+            fallbackContent,
+          ),
           'order': i + 1,
           'updatedAt': FieldValue.serverTimestamp(),
         });
@@ -6358,9 +6616,30 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         final memory = Map<String, dynamic>.from(_eventMemoryDrafts[i]);
         final rawScenes = memory.remove('scenes');
         memory.remove('memoryId');
+
+        final localizedMemories = localized['memories'];
+        final rawLocalizedMemory =
+        localizedMemories is List && i < localizedMemories.length
+            ? localizedMemories[i]
+            : null;
+        final localizedMemory = rawLocalizedMemory is Map
+            ? Map<String, dynamic>.from(rawLocalizedMemory)
+            : <String, dynamic>{};
+        final localizedScenes = localizedMemory.remove('scenes');
+
+        final memoryFallback = <String, dynamic>{
+          if (memory['title'] != null) 'title': memory['title'].toString(),
+          if (memory['subtitle'] != null)
+            'subtitle': memory['subtitle'].toString(),
+          if (memory['description'] != null)
+            'description': memory['description'].toString(),
+        };
+        localizedMemory['zh_Hant'] = memoryFallback;
+
         final memoryRef = eventRef.collection('memories').doc('memory_${i + 1}');
         batch.set(memoryRef, {
           ...memory,
+          'content': localizedMemory,
           'order': i + 1,
           'updatedAt': FieldValue.serverTimestamp(),
         });
@@ -6371,9 +6650,21 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         for (int j = 0; j < scenes.length; j++) {
           final scene = Map<String, dynamic>.from(scenes[j]);
           scene.remove('sceneId');
+
+          final sceneFallback = <String, dynamic>{
+            if (scene['text'] != null) 'text': scene['text'].toString(),
+          };
+
+          final localizedScene = _localizedListItem(
+            localizedScenes,
+            j,
+            sceneFallback,
+          );
+
           final sceneRef = memoryRef.collection('scenes').doc('scene_${j + 1}');
           batch.set(sceneRef, {
             ...scene,
+            'content': localizedScene,
             'order': j + 1,
             'updatedAt': FieldValue.serverTimestamp(),
           });
@@ -6457,10 +6748,18 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       if (type == 'milestone') {
         return '${item['target']}  ·  ${item['title']}';
       }
+      final rawMax = item['maxRedemptions'];
+      final maxRedemptions = rawMax is num
+          ? rawMax.toInt()
+          : int.tryParse(rawMax?.toString() ?? '') ??
+          (item['limitOne'] == true ? 1 : 0);
+      final limitText = maxRedemptions > 0
+          ? '每人最多 $maxRedemptions 次'
+          : '無限次';
       if (item['itemType'] == 'flower') {
-        return '${item['name']}  ·  ${item['price']}  ·  花花 ×${item['rewardAmount'] ?? 0}';
+        return '${item['name']}  ·  ${item['price']}  ·  花花 ×${item['rewardAmount'] ?? 0}  ·  $limitText';
       }
-      return '${item['name']}  ·  ${item['price']}';
+      return '${item['name']}  ·  ${item['price']}  ·  $limitText';
     }
 
     return Card(
@@ -6506,12 +6805,31 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                     itemText(item),
                     style: GoogleFonts.notoSerifTc(fontSize: 12.5),
                   ),
-                  trailing: IconButton(
-                    tooltip: '移除',
-                    onPressed: () {
-                      setState(() => items.removeAt(index));
-                    },
-                    icon: const Icon(Icons.close_rounded, size: 18),
+                  trailing: Wrap(
+                    spacing: 0,
+                    children: [
+                      IconButton(
+                        tooltip: '編輯',
+                        onPressed: () async {
+                          final edited = await _showEventItemDialog(
+                            type: type,
+                            initial: Map<String, dynamic>.from(item),
+                          );
+                          if (edited == null || !mounted) return;
+                          setState(() {
+                            items[index] = edited;
+                          });
+                        },
+                        icon: const Icon(Icons.edit_outlined, size: 18),
+                      ),
+                      IconButton(
+                        tooltip: '移除',
+                        onPressed: () {
+                          setState(() => items.removeAt(index));
+                        },
+                        icon: const Icon(Icons.close_rounded, size: 18),
+                      ),
+                    ],
                   ),
                 );
               }),
@@ -7270,7 +7588,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                     : const Icon(Icons.save_rounded),
                 label: Text(
                   _isSavingEvent
-                      ? '儲存中…'
+                      ? '翻譯並儲存中…'
                       : (_editingReusableEventId == null ? '儲存活動' : '更新活動'),
                 ),
               ),

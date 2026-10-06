@@ -80,6 +80,16 @@ class _ProfilePageState extends State<ProfilePage>
   StreamSubscription? _pointsSubscription;
   StreamSubscription? _userDocSubscription;
   StreamSubscription<QuerySnapshot>? _profileMomentsSubscription;
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>?
+  _myPrivateCharactersSubscription;
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>?
+  _myPublicCharactersSubscription;
+  List<Character> _realtimePrivateCharacters = <Character>[];
+  List<Character> _realtimePublicCharacters = <Character>[];
+  int _privateCharactersSnapshotVersion = 0;
+  int _publicCharactersSnapshotVersion = 0;
+  bool _hasRealtimePrivateCharactersSnapshot = false;
+  bool _hasRealtimePublicCharactersSnapshot = false;
   // --- Firebase 變數 ---
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   String? _userId;
@@ -132,6 +142,7 @@ class _ProfilePageState extends State<ProfilePage>
           // 🌟 第三步：確定有 UserID 了，再來抓 ID 鎖頭和基本資料
           _loadUserPIDData();
           _loadInitialData();
+          _listenToMyCharactersRealtime();
           _listenToFlowerPoints();
           _checkDailyCheckInStatus();
           _loadDailyTaskProgress();
@@ -146,6 +157,12 @@ class _ProfilePageState extends State<ProfilePage>
       } else if (mounted) {
         _profileMomentsSubscription?.cancel();
         _profileMomentsSubscription = null;
+        _myPrivateCharactersSubscription?.cancel();
+        _myPrivateCharactersSubscription = null;
+        _myPublicCharactersSubscription?.cancel();
+        _myPublicCharactersSubscription = null;
+        _realtimePrivateCharacters = <Character>[];
+        _realtimePublicCharacters = <Character>[];
 
         setState(() {
           _isLoading = false;
@@ -289,6 +306,8 @@ class _ProfilePageState extends State<ProfilePage>
     _pointsSubscription?.cancel();
     _userDocSubscription?.cancel();
     _profileMomentsSubscription?.cancel();
+    _myPrivateCharactersSubscription?.cancel();
+    _myPublicCharactersSubscription?.cancel();
     _profileTabController.dispose();
     super.dispose();
   }
@@ -2199,7 +2218,7 @@ class _ProfilePageState extends State<ProfilePage>
                         );
                       },
                       icon: Transform.translate(
-                        offset: const Offset(15, -3),
+                        offset: const Offset(30, -3),
                         child: _buildTintedProfileAsset(
                           maskAsset:
                           'assets/images/profile/announcement_mask.png',
@@ -2220,11 +2239,15 @@ class _ProfilePageState extends State<ProfilePage>
                           ),
                         );
                       },
-                      icon: Icon(
-                        Icons.collections_bookmark_outlined,
-                        color: theme.colorScheme.primary
-                            .withValues(alpha: 0.62),
-                        size: 25,
+                      icon: Transform.translate(
+                        offset: const Offset(15, -2),
+                        child: _buildTintedProfileAsset(
+                          maskAsset:
+                          'assets/icons/icon_profile_collection.png',
+                          size: 40,
+                          color: theme.colorScheme.primary,
+                          opacity: 0.62,
+                        ),
                       ),
                     ),
 
@@ -2247,125 +2270,6 @@ class _ProfilePageState extends State<ProfilePage>
                       ),
                     ),
 
-                    // 舊入口保留在程式中，但不顯示在目前版面。
-                    if (false) ...[
-                      if (!isAppleReviewMode)
-                        IconButton(
-                          tooltip: l10n.profile_tooltip_backpack,
-                          icon: const Icon(
-                            Icons.card_giftcard,
-                          ),
-                          onPressed: () async {
-                            if (currentUser == null) return;
-
-                            showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (context) =>
-                              const Center(
-                                child:
-                                CircularProgressIndicator(),
-                              ),
-                            );
-
-                            try {
-                              final userDoc =
-                              await FirebaseFirestore
-                                  .instance
-                                  .collection('users')
-                                  .doc(currentUser.uid)
-                                  .get();
-
-                              final int totalSpent =
-                                  userDoc.data()?[
-                                  'totalSpent'] ??
-                                      0;
-
-                              final addressDoc =
-                              await FirebaseFirestore
-                                  .instance
-                                  .collection(
-                                'shipping_addresses',
-                              )
-                                  .doc(currentUser.uid)
-                                  .get();
-
-                              final bool
-                              hasSubmittedAddress =
-                                  addressDoc.exists;
-
-                              if (mounted) {
-                                Navigator.pop(context);
-                              }
-
-                              if (mounted) {
-                                _showBackpackDialog(
-                                  context,
-                                  currentUser.uid,
-                                  totalSpent,
-                                  hasSubmittedAddress,
-                                );
-                              }
-                            } catch (e) {
-                              if (mounted) {
-                                Navigator.pop(context);
-                              }
-
-                              debugPrint(
-                                '讀取背包失敗: $e',
-                              );
-                            }
-                          },
-                        ),
-
-                      IconButton(
-                        tooltip:
-                        l10n.title_time_letters,
-                        icon: Image.asset(
-                          'assets/images/scroll_icon.png',
-                          width: 26,
-                          height: 26,
-                          color: Theme.of(context)
-                              .brightness ==
-                              Brightness.dark
-                              ? Colors.white
-                              : const Color(
-                            0xFF6750A4,
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                              const AnnouncementListPage(),
-                            ),
-                          );
-                        },
-                      ),
-
-                      IconButton(
-                        icon: Icon(
-                          Icons.settings_outlined,
-                          color: Theme.of(context)
-                              .brightness ==
-                              Brightness.dark
-                              ? Colors.white70
-                              : Colors.black54,
-                        ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                              const SettingsPage(),
-                            ),
-                          );
-                        },
-                      ),
-
-                      const SizedBox(width: 8),
-                    ],
                   ],
                 ),
 
@@ -3898,6 +3802,41 @@ class _ProfilePageState extends State<ProfilePage>
               ),
             ),
             Positioned(
+              top: 10,
+              left: 10,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 9,
+                  vertical: 5,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.42),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      '💬',
+                      style: TextStyle(
+                        fontSize: 13,
+                        height: 1,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      _formatPoints(character.playCount),
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
               top: 5,
               right: 5,
               child: IconButton(
@@ -4951,6 +4890,106 @@ class _ProfilePageState extends State<ProfilePage>
     final random = Random();
     return String.fromCharCodes(Iterable.generate(
         length, (_) => chars.codeUnitAt(random.nextInt(chars.length))));
+  }
+
+  void _listenToMyCharactersRealtime() {
+    final userId = _userId;
+    if (userId == null) return;
+
+    _myPrivateCharactersSubscription?.cancel();
+    _myPublicCharactersSubscription?.cancel();
+
+    _realtimePrivateCharacters = <Character>[];
+    _realtimePublicCharacters = <Character>[];
+    _hasRealtimePrivateCharactersSnapshot = false;
+    _hasRealtimePublicCharactersSnapshot = false;
+
+    final privateQuery = _db
+        .collection('artifacts')
+        .doc(_appId)
+        .collection('users')
+        .doc(userId)
+        .collection('private_characters')
+        .orderBy('createdAt', descending: true);
+
+    final publicQuery = _db
+        .collection('artifacts')
+        .doc(_appId)
+        .collection('public_characters')
+        .where('createdBy', isEqualTo: userId)
+        .orderBy('createdAt', descending: true);
+
+    _myPrivateCharactersSubscription = privateQuery.snapshots().listen(
+          (snapshot) async {
+        final snapshotVersion = ++_privateCharactersSnapshotVersion;
+        try {
+          final characters = await Future.wait(
+            snapshot.docs
+                .map((doc) => Character.fromFirestoreAsync(doc))
+                .toList(),
+          );
+
+          if (!mounted ||
+              snapshotVersion != _privateCharactersSnapshotVersion) {
+            return;
+          }
+
+          _realtimePrivateCharacters = characters;
+          _hasRealtimePrivateCharactersSnapshot = true;
+          _applyRealtimeMyCharacters();
+        } catch (e) {
+          debugPrint('⚠️ 即時更新私人角色失敗：$e');
+        }
+      },
+      onError: (error) {
+        debugPrint('⚠️ 監聽私人角色失敗：$error');
+      },
+    );
+
+    _myPublicCharactersSubscription = publicQuery.snapshots().listen(
+          (snapshot) async {
+        final snapshotVersion = ++_publicCharactersSnapshotVersion;
+        try {
+          final characters = await Future.wait(
+            snapshot.docs
+                .map((doc) => Character.fromFirestoreAsync(doc))
+                .toList(),
+          );
+
+          if (!mounted || snapshotVersion != _publicCharactersSnapshotVersion) {
+            return;
+          }
+
+          _realtimePublicCharacters = characters;
+          _hasRealtimePublicCharactersSnapshot = true;
+          _applyRealtimeMyCharacters();
+        } catch (e) {
+          debugPrint('⚠️ 即時更新公開角色失敗：$e');
+        }
+      },
+      onError: (error) {
+        debugPrint('⚠️ 監聽公開角色失敗：$error');
+      },
+    );
+  }
+
+  void _applyRealtimeMyCharacters() {
+    if (!mounted ||
+        !_hasRealtimePrivateCharactersSnapshot ||
+        !_hasRealtimePublicCharactersSnapshot) {
+      return;
+    }
+
+    final combined = <Character>[
+      ..._realtimePrivateCharacters,
+      ..._realtimePublicCharacters,
+    ]..sort(
+          (a, b) => b.createdAt.compareTo(a.createdAt),
+    );
+
+    setState(() {
+      _myCharacters = combined;
+    });
   }
 
   Future<void> _fetchAllCharacterData() async {

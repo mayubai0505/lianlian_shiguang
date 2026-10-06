@@ -24,6 +24,7 @@ import '../services/app_constants.dart';
 import '../utils/image_utils.dart';
 import 'welcome_guide_page.dart';
 import 'avatar_frame_picker_page.dart';
+import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 //個人檔案
 
 class EditProfilePage extends StatefulWidget {
@@ -1855,7 +1856,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          '個人裝扮',
+                          appL10n.edit_profile_message,
                           style: GoogleFonts.notoSerifTc(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
@@ -1919,7 +1920,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     const SizedBox(height: 3),
                                     Text(
                                       _equippedAvatarFrameName.isEmpty
-                                          ? '目前未使用'
+                                          ? appL10n.edit_profile_message_current
                                           : _equippedAvatarFrameName,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,

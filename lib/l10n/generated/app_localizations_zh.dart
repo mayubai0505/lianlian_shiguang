@@ -7891,6 +7891,1427 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get chat_mode_resonance_cost_short => '10花';
+
+  @override
+  String get notification_channel_chat_description => '用於接收角色的最新回覆與遊戲提醒。';
+
+  @override
+  String get subscription_star_contract_name => '戀戀拾光．星之契約';
+
+  @override
+  String moment_notification_comment_on_your_post(
+      Object commentText, Object senderNickname) {
+    return '$senderNickname在妳的動態下留言：「$commentText」';
+  }
+
+  @override
+  String get moment_notification_new_reply_title => '動態有新回應！💬';
+
+  @override
+  String get moment_notification_character_popularity_title => '角色人氣爆發！🔥';
+
+  @override
+  String get font_size_small => '小';
+
+  @override
+  String get font_size_standard => '標準';
+
+  @override
+  String get font_size_slightly_large => '稍大';
+
+  @override
+  String get font_size_large => '大';
+
+  @override
+  String get font_size_extra_large => '特大';
+
+  @override
+  String get font_selection_title => '字體';
+
+  @override
+  String get font_selection_description => '選一種最適合妳閱讀故事與聊天的字體。';
+
+  @override
+  String get font_size_title => '字體大小';
+
+  @override
+  String get font_selection_tagline => '與你喜歡的他，再次寫下屬於你們的故事。';
+
+  @override
+  String font_selection_applied_message(Object value1) {
+    return '已套用「$value1」';
+  }
+
+  @override
+  String get font_selection_local_storage_note =>
+      '字體與字級會立即套用並保存在這台裝置；恢復預設外觀時會回到「拾光宋體＋標準大小」。';
+
+  @override
+  String get inbox_customer_service_report => '客服回報';
+
+  @override
+  String get inbox_content_text_message_player_title_send => '玩家送出的標題';
+
+  @override
+  String get inbox_content_text_message_player_content_send => '玩家送出的內容';
+
+  @override
+  String avatar_frame_equipped_message(Object value1) {
+    return '已裝備「$value1」';
+  }
+
+  @override
+  String get avatar_frame_unequip_frame_snackbar => '已卸下頭像框';
+
+  @override
+  String get avatar_frame_unequip_frame_message_event => '活動頭像框';
+
+  @override
+  String get avatar_frame_message => '頭像框';
+
+  @override
+  String avatar_frame_load_failed(Object value1) {
+    return '讀取頭像框失敗：$value1';
+  }
+
+  @override
+  String get avatar_frame_parse_frames_message_select => '選擇你想使用的頭像框';
+
+  @override
+  String get avatar_frame_parse_frames_message_event => '活動取得後永久保留，可隨時更換或卸下。';
+
+  @override
+  String get avatar_frame_parse_frames_title => '不使用頭像框';
+
+  @override
+  String get avatar_frame_parse_frames_subtitle_avatar => '顯示原本的頭像';
+
+  @override
+  String get avatar_frame_parse_frames_message_event_shop_redeem_current =>
+      '目前還沒有已擁有的頭像框。\n活動商店兌換後會出現在這裡。';
+
+  @override
+  String get avatar_frame_parse_frames_message_event_variant_b => '活動限定頭像框';
+
+  @override
+  String get background_settings_message => '限定背景';
+
+  @override
+  String get background_title_exclusive_photo_current => '目前沒有專屬照片';
+
+  @override
+  String get background_subtitle_unlock_character_photo => '之後解鎖的角色照片會出現在這裡。';
+
+  @override
+  String get background_title_login => '登入後即可查看限定背景';
+
+  @override
+  String get background_subtitle_redeem_chat_event => '活動兌換取得的聊天室背景會保存在這裡。';
+
+  @override
+  String get background_title => '還沒有取得限定背景';
+
+  @override
+  String get background_subtitle_event_shop_redeem_chat =>
+      '活動商店兌換的聊天室背景，之後會出現在這裡。';
+
+  @override
+  String get background_is_limited_background_type_message_chat_event =>
+      '活動限定聊天室背景';
+
+  @override
+  String background_is_limited_background_type_message_current_chat(
+      Object value1) {
+    return '要將「$value1」設為目前聊天室的背景嗎？';
+  }
+
+  @override
+  String character_edit_message_character_settings(Object value1) {
+    return '【角色性格與設定】\n$value1';
+  }
+
+  @override
+  String character_edit_message(Object value1) {
+    return '【說話語氣與風格】\n$value1';
+  }
+
+  @override
+  String character_edit_message_variant_b(Object value1) {
+    return '【社交與環境互動】\n$value1';
+  }
+
+  @override
+  String character_edit_save_to_draft_message_current_character(Object value1) {
+    return '目前主要角色：【$value1】\n';
+  }
+
+  @override
+  String character_edit_message_back(Object result) {
+    return '🚪 返回原本的 ProfilePage：$result';
+  }
+
+  @override
+  String character_edit_save_character_message(Object value1) {
+    return '📦 準備搬移 $value1 則記憶碎片：';
+  }
+
+  @override
+  String character_edit_message_complete(Object value1) {
+    return '✅ 已完成搬移 $value1 則記憶碎片';
+  }
+
+  @override
+  String character_edit_preload_first_voice_sample_message_background_start(
+      Object voiceId) {
+    return '⏳ 開始背景預載第一個 Voice：$voiceId';
+  }
+
+  @override
+  String get character_edit_preload_first_voice_sample_message_update =>
+      '⚠️ Voice 清單已更新，略過舊的預載結果';
+
+  @override
+  String
+      get character_edit_preload_first_voice_sample_message_background_complete =>
+          '✅ 第一個 Voice 已背景預載完成';
+
+  @override
+  String get character_edit_preload_first_voice_sample_message_failed =>
+      '⚠️ 第一個 Voice 預載失敗：';
+
+  @override
+  String character_edit_preload_first_voice_sample_message(Object value1) {
+    return '✅ matchVoiceFromBank 回傳：$value1';
+  }
+
+  @override
+  String get character_edit_error_voice => '語音服務回傳格式錯誤';
+
+  @override
+  String get character_edit_error_voice_variant_b => '語音服務沒有回傳 previews';
+
+  @override
+  String character_edit_message_success_voice_match(Object value1) {
+    return '✅ 成功配對 $value1 個 Voice Bank 聲音';
+  }
+
+  @override
+  String get character_edit_message_failed_match =>
+      '========== Voice Bank 配對失敗 ==========';
+
+  @override
+  String get character_edit_message_error_match =>
+      '========== Voice Bank 配對未知錯誤 ==========';
+
+  @override
+  String get character_edit_preview_voice_sample_error_preview => '試聽服務回傳格式錯誤';
+
+  @override
+  String get character_edit_preview_voice_sample_error_preview_variant_b =>
+      '試聽音訊資料為空';
+
+  @override
+  String get character_edit_preview_voice_sample_error_failed_preview =>
+      '試聽音訊解析失敗';
+
+  @override
+  String get character_edit_test_voice_settings_message_failed =>
+      '========== testVoiceSettings 失敗 ==========';
+
+  @override
+  String character_edit_confirm_voice_selection_message_selected(
+      Object realVoiceId) {
+    return '✅ Voice選定正式 Voice ID：$realVoiceId';
+  }
+
+  @override
+  String
+      get character_edit_confirm_voice_selection_message_save_failed_select =>
+          '========== 儲存 Voice Bank 選擇失敗 ==========';
+
+  @override
+  String
+      get character_edit_confirm_voice_selection_message_failed_voice_selected =>
+          '========== 選定 Voice Bank 聲音失敗 ==========';
+
+  @override
+  String get character_to_map_message_creator => '神祕創作者';
+
+  @override
+  String get character_get_character_by_id_message_load_background_story =>
+      '背景故事載入中...';
+
+  @override
+  String get character_get_character_by_id_message_sync => '初始劇情同步中...';
+
+  @override
+  String get character_get_character_by_id_message => '正在準備開場白...';
+
+  @override
+  String get character_get_character_by_id_message_background => '正在加載背景...';
+
+  @override
+  String get character_get_character_by_id_message_load => '世界觀載入中...';
+
+  @override
+  String get character_get_character_by_id_message_load_settings =>
+      '正在載入角色核心設定...';
+
+  @override
+  String get character_get_character_by_id_message_variant_b => '正在加載性格...';
+
+  @override
+  String get character_get_character_by_id_message_appearance => '外貌描述加載中...';
+
+  @override
+  String get character_get_character_by_id_message_variant_c => '正在加載語氣...';
+
+  @override
+  String get character_get_character_by_id_message_load_variant_b => '尚未讀取';
+
+  @override
+  String get character_get_character_by_id_message_variant_d => '陌生人';
+
+  @override
+  String get character_get_character_by_id_message_load_variant_c =>
+      '對話範例讀取中...';
+
+  @override
+  String get character_get_character_by_id_message_variant_e => '初識';
+
+  @override
+  String get character_get_character_by_id_message_variant_f => '熟識';
+
+  @override
+  String get character_get_character_by_id_message_variant_g => '曖昧';
+
+  @override
+  String get chat_input_message_sticker => '貼紙';
+
+  @override
+  String get chat_text => '今日免費閒聊已達上限';
+
+  @override
+  String get chat_message_flowers_today_continue =>
+      '今天的 10 次免費閒聊已使用完畢。\n\n接下來每次閒聊需支付 1 朵花花，是否繼續？';
+
+  @override
+  String get chat_text_continue => '同意並繼續';
+
+  @override
+  String get chat_empty_message_label_current_sticker => '目前還沒有可使用的貼紙。';
+
+  @override
+  String get chat_empty_message_label_sticker => '還沒有最近使用的貼紙';
+
+  @override
+  String get chat_empty_message_label_sticker_variant_b => '還沒有喜愛的貼紙';
+
+  @override
+  String get chat_empty_message_label_current_sticker_variant_b =>
+      '目前還沒有可使用的貼紙';
+
+  @override
+  String get chat_empty_message_sticker => '我的貼紙';
+
+  @override
+  String get chat_empty_message => '最近使用';
+
+  @override
+  String get chat_empty_message_variant_b => '喜愛';
+
+  @override
+  String get chat_send_sticker_message_current_unavailable_sticker =>
+      '這張貼紙目前無法使用';
+
+  @override
+  String chat_message_theater(Object sceneTitle) {
+    return '—— 劇場・$sceneTitle ——';
+  }
+
+  @override
+  String get chat_handle_regenerate_button_message_character_reply_again =>
+      '將重新產生角色上一則回覆。';
+
+  @override
+  String creator_profile_reason_tile_message_report_select_reason(
+      Object creatorName) {
+    return '請選擇檢舉「$creatorName」的原因：';
+  }
+
+  @override
+  String get widget_key_message => '狀態';
+
+  @override
+  String get widget_key_message_variant_b => '地點';
+
+  @override
+  String get widget_label_character => '尚未有角色狀態';
+
+  @override
+  String get widget_format_post_time_label_moment_latest => '最新動態';
+
+  @override
+  String get widget_format_post_time_label_update_moment => '剛剛更新了動態';
+
+  @override
+  String widget_format_post_time_label_minutes_ago_update_moment(
+      Object value1) {
+    return '$value1 分鐘前更新了動態';
+  }
+
+  @override
+  String widget_format_post_time_label_hours_ago_update_moment(Object value1) {
+    return '$value1 小時前更新了動態';
+  }
+
+  @override
+  String get widget_format_post_time_label_update_moment_days => '昨天更新了動態';
+
+  @override
+  String widget_format_post_time_label_update_moment_days_ago(Object value1) {
+    return '$value1 天前更新了動態';
+  }
+
+  @override
+  String widget_format_post_time_label_update_moment_variant_b(
+      Object value1, Object value2) {
+    return '$value1/$value2 更新了動態';
+  }
+
+  @override
+  String get widget_format_post_time_message_share_photo => '分享了一張照片';
+
+  @override
+  String get widget_format_post_time_message_update_moment => '更新了一則動態';
+
+  @override
+  String get widget_format_post_time_message_current_character_moment =>
+      '目前還沒有角色動態';
+
+  @override
+  String get widget_extract_daily_quote_message => '地點：';
+
+  @override
+  String get widget_format_daily_quote_time_message_today => '還沒有留下今天的一句話';
+
+  @override
+  String get widget_load_period_care_state_message_today =>
+      '「今天別太勉強自己，我陪妳慢慢來。」';
+
+  @override
+  String widget_load_period_care_state_message_period_days(Object dayCount) {
+    return '生理期第 $dayCount 天';
+  }
+
+  @override
+  String get widget_load_period_care_state_message_days =>
+      '「這幾天記得早點休息，別把自己累壞。」';
+
+  @override
+  String get widget_load_period_care_state_message_today_start => '預計今天開始';
+
+  @override
+  String widget_load_period_care_state_message_days_variant_b(
+      Object daysUntil) {
+    return '預計還有 $daysUntil 天';
+  }
+
+  @override
+  String get widget_load_period_care_state_message_today_variant_b =>
+      '「辛苦了，今天也要好好照顧自己。」';
+
+  @override
+  String get widget_load_period_care_state_message_period_end => '生理期剛結束';
+
+  @override
+  String get widget_load_period_care_state_message_today_variant_c =>
+      '「今天也記得好好照顧自己。」';
+
+  @override
+  String get widget_load_period_care_state_message_current_reminder =>
+      '目前沒有特別的週期提醒';
+
+  @override
+  String get widget_load_period_care_state_message => '尚未有足夠的週期紀錄';
+
+  @override
+  String get widget_parse_character_birthday_message => '年';
+
+  @override
+  String get widget_parse_character_birthday_message_variant_b => '月';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_character_birthday =>
+      '角色生日';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_birthday_settings =>
+      '尚未設定生日';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_birthday_countdown(
+      Object birthdayLabel) {
+    return '距離他的生日・$birthdayLabel';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_today => '就是今天';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_days(Object days) {
+    return '還有 $days 天';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message => '和他相遇';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_variant_b =>
+      '尚未有相遇紀錄';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_days_variant_b(
+      Object value1) {
+    return '$value1 天';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_variant_c => '重要的日子';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_date_select =>
+      '尚未選擇日期';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_elapsed_days(
+      Object value1) {
+    return '已過 $value1 天';
+  }
+
+  @override
+  String get widget_settings_remove_title_character_latest => '角色最新貼文';
+
+  @override
+  String get widget_settings_remove_subtitle_moment_latest =>
+      '不用打開 App，也能看到他的最新動態。';
+
+  @override
+  String get widget_settings_remove_title_period => '生理期陪伴';
+
+  @override
+  String get widget_settings_remove_subtitle_character_end =>
+      '快到、進行中與結束後，都多一點角色的關心。';
+
+  @override
+  String get widget_settings_remove_title => '今日一句';
+
+  @override
+  String get widget_settings_remove_subtitle_days => '每天打開手機，都有一句話在桌面等著妳。';
+
+  @override
+  String get widget_settings_remove_title_reminder => '紀念日／提醒';
+
+  @override
+  String get widget_settings_remove_subtitle_character_birthday_reminder =>
+      '一起記住相遇、生日，也讓角色提醒妳重要的事。';
+
+  @override
+  String get widget_settings_remove_title_character => '角色狀態';
+
+  @override
+  String get widget_settings_remove_subtitle_chat_latest_mood =>
+      '把聊天室最新的心情、狀態與地點帶到桌面。';
+
+  @override
+  String get widget_settings_size_label => '中';
+
+  @override
+  String get widget_settings_size_label_message_send => '已送出新增到桌面的請求。';
+
+  @override
+  String get widget_settings_size_label_message_try_again_later_failed =>
+      '新增到桌面失敗，請稍後再試。';
+
+  @override
+  String
+      get widget_settings_edit_saved_widget_message_character_reminder_again =>
+          '舊版「角色待辦提醒」已併入「紀念日／提醒」，請重新建立。';
+
+  @override
+  String get widget_settings_delete_saved_widget_title_delete_small => '刪除小工具？';
+
+  @override
+  String
+      widget_settings_delete_saved_widget_message_stop_display_long_press_home_after_delete(
+          Object value1, Object value2) {
+    return '確定要刪除「$value1・$value2」嗎？\n\n刪除後，桌面上的這顆小工具會停止顯示角色內容，並提示玩家長按桌面移除。';
+  }
+
+  @override
+  String
+      get widget_settings_delete_saved_widget_message_delete_settings_small =>
+          '已刪除小工具設定；桌面上的對應小工具已停用。';
+
+  @override
+  String get widget_settings_message_desktop_widget => '桌面小工具';
+
+  @override
+  String get widget_settings_message_character_days => '讓喜歡的角色陪妳出現在每一天。';
+
+  @override
+  String get widget_settings_message_small => '我的小工具';
+
+  @override
+  String get widget_settings_message_desktop_widget_variant_b => '還沒有桌面小工具';
+
+  @override
+  String get widget_settings_message_character_reminder =>
+      '選一個喜歡的角色，讓他的提醒、貼文或狀態出現在桌面上。';
+
+  @override
+  String widget_settings_message_size(Object value1) {
+    return '$value1尺寸';
+  }
+
+  @override
+  String get widget_settings_tooltip => '新增到桌面';
+
+  @override
+  String get widget_settings_tooltip_small => '編輯小工具';
+
+  @override
+  String get widget_settings_tooltip_delete_small => '刪除小工具';
+
+  @override
+  String get widget_settings_message_desktop_widget_variant_c => '新增桌面小工具';
+
+  @override
+  String get widget_settings_message_character_photo_content_select_small =>
+      '每個小工具都可以獨立選擇角色、角色照片與顯示內容，也可以同時放多個角色在桌面上。';
+
+  @override
+  String get widget_settings_desktop_type_selection_message_select_small =>
+      '選擇小工具';
+
+  @override
+  String get widget_settings_desktop_type_selection_message_select =>
+      '先選擇妳想放到桌面的陪伴方式。';
+
+  @override
+  String
+      get widget_settings_go_to_photo_step_message_try_again_later_failed_load_character_photo =>
+          '角色照片載入失敗，請稍後再試。';
+
+  @override
+  String get widget_settings_message_character_select => '選擇角色';
+
+  @override
+  String get widget_settings_message_character_friend_days =>
+      '只顯示妳已加好友或曾經聊過天的角色。';
+
+  @override
+  String get widget_settings_hint_character_search => '搜尋角色';
+
+  @override
+  String get widget_settings_message_try_again_later_failed_load_character =>
+      '角色載入失敗，請稍後再試。';
+
+  @override
+  String get widget_settings_message_current_character_chat_friend_add =>
+      '目前沒有符合的角色。先和角色聊聊天，或把他加入好友吧。';
+
+  @override
+  String get widget_settings_message_character_photo_select => '下一步・選擇角色照片';
+
+  @override
+  String
+      get widget_settings_desktop_photo_selection_message_character_photo_select =>
+          '選擇角色照片';
+
+  @override
+  String
+      widget_settings_desktop_photo_selection_message_current_affection_unlocked_photo(
+          Object value1) {
+    return '目前好感度 $value1・已解鎖的照片可以直接使用。';
+  }
+
+  @override
+  String
+      get widget_settings_desktop_photo_selection_message_current_character_photo =>
+          '這個角色目前沒有可用照片。';
+
+  @override
+  String
+      widget_settings_desktop_photo_selection_message_required_affection_unlock_photo(
+          Object value1) {
+    return '需要好感度 $value1 才能解鎖這張照片。';
+  }
+
+  @override
+  String get widget_settings_message_photo_public => '公開照片';
+
+  @override
+  String widget_settings_message_unlock(Object value1) {
+    return '好感 $value1 解鎖';
+  }
+
+  @override
+  String widget_settings_message_unlocked(Object value1) {
+    return '已解鎖・好感 $value1';
+  }
+
+  @override
+  String get widget_settings_message_content_settings => '下一步・設定顯示內容';
+
+  @override
+  String get widget_settings_open_preview_message_player_select =>
+      '請先選擇一個玩家建立的事件／待辦。';
+
+  @override
+  String get widget_settings_pick_custom_memo_event_message_login_account =>
+      '請先登入帳號。';
+
+  @override
+  String
+      get widget_settings_pick_custom_memo_event_message_memo_current_character =>
+          '這個角色目前還沒有建立任何事件／備忘錄。';
+
+  @override
+  String get widget_settings_pick_custom_memo_event_message_player_select =>
+      '選擇玩家建立的事件';
+
+  @override
+  String get widget_settings_message_try_again_later_failed_load =>
+      '事件讀取失敗，請稍後再試。';
+
+  @override
+  String get widget_settings_message_content_settings_variant_b => '設定顯示內容';
+
+  @override
+  String get widget_settings_subtitle_content => '調整妳想在桌面上看到的內容。';
+
+  @override
+  String get widget_settings_message_small_variant_b => '下一步・預覽小工具';
+
+  @override
+  String get widget_settings_title => '貼文顯示';
+
+  @override
+  String get widget_settings_title_variant_b => '顯示貼文圖片';
+
+  @override
+  String get widget_settings_title_variant_c => '顯示心動數';
+
+  @override
+  String get widget_settings_title_comment => '顯示留言數';
+
+  @override
+  String get widget_settings_title_variant_d => '隱私與陪伴';
+
+  @override
+  String get widget_settings_title_variant_e => '隱私模式';
+
+  @override
+  String get widget_settings_subtitle_period_character =>
+      '桌面只顯示角色關心，不直接寫出生理期資訊。';
+
+  @override
+  String get widget_settings_title_variant_f => '詳細模式';
+
+  @override
+  String get widget_settings_subtitle_end => '可顯示快到了、進行中或剛結束等週期狀態。';
+
+  @override
+  String get widget_settings_title_variant_g => '顯示週期狀態';
+
+  @override
+  String get widget_settings_title_time => '顯示時間';
+
+  @override
+  String get widget_settings_title_update => '更新方式';
+
+  @override
+  String get widget_settings_message_update_days => '每天更新一次';
+
+  @override
+  String get widget_settings_message_update => '每次打開 App 後更新';
+
+  @override
+  String get widget_settings_text_update => '打開 App 後更新';
+
+  @override
+  String get widget_settings_title_content => '紀念日內容';
+
+  @override
+  String get widget_settings_title_days => '相遇天數';
+
+  @override
+  String get widget_settings_subtitle_character_today_days => '顯示妳和角色認識到今天的天數。';
+
+  @override
+  String get widget_settings_subtitle_character_birthday => '顯示距離角色生日還有多久。';
+
+  @override
+  String get widget_settings_title_player => '玩家建立的事件／待辦';
+
+  @override
+  String get widget_settings_message_memo_character_select_reminder =>
+      '從這個角色的備忘錄／提醒中選擇一個事件或待辦。';
+
+  @override
+  String widget_settings_message_selected(Object _selectedMemoContent) {
+    return '已選：$_selectedMemoContent';
+  }
+
+  @override
+  String get widget_settings_message_select => '最多選擇 3 項';
+
+  @override
+  String get widget_settings_message_character => '角色狀態最多顯示 3 項。';
+
+  @override
+  String get widget_settings_message_small_variant_c => '預覽小工具';
+
+  @override
+  String get widget_settings_title_confirm => '最後確認';
+
+  @override
+  String get widget_settings_subtitle_large => '先看看放到桌面上大概會長什麼樣子。';
+
+  @override
+  String get widget_settings_title_size => '尺寸';
+
+  @override
+  String get widget_settings_title_variant_h => '版型';
+
+  @override
+  String get widget_settings_label_photo => '滿版照片';
+
+  @override
+  String get widget_settings_label_character => '角色卡式';
+
+  @override
+  String get widget_settings_message_sync => '正在同步…';
+
+  @override
+  String get widget_settings_message_desktop_widget_add => '加入桌面小工具';
+
+  @override
+  String get widget_settings_sample_lines_message_today_end => '「今天比預想中早一點結束。」';
+
+  @override
+  String get widget_settings_sample_lines_message_days => '「這幾天別太勉強自己。」';
+
+  @override
+  String get widget_settings_sample_lines_message_period => '生理期進行中';
+
+  @override
+  String get widget_settings_sample_lines_message_today => '「今天多休息一點。」';
+
+  @override
+  String get widget_settings_sample_lines_message_today_variant_b =>
+      '「今天也別忘了好好吃飯。」';
+
+  @override
+  String get widget_settings_sample_lines_label_birthday_countdown => '距離他的生日';
+
+  @override
+  String get widget_settings_sample_lines_label_days => '還有 12 天';
+
+  @override
+  String get widget_settings_sample_lines_label_days_variant_b => '128 天';
+
+  @override
+  String get widget_settings_sample_lines_message_mood => '心情｜有點疲倦';
+
+  @override
+  String get widget_settings_sample_lines_message_end => '狀態｜剛結束工作';
+
+  @override
+  String get widget_settings_sample_lines_message => '地點｜公司樓下';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_b => '關係｜戀人';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_c => '衣著｜淺灰色針織衫';
+
+  @override
+  String get widget_settings_sample_lines_message_days_variant_b => '天氣｜微涼';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_d => '想法｜想早點見到妳';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_e => '動作｜正在收拾桌面';
+
+  @override
+  String get widget_settings_sample_lines_message_affection => '好感度｜安定而親近';
+
+  @override
+  String get edit_profile_message => '個人裝扮';
+
+  @override
+  String get edit_profile_message_current => '目前未使用';
+
+  @override
+  String
+      get event_memory_character_load_characters_message_login_character_select =>
+          '請先登入後再選擇角色';
+
+  @override
+  String get event_memory_character_center_message_memory_select =>
+      '選擇想一起留下這段回憶的人';
+
+  @override
+  String get event_memory_character_center_message_character_friend_add =>
+      '只有你自己建立的角色，以及已加入好友的角色會出現在這裡。';
+
+  @override
+  String get event_memory_character_center_message_current_character_select =>
+      '目前沒有可以選擇的角色';
+
+  @override
+  String
+      get event_memory_character_center_message_public_character_character_friend_add =>
+          '建立自己的角色，或先將喜歡的公開角色加入好友。';
+
+  @override
+  String get event_memory_character_message_character_select => '請先選擇角色';
+
+  @override
+  String event_memory_character_message_continue(Object value1) {
+    return '與 $value1 繼續';
+  }
+
+  @override
+  String get event_memory_character_card_message_private => '我的・私人';
+
+  @override
+  String get event_memory_character_error_label_load_again => '重新讀取';
+
+  @override
+  String
+      get event_memory_collection_show_collection_intro_if_needed_message_collection =>
+          '拾光收藏';
+
+  @override
+  String
+      get event_memory_collection_show_collection_intro_if_needed_message_collection_content =>
+          '這裡是收藏列表，可以看看自己所有收藏的內容';
+
+  @override
+  String get event_memory_collection_text_collection_login => '請先登入後查看收藏';
+
+  @override
+  String get event_memory_collection_message_memory => '回憶';
+
+  @override
+  String get event_memory_collection_message_chat_background => '聊天室背景';
+
+  @override
+  String get event_memory_collection_message_avatar_frame_collection =>
+      '還沒有收藏頭像框喔';
+
+  @override
+  String get event_memory_collection_message_avatar_frame =>
+      '之後獲得的限定頭像框會出現在這裡。';
+
+  @override
+  String get event_memory_collection_message_collection_sticker => '還沒有收藏貼紙喔';
+
+  @override
+  String get event_memory_collection_message_sticker => '之後收集到的貼紙都會放在這裡。';
+
+  @override
+  String get event_memory_collection_message_collection_chat_background =>
+      '還沒有收藏聊天室背景喔';
+
+  @override
+  String get event_memory_collection_message_chat_background_variant_b =>
+      '之後獲得的限定聊天室背景會出現在這裡。';
+
+  @override
+  String get event_memory_collection_tab_title_collection_temporary =>
+      '暫時讀不到收藏';
+
+  @override
+  String get event_memory_collection_tab_title_collection_memory => '還沒有收藏回憶喔';
+
+  @override
+  String get event_memory_collection_tab_subtitle_limited_memory_complete =>
+      '完成限定回憶後，可以把喜歡的片段留在這裡。';
+
+  @override
+  String get event_memory_collection_item_card_label => '限定物品';
+
+  @override
+  String get event_memory_collection_confirm_delete_owned_item_message_delete =>
+      '刪除限定物品？';
+
+  @override
+  String
+      event_memory_collection_confirm_delete_owned_item_message_after_delete_unavailable(
+          Object _itemTypeLabel) {
+    return '刪除後將無法再使用這個$_itemTypeLabel，';
+  }
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_collection =>
+          '也不會再出現在「拾光收藏」中。\n\n';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_unavailable =>
+          '這代表你將放棄這次取得的限定物品，且此操作無法復原。\n\n';
+
+  @override
+  String
+      event_memory_collection_confirm_delete_owned_item_message_delete_variant_b(
+          Object value1) {
+    return '確定要刪除「$value1」嗎？';
+  }
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_delete_variant_c =>
+          '已刪除限定物品';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_not_found_delete =>
+          '找不到這個限定物品，可能已經刪除了';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_collection_current_delete =>
+          '這個收藏目前不能刪除';
+
+  @override
+  String get event_memory_collection_show_preview_message => '圖片準備中';
+
+  @override
+  String get event_memory_collection_show_preview_message_failed_load =>
+      '圖片載入失敗';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save_current =>
+      '網頁版目前不支援直接儲存到手機相簿';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save_memory =>
+      '需要相簿權限才能儲存這段回憶';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_memory =>
+      '回憶圖片還沒準備好，請再試一次';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_failed_memory =>
+      '產生回憶圖片失敗';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save =>
+      '已儲存到手機相簿 ♡';
+
+  @override
+  String
+      get event_memory_collection_save_to_gallery_message_save_confirm_failed =>
+          '儲存失敗，請確認相簿權限後再試一次';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_title_collection_cancel =>
+          '取消收藏？';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_message_collection_cancel_memory =>
+          '取消收藏後，這段回憶將不會再出現在「拾光收藏」中。\n\n確定要取消收藏嗎？';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_message_try_again_later_collection_cancel_failed =>
+          '取消收藏失敗，請稍後再試';
+
+  @override
+  String get event_memory_collection_message_collection_memory => '回憶收藏';
+
+  @override
+  String get event_memory_collection_label_play => '再次播放';
+
+  @override
+  String get event_memory_collection_label_save => '正在儲存…';
+
+  @override
+  String get event_memory_collection_label_save_variant_b => '儲存到手機相簿';
+
+  @override
+  String get event_memory_collection_collected_card_message_limited_memory =>
+      '戀戀拾光・限定回憶';
+
+  @override
+  String get event_memory_collection_create_state_message_end_story =>
+      '有些瞬間，\n並不會因為故事結束而消失。';
+
+  @override
+  String get event_memory_collection_text_collection => '這段收藏沒有可重播的 Scene';
+
+  @override
+  String get event_memory_collection_message => '略過';
+
+  @override
+  String get event_memory_collection_message_end => '點擊結束';
+
+  @override
+  String get event_memory_collection_message_continue => '點擊繼續';
+
+  @override
+  String get event_memory_collection_message_variant_b => '點擊顯示全文';
+
+  @override
+  String get event_memory_collection_collected_label_collection => '剛剛收藏';
+
+  @override
+  String get event_memory_collection_collected_item_label_collection_date =>
+      '收藏日期未記錄';
+
+  @override
+  String event_memory_collection_collected_item_label_collection(
+      Object day, Object month, Object value1) {
+    return '收藏於 $value1/$month/$day';
+  }
+
+  @override
+  String get event_memory_text_not_found_event => '找不到活動資料';
+
+  @override
+  String get event_memory_message_limited_memory_failed_load => '限定回憶讀取失敗';
+
+  @override
+  String get event_memory_as_map_label_unlocked => '已解鎖';
+
+  @override
+  String event_memory_as_map_label_unlock(Object currencyIcon,
+      Object currencyName, Object currentValue, Object requiredValue) {
+    return '累積 $currencyIcon $requiredValue $currencyName 解鎖（$currentValue / $requiredValue）';
+  }
+
+  @override
+  String get event_memory_as_map_label_unlock_task_event_complete =>
+      '完成指定活動任務後解鎖';
+
+  @override
+  String get event_memory_as_map_label_redeem_unlock_event => '兌換指定活動商品後解鎖';
+
+  @override
+  String get event_memory_as_map_label_unlock_variant_b => '尚未解鎖';
+
+  @override
+  String get event_memory_hero_message => '把只屬於你們的片段，留在這個季節裡。';
+
+  @override
+  String event_memory_hero_message_limited_memory(
+      Object totalCount, Object unlockedCount) {
+    return '限定回憶  $unlockedCount / $totalCount';
+  }
+
+  @override
+  String get event_memory_status_label_unlocked => '已解鎖・尚未觀看';
+
+  @override
+  String get event_memory_status_label => '已觀看';
+
+  @override
+  String get event_memory_status_label_collection => '已收藏';
+
+  @override
+  String get event_memory_footer_label_memory_start => '可以開始這段回憶';
+
+  @override
+  String get event_memory_footer_label => '可以再次觀看';
+
+  @override
+  String get event_memory_footer_label_collection => '已收藏至拾光收藏';
+
+  @override
+  String get event_memory_empty_message_limited_memory_event_public =>
+      '這次活動還沒有公開限定回憶';
+
+  @override
+  String get event_memory_performance_finish_message_memory => '這段回憶，留下來了。';
+
+  @override
+  String get event_memory_performance_finish_message_save_collection =>
+      '收藏會保留在遊戲內；只有儲存到手機相簿時，才會向系統要求相簿權限。';
+
+  @override
+  String get event_memory_performance_finish_message => '處理中…';
+
+  @override
+  String get event_memory_performance_finish_message_collection_memory =>
+      '收藏這段回憶';
+
+  @override
+  String
+      get event_memory_performance_confirm_uncollect_memory_message_collection_cancel_memory_again_remove =>
+          '取消後，這段回憶會從「拾光收藏」中移除。之後仍然可以重新觀看並再次收藏。';
+
+  @override
+  String
+      get event_memory_performance_uncollect_memory_message_collection_login =>
+          '請先登入後再管理收藏';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_collection_login_memory =>
+          '請先登入後再收藏這段回憶';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_collection_memory =>
+          '已收藏這段回憶 ♡';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_try_again_later_collection_failed =>
+          '收藏失敗，請稍後再試';
+
+  @override
+  String get event_memory_performance_text_panel_message_complete => '點擊完成';
+
+  @override
+  String get event_memory_performance_build_performance_message => '跳過';
+
+  @override
+  String get event_memory_performance_text_play => '沒有可播放的 Scene';
+
+  @override
+  String get event_memory_profile_change_profile_message_profile => '更換拾光檔案';
+
+  @override
+  String get event_memory_profile_message_profile_confirm => '確認拾光檔案';
+
+  @override
+  String get event_memory_profile_center_text_profile_not_found =>
+      '找不到可使用的拾光檔案';
+
+  @override
+  String get event_memory_profile_center_message_memory => '這段回憶，會以誰的身分留下？';
+
+  @override
+  String get event_memory_profile_center_message_profile_character_start =>
+      '已優先使用你與這個角色最近使用的拾光檔案，也可以在開始前更換。';
+
+  @override
+  String event_memory_profile_center_message(Object value1) {
+    return '將以「$value1」與';
+  }
+
+  @override
+  String event_memory_profile_center_message_memory_variant_b(Object value1) {
+    return '「$value1」留下這段回憶';
+  }
+
+  @override
+  String get event_memory_profile_center_label_memory_start => '開始回憶';
+
+  @override
+  String get event_message_failed_load => '活動資料讀取失敗';
+
+  @override
+  String get event_message_not_found => '找不到這個活動';
+
+  @override
+  String get event_remaining_label => '活動進行中';
+
+  @override
+  String event_remaining_label_days(Object value1) {
+    return '剩餘 $value1 天';
+  }
+
+  @override
+  String event_remaining_label_hours(Object value1) {
+    return '剩餘 $value1 小時';
+  }
+
+  @override
+  String get event_remaining_label_end => '即將結束';
+
+  @override
+  String get event_balance_pill_tooltip_back => '返回';
+
+  @override
+  String event_claim_task_message_claim_current(
+      Object currency, Object reward, Object value1, Object value2) {
+    return '已領取 $value1 $reward $value2，目前共有 $currency';
+  }
+
+  @override
+  String get event_claim_task_message_reward_claim => '獎勵已領取';
+
+  @override
+  String get event_claim_task_message_claim_failed => '領取失敗';
+
+  @override
+  String get event_claim_task_message_task_claim => '這個任務已經領取過了';
+
+  @override
+  String get event_claim_task_message_incomplete_task => '任務尚未完成';
+
+  @override
+  String get event_task_list_label_task_load => '讀取任務中…';
+
+  @override
+  String get event_task_list_label_task_current => '目前沒有任務';
+
+  @override
+  String get event_task_list_label_task_login_progress => '登入後即可查看活動任務進度';
+
+  @override
+  String get event_milestone_progress_label_reward_load => '讀取累積獎勵中…';
+
+  @override
+  String get event_milestone_progress_label_reward_current => '目前沒有累積獎勵';
+
+  @override
+  String event_build_with_total_message_current(Object totalEarned) {
+    return '目前  $totalEarned';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_confirm => '確認兌換';
+
+  @override
+  String event_progress_ref_message_redeem_flowers(
+      Object itemName, Object price, Object rewardAmount, Object value1) {
+    return '要使用 $value1 $price 兌換「$itemName」嗎？\n\n兌換後可獲得 $rewardAmount 花花。';
+  }
+
+  @override
+  String event_progress_ref_message_redeem(
+      Object itemName, Object price, Object value1) {
+    return '要使用 $value1 $price 兌換「$itemName」嗎？';
+  }
+
+  @override
+  String event_progress_ref_message_redeem_success_flowers(
+      Object returnedReward) {
+    return '兌換成功！獲得 $returnedReward 花花';
+  }
+
+  @override
+  String event_progress_ref_message_event_collection_redeem_success_add(
+      Object itemName) {
+    return '兌換成功！「$itemName」已加入活動收藏';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_failed => '兌換失敗';
+
+  @override
+  String get event_progress_ref_message_redeem_variant_b => '這個商品已經兌換過了';
+
+  @override
+  String get event_progress_ref_message_insufficient => '貨幣不足';
+
+  @override
+  String event_progress_ref_message_insufficient_variant_b(Object value1) {
+    return '$value1不足';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_variant_c => '兌換';
+
+  @override
+  String get event_progress_ref_message_redeem_variant_d => '已兌換';
+
+  @override
+  String event_message_redeem_flowers(Object rewardAmount) {
+    return '兌換後可獲得 $rewardAmount 花花';
+  }
+
+  @override
+  String event_message_redeem(Object redeemedCount) {
+    return '已兌換 $redeemedCount 次';
+  }
+
+  @override
+  String get event_message_event_shop_login => '登入後即可使用活動商店';
+
+  @override
+  String get event_message_redeem_current => '目前沒有可兌換商品';
+
+  @override
+  String event_shop_item_card_message_flowers(Object rewardAmount) {
+    return '可獲得 $rewardAmount 花花';
+  }
+
+  @override
+  String get event_message_insufficient => '不足';
+
+  @override
+  String get notification_message_player => '玩家附加圖片';
+
+  @override
+  String notification_message_qixi_letter(Object value1) {
+    return '來自 $value1 的七夕信';
+  }
+
+  @override
+  String recommendation_remaining_label_days(Object value1) {
+    return '剩 $value1 天';
+  }
+
+  @override
+  String recommendation_remaining_label_hours(Object value1) {
+    return '剩 $value1 小時';
+  }
+
+  @override
+  String get settings_subtitle_character_days => '讓喜歡的角色陪妳出現在每一天';
+
+  @override
+  String moment_notification_comment_on_character_post(
+      Object authorName, Object commentText, Object senderNickname) {
+    return '$senderNickname給$authorName留了話：「$commentText」';
+  }
+
+  @override
+  String get inbox_content_text_message_customer_service_message_send =>
+      '已送出的客服信件';
+
+  @override
+  String get character_edit_relationship_none_label => '无';
+
+  @override
+  String get auth_cancel_account_deletion_failed => '取消刪除帳號失敗，請稍後再試';
+
+  @override
+  String get auth_delete_account_failed => '刪除帳號失敗';
+
+  @override
+  String get auth_request_account_deletion_failed => '申請刪除帳號失敗，請稍後再試';
+
+  @override
+  String get theme_font_shiguang_serif => '拾光宋體';
+
+  @override
+  String get theme_font_clean_sans => '清雅黑體';
+
+  @override
+  String get theme_font_system => '系統字體';
+
+  @override
+  String get theme_font_shiguang_serif_description => '文青柔和，適合沉浸閱讀';
+
+  @override
+  String get theme_font_clean_sans_description => '清楚俐落，長時間閱讀較輕鬆';
+
+  @override
+  String get theme_font_system_description => '跟隨手機系統預設字體';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -15776,6 +17197,1323 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get chat_mode_resonance_cost_short => '10朵花';
+
+  @override
+  String get notification_channel_chat_description => '用于接收角色的最新回复与游戏提醒。';
+
+  @override
+  String get subscription_star_contract_name => '恋恋拾光．星之契约';
+
+  @override
+  String moment_notification_comment_on_your_post(
+      Object commentText, Object senderNickname) {
+    return '$senderNickname在你的动态下留言：「$commentText」';
+  }
+
+  @override
+  String get moment_notification_new_reply_title => '动态有新回应！💬';
+
+  @override
+  String get moment_notification_character_popularity_title => '角色人气爆发！🔥';
+
+  @override
+  String get font_size_small => '小';
+
+  @override
+  String get font_size_standard => '标准';
+
+  @override
+  String get font_size_slightly_large => '稍大';
+
+  @override
+  String get font_size_large => '大';
+
+  @override
+  String get font_size_extra_large => '特大';
+
+  @override
+  String get font_selection_title => '字体';
+
+  @override
+  String get font_selection_description => '选一种最适合你阅读故事与聊天的字体。';
+
+  @override
+  String get font_size_title => '字体大小';
+
+  @override
+  String get font_selection_tagline => '与你喜欢的他，再次写下属于你们的故事。';
+
+  @override
+  String font_selection_applied_message(Object value1) {
+    return '已套用「$value1」';
+  }
+
+  @override
+  String get font_selection_local_storage_note =>
+      '字体与字级会立即套用并保存在这台装置；恢复预设外观时会回到「拾光宋体＋标准大小」。';
+
+  @override
+  String get inbox_customer_service_report => '客服回报';
+
+  @override
+  String get inbox_content_text_message_player_title_send => '玩家送出的标题';
+
+  @override
+  String get inbox_content_text_message_player_content_send => '玩家送出的内容';
+
+  @override
+  String avatar_frame_equipped_message(Object value1) {
+    return '已装备「$value1」';
+  }
+
+  @override
+  String get avatar_frame_unequip_frame_snackbar => '已卸下头像框';
+
+  @override
+  String get avatar_frame_unequip_frame_message_event => '活动头像框';
+
+  @override
+  String get avatar_frame_message => '头像框';
+
+  @override
+  String avatar_frame_load_failed(Object value1) {
+    return '读取头像框失败：$value1';
+  }
+
+  @override
+  String get avatar_frame_parse_frames_message_select => '选择你想使用的头像框';
+
+  @override
+  String get avatar_frame_parse_frames_message_event => '活动取得后永久保留，可随时更换或卸下。';
+
+  @override
+  String get avatar_frame_parse_frames_title => '不使用头像框';
+
+  @override
+  String get avatar_frame_parse_frames_subtitle_avatar => '显示原本的头像';
+
+  @override
+  String get avatar_frame_parse_frames_message_event_shop_redeem_current =>
+      '目前还没有已拥有的头像框。\n活动商店兑换后会出现在这里。';
+
+  @override
+  String get avatar_frame_parse_frames_message_event_variant_b => '活动限定头像框';
+
+  @override
+  String get background_settings_message => '限定背景';
+
+  @override
+  String get background_title_exclusive_photo_current => '目前没有专属照片';
+
+  @override
+  String get background_subtitle_unlock_character_photo => '之后解锁的角色照片会出现在这里。';
+
+  @override
+  String get background_title_login => '登入后即可查看限定背景';
+
+  @override
+  String get background_subtitle_redeem_chat_event => '活动兑换取得的聊天室背景会保存在这里。';
+
+  @override
+  String get background_title => '还没有取得限定背景';
+
+  @override
+  String get background_subtitle_event_shop_redeem_chat =>
+      '活动商店兑换的聊天室背景，之后会出现在这里。';
+
+  @override
+  String get background_is_limited_background_type_message_chat_event =>
+      '活动限定聊天室背景';
+
+  @override
+  String background_is_limited_background_type_message_current_chat(
+      Object value1) {
+    return '要将「$value1」设为目前聊天室的背景吗？';
+  }
+
+  @override
+  String character_edit_save_to_draft_message_current_character(Object value1) {
+    return '目前主要角色：【$value1】\n';
+  }
+
+  @override
+  String get character_to_map_message_creator => '神秘创作者';
+
+  @override
+  String get character_get_character_by_id_message_load_background_story =>
+      '背景故事加载中...';
+
+  @override
+  String get character_get_character_by_id_message_sync => '初始剧情同步中...';
+
+  @override
+  String get character_get_character_by_id_message => '正在准备开场白...';
+
+  @override
+  String get character_get_character_by_id_message_background => '正在加载背景...';
+
+  @override
+  String get character_get_character_by_id_message_load => '世界观加载中...';
+
+  @override
+  String get character_get_character_by_id_message_load_settings =>
+      '正在加载角色核心设定...';
+
+  @override
+  String get character_get_character_by_id_message_variant_b => '正在加载性格...';
+
+  @override
+  String get character_get_character_by_id_message_appearance => '外貌描述加载中...';
+
+  @override
+  String get character_get_character_by_id_message_variant_c => '正在加载语气...';
+
+  @override
+  String get character_get_character_by_id_message_load_variant_b => '尚未读取';
+
+  @override
+  String get character_get_character_by_id_message_variant_d => '陌生人';
+
+  @override
+  String get character_get_character_by_id_message_load_variant_c =>
+      '对话范例读取中...';
+
+  @override
+  String get character_get_character_by_id_message_variant_e => '初识';
+
+  @override
+  String get character_get_character_by_id_message_variant_f => '熟识';
+
+  @override
+  String get character_get_character_by_id_message_variant_g => '暧昧';
+
+  @override
+  String get chat_input_message_sticker => '贴纸';
+
+  @override
+  String get chat_text => '今日免费闲聊已达上限';
+
+  @override
+  String get chat_message_flowers_today_continue =>
+      '今天的 10 次免费闲聊已使用完毕。\n\n接下来每次闲聊需支付 1 朵花花，是否继续？';
+
+  @override
+  String get chat_text_continue => '同意并继续';
+
+  @override
+  String get chat_empty_message_label_current_sticker => '目前还没有可使用的贴纸。';
+
+  @override
+  String get chat_empty_message_label_sticker => '还没有最近使用的贴纸';
+
+  @override
+  String get chat_empty_message_label_sticker_variant_b => '还没有喜爱的贴纸';
+
+  @override
+  String get chat_empty_message_label_current_sticker_variant_b =>
+      '目前还没有可使用的贴纸';
+
+  @override
+  String get chat_empty_message_sticker => '我的贴纸';
+
+  @override
+  String get chat_empty_message => '最近使用';
+
+  @override
+  String get chat_empty_message_variant_b => '喜爱';
+
+  @override
+  String get chat_send_sticker_message_current_unavailable_sticker =>
+      '这张贴纸目前无法使用';
+
+  @override
+  String chat_message_theater(Object sceneTitle) {
+    return '—— 剧场・$sceneTitle ——';
+  }
+
+  @override
+  String get chat_handle_regenerate_button_message_character_reply_again =>
+      '将重新产生角色上一则回复。';
+
+  @override
+  String creator_profile_reason_tile_message_report_select_reason(
+      Object creatorName) {
+    return '请选择检举「$creatorName」的原因：';
+  }
+
+  @override
+  String get widget_key_message => '状态';
+
+  @override
+  String get widget_key_message_variant_b => '地点';
+
+  @override
+  String get widget_label_character => '尚未有角色状态';
+
+  @override
+  String get widget_format_post_time_label_moment_latest => '最新动态';
+
+  @override
+  String get widget_format_post_time_label_update_moment => '刚刚更新了动态';
+
+  @override
+  String widget_format_post_time_label_minutes_ago_update_moment(
+      Object value1) {
+    return '$value1 分钟前更新了动态';
+  }
+
+  @override
+  String widget_format_post_time_label_hours_ago_update_moment(Object value1) {
+    return '$value1 小时前更新了动态';
+  }
+
+  @override
+  String get widget_format_post_time_label_update_moment_days => '昨天更新了动态';
+
+  @override
+  String widget_format_post_time_label_update_moment_days_ago(Object value1) {
+    return '$value1 天前更新了动态';
+  }
+
+  @override
+  String widget_format_post_time_label_update_moment_variant_b(
+      Object value1, Object value2) {
+    return '$value1/$value2 更新了动态';
+  }
+
+  @override
+  String get widget_format_post_time_message_share_photo => '分享了一张照片';
+
+  @override
+  String get widget_format_post_time_message_update_moment => '更新了一则动态';
+
+  @override
+  String get widget_format_post_time_message_current_character_moment =>
+      '目前还没有角色动态';
+
+  @override
+  String get widget_extract_daily_quote_message => '地点：';
+
+  @override
+  String get widget_format_daily_quote_time_message_today => '还没有留下今天的一句话';
+
+  @override
+  String get widget_load_period_care_state_message_today =>
+      '「今天别太勉强自己，我陪你慢慢来。」';
+
+  @override
+  String widget_load_period_care_state_message_period_days(Object dayCount) {
+    return '生理期第 $dayCount 天';
+  }
+
+  @override
+  String get widget_load_period_care_state_message_days =>
+      '「这几天记得早点休息，别把自己累坏。」';
+
+  @override
+  String get widget_load_period_care_state_message_today_start => '预计今天开始';
+
+  @override
+  String widget_load_period_care_state_message_days_variant_b(
+      Object daysUntil) {
+    return '预计还有 $daysUntil 天';
+  }
+
+  @override
+  String get widget_load_period_care_state_message_today_variant_b =>
+      '「辛苦了，今天也要好好照顾自己。」';
+
+  @override
+  String get widget_load_period_care_state_message_period_end => '生理期刚结束';
+
+  @override
+  String get widget_load_period_care_state_message_today_variant_c =>
+      '「今天也记得好好照顾自己。」';
+
+  @override
+  String get widget_load_period_care_state_message_current_reminder =>
+      '目前没有特别的周期提醒';
+
+  @override
+  String get widget_load_period_care_state_message => '尚未有足够的周期纪录';
+
+  @override
+  String get widget_parse_character_birthday_message => '年';
+
+  @override
+  String get widget_parse_character_birthday_message_variant_b => '月';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_character_birthday =>
+      '角色生日';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_birthday_settings =>
+      '尚未设定生日';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_birthday_countdown(
+      Object birthdayLabel) {
+    return '距离他的生日・$birthdayLabel';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_today => '就是今天';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_days(Object days) {
+    return '还有 $days 天';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message => '和他相遇';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_variant_b =>
+      '尚未有相遇纪录';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_days_variant_b(
+      Object value1) {
+    return '$value1 天';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_variant_c => '重要的日子';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_date_select =>
+      '尚未选择日期';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_elapsed_days(
+      Object value1) {
+    return '已过 $value1 天';
+  }
+
+  @override
+  String get widget_settings_remove_title_character_latest => '角色最新帖子';
+
+  @override
+  String get widget_settings_remove_subtitle_moment_latest =>
+      '不用打开 App，也能看到他的最新动态。';
+
+  @override
+  String get widget_settings_remove_title_period => '生理期陪伴';
+
+  @override
+  String get widget_settings_remove_subtitle_character_end =>
+      '快到、进行中与结束后，都多一点角色的关心。';
+
+  @override
+  String get widget_settings_remove_title => '今日一句';
+
+  @override
+  String get widget_settings_remove_subtitle_days => '每天打开手机，都有一句话在桌面等着你。';
+
+  @override
+  String get widget_settings_remove_title_reminder => '纪念日／提醒';
+
+  @override
+  String get widget_settings_remove_subtitle_character_birthday_reminder =>
+      '一起记住相遇、生日，也让角色提醒你重要的事。';
+
+  @override
+  String get widget_settings_remove_title_character => '角色状态';
+
+  @override
+  String get widget_settings_remove_subtitle_chat_latest_mood =>
+      '把聊天室最新的心情、状态与地点带到桌面。';
+
+  @override
+  String get widget_settings_size_label => '中';
+
+  @override
+  String get widget_settings_size_label_message_send => '已送出新增到桌面的请求。';
+
+  @override
+  String get widget_settings_size_label_message_try_again_later_failed =>
+      '新增到桌面失败，请稍后再试。';
+
+  @override
+  String
+      get widget_settings_edit_saved_widget_message_character_reminder_again =>
+          '旧版「角色待办提醒」已并入「纪念日／提醒」，请重新建立。';
+
+  @override
+  String get widget_settings_delete_saved_widget_title_delete_small => '删除小组件？';
+
+  @override
+  String
+      widget_settings_delete_saved_widget_message_stop_display_long_press_home_after_delete(
+          Object value1, Object value2) {
+    return '确定要删除「$value1・$value2」吗？\n\n删除后，桌面上的这颗小组件会停止显示角色内容，并提示玩家长按桌面移除。';
+  }
+
+  @override
+  String
+      get widget_settings_delete_saved_widget_message_delete_settings_small =>
+          '已删除小组件设定；桌面上的对应小组件已停用。';
+
+  @override
+  String get widget_settings_message_desktop_widget => '桌面小组件';
+
+  @override
+  String get widget_settings_message_character_days => '让喜欢的角色陪你出现在每一天。';
+
+  @override
+  String get widget_settings_message_small => '我的小组件';
+
+  @override
+  String get widget_settings_message_desktop_widget_variant_b => '还没有桌面小组件';
+
+  @override
+  String get widget_settings_message_character_reminder =>
+      '选一个喜欢的角色，让他的提醒、帖子或状态出现在桌面上。';
+
+  @override
+  String widget_settings_message_size(Object value1) {
+    return '$value1尺寸';
+  }
+
+  @override
+  String get widget_settings_tooltip => '新增到桌面';
+
+  @override
+  String get widget_settings_tooltip_small => '编辑小组件';
+
+  @override
+  String get widget_settings_tooltip_delete_small => '删除小组件';
+
+  @override
+  String get widget_settings_message_desktop_widget_variant_c => '新增桌面小组件';
+
+  @override
+  String get widget_settings_message_character_photo_content_select_small =>
+      '每个小组件都可以独立选择角色、角色照片与显示内容，也可以同时放多个角色在桌面上。';
+
+  @override
+  String get widget_settings_desktop_type_selection_message_select_small =>
+      '选择小组件';
+
+  @override
+  String get widget_settings_desktop_type_selection_message_select =>
+      '先选择你想放到桌面的陪伴方式。';
+
+  @override
+  String
+      get widget_settings_go_to_photo_step_message_try_again_later_failed_load_character_photo =>
+          '角色照片加载失败，请稍后再试。';
+
+  @override
+  String get widget_settings_message_character_select => '选择角色';
+
+  @override
+  String get widget_settings_message_character_friend_days =>
+      '只显示你已加好友或曾经聊过天的角色。';
+
+  @override
+  String get widget_settings_hint_character_search => '搜寻角色';
+
+  @override
+  String get widget_settings_message_try_again_later_failed_load_character =>
+      '角色加载失败，请稍后再试。';
+
+  @override
+  String get widget_settings_message_current_character_chat_friend_add =>
+      '目前没有符合的角色。先和角色聊聊天，或把他加入好友吧。';
+
+  @override
+  String get widget_settings_message_character_photo_select => '下一步・选择角色照片';
+
+  @override
+  String
+      get widget_settings_desktop_photo_selection_message_character_photo_select =>
+          '选择角色照片';
+
+  @override
+  String
+      widget_settings_desktop_photo_selection_message_current_affection_unlocked_photo(
+          Object value1) {
+    return '目前好感度 $value1・已解锁的照片可以直接使用。';
+  }
+
+  @override
+  String
+      get widget_settings_desktop_photo_selection_message_current_character_photo =>
+          '这个角色目前没有可用照片。';
+
+  @override
+  String
+      widget_settings_desktop_photo_selection_message_required_affection_unlock_photo(
+          Object value1) {
+    return '需要好感度 $value1 才能解锁这张照片。';
+  }
+
+  @override
+  String get widget_settings_message_photo_public => '公开照片';
+
+  @override
+  String widget_settings_message_unlock(Object value1) {
+    return '好感 $value1 解锁';
+  }
+
+  @override
+  String widget_settings_message_unlocked(Object value1) {
+    return '已解锁・好感 $value1';
+  }
+
+  @override
+  String get widget_settings_message_content_settings => '下一步・设定显示内容';
+
+  @override
+  String get widget_settings_open_preview_message_player_select =>
+      '请先选择一个玩家建立的事件／待办。';
+
+  @override
+  String get widget_settings_pick_custom_memo_event_message_login_account =>
+      '请先登入帐号。';
+
+  @override
+  String
+      get widget_settings_pick_custom_memo_event_message_memo_current_character =>
+          '这个角色目前还没有建立任何事件／备忘录。';
+
+  @override
+  String get widget_settings_pick_custom_memo_event_message_player_select =>
+      '选择玩家建立的事件';
+
+  @override
+  String get widget_settings_message_try_again_later_failed_load =>
+      '事件读取失败，请稍后再试。';
+
+  @override
+  String get widget_settings_message_content_settings_variant_b => '设定显示内容';
+
+  @override
+  String get widget_settings_subtitle_content => '调整你想在桌面上看到的内容。';
+
+  @override
+  String get widget_settings_message_small_variant_b => '下一步・预览小组件';
+
+  @override
+  String get widget_settings_title => '帖子显示';
+
+  @override
+  String get widget_settings_title_variant_b => '显示帖子图片';
+
+  @override
+  String get widget_settings_title_variant_c => '显示心动数';
+
+  @override
+  String get widget_settings_title_comment => '显示留言数';
+
+  @override
+  String get widget_settings_title_variant_d => '隐私与陪伴';
+
+  @override
+  String get widget_settings_title_variant_e => '隐私模式';
+
+  @override
+  String get widget_settings_subtitle_period_character =>
+      '桌面只显示角色关心，不直接写出生理期资讯。';
+
+  @override
+  String get widget_settings_title_variant_f => '详细模式';
+
+  @override
+  String get widget_settings_subtitle_end => '可显示快到了、进行中或刚结束等周期状态。';
+
+  @override
+  String get widget_settings_title_variant_g => '显示周期状态';
+
+  @override
+  String get widget_settings_title_time => '显示时间';
+
+  @override
+  String get widget_settings_title_update => '更新方式';
+
+  @override
+  String get widget_settings_message_update_days => '每天更新一次';
+
+  @override
+  String get widget_settings_message_update => '每次打开 App 后更新';
+
+  @override
+  String get widget_settings_text_update => '打开 App 后更新';
+
+  @override
+  String get widget_settings_title_content => '纪念日内容';
+
+  @override
+  String get widget_settings_title_days => '相遇天数';
+
+  @override
+  String get widget_settings_subtitle_character_today_days => '显示你和角色认识到今天的天数。';
+
+  @override
+  String get widget_settings_subtitle_character_birthday => '显示距离角色生日还有多久。';
+
+  @override
+  String get widget_settings_title_player => '玩家建立的事件／待办';
+
+  @override
+  String get widget_settings_message_memo_character_select_reminder =>
+      '从这个角色的备忘录／提醒中选择一个事件或待办。';
+
+  @override
+  String widget_settings_message_selected(Object _selectedMemoContent) {
+    return '已选：$_selectedMemoContent';
+  }
+
+  @override
+  String get widget_settings_message_select => '最多选择 3 项';
+
+  @override
+  String get widget_settings_message_character => '角色状态最多显示 3 项。';
+
+  @override
+  String get widget_settings_message_small_variant_c => '预览小组件';
+
+  @override
+  String get widget_settings_title_confirm => '最后确认';
+
+  @override
+  String get widget_settings_subtitle_large => '先看看放到桌面上大概会长什么样子。';
+
+  @override
+  String get widget_settings_title_size => '尺寸';
+
+  @override
+  String get widget_settings_title_variant_h => '版型';
+
+  @override
+  String get widget_settings_label_photo => '满版照片';
+
+  @override
+  String get widget_settings_label_character => '角色卡式';
+
+  @override
+  String get widget_settings_message_sync => '正在同步…';
+
+  @override
+  String get widget_settings_message_desktop_widget_add => '加入桌面小组件';
+
+  @override
+  String get widget_settings_sample_lines_message_today_end => '「今天比预想中早一点结束。」';
+
+  @override
+  String get widget_settings_sample_lines_message_days => '「这几天别太勉强自己。」';
+
+  @override
+  String get widget_settings_sample_lines_message_period => '生理期进行中';
+
+  @override
+  String get widget_settings_sample_lines_message_today => '「今天多休息一点。」';
+
+  @override
+  String get widget_settings_sample_lines_message_today_variant_b =>
+      '「今天也别忘了好好吃饭。」';
+
+  @override
+  String get widget_settings_sample_lines_label_birthday_countdown => '距离他的生日';
+
+  @override
+  String get widget_settings_sample_lines_label_days => '还有 12 天';
+
+  @override
+  String get widget_settings_sample_lines_label_days_variant_b => '128 天';
+
+  @override
+  String get widget_settings_sample_lines_message_mood => '心情｜有点疲倦';
+
+  @override
+  String get widget_settings_sample_lines_message_end => '状态｜刚结束工作';
+
+  @override
+  String get widget_settings_sample_lines_message => '地点｜公司楼下';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_b => '关系｜恋人';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_c => '衣着｜浅灰色针织衫';
+
+  @override
+  String get widget_settings_sample_lines_message_days_variant_b => '天气｜微凉';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_d => '想法｜想早点见到你';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_e => '动作｜正在收拾桌面';
+
+  @override
+  String get widget_settings_sample_lines_message_affection => '好感度｜安定而亲近';
+
+  @override
+  String get edit_profile_message => '个人装扮';
+
+  @override
+  String get edit_profile_message_current => '目前未使用';
+
+  @override
+  String
+      get event_memory_character_load_characters_message_login_character_select =>
+          '请先登入后再选择角色';
+
+  @override
+  String get event_memory_character_center_message_memory_select =>
+      '选择想一起留下这段回忆的人';
+
+  @override
+  String get event_memory_character_center_message_character_friend_add =>
+      '只有你自己建立的角色，以及已加入好友的角色会出现在这里。';
+
+  @override
+  String get event_memory_character_center_message_current_character_select =>
+      '目前没有可以选择的角色';
+
+  @override
+  String
+      get event_memory_character_center_message_public_character_character_friend_add =>
+          '建立自己的角色，或先将喜欢的公开角色加入好友。';
+
+  @override
+  String get event_memory_character_message_character_select => '请先选择角色';
+
+  @override
+  String event_memory_character_message_continue(Object value1) {
+    return '与 $value1 继续';
+  }
+
+  @override
+  String get event_memory_character_card_message_private => '我的・私人';
+
+  @override
+  String get event_memory_character_error_label_load_again => '重新读取';
+
+  @override
+  String
+      get event_memory_collection_show_collection_intro_if_needed_message_collection =>
+          '拾光收藏';
+
+  @override
+  String
+      get event_memory_collection_show_collection_intro_if_needed_message_collection_content =>
+          '这里是收藏列表，可以看看自己所有收藏的内容';
+
+  @override
+  String get event_memory_collection_text_collection_login => '请先登入后查看收藏';
+
+  @override
+  String get event_memory_collection_message_memory => '回忆';
+
+  @override
+  String get event_memory_collection_message_chat_background => '聊天室背景';
+
+  @override
+  String get event_memory_collection_message_avatar_frame_collection =>
+      '还没有收藏头像框喔';
+
+  @override
+  String get event_memory_collection_message_avatar_frame =>
+      '之后获得的限定头像框会出现在这里。';
+
+  @override
+  String get event_memory_collection_message_collection_sticker => '还没有收藏贴纸喔';
+
+  @override
+  String get event_memory_collection_message_sticker => '之后收集到的贴纸都会放在这里。';
+
+  @override
+  String get event_memory_collection_message_collection_chat_background =>
+      '还没有收藏聊天室背景喔';
+
+  @override
+  String get event_memory_collection_message_chat_background_variant_b =>
+      '之后获得的限定聊天室背景会出现在这里。';
+
+  @override
+  String get event_memory_collection_tab_title_collection_temporary =>
+      '暂时读不到收藏';
+
+  @override
+  String get event_memory_collection_tab_title_collection_memory => '还没有收藏回忆喔';
+
+  @override
+  String get event_memory_collection_tab_subtitle_limited_memory_complete =>
+      '完成限定回忆后，可以把喜欢的片段留在这里。';
+
+  @override
+  String get event_memory_collection_item_card_label => '限定物品';
+
+  @override
+  String get event_memory_collection_confirm_delete_owned_item_message_delete =>
+      '删除限定物品？';
+
+  @override
+  String
+      event_memory_collection_confirm_delete_owned_item_message_after_delete_unavailable(
+          Object _itemTypeLabel) {
+    return '删除后将无法再使用这个$_itemTypeLabel，';
+  }
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_collection =>
+          '也不会再出现在「拾光收藏」中。\n\n';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_unavailable =>
+          '这代表你将放弃这次取得的限定物品，且此操作无法复原。\n\n';
+
+  @override
+  String
+      event_memory_collection_confirm_delete_owned_item_message_delete_variant_b(
+          Object value1) {
+    return '确定要删除「$value1」吗？';
+  }
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_delete_variant_c =>
+          '已删除限定物品';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_not_found_delete =>
+          '找不到这个限定物品，可能已经删除了';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_collection_current_delete =>
+          '这个收藏目前不能删除';
+
+  @override
+  String get event_memory_collection_show_preview_message => '图片准备中';
+
+  @override
+  String get event_memory_collection_show_preview_message_failed_load =>
+      '图片加载失败';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save_current =>
+      '网页版目前不支援直接保存到手机相册';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save_memory =>
+      '需要相册权限才能保存这段回忆';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_memory =>
+      '回忆图片还没准备好，请再试一次';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_failed_memory =>
+      '产生回忆图片失败';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save =>
+      '已保存到手机相册 ♡';
+
+  @override
+  String
+      get event_memory_collection_save_to_gallery_message_save_confirm_failed =>
+          '保存失败，请确认相册权限后再试一次';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_title_collection_cancel =>
+          '取消收藏？';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_message_collection_cancel_memory =>
+          '取消收藏后，这段回忆将不会再出现在「拾光收藏」中。\n\n确定要取消收藏吗？';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_message_try_again_later_collection_cancel_failed =>
+          '取消收藏失败，请稍后再试';
+
+  @override
+  String get event_memory_collection_message_collection_memory => '回忆收藏';
+
+  @override
+  String get event_memory_collection_label_play => '再次播放';
+
+  @override
+  String get event_memory_collection_label_save => '正在保存…';
+
+  @override
+  String get event_memory_collection_label_save_variant_b => '保存到手机相册';
+
+  @override
+  String get event_memory_collection_collected_card_message_limited_memory =>
+      '恋恋拾光・限定回忆';
+
+  @override
+  String get event_memory_collection_create_state_message_end_story =>
+      '有些瞬间，\n并不会因为故事结束而消失。';
+
+  @override
+  String get event_memory_collection_text_collection => '这段收藏没有可重播的 Scene';
+
+  @override
+  String get event_memory_collection_message => '略过';
+
+  @override
+  String get event_memory_collection_message_end => '点击结束';
+
+  @override
+  String get event_memory_collection_message_continue => '点击继续';
+
+  @override
+  String get event_memory_collection_message_variant_b => '点击显示全文';
+
+  @override
+  String get event_memory_collection_collected_label_collection => '刚刚收藏';
+
+  @override
+  String get event_memory_collection_collected_item_label_collection_date =>
+      '收藏日期未记录';
+
+  @override
+  String event_memory_collection_collected_item_label_collection(
+      Object day, Object month, Object value1) {
+    return '收藏于 $value1/$month/$day';
+  }
+
+  @override
+  String get event_memory_text_not_found_event => '找不到活动资料';
+
+  @override
+  String get event_memory_message_limited_memory_failed_load => '限定回忆读取失败';
+
+  @override
+  String get event_memory_as_map_label_unlocked => '已解锁';
+
+  @override
+  String event_memory_as_map_label_unlock(Object currencyIcon,
+      Object currencyName, Object currentValue, Object requiredValue) {
+    return '累积 $currencyIcon $requiredValue $currencyName 解锁（$currentValue / $requiredValue）';
+  }
+
+  @override
+  String get event_memory_as_map_label_unlock_task_event_complete =>
+      '完成指定活动任务后解锁';
+
+  @override
+  String get event_memory_as_map_label_redeem_unlock_event => '兑换指定活动商品后解锁';
+
+  @override
+  String get event_memory_as_map_label_unlock_variant_b => '尚未解锁';
+
+  @override
+  String get event_memory_hero_message => '把只属于你们的片段，留在这个季节里。';
+
+  @override
+  String event_memory_hero_message_limited_memory(
+      Object totalCount, Object unlockedCount) {
+    return '限定回忆  $unlockedCount / $totalCount';
+  }
+
+  @override
+  String get event_memory_status_label_unlocked => '已解锁・尚未观看';
+
+  @override
+  String get event_memory_status_label => '已观看';
+
+  @override
+  String get event_memory_status_label_collection => '已收藏';
+
+  @override
+  String get event_memory_footer_label_memory_start => '可以开始这段回忆';
+
+  @override
+  String get event_memory_footer_label => '可以再次观看';
+
+  @override
+  String get event_memory_footer_label_collection => '已收藏至拾光收藏';
+
+  @override
+  String get event_memory_empty_message_limited_memory_event_public =>
+      '这次活动还没有公开限定回忆';
+
+  @override
+  String get event_memory_performance_finish_message_memory => '这段回忆，留下来了。';
+
+  @override
+  String get event_memory_performance_finish_message_save_collection =>
+      '收藏会保留在游戏内；只有保存到手机相册时，才会向系统要求相册权限。';
+
+  @override
+  String get event_memory_performance_finish_message => '处理中…';
+
+  @override
+  String get event_memory_performance_finish_message_collection_memory =>
+      '收藏这段回忆';
+
+  @override
+  String
+      get event_memory_performance_confirm_uncollect_memory_message_collection_cancel_memory_again_remove =>
+          '取消后，这段回忆会从「拾光收藏」中移除。之后仍然可以重新观看并再次收藏。';
+
+  @override
+  String
+      get event_memory_performance_uncollect_memory_message_collection_login =>
+          '请先登入后再管理收藏';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_collection_login_memory =>
+          '请先登入后再收藏这段回忆';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_collection_memory =>
+          '已收藏这段回忆 ♡';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_try_again_later_collection_failed =>
+          '收藏失败，请稍后再试';
+
+  @override
+  String get event_memory_performance_text_panel_message_complete => '点击完成';
+
+  @override
+  String get event_memory_performance_build_performance_message => '跳过';
+
+  @override
+  String get event_memory_performance_text_play => '没有可播放的 Scene';
+
+  @override
+  String get event_memory_profile_change_profile_message_profile => '更换拾光档案';
+
+  @override
+  String get event_memory_profile_message_profile_confirm => '确认拾光档案';
+
+  @override
+  String get event_memory_profile_center_text_profile_not_found =>
+      '找不到可使用的拾光档案';
+
+  @override
+  String get event_memory_profile_center_message_memory => '这段回忆，会以谁的身分留下？';
+
+  @override
+  String get event_memory_profile_center_message_profile_character_start =>
+      '已优先使用你与这个角色最近使用的拾光档案，也可以在开始前更换。';
+
+  @override
+  String event_memory_profile_center_message(Object value1) {
+    return '将以「$value1」与';
+  }
+
+  @override
+  String event_memory_profile_center_message_memory_variant_b(Object value1) {
+    return '「$value1」留下这段回忆';
+  }
+
+  @override
+  String get event_memory_profile_center_label_memory_start => '开始回忆';
+
+  @override
+  String get event_message_failed_load => '活动资料读取失败';
+
+  @override
+  String get event_message_not_found => '找不到这个活动';
+
+  @override
+  String get event_remaining_label => '活动进行中';
+
+  @override
+  String event_remaining_label_days(Object value1) {
+    return '剩余 $value1 天';
+  }
+
+  @override
+  String event_remaining_label_hours(Object value1) {
+    return '剩余 $value1 小时';
+  }
+
+  @override
+  String get event_remaining_label_end => '即将结束';
+
+  @override
+  String get event_balance_pill_tooltip_back => '返回';
+
+  @override
+  String event_claim_task_message_claim_current(
+      Object currency, Object reward, Object value1, Object value2) {
+    return '已领取 $value1 $reward $value2，目前共有 $currency';
+  }
+
+  @override
+  String get event_claim_task_message_reward_claim => '奖励已领取';
+
+  @override
+  String get event_claim_task_message_claim_failed => '领取失败';
+
+  @override
+  String get event_claim_task_message_task_claim => '这个任务已经领取过了';
+
+  @override
+  String get event_claim_task_message_incomplete_task => '任务尚未完成';
+
+  @override
+  String get event_task_list_label_task_load => '读取任务中…';
+
+  @override
+  String get event_task_list_label_task_current => '目前没有任务';
+
+  @override
+  String get event_task_list_label_task_login_progress => '登入后即可查看活动任务进度';
+
+  @override
+  String get event_milestone_progress_label_reward_load => '读取累积奖励中…';
+
+  @override
+  String get event_milestone_progress_label_reward_current => '目前没有累积奖励';
+
+  @override
+  String event_build_with_total_message_current(Object totalEarned) {
+    return '目前  $totalEarned';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_confirm => '确认兑换';
+
+  @override
+  String event_progress_ref_message_redeem_flowers(
+      Object itemName, Object price, Object rewardAmount, Object value1) {
+    return '要使用 $value1 $price 兑换「$itemName」吗？\n\n兑换后可获得 $rewardAmount 花花。';
+  }
+
+  @override
+  String event_progress_ref_message_redeem(
+      Object itemName, Object price, Object value1) {
+    return '要使用 $value1 $price 兑换「$itemName」吗？';
+  }
+
+  @override
+  String event_progress_ref_message_redeem_success_flowers(
+      Object returnedReward) {
+    return '兑换成功！获得 $returnedReward 花花';
+  }
+
+  @override
+  String event_progress_ref_message_event_collection_redeem_success_add(
+      Object itemName) {
+    return '兑换成功！「$itemName」已加入活动收藏';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_failed => '兑换失败';
+
+  @override
+  String get event_progress_ref_message_redeem_variant_b => '这个商品已经兑换过了';
+
+  @override
+  String get event_progress_ref_message_insufficient => '货币不足';
+
+  @override
+  String event_progress_ref_message_insufficient_variant_b(Object value1) {
+    return '$value1不足';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_variant_c => '兑换';
+
+  @override
+  String get event_progress_ref_message_redeem_variant_d => '已兑换';
+
+  @override
+  String event_message_redeem_flowers(Object rewardAmount) {
+    return '兑换后可获得 $rewardAmount 花花';
+  }
+
+  @override
+  String event_message_redeem(Object redeemedCount) {
+    return '已兑换 $redeemedCount 次';
+  }
+
+  @override
+  String get event_message_event_shop_login => '登入后即可使用活动商店';
+
+  @override
+  String get event_message_redeem_current => '目前没有可兑换商品';
+
+  @override
+  String event_shop_item_card_message_flowers(Object rewardAmount) {
+    return '可获得 $rewardAmount 花花';
+  }
+
+  @override
+  String get event_message_insufficient => '不足';
+
+  @override
+  String get notification_message_player => '玩家附加图片';
+
+  @override
+  String notification_message_qixi_letter(Object value1) {
+    return '来自 $value1 的七夕信';
+  }
+
+  @override
+  String recommendation_remaining_label_days(Object value1) {
+    return '剩 $value1 天';
+  }
+
+  @override
+  String recommendation_remaining_label_hours(Object value1) {
+    return '剩 $value1 小时';
+  }
+
+  @override
+  String get settings_subtitle_character_days => '让喜欢的角色陪你出现在每一天';
+
+  @override
+  String moment_notification_comment_on_character_post(
+      Object authorName, Object commentText, Object senderNickname) {
+    return '$senderNickname给$authorName留了话：「$commentText」';
+  }
+
+  @override
+  String get inbox_content_text_message_customer_service_message_send =>
+      '已送出的客服信件';
+
+  @override
+  String get character_edit_relationship_none_label => '无';
+
+  @override
+  String get auth_cancel_account_deletion_failed => '取消删除帐号失败，请稍后再试';
+
+  @override
+  String get auth_delete_account_failed => '删除帐号失败';
+
+  @override
+  String get auth_request_account_deletion_failed => '申请删除帐号失败，请稍后再试';
+
+  @override
+  String get theme_font_shiguang_serif => '拾光宋体';
+
+  @override
+  String get theme_font_clean_sans => '清雅黑体';
+
+  @override
+  String get theme_font_system => '系统字体';
+
+  @override
+  String get theme_font_shiguang_serif_description => '文青柔和，适合沉浸阅读';
+
+  @override
+  String get theme_font_clean_sans_description => '清楚俐落，长时间阅读较轻松';
+
+  @override
+  String get theme_font_system_description => '跟随手机系统预设字体';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -23665,4 +26403,1425 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get chat_mode_resonance_cost_short => '10花';
+
+  @override
+  String get notification_channel_chat_description => '用於接收角色的最新回覆與遊戲提醒。';
+
+  @override
+  String get subscription_star_contract_name => '戀戀拾光．星之契約';
+
+  @override
+  String moment_notification_comment_on_your_post(
+      Object commentText, Object senderNickname) {
+    return '$senderNickname在妳的動態下留言：「$commentText」';
+  }
+
+  @override
+  String get moment_notification_new_reply_title => '動態有新回應！💬';
+
+  @override
+  String get moment_notification_character_popularity_title => '角色人氣爆發！🔥';
+
+  @override
+  String get font_size_small => '小';
+
+  @override
+  String get font_size_standard => '標準';
+
+  @override
+  String get font_size_slightly_large => '稍大';
+
+  @override
+  String get font_size_large => '大';
+
+  @override
+  String get font_size_extra_large => '特大';
+
+  @override
+  String get font_selection_title => '字體';
+
+  @override
+  String get font_selection_description => '選一種最適合妳閱讀故事與聊天的字體。';
+
+  @override
+  String get font_size_title => '字體大小';
+
+  @override
+  String get font_selection_tagline => '與你喜歡的他，再次寫下屬於你們的故事。';
+
+  @override
+  String font_selection_applied_message(Object value1) {
+    return '已套用「$value1」';
+  }
+
+  @override
+  String get font_selection_local_storage_note =>
+      '字體與字級會立即套用並保存在這台裝置；恢復預設外觀時會回到「拾光宋體＋標準大小」。';
+
+  @override
+  String get inbox_customer_service_report => '客服回報';
+
+  @override
+  String get inbox_content_text_message_player_title_send => '玩家送出的標題';
+
+  @override
+  String get inbox_content_text_message_player_content_send => '玩家送出的內容';
+
+  @override
+  String avatar_frame_equipped_message(Object value1) {
+    return '已裝備「$value1」';
+  }
+
+  @override
+  String get avatar_frame_unequip_frame_snackbar => '已卸下頭像框';
+
+  @override
+  String get avatar_frame_unequip_frame_message_event => '活動頭像框';
+
+  @override
+  String get avatar_frame_message => '頭像框';
+
+  @override
+  String avatar_frame_load_failed(Object value1) {
+    return '讀取頭像框失敗：$value1';
+  }
+
+  @override
+  String get avatar_frame_parse_frames_message_select => '選擇你想使用的頭像框';
+
+  @override
+  String get avatar_frame_parse_frames_message_event => '活動取得後永久保留，可隨時更換或卸下。';
+
+  @override
+  String get avatar_frame_parse_frames_title => '不使用頭像框';
+
+  @override
+  String get avatar_frame_parse_frames_subtitle_avatar => '顯示原本的頭像';
+
+  @override
+  String get avatar_frame_parse_frames_message_event_shop_redeem_current =>
+      '目前還沒有已擁有的頭像框。\n活動商店兌換後會出現在這裡。';
+
+  @override
+  String get avatar_frame_parse_frames_message_event_variant_b => '活動限定頭像框';
+
+  @override
+  String get background_settings_message => '限定背景';
+
+  @override
+  String get background_title_exclusive_photo_current => '目前沒有專屬照片';
+
+  @override
+  String get background_subtitle_unlock_character_photo => '之後解鎖的角色照片會出現在這裡。';
+
+  @override
+  String get background_title_login => '登入後即可查看限定背景';
+
+  @override
+  String get background_subtitle_redeem_chat_event => '活動兌換取得的聊天室背景會保存在這裡。';
+
+  @override
+  String get background_title => '還沒有取得限定背景';
+
+  @override
+  String get background_subtitle_event_shop_redeem_chat =>
+      '活動商店兌換的聊天室背景，之後會出現在這裡。';
+
+  @override
+  String get background_is_limited_background_type_message_chat_event =>
+      '活動限定聊天室背景';
+
+  @override
+  String background_is_limited_background_type_message_current_chat(
+      Object value1) {
+    return '要將「$value1」設為目前聊天室的背景嗎？';
+  }
+
+  @override
+  String character_edit_message_character_settings(Object value1) {
+    return '【角色性格與設定】\n$value1';
+  }
+
+  @override
+  String character_edit_message(Object value1) {
+    return '【說話語氣與風格】\n$value1';
+  }
+
+  @override
+  String character_edit_message_variant_b(Object value1) {
+    return '【社交與環境互動】\n$value1';
+  }
+
+  @override
+  String character_edit_save_to_draft_message_current_character(Object value1) {
+    return '目前主要角色：【$value1】\n';
+  }
+
+  @override
+  String character_edit_message_back(Object result) {
+    return '🚪 返回原本的 ProfilePage：$result';
+  }
+
+  @override
+  String character_edit_save_character_message(Object value1) {
+    return '📦 準備搬移 $value1 則記憶碎片：';
+  }
+
+  @override
+  String character_edit_message_complete(Object value1) {
+    return '✅ 已完成搬移 $value1 則記憶碎片';
+  }
+
+  @override
+  String character_edit_preload_first_voice_sample_message_background_start(
+      Object voiceId) {
+    return '⏳ 開始背景預載第一個 Voice：$voiceId';
+  }
+
+  @override
+  String get character_edit_preload_first_voice_sample_message_update =>
+      '⚠️ Voice 清單已更新，略過舊的預載結果';
+
+  @override
+  String
+      get character_edit_preload_first_voice_sample_message_background_complete =>
+          '✅ 第一個 Voice 已背景預載完成';
+
+  @override
+  String get character_edit_preload_first_voice_sample_message_failed =>
+      '⚠️ 第一個 Voice 預載失敗：';
+
+  @override
+  String character_edit_preload_first_voice_sample_message(Object value1) {
+    return '✅ matchVoiceFromBank 回傳：$value1';
+  }
+
+  @override
+  String get character_edit_error_voice => '語音服務回傳格式錯誤';
+
+  @override
+  String get character_edit_error_voice_variant_b => '語音服務沒有回傳 previews';
+
+  @override
+  String character_edit_message_success_voice_match(Object value1) {
+    return '✅ 成功配對 $value1 個 Voice Bank 聲音';
+  }
+
+  @override
+  String get character_edit_message_failed_match =>
+      '========== Voice Bank 配對失敗 ==========';
+
+  @override
+  String get character_edit_message_error_match =>
+      '========== Voice Bank 配對未知錯誤 ==========';
+
+  @override
+  String get character_edit_preview_voice_sample_error_preview => '試聽服務回傳格式錯誤';
+
+  @override
+  String get character_edit_preview_voice_sample_error_preview_variant_b =>
+      '試聽音訊資料為空';
+
+  @override
+  String get character_edit_preview_voice_sample_error_failed_preview =>
+      '試聽音訊解析失敗';
+
+  @override
+  String get character_edit_test_voice_settings_message_failed =>
+      '========== testVoiceSettings 失敗 ==========';
+
+  @override
+  String character_edit_confirm_voice_selection_message_selected(
+      Object realVoiceId) {
+    return '✅ Voice選定正式 Voice ID：$realVoiceId';
+  }
+
+  @override
+  String
+      get character_edit_confirm_voice_selection_message_save_failed_select =>
+          '========== 儲存 Voice Bank 選擇失敗 ==========';
+
+  @override
+  String
+      get character_edit_confirm_voice_selection_message_failed_voice_selected =>
+          '========== 選定 Voice Bank 聲音失敗 ==========';
+
+  @override
+  String get character_to_map_message_creator => '神祕創作者';
+
+  @override
+  String get character_get_character_by_id_message_load_background_story =>
+      '背景故事載入中...';
+
+  @override
+  String get character_get_character_by_id_message_sync => '初始劇情同步中...';
+
+  @override
+  String get character_get_character_by_id_message => '正在準備開場白...';
+
+  @override
+  String get character_get_character_by_id_message_background => '正在加載背景...';
+
+  @override
+  String get character_get_character_by_id_message_load => '世界觀載入中...';
+
+  @override
+  String get character_get_character_by_id_message_load_settings =>
+      '正在載入角色核心設定...';
+
+  @override
+  String get character_get_character_by_id_message_variant_b => '正在加載性格...';
+
+  @override
+  String get character_get_character_by_id_message_appearance => '外貌描述加載中...';
+
+  @override
+  String get character_get_character_by_id_message_variant_c => '正在加載語氣...';
+
+  @override
+  String get character_get_character_by_id_message_load_variant_b => '尚未讀取';
+
+  @override
+  String get character_get_character_by_id_message_variant_d => '陌生人';
+
+  @override
+  String get character_get_character_by_id_message_load_variant_c =>
+      '對話範例讀取中...';
+
+  @override
+  String get character_get_character_by_id_message_variant_e => '初識';
+
+  @override
+  String get character_get_character_by_id_message_variant_f => '熟識';
+
+  @override
+  String get character_get_character_by_id_message_variant_g => '曖昧';
+
+  @override
+  String get chat_input_message_sticker => '貼紙';
+
+  @override
+  String get chat_text => '今日免費閒聊已達上限';
+
+  @override
+  String get chat_message_flowers_today_continue =>
+      '今天的 10 次免費閒聊已使用完畢。\n\n接下來每次閒聊需支付 1 朵花花，是否繼續？';
+
+  @override
+  String get chat_text_continue => '同意並繼續';
+
+  @override
+  String get chat_empty_message_label_current_sticker => '目前還沒有可使用的貼紙。';
+
+  @override
+  String get chat_empty_message_label_sticker => '還沒有最近使用的貼紙';
+
+  @override
+  String get chat_empty_message_label_sticker_variant_b => '還沒有喜愛的貼紙';
+
+  @override
+  String get chat_empty_message_label_current_sticker_variant_b =>
+      '目前還沒有可使用的貼紙';
+
+  @override
+  String get chat_empty_message_sticker => '我的貼紙';
+
+  @override
+  String get chat_empty_message => '最近使用';
+
+  @override
+  String get chat_empty_message_variant_b => '喜愛';
+
+  @override
+  String get chat_send_sticker_message_current_unavailable_sticker =>
+      '這張貼紙目前無法使用';
+
+  @override
+  String chat_message_theater(Object sceneTitle) {
+    return '—— 劇場・$sceneTitle ——';
+  }
+
+  @override
+  String get chat_handle_regenerate_button_message_character_reply_again =>
+      '將重新產生角色上一則回覆。';
+
+  @override
+  String creator_profile_reason_tile_message_report_select_reason(
+      Object creatorName) {
+    return '請選擇檢舉「$creatorName」的原因：';
+  }
+
+  @override
+  String get widget_key_message => '狀態';
+
+  @override
+  String get widget_key_message_variant_b => '地點';
+
+  @override
+  String get widget_label_character => '尚未有角色狀態';
+
+  @override
+  String get widget_format_post_time_label_moment_latest => '最新動態';
+
+  @override
+  String get widget_format_post_time_label_update_moment => '剛剛更新了動態';
+
+  @override
+  String widget_format_post_time_label_minutes_ago_update_moment(
+      Object value1) {
+    return '$value1 分鐘前更新了動態';
+  }
+
+  @override
+  String widget_format_post_time_label_hours_ago_update_moment(Object value1) {
+    return '$value1 小時前更新了動態';
+  }
+
+  @override
+  String get widget_format_post_time_label_update_moment_days => '昨天更新了動態';
+
+  @override
+  String widget_format_post_time_label_update_moment_days_ago(Object value1) {
+    return '$value1 天前更新了動態';
+  }
+
+  @override
+  String widget_format_post_time_label_update_moment_variant_b(
+      Object value1, Object value2) {
+    return '$value1/$value2 更新了動態';
+  }
+
+  @override
+  String get widget_format_post_time_message_share_photo => '分享了一張照片';
+
+  @override
+  String get widget_format_post_time_message_update_moment => '更新了一則動態';
+
+  @override
+  String get widget_format_post_time_message_current_character_moment =>
+      '目前還沒有角色動態';
+
+  @override
+  String get widget_extract_daily_quote_message => '地點：';
+
+  @override
+  String get widget_format_daily_quote_time_message_today => '還沒有留下今天的一句話';
+
+  @override
+  String get widget_load_period_care_state_message_today =>
+      '「今天別太勉強自己，我陪妳慢慢來。」';
+
+  @override
+  String widget_load_period_care_state_message_period_days(Object dayCount) {
+    return '生理期第 $dayCount 天';
+  }
+
+  @override
+  String get widget_load_period_care_state_message_days =>
+      '「這幾天記得早點休息，別把自己累壞。」';
+
+  @override
+  String get widget_load_period_care_state_message_today_start => '預計今天開始';
+
+  @override
+  String widget_load_period_care_state_message_days_variant_b(
+      Object daysUntil) {
+    return '預計還有 $daysUntil 天';
+  }
+
+  @override
+  String get widget_load_period_care_state_message_today_variant_b =>
+      '「辛苦了，今天也要好好照顧自己。」';
+
+  @override
+  String get widget_load_period_care_state_message_period_end => '生理期剛結束';
+
+  @override
+  String get widget_load_period_care_state_message_today_variant_c =>
+      '「今天也記得好好照顧自己。」';
+
+  @override
+  String get widget_load_period_care_state_message_current_reminder =>
+      '目前沒有特別的週期提醒';
+
+  @override
+  String get widget_load_period_care_state_message => '尚未有足夠的週期紀錄';
+
+  @override
+  String get widget_parse_character_birthday_message => '年';
+
+  @override
+  String get widget_parse_character_birthday_message_variant_b => '月';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_character_birthday =>
+      '角色生日';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_birthday_settings =>
+      '尚未設定生日';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_birthday_countdown(
+      Object birthdayLabel) {
+    return '距離他的生日・$birthdayLabel';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_today => '就是今天';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_days(Object days) {
+    return '還有 $days 天';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message => '和他相遇';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_variant_b =>
+      '尚未有相遇紀錄';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_days_variant_b(
+      Object value1) {
+    return '$value1 天';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_variant_c => '重要的日子';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_date_select =>
+      '尚未選擇日期';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_elapsed_days(
+      Object value1) {
+    return '已過 $value1 天';
+  }
+
+  @override
+  String get widget_settings_remove_title_character_latest => '角色最新貼文';
+
+  @override
+  String get widget_settings_remove_subtitle_moment_latest =>
+      '不用打開 App，也能看到他的最新動態。';
+
+  @override
+  String get widget_settings_remove_title_period => '生理期陪伴';
+
+  @override
+  String get widget_settings_remove_subtitle_character_end =>
+      '快到、進行中與結束後，都多一點角色的關心。';
+
+  @override
+  String get widget_settings_remove_title => '今日一句';
+
+  @override
+  String get widget_settings_remove_subtitle_days => '每天打開手機，都有一句話在桌面等著妳。';
+
+  @override
+  String get widget_settings_remove_title_reminder => '紀念日／提醒';
+
+  @override
+  String get widget_settings_remove_subtitle_character_birthday_reminder =>
+      '一起記住相遇、生日，也讓角色提醒妳重要的事。';
+
+  @override
+  String get widget_settings_remove_title_character => '角色狀態';
+
+  @override
+  String get widget_settings_remove_subtitle_chat_latest_mood =>
+      '把聊天室最新的心情、狀態與地點帶到桌面。';
+
+  @override
+  String get widget_settings_size_label => '中';
+
+  @override
+  String get widget_settings_size_label_message_send => '已送出新增到桌面的請求。';
+
+  @override
+  String get widget_settings_size_label_message_try_again_later_failed =>
+      '新增到桌面失敗，請稍後再試。';
+
+  @override
+  String
+      get widget_settings_edit_saved_widget_message_character_reminder_again =>
+          '舊版「角色待辦提醒」已併入「紀念日／提醒」，請重新建立。';
+
+  @override
+  String get widget_settings_delete_saved_widget_title_delete_small => '刪除小工具？';
+
+  @override
+  String
+      widget_settings_delete_saved_widget_message_stop_display_long_press_home_after_delete(
+          Object value1, Object value2) {
+    return '確定要刪除「$value1・$value2」嗎？\n\n刪除後，桌面上的這顆小工具會停止顯示角色內容，並提示玩家長按桌面移除。';
+  }
+
+  @override
+  String
+      get widget_settings_delete_saved_widget_message_delete_settings_small =>
+          '已刪除小工具設定；桌面上的對應小工具已停用。';
+
+  @override
+  String get widget_settings_message_desktop_widget => '桌面小工具';
+
+  @override
+  String get widget_settings_message_character_days => '讓喜歡的角色陪妳出現在每一天。';
+
+  @override
+  String get widget_settings_message_small => '我的小工具';
+
+  @override
+  String get widget_settings_message_desktop_widget_variant_b => '還沒有桌面小工具';
+
+  @override
+  String get widget_settings_message_character_reminder =>
+      '選一個喜歡的角色，讓他的提醒、貼文或狀態出現在桌面上。';
+
+  @override
+  String widget_settings_message_size(Object value1) {
+    return '$value1尺寸';
+  }
+
+  @override
+  String get widget_settings_tooltip => '新增到桌面';
+
+  @override
+  String get widget_settings_tooltip_small => '編輯小工具';
+
+  @override
+  String get widget_settings_tooltip_delete_small => '刪除小工具';
+
+  @override
+  String get widget_settings_message_desktop_widget_variant_c => '新增桌面小工具';
+
+  @override
+  String get widget_settings_message_character_photo_content_select_small =>
+      '每個小工具都可以獨立選擇角色、角色照片與顯示內容，也可以同時放多個角色在桌面上。';
+
+  @override
+  String get widget_settings_desktop_type_selection_message_select_small =>
+      '選擇小工具';
+
+  @override
+  String get widget_settings_desktop_type_selection_message_select =>
+      '先選擇妳想放到桌面的陪伴方式。';
+
+  @override
+  String
+      get widget_settings_go_to_photo_step_message_try_again_later_failed_load_character_photo =>
+          '角色照片載入失敗，請稍後再試。';
+
+  @override
+  String get widget_settings_message_character_select => '選擇角色';
+
+  @override
+  String get widget_settings_message_character_friend_days =>
+      '只顯示妳已加好友或曾經聊過天的角色。';
+
+  @override
+  String get widget_settings_hint_character_search => '搜尋角色';
+
+  @override
+  String get widget_settings_message_try_again_later_failed_load_character =>
+      '角色載入失敗，請稍後再試。';
+
+  @override
+  String get widget_settings_message_current_character_chat_friend_add =>
+      '目前沒有符合的角色。先和角色聊聊天，或把他加入好友吧。';
+
+  @override
+  String get widget_settings_message_character_photo_select => '下一步・選擇角色照片';
+
+  @override
+  String
+      get widget_settings_desktop_photo_selection_message_character_photo_select =>
+          '選擇角色照片';
+
+  @override
+  String
+      widget_settings_desktop_photo_selection_message_current_affection_unlocked_photo(
+          Object value1) {
+    return '目前好感度 $value1・已解鎖的照片可以直接使用。';
+  }
+
+  @override
+  String
+      get widget_settings_desktop_photo_selection_message_current_character_photo =>
+          '這個角色目前沒有可用照片。';
+
+  @override
+  String
+      widget_settings_desktop_photo_selection_message_required_affection_unlock_photo(
+          Object value1) {
+    return '需要好感度 $value1 才能解鎖這張照片。';
+  }
+
+  @override
+  String get widget_settings_message_photo_public => '公開照片';
+
+  @override
+  String widget_settings_message_unlock(Object value1) {
+    return '好感 $value1 解鎖';
+  }
+
+  @override
+  String widget_settings_message_unlocked(Object value1) {
+    return '已解鎖・好感 $value1';
+  }
+
+  @override
+  String get widget_settings_message_content_settings => '下一步・設定顯示內容';
+
+  @override
+  String get widget_settings_open_preview_message_player_select =>
+      '請先選擇一個玩家建立的事件／待辦。';
+
+  @override
+  String get widget_settings_pick_custom_memo_event_message_login_account =>
+      '請先登入帳號。';
+
+  @override
+  String
+      get widget_settings_pick_custom_memo_event_message_memo_current_character =>
+          '這個角色目前還沒有建立任何事件／備忘錄。';
+
+  @override
+  String get widget_settings_pick_custom_memo_event_message_player_select =>
+      '選擇玩家建立的事件';
+
+  @override
+  String get widget_settings_message_try_again_later_failed_load =>
+      '事件讀取失敗，請稍後再試。';
+
+  @override
+  String get widget_settings_message_content_settings_variant_b => '設定顯示內容';
+
+  @override
+  String get widget_settings_subtitle_content => '調整妳想在桌面上看到的內容。';
+
+  @override
+  String get widget_settings_message_small_variant_b => '下一步・預覽小工具';
+
+  @override
+  String get widget_settings_title => '貼文顯示';
+
+  @override
+  String get widget_settings_title_variant_b => '顯示貼文圖片';
+
+  @override
+  String get widget_settings_title_variant_c => '顯示心動數';
+
+  @override
+  String get widget_settings_title_comment => '顯示留言數';
+
+  @override
+  String get widget_settings_title_variant_d => '隱私與陪伴';
+
+  @override
+  String get widget_settings_title_variant_e => '隱私模式';
+
+  @override
+  String get widget_settings_subtitle_period_character =>
+      '桌面只顯示角色關心，不直接寫出生理期資訊。';
+
+  @override
+  String get widget_settings_title_variant_f => '詳細模式';
+
+  @override
+  String get widget_settings_subtitle_end => '可顯示快到了、進行中或剛結束等週期狀態。';
+
+  @override
+  String get widget_settings_title_variant_g => '顯示週期狀態';
+
+  @override
+  String get widget_settings_title_time => '顯示時間';
+
+  @override
+  String get widget_settings_title_update => '更新方式';
+
+  @override
+  String get widget_settings_message_update_days => '每天更新一次';
+
+  @override
+  String get widget_settings_message_update => '每次打開 App 後更新';
+
+  @override
+  String get widget_settings_text_update => '打開 App 後更新';
+
+  @override
+  String get widget_settings_title_content => '紀念日內容';
+
+  @override
+  String get widget_settings_title_days => '相遇天數';
+
+  @override
+  String get widget_settings_subtitle_character_today_days => '顯示妳和角色認識到今天的天數。';
+
+  @override
+  String get widget_settings_subtitle_character_birthday => '顯示距離角色生日還有多久。';
+
+  @override
+  String get widget_settings_title_player => '玩家建立的事件／待辦';
+
+  @override
+  String get widget_settings_message_memo_character_select_reminder =>
+      '從這個角色的備忘錄／提醒中選擇一個事件或待辦。';
+
+  @override
+  String widget_settings_message_selected(Object _selectedMemoContent) {
+    return '已選：$_selectedMemoContent';
+  }
+
+  @override
+  String get widget_settings_message_select => '最多選擇 3 項';
+
+  @override
+  String get widget_settings_message_character => '角色狀態最多顯示 3 項。';
+
+  @override
+  String get widget_settings_message_small_variant_c => '預覽小工具';
+
+  @override
+  String get widget_settings_title_confirm => '最後確認';
+
+  @override
+  String get widget_settings_subtitle_large => '先看看放到桌面上大概會長什麼樣子。';
+
+  @override
+  String get widget_settings_title_size => '尺寸';
+
+  @override
+  String get widget_settings_title_variant_h => '版型';
+
+  @override
+  String get widget_settings_label_photo => '滿版照片';
+
+  @override
+  String get widget_settings_label_character => '角色卡式';
+
+  @override
+  String get widget_settings_message_sync => '正在同步…';
+
+  @override
+  String get widget_settings_message_desktop_widget_add => '加入桌面小工具';
+
+  @override
+  String get widget_settings_sample_lines_message_today_end => '「今天比預想中早一點結束。」';
+
+  @override
+  String get widget_settings_sample_lines_message_days => '「這幾天別太勉強自己。」';
+
+  @override
+  String get widget_settings_sample_lines_message_period => '生理期進行中';
+
+  @override
+  String get widget_settings_sample_lines_message_today => '「今天多休息一點。」';
+
+  @override
+  String get widget_settings_sample_lines_message_today_variant_b =>
+      '「今天也別忘了好好吃飯。」';
+
+  @override
+  String get widget_settings_sample_lines_label_birthday_countdown => '距離他的生日';
+
+  @override
+  String get widget_settings_sample_lines_label_days => '還有 12 天';
+
+  @override
+  String get widget_settings_sample_lines_label_days_variant_b => '128 天';
+
+  @override
+  String get widget_settings_sample_lines_message_mood => '心情｜有點疲倦';
+
+  @override
+  String get widget_settings_sample_lines_message_end => '狀態｜剛結束工作';
+
+  @override
+  String get widget_settings_sample_lines_message => '地點｜公司樓下';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_b => '關係｜戀人';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_c => '衣著｜淺灰色針織衫';
+
+  @override
+  String get widget_settings_sample_lines_message_days_variant_b => '天氣｜微涼';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_d => '想法｜想早點見到妳';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_e => '動作｜正在收拾桌面';
+
+  @override
+  String get widget_settings_sample_lines_message_affection => '好感度｜安定而親近';
+
+  @override
+  String get edit_profile_message => '個人裝扮';
+
+  @override
+  String get edit_profile_message_current => '目前未使用';
+
+  @override
+  String
+      get event_memory_character_load_characters_message_login_character_select =>
+          '請先登入後再選擇角色';
+
+  @override
+  String get event_memory_character_center_message_memory_select =>
+      '選擇想一起留下這段回憶的人';
+
+  @override
+  String get event_memory_character_center_message_character_friend_add =>
+      '只有你自己建立的角色，以及已加入好友的角色會出現在這裡。';
+
+  @override
+  String get event_memory_character_center_message_current_character_select =>
+      '目前沒有可以選擇的角色';
+
+  @override
+  String
+      get event_memory_character_center_message_public_character_character_friend_add =>
+          '建立自己的角色，或先將喜歡的公開角色加入好友。';
+
+  @override
+  String get event_memory_character_message_character_select => '請先選擇角色';
+
+  @override
+  String event_memory_character_message_continue(Object value1) {
+    return '與 $value1 繼續';
+  }
+
+  @override
+  String get event_memory_character_card_message_private => '我的・私人';
+
+  @override
+  String get event_memory_character_error_label_load_again => '重新讀取';
+
+  @override
+  String
+      get event_memory_collection_show_collection_intro_if_needed_message_collection =>
+          '拾光收藏';
+
+  @override
+  String
+      get event_memory_collection_show_collection_intro_if_needed_message_collection_content =>
+          '這裡是收藏列表，可以看看自己所有收藏的內容';
+
+  @override
+  String get event_memory_collection_text_collection_login => '請先登入後查看收藏';
+
+  @override
+  String get event_memory_collection_message_memory => '回憶';
+
+  @override
+  String get event_memory_collection_message_chat_background => '聊天室背景';
+
+  @override
+  String get event_memory_collection_message_avatar_frame_collection =>
+      '還沒有收藏頭像框喔';
+
+  @override
+  String get event_memory_collection_message_avatar_frame =>
+      '之後獲得的限定頭像框會出現在這裡。';
+
+  @override
+  String get event_memory_collection_message_collection_sticker => '還沒有收藏貼紙喔';
+
+  @override
+  String get event_memory_collection_message_sticker => '之後收集到的貼紙都會放在這裡。';
+
+  @override
+  String get event_memory_collection_message_collection_chat_background =>
+      '還沒有收藏聊天室背景喔';
+
+  @override
+  String get event_memory_collection_message_chat_background_variant_b =>
+      '之後獲得的限定聊天室背景會出現在這裡。';
+
+  @override
+  String get event_memory_collection_tab_title_collection_temporary =>
+      '暫時讀不到收藏';
+
+  @override
+  String get event_memory_collection_tab_title_collection_memory => '還沒有收藏回憶喔';
+
+  @override
+  String get event_memory_collection_tab_subtitle_limited_memory_complete =>
+      '完成限定回憶後，可以把喜歡的片段留在這裡。';
+
+  @override
+  String get event_memory_collection_item_card_label => '限定物品';
+
+  @override
+  String get event_memory_collection_confirm_delete_owned_item_message_delete =>
+      '刪除限定物品？';
+
+  @override
+  String
+      event_memory_collection_confirm_delete_owned_item_message_after_delete_unavailable(
+          Object _itemTypeLabel) {
+    return '刪除後將無法再使用這個$_itemTypeLabel，';
+  }
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_collection =>
+          '也不會再出現在「拾光收藏」中。\n\n';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_unavailable =>
+          '這代表你將放棄這次取得的限定物品，且此操作無法復原。\n\n';
+
+  @override
+  String
+      event_memory_collection_confirm_delete_owned_item_message_delete_variant_b(
+          Object value1) {
+    return '確定要刪除「$value1」嗎？';
+  }
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_delete_variant_c =>
+          '已刪除限定物品';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_not_found_delete =>
+          '找不到這個限定物品，可能已經刪除了';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_collection_current_delete =>
+          '這個收藏目前不能刪除';
+
+  @override
+  String get event_memory_collection_show_preview_message => '圖片準備中';
+
+  @override
+  String get event_memory_collection_show_preview_message_failed_load =>
+      '圖片載入失敗';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save_current =>
+      '網頁版目前不支援直接儲存到手機相簿';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save_memory =>
+      '需要相簿權限才能儲存這段回憶';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_memory =>
+      '回憶圖片還沒準備好，請再試一次';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_failed_memory =>
+      '產生回憶圖片失敗';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save =>
+      '已儲存到手機相簿 ♡';
+
+  @override
+  String
+      get event_memory_collection_save_to_gallery_message_save_confirm_failed =>
+          '儲存失敗，請確認相簿權限後再試一次';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_title_collection_cancel =>
+          '取消收藏？';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_message_collection_cancel_memory =>
+          '取消收藏後，這段回憶將不會再出現在「拾光收藏」中。\n\n確定要取消收藏嗎？';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_message_try_again_later_collection_cancel_failed =>
+          '取消收藏失敗，請稍後再試';
+
+  @override
+  String get event_memory_collection_message_collection_memory => '回憶收藏';
+
+  @override
+  String get event_memory_collection_label_play => '再次播放';
+
+  @override
+  String get event_memory_collection_label_save => '正在儲存…';
+
+  @override
+  String get event_memory_collection_label_save_variant_b => '儲存到手機相簿';
+
+  @override
+  String get event_memory_collection_collected_card_message_limited_memory =>
+      '戀戀拾光・限定回憶';
+
+  @override
+  String get event_memory_collection_create_state_message_end_story =>
+      '有些瞬間，\n並不會因為故事結束而消失。';
+
+  @override
+  String get event_memory_collection_text_collection => '這段收藏沒有可重播的 Scene';
+
+  @override
+  String get event_memory_collection_message => '略過';
+
+  @override
+  String get event_memory_collection_message_end => '點擊結束';
+
+  @override
+  String get event_memory_collection_message_continue => '點擊繼續';
+
+  @override
+  String get event_memory_collection_message_variant_b => '點擊顯示全文';
+
+  @override
+  String get event_memory_collection_collected_label_collection => '剛剛收藏';
+
+  @override
+  String get event_memory_collection_collected_item_label_collection_date =>
+      '收藏日期未記錄';
+
+  @override
+  String event_memory_collection_collected_item_label_collection(
+      Object day, Object month, Object value1) {
+    return '收藏於 $value1/$month/$day';
+  }
+
+  @override
+  String get event_memory_text_not_found_event => '找不到活動資料';
+
+  @override
+  String get event_memory_message_limited_memory_failed_load => '限定回憶讀取失敗';
+
+  @override
+  String get event_memory_as_map_label_unlocked => '已解鎖';
+
+  @override
+  String event_memory_as_map_label_unlock(Object currencyIcon,
+      Object currencyName, Object currentValue, Object requiredValue) {
+    return '累積 $currencyIcon $requiredValue $currencyName 解鎖（$currentValue / $requiredValue）';
+  }
+
+  @override
+  String get event_memory_as_map_label_unlock_task_event_complete =>
+      '完成指定活動任務後解鎖';
+
+  @override
+  String get event_memory_as_map_label_redeem_unlock_event => '兌換指定活動商品後解鎖';
+
+  @override
+  String get event_memory_as_map_label_unlock_variant_b => '尚未解鎖';
+
+  @override
+  String get event_memory_hero_message => '把只屬於你們的片段，留在這個季節裡。';
+
+  @override
+  String event_memory_hero_message_limited_memory(
+      Object totalCount, Object unlockedCount) {
+    return '限定回憶  $unlockedCount / $totalCount';
+  }
+
+  @override
+  String get event_memory_status_label_unlocked => '已解鎖・尚未觀看';
+
+  @override
+  String get event_memory_status_label => '已觀看';
+
+  @override
+  String get event_memory_status_label_collection => '已收藏';
+
+  @override
+  String get event_memory_footer_label_memory_start => '可以開始這段回憶';
+
+  @override
+  String get event_memory_footer_label => '可以再次觀看';
+
+  @override
+  String get event_memory_footer_label_collection => '已收藏至拾光收藏';
+
+  @override
+  String get event_memory_empty_message_limited_memory_event_public =>
+      '這次活動還沒有公開限定回憶';
+
+  @override
+  String get event_memory_performance_finish_message_memory => '這段回憶，留下來了。';
+
+  @override
+  String get event_memory_performance_finish_message_save_collection =>
+      '收藏會保留在遊戲內；只有儲存到手機相簿時，才會向系統要求相簿權限。';
+
+  @override
+  String get event_memory_performance_finish_message => '處理中…';
+
+  @override
+  String get event_memory_performance_finish_message_collection_memory =>
+      '收藏這段回憶';
+
+  @override
+  String
+      get event_memory_performance_confirm_uncollect_memory_message_collection_cancel_memory_again_remove =>
+          '取消後，這段回憶會從「拾光收藏」中移除。之後仍然可以重新觀看並再次收藏。';
+
+  @override
+  String
+      get event_memory_performance_uncollect_memory_message_collection_login =>
+          '請先登入後再管理收藏';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_collection_login_memory =>
+          '請先登入後再收藏這段回憶';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_collection_memory =>
+          '已收藏這段回憶 ♡';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_try_again_later_collection_failed =>
+          '收藏失敗，請稍後再試';
+
+  @override
+  String get event_memory_performance_text_panel_message_complete => '點擊完成';
+
+  @override
+  String get event_memory_performance_build_performance_message => '跳過';
+
+  @override
+  String get event_memory_performance_text_play => '沒有可播放的 Scene';
+
+  @override
+  String get event_memory_profile_change_profile_message_profile => '更換拾光檔案';
+
+  @override
+  String get event_memory_profile_message_profile_confirm => '確認拾光檔案';
+
+  @override
+  String get event_memory_profile_center_text_profile_not_found =>
+      '找不到可使用的拾光檔案';
+
+  @override
+  String get event_memory_profile_center_message_memory => '這段回憶，會以誰的身分留下？';
+
+  @override
+  String get event_memory_profile_center_message_profile_character_start =>
+      '已優先使用你與這個角色最近使用的拾光檔案，也可以在開始前更換。';
+
+  @override
+  String event_memory_profile_center_message(Object value1) {
+    return '將以「$value1」與';
+  }
+
+  @override
+  String event_memory_profile_center_message_memory_variant_b(Object value1) {
+    return '「$value1」留下這段回憶';
+  }
+
+  @override
+  String get event_memory_profile_center_label_memory_start => '開始回憶';
+
+  @override
+  String get event_message_failed_load => '活動資料讀取失敗';
+
+  @override
+  String get event_message_not_found => '找不到這個活動';
+
+  @override
+  String get event_remaining_label => '活動進行中';
+
+  @override
+  String event_remaining_label_days(Object value1) {
+    return '剩餘 $value1 天';
+  }
+
+  @override
+  String event_remaining_label_hours(Object value1) {
+    return '剩餘 $value1 小時';
+  }
+
+  @override
+  String get event_remaining_label_end => '即將結束';
+
+  @override
+  String get event_balance_pill_tooltip_back => '返回';
+
+  @override
+  String event_claim_task_message_claim_current(
+      Object currency, Object reward, Object value1, Object value2) {
+    return '已領取 $value1 $reward $value2，目前共有 $currency';
+  }
+
+  @override
+  String get event_claim_task_message_reward_claim => '獎勵已領取';
+
+  @override
+  String get event_claim_task_message_claim_failed => '領取失敗';
+
+  @override
+  String get event_claim_task_message_task_claim => '這個任務已經領取過了';
+
+  @override
+  String get event_claim_task_message_incomplete_task => '任務尚未完成';
+
+  @override
+  String get event_task_list_label_task_load => '讀取任務中…';
+
+  @override
+  String get event_task_list_label_task_current => '目前沒有任務';
+
+  @override
+  String get event_task_list_label_task_login_progress => '登入後即可查看活動任務進度';
+
+  @override
+  String get event_milestone_progress_label_reward_load => '讀取累積獎勵中…';
+
+  @override
+  String get event_milestone_progress_label_reward_current => '目前沒有累積獎勵';
+
+  @override
+  String event_build_with_total_message_current(Object totalEarned) {
+    return '目前  $totalEarned';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_confirm => '確認兌換';
+
+  @override
+  String event_progress_ref_message_redeem_flowers(
+      Object itemName, Object price, Object rewardAmount, Object value1) {
+    return '要使用 $value1 $price 兌換「$itemName」嗎？\n\n兌換後可獲得 $rewardAmount 花花。';
+  }
+
+  @override
+  String event_progress_ref_message_redeem(
+      Object itemName, Object price, Object value1) {
+    return '要使用 $value1 $price 兌換「$itemName」嗎？';
+  }
+
+  @override
+  String event_progress_ref_message_redeem_success_flowers(
+      Object returnedReward) {
+    return '兌換成功！獲得 $returnedReward 花花';
+  }
+
+  @override
+  String event_progress_ref_message_event_collection_redeem_success_add(
+      Object itemName) {
+    return '兌換成功！「$itemName」已加入活動收藏';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_failed => '兌換失敗';
+
+  @override
+  String get event_progress_ref_message_redeem_variant_b => '這個商品已經兌換過了';
+
+  @override
+  String get event_progress_ref_message_insufficient => '貨幣不足';
+
+  @override
+  String event_progress_ref_message_insufficient_variant_b(Object value1) {
+    return '$value1不足';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_variant_c => '兌換';
+
+  @override
+  String get event_progress_ref_message_redeem_variant_d => '已兌換';
+
+  @override
+  String event_message_redeem_flowers(Object rewardAmount) {
+    return '兌換後可獲得 $rewardAmount 花花';
+  }
+
+  @override
+  String event_message_redeem(Object redeemedCount) {
+    return '已兌換 $redeemedCount 次';
+  }
+
+  @override
+  String get event_message_event_shop_login => '登入後即可使用活動商店';
+
+  @override
+  String get event_message_redeem_current => '目前沒有可兌換商品';
+
+  @override
+  String event_shop_item_card_message_flowers(Object rewardAmount) {
+    return '可獲得 $rewardAmount 花花';
+  }
+
+  @override
+  String get event_message_insufficient => '不足';
+
+  @override
+  String get notification_message_player => '玩家附加圖片';
+
+  @override
+  String notification_message_qixi_letter(Object value1) {
+    return '來自 $value1 的七夕信';
+  }
+
+  @override
+  String recommendation_remaining_label_days(Object value1) {
+    return '剩 $value1 天';
+  }
+
+  @override
+  String recommendation_remaining_label_hours(Object value1) {
+    return '剩 $value1 小時';
+  }
+
+  @override
+  String get settings_subtitle_character_days => '讓喜歡的角色陪妳出現在每一天';
+
+  @override
+  String moment_notification_comment_on_character_post(
+      Object authorName, Object commentText, Object senderNickname) {
+    return '$senderNickname給$authorName留了話：「$commentText」';
+  }
+
+  @override
+  String get inbox_content_text_message_customer_service_message_send =>
+      '已送出的客服信件';
+
+  @override
+  String get character_edit_relationship_none_label => '无';
+
+  @override
+  String get auth_cancel_account_deletion_failed => '取消刪除帳號失敗，請稍後再試';
+
+  @override
+  String get auth_delete_account_failed => '刪除帳號失敗';
+
+  @override
+  String get auth_request_account_deletion_failed => '申請刪除帳號失敗，請稍後再試';
+
+  @override
+  String get theme_font_shiguang_serif => '拾光宋體';
+
+  @override
+  String get theme_font_clean_sans => '清雅黑體';
+
+  @override
+  String get theme_font_system => '系統字體';
+
+  @override
+  String get theme_font_shiguang_serif_description => '文青柔和，適合沉浸閱讀';
+
+  @override
+  String get theme_font_clean_sans_description => '清楚俐落，長時間閱讀較輕鬆';
+
+  @override
+  String get theme_font_system_description => '跟隨手機系統預設字體';
 }

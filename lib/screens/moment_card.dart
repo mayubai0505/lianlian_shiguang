@@ -60,6 +60,7 @@ class _MomentCardState extends State<MomentCard> {
   bool _isLikeStatusLoading = true;
   bool _isBookmarked = false;
   bool _isOpeningMomentAction = false;
+  String _resolvedAuthorAvatar = '';
   // 🔑 宣告 5 把氣泡追蹤鑰匙 (新增在這裡)
   final GlobalKey _likeKey = GlobalKey();
   final GlobalKey _bookmarkKey = GlobalKey();
@@ -83,10 +84,11 @@ class _MomentCardState extends State<MomentCard> {
   void initState() {
     super.initState();
     _likeCount = widget.moment.likeCount;
+    _resolvedAuthorAvatar = '';
     _checkIfLiked();
     _checkIfBookmarked();
+    _refreshLatestAuthorAvatar();
 
-    // 🌟 原本一大串發射程式碼，現在濃縮成這一行！
     if (widget.showFeatureTips) {
       _checkAndShowTips();
     }
@@ -98,6 +100,13 @@ class _MomentCardState extends State<MomentCard> {
 
     if (!oldWidget.showFeatureTips && widget.showFeatureTips) {
       _checkAndShowTips();
+    }
+
+    if (oldWidget.moment.id != widget.moment.id ||
+        oldWidget.moment.authorId != widget.moment.authorId ||
+        oldWidget.moment.authorAvatar != widget.moment.authorAvatar) {
+      _resolvedAuthorAvatar = '';
+      _refreshLatestAuthorAvatar();
     }
   }
 
@@ -123,6 +132,75 @@ class _MomentCardState extends State<MomentCard> {
       } catch (e) {
         print("⚠️ 找不到 ShowCaseWidget: $e");
       }
+    }
+  }
+
+
+  Future<void> _refreshLatestAuthorAvatar() async {
+    try {
+      String latestAvatar = '';
+
+      if (widget.moment.isCreatorPost) {
+        final ownerUid = widget.moment.createdBy.trim();
+        if (ownerUid.isNotEmpty) {
+          final userDoc = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(ownerUid)
+              .get();
+
+          latestAvatar =
+              (userDoc.data()?['avatarPath'] ?? '').toString().trim();
+        }
+      } else {
+        final characterId = widget.moment.authorId.trim();
+
+        if (characterId.isNotEmpty) {
+          // 先找公開角色：公開動態牆與個人主頁都能取得最新頭像。
+          final publicDoc = await FirebaseFirestore.instance
+              .collection('artifacts')
+              .doc(AppConfig.appId)
+              .collection('public_characters')
+              .doc(characterId)
+              .get();
+
+          if (publicDoc.exists) {
+            latestAvatar =
+                (publicDoc.data()?['avatarPath'] ?? '').toString().trim();
+          }
+
+          // 公開角色找不到時，再用該動態真正擁有者的私人角色資料。
+          if (latestAvatar.isEmpty) {
+            final ownerUid = widget.moment.createdBy.trim();
+            if (ownerUid.isNotEmpty) {
+              final privateDoc = await FirebaseFirestore.instance
+                  .collection('artifacts')
+                  .doc(AppConfig.appId)
+                  .collection('users')
+                  .doc(ownerUid)
+                  .collection('private_characters')
+                  .doc(characterId)
+                  .get();
+
+              if (privateDoc.exists) {
+                latestAvatar =
+                    (privateDoc.data()?['avatarPath'] ?? '').toString().trim();
+              }
+            }
+          }
+        }
+      }
+
+      if (!mounted || latestAvatar.isEmpty) return;
+
+      if (_resolvedAuthorAvatar != latestAvatar) {
+        setState(() {
+          _resolvedAuthorAvatar = latestAvatar;
+        });
+      }
+    } catch (e) {
+      // 讀最新頭像失敗時沿用動態當初保存的 authorAvatar，
+      // 不讓頭像同步問題影響整張動態卡片。
+      debugPrint('⚠️ 讀取動態作者最新頭像失敗：$e');
     }
   }
 
@@ -388,6 +466,28 @@ class _MomentCardState extends State<MomentCard> {
       return [];
     }
   }
+  String _formatMomentCreatedAt(
+      BuildContext context,
+      Timestamp createdAt,
+      ) {
+    final dateTime = createdAt.toDate();
+    final localeName = Localizations.localeOf(context).toString();
+
+    try {
+      return DateFormat.MMMd(localeName).add_Hm().format(dateTime);
+    } catch (e) {
+      // Release 版若該 locale 的 intl 日期資料尚未初始化，
+      // DateFormat 會直接在 build 階段丟例外，Flutter 就會顯示灰色 ErrorWidget。
+      debugPrint('⚠️ 動態日期格式化失敗，改用安全格式：$localeName / $e');
+
+      final month = dateTime.month.toString().padLeft(2, '0');
+      final day = dateTime.day.toString().padLeft(2, '0');
+      final hour = dateTime.hour.toString().padLeft(2, '0');
+      final minute = dateTime.minute.toString().padLeft(2, '0');
+      return '$month/$day $hour:$minute';
+    }
+  }
+
   // ✨ 2. 更新您的轉發選單
   void _showForwardBottomSheet(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -1240,10 +1340,9 @@ class _MomentCardState extends State<MomentCard> {
                     child: CircleAvatar(
                       radius: 24,
                       backgroundImage: getAvatarImageProvider(
-                        widget.moment.authorAvatar,
+                        _resolvedAuthorAvatar,
                       ),
-                      backgroundColor:
-                      primary.withValues(alpha: 0.08),
+                      backgroundColor: primary.withValues(alpha: 0.08),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -1265,10 +1364,9 @@ class _MomentCardState extends State<MomentCard> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          DateFormat.MMMd(
-                            Localizations.localeOf(context).toString(),
-                          ).add_Hm().format(
-                            widget.moment.createdAt.toDate(),
+                          _formatMomentCreatedAt(
+                            context,
+                            widget.moment.createdAt,
                           ),
                           style: GoogleFonts.notoSerifTc(
                             color: onSurface.withValues(alpha: 0.42),
@@ -1358,10 +1456,28 @@ class _MomentCardState extends State<MomentCard> {
                 padding: const EdgeInsets.fromLTRB(10, 0, 10, 2),
                 child: Row(
                   children: [
-                    Showcase(
-                      key: _likeKey,
-                      description: l10n.tip_post_like,
-                      child: IconButton(
+                    if (widget.showFeatureTips)
+                      Showcase(
+                        key: _likeKey,
+                        description: l10n.tip_post_like,
+                        child: IconButton(
+                          visualDensity: VisualDensity.compact,
+                          icon: Icon(
+                            _isLiked
+                                ? Icons.eco_rounded
+                                : Icons.eco_outlined,
+                            size: 21,
+                            color: _isLiked ? primary : actionColor,
+                          ),
+                          onPressed: () {
+                            _hideTipsThenRun(
+                                  () async => await _toggleLike(),
+                            );
+                          },
+                        ),
+                      )
+                    else
+                      IconButton(
                         visualDensity: VisualDensity.compact,
                         icon: Icon(
                           _isLiked
@@ -1376,7 +1492,6 @@ class _MomentCardState extends State<MomentCard> {
                           );
                         },
                       ),
-                    ),
                     IconButton(
                       visualDensity: VisualDensity.compact,
                       icon: Icon(
@@ -1413,10 +1528,30 @@ class _MomentCardState extends State<MomentCard> {
                       },
                     ),
                     const Spacer(),
-                    Showcase(
-                      key: _bookmarkKey,
-                      description: l10n.tip_post_bookmark,
-                      child: IconButton(
+                    if (widget.showFeatureTips)
+                      Showcase(
+                        key: _bookmarkKey,
+                        description: l10n.tip_post_bookmark,
+                        child: IconButton(
+                          visualDensity: VisualDensity.compact,
+                          icon: Icon(
+                            _isBookmarked
+                                ? Icons.park_rounded
+                                : Icons.park_outlined,
+                            size: 22,
+                            color: _isBookmarked
+                                ? primary
+                                : actionColor,
+                          ),
+                          onPressed: () {
+                            _hideTipsThenRun(
+                                  () async => await _toggleBookmark(),
+                            );
+                          },
+                        ),
+                      )
+                    else
+                      IconButton(
                         visualDensity: VisualDensity.compact,
                         icon: Icon(
                           _isBookmarked
@@ -1433,7 +1568,6 @@ class _MomentCardState extends State<MomentCard> {
                           );
                         },
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -1465,5 +1599,4 @@ class _MomentCardState extends State<MomentCard> {
       ),
     );
   }
-
 }

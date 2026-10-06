@@ -13,6 +13,7 @@ import '../services/theme_notifier.dart';
 import '../services/toast_utils.dart';
 import 'character_model.dart';
 import 'dart:ui';
+import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 
 class BackgroundSettingsPage extends StatefulWidget {
   final Character character;
@@ -158,9 +159,9 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
-                    tabs: const [
+                    tabs: [
                       Tab(text: '專屬照片'),
-                      Tab(text: '限定背景'),
+                      Tab(text: appL10n.background_settings_message),
                     ],
                   ),
                 ),
@@ -244,8 +245,8 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
               return _buildEmptyLimitedState(
                 context,
                 icon: Icons.photo_library_outlined,
-                title: '目前沒有專屬照片',
-                subtitle: '之後解鎖的角色照片會出現在這裡。',
+                title: appL10n.background_title_exclusive_photo_current,
+                subtitle: appL10n.background_subtitle_unlock_character_photo,
               );
             }
 
@@ -301,8 +302,8 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
       return _buildEmptyLimitedState(
         context,
         icon: Icons.lock_outline_rounded,
-        title: '登入後即可查看限定背景',
-        subtitle: '活動兌換取得的聊天室背景會保存在這裡。',
+        title: appL10n.background_title_login,
+        subtitle: appL10n.background_subtitle_redeem_chat_event,
       );
     }
 
@@ -375,8 +376,8 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
           return _buildEmptyLimitedState(
             context,
             icon: Icons.wallpaper_outlined,
-            title: '還沒有取得限定背景',
-            subtitle: '活動商店兌換的聊天室背景，之後會出現在這裡。',
+            title: appL10n.background_title,
+            subtitle: appL10n.background_subtitle_event_shop_redeem_chat,
           );
         }
 
@@ -468,7 +469,7 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
                       Text(
                         item.description.trim().isNotEmpty
                             ? item.description
-                            : '活動限定聊天室背景',
+                            : appL10n.background_is_limited_background_type_message_chat_event,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.notoSerifTc(
@@ -550,7 +551,7 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
           ),
         ),
         content: Text(
-          '要將「${item.name}」設為目前聊天室的背景嗎？',
+          appL10n.background_is_limited_background_type_message_current_chat(item.name),
           style: GoogleFonts.notoSerifTc(),
         ),
         actions: [

@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../services/app_constants.dart';
 import '../utils/image_utils.dart';
 import 'event_memory_profile_confirm_page.dart';
+import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 
 class EventMemoryCharacterSelectPage extends StatefulWidget {
   final String eventId;
@@ -90,7 +91,7 @@ class _EventMemoryCharacterSelectPageState
       if (mounted) {
         setState(() {
           _loading = false;
-          _error = '請先登入後再選擇角色';
+          _error = appL10n.event_memory_character_load_characters_message_login_character_select;
         });
       }
       return;
@@ -278,7 +279,7 @@ class _EventMemoryCharacterSelectPageState
                           CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '選擇想一起留下這段回憶的人',
+                              appL10n.event_memory_character_center_message_memory_select,
                               style: GoogleFonts.notoSerifTc(
                                 fontSize: 21,
                                 fontWeight: FontWeight.w800,
@@ -287,7 +288,7 @@ class _EventMemoryCharacterSelectPageState
                             ),
                             const SizedBox(height: 6),
                             Text(
-                              '只有你自己建立的角色，以及已加入好友的角色會出現在這裡。',
+                              appL10n.event_memory_character_center_message_character_friend_add,
                               style: GoogleFonts.notoSerifTc(
                                 fontSize: 12,
                                 height: 1.55,
@@ -370,7 +371,7 @@ class _EventMemoryCharacterSelectPageState
                                 ),
                                 const SizedBox(height: 12),
                                 Text(
-                                  '目前沒有可以選擇的角色',
+                                  appL10n.event_memory_character_center_message_current_character_select,
                                   style: GoogleFonts.notoSerifTc(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700,
@@ -379,7 +380,7 @@ class _EventMemoryCharacterSelectPageState
                                 ),
                                 const SizedBox(height: 6),
                                 Text(
-                                  '建立自己的角色，或先將喜歡的公開角色加入好友。',
+                                  appL10n.event_memory_character_center_message_public_character_character_friend_add,
                                   textAlign: TextAlign.center,
                                   style: GoogleFonts.notoSerifTc(
                                     fontSize: 12,
@@ -422,8 +423,8 @@ class _EventMemoryCharacterSelectPageState
                     icon: const Icon(Icons.arrow_forward_rounded),
                     label: Text(
                       _selectedCharacter == null
-                          ? '請先選擇角色'
-                          : '與 ${_selectedCharacter!.name} 繼續',
+                          ? appL10n.event_memory_character_message_character_select
+                          : appL10n.event_memory_character_message_continue(_selectedCharacter!.name),
                     ),
                   ),
                 ),
@@ -693,7 +694,7 @@ class _CharacterCard extends StatelessWidget {
                   character.source == _CharacterSource.friend
                       ? '好友'
                       : character.isPrivate
-                      ? '我的・私人'
+                      ? appL10n.event_memory_character_card_message_private
                       : '我的角色',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -794,7 +795,7 @@ class _ErrorState extends StatelessWidget {
             OutlinedButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('重新讀取'),
+              label: Text(appL10n.event_memory_character_error_label_load_again),
             ),
           ],
         ),

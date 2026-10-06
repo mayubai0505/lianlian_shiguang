@@ -8067,4 +8067,1454 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get chat_mode_resonance_cost_short => '꽃 10개';
+
+  @override
+  String get notification_channel_chat_description =>
+      '캐릭터의 최신 답장과 게임 알림을 받는 데 사용됩니다.';
+
+  @override
+  String get subscription_star_contract_name => '연연습광 · 별의 계약';
+
+  @override
+  String moment_notification_comment_on_your_post(
+      Object commentText, Object senderNickname) {
+    return '$senderNickname님이 회원님의 게시물에 댓글을 남겼습니다: “$commentText”';
+  }
+
+  @override
+  String get moment_notification_new_reply_title => '게시물에 새 답글이 있어요! 💬';
+
+  @override
+  String get moment_notification_character_popularity_title =>
+      '캐릭터 인기가 급상승 중! 🔥';
+
+  @override
+  String get font_size_small => '작게';
+
+  @override
+  String get font_size_standard => '표준';
+
+  @override
+  String get font_size_slightly_large => '조금 크게';
+
+  @override
+  String get font_size_large => '크게';
+
+  @override
+  String get font_size_extra_large => '아주 크게';
+
+  @override
+  String get font_selection_title => '글꼴';
+
+  @override
+  String get font_selection_description => '스토리와 채팅을 읽기에 가장 편한 글꼴을 선택하세요.';
+
+  @override
+  String get font_size_title => '글꼴 크기';
+
+  @override
+  String get font_selection_tagline => '좋아하는 그와 다시, 둘만의 이야기를 써 내려가세요.';
+
+  @override
+  String font_selection_applied_message(Object value1) {
+    return '“$value1” 적용됨';
+  }
+
+  @override
+  String get font_selection_local_storage_note =>
+      '글꼴과 글자 크기는 즉시 적용되어 이 기기에 저장됩니다. 기본 화면으로 복원하면 “습광 명조 + 표준 크기”로 돌아갑니다.';
+
+  @override
+  String get inbox_customer_service_report => '고객센터 문의';
+
+  @override
+  String get inbox_content_text_message_player_title_send => '플레이어가 보낸 제목';
+
+  @override
+  String get inbox_content_text_message_player_content_send => '플레이어가 보낸 내용';
+
+  @override
+  String avatar_frame_equipped_message(Object value1) {
+    return '“$value1” 장착됨';
+  }
+
+  @override
+  String get avatar_frame_unequip_frame_snackbar => '아바타 프레임 해제됨';
+
+  @override
+  String get avatar_frame_unequip_frame_message_event => '이벤트 아바타 프레임';
+
+  @override
+  String get avatar_frame_message => '아바타 프레임';
+
+  @override
+  String avatar_frame_load_failed(Object value1) {
+    return '아바타 프레임을 불러오지 못했습니다: $value1';
+  }
+
+  @override
+  String get avatar_frame_parse_frames_message_select => '사용할 아바타 프레임을 선택하세요';
+
+  @override
+  String get avatar_frame_parse_frames_message_event =>
+      '이벤트에서 획득한 아바타 프레임은 영구 보관되며 언제든 변경하거나 해제할 수 있습니다.';
+
+  @override
+  String get avatar_frame_parse_frames_title => '아바타 프레임 사용 안 함';
+
+  @override
+  String get avatar_frame_parse_frames_subtitle_avatar => '기본 아바타 표시';
+
+  @override
+  String get avatar_frame_parse_frames_message_event_shop_redeem_current =>
+      '보유한 아바타 프레임이 아직 없습니다.\n이벤트 상점에서 교환하면 여기에 표시됩니다.';
+
+  @override
+  String get avatar_frame_parse_frames_message_event_variant_b =>
+      '이벤트 한정 아바타 프레임';
+
+  @override
+  String get background_settings_message => '한정 배경';
+
+  @override
+  String get background_title_exclusive_photo_current => '전용 사진이 아직 없습니다';
+
+  @override
+  String get background_subtitle_unlock_character_photo =>
+      '이후 해금한 캐릭터 사진이 여기에 표시됩니다.';
+
+  @override
+  String get background_title_login => '로그인하면 한정 배경을 확인할 수 있습니다';
+
+  @override
+  String get background_subtitle_redeem_chat_event =>
+      '이벤트 교환으로 획득한 채팅 배경은 여기에 저장됩니다.';
+
+  @override
+  String get background_title => '아직 한정 배경을 획득하지 않았습니다';
+
+  @override
+  String get background_subtitle_event_shop_redeem_chat =>
+      '이벤트 상점에서 교환한 채팅 배경이 이후 여기에 표시됩니다.';
+
+  @override
+  String get background_is_limited_background_type_message_chat_event =>
+      '이벤트 한정 채팅 배경';
+
+  @override
+  String background_is_limited_background_type_message_current_chat(
+      Object value1) {
+    return '“$value1”을 현재 채팅방 배경으로 설정할까요?';
+  }
+
+  @override
+  String character_edit_message_character_settings(Object value1) {
+    return '【角色性格與設定】\n$value1';
+  }
+
+  @override
+  String character_edit_message(Object value1) {
+    return '【說話語氣與風格】\n$value1';
+  }
+
+  @override
+  String character_edit_message_variant_b(Object value1) {
+    return '【社交與環境互動】\n$value1';
+  }
+
+  @override
+  String character_edit_save_to_draft_message_current_character(Object value1) {
+    return '현재 대표 캐릭터: 【$value1】\n';
+  }
+
+  @override
+  String character_edit_message_back(Object result) {
+    return '🚪 返回原本的 ProfilePage：$result';
+  }
+
+  @override
+  String character_edit_save_character_message(Object value1) {
+    return '📦 準備搬移 $value1 則記憶碎片：';
+  }
+
+  @override
+  String character_edit_message_complete(Object value1) {
+    return '✅ 已完成搬移 $value1 則記憶碎片';
+  }
+
+  @override
+  String character_edit_preload_first_voice_sample_message_background_start(
+      Object voiceId) {
+    return '⏳ 開始背景預載第一個 Voice：$voiceId';
+  }
+
+  @override
+  String get character_edit_preload_first_voice_sample_message_update =>
+      '⚠️ Voice 清單已更新，略過舊的預載結果';
+
+  @override
+  String
+      get character_edit_preload_first_voice_sample_message_background_complete =>
+          '✅ 第一個 Voice 已背景預載完成';
+
+  @override
+  String get character_edit_preload_first_voice_sample_message_failed =>
+      '⚠️ 第一個 Voice 預載失敗：';
+
+  @override
+  String character_edit_preload_first_voice_sample_message(Object value1) {
+    return '✅ matchVoiceFromBank 回傳：$value1';
+  }
+
+  @override
+  String get character_edit_error_voice => '語音服務回傳格式錯誤';
+
+  @override
+  String get character_edit_error_voice_variant_b => '語音服務沒有回傳 previews';
+
+  @override
+  String character_edit_message_success_voice_match(Object value1) {
+    return '✅ 成功配對 $value1 個 Voice Bank 聲音';
+  }
+
+  @override
+  String get character_edit_message_failed_match =>
+      '========== Voice Bank 配對失敗 ==========';
+
+  @override
+  String get character_edit_message_error_match =>
+      '========== Voice Bank 配對未知錯誤 ==========';
+
+  @override
+  String get character_edit_preview_voice_sample_error_preview => '試聽服務回傳格式錯誤';
+
+  @override
+  String get character_edit_preview_voice_sample_error_preview_variant_b =>
+      '試聽音訊資料為空';
+
+  @override
+  String get character_edit_preview_voice_sample_error_failed_preview =>
+      '試聽音訊解析失敗';
+
+  @override
+  String get character_edit_test_voice_settings_message_failed =>
+      '========== testVoiceSettings 失敗 ==========';
+
+  @override
+  String character_edit_confirm_voice_selection_message_selected(
+      Object realVoiceId) {
+    return '✅ Voice選定正式 Voice ID：$realVoiceId';
+  }
+
+  @override
+  String
+      get character_edit_confirm_voice_selection_message_save_failed_select =>
+          '========== 儲存 Voice Bank 選擇失敗 ==========';
+
+  @override
+  String
+      get character_edit_confirm_voice_selection_message_failed_voice_selected =>
+          '========== 選定 Voice Bank 聲音失敗 ==========';
+
+  @override
+  String get character_to_map_message_creator => '수수께끼의 크리에이터';
+
+  @override
+  String get character_get_character_by_id_message_load_background_story =>
+      '배경 이야기 불러오는 중...';
+
+  @override
+  String get character_get_character_by_id_message_sync => '초기 스토리 동기화 중...';
+
+  @override
+  String get character_get_character_by_id_message => '첫 대사 준비 중...';
+
+  @override
+  String get character_get_character_by_id_message_background => '배경 불러오는 중...';
+
+  @override
+  String get character_get_character_by_id_message_load => '세계관 불러오는 중...';
+
+  @override
+  String get character_get_character_by_id_message_load_settings =>
+      '캐릭터 핵심 설정 불러오는 중...';
+
+  @override
+  String get character_get_character_by_id_message_variant_b => '성격 불러오는 중...';
+
+  @override
+  String get character_get_character_by_id_message_appearance =>
+      '외형 설명 불러오는 중...';
+
+  @override
+  String get character_get_character_by_id_message_variant_c => '말투 불러오는 중...';
+
+  @override
+  String get character_get_character_by_id_message_load_variant_b =>
+      '아직 불러오지 않음';
+
+  @override
+  String get character_get_character_by_id_message_variant_d => '낯선 사람';
+
+  @override
+  String get character_get_character_by_id_message_load_variant_c =>
+      '대화 예시 불러오는 중...';
+
+  @override
+  String get character_get_character_by_id_message_variant_e => '첫 만남';
+
+  @override
+  String get character_get_character_by_id_message_variant_f => '익숙한 사이';
+
+  @override
+  String get character_get_character_by_id_message_variant_g => '썸';
+
+  @override
+  String get chat_input_message_sticker => '스티커';
+
+  @override
+  String get chat_text => '오늘의 무료 잡담 한도에 도달했어요';
+
+  @override
+  String get chat_message_flowers_today_continue =>
+      '오늘의 무료 잡담 10회를 모두 사용했습니다.\n\n이제부터 잡담 1회당 꽃 1개가 필요합니다. 계속할까요?';
+
+  @override
+  String get chat_text_continue => '동의하고 계속';
+
+  @override
+  String get chat_empty_message_label_current_sticker =>
+      '현재 사용할 수 있는 스티커가 없습니다.';
+
+  @override
+  String get chat_empty_message_label_sticker => '최근 사용한 스티커가 아직 없습니다';
+
+  @override
+  String get chat_empty_message_label_sticker_variant_b => '즐겨찾기 스티커가 아직 없습니다';
+
+  @override
+  String get chat_empty_message_label_current_sticker_variant_b =>
+      '현재 사용할 수 있는 스티커가 없습니다';
+
+  @override
+  String get chat_empty_message_sticker => '내 스티커';
+
+  @override
+  String get chat_empty_message => '최근 사용';
+
+  @override
+  String get chat_empty_message_variant_b => '즐겨찾기';
+
+  @override
+  String get chat_send_sticker_message_current_unavailable_sticker =>
+      '이 스티커는 현재 사용할 수 없습니다';
+
+  @override
+  String chat_message_theater(Object sceneTitle) {
+    return '—— 극장・$sceneTitle ——';
+  }
+
+  @override
+  String get chat_handle_regenerate_button_message_character_reply_again =>
+      '캐릭터의 직전 답변을 다시 생성합니다.';
+
+  @override
+  String creator_profile_reason_tile_message_report_select_reason(
+      Object creatorName) {
+    return '“$creatorName”을 신고하는 이유를 선택하세요:';
+  }
+
+  @override
+  String get widget_key_message => '상태';
+
+  @override
+  String get widget_key_message_variant_b => '위치';
+
+  @override
+  String get widget_label_character => '캐릭터 상태가 아직 없습니다';
+
+  @override
+  String get widget_format_post_time_label_moment_latest => '최신 게시물';
+
+  @override
+  String get widget_format_post_time_label_update_moment => '방금 게시물을 업데이트했어요';
+
+  @override
+  String widget_format_post_time_label_minutes_ago_update_moment(
+      Object value1) {
+    return '$value1분 전에 게시물을 업데이트했어요';
+  }
+
+  @override
+  String widget_format_post_time_label_hours_ago_update_moment(Object value1) {
+    return '$value1시간 전에 게시물을 업데이트했어요';
+  }
+
+  @override
+  String get widget_format_post_time_label_update_moment_days =>
+      '어제 게시물을 업데이트했어요';
+
+  @override
+  String widget_format_post_time_label_update_moment_days_ago(Object value1) {
+    return '$value1일 전에 게시물을 업데이트했어요';
+  }
+
+  @override
+  String widget_format_post_time_label_update_moment_variant_b(
+      Object value1, Object value2) {
+    return '$value1/$value2에 게시물을 업데이트했어요';
+  }
+
+  @override
+  String get widget_format_post_time_message_share_photo => '사진을 공유했어요';
+
+  @override
+  String get widget_format_post_time_message_update_moment => '게시물을 업데이트했어요';
+
+  @override
+  String get widget_format_post_time_message_current_character_moment =>
+      '캐릭터 게시물이 아직 없습니다';
+
+  @override
+  String get widget_extract_daily_quote_message => '위치:';
+
+  @override
+  String get widget_format_daily_quote_time_message_today => '오늘의 한마디가 아직 없습니다';
+
+  @override
+  String get widget_load_period_care_state_message_today =>
+      '“오늘은 너무 무리하지 마. 내가 곁에서 천천히 함께할게.”';
+
+  @override
+  String widget_load_period_care_state_message_period_days(Object dayCount) {
+    return '생리 $dayCount일째';
+  }
+
+  @override
+  String get widget_load_period_care_state_message_days =>
+      '“요 며칠은 조금 일찍 쉬어. 너무 지치지 않게.”';
+
+  @override
+  String get widget_load_period_care_state_message_today_start => '오늘 시작 예정';
+
+  @override
+  String widget_load_period_care_state_message_days_variant_b(
+      Object daysUntil) {
+    return '예상까지 $daysUntil일';
+  }
+
+  @override
+  String get widget_load_period_care_state_message_today_variant_b =>
+      '“고생했어. 오늘은 꼭 스스로를 잘 챙겨.”';
+
+  @override
+  String get widget_load_period_care_state_message_period_end => '생리가 막 끝났어요';
+
+  @override
+  String get widget_load_period_care_state_message_today_variant_c =>
+      '“오늘도 스스로를 잘 챙기는 것 잊지 마.”';
+
+  @override
+  String get widget_load_period_care_state_message_current_reminder =>
+      '현재 특별한 주기 알림이 없습니다';
+
+  @override
+  String get widget_load_period_care_state_message => '주기 기록이 아직 충분하지 않습니다';
+
+  @override
+  String get widget_parse_character_birthday_message => '년';
+
+  @override
+  String get widget_parse_character_birthday_message_variant_b => '월';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_character_birthday =>
+      '캐릭터 생일';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_birthday_settings =>
+      '생일 미설정';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_birthday_countdown(
+      Object birthdayLabel) {
+    return '그의 생일까지・$birthdayLabel';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_today => '바로 오늘';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_days(Object days) {
+    return '$days일 남음';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message => '그와 만난 날';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_variant_b =>
+      '만남 기록이 아직 없습니다';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_days_variant_b(
+      Object value1) {
+    return '$value1일';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_variant_c => '소중한 날';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_date_select =>
+      '날짜 미선택';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_elapsed_days(
+      Object value1) {
+    return '$value1일 지남';
+  }
+
+  @override
+  String get widget_settings_remove_title_character_latest => '캐릭터 최신 게시물';
+
+  @override
+  String get widget_settings_remove_subtitle_moment_latest =>
+      'App을 열지 않아도 그의 최신 소식을 볼 수 있어요.';
+
+  @override
+  String get widget_settings_remove_title_period => '생리 기간 케어';
+
+  @override
+  String get widget_settings_remove_subtitle_character_end =>
+      '시작 전, 진행 중, 끝난 뒤에도 캐릭터의 관심을 조금 더 받아보세요.';
+
+  @override
+  String get widget_settings_remove_title => '오늘의 한마디';
+
+  @override
+  String get widget_settings_remove_subtitle_days =>
+      '매일 휴대폰을 열면 홈 화면에서 한마디가 기다리고 있어요.';
+
+  @override
+  String get widget_settings_remove_title_reminder => '기념일 / 알림';
+
+  @override
+  String get widget_settings_remove_subtitle_character_birthday_reminder =>
+      '처음 만난 날과 생일을 함께 기억하고, 캐릭터가 중요한 일을 알려주게 하세요.';
+
+  @override
+  String get widget_settings_remove_title_character => '캐릭터 상태';
+
+  @override
+  String get widget_settings_remove_subtitle_chat_latest_mood =>
+      '채팅의 최신 기분, 상태, 위치를 홈 화면으로 가져옵니다.';
+
+  @override
+  String get widget_settings_size_label => '중간';
+
+  @override
+  String get widget_settings_size_label_message_send => '홈 화면 추가 요청을 보냈습니다.';
+
+  @override
+  String get widget_settings_size_label_message_try_again_later_failed =>
+      '홈 화면에 추가하지 못했습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String
+      get widget_settings_edit_saved_widget_message_character_reminder_again =>
+          '이전 버전의 “캐릭터 할 일 알림”은 “기념일 / 알림”에 통합되었습니다. 다시 만들어 주세요.';
+
+  @override
+  String get widget_settings_delete_saved_widget_title_delete_small =>
+      '위젯을 삭제할까요?';
+
+  @override
+  String
+      widget_settings_delete_saved_widget_message_stop_display_long_press_home_after_delete(
+          Object value1, Object value2) {
+    return '“$value1・$value2”을 삭제할까요?\n\n삭제하면 홈 화면의 이 위젯은 캐릭터 콘텐츠 표시를 중지하고, 플레이어에게 홈 화면을 길게 눌러 제거하라는 안내를 표시합니다.';
+  }
+
+  @override
+  String
+      get widget_settings_delete_saved_widget_message_delete_settings_small =>
+          '위젯 설정을 삭제했습니다. 홈 화면의 해당 위젯이 비활성화되었습니다.';
+
+  @override
+  String get widget_settings_message_desktop_widget => '홈 화면 위젯';
+
+  @override
+  String get widget_settings_message_character_days => '좋아하는 캐릭터와 매일 함께하세요.';
+
+  @override
+  String get widget_settings_message_small => '내 위젯';
+
+  @override
+  String get widget_settings_message_desktop_widget_variant_b =>
+      '홈 화면 위젯이 아직 없습니다';
+
+  @override
+  String get widget_settings_message_character_reminder =>
+      '좋아하는 캐릭터를 선택해 알림, 게시물 또는 상태를 홈 화면에 표시하세요.';
+
+  @override
+  String widget_settings_message_size(Object value1) {
+    return '$value1 크기';
+  }
+
+  @override
+  String get widget_settings_tooltip => '홈 화면에 추가';
+
+  @override
+  String get widget_settings_tooltip_small => '위젯 편집';
+
+  @override
+  String get widget_settings_tooltip_delete_small => '위젯 삭제';
+
+  @override
+  String get widget_settings_message_desktop_widget_variant_c => '홈 화면 위젯 추가';
+
+  @override
+  String get widget_settings_message_character_photo_content_select_small =>
+      '각 위젯마다 캐릭터, 캐릭터 사진, 표시할 내용을 따로 선택할 수 있습니다. 여러 캐릭터를 동시에 홈 화면에 둘 수도 있습니다.';
+
+  @override
+  String get widget_settings_desktop_type_selection_message_select_small =>
+      '위젯 선택';
+
+  @override
+  String get widget_settings_desktop_type_selection_message_select =>
+      '먼저 홈 화면에서 어떤 방식으로 함께할지 선택하세요.';
+
+  @override
+  String
+      get widget_settings_go_to_photo_step_message_try_again_later_failed_load_character_photo =>
+          '캐릭터 사진을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get widget_settings_message_character_select => '캐릭터 선택';
+
+  @override
+  String get widget_settings_message_character_friend_days =>
+      '친구로 추가했거나 이전에 대화한 캐릭터만 표시됩니다.';
+
+  @override
+  String get widget_settings_hint_character_search => '캐릭터 검색';
+
+  @override
+  String get widget_settings_message_try_again_later_failed_load_character =>
+      '캐릭터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get widget_settings_message_current_character_chat_friend_add =>
+      '조건에 맞는 캐릭터가 없습니다. 먼저 캐릭터와 대화하거나 친구로 추가해 보세요.';
+
+  @override
+  String get widget_settings_message_character_photo_select => '다음・캐릭터 사진 선택';
+
+  @override
+  String
+      get widget_settings_desktop_photo_selection_message_character_photo_select =>
+          '캐릭터 사진 선택';
+
+  @override
+  String
+      widget_settings_desktop_photo_selection_message_current_affection_unlocked_photo(
+          Object value1) {
+    return '현재 호감도 $value1・해금된 사진은 바로 사용할 수 있습니다.';
+  }
+
+  @override
+  String
+      get widget_settings_desktop_photo_selection_message_current_character_photo =>
+          '이 캐릭터는 현재 사용할 수 있는 사진이 없습니다.';
+
+  @override
+  String
+      widget_settings_desktop_photo_selection_message_required_affection_unlock_photo(
+          Object value1) {
+    return '이 사진을 해금하려면 호감도 $value1이 필요합니다.';
+  }
+
+  @override
+  String get widget_settings_message_photo_public => '공개 사진';
+
+  @override
+  String widget_settings_message_unlock(Object value1) {
+    return '호감도 $value1에 해금';
+  }
+
+  @override
+  String widget_settings_message_unlocked(Object value1) {
+    return '해금됨・호감도 $value1';
+  }
+
+  @override
+  String get widget_settings_message_content_settings => '다음・표시 내용 설정';
+
+  @override
+  String get widget_settings_open_preview_message_player_select =>
+      '먼저 플레이어가 만든 이벤트 / 할 일을 선택하세요.';
+
+  @override
+  String get widget_settings_pick_custom_memo_event_message_login_account =>
+      '먼저 로그인해 주세요.';
+
+  @override
+  String
+      get widget_settings_pick_custom_memo_event_message_memo_current_character =>
+          '이 캐릭터에는 아직 이벤트 / 메모가 없습니다.';
+
+  @override
+  String get widget_settings_pick_custom_memo_event_message_player_select =>
+      '플레이어가 만든 이벤트 선택';
+
+  @override
+  String get widget_settings_message_try_again_later_failed_load =>
+      '이벤트를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get widget_settings_message_content_settings_variant_b => '표시 내용 설정';
+
+  @override
+  String get widget_settings_subtitle_content => '홈 화면에서 보고 싶은 내용을 조정하세요.';
+
+  @override
+  String get widget_settings_message_small_variant_b => '다음・위젯 미리보기';
+
+  @override
+  String get widget_settings_title => '게시물 표시';
+
+  @override
+  String get widget_settings_title_variant_b => '게시물 이미지 표시';
+
+  @override
+  String get widget_settings_title_variant_c => '좋아요 수 표시';
+
+  @override
+  String get widget_settings_title_comment => '댓글 수 표시';
+
+  @override
+  String get widget_settings_title_variant_d => '개인정보 보호와 동행';
+
+  @override
+  String get widget_settings_title_variant_e => '개인정보 보호 모드';
+
+  @override
+  String get widget_settings_subtitle_period_character =>
+      '홈 화면에는 캐릭터의 배려만 표시하고 생리 정보는 직접 표시하지 않습니다.';
+
+  @override
+  String get widget_settings_title_variant_f => '상세 모드';
+
+  @override
+  String get widget_settings_subtitle_end =>
+      '시작 임박, 진행 중, 막 종료됨 등의 주기 상태를 표시할 수 있습니다.';
+
+  @override
+  String get widget_settings_title_variant_g => '주기 상태 표시';
+
+  @override
+  String get widget_settings_title_time => '시간 표시';
+
+  @override
+  String get widget_settings_title_update => '업데이트 방식';
+
+  @override
+  String get widget_settings_message_update_days => '하루에 한 번 업데이트';
+
+  @override
+  String get widget_settings_message_update => 'App을 열 때마다 업데이트';
+
+  @override
+  String get widget_settings_text_update => 'App을 연 후 업데이트';
+
+  @override
+  String get widget_settings_title_content => '기념일 내용';
+
+  @override
+  String get widget_settings_title_days => '만난 지 며칠';
+
+  @override
+  String get widget_settings_subtitle_character_today_days =>
+      '나와 캐릭터가 처음 만난 날부터 오늘까지의 일수를 표시합니다.';
+
+  @override
+  String get widget_settings_subtitle_character_birthday =>
+      '캐릭터의 생일까지 얼마나 남았는지 표시합니다.';
+
+  @override
+  String get widget_settings_title_player => '플레이어가 만든 이벤트 / 할 일';
+
+  @override
+  String get widget_settings_message_memo_character_select_reminder =>
+      '이 캐릭터의 메모 / 알림에서 이벤트 또는 할 일을 선택하세요.';
+
+  @override
+  String widget_settings_message_selected(Object _selectedMemoContent) {
+    return '선택됨: $_selectedMemoContent';
+  }
+
+  @override
+  String get widget_settings_message_select => '최대 3개 선택';
+
+  @override
+  String get widget_settings_message_character => '캐릭터 상태는 최대 3개까지 표시할 수 있습니다.';
+
+  @override
+  String get widget_settings_message_small_variant_c => '위젯 미리보기';
+
+  @override
+  String get widget_settings_title_confirm => '최종 확인';
+
+  @override
+  String get widget_settings_subtitle_large => '홈 화면에 배치했을 때의 모습을 먼저 확인해 보세요.';
+
+  @override
+  String get widget_settings_title_size => '크기';
+
+  @override
+  String get widget_settings_title_variant_h => '레이아웃';
+
+  @override
+  String get widget_settings_label_photo => '전체 화면 사진';
+
+  @override
+  String get widget_settings_label_character => '캐릭터 카드';
+
+  @override
+  String get widget_settings_message_sync => '동기화 중…';
+
+  @override
+  String get widget_settings_message_desktop_widget_add => '홈 화면 위젯 추가';
+
+  @override
+  String get widget_settings_sample_lines_message_today_end =>
+      '“오늘은 생각보다 조금 일찍 끝났어.”';
+
+  @override
+  String get widget_settings_sample_lines_message_days => '“요 며칠은 너무 무리하지 마.”';
+
+  @override
+  String get widget_settings_sample_lines_message_period => '생리 진행 중';
+
+  @override
+  String get widget_settings_sample_lines_message_today => '“오늘은 조금 더 쉬어.”';
+
+  @override
+  String get widget_settings_sample_lines_message_today_variant_b =>
+      '“오늘도 밥 잘 챙겨 먹는 거 잊지 마.”';
+
+  @override
+  String get widget_settings_sample_lines_label_birthday_countdown => '그의 생일까지';
+
+  @override
+  String get widget_settings_sample_lines_label_days => '12일 남음';
+
+  @override
+  String get widget_settings_sample_lines_label_days_variant_b => '128일';
+
+  @override
+  String get widget_settings_sample_lines_message_mood => '기분｜조금 피곤함';
+
+  @override
+  String get widget_settings_sample_lines_message_end => '상태｜방금 일을 마침';
+
+  @override
+  String get widget_settings_sample_lines_message => '위치｜회사 아래';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_b => '관계｜연인';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_c => '옷차림｜연한 회색 니트';
+
+  @override
+  String get widget_settings_sample_lines_message_days_variant_b => '날씨｜조금 선선함';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_d => '생각｜빨리 만나고 싶어';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_e => '행동｜책상을 정리하는 중';
+
+  @override
+  String get widget_settings_sample_lines_message_affection => '호감도｜안정적이고 가까움';
+
+  @override
+  String get edit_profile_message => '프로필 꾸미기';
+
+  @override
+  String get edit_profile_message_current => '현재 사용하지 않음';
+
+  @override
+  String
+      get event_memory_character_load_characters_message_login_character_select =>
+          '캐릭터를 선택하기 전에 로그인해 주세요';
+
+  @override
+  String get event_memory_character_center_message_memory_select =>
+      '이 추억을 함께 남기고 싶은 사람을 선택하세요';
+
+  @override
+  String get event_memory_character_center_message_character_friend_add =>
+      '직접 만든 캐릭터와 친구로 추가한 캐릭터만 여기에 표시됩니다.';
+
+  @override
+  String get event_memory_character_center_message_current_character_select =>
+      '현재 선택할 수 있는 캐릭터가 없습니다';
+
+  @override
+  String
+      get event_memory_character_center_message_public_character_character_friend_add =>
+          '직접 캐릭터를 만들거나 좋아하는 공개 캐릭터를 친구로 추가해 보세요.';
+
+  @override
+  String get event_memory_character_message_character_select => '먼저 캐릭터를 선택하세요';
+
+  @override
+  String event_memory_character_message_continue(Object value1) {
+    return '$value1와 계속';
+  }
+
+  @override
+  String get event_memory_character_card_message_private => '내 캐릭터・비공개';
+
+  @override
+  String get event_memory_character_error_label_load_again => '다시 불러오기';
+
+  @override
+  String
+      get event_memory_collection_show_collection_intro_if_needed_message_collection =>
+          '습광 컬렉션';
+
+  @override
+  String
+      get event_memory_collection_show_collection_intro_if_needed_message_collection_content =>
+          '여기는 컬렉션 목록입니다. 저장한 모든 내용을 확인할 수 있어요.';
+
+  @override
+  String get event_memory_collection_text_collection_login =>
+      '컬렉션을 보려면 로그인해 주세요';
+
+  @override
+  String get event_memory_collection_message_memory => '추억';
+
+  @override
+  String get event_memory_collection_message_chat_background => '채팅 배경';
+
+  @override
+  String get event_memory_collection_message_avatar_frame_collection =>
+      '수집한 아바타 프레임이 아직 없습니다';
+
+  @override
+  String get event_memory_collection_message_avatar_frame =>
+      '이후 획득한 한정 아바타 프레임이 여기에 표시됩니다.';
+
+  @override
+  String get event_memory_collection_message_collection_sticker =>
+      '수집한 스티커가 아직 없습니다';
+
+  @override
+  String get event_memory_collection_message_sticker =>
+      '이후 수집한 스티커는 여기에 보관됩니다.';
+
+  @override
+  String get event_memory_collection_message_collection_chat_background =>
+      '수집한 채팅 배경이 아직 없습니다';
+
+  @override
+  String get event_memory_collection_message_chat_background_variant_b =>
+      '이후 획득한 한정 채팅 배경이 여기에 표시됩니다.';
+
+  @override
+  String get event_memory_collection_tab_title_collection_temporary =>
+      '현재 컬렉션을 불러올 수 없습니다';
+
+  @override
+  String get event_memory_collection_tab_title_collection_memory =>
+      '수집한 추억이 아직 없습니다';
+
+  @override
+  String get event_memory_collection_tab_subtitle_limited_memory_complete =>
+      '한정 추억을 완료하면 마음에 드는 장면을 여기에 남길 수 있습니다.';
+
+  @override
+  String get event_memory_collection_item_card_label => '한정 아이템';
+
+  @override
+  String get event_memory_collection_confirm_delete_owned_item_message_delete =>
+      '한정 아이템을 삭제할까요?';
+
+  @override
+  String
+      event_memory_collection_confirm_delete_owned_item_message_after_delete_unavailable(
+          Object _itemTypeLabel) {
+    return '삭제하면 이 $_itemTypeLabel을 더 이상 사용할 수 없고,';
+  }
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_collection =>
+          '“습광 컬렉션”에도 더 이상 표시되지 않습니다.\n\n';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_unavailable =>
+          '이번에 획득한 한정 아이템을 포기하게 되며, 이 작업은 되돌릴 수 없습니다.\n\n';
+
+  @override
+  String
+      event_memory_collection_confirm_delete_owned_item_message_delete_variant_b(
+          Object value1) {
+    return '“$value1”을 삭제할까요?';
+  }
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_delete_variant_c =>
+          '한정 아이템을 삭제했습니다';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_not_found_delete =>
+          '이 한정 아이템을 찾을 수 없습니다. 이미 삭제되었을 수 있습니다';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_collection_current_delete =>
+          '이 컬렉션은 현재 삭제할 수 없습니다';
+
+  @override
+  String get event_memory_collection_show_preview_message => '이미지 준비 중';
+
+  @override
+  String get event_memory_collection_show_preview_message_failed_load =>
+      '이미지를 불러오지 못했습니다';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save_current =>
+      '웹 버전에서는 현재 휴대폰 사진 보관함에 직접 저장할 수 없습니다';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save_memory =>
+      '이 추억을 저장하려면 사진 보관함 권한이 필요합니다';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_memory =>
+      '추억 이미지가 아직 준비되지 않았습니다. 다시 시도해 주세요.';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_failed_memory =>
+      '추억 이미지 생성에 실패했습니다';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save =>
+      '휴대폰 사진 보관함에 저장했습니다 ♡';
+
+  @override
+  String
+      get event_memory_collection_save_to_gallery_message_save_confirm_failed =>
+          '저장에 실패했습니다. 사진 보관함 권한을 확인한 후 다시 시도해 주세요.';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_title_collection_cancel =>
+          '컬렉션에서 해제할까요?';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_message_collection_cancel_memory =>
+          '컬렉션을 해제하면 이 추억은 “습광 컬렉션”에 더 이상 표시되지 않습니다.\n\n컬렉션을 해제할까요?';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_message_try_again_later_collection_cancel_failed =>
+          '컬렉션 해제에 실패했습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get event_memory_collection_message_collection_memory => '추억 컬렉션';
+
+  @override
+  String get event_memory_collection_label_play => '다시 재생';
+
+  @override
+  String get event_memory_collection_label_save => '저장 중…';
+
+  @override
+  String get event_memory_collection_label_save_variant_b => '사진 보관함에 저장';
+
+  @override
+  String get event_memory_collection_collected_card_message_limited_memory =>
+      '연연습광・한정 추억';
+
+  @override
+  String get event_memory_collection_create_state_message_end_story =>
+      '어떤 순간은\n이야기가 끝나도 사라지지 않습니다.';
+
+  @override
+  String get event_memory_collection_text_collection =>
+      '이 컬렉션에는 다시 재생할 수 있는 Scene이 없습니다';
+
+  @override
+  String get event_memory_collection_message => '건너뛰기';
+
+  @override
+  String get event_memory_collection_message_end => '탭하여 종료';
+
+  @override
+  String get event_memory_collection_message_continue => '탭하여 계속';
+
+  @override
+  String get event_memory_collection_message_variant_b => '탭하여 전체 내용 보기';
+
+  @override
+  String get event_memory_collection_collected_label_collection => '방금 컬렉션함';
+
+  @override
+  String get event_memory_collection_collected_item_label_collection_date =>
+      '컬렉션 날짜가 기록되지 않음';
+
+  @override
+  String event_memory_collection_collected_item_label_collection(
+      Object day, Object month, Object value1) {
+    return '$value1/$month/$day에 컬렉션';
+  }
+
+  @override
+  String get event_memory_text_not_found_event => '이벤트 데이터를 찾을 수 없습니다';
+
+  @override
+  String get event_memory_message_limited_memory_failed_load =>
+      '한정 추억을 불러오지 못했습니다';
+
+  @override
+  String get event_memory_as_map_label_unlocked => '해금됨';
+
+  @override
+  String event_memory_as_map_label_unlock(Object currencyIcon,
+      Object currencyName, Object currentValue, Object requiredValue) {
+    return '$currencyIcon $requiredValue $currencyName을 누적해 해금 ($currentValue / $requiredValue)';
+  }
+
+  @override
+  String get event_memory_as_map_label_unlock_task_event_complete =>
+      '지정된 이벤트 임무 완료 후 해금';
+
+  @override
+  String get event_memory_as_map_label_redeem_unlock_event =>
+      '지정된 이벤트 상품 교환 후 해금';
+
+  @override
+  String get event_memory_as_map_label_unlock_variant_b => '아직 해금되지 않음';
+
+  @override
+  String get event_memory_hero_message => '이 계절에 오직 둘만의 순간을 남겨보세요.';
+
+  @override
+  String event_memory_hero_message_limited_memory(
+      Object totalCount, Object unlockedCount) {
+    return '한정 추억  $unlockedCount / $totalCount';
+  }
+
+  @override
+  String get event_memory_status_label_unlocked => '해금됨・아직 보지 않음';
+
+  @override
+  String get event_memory_status_label => '확인함';
+
+  @override
+  String get event_memory_status_label_collection => '컬렉션함';
+
+  @override
+  String get event_memory_footer_label_memory_start => '이 추억을 시작할 수 있습니다';
+
+  @override
+  String get event_memory_footer_label => '다시 볼 수 있습니다';
+
+  @override
+  String get event_memory_footer_label_collection => '습광 컬렉션에 저장됨';
+
+  @override
+  String get event_memory_empty_message_limited_memory_event_public =>
+      '이번 이벤트에는 아직 공개된 한정 추억이 없습니다';
+
+  @override
+  String get event_memory_performance_finish_message_memory => '이 추억이 남았습니다.';
+
+  @override
+  String get event_memory_performance_finish_message_save_collection =>
+      '컬렉션은 게임 안에 보관됩니다. 휴대폰 사진 보관함에 저장할 때만 시스템에서 사진 보관함 권한을 요청합니다.';
+
+  @override
+  String get event_memory_performance_finish_message => '처리 중…';
+
+  @override
+  String get event_memory_performance_finish_message_collection_memory =>
+      '이 추억 컬렉션하기';
+
+  @override
+  String
+      get event_memory_performance_confirm_uncollect_memory_message_collection_cancel_memory_again_remove =>
+          '해제하면 이 추억은 “습광 컬렉션”에서 제거됩니다. 이후 다시 보고 다시 컬렉션할 수 있습니다.';
+
+  @override
+  String
+      get event_memory_performance_uncollect_memory_message_collection_login =>
+          '컬렉션을 관리하려면 먼저 로그인해 주세요';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_collection_login_memory =>
+          '이 추억을 컬렉션하려면 먼저 로그인해 주세요';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_collection_memory =>
+          '이 추억을 컬렉션했습니다 ♡';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_try_again_later_collection_failed =>
+          '컬렉션에 실패했습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get event_memory_performance_text_panel_message_complete => '탭하여 완료';
+
+  @override
+  String get event_memory_performance_build_performance_message => '건너뛰기';
+
+  @override
+  String get event_memory_performance_text_play => '재생할 수 있는 Scene이 없습니다';
+
+  @override
+  String get event_memory_profile_change_profile_message_profile => '습광 프로필 변경';
+
+  @override
+  String get event_memory_profile_message_profile_confirm => '습광 프로필 확인';
+
+  @override
+  String get event_memory_profile_center_text_profile_not_found =>
+      '사용 가능한 습광 프로필을 찾을 수 없습니다';
+
+  @override
+  String get event_memory_profile_center_message_memory =>
+      '이 추억 속에서는 어떤 모습의 나로 남을까요?';
+
+  @override
+  String get event_memory_profile_center_message_profile_character_start =>
+      '이 캐릭터와 가장 최근에 사용한 습광 프로필을 우선 선택했습니다. 시작 전에 변경할 수 있습니다.';
+
+  @override
+  String event_memory_profile_center_message(Object value1) {
+    return '“$value1”로';
+  }
+
+  @override
+  String event_memory_profile_center_message_memory_variant_b(Object value1) {
+    return '“$value1”와 이 추억을 남기기';
+  }
+
+  @override
+  String get event_memory_profile_center_label_memory_start => '추억 시작';
+
+  @override
+  String get event_message_failed_load => '이벤트 데이터를 불러오지 못했습니다';
+
+  @override
+  String get event_message_not_found => '이벤트를 찾을 수 없습니다';
+
+  @override
+  String get event_remaining_label => '이벤트 진행 중';
+
+  @override
+  String event_remaining_label_days(Object value1) {
+    return '$value1일 남음';
+  }
+
+  @override
+  String event_remaining_label_hours(Object value1) {
+    return '$value1시간 남음';
+  }
+
+  @override
+  String get event_remaining_label_end => '곧 종료됩니다';
+
+  @override
+  String get event_balance_pill_tooltip_back => '뒤로';
+
+  @override
+  String event_claim_task_message_claim_current(
+      Object currency, Object reward, Object value1, Object value2) {
+    return '$value1 $reward $value2을 받았습니다. 현재 $currency 보유 중';
+  }
+
+  @override
+  String get event_claim_task_message_reward_claim => '보상을 받았습니다';
+
+  @override
+  String get event_claim_task_message_claim_failed => '받기에 실패했습니다';
+
+  @override
+  String get event_claim_task_message_task_claim => '이 임무 보상은 이미 받았습니다';
+
+  @override
+  String get event_claim_task_message_incomplete_task => '임무가 아직 완료되지 않았습니다';
+
+  @override
+  String get event_task_list_label_task_load => '임무 불러오는 중…';
+
+  @override
+  String get event_task_list_label_task_current => '현재 임무가 없습니다';
+
+  @override
+  String get event_task_list_label_task_login_progress =>
+      '로그인하면 이벤트 임무 진행도를 확인할 수 있습니다';
+
+  @override
+  String get event_milestone_progress_label_reward_load => '누적 보상 불러오는 중…';
+
+  @override
+  String get event_milestone_progress_label_reward_current => '현재 누적 보상이 없습니다';
+
+  @override
+  String event_build_with_total_message_current(Object totalEarned) {
+    return '현재  $totalEarned';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_confirm => '교환 확인';
+
+  @override
+  String event_progress_ref_message_redeem_flowers(
+      Object itemName, Object price, Object rewardAmount, Object value1) {
+    return '$value1 $price을 사용해 “$itemName”으로 교환할까요?\n\n교환 후 꽃 $rewardAmount개를 받을 수 있습니다.';
+  }
+
+  @override
+  String event_progress_ref_message_redeem(
+      Object itemName, Object price, Object value1) {
+    return '$value1 $price을 사용해 “$itemName”으로 교환할까요?';
+  }
+
+  @override
+  String event_progress_ref_message_redeem_success_flowers(
+      Object returnedReward) {
+    return '교환 성공! 꽃 $returnedReward개를 받았습니다';
+  }
+
+  @override
+  String event_progress_ref_message_event_collection_redeem_success_add(
+      Object itemName) {
+    return '교환 성공! “$itemName”이 이벤트 컬렉션에 추가되었습니다';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_failed => '교환에 실패했습니다';
+
+  @override
+  String get event_progress_ref_message_redeem_variant_b => '이 상품은 이미 교환했습니다';
+
+  @override
+  String get event_progress_ref_message_insufficient => '재화가 부족합니다';
+
+  @override
+  String event_progress_ref_message_insufficient_variant_b(Object value1) {
+    return '$value1이 부족합니다';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_variant_c => '교환';
+
+  @override
+  String get event_progress_ref_message_redeem_variant_d => '교환 완료';
+
+  @override
+  String event_message_redeem_flowers(Object rewardAmount) {
+    return '교환 후 꽃 $rewardAmount개를 받을 수 있습니다';
+  }
+
+  @override
+  String event_message_redeem(Object redeemedCount) {
+    return '$redeemedCount회 교환함';
+  }
+
+  @override
+  String get event_message_event_shop_login => '로그인하면 이벤트 상점을 이용할 수 있습니다';
+
+  @override
+  String get event_message_redeem_current => '현재 교환 가능한 상품이 없습니다';
+
+  @override
+  String event_shop_item_card_message_flowers(Object rewardAmount) {
+    return '꽃 $rewardAmount개 획득 가능';
+  }
+
+  @override
+  String get event_message_insufficient => '부족';
+
+  @override
+  String get notification_message_player => '플레이어 첨부 이미지';
+
+  @override
+  String notification_message_qixi_letter(Object value1) {
+    return '$value1에게서 온 칠석 편지';
+  }
+
+  @override
+  String recommendation_remaining_label_days(Object value1) {
+    return '$value1일 남음';
+  }
+
+  @override
+  String recommendation_remaining_label_hours(Object value1) {
+    return '$value1시간 남음';
+  }
+
+  @override
+  String get settings_subtitle_character_days => '좋아하는 캐릭터와 매일 함께하세요';
+
+  @override
+  String moment_notification_comment_on_character_post(
+      Object authorName, Object commentText, Object senderNickname) {
+    return '$senderNickname님이 $authorName님에게 댓글을 남겼습니다: “$commentText”';
+  }
+
+  @override
+  String get inbox_content_text_message_customer_service_message_send =>
+      '보낸 고객센터 문의';
+
+  @override
+  String get character_edit_relationship_none_label => '없음';
+
+  @override
+  String get auth_cancel_account_deletion_failed =>
+      '계정 삭제 취소에 실패했습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get auth_delete_account_failed => '계정 삭제에 실패했습니다';
+
+  @override
+  String get auth_request_account_deletion_failed =>
+      '계정 삭제 요청에 실패했습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get theme_font_shiguang_serif => '습광 명조';
+
+  @override
+  String get theme_font_clean_sans => '청아 고딕';
+
+  @override
+  String get theme_font_system => '시스템 글꼴';
+
+  @override
+  String get theme_font_shiguang_serif_description =>
+      '부드럽고 문학적인 느낌으로 몰입해서 읽기에 적합합니다';
+
+  @override
+  String get theme_font_clean_sans_description => '깔끔하고 선명해 오래 읽어도 편안합니다';
+
+  @override
+  String get theme_font_system_description => '기기의 기본 시스템 글꼴을 따릅니다';
 }

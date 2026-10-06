@@ -8521,4 +8521,1522 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get chat_mode_resonance_cost_short => '10 Bunga';
+
+  @override
+  String get notification_channel_chat_description =>
+      'Digunakan untuk menerima balasan terbaru dari karakter dan pengingat game.';
+
+  @override
+  String get subscription_star_contract_name =>
+      'Lianlian Shiguang · Perjanjian Bintang';
+
+  @override
+  String moment_notification_comment_on_your_post(
+      Object commentText, Object senderNickname) {
+    return '$senderNickname berkomentar di postinganmu: “$commentText”';
+  }
+
+  @override
+  String get moment_notification_new_reply_title =>
+      'Ada balasan baru di postinganmu! 💬';
+
+  @override
+  String get moment_notification_character_popularity_title =>
+      'Popularitas karakter sedang melejit! 🔥';
+
+  @override
+  String get font_size_small => 'Kecil';
+
+  @override
+  String get font_size_standard => 'Standar';
+
+  @override
+  String get font_size_slightly_large => 'Agak Besar';
+
+  @override
+  String get font_size_large => 'Besar';
+
+  @override
+  String get font_size_extra_large => 'Sangat Besar';
+
+  @override
+  String get font_selection_title => 'Font';
+
+  @override
+  String get font_selection_description =>
+      'Pilih font yang paling nyaman untuk membaca cerita dan mengobrol.';
+
+  @override
+  String get font_size_title => 'Ukuran Font';
+
+  @override
+  String get font_selection_tagline =>
+      'Tuliskan kembali kisahmu bersama dia yang kamu sukai.';
+
+  @override
+  String font_selection_applied_message(Object value1) {
+    return '“$value1” telah diterapkan';
+  }
+
+  @override
+  String get font_selection_local_storage_note =>
+      'Font dan ukuran akan langsung diterapkan dan disimpan di perangkat ini. Saat tampilan default dipulihkan, pengaturan akan kembali ke “Shiguang Serif + Standar”.';
+
+  @override
+  String get inbox_customer_service_report => 'Laporan Layanan Pelanggan';
+
+  @override
+  String get inbox_content_text_message_player_title_send =>
+      'Judul yang dikirim pemain';
+
+  @override
+  String get inbox_content_text_message_player_content_send =>
+      'Isi yang dikirim pemain';
+
+  @override
+  String avatar_frame_equipped_message(Object value1) {
+    return '“$value1” telah dipasang';
+  }
+
+  @override
+  String get avatar_frame_unequip_frame_snackbar => 'Bingkai avatar dilepas';
+
+  @override
+  String get avatar_frame_unequip_frame_message_event => 'Bingkai Avatar Event';
+
+  @override
+  String get avatar_frame_message => 'Bingkai Avatar';
+
+  @override
+  String avatar_frame_load_failed(Object value1) {
+    return 'Gagal memuat bingkai avatar: $value1';
+  }
+
+  @override
+  String get avatar_frame_parse_frames_message_select =>
+      'Pilih bingkai avatar yang ingin digunakan';
+
+  @override
+  String get avatar_frame_parse_frames_message_event =>
+      'Bingkai avatar dari event akan tersimpan permanen setelah diperoleh dan dapat diganti atau dilepas kapan saja.';
+
+  @override
+  String get avatar_frame_parse_frames_title => 'Jangan gunakan bingkai avatar';
+
+  @override
+  String get avatar_frame_parse_frames_subtitle_avatar =>
+      'Tampilkan avatar asli';
+
+  @override
+  String get avatar_frame_parse_frames_message_event_shop_redeem_current =>
+      'Kamu belum memiliki bingkai avatar.\nBingkai yang ditukar di toko event akan muncul di sini.';
+
+  @override
+  String get avatar_frame_parse_frames_message_event_variant_b =>
+      'Bingkai Avatar Terbatas Event';
+
+  @override
+  String get background_settings_message => 'Latar Terbatas';
+
+  @override
+  String get background_title_exclusive_photo_current =>
+      'Belum ada foto eksklusif';
+
+  @override
+  String get background_subtitle_unlock_character_photo =>
+      'Foto karakter yang dibuka nanti akan muncul di sini.';
+
+  @override
+  String get background_title_login => 'Masuk untuk melihat latar terbatas';
+
+  @override
+  String get background_subtitle_redeem_chat_event =>
+      'Latar chat yang diperoleh dari event akan disimpan di sini.';
+
+  @override
+  String get background_title => 'Kamu belum mendapatkan latar terbatas';
+
+  @override
+  String get background_subtitle_event_shop_redeem_chat =>
+      'Latar chat yang ditukar di toko event akan muncul di sini.';
+
+  @override
+  String get background_is_limited_background_type_message_chat_event =>
+      'Latar Chat Terbatas Event';
+
+  @override
+  String background_is_limited_background_type_message_current_chat(
+      Object value1) {
+    return 'Jadikan “$value1” sebagai latar chat saat ini?';
+  }
+
+  @override
+  String character_edit_message_character_settings(Object value1) {
+    return '【角色性格與設定】\n$value1';
+  }
+
+  @override
+  String character_edit_message(Object value1) {
+    return '【說話語氣與風格】\n$value1';
+  }
+
+  @override
+  String character_edit_message_variant_b(Object value1) {
+    return '【社交與環境互動】\n$value1';
+  }
+
+  @override
+  String character_edit_save_to_draft_message_current_character(Object value1) {
+    return 'Karakter utama saat ini: 【$value1】\n';
+  }
+
+  @override
+  String character_edit_message_back(Object result) {
+    return '🚪 返回原本的 ProfilePage：$result';
+  }
+
+  @override
+  String character_edit_save_character_message(Object value1) {
+    return '📦 準備搬移 $value1 則記憶碎片：';
+  }
+
+  @override
+  String character_edit_message_complete(Object value1) {
+    return '✅ 已完成搬移 $value1 則記憶碎片';
+  }
+
+  @override
+  String character_edit_preload_first_voice_sample_message_background_start(
+      Object voiceId) {
+    return '⏳ 開始背景預載第一個 Voice：$voiceId';
+  }
+
+  @override
+  String get character_edit_preload_first_voice_sample_message_update =>
+      '⚠️ Voice 清單已更新，略過舊的預載結果';
+
+  @override
+  String
+      get character_edit_preload_first_voice_sample_message_background_complete =>
+          '✅ 第一個 Voice 已背景預載完成';
+
+  @override
+  String get character_edit_preload_first_voice_sample_message_failed =>
+      '⚠️ 第一個 Voice 預載失敗：';
+
+  @override
+  String character_edit_preload_first_voice_sample_message(Object value1) {
+    return '✅ matchVoiceFromBank 回傳：$value1';
+  }
+
+  @override
+  String get character_edit_error_voice => '語音服務回傳格式錯誤';
+
+  @override
+  String get character_edit_error_voice_variant_b => '語音服務沒有回傳 previews';
+
+  @override
+  String character_edit_message_success_voice_match(Object value1) {
+    return '✅ 成功配對 $value1 個 Voice Bank 聲音';
+  }
+
+  @override
+  String get character_edit_message_failed_match =>
+      '========== Voice Bank 配對失敗 ==========';
+
+  @override
+  String get character_edit_message_error_match =>
+      '========== Voice Bank 配對未知錯誤 ==========';
+
+  @override
+  String get character_edit_preview_voice_sample_error_preview => '試聽服務回傳格式錯誤';
+
+  @override
+  String get character_edit_preview_voice_sample_error_preview_variant_b =>
+      '試聽音訊資料為空';
+
+  @override
+  String get character_edit_preview_voice_sample_error_failed_preview =>
+      '試聽音訊解析失敗';
+
+  @override
+  String get character_edit_test_voice_settings_message_failed =>
+      '========== testVoiceSettings 失敗 ==========';
+
+  @override
+  String character_edit_confirm_voice_selection_message_selected(
+      Object realVoiceId) {
+    return '✅ Voice選定正式 Voice ID：$realVoiceId';
+  }
+
+  @override
+  String
+      get character_edit_confirm_voice_selection_message_save_failed_select =>
+          '========== 儲存 Voice Bank 選擇失敗 ==========';
+
+  @override
+  String
+      get character_edit_confirm_voice_selection_message_failed_voice_selected =>
+          '========== 選定 Voice Bank 聲音失敗 ==========';
+
+  @override
+  String get character_to_map_message_creator => 'Kreator Misterius';
+
+  @override
+  String get character_get_character_by_id_message_load_background_story =>
+      'Memuat latar belakang cerita...';
+
+  @override
+  String get character_get_character_by_id_message_sync =>
+      'Menyinkronkan cerita awal...';
+
+  @override
+  String get character_get_character_by_id_message =>
+      'Menyiapkan kalimat pembuka...';
+
+  @override
+  String get character_get_character_by_id_message_background =>
+      'Memuat latar...';
+
+  @override
+  String get character_get_character_by_id_message_load =>
+      'Memuat dunia cerita...';
+
+  @override
+  String get character_get_character_by_id_message_load_settings =>
+      'Memuat pengaturan inti karakter...';
+
+  @override
+  String get character_get_character_by_id_message_variant_b =>
+      'Memuat kepribadian...';
+
+  @override
+  String get character_get_character_by_id_message_appearance =>
+      'Memuat deskripsi penampilan...';
+
+  @override
+  String get character_get_character_by_id_message_variant_c =>
+      'Memuat gaya bicara...';
+
+  @override
+  String get character_get_character_by_id_message_load_variant_b =>
+      'Belum dimuat';
+
+  @override
+  String get character_get_character_by_id_message_variant_d => 'Orang asing';
+
+  @override
+  String get character_get_character_by_id_message_load_variant_c =>
+      'Memuat contoh dialog...';
+
+  @override
+  String get character_get_character_by_id_message_variant_e =>
+      'Pertemuan Pertama';
+
+  @override
+  String get character_get_character_by_id_message_variant_f => 'Sudah Kenal';
+
+  @override
+  String get character_get_character_by_id_message_variant_g => 'PDKT';
+
+  @override
+  String get chat_input_message_sticker => 'Stiker';
+
+  @override
+  String get chat_text => 'Batas chat santai gratis hari ini telah tercapai';
+
+  @override
+  String get chat_message_flowers_today_continue =>
+      'Kamu sudah menggunakan 10 chat santai gratis hari ini.\n\nSelanjutnya, setiap chat santai membutuhkan 1 Bunga. Lanjutkan?';
+
+  @override
+  String get chat_text_continue => 'Setuju dan Lanjutkan';
+
+  @override
+  String get chat_empty_message_label_current_sticker =>
+      'Saat ini belum ada stiker yang dapat digunakan.';
+
+  @override
+  String get chat_empty_message_label_sticker =>
+      'Belum ada stiker yang baru digunakan';
+
+  @override
+  String get chat_empty_message_label_sticker_variant_b =>
+      'Belum ada stiker favorit';
+
+  @override
+  String get chat_empty_message_label_current_sticker_variant_b =>
+      'Saat ini belum ada stiker yang dapat digunakan';
+
+  @override
+  String get chat_empty_message_sticker => 'Stiker Saya';
+
+  @override
+  String get chat_empty_message => 'Baru Digunakan';
+
+  @override
+  String get chat_empty_message_variant_b => 'Favorit';
+
+  @override
+  String get chat_send_sticker_message_current_unavailable_sticker =>
+      'Stiker ini sedang tidak dapat digunakan';
+
+  @override
+  String chat_message_theater(Object sceneTitle) {
+    return '—— Teater・$sceneTitle ——';
+  }
+
+  @override
+  String get chat_handle_regenerate_button_message_character_reply_again =>
+      'Balasan terakhir karakter akan dibuat ulang.';
+
+  @override
+  String creator_profile_reason_tile_message_report_select_reason(
+      Object creatorName) {
+    return 'Pilih alasan untuk melaporkan “$creatorName”:';
+  }
+
+  @override
+  String get widget_key_message => 'Status';
+
+  @override
+  String get widget_key_message_variant_b => 'Lokasi';
+
+  @override
+  String get widget_label_character => 'Belum ada status karakter';
+
+  @override
+  String get widget_format_post_time_label_moment_latest => 'Postingan Terbaru';
+
+  @override
+  String get widget_format_post_time_label_update_moment =>
+      'Baru saja memperbarui postingan';
+
+  @override
+  String widget_format_post_time_label_minutes_ago_update_moment(
+      Object value1) {
+    return 'Memperbarui postingan $value1 menit lalu';
+  }
+
+  @override
+  String widget_format_post_time_label_hours_ago_update_moment(Object value1) {
+    return 'Memperbarui postingan $value1 jam lalu';
+  }
+
+  @override
+  String get widget_format_post_time_label_update_moment_days =>
+      'Memperbarui postingan kemarin';
+
+  @override
+  String widget_format_post_time_label_update_moment_days_ago(Object value1) {
+    return 'Memperbarui postingan $value1 hari lalu';
+  }
+
+  @override
+  String widget_format_post_time_label_update_moment_variant_b(
+      Object value1, Object value2) {
+    return 'Memperbarui postingan pada $value1/$value2';
+  }
+
+  @override
+  String get widget_format_post_time_message_share_photo =>
+      'Membagikan sebuah foto';
+
+  @override
+  String get widget_format_post_time_message_update_moment =>
+      'Memperbarui postingan';
+
+  @override
+  String get widget_format_post_time_message_current_character_moment =>
+      'Belum ada postingan karakter';
+
+  @override
+  String get widget_extract_daily_quote_message => 'Lokasi:';
+
+  @override
+  String get widget_format_daily_quote_time_message_today =>
+      'Belum ada satu kalimat untuk hari ini';
+
+  @override
+  String get widget_load_period_care_state_message_today =>
+      '“Jangan terlalu memaksakan diri hari ini. Aku akan menemanimu pelan-pelan.”';
+
+  @override
+  String widget_load_period_care_state_message_period_days(Object dayCount) {
+    return 'Hari ke-$dayCount menstruasi';
+  }
+
+  @override
+  String get widget_load_period_care_state_message_days =>
+      '“Beberapa hari ini coba istirahat lebih awal. Jangan terlalu memforsir diri.”';
+
+  @override
+  String get widget_load_period_care_state_message_today_start =>
+      'Diperkirakan mulai hari ini';
+
+  @override
+  String widget_load_period_care_state_message_days_variant_b(
+      Object daysUntil) {
+    return 'Diperkirakan $daysUntil hari lagi';
+  }
+
+  @override
+  String get widget_load_period_care_state_message_today_variant_b =>
+      '“Kamu sudah berusaha keras. Jaga dirimu baik-baik hari ini.”';
+
+  @override
+  String get widget_load_period_care_state_message_period_end =>
+      'Menstruasi baru saja selesai';
+
+  @override
+  String get widget_load_period_care_state_message_today_variant_c =>
+      '“Jangan lupa jaga dirimu baik-baik hari ini juga.”';
+
+  @override
+  String get widget_load_period_care_state_message_current_reminder =>
+      'Saat ini tidak ada pengingat siklus khusus';
+
+  @override
+  String get widget_load_period_care_state_message =>
+      'Catatan siklus belum cukup';
+
+  @override
+  String get widget_parse_character_birthday_message => 'Tahun';
+
+  @override
+  String get widget_parse_character_birthday_message_variant_b => 'Bulan';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_character_birthday =>
+      'Ulang Tahun Karakter';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_birthday_settings =>
+      'Ulang tahun belum diatur';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_birthday_countdown(
+      Object birthdayLabel) {
+    return 'Menuju ulang tahunnya・$birthdayLabel';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_today => 'Hari ini';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_days(Object days) {
+    return '$days hari lagi';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message =>
+      'Sejak bertemu dengannya';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_variant_b =>
+      'Belum ada catatan pertemuan';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_days_variant_b(
+      Object value1) {
+    return '$value1 hari';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_variant_c =>
+      'Hari Penting';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_date_select =>
+      'Belum memilih tanggal';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_elapsed_days(
+      Object value1) {
+    return 'Sudah lewat $value1 hari';
+  }
+
+  @override
+  String get widget_settings_remove_title_character_latest =>
+      'Postingan Terbaru Karakter';
+
+  @override
+  String get widget_settings_remove_subtitle_moment_latest =>
+      'Lihat kabar terbarunya tanpa membuka app.';
+
+  @override
+  String get widget_settings_remove_title_period => 'Pendampingan Menstruasi';
+
+  @override
+  String get widget_settings_remove_subtitle_character_end =>
+      'Sedikit lebih banyak perhatian dari karakter sebelum, selama, dan setelah menstruasi.';
+
+  @override
+  String get widget_settings_remove_title => 'Kalimat Hari Ini';
+
+  @override
+  String get widget_settings_remove_subtitle_days =>
+      'Setiap hari, satu kalimat akan menunggumu di layar utama.';
+
+  @override
+  String get widget_settings_remove_title_reminder => 'Hari Jadi / Pengingat';
+
+  @override
+  String get widget_settings_remove_subtitle_character_birthday_reminder =>
+      'Ingat bersama hari pertama bertemu dan ulang tahun, serta biarkan karakter mengingatkanmu tentang hal-hal penting.';
+
+  @override
+  String get widget_settings_remove_title_character => 'Status Karakter';
+
+  @override
+  String get widget_settings_remove_subtitle_chat_latest_mood =>
+      'Tampilkan suasana hati, status, dan lokasi terbaru dari chat di layar utama.';
+
+  @override
+  String get widget_settings_size_label => 'Sedang';
+
+  @override
+  String get widget_settings_size_label_message_send =>
+      'Permintaan untuk menambahkan ke layar utama telah dikirim.';
+
+  @override
+  String get widget_settings_size_label_message_try_again_later_failed =>
+      'Gagal menambahkan ke layar utama. Coba lagi nanti.';
+
+  @override
+  String get widget_settings_edit_saved_widget_message_character_reminder_again =>
+      '“Pengingat Tugas Karakter” versi lama telah digabungkan ke “Hari Jadi / Pengingat”. Silakan buat ulang.';
+
+  @override
+  String get widget_settings_delete_saved_widget_title_delete_small =>
+      'Hapus widget?';
+
+  @override
+  String
+      widget_settings_delete_saved_widget_message_stop_display_long_press_home_after_delete(
+          Object value1, Object value2) {
+    return 'Hapus “$value1・$value2”?\n\nSetelah dihapus, widget ini akan berhenti menampilkan konten karakter dan akan meminta pemain menekan lama layar utama untuk menghapusnya.';
+  }
+
+  @override
+  String get widget_settings_delete_saved_widget_message_delete_settings_small =>
+      'Pengaturan widget telah dihapus; widget terkait di layar utama telah dinonaktifkan.';
+
+  @override
+  String get widget_settings_message_desktop_widget => 'Widget Layar Utama';
+
+  @override
+  String get widget_settings_message_character_days =>
+      'Biarkan karakter favoritmu menemanimu setiap hari.';
+
+  @override
+  String get widget_settings_message_small => 'Widget Saya';
+
+  @override
+  String get widget_settings_message_desktop_widget_variant_b =>
+      'Belum ada widget layar utama';
+
+  @override
+  String get widget_settings_message_character_reminder =>
+      'Pilih karakter favorit dan tampilkan pengingat, postingan, atau statusnya di layar utama.';
+
+  @override
+  String widget_settings_message_size(Object value1) {
+    return 'Ukuran $value1';
+  }
+
+  @override
+  String get widget_settings_tooltip => 'Tambahkan ke Layar Utama';
+
+  @override
+  String get widget_settings_tooltip_small => 'Edit Widget';
+
+  @override
+  String get widget_settings_tooltip_delete_small => 'Hapus Widget';
+
+  @override
+  String get widget_settings_message_desktop_widget_variant_c =>
+      'Tambah Widget Layar Utama';
+
+  @override
+  String get widget_settings_message_character_photo_content_select_small =>
+      'Setiap widget dapat memilih karakter, foto karakter, dan konten tampilan secara terpisah. Kamu juga dapat menempatkan beberapa karakter sekaligus di layar utama.';
+
+  @override
+  String get widget_settings_desktop_type_selection_message_select_small =>
+      'Pilih Widget';
+
+  @override
+  String get widget_settings_desktop_type_selection_message_select =>
+      'Pilih dulu cara karakter ingin menemanimu di layar utama.';
+
+  @override
+  String
+      get widget_settings_go_to_photo_step_message_try_again_later_failed_load_character_photo =>
+          'Gagal memuat foto karakter. Coba lagi nanti.';
+
+  @override
+  String get widget_settings_message_character_select => 'Pilih Karakter';
+
+  @override
+  String get widget_settings_message_character_friend_days =>
+      'Hanya karakter yang sudah kamu tambahkan sebagai teman atau pernah diajak mengobrol yang akan ditampilkan.';
+
+  @override
+  String get widget_settings_hint_character_search => 'Cari Karakter';
+
+  @override
+  String get widget_settings_message_try_again_later_failed_load_character =>
+      'Gagal memuat karakter. Coba lagi nanti.';
+
+  @override
+  String get widget_settings_message_current_character_chat_friend_add =>
+      'Saat ini tidak ada karakter yang sesuai. Coba ngobrol dengan karakter terlebih dahulu atau tambahkan sebagai teman.';
+
+  @override
+  String get widget_settings_message_character_photo_select =>
+      'Berikutnya・Pilih Foto Karakter';
+
+  @override
+  String
+      get widget_settings_desktop_photo_selection_message_character_photo_select =>
+          'Pilih Foto Karakter';
+
+  @override
+  String
+      widget_settings_desktop_photo_selection_message_current_affection_unlocked_photo(
+          Object value1) {
+    return 'Afeksi saat ini $value1・Foto yang sudah terbuka dapat langsung digunakan.';
+  }
+
+  @override
+  String
+      get widget_settings_desktop_photo_selection_message_current_character_photo =>
+          'Karakter ini saat ini tidak memiliki foto yang dapat digunakan.';
+
+  @override
+  String
+      widget_settings_desktop_photo_selection_message_required_affection_unlock_photo(
+          Object value1) {
+    return 'Diperlukan afeksi $value1 untuk membuka foto ini.';
+  }
+
+  @override
+  String get widget_settings_message_photo_public => 'Foto Publik';
+
+  @override
+  String widget_settings_message_unlock(Object value1) {
+    return 'Terbuka pada Afeksi $value1';
+  }
+
+  @override
+  String widget_settings_message_unlocked(Object value1) {
+    return 'Sudah Terbuka・Afeksi $value1';
+  }
+
+  @override
+  String get widget_settings_message_content_settings =>
+      'Berikutnya・Atur Konten Tampilan';
+
+  @override
+  String get widget_settings_open_preview_message_player_select =>
+      'Pilih dulu event / tugas yang dibuat pemain.';
+
+  @override
+  String get widget_settings_pick_custom_memo_event_message_login_account =>
+      'Silakan masuk terlebih dahulu.';
+
+  @override
+  String
+      get widget_settings_pick_custom_memo_event_message_memo_current_character =>
+          'Karakter ini belum memiliki event / memo.';
+
+  @override
+  String get widget_settings_pick_custom_memo_event_message_player_select =>
+      'Pilih event buatan pemain';
+
+  @override
+  String get widget_settings_message_try_again_later_failed_load =>
+      'Gagal memuat event. Coba lagi nanti.';
+
+  @override
+  String get widget_settings_message_content_settings_variant_b =>
+      'Atur Konten Tampilan';
+
+  @override
+  String get widget_settings_subtitle_content =>
+      'Sesuaikan konten yang ingin kamu lihat di layar utama.';
+
+  @override
+  String get widget_settings_message_small_variant_b =>
+      'Berikutnya・Pratinjau Widget';
+
+  @override
+  String get widget_settings_title => 'Tampilan Postingan';
+
+  @override
+  String get widget_settings_title_variant_b => 'Tampilkan Gambar Postingan';
+
+  @override
+  String get widget_settings_title_variant_c => 'Tampilkan Jumlah Suka';
+
+  @override
+  String get widget_settings_title_comment => 'Tampilkan Jumlah Komentar';
+
+  @override
+  String get widget_settings_title_variant_d => 'Privasi & Pendampingan';
+
+  @override
+  String get widget_settings_title_variant_e => 'Mode Privasi';
+
+  @override
+  String get widget_settings_subtitle_period_character =>
+      'Di layar utama hanya tampilkan perhatian karakter tanpa menampilkan informasi menstruasi secara langsung.';
+
+  @override
+  String get widget_settings_title_variant_f => 'Mode Rinci';
+
+  @override
+  String get widget_settings_subtitle_end =>
+      'Dapat menampilkan status siklus seperti akan dimulai, sedang berlangsung, atau baru selesai.';
+
+  @override
+  String get widget_settings_title_variant_g => 'Tampilkan Status Siklus';
+
+  @override
+  String get widget_settings_title_time => 'Tampilkan Waktu';
+
+  @override
+  String get widget_settings_title_update => 'Cara Pembaruan';
+
+  @override
+  String get widget_settings_message_update_days => 'Perbarui sekali sehari';
+
+  @override
+  String get widget_settings_message_update =>
+      'Perbarui setiap kali app dibuka';
+
+  @override
+  String get widget_settings_text_update => 'Perbarui setelah membuka app';
+
+  @override
+  String get widget_settings_title_content => 'Konten Hari Jadi';
+
+  @override
+  String get widget_settings_title_days => 'Hari Sejak Bertemu';
+
+  @override
+  String get widget_settings_subtitle_character_today_days =>
+      'Tampilkan jumlah hari sejak kamu dan karakter pertama kali bertemu hingga hari ini.';
+
+  @override
+  String get widget_settings_subtitle_character_birthday =>
+      'Tampilkan berapa lama lagi menuju ulang tahun karakter.';
+
+  @override
+  String get widget_settings_title_player => 'Event / Tugas Buatan Pemain';
+
+  @override
+  String get widget_settings_message_memo_character_select_reminder =>
+      'Pilih event atau tugas dari memo / pengingat karakter ini.';
+
+  @override
+  String widget_settings_message_selected(Object _selectedMemoContent) {
+    return 'Dipilih: $_selectedMemoContent';
+  }
+
+  @override
+  String get widget_settings_message_select => 'Pilih maksimal 3 item';
+
+  @override
+  String get widget_settings_message_character =>
+      'Status karakter dapat menampilkan maksimal 3 item.';
+
+  @override
+  String get widget_settings_message_small_variant_c => 'Pratinjau Widget';
+
+  @override
+  String get widget_settings_title_confirm => 'Konfirmasi Akhir';
+
+  @override
+  String get widget_settings_subtitle_large =>
+      'Lihat dulu kira-kira seperti apa tampilannya di layar utama.';
+
+  @override
+  String get widget_settings_title_size => 'Ukuran';
+
+  @override
+  String get widget_settings_title_variant_h => 'Tata Letak';
+
+  @override
+  String get widget_settings_label_photo => 'Foto Layar Penuh';
+
+  @override
+  String get widget_settings_label_character => 'Kartu Karakter';
+
+  @override
+  String get widget_settings_message_sync => 'Menyinkronkan…';
+
+  @override
+  String get widget_settings_message_desktop_widget_add =>
+      'Tambah Widget Layar Utama';
+
+  @override
+  String get widget_settings_sample_lines_message_today_end =>
+      '“Hari ini selesai sedikit lebih cepat dari perkiraan.”';
+
+  @override
+  String get widget_settings_sample_lines_message_days =>
+      '“Beberapa hari ini jangan terlalu memaksakan diri.”';
+
+  @override
+  String get widget_settings_sample_lines_message_period => 'Sedang menstruasi';
+
+  @override
+  String get widget_settings_sample_lines_message_today =>
+      '“Hari ini istirahatlah sedikit lebih banyak.”';
+
+  @override
+  String get widget_settings_sample_lines_message_today_variant_b =>
+      '“Hari ini juga jangan lupa makan dengan baik.”';
+
+  @override
+  String get widget_settings_sample_lines_label_birthday_countdown =>
+      'Menuju ulang tahunnya';
+
+  @override
+  String get widget_settings_sample_lines_label_days => '12 hari lagi';
+
+  @override
+  String get widget_settings_sample_lines_label_days_variant_b => '128 hari';
+
+  @override
+  String get widget_settings_sample_lines_message_mood =>
+      'Suasana Hati｜Sedikit lelah';
+
+  @override
+  String get widget_settings_sample_lines_message_end =>
+      'Status｜Baru selesai bekerja';
+
+  @override
+  String get widget_settings_sample_lines_message => 'Lokasi｜Di bawah kantor';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_b =>
+      'Hubungan｜Kekasih';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_c =>
+      'Pakaian｜Sweater rajut abu-abu muda';
+
+  @override
+  String get widget_settings_sample_lines_message_days_variant_b =>
+      'Cuaca｜Agak sejuk';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_d =>
+      'Pikiran｜Ingin bertemu lebih cepat';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_e =>
+      'Aksi｜Sedang merapikan meja';
+
+  @override
+  String get widget_settings_sample_lines_message_affection =>
+      'Afeksi｜Tenang dan dekat';
+
+  @override
+  String get edit_profile_message => 'Dekorasi Profil';
+
+  @override
+  String get edit_profile_message_current => 'Saat ini tidak digunakan';
+
+  @override
+  String
+      get event_memory_character_load_characters_message_login_character_select =>
+          'Silakan masuk sebelum memilih karakter';
+
+  @override
+  String get event_memory_character_center_message_memory_select =>
+      'Pilih dengan siapa kamu ingin menyimpan kenangan ini';
+
+  @override
+  String get event_memory_character_center_message_character_friend_add =>
+      'Hanya karakter yang kamu buat sendiri dan karakter yang sudah ditambahkan sebagai teman yang akan muncul di sini.';
+
+  @override
+  String get event_memory_character_center_message_current_character_select =>
+      'Saat ini tidak ada karakter yang bisa dipilih';
+
+  @override
+  String get event_memory_character_center_message_public_character_character_friend_add =>
+      'Buat karaktermu sendiri atau tambahkan dulu karakter publik yang kamu suka sebagai teman.';
+
+  @override
+  String get event_memory_character_message_character_select =>
+      'Pilih karakter terlebih dahulu';
+
+  @override
+  String event_memory_character_message_continue(Object value1) {
+    return 'Lanjutkan dengan $value1';
+  }
+
+  @override
+  String get event_memory_character_card_message_private => 'Milikku・Privat';
+
+  @override
+  String get event_memory_character_error_label_load_again => 'Muat Ulang';
+
+  @override
+  String
+      get event_memory_collection_show_collection_intro_if_needed_message_collection =>
+          'Koleksi Shiguang';
+
+  @override
+  String get event_memory_collection_show_collection_intro_if_needed_message_collection_content =>
+      'Ini adalah daftar koleksimu, tempat kamu dapat melihat semua yang telah disimpan.';
+
+  @override
+  String get event_memory_collection_text_collection_login =>
+      'Silakan masuk untuk melihat koleksi';
+
+  @override
+  String get event_memory_collection_message_memory => 'Kenangan';
+
+  @override
+  String get event_memory_collection_message_chat_background => 'Latar Chat';
+
+  @override
+  String get event_memory_collection_message_avatar_frame_collection =>
+      'Belum ada bingkai avatar yang dikoleksi';
+
+  @override
+  String get event_memory_collection_message_avatar_frame =>
+      'Bingkai avatar terbatas yang kamu peroleh nanti akan muncul di sini.';
+
+  @override
+  String get event_memory_collection_message_collection_sticker =>
+      'Belum ada stiker yang dikoleksi';
+
+  @override
+  String get event_memory_collection_message_sticker =>
+      'Stiker yang kamu kumpulkan nanti akan disimpan di sini.';
+
+  @override
+  String get event_memory_collection_message_collection_chat_background =>
+      'Belum ada latar chat yang dikoleksi';
+
+  @override
+  String get event_memory_collection_message_chat_background_variant_b =>
+      'Latar chat terbatas yang kamu peroleh nanti akan muncul di sini.';
+
+  @override
+  String get event_memory_collection_tab_title_collection_temporary =>
+      'Koleksi sementara tidak dapat dimuat';
+
+  @override
+  String get event_memory_collection_tab_title_collection_memory =>
+      'Belum ada kenangan yang dikoleksi';
+
+  @override
+  String get event_memory_collection_tab_subtitle_limited_memory_complete =>
+      'Setelah menyelesaikan kenangan terbatas, kamu dapat menyimpan momen favorit di sini.';
+
+  @override
+  String get event_memory_collection_item_card_label => 'Item Terbatas';
+
+  @override
+  String get event_memory_collection_confirm_delete_owned_item_message_delete =>
+      'Hapus item terbatas?';
+
+  @override
+  String
+      event_memory_collection_confirm_delete_owned_item_message_after_delete_unavailable(
+          Object _itemTypeLabel) {
+    return 'Setelah dihapus, kamu tidak akan dapat lagi menggunakan $_itemTypeLabel ini,';
+  }
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_collection =>
+          'dan item ini juga tidak akan muncul lagi di “Koleksi Shiguang”.\n\n';
+
+  @override
+  String get event_memory_collection_confirm_delete_owned_item_message_unavailable =>
+      'Artinya kamu akan melepaskan item terbatas yang diperoleh kali ini, dan tindakan ini tidak dapat dibatalkan.\n\n';
+
+  @override
+  String
+      event_memory_collection_confirm_delete_owned_item_message_delete_variant_b(
+          Object value1) {
+    return 'Yakin ingin menghapus “$value1”?';
+  }
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_delete_variant_c =>
+          'Item terbatas dihapus';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_not_found_delete =>
+          'Item terbatas ini tidak ditemukan dan mungkin sudah dihapus';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_collection_current_delete =>
+          'Koleksi ini saat ini tidak dapat dihapus';
+
+  @override
+  String get event_memory_collection_show_preview_message =>
+      'Menyiapkan gambar';
+
+  @override
+  String get event_memory_collection_show_preview_message_failed_load =>
+      'Gagal memuat gambar';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save_current =>
+      'Versi web saat ini tidak mendukung penyimpanan langsung ke galeri ponsel';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save_memory =>
+      'Izin galeri diperlukan untuk menyimpan kenangan ini';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_memory =>
+      'Gambar kenangan belum siap. Coba lagi.';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_failed_memory =>
+      'Gagal membuat gambar kenangan';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save =>
+      'Tersimpan ke galeri ponsel ♡';
+
+  @override
+  String
+      get event_memory_collection_save_to_gallery_message_save_confirm_failed =>
+          'Gagal menyimpan. Periksa izin galeri lalu coba lagi.';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_title_collection_cancel =>
+          'Hapus dari koleksi?';
+
+  @override
+  String get event_memory_collection_delete_collection_message_collection_cancel_memory =>
+      'Setelah dihapus dari koleksi, kenangan ini tidak akan lagi muncul di “Koleksi Shiguang”.\n\nYakin ingin menghapusnya dari koleksi?';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_message_try_again_later_collection_cancel_failed =>
+          'Gagal menghapus dari koleksi. Coba lagi nanti.';
+
+  @override
+  String get event_memory_collection_message_collection_memory =>
+      'Koleksi Kenangan';
+
+  @override
+  String get event_memory_collection_label_play => 'Putar Lagi';
+
+  @override
+  String get event_memory_collection_label_save => 'Menyimpan…';
+
+  @override
+  String get event_memory_collection_label_save_variant_b => 'Simpan ke Galeri';
+
+  @override
+  String get event_memory_collection_collected_card_message_limited_memory =>
+      'Lianlian Shiguang・Kenangan Terbatas';
+
+  @override
+  String get event_memory_collection_create_state_message_end_story =>
+      'Ada beberapa momen yang\ntidak hilang hanya karena ceritanya berakhir.';
+
+  @override
+  String get event_memory_collection_text_collection =>
+      'Kenangan tersimpan ini tidak memiliki Scene yang dapat diputar ulang';
+
+  @override
+  String get event_memory_collection_message => 'Lewati';
+
+  @override
+  String get event_memory_collection_message_end => 'Ketuk untuk Selesai';
+
+  @override
+  String get event_memory_collection_message_continue => 'Ketuk untuk Lanjut';
+
+  @override
+  String get event_memory_collection_message_variant_b =>
+      'Ketuk untuk Tampilkan Teks Lengkap';
+
+  @override
+  String get event_memory_collection_collected_label_collection =>
+      'Baru Dikoleksi';
+
+  @override
+  String get event_memory_collection_collected_item_label_collection_date =>
+      'Tanggal koleksi tidak tercatat';
+
+  @override
+  String event_memory_collection_collected_item_label_collection(
+      Object day, Object month, Object value1) {
+    return 'Dikoleksi pada $value1/$month/$day';
+  }
+
+  @override
+  String get event_memory_text_not_found_event => 'Data event tidak ditemukan';
+
+  @override
+  String get event_memory_message_limited_memory_failed_load =>
+      'Gagal memuat kenangan terbatas';
+
+  @override
+  String get event_memory_as_map_label_unlocked => 'Sudah Terbuka';
+
+  @override
+  String event_memory_as_map_label_unlock(Object currencyIcon,
+      Object currencyName, Object currentValue, Object requiredValue) {
+    return 'Kumpulkan $currencyIcon $requiredValue $currencyName untuk membuka ($currentValue / $requiredValue)';
+  }
+
+  @override
+  String get event_memory_as_map_label_unlock_task_event_complete =>
+      'Terbuka setelah menyelesaikan tugas event yang ditentukan';
+
+  @override
+  String get event_memory_as_map_label_redeem_unlock_event =>
+      'Terbuka setelah menukar item event yang ditentukan';
+
+  @override
+  String get event_memory_as_map_label_unlock_variant_b => 'Belum Terbuka';
+
+  @override
+  String get event_memory_hero_message =>
+      'Simpan satu momen yang hanya milik kalian berdua di musim ini.';
+
+  @override
+  String event_memory_hero_message_limited_memory(
+      Object totalCount, Object unlockedCount) {
+    return 'Kenangan Terbatas  $unlockedCount / $totalCount';
+  }
+
+  @override
+  String get event_memory_status_label_unlocked =>
+      'Sudah Terbuka・Belum Dilihat';
+
+  @override
+  String get event_memory_status_label => 'Sudah Dilihat';
+
+  @override
+  String get event_memory_status_label_collection => 'Sudah Dikoleksi';
+
+  @override
+  String get event_memory_footer_label_memory_start =>
+      'Kamu dapat memulai kenangan ini';
+
+  @override
+  String get event_memory_footer_label => 'Kamu dapat menontonnya lagi';
+
+  @override
+  String get event_memory_footer_label_collection =>
+      'Tersimpan di Koleksi Shiguang';
+
+  @override
+  String get event_memory_empty_message_limited_memory_event_public =>
+      'Event ini belum memiliki kenangan terbatas yang dipublikasikan';
+
+  @override
+  String get event_memory_performance_finish_message_memory =>
+      'Kenangan ini telah tersimpan.';
+
+  @override
+  String get event_memory_performance_finish_message_save_collection =>
+      'Koleksi tetap tersimpan di dalam game. Izin galeri hanya akan diminta saat menyimpan ke ponsel.';
+
+  @override
+  String get event_memory_performance_finish_message => 'Memproses…';
+
+  @override
+  String get event_memory_performance_finish_message_collection_memory =>
+      'Koleksi Kenangan Ini';
+
+  @override
+  String get event_memory_performance_confirm_uncollect_memory_message_collection_cancel_memory_again_remove =>
+      'Setelah dibatalkan, kenangan ini akan dihapus dari “Koleksi Shiguang”. Kamu tetap dapat menontonnya lagi dan mengoleksinya kembali nanti.';
+
+  @override
+  String
+      get event_memory_performance_uncollect_memory_message_collection_login =>
+          'Silakan masuk sebelum mengelola koleksi';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_collection_login_memory =>
+          'Silakan masuk sebelum mengoleksi kenangan ini';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_collection_memory =>
+          'Kenangan telah dikoleksi ♡';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_try_again_later_collection_failed =>
+          'Gagal mengoleksi. Coba lagi nanti.';
+
+  @override
+  String get event_memory_performance_text_panel_message_complete =>
+      'Ketuk untuk Selesai';
+
+  @override
+  String get event_memory_performance_build_performance_message => 'Lewati';
+
+  @override
+  String get event_memory_performance_text_play =>
+      'Tidak ada Scene yang dapat diputar';
+
+  @override
+  String get event_memory_profile_change_profile_message_profile =>
+      'Ganti Profil Shiguang';
+
+  @override
+  String get event_memory_profile_message_profile_confirm =>
+      'Konfirmasi Profil Shiguang';
+
+  @override
+  String get event_memory_profile_center_text_profile_not_found =>
+      'Tidak ditemukan Profil Shiguang yang dapat digunakan';
+
+  @override
+  String get event_memory_profile_center_message_memory =>
+      'Sebagai siapa kamu akan berada dalam kenangan ini?';
+
+  @override
+  String get event_memory_profile_center_message_profile_character_start =>
+      'Profil Shiguang yang paling baru kamu gunakan dengan karakter ini telah dipilih terlebih dahulu. Kamu dapat menggantinya sebelum memulai.';
+
+  @override
+  String event_memory_profile_center_message(Object value1) {
+    return 'Sebagai “$value1” dengan';
+  }
+
+  @override
+  String event_memory_profile_center_message_memory_variant_b(Object value1) {
+    return '“$value1” dalam kenangan ini';
+  }
+
+  @override
+  String get event_memory_profile_center_label_memory_start => 'Mulai Kenangan';
+
+  @override
+  String get event_message_failed_load => 'Gagal memuat data event';
+
+  @override
+  String get event_message_not_found => 'Event tidak ditemukan';
+
+  @override
+  String get event_remaining_label => 'Event Sedang Berlangsung';
+
+  @override
+  String event_remaining_label_days(Object value1) {
+    return 'Sisa $value1 hari';
+  }
+
+  @override
+  String event_remaining_label_hours(Object value1) {
+    return 'Sisa $value1 jam';
+  }
+
+  @override
+  String get event_remaining_label_end => 'Segera Berakhir';
+
+  @override
+  String get event_balance_pill_tooltip_back => 'Kembali';
+
+  @override
+  String event_claim_task_message_claim_current(
+      Object currency, Object reward, Object value1, Object value2) {
+    return 'Telah menerima $value1 $reward $value2. Saat ini kamu memiliki $currency';
+  }
+
+  @override
+  String get event_claim_task_message_reward_claim => 'Hadiah telah diterima';
+
+  @override
+  String get event_claim_task_message_claim_failed => 'Gagal menerima';
+
+  @override
+  String get event_claim_task_message_task_claim =>
+      'Tugas ini sudah pernah diklaim';
+
+  @override
+  String get event_claim_task_message_incomplete_task => 'Tugas belum selesai';
+
+  @override
+  String get event_task_list_label_task_load => 'Memuat tugas…';
+
+  @override
+  String get event_task_list_label_task_current => 'Saat ini tidak ada tugas';
+
+  @override
+  String get event_task_list_label_task_login_progress =>
+      'Masuk untuk melihat progres tugas event';
+
+  @override
+  String get event_milestone_progress_label_reward_load =>
+      'Memuat hadiah akumulasi…';
+
+  @override
+  String get event_milestone_progress_label_reward_current =>
+      'Saat ini tidak ada hadiah akumulasi';
+
+  @override
+  String event_build_with_total_message_current(Object totalEarned) {
+    return 'Saat ini  $totalEarned';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_confirm =>
+      'Konfirmasi Penukaran';
+
+  @override
+  String event_progress_ref_message_redeem_flowers(
+      Object itemName, Object price, Object rewardAmount, Object value1) {
+    return 'Gunakan $value1 $price untuk menukar “$itemName”?\n\nSetelah ditukar, kamu akan menerima $rewardAmount Bunga.';
+  }
+
+  @override
+  String event_progress_ref_message_redeem(
+      Object itemName, Object price, Object value1) {
+    return 'Gunakan $value1 $price untuk menukar “$itemName”?';
+  }
+
+  @override
+  String event_progress_ref_message_redeem_success_flowers(
+      Object returnedReward) {
+    return 'Penukaran berhasil! Mendapat $returnedReward Bunga';
+  }
+
+  @override
+  String event_progress_ref_message_event_collection_redeem_success_add(
+      Object itemName) {
+    return 'Penukaran berhasil! “$itemName” telah ditambahkan ke Koleksi Event';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_failed => 'Penukaran gagal';
+
+  @override
+  String get event_progress_ref_message_redeem_variant_b =>
+      'Item ini sudah pernah ditukar';
+
+  @override
+  String get event_progress_ref_message_insufficient => 'Mata uang tidak cukup';
+
+  @override
+  String event_progress_ref_message_insufficient_variant_b(Object value1) {
+    return '$value1 tidak cukup';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_variant_c => 'Tukar';
+
+  @override
+  String get event_progress_ref_message_redeem_variant_d => 'Sudah Ditukar';
+
+  @override
+  String event_message_redeem_flowers(Object rewardAmount) {
+    return 'Setelah ditukar, kamu akan menerima $rewardAmount Bunga';
+  }
+
+  @override
+  String event_message_redeem(Object redeemedCount) {
+    return 'Sudah ditukar $redeemedCount kali';
+  }
+
+  @override
+  String get event_message_event_shop_login =>
+      'Masuk untuk menggunakan toko event';
+
+  @override
+  String get event_message_redeem_current =>
+      'Saat ini tidak ada item yang dapat ditukar';
+
+  @override
+  String event_shop_item_card_message_flowers(Object rewardAmount) {
+    return 'Dapatkan $rewardAmount Bunga';
+  }
+
+  @override
+  String get event_message_insufficient => 'Tidak cukup';
+
+  @override
+  String get notification_message_player => 'Gambar lampiran pemain';
+
+  @override
+  String notification_message_qixi_letter(Object value1) {
+    return 'Surat Qixi dari $value1';
+  }
+
+  @override
+  String recommendation_remaining_label_days(Object value1) {
+    return 'Sisa $value1 hari';
+  }
+
+  @override
+  String recommendation_remaining_label_hours(Object value1) {
+    return 'Sisa $value1 jam';
+  }
+
+  @override
+  String get settings_subtitle_character_days =>
+      'Biarkan karakter favoritmu menemanimu setiap hari';
+
+  @override
+  String moment_notification_comment_on_character_post(
+      Object authorName, Object commentText, Object senderNickname) {
+    return '$senderNickname meninggalkan komentar untuk $authorName: “$commentText”';
+  }
+
+  @override
+  String get inbox_content_text_message_customer_service_message_send =>
+      'Pesan dukungan pelanggan yang sudah dikirim';
+
+  @override
+  String get character_edit_relationship_none_label => 'Tidak ada';
+
+  @override
+  String get auth_cancel_account_deletion_failed =>
+      'Gagal membatalkan penghapusan akun. Coba lagi nanti.';
+
+  @override
+  String get auth_delete_account_failed => 'Gagal menghapus akun';
+
+  @override
+  String get auth_request_account_deletion_failed =>
+      'Gagal mengajukan penghapusan akun. Coba lagi nanti.';
+
+  @override
+  String get theme_font_shiguang_serif => 'Shiguang Serif';
+
+  @override
+  String get theme_font_clean_sans => 'Sans Bersih';
+
+  @override
+  String get theme_font_system => 'Font Sistem';
+
+  @override
+  String get theme_font_shiguang_serif_description =>
+      'Lembut dan bernuansa sastra, cocok untuk membaca secara imersif';
+
+  @override
+  String get theme_font_clean_sans_description =>
+      'Jelas dan rapi, nyaman untuk membaca dalam waktu lama';
+
+  @override
+  String get theme_font_system_description =>
+      'Ikuti font sistem default perangkat';
 }

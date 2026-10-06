@@ -84,6 +84,7 @@ flutter:
     - assets/images/brand/
     - assets/images/guide/
     - assets/images/echo/
+    - assets/icons/
     - assets/images/announcement/
     - assets/images/heartbeat_diary/
     - assets/images/store/

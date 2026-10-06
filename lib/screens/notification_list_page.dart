@@ -14,6 +14,7 @@ import 'dart:typed_data';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 // 信件內容
 class NotificationListPage extends StatefulWidget {
   const NotificationListPage({super.key});
@@ -2171,7 +2172,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
               if (widget.supportImageUrl.trim().isNotEmpty) ...[
                 const SizedBox(height: 14),
                 Text(
-                  '玩家附加圖片',
+                  appL10n.notification_message_player,
                   style: GoogleFonts.notoSerifTc(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
@@ -2595,7 +2596,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
                             const SizedBox(width: 6),
                             Expanded(
                               child: Text(
-                                '來自 ${widget.fromName} 的七夕信',
+                                appL10n.notification_message_qixi_letter(widget.fromName),
                                 style: const TextStyle(
                                   color: mutedPurple,
                                   fontSize: 13,

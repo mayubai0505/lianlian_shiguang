@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../services/theme_notifier.dart';
 import '../services/toast_utils.dart';
+import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 
 class FontSelectionPage extends StatelessWidget {
   const FontSelectionPage({super.key});
@@ -26,11 +27,11 @@ class FontSelectionPage extends StatelessWidget {
   }
 
   String _fontScaleLabel(double scale) {
-    if (scale <= 0.9) return '小';
-    if (scale <= 1.0) return '標準';
-    if (scale <= 1.1) return '稍大';
-    if (scale <= 1.2) return '大';
-    return '特大';
+    if (scale <= 0.9) return appL10n.font_size_small;
+    if (scale <= 1.0) return appL10n.font_size_standard;
+    if (scale <= 1.1) return appL10n.font_size_slightly_large;
+    if (scale <= 1.2) return appL10n.font_size_large;
+    return appL10n.font_size_extra_large;
   }
 
   int _fontScaleIndex(double scale) {
@@ -60,7 +61,7 @@ class FontSelectionPage extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: const Text('字體'),
+          title: Text(appL10n.font_selection_title),
           centerTitle: true,
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -72,7 +73,7 @@ class FontSelectionPage extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 18, 20, 36),
             children: [
               Text(
-                '選一種最適合妳閱讀故事與聊天的字體。',
+                appL10n.font_selection_description,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.62),
                   height: 1.5,
@@ -98,7 +99,7 @@ class FontSelectionPage extends StatelessWidget {
                         const SizedBox(width: 9),
                         Expanded(
                           child: Text(
-                            '字體大小',
+                            appL10n.font_size_title,
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w700,
                             ),
@@ -115,7 +116,7 @@ class FontSelectionPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 14),
                     Text(
-                      '與你喜歡的他，再次寫下屬於你們的故事。',
+                      appL10n.font_selection_tagline,
                       textScaler: TextScaler.linear(notifier.fontScale),
                       style: theme.textTheme.bodyLarge?.copyWith(
                         height: 1.55,
@@ -166,7 +167,7 @@ class FontSelectionPage extends StatelessWidget {
 
                         ToastUtils.showCenterToast(
                           context,
-                          '已套用「${font.label}」',
+                          appL10n.font_selection_applied_message(font.label),
                           customIcon: Icons.text_fields_rounded,
                         );
                       },
@@ -222,7 +223,7 @@ class FontSelectionPage extends StatelessWidget {
               }),
               const SizedBox(height: 8),
               Text(
-                '字體與字級會立即套用並保存在這台裝置；恢復預設外觀時會回到「拾光宋體＋標準大小」。',
+                appL10n.font_selection_local_storage_note,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.46),
                   height: 1.45,

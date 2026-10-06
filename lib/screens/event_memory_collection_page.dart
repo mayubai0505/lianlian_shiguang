@@ -15,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../services/app_constants.dart';
 import '../services/toast_utils.dart';
 import '../utils/image_utils.dart';
+import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 
 //拾光檔案
 
@@ -55,14 +56,14 @@ class _EventMemoryCollectionPageState
         builder: (dialogContext) {
           return AlertDialog(
             title: Text(
-              '拾光收藏',
+              appL10n.event_memory_collection_show_collection_intro_if_needed_message_collection,
               textAlign: TextAlign.center,
               style: GoogleFonts.notoSerifTc(
                 fontWeight: FontWeight.w700,
               ),
             ),
             content: Text(
-              '這裡是收藏列表，可以看看自己所有收藏的內容',
+              appL10n.event_memory_collection_show_collection_intro_if_needed_message_collection_content,
               textAlign: TextAlign.center,
               style: GoogleFonts.notoSerifTc(
                 height: 1.6,
@@ -131,7 +132,7 @@ class _EventMemoryCollectionPageState
     if (user == null) {
       return Scaffold(
         appBar: AppBar(title: const Text('拾光收藏')),
-        body: const Center(child: Text('請先登入後查看收藏')),
+        body: Center(child: Text(appL10n.event_memory_collection_text_collection_login)),
       );
     }
 
@@ -154,11 +155,11 @@ class _EventMemoryCollectionPageState
               fontWeight: FontWeight.w500,
             ),
             indicatorSize: TabBarIndicatorSize.label,
-            tabs: const [
-              Tab(text: '回憶'),
+            tabs: [
+              Tab(text: appL10n.event_memory_collection_message_memory),
               Tab(text: '頭像框'),
               Tab(text: '貼紙'),
-              Tab(text: '聊天室背景'),
+              Tab(text: appL10n.event_memory_collection_message_chat_background),
             ],
           ),
         ),
@@ -168,14 +169,14 @@ class _EventMemoryCollectionPageState
             _EventItemCollectionTab(
               uid: user.uid,
               acceptedTypes: const {'avatar_frame'},
-              emptyTitle: '還沒有收藏頭像框喔',
-              emptySubtitle: '之後獲得的限定頭像框會出現在這裡。',
+              emptyTitle: appL10n.event_memory_collection_message_avatar_frame_collection,
+              emptySubtitle: appL10n.event_memory_collection_message_avatar_frame,
             ),
             _EventItemCollectionTab(
               uid: user.uid,
               acceptedTypes: const {'sticker', 'stickers'},
-              emptyTitle: '還沒有收藏貼紙喔',
-              emptySubtitle: '之後收集到的貼紙都會放在這裡。',
+              emptyTitle: appL10n.event_memory_collection_message_collection_sticker,
+              emptySubtitle: appL10n.event_memory_collection_message_sticker,
             ),
             _EventItemCollectionTab(
               uid: user.uid,
@@ -184,8 +185,8 @@ class _EventMemoryCollectionPageState
                 'chat_background',
                 'scene_background',
               },
-              emptyTitle: '還沒有收藏聊天室背景喔',
-              emptySubtitle: '之後獲得的限定聊天室背景會出現在這裡。',
+              emptyTitle: appL10n.event_memory_collection_message_collection_chat_background,
+              emptySubtitle: appL10n.event_memory_collection_message_chat_background_variant_b,
             ),
           ],
         ),
@@ -212,8 +213,8 @@ class _MemoryCollectionTab extends StatelessWidget {
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return const _CollectionState(
-            title: '暫時讀不到收藏',
+          return _CollectionState(
+            title: appL10n.event_memory_collection_tab_title_collection_temporary,
             subtitle: '請稍後再試一次。',
           );
         }
@@ -226,9 +227,9 @@ class _MemoryCollectionTab extends StatelessWidget {
         snapshot.data!.docs.map(_CollectedMemory.fromDocument).toList();
 
         if (memories.isEmpty) {
-          return const _CollectionState(
-            title: '還沒有收藏回憶喔',
-            subtitle: '完成限定回憶後，可以把喜歡的片段留在這裡。',
+          return _CollectionState(
+            title: appL10n.event_memory_collection_tab_title_collection_memory,
+            subtitle: appL10n.event_memory_collection_tab_subtitle_limited_memory_complete,
           );
         }
 
@@ -416,7 +417,7 @@ class _EventItemCardState extends State<_EventItemCard> {
         item.itemType == 'scene_background') {
       return '聊天室背景';
     }
-    return '限定物品';
+    return appL10n.event_memory_collection_item_card_label;
   }
 
   Future<void> _clearAvatarFrameCache(String uid) async {
@@ -436,15 +437,15 @@ class _EventItemCardState extends State<_EventItemCard> {
       barrierDismissible: false,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text(
-            '刪除限定物品？',
+          title: Text(
+            appL10n.event_memory_collection_confirm_delete_owned_item_message_delete,
             textAlign: TextAlign.center,
           ),
           content: Text(
-            '刪除後將無法再使用這個$_itemTypeLabel，'
-                '也不會再出現在「拾光收藏」中。\n\n'
-                '這代表你將放棄這次取得的限定物品，且此操作無法復原。\n\n'
-                '確定要刪除「${item.name}」嗎？',
+            appL10n.event_memory_collection_confirm_delete_owned_item_message_after_delete_unavailable(_itemTypeLabel) +
+                appL10n.event_memory_collection_confirm_delete_owned_item_message_collection +
+                appL10n.event_memory_collection_confirm_delete_owned_item_message_unavailable +
+                appL10n.event_memory_collection_confirm_delete_owned_item_message_delete_variant_b(item.name),
             textAlign: TextAlign.center,
             style: GoogleFonts.notoSerifTc(height: 1.6),
           ),
@@ -504,7 +505,7 @@ class _EventItemCardState extends State<_EventItemCard> {
 
       ToastUtils.showCenterToast(
         context,
-        '已刪除限定物品',
+        appL10n.event_memory_collection_confirm_delete_owned_item_message_delete_variant_c,
         customIcon: Icons.delete_outline_rounded,
       );
     } on FirebaseFunctionsException catch (e) {
@@ -517,9 +518,9 @@ class _EventItemCardState extends State<_EventItemCard> {
       String message = e.message ?? '刪除失敗，請稍後再試';
 
       if (e.code == 'not-found') {
-        message = '找不到這個限定物品，可能已經刪除了';
+        message = appL10n.event_memory_collection_confirm_delete_owned_item_message_not_found_delete;
       } else if (e.code == 'failed-precondition') {
-        message = e.message ?? '這個收藏目前不能刪除';
+        message = e.message ?? appL10n.event_memory_collection_confirm_delete_owned_item_message_collection_current_delete;
       }
 
       ToastUtils.showCenterToast(
@@ -593,7 +594,7 @@ class _EventItemCardState extends State<_EventItemCard> {
                       child: provider == null
                           ? Center(
                         child: Text(
-                          '圖片準備中',
+                          appL10n.event_memory_collection_show_preview_message,
                           style: GoogleFonts.notoSerifTc(
                             color: theme.colorScheme.onSurface
                                 .withValues(alpha: 0.45),
@@ -609,7 +610,7 @@ class _EventItemCardState extends State<_EventItemCard> {
                             fit: BoxFit.contain,
                             errorBuilder: (_, __, ___) => Center(
                               child: Text(
-                                '圖片載入失敗',
+                                appL10n.event_memory_collection_show_preview_message_failed_load,
                                 style: GoogleFonts.notoSerifTc(
                                   color: theme.colorScheme.onSurface
                                       .withValues(alpha: 0.45),
@@ -929,7 +930,7 @@ class _EventMemoryCollectionDetailPageState
     if (kIsWeb) {
       ToastUtils.showCenterToast(
         context,
-        '網頁版目前不支援直接儲存到手機相簿',
+        appL10n.event_memory_collection_save_to_gallery_message_save_current,
         isError: true,
       );
       return;
@@ -947,7 +948,7 @@ class _EventMemoryCollectionDetailPageState
         if (!mounted) return;
         ToastUtils.showCenterToast(
           context,
-          '需要相簿權限才能儲存這段回憶',
+          appL10n.event_memory_collection_save_to_gallery_message_save_memory,
           isError: true,
         );
         return;
@@ -960,7 +961,7 @@ class _EventMemoryCollectionDetailPageState
         if (!mounted) return;
         ToastUtils.showCenterToast(
           context,
-          '回憶圖片還沒準備好，請再試一次',
+          appL10n.event_memory_collection_save_to_gallery_message_memory,
           isError: true,
         );
         return;
@@ -973,7 +974,7 @@ class _EventMemoryCollectionDetailPageState
         if (!mounted) return;
         ToastUtils.showCenterToast(
           context,
-          '產生回憶圖片失敗',
+          appL10n.event_memory_collection_save_to_gallery_message_failed_memory,
           isError: true,
         );
         return;
@@ -1002,7 +1003,7 @@ class _EventMemoryCollectionDetailPageState
       if (!mounted) return;
       ToastUtils.showCenterToast(
         context,
-        '已儲存到手機相簿 ♡',
+        appL10n.event_memory_collection_save_to_gallery_message_save,
         customIcon: Icons.photo_library_rounded,
       );
     } on GalException catch (e) {
@@ -1010,7 +1011,7 @@ class _EventMemoryCollectionDetailPageState
       if (!mounted) return;
       ToastUtils.showCenterToast(
         context,
-        '儲存失敗，請確認相簿權限後再試一次',
+        appL10n.event_memory_collection_save_to_gallery_message_save_confirm_failed,
         isError: true,
       );
     } catch (e) {
@@ -1035,9 +1036,9 @@ class _EventMemoryCollectionDetailPageState
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('取消收藏？'),
-          content: const Text(
-            '取消收藏後，這段回憶將不會再出現在「拾光收藏」中。\n\n確定要取消收藏嗎？',
+          title: Text(appL10n.event_memory_collection_delete_collection_title_collection_cancel),
+          content: Text(
+            appL10n.event_memory_collection_delete_collection_message_collection_cancel_memory,
             textAlign: TextAlign.center,
           ),
           actionsAlignment: MainAxisAlignment.center,
@@ -1074,7 +1075,7 @@ class _EventMemoryCollectionDetailPageState
       if (!mounted) return;
       ToastUtils.showCenterToast(
         context,
-        '取消收藏失敗，請稍後再試',
+        appL10n.event_memory_collection_delete_collection_message_try_again_later_collection_cancel_failed,
         isError: true,
       );
     } finally {
@@ -1092,7 +1093,7 @@ class _EventMemoryCollectionDetailPageState
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          '回憶收藏',
+          appL10n.event_memory_collection_message_collection_memory,
           style: GoogleFonts.notoSerifTc(fontWeight: FontWeight.w700),
         ),
       ),
@@ -1122,7 +1123,7 @@ class _EventMemoryCollectionDetailPageState
                 );
               },
               icon: const Icon(Icons.play_circle_outline_rounded),
-              label: const Text('再次播放'),
+              label: Text(appL10n.event_memory_collection_label_play),
               style: FilledButton.styleFrom(
                 minimumSize: const Size.fromHeight(50),
               ),
@@ -1137,7 +1138,7 @@ class _EventMemoryCollectionDetailPageState
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
                   : const Icon(Icons.photo_library_outlined),
-              label: Text(_saving ? '正在儲存…' : '儲存到手機相簿'),
+              label: Text(_saving ? appL10n.event_memory_collection_label_save : appL10n.event_memory_collection_label_save_variant_b),
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size.fromHeight(50),
               ),
@@ -1210,7 +1211,7 @@ class _CollectedMemoryCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '戀戀拾光・限定回憶',
+                    appL10n.event_memory_collection_collected_card_message_limited_memory,
                     style: GoogleFonts.notoSerifTc(
                       color: Colors.white.withValues(alpha: 0.88),
                       fontSize: 11,
@@ -1285,7 +1286,7 @@ class _CollectedMemoryReplayPage extends StatefulWidget {
 
 class _CollectedMemoryReplayPageState extends State<_CollectedMemoryReplayPage>
     with SingleTickerProviderStateMixin {
-  static const String _openingText = '有些瞬間，\n並不會因為故事結束而消失。';
+  static String get _openingText => appL10n.event_memory_collection_create_state_message_end_story;
 
   late final AnimationController _photoMotionController;
   Timer? _typingTimer;
@@ -1450,7 +1451,7 @@ class _CollectedMemoryReplayPageState extends State<_CollectedMemoryReplayPage>
     if (_scenes.isEmpty) {
       return Scaffold(
         appBar: AppBar(),
-        body: const Center(child: Text('這段收藏沒有可重播的 Scene')),
+        body: Center(child: Text(appL10n.event_memory_collection_text_collection)),
       );
     }
 
@@ -1488,8 +1489,8 @@ class _CollectedMemoryReplayPageState extends State<_CollectedMemoryReplayPage>
                   top: 12,
                   child: TextButton(
                     onPressed: _skipOpening,
-                    child: const Text(
-                      '略過',
+                    child: Text(
+                      appL10n.event_memory_collection_message,
                       style: TextStyle(color: Colors.white70),
                     ),
                   ),
@@ -1660,9 +1661,9 @@ class _CollectedMemoryReplayPageState extends State<_CollectedMemoryReplayPage>
                             child: Text(
                               _typingDone
                                   ? (_index == _scenes.length - 1
-                                  ? '點擊結束'
-                                  : '點擊繼續')
-                                  : '點擊顯示全文',
+                                  ? appL10n.event_memory_collection_message_end
+                                  : appL10n.event_memory_collection_message_continue)
+                                  : appL10n.event_memory_collection_message_variant_b,
                               style: GoogleFonts.notoSerifTc(
                                 color: Colors.white.withValues(alpha: 0.58),
                                 fontSize: 9.5,
@@ -1737,7 +1738,7 @@ class _CollectedMemory {
 
   String get collectedDateLabel {
     final value = collectedAt;
-    if (value == null) return '剛剛收藏';
+    if (value == null) return appL10n.event_memory_collection_collected_label_collection;
     return '${value.year}/${value.month.toString().padLeft(2, '0')}/${value.day.toString().padLeft(2, '0')}';
   }
 
@@ -1824,11 +1825,11 @@ class _CollectedEventItem {
 
   String get collectionDateLabel {
     final value = acquiredAt;
-    if (value == null) return '收藏日期未記錄';
+    if (value == null) return appL10n.event_memory_collection_collected_item_label_collection_date;
 
     final month = value.month.toString().padLeft(2, '0');
     final day = value.day.toString().padLeft(2, '0');
-    return '收藏於 ${value.year}/$month/$day';
+    return appL10n.event_memory_collection_collected_item_label_collection(day, month, value.year);
   }
 }
 

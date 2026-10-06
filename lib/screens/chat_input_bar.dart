@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:showcaseview/showcaseview.dart';
+import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 
 class ChatInputBar extends StatefulWidget {
   final TextEditingController controller;
@@ -294,18 +295,16 @@ class _ChatInputBarState extends State<ChatInputBar>
                     : (widget.focusNode.hasFocus &&
                     !_toolsExpandedWhileFocused
                     ? 'Send'
-                    : '貼紙'),
+                    : appL10n.chat_input_message_sticker),
                 icon: widget.isGenerating
                     ? Icons.stop_circle_outlined
-                    : (widget.focusNode.hasFocus &&
-                    !_toolsExpandedWhileFocused
+                    : null,
+                asset: widget.isGenerating
                     ? null
-                    : Icons.emoji_emotions_outlined),
-                asset: (!widget.isGenerating &&
-                    widget.focusNode.hasFocus &&
+                    : (widget.focusNode.hasFocus &&
                     !_toolsExpandedWhileFocused)
                     ? 'assets/images/chat/chat_send_plane_mask.png'
-                    : null,
+                    : 'assets/icons/icon_chat_sticker.png',
                 assetSize: 30,
                 iconSize: widget.isGenerating ? 25 : 27,
                 iconColor:

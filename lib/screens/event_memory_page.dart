@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../services/app_constants.dart';
 import 'event_memory_character_select_page.dart';
+import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 
 class EventMemoryPage extends StatelessWidget {
   final String eventId;
@@ -55,8 +56,8 @@ class EventMemoryPage extends StatelessWidget {
         }
 
         if (!eventSnapshot.data!.exists) {
-          return const Scaffold(
-            body: Center(child: Text('找不到活動資料')),
+          return Scaffold(
+            body: Center(child: Text(appL10n.event_memory_text_not_found_event)),
           );
         }
 
@@ -180,7 +181,7 @@ class EventMemoryPage extends StatelessWidget {
                           if (memorySnapshot.hasError) {
                             return Center(
                               child: Text(
-                                '限定回憶讀取失敗',
+                                appL10n.event_memory_message_limited_memory_failed_load,
                                 style: GoogleFonts.notoSerifTc(),
                               ),
                             );
@@ -430,17 +431,17 @@ class _MemoryUnlockState {
     required String currencyName,
     required String currencyIcon,
   }) {
-    if (unlocked) return '已解鎖';
+    if (unlocked) return appL10n.event_memory_as_map_label_unlocked;
 
     switch (type) {
       case 'total_earned':
-        return '累積 $currencyIcon $requiredValue $currencyName 解鎖（$currentValue / $requiredValue）';
+        return appL10n.event_memory_as_map_label_unlock(currencyIcon, currencyName, currentValue, requiredValue);
       case 'task':
-        return '完成指定活動任務後解鎖';
+        return appL10n.event_memory_as_map_label_unlock_task_event_complete;
       case 'shop_item':
-        return '兌換指定活動商品後解鎖';
+        return appL10n.event_memory_as_map_label_redeem_unlock_event;
       default:
-        return '尚未解鎖';
+        return appL10n.event_memory_as_map_label_unlock_variant_b;
     }
   }
 }
@@ -637,7 +638,7 @@ class _MemoryHero extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '把只屬於你們的片段，留在這個季節裡。',
+                    appL10n.event_memory_hero_message,
                     style: GoogleFonts.notoSerifTc(
                       fontSize: 11.5,
                       color: hasImage
@@ -654,7 +655,7 @@ class _MemoryHero extends StatelessWidget {
                       borderRadius: BorderRadius.circular(999),
                     ),
                     child: Text(
-                      '限定回憶  $unlockedCount / $totalCount',
+                      appL10n.event_memory_hero_message_limited_memory(totalCount, unlockedCount),
                       style: GoogleFonts.notoSerifTc(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
@@ -722,11 +723,11 @@ class _MemoryChapterCard extends StatelessWidget {
         case _MemoryChapterStatus.locked:
           return '尚未解鎖';
         case _MemoryChapterStatus.unlockedUnviewed:
-          return '已解鎖・尚未觀看';
+          return appL10n.event_memory_status_label_unlocked;
         case _MemoryChapterStatus.viewed:
-          return '已觀看';
+          return appL10n.event_memory_status_label;
         case _MemoryChapterStatus.collected:
-          return '已收藏';
+          return appL10n.event_memory_status_label_collection;
       }
     }
 
@@ -735,11 +736,11 @@ class _MemoryChapterCard extends StatelessWidget {
         case _MemoryChapterStatus.locked:
           return unlockLabel;
         case _MemoryChapterStatus.unlockedUnviewed:
-          return '可以開始這段回憶';
+          return appL10n.event_memory_footer_label_memory_start;
         case _MemoryChapterStatus.viewed:
-          return '可以再次觀看';
+          return appL10n.event_memory_footer_label;
         case _MemoryChapterStatus.collected:
-          return '已收藏至拾光收藏';
+          return appL10n.event_memory_footer_label_collection;
       }
     }
 
@@ -951,7 +952,7 @@ class _EmptyMemoryState extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              '這次活動還沒有公開限定回憶',
+              appL10n.event_memory_empty_message_limited_memory_event_public,
               textAlign: TextAlign.center,
               style: GoogleFonts.notoSerifTc(
                 fontSize: 14,

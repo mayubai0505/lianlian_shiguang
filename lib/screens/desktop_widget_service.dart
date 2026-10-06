@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:home_widget/home_widget.dart';
+import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 
 class DesktopWidgetNativeService {
   static const String appGroupId =
@@ -141,10 +142,10 @@ class DesktopWidgetNativeService {
 
   static const String _registryPrefsKey = 'desktop_widget_registry_v1';
 
-  static const Map<String, String> _statusLabels = <String, String>{
+  static Map<String, String> get _statusLabels => <String, String>{
     'mood': '心情',
-    'currentState': '狀態',
-    'location': '地點',
+    'currentState': appL10n.widget_key_message,
+    'location': appL10n.widget_key_message_variant_b,
     'relationship': '關係',
     'outfit': '衣著',
     'weather': '天氣',
@@ -221,7 +222,7 @@ class DesktopWidgetNativeService {
   }) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null || characterId.trim().isEmpty) {
-      return const <String>['尚未有角色狀態'];
+      return <String>[appL10n.widget_label_character];
     }
 
     try {
@@ -385,18 +386,18 @@ class DesktopWidgetNativeService {
       createdAt = rawCreatedAt;
     }
 
-    if (createdAt == null) return '最新動態';
+    if (createdAt == null) return appL10n.widget_format_post_time_label_moment_latest;
 
     final now = DateTime.now();
     final diff = now.difference(createdAt);
 
-    if (diff.inMinutes < 1) return '剛剛更新了動態';
-    if (diff.inMinutes < 60) return '${diff.inMinutes} 分鐘前更新了動態';
-    if (diff.inHours < 24) return '${diff.inHours} 小時前更新了動態';
-    if (diff.inDays == 1) return '昨天更新了動態';
-    if (diff.inDays < 7) return '${diff.inDays} 天前更新了動態';
+    if (diff.inMinutes < 1) return appL10n.widget_format_post_time_label_update_moment;
+    if (diff.inMinutes < 60) return appL10n.widget_format_post_time_label_minutes_ago_update_moment(diff.inMinutes);
+    if (diff.inHours < 24) return appL10n.widget_format_post_time_label_hours_ago_update_moment(diff.inHours);
+    if (diff.inDays == 1) return appL10n.widget_format_post_time_label_update_moment_days;
+    if (diff.inDays < 7) return appL10n.widget_format_post_time_label_update_moment_days_ago(diff.inDays);
 
-    return '${createdAt.month}/${createdAt.day} 更新了動態';
+    return appL10n.widget_format_post_time_label_update_moment_variant_b(createdAt.month, createdAt.day);
   }
 
   static List<String> buildLatestPostLines({
@@ -416,9 +417,9 @@ class DesktopWidgetNativeService {
     if (trimmedContent.isNotEmpty) {
       lines.add('「$trimmedContent」');
     } else if (hasImage) {
-      lines.add('分享了一張照片');
+      lines.add(appL10n.widget_format_post_time_message_share_photo);
     } else {
-      lines.add('更新了一則動態');
+      lines.add(appL10n.widget_format_post_time_message_update_moment);
     }
 
     final showLikes = settings['showLikes'] != false;
@@ -442,7 +443,7 @@ class DesktopWidgetNativeService {
   }) async {
     if (characterId.trim().isEmpty) {
       return <String, dynamic>{
-        'lines': const <String>['目前還沒有角色動態'],
+        'lines': <String>[appL10n.widget_format_post_time_message_current_character_moment],
         'imageUrl': fallbackImageUrl,
       };
     }
@@ -646,7 +647,7 @@ class DesktopWidgetNativeService {
         .where((line) => line.isNotEmpty)
         .where((line) =>
     !line.startsWith('時間：') &&
-        !line.startsWith('地點：') &&
+        !line.startsWith(appL10n.widget_extract_daily_quote_message) &&
         !line.contains('｜'))
         .toList();
 
@@ -690,7 +691,7 @@ class DesktopWidgetNativeService {
     if (quote.trim().isNotEmpty) {
       lines.add('「${quote.trim()}」');
     } else {
-      lines.add('還沒有留下今天的一句話');
+      lines.add(appL10n.widget_format_daily_quote_time_message_today);
     }
 
     if (settings['showTime'] == true) {
@@ -1103,31 +1104,31 @@ class DesktopWidgetNativeService {
 
     switch (status) {
       case 'ongoing':
-        careLine = '「今天別太勉強自己，我陪妳慢慢來。」';
+        careLine = appL10n.widget_load_period_care_state_message_today;
         final dayCount = state['dayCount'] is num
             ? (state['dayCount'] as num).toInt()
             : 1;
-        cycleLine = '生理期第 $dayCount 天';
+        cycleLine = appL10n.widget_load_period_care_state_message_period_days(dayCount);
         break;
       case 'upcoming':
-        careLine = '「這幾天記得早點休息，別把自己累壞。」';
+        careLine = appL10n.widget_load_period_care_state_message_days;
         final daysUntil = state['daysUntil'] is num
             ? (state['daysUntil'] as num).toInt()
             : 0;
         cycleLine =
-        daysUntil == 0 ? '預計今天開始' : '預計還有 $daysUntil 天';
+        daysUntil == 0 ? appL10n.widget_load_period_care_state_message_today_start : appL10n.widget_load_period_care_state_message_days_variant_b(daysUntil);
         break;
       case 'just_ended':
-        careLine = '「辛苦了，今天也要好好照顧自己。」';
-        cycleLine = '生理期剛結束';
+        careLine = appL10n.widget_load_period_care_state_message_today_variant_b;
+        cycleLine = appL10n.widget_load_period_care_state_message_period_end;
         break;
       case 'normal':
-        careLine = '「今天也記得好好照顧自己。」';
-        cycleLine = '目前沒有特別的週期提醒';
+        careLine = appL10n.widget_load_period_care_state_message_today_variant_c;
+        cycleLine = appL10n.widget_load_period_care_state_message_current_reminder;
         break;
       default:
         careLine = '「今天也記得好好照顧自己。」';
-        cycleLine = '尚未有足夠的週期紀錄';
+        cycleLine = appL10n.widget_load_period_care_state_message;
         break;
     }
 
@@ -1240,8 +1241,8 @@ class DesktopWidgetNativeService {
 
     // 支援 8/17、08-17、8月17日、1998/8/17 等常見角色生日格式。
     final normalized = raw
-        .replaceAll('年', '/')
-        .replaceAll('月', '/')
+        .replaceAll(appL10n.widget_parse_character_birthday_message, '/')
+        .replaceAll(appL10n.widget_parse_character_birthday_message_variant_b, '/')
         .replaceAll('日', '')
         .replaceAll('-', '/')
         .replaceAll('.', '/');
@@ -1275,9 +1276,9 @@ class DesktopWidgetNativeService {
   static List<String> _buildBirthdayCountdownLines(dynamic rawBirthday) {
     final birthday = _parseCharacterBirthday(rawBirthday);
     if (birthday == null) {
-      return const <String>[
-        '角色生日',
-        '尚未設定生日',
+      return <String>[
+        appL10n.widget_build_birthday_countdown_lines_message_character_birthday,
+        appL10n.widget_build_birthday_countdown_lines_message_birthday_settings,
       ];
     }
 
@@ -1303,8 +1304,8 @@ class DesktopWidgetNativeService {
         '${birthday.month}/${birthday.day}';
 
     return <String>[
-      '距離他的生日・$birthdayLabel',
-      days == 0 ? '就是今天' : '還有 $days 天',
+      appL10n.widget_build_birthday_countdown_lines_message_birthday_countdown(birthdayLabel),
+      days == 0 ? appL10n.widget_build_birthday_countdown_lines_message_today : appL10n.widget_build_birthday_countdown_lines_message_days(days),
     ];
   }
 
@@ -1313,9 +1314,9 @@ class DesktopWidgetNativeService {
       ) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null || characterId.trim().isEmpty) {
-      return const <String>[
-        '和他相遇',
-        '尚未有相遇紀錄',
+      return <String>[
+        appL10n.widget_build_birthday_countdown_lines_message,
+        appL10n.widget_build_birthday_countdown_lines_message_variant_b,
       ];
     }
 
@@ -1354,7 +1355,7 @@ class DesktopWidgetNativeService {
 
       return <String>[
         '和他相遇',
-        '${days < 1 ? 1 : days} 天',
+        appL10n.widget_build_birthday_countdown_lines_message_days_variant_b(days < 1 ? 1 : days),
       ];
     } catch (error) {
       debugPrint('⚠️ Widget 讀取相遇天數失敗：$error');
@@ -1380,8 +1381,8 @@ class DesktopWidgetNativeService {
 
     if (targetDate == null) {
       return <String>[
-        content.isEmpty ? '重要的日子' : content,
-        '尚未選擇日期',
+        content.isEmpty ? appL10n.widget_build_birthday_countdown_lines_message_variant_c : content,
+        appL10n.widget_build_birthday_countdown_lines_message_date_select,
       ];
     }
 
@@ -1393,7 +1394,7 @@ class DesktopWidgetNativeService {
         ? '還有 $days 天'
         : days == 0
         ? '就是今天'
-        : '已過 ${days.abs()} 天';
+        : appL10n.widget_build_birthday_countdown_lines_message_elapsed_days(days.abs());
 
     return <String>[
       content.isEmpty ? '重要的日子' : content,

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 
 class Moment {
   final String id;
@@ -53,8 +54,8 @@ class Moment {
     try {
       // ✨ 根據身分決定文案
       final String mailBody = isCreatorPost
-          ? '$senderNickname在妳的動態下留言：「$commentText」'
-          : '$senderNickname給$authorName留了話：「$commentText」';
+          ? appL10n.moment_notification_comment_on_your_post(commentText, senderNickname)
+          : appL10n.moment_notification_comment_on_character_post(authorName, commentText, senderNickname);
 
       // ✅ 固定通知 ID：同一則留言只會有一封通知
       final String notificationId = 'moment_comment_${id}_$commentId';
@@ -68,7 +69,7 @@ class Moment {
         'type': 'comment',
         'fromId': currentUserId,
         'fromName': senderNickname,
-        'title': isCreatorPost ? '動態有新回應！💬' : '角色人氣爆發！🔥',
+        'title': isCreatorPost ? appL10n.moment_notification_new_reply_title : appL10n.moment_notification_character_popularity_title,
         'body': mailBody,
         'postId': id,
         'commentId': commentId,

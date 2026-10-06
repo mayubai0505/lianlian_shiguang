@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../services/toast_utils.dart';
 import '../services/app_constants.dart';
 import 'event_memory_page.dart';
+import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 
 const Color _eventDefaultTextPrimary = Color(0xFF3B3340);
 const Color _eventDefaultTextSecondary = Color(0xFF6F6673);
@@ -55,7 +56,7 @@ class EventPage extends StatelessWidget {
 
           if (snapshot.hasError || !snapshot.hasData || !snapshot.data!.exists) {
             return _EventUnavailablePage(
-              message: snapshot.hasError ? '活動資料讀取失敗' : '找不到這個活動',
+              message: snapshot.hasError ? appL10n.event_message_failed_load : appL10n.event_message_not_found,
             );
           }
 
@@ -230,12 +231,12 @@ class _EventContent extends StatelessWidget {
   DateTime? _date(dynamic value) => value is Timestamp ? value.toDate() : null;
 
   String _remaining(DateTime? end) {
-    if (end == null) return '活動進行中';
+    if (end == null) return appL10n.event_remaining_label;
     final d = end.difference(DateTime.now());
     if (d.isNegative) return '活動已結束';
-    if (d.inDays >= 1) return '剩餘 ${d.inDays + 1} 天';
-    if (d.inHours >= 1) return '剩餘 ${d.inHours} 小時';
-    return '即將結束';
+    if (d.inDays >= 1) return appL10n.event_remaining_label_days(d.inDays + 1);
+    if (d.inHours >= 1) return appL10n.event_remaining_label_hours(d.inHours);
+    return appL10n.event_remaining_label_end;
   }
 
   String _dateText(DateTime? start, DateTime? end) {
@@ -678,7 +679,7 @@ class _EventHeroCard extends StatelessWidget {
                 width: 38,
                 height: 38,
                 child: IconButton(
-                  tooltip: '返回',
+                  tooltip: appL10n.event_balance_pill_tooltip_back,
                   padding: EdgeInsets.zero,
                   onPressed: () => Navigator.of(context).maybePop(),
                   icon: const Icon(
@@ -995,19 +996,19 @@ class _TaskListState extends State<_TaskList> {
       ToastUtils.showCenterToast(
         context,
         reward > 0
-            ? '已領取 ${widget.currencyIcon} $reward ${widget.currencyName}，目前共有 $currency'
-            : '獎勵已領取',
+            ? appL10n.event_claim_task_message_claim_current(currency, reward, widget.currencyIcon, widget.currencyName)
+            : appL10n.event_claim_task_message_reward_claim,
         customIcon: Icons.check_circle_rounded,
       );
     } on FirebaseFunctionsException catch (error) {
       if (!mounted) return;
 
-      String message = error.message ?? '領取失敗';
+      String message = error.message ?? appL10n.event_claim_task_message_claim_failed;
 
       if (error.code == 'already-exists') {
-        message = '這個任務已經領取過了';
+        message = appL10n.event_claim_task_message_task_claim;
       } else if (error.code == 'failed-precondition') {
-        message = error.message ?? '任務尚未完成';
+        message = error.message ?? appL10n.event_claim_task_message_incomplete_task;
       }
 
       ToastUtils.showCenterToast(
@@ -1038,13 +1039,13 @@ class _TaskListState extends State<_TaskList> {
       stream: widget.ref.orderBy('order').snapshots(),
       builder: (context, taskSnapshot) {
         if (!taskSnapshot.hasData) {
-          return const _SoftCard(label: '讀取任務中…');
+          return _SoftCard(label: appL10n.event_task_list_label_task_load);
         }
         if (taskSnapshot.data!.docs.isEmpty) {
-          return const _SoftCard(label: '目前沒有任務');
+          return _SoftCard(label: appL10n.event_task_list_label_task_current);
         }
         if (progressRef == null) {
-          return const _SoftCard(label: '登入後即可查看活動任務進度');
+          return _SoftCard(label: appL10n.event_task_list_label_task_login_progress);
         }
 
         return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
@@ -1285,14 +1286,14 @@ class _MilestoneProgress extends StatelessWidget {
       builder: (context, milestoneSnapshot) {
         if (!milestoneSnapshot.hasData) {
           return _CompactSectionMessage(
-            label: '讀取累積獎勵中…',
+            label: appL10n.event_milestone_progress_label_reward_load,
             accent: accent,
           );
         }
         final docs = milestoneSnapshot.data!.docs;
         if (docs.isEmpty) {
           return _CompactSectionMessage(
-            label: '目前沒有累積獎勵',
+            label: appL10n.event_milestone_progress_label_reward_current,
             accent: accent,
           );
         }
@@ -1317,7 +1318,7 @@ class _MilestoneProgress extends StatelessWidget {
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: Text(
-                    '目前  $totalEarned',
+                    appL10n.event_build_with_total_message_current(totalEarned),
                     style: GoogleFonts.notoSerifTc(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
@@ -1691,15 +1692,15 @@ class _EventShopPageState extends State<EventShopPage> {
       builder: (dialogContext) {
         return AlertDialog(
           title: Text(
-            '確認兌換',
+            appL10n.event_progress_ref_message_redeem_confirm,
             style: GoogleFonts.notoSerifTc(
               fontWeight: FontWeight.w700,
             ),
           ),
           content: Text(
             itemType == 'flower' && rewardAmount > 0
-                ? '要使用 ${widget.currencyIcon} $price 兌換「$itemName」嗎？\n\n兌換後可獲得 $rewardAmount 花花。'
-                : '要使用 ${widget.currencyIcon} $price 兌換「$itemName」嗎？',
+                ? appL10n.event_progress_ref_message_redeem_flowers(itemName, price, rewardAmount, widget.currencyIcon)
+                : appL10n.event_progress_ref_message_redeem(itemName, price, widget.currencyIcon),
             style: GoogleFonts.notoSerifTc(
               height: 1.55,
               color: widget.textPrimaryColor,
@@ -1746,20 +1747,20 @@ class _EventShopPageState extends State<EventShopPage> {
       ToastUtils.showCenterToast(
         context,
         returnedReward > 0
-            ? '兌換成功！獲得 $returnedReward 花花'
-            : '兌換成功！「$itemName」已加入活動收藏',
+            ? appL10n.event_progress_ref_message_redeem_success_flowers(returnedReward)
+            : appL10n.event_progress_ref_message_event_collection_redeem_success_add(itemName),
         customIcon: Icons.check_circle_rounded,
       );
     } on FirebaseFunctionsException catch (error) {
       if (!mounted) return;
 
-      String message = error.message ?? '兌換失敗';
+      String message = error.message ?? appL10n.event_progress_ref_message_redeem_failed;
 
       if (error.code == 'already-exists') {
-        message = '這個商品已經兌換過了';
+        message = appL10n.event_progress_ref_message_redeem_variant_b;
       } else if (error.code == 'failed-precondition' &&
-          message.contains('貨幣不足')) {
-        message = '${widget.currencyName}不足';
+          message.contains(appL10n.event_progress_ref_message_insufficient)) {
+        message = appL10n.event_progress_ref_message_insufficient_variant_b(widget.currencyName);
       }
 
       ToastUtils.showCenterToast(
@@ -1786,6 +1787,7 @@ class _EventShopPageState extends State<EventShopPage> {
     required Map<String, dynamic> data,
     required int price,
     required int redeemedCount,
+    required int maxRedemptions,
     required bool alreadyRedeemed,
     required bool insufficient,
   }) async {
@@ -1802,9 +1804,9 @@ class _EventShopPageState extends State<EventShopPage> {
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.58),
       builder: (dialogContext) {
-        String buttonText = '兌換';
+        String buttonText = appL10n.event_progress_ref_message_redeem_variant_c;
         if (alreadyRedeemed) {
-          buttonText = '已兌換';
+          buttonText = appL10n.event_progress_ref_message_redeem_variant_d;
         } else if (insufficient) {
           buttonText = '${widget.currencyName}不足';
         }
@@ -1903,7 +1905,7 @@ class _EventShopPageState extends State<EventShopPage> {
                             if (itemType == 'flower' && rewardAmount > 0) ...[
                               const SizedBox(height: 10),
                               Text(
-                                '兌換後可獲得 $rewardAmount 花花',
+                                appL10n.event_message_redeem_flowers(rewardAmount),
                                 style: GoogleFonts.notoSerifTc(
                                   fontSize: 11.5,
                                   fontWeight: FontWeight.w600,
@@ -1911,10 +1913,12 @@ class _EventShopPageState extends State<EventShopPage> {
                                 ),
                               ),
                             ],
-                            if (redeemedCount > 0 && !alreadyRedeemed) ...[
+                            if (maxRedemptions > 0 || redeemedCount > 0) ...[
                               const SizedBox(height: 8),
                               Text(
-                                '已兌換 $redeemedCount 次',
+                                maxRedemptions > 0
+                                    ? '已兌換 $redeemedCount / $maxRedemptions 次'
+                                    : '已兌換 $redeemedCount 次',
                                 style: GoogleFonts.notoSerifTc(
                                   fontSize: 10.5,
                                   color: colors.onSurface
@@ -2002,7 +2006,7 @@ class _EventShopPageState extends State<EventShopPage> {
       body: progressRef == null
           ? Center(
         child: Text(
-          '登入後即可使用活動商店',
+          appL10n.event_message_event_shop_login,
           style: GoogleFonts.notoSerifTc(
             color: widget.textSecondaryColor,
           ),
@@ -2122,7 +2126,7 @@ class _EventShopPageState extends State<EventShopPage> {
                     if (docs.isEmpty) {
                       return Center(
                         child: Text(
-                          '目前沒有可兌換商品',
+                          appL10n.event_message_redeem_current,
                           style: GoogleFonts.notoSerifTc(
                             color: widget.textMutedColor,
                           ),
@@ -2155,9 +2159,16 @@ class _EventShopPageState extends State<EventShopPage> {
                           '${redeemedShopItems[doc.id]}',
                         ) ??
                             0;
-                        final limitOne = data['limitOne'] == true;
+                        final rawMaxRedemptions = data['maxRedemptions'];
+                        final int maxRedemptions = rawMaxRedemptions is num
+                            ? rawMaxRedemptions.toInt()
+                            : int.tryParse(
+                          rawMaxRedemptions?.toString() ?? '',
+                        ) ??
+                            (data['limitOne'] == true ? 1 : 0);
                         final alreadyRedeemed =
-                            limitOne && redeemedCount > 0;
+                            maxRedemptions > 0 &&
+                                redeemedCount >= maxRedemptions;
                         final insufficient = currency < price;
 
                         return _ShopItemCard(
@@ -2165,6 +2176,7 @@ class _EventShopPageState extends State<EventShopPage> {
                           data: data,
                           currencyIcon: widget.currencyIcon,
                           redeemedCount: redeemedCount,
+                          maxRedemptions: maxRedemptions,
                           isRedeeming: _redeemingItemIds.contains(doc.id),
                           alreadyRedeemed: alreadyRedeemed,
                           insufficient: insufficient,
@@ -2178,6 +2190,7 @@ class _EventShopPageState extends State<EventShopPage> {
                             data: data,
                             price: price,
                             redeemedCount: redeemedCount,
+                            maxRedemptions: maxRedemptions,
                             alreadyRedeemed: alreadyRedeemed,
                             insufficient: insufficient,
                           ),
@@ -2205,6 +2218,7 @@ class _ShopItemCard extends StatelessWidget {
   final Map<String, dynamic> data;
   final String currencyIcon;
   final int redeemedCount;
+  final int maxRedemptions;
   final bool isRedeeming;
   final bool alreadyRedeemed;
   final bool insufficient;
@@ -2221,6 +2235,7 @@ class _ShopItemCard extends StatelessWidget {
     required this.data,
     required this.currencyIcon,
     required this.redeemedCount,
+    required this.maxRedemptions,
     required this.isRedeeming,
     required this.alreadyRedeemed,
     required this.insufficient,
@@ -2310,7 +2325,7 @@ class _ShopItemCard extends StatelessWidget {
                       if (itemType == 'flower' && rewardAmount > 0) ...[
                         const SizedBox(height: 4),
                         Text(
-                          '可獲得 $rewardAmount 花花',
+                          appL10n.event_shop_item_card_message_flowers(rewardAmount),
                           style: GoogleFonts.notoSerifTc(
                             fontSize: 10,
                             color: accentColor,
@@ -2318,10 +2333,12 @@ class _ShopItemCard extends StatelessWidget {
                           ),
                         ),
                       ],
-                      if (redeemedCount > 0 && !alreadyRedeemed) ...[
+                      if (maxRedemptions > 0 || redeemedCount > 0) ...[
                         const SizedBox(height: 3),
                         Text(
-                          '已兌換 $redeemedCount 次',
+                          maxRedemptions > 0
+                              ? '已兌換 $redeemedCount / $maxRedemptions 次'
+                              : '已兌換 $redeemedCount 次',
                           style: GoogleFonts.notoSerifTc(
                             fontSize: 9.5,
                             color: textMutedColor,
@@ -2363,7 +2380,7 @@ class _ShopItemCard extends StatelessWidget {
                                 alreadyRedeemed
                                     ? '已兌換'
                                     : insufficient
-                                    ? '不足'
+                                    ? appL10n.event_message_insufficient
                                     : '兌換',
                                 style: GoogleFonts.notoSerifTc(
                                   fontSize: 10.5,

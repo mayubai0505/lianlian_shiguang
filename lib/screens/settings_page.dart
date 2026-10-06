@@ -18,6 +18,7 @@ import '../page/admin_announcement_page.dart';
 import '../page/app_texts.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'desktop_widget_settings_page.dart';
+import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 //設定
 
 class SettingsPage extends StatefulWidget { // ✨ 改成 StatefulWidget
@@ -497,8 +498,9 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
 
                   _buildSettingsTile(
-                    iconData: Icons.text_fields_rounded,
-                    title: '字體',
+                    maskAsset:
+                    'assets/icons/icon_settings_font.png',
+                    title: l10n.font_selection_title,
                     subtitle: '${themeNotifier.currentFont.label}・${(themeNotifier.fontScale * 100).round()}%',
                     onTap: () {
                       Navigator.push(
@@ -522,9 +524,10 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
 
                   _buildSettingsTile(
-                    iconData: Icons.widgets_rounded,
-                    title: '桌面小工具',
-                    subtitle: '讓喜歡的角色陪妳出現在每一天',
+                    maskAsset:
+                    'assets/icons/icon_settings_widget-2.png',
+                    title: l10n.widget_settings_message_desktop_widget,
+                    subtitle: appL10n.settings_subtitle_character_days,
                     onTap: () {
                       Navigator.push(
                         context,

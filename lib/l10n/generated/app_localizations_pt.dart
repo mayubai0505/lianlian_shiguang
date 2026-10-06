@@ -8577,4 +8577,1537 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get chat_mode_resonance_cost_short => '10 flores';
+
+  @override
+  String get notification_channel_chat_description =>
+      'Usado para receber as respostas mais recentes dos personagens e lembretes do jogo.';
+
+  @override
+  String get subscription_star_contract_name =>
+      'Lianlian Shiguang · Pacto Estelar';
+
+  @override
+  String moment_notification_comment_on_your_post(
+      Object commentText, Object senderNickname) {
+    return '$senderNickname comentou na sua publicação: “$commentText”';
+  }
+
+  @override
+  String get moment_notification_new_reply_title =>
+      'Nova resposta na sua publicação! 💬';
+
+  @override
+  String get moment_notification_character_popularity_title =>
+      'A popularidade do personagem disparou! 🔥';
+
+  @override
+  String get font_size_small => 'Pequeno';
+
+  @override
+  String get font_size_standard => 'Padrão';
+
+  @override
+  String get font_size_slightly_large => 'Um pouco maior';
+
+  @override
+  String get font_size_large => 'Grande';
+
+  @override
+  String get font_size_extra_large => 'Extra grande';
+
+  @override
+  String get font_selection_title => 'Fonte';
+
+  @override
+  String get font_selection_description =>
+      'Escolha a fonte mais confortável para ler histórias e conversar.';
+
+  @override
+  String get font_size_title => 'Tamanho da fonte';
+
+  @override
+  String get font_selection_tagline =>
+      'Escreva novamente a sua história com quem você gosta.';
+
+  @override
+  String font_selection_applied_message(Object value1) {
+    return '“$value1” aplicado';
+  }
+
+  @override
+  String get font_selection_local_storage_note =>
+      'A fonte e o tamanho são aplicados imediatamente e salvos neste dispositivo. Ao restaurar a aparência padrão, voltarão para “Shiguang Serif + Padrão”.';
+
+  @override
+  String get inbox_customer_service_report => 'Relatório ao suporte';
+
+  @override
+  String get inbox_content_text_message_player_title_send =>
+      'Título enviado pelo jogador';
+
+  @override
+  String get inbox_content_text_message_player_content_send =>
+      'Conteúdo enviado pelo jogador';
+
+  @override
+  String avatar_frame_equipped_message(Object value1) {
+    return '“$value1” equipado';
+  }
+
+  @override
+  String get avatar_frame_unequip_frame_snackbar =>
+      'Moldura de avatar removida';
+
+  @override
+  String get avatar_frame_unequip_frame_message_event =>
+      'Moldura de avatar do evento';
+
+  @override
+  String get avatar_frame_message => 'Moldura de avatar';
+
+  @override
+  String avatar_frame_load_failed(Object value1) {
+    return 'Falha ao carregar molduras de avatar: $value1';
+  }
+
+  @override
+  String get avatar_frame_parse_frames_message_select =>
+      'Escolha a moldura de avatar que deseja usar';
+
+  @override
+  String get avatar_frame_parse_frames_message_event =>
+      'As molduras de avatar obtidas em eventos ficam guardadas permanentemente e podem ser trocadas ou removidas a qualquer momento.';
+
+  @override
+  String get avatar_frame_parse_frames_title => 'Não usar moldura de avatar';
+
+  @override
+  String get avatar_frame_parse_frames_subtitle_avatar =>
+      'Mostrar avatar original';
+
+  @override
+  String get avatar_frame_parse_frames_message_event_shop_redeem_current =>
+      'Você ainda não possui molduras de avatar.\nAs molduras resgatadas na loja do evento aparecerão aqui.';
+
+  @override
+  String get avatar_frame_parse_frames_message_event_variant_b =>
+      'Moldura de avatar limitada do evento';
+
+  @override
+  String get background_settings_message => 'Fundos limitados';
+
+  @override
+  String get background_title_exclusive_photo_current =>
+      'Ainda não há fotos exclusivas';
+
+  @override
+  String get background_subtitle_unlock_character_photo =>
+      'As fotos do personagem desbloqueadas mais tarde aparecerão aqui.';
+
+  @override
+  String get background_title_login => 'Entre para ver os fundos limitados';
+
+  @override
+  String get background_subtitle_redeem_chat_event =>
+      'Os fundos de chat obtidos em eventos ficam salvos aqui.';
+
+  @override
+  String get background_title => 'Você ainda não obteve fundos limitados';
+
+  @override
+  String get background_subtitle_event_shop_redeem_chat =>
+      'Os fundos de chat resgatados na loja do evento aparecerão aqui.';
+
+  @override
+  String get background_is_limited_background_type_message_chat_event =>
+      'Fundo de chat limitado do evento';
+
+  @override
+  String background_is_limited_background_type_message_current_chat(
+      Object value1) {
+    return 'Definir “$value1” como fundo do chat atual?';
+  }
+
+  @override
+  String character_edit_message_character_settings(Object value1) {
+    return '【角色性格與設定】\n$value1';
+  }
+
+  @override
+  String character_edit_message(Object value1) {
+    return '【說話語氣與風格】\n$value1';
+  }
+
+  @override
+  String character_edit_message_variant_b(Object value1) {
+    return '【社交與環境互動】\n$value1';
+  }
+
+  @override
+  String character_edit_save_to_draft_message_current_character(Object value1) {
+    return 'Personagem principal atual: 【$value1】\n';
+  }
+
+  @override
+  String character_edit_message_back(Object result) {
+    return '🚪 返回原本的 ProfilePage：$result';
+  }
+
+  @override
+  String character_edit_save_character_message(Object value1) {
+    return '📦 準備搬移 $value1 則記憶碎片：';
+  }
+
+  @override
+  String character_edit_message_complete(Object value1) {
+    return '✅ 已完成搬移 $value1 則記憶碎片';
+  }
+
+  @override
+  String character_edit_preload_first_voice_sample_message_background_start(
+      Object voiceId) {
+    return '⏳ 開始背景預載第一個 Voice：$voiceId';
+  }
+
+  @override
+  String get character_edit_preload_first_voice_sample_message_update =>
+      '⚠️ Voice 清單已更新，略過舊的預載結果';
+
+  @override
+  String
+      get character_edit_preload_first_voice_sample_message_background_complete =>
+          '✅ 第一個 Voice 已背景預載完成';
+
+  @override
+  String get character_edit_preload_first_voice_sample_message_failed =>
+      '⚠️ 第一個 Voice 預載失敗：';
+
+  @override
+  String character_edit_preload_first_voice_sample_message(Object value1) {
+    return '✅ matchVoiceFromBank 回傳：$value1';
+  }
+
+  @override
+  String get character_edit_error_voice => '語音服務回傳格式錯誤';
+
+  @override
+  String get character_edit_error_voice_variant_b => '語音服務沒有回傳 previews';
+
+  @override
+  String character_edit_message_success_voice_match(Object value1) {
+    return '✅ 成功配對 $value1 個 Voice Bank 聲音';
+  }
+
+  @override
+  String get character_edit_message_failed_match =>
+      '========== Voice Bank 配對失敗 ==========';
+
+  @override
+  String get character_edit_message_error_match =>
+      '========== Voice Bank 配對未知錯誤 ==========';
+
+  @override
+  String get character_edit_preview_voice_sample_error_preview => '試聽服務回傳格式錯誤';
+
+  @override
+  String get character_edit_preview_voice_sample_error_preview_variant_b =>
+      '試聽音訊資料為空';
+
+  @override
+  String get character_edit_preview_voice_sample_error_failed_preview =>
+      '試聽音訊解析失敗';
+
+  @override
+  String get character_edit_test_voice_settings_message_failed =>
+      '========== testVoiceSettings 失敗 ==========';
+
+  @override
+  String character_edit_confirm_voice_selection_message_selected(
+      Object realVoiceId) {
+    return '✅ Voice選定正式 Voice ID：$realVoiceId';
+  }
+
+  @override
+  String
+      get character_edit_confirm_voice_selection_message_save_failed_select =>
+          '========== 儲存 Voice Bank 選擇失敗 ==========';
+
+  @override
+  String
+      get character_edit_confirm_voice_selection_message_failed_voice_selected =>
+          '========== 選定 Voice Bank 聲音失敗 ==========';
+
+  @override
+  String get character_to_map_message_creator => 'Criador misterioso';
+
+  @override
+  String get character_get_character_by_id_message_load_background_story =>
+      'Carregando história de fundo...';
+
+  @override
+  String get character_get_character_by_id_message_sync =>
+      'Sincronizando história inicial...';
+
+  @override
+  String get character_get_character_by_id_message =>
+      'Preparando a primeira fala...';
+
+  @override
+  String get character_get_character_by_id_message_background =>
+      'Carregando fundo...';
+
+  @override
+  String get character_get_character_by_id_message_load =>
+      'Carregando universo...';
+
+  @override
+  String get character_get_character_by_id_message_load_settings =>
+      'Carregando configurações principais do personagem...';
+
+  @override
+  String get character_get_character_by_id_message_variant_b =>
+      'Carregando personalidade...';
+
+  @override
+  String get character_get_character_by_id_message_appearance =>
+      'Carregando descrição da aparência...';
+
+  @override
+  String get character_get_character_by_id_message_variant_c =>
+      'Carregando estilo de fala...';
+
+  @override
+  String get character_get_character_by_id_message_load_variant_b =>
+      'Ainda não carregado';
+
+  @override
+  String get character_get_character_by_id_message_variant_d => 'Desconhecido';
+
+  @override
+  String get character_get_character_by_id_message_load_variant_c =>
+      'Carregando exemplos de diálogo...';
+
+  @override
+  String get character_get_character_by_id_message_variant_e =>
+      'Primeiro encontro';
+
+  @override
+  String get character_get_character_by_id_message_variant_f => 'Conhecidos';
+
+  @override
+  String get character_get_character_by_id_message_variant_g => 'Flertando';
+
+  @override
+  String get chat_input_message_sticker => 'Sticker';
+
+  @override
+  String get chat_text =>
+      'Você atingiu o limite de conversas casuais gratuitas de hoje';
+
+  @override
+  String get chat_message_flowers_today_continue =>
+      'Você já usou as 10 conversas casuais gratuitas de hoje.\n\nA partir de agora, cada conversa casual custa 1 Flor. Deseja continuar?';
+
+  @override
+  String get chat_text_continue => 'Aceitar e continuar';
+
+  @override
+  String get chat_empty_message_label_current_sticker =>
+      'Nenhum sticker está disponível no momento.';
+
+  @override
+  String get chat_empty_message_label_sticker =>
+      'Ainda não há stickers usados recentemente';
+
+  @override
+  String get chat_empty_message_label_sticker_variant_b =>
+      'Ainda não há stickers favoritos';
+
+  @override
+  String get chat_empty_message_label_current_sticker_variant_b =>
+      'Nenhum sticker está disponível no momento';
+
+  @override
+  String get chat_empty_message_sticker => 'Meus stickers';
+
+  @override
+  String get chat_empty_message => 'Usados recentemente';
+
+  @override
+  String get chat_empty_message_variant_b => 'Favoritos';
+
+  @override
+  String get chat_send_sticker_message_current_unavailable_sticker =>
+      'Este sticker não está disponível no momento';
+
+  @override
+  String chat_message_theater(Object sceneTitle) {
+    return '—— Teatro・$sceneTitle ——';
+  }
+
+  @override
+  String get chat_handle_regenerate_button_message_character_reply_again =>
+      'A resposta anterior do personagem será gerada novamente.';
+
+  @override
+  String creator_profile_reason_tile_message_report_select_reason(
+      Object creatorName) {
+    return 'Escolha o motivo para denunciar “$creatorName”:';
+  }
+
+  @override
+  String get widget_key_message => 'Status';
+
+  @override
+  String get widget_key_message_variant_b => 'Localização';
+
+  @override
+  String get widget_label_character => 'Ainda não há status do personagem';
+
+  @override
+  String get widget_format_post_time_label_moment_latest =>
+      'Publicação mais recente';
+
+  @override
+  String get widget_format_post_time_label_update_moment =>
+      'Acabou de atualizar uma publicação';
+
+  @override
+  String widget_format_post_time_label_minutes_ago_update_moment(
+      Object value1) {
+    return 'Atualizou uma publicação há $value1 minutos';
+  }
+
+  @override
+  String widget_format_post_time_label_hours_ago_update_moment(Object value1) {
+    return 'Atualizou uma publicação há $value1 horas';
+  }
+
+  @override
+  String get widget_format_post_time_label_update_moment_days =>
+      'Atualizou uma publicação ontem';
+
+  @override
+  String widget_format_post_time_label_update_moment_days_ago(Object value1) {
+    return 'Atualizou uma publicação há $value1 dias';
+  }
+
+  @override
+  String widget_format_post_time_label_update_moment_variant_b(
+      Object value1, Object value2) {
+    return 'Atualizou uma publicação em $value1/$value2';
+  }
+
+  @override
+  String get widget_format_post_time_message_share_photo =>
+      'Compartilhou uma foto';
+
+  @override
+  String get widget_format_post_time_message_update_moment =>
+      'Publicou uma atualização';
+
+  @override
+  String get widget_format_post_time_message_current_character_moment =>
+      'Ainda não há publicações do personagem';
+
+  @override
+  String get widget_extract_daily_quote_message => 'Localização:';
+
+  @override
+  String get widget_format_daily_quote_time_message_today =>
+      'Ainda não há uma frase para hoje';
+
+  @override
+  String get widget_load_period_care_state_message_today =>
+      '“Não se force demais hoje. Eu fico com você e vamos com calma.”';
+
+  @override
+  String widget_load_period_care_state_message_period_days(Object dayCount) {
+    return 'Dia $dayCount da menstruação';
+  }
+
+  @override
+  String get widget_load_period_care_state_message_days =>
+      '“Nos próximos dias, tente descansar um pouco mais cedo. Não se desgaste.”';
+
+  @override
+  String get widget_load_period_care_state_message_today_start =>
+      'Previsto para começar hoje';
+
+  @override
+  String widget_load_period_care_state_message_days_variant_b(
+      Object daysUntil) {
+    return 'Previsto em $daysUntil dias';
+  }
+
+  @override
+  String get widget_load_period_care_state_message_today_variant_b =>
+      '“Você se esforçou muito. Cuide bem de si hoje.”';
+
+  @override
+  String get widget_load_period_care_state_message_period_end =>
+      'A menstruação acabou de terminar';
+
+  @override
+  String get widget_load_period_care_state_message_today_variant_c =>
+      '“Lembre-se de cuidar bem de si hoje também.”';
+
+  @override
+  String get widget_load_period_care_state_message_current_reminder =>
+      'Nenhum lembrete especial do ciclo no momento';
+
+  @override
+  String get widget_load_period_care_state_message =>
+      'Ainda não há registros suficientes do ciclo';
+
+  @override
+  String get widget_parse_character_birthday_message => 'Ano';
+
+  @override
+  String get widget_parse_character_birthday_message_variant_b => 'Mês';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_character_birthday =>
+      'Aniversário do personagem';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_birthday_settings =>
+      'Aniversário não definido';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_birthday_countdown(
+      Object birthdayLabel) {
+    return 'Até o aniversário dele・$birthdayLabel';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_today => 'É hoje';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_days(Object days) {
+    return 'Faltam $days dias';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message =>
+      'Desde que se conheceram';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_variant_b =>
+      'Ainda não há registro do encontro';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_days_variant_b(
+      Object value1) {
+    return '$value1 dias';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_variant_c =>
+      'Dia importante';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_date_select =>
+      'Nenhuma data selecionada';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_elapsed_days(
+      Object value1) {
+    return 'Há $value1 dias';
+  }
+
+  @override
+  String get widget_settings_remove_title_character_latest =>
+      'Publicação mais recente do personagem';
+
+  @override
+  String get widget_settings_remove_subtitle_moment_latest =>
+      'Veja a atualização mais recente dele sem abrir o app.';
+
+  @override
+  String get widget_settings_remove_title_period =>
+      'Acompanhamento durante a menstruação';
+
+  @override
+  String get widget_settings_remove_subtitle_character_end =>
+      'Um pouco mais de carinho do personagem antes, durante e depois da menstruação.';
+
+  @override
+  String get widget_settings_remove_title => 'Frase de hoje';
+
+  @override
+  String get widget_settings_remove_subtitle_days =>
+      'Todos os dias, uma frase estará esperando por você na tela inicial.';
+
+  @override
+  String get widget_settings_remove_title_reminder =>
+      'Aniversários / Lembretes';
+
+  @override
+  String get widget_settings_remove_subtitle_character_birthday_reminder =>
+      'Lembrem juntos o dia em que se conheceram e os aniversários, e deixe o personagem lembrar você das coisas importantes.';
+
+  @override
+  String get widget_settings_remove_title_character => 'Status do personagem';
+
+  @override
+  String get widget_settings_remove_subtitle_chat_latest_mood =>
+      'Leve para a tela inicial o humor, status e localização mais recentes do chat.';
+
+  @override
+  String get widget_settings_size_label => 'Médio';
+
+  @override
+  String get widget_settings_size_label_message_send =>
+      'A solicitação para adicionar à tela inicial foi enviada.';
+
+  @override
+  String get widget_settings_size_label_message_try_again_later_failed =>
+      'Falha ao adicionar à tela inicial. Tente novamente mais tarde.';
+
+  @override
+  String get widget_settings_edit_saved_widget_message_character_reminder_again =>
+      'O antigo “Lembrete de tarefas do personagem” foi incorporado a “Aniversários / Lembretes”. Crie-o novamente.';
+
+  @override
+  String get widget_settings_delete_saved_widget_title_delete_small =>
+      'Excluir widget?';
+
+  @override
+  String
+      widget_settings_delete_saved_widget_message_stop_display_long_press_home_after_delete(
+          Object value1, Object value2) {
+    return 'Deseja excluir “$value1・$value2”?\n\nApós a exclusão, este widget deixará de mostrar conteúdo do personagem e orientará o jogador a pressionar e segurar a tela inicial para removê-lo.';
+  }
+
+  @override
+  String get widget_settings_delete_saved_widget_message_delete_settings_small =>
+      'As configurações do widget foram excluídas; o widget correspondente na tela inicial foi desativado.';
+
+  @override
+  String get widget_settings_message_desktop_widget =>
+      'Widgets da tela inicial';
+
+  @override
+  String get widget_settings_message_character_days =>
+      'Deixe seu personagem favorito acompanhar você todos os dias.';
+
+  @override
+  String get widget_settings_message_small => 'Meus widgets';
+
+  @override
+  String get widget_settings_message_desktop_widget_variant_b =>
+      'Ainda não há widgets na tela inicial';
+
+  @override
+  String get widget_settings_message_character_reminder =>
+      'Escolha um personagem favorito e mostre seus lembretes, publicações ou status na tela inicial.';
+
+  @override
+  String widget_settings_message_size(Object value1) {
+    return 'Tamanho $value1';
+  }
+
+  @override
+  String get widget_settings_tooltip => 'Adicionar à tela inicial';
+
+  @override
+  String get widget_settings_tooltip_small => 'Editar widget';
+
+  @override
+  String get widget_settings_tooltip_delete_small => 'Excluir widget';
+
+  @override
+  String get widget_settings_message_desktop_widget_variant_c =>
+      'Adicionar widget à tela inicial';
+
+  @override
+  String get widget_settings_message_character_photo_content_select_small =>
+      'Cada widget pode escolher de forma independente o personagem, a foto do personagem e o conteúdo exibido. Você também pode colocar vários personagens ao mesmo tempo na tela inicial.';
+
+  @override
+  String get widget_settings_desktop_type_selection_message_select_small =>
+      'Escolher widget';
+
+  @override
+  String get widget_settings_desktop_type_selection_message_select =>
+      'Primeiro escolha como deseja que o personagem acompanhe você na tela inicial.';
+
+  @override
+  String
+      get widget_settings_go_to_photo_step_message_try_again_later_failed_load_character_photo =>
+          'Falha ao carregar as fotos do personagem. Tente novamente mais tarde.';
+
+  @override
+  String get widget_settings_message_character_select => 'Escolher personagem';
+
+  @override
+  String get widget_settings_message_character_friend_days =>
+      'Somente personagens adicionados como amigos ou com quem você já conversou são exibidos.';
+
+  @override
+  String get widget_settings_hint_character_search => 'Pesquisar personagens';
+
+  @override
+  String get widget_settings_message_try_again_later_failed_load_character =>
+      'Falha ao carregar personagens. Tente novamente mais tarde.';
+
+  @override
+  String get widget_settings_message_current_character_chat_friend_add =>
+      'Não há personagens correspondentes no momento. Converse primeiro com um personagem ou adicione-o como amigo.';
+
+  @override
+  String get widget_settings_message_character_photo_select =>
+      'Próximo・Escolher foto do personagem';
+
+  @override
+  String
+      get widget_settings_desktop_photo_selection_message_character_photo_select =>
+          'Escolher foto do personagem';
+
+  @override
+  String
+      widget_settings_desktop_photo_selection_message_current_affection_unlocked_photo(
+          Object value1) {
+    return 'Afinidade atual $value1・Fotos desbloqueadas podem ser usadas diretamente.';
+  }
+
+  @override
+  String
+      get widget_settings_desktop_photo_selection_message_current_character_photo =>
+          'Este personagem não tem fotos disponíveis no momento.';
+
+  @override
+  String
+      widget_settings_desktop_photo_selection_message_required_affection_unlock_photo(
+          Object value1) {
+    return 'É necessária afinidade $value1 para desbloquear esta foto.';
+  }
+
+  @override
+  String get widget_settings_message_photo_public => 'Foto pública';
+
+  @override
+  String widget_settings_message_unlock(Object value1) {
+    return 'Desbloqueia com afinidade $value1';
+  }
+
+  @override
+  String widget_settings_message_unlocked(Object value1) {
+    return 'Desbloqueada・Afinidade $value1';
+  }
+
+  @override
+  String get widget_settings_message_content_settings =>
+      'Próximo・Configurar conteúdo exibido';
+
+  @override
+  String get widget_settings_open_preview_message_player_select =>
+      'Selecione primeiro um evento / tarefa criado por um jogador.';
+
+  @override
+  String get widget_settings_pick_custom_memo_event_message_login_account =>
+      'Entre na sua conta primeiro.';
+
+  @override
+  String
+      get widget_settings_pick_custom_memo_event_message_memo_current_character =>
+          'Este personagem ainda não tem eventos / anotações.';
+
+  @override
+  String get widget_settings_pick_custom_memo_event_message_player_select =>
+      'Selecionar evento criado pelo jogador';
+
+  @override
+  String get widget_settings_message_try_again_later_failed_load =>
+      'Falha ao carregar eventos. Tente novamente mais tarde.';
+
+  @override
+  String get widget_settings_message_content_settings_variant_b =>
+      'Configurar conteúdo exibido';
+
+  @override
+  String get widget_settings_subtitle_content =>
+      'Ajuste o que deseja ver na tela inicial.';
+
+  @override
+  String get widget_settings_message_small_variant_b =>
+      'Próximo・Pré-visualizar widget';
+
+  @override
+  String get widget_settings_title => 'Exibição de publicações';
+
+  @override
+  String get widget_settings_title_variant_b => 'Mostrar imagem da publicação';
+
+  @override
+  String get widget_settings_title_variant_c => 'Mostrar número de curtidas';
+
+  @override
+  String get widget_settings_title_comment => 'Mostrar número de comentários';
+
+  @override
+  String get widget_settings_title_variant_d => 'Privacidade e companhia';
+
+  @override
+  String get widget_settings_title_variant_e => 'Modo de privacidade';
+
+  @override
+  String get widget_settings_subtitle_period_character =>
+      'Na tela inicial, mostra apenas o cuidado do personagem sem exibir diretamente informações sobre a menstruação.';
+
+  @override
+  String get widget_settings_title_variant_f => 'Modo detalhado';
+
+  @override
+  String get widget_settings_subtitle_end =>
+      'Pode mostrar estados do ciclo como próximo, em andamento ou recém-terminado.';
+
+  @override
+  String get widget_settings_title_variant_g => 'Mostrar status do ciclo';
+
+  @override
+  String get widget_settings_title_time => 'Mostrar hora';
+
+  @override
+  String get widget_settings_title_update => 'Método de atualização';
+
+  @override
+  String get widget_settings_message_update_days => 'Atualizar uma vez por dia';
+
+  @override
+  String get widget_settings_message_update =>
+      'Atualizar sempre que o app for aberto';
+
+  @override
+  String get widget_settings_text_update => 'Atualizar após abrir o app';
+
+  @override
+  String get widget_settings_title_content => 'Conteúdo de aniversário';
+
+  @override
+  String get widget_settings_title_days => 'Dias desde o encontro';
+
+  @override
+  String get widget_settings_subtitle_character_today_days =>
+      'Mostra quantos dias se passaram desde que você e o personagem se conheceram.';
+
+  @override
+  String get widget_settings_subtitle_character_birthday =>
+      'Mostra quanto tempo falta para o aniversário do personagem.';
+
+  @override
+  String get widget_settings_title_player =>
+      'Evento / tarefa criado pelo jogador';
+
+  @override
+  String get widget_settings_message_memo_character_select_reminder =>
+      'Escolha um evento ou tarefa nas anotações / lembretes deste personagem.';
+
+  @override
+  String widget_settings_message_selected(Object _selectedMemoContent) {
+    return 'Selecionado: $_selectedMemoContent';
+  }
+
+  @override
+  String get widget_settings_message_select => 'Selecione até 3 itens';
+
+  @override
+  String get widget_settings_message_character =>
+      'O status do personagem pode mostrar até 3 itens.';
+
+  @override
+  String get widget_settings_message_small_variant_c => 'Pré-visualizar widget';
+
+  @override
+  String get widget_settings_title_confirm => 'Confirmação final';
+
+  @override
+  String get widget_settings_subtitle_large =>
+      'Veja primeiro aproximadamente como ficará na tela inicial.';
+
+  @override
+  String get widget_settings_title_size => 'Tamanho';
+
+  @override
+  String get widget_settings_title_variant_h => 'Layout';
+
+  @override
+  String get widget_settings_label_photo => 'Foto em tela cheia';
+
+  @override
+  String get widget_settings_label_character => 'Cartão do personagem';
+
+  @override
+  String get widget_settings_message_sync => 'Sincronizando…';
+
+  @override
+  String get widget_settings_message_desktop_widget_add =>
+      'Adicionar widget à tela inicial';
+
+  @override
+  String get widget_settings_sample_lines_message_today_end =>
+      '“Hoje terminei um pouco mais cedo do que esperava.”';
+
+  @override
+  String get widget_settings_sample_lines_message_days =>
+      '“Não se force demais nos próximos dias.”';
+
+  @override
+  String get widget_settings_sample_lines_message_period =>
+      'Menstruação em andamento';
+
+  @override
+  String get widget_settings_sample_lines_message_today =>
+      '“Descanse um pouco mais hoje.”';
+
+  @override
+  String get widget_settings_sample_lines_message_today_variant_b =>
+      '“Não esqueça de comer direito hoje também.”';
+
+  @override
+  String get widget_settings_sample_lines_label_birthday_countdown =>
+      'Até o aniversário dele';
+
+  @override
+  String get widget_settings_sample_lines_label_days => 'Faltam 12 dias';
+
+  @override
+  String get widget_settings_sample_lines_label_days_variant_b => '128 dias';
+
+  @override
+  String get widget_settings_sample_lines_message_mood =>
+      'Humor｜Um pouco cansado';
+
+  @override
+  String get widget_settings_sample_lines_message_end =>
+      'Status｜Acabou de terminar o trabalho';
+
+  @override
+  String get widget_settings_sample_lines_message =>
+      'Localização｜Embaixo do escritório';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_b =>
+      'Relacionamento｜Amor';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_c =>
+      'Roupa｜Suéter de tricô cinza-claro';
+
+  @override
+  String get widget_settings_sample_lines_message_days_variant_b =>
+      'Clima｜Um pouco fresco';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_d =>
+      'Pensamento｜Quero ver você mais cedo';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_e =>
+      'Ação｜Arrumando a mesa';
+
+  @override
+  String get widget_settings_sample_lines_message_affection =>
+      'Afinidade｜Tranquila e próxima';
+
+  @override
+  String get edit_profile_message => 'Decoração do perfil';
+
+  @override
+  String get edit_profile_message_current => 'Não está em uso';
+
+  @override
+  String
+      get event_memory_character_load_characters_message_login_character_select =>
+          'Entre na sua conta antes de escolher um personagem';
+
+  @override
+  String get event_memory_character_center_message_memory_select =>
+      'Escolha com quem deseja guardar esta lembrança';
+
+  @override
+  String get event_memory_character_center_message_character_friend_add =>
+      'Somente personagens criados por você e personagens adicionados como amigos aparecerão aqui.';
+
+  @override
+  String get event_memory_character_center_message_current_character_select =>
+      'Nenhum personagem está disponível para seleção no momento';
+
+  @override
+  String get event_memory_character_center_message_public_character_character_friend_add =>
+      'Crie seu próprio personagem ou adicione primeiro um personagem público de que goste como amigo.';
+
+  @override
+  String get event_memory_character_message_character_select =>
+      'Selecione primeiro um personagem';
+
+  @override
+  String event_memory_character_message_continue(Object value1) {
+    return 'Continuar com $value1';
+  }
+
+  @override
+  String get event_memory_character_card_message_private => 'Meu・Privado';
+
+  @override
+  String get event_memory_character_error_label_load_again => 'Recarregar';
+
+  @override
+  String
+      get event_memory_collection_show_collection_intro_if_needed_message_collection =>
+          'Coleção Shiguang';
+
+  @override
+  String
+      get event_memory_collection_show_collection_intro_if_needed_message_collection_content =>
+          'Esta é a sua lista de coleção, onde você pode ver tudo o que salvou.';
+
+  @override
+  String get event_memory_collection_text_collection_login =>
+      'Entre para ver sua coleção';
+
+  @override
+  String get event_memory_collection_message_memory => 'Lembranças';
+
+  @override
+  String get event_memory_collection_message_chat_background =>
+      'Fundos de chat';
+
+  @override
+  String get event_memory_collection_message_avatar_frame_collection =>
+      'Ainda não há molduras de avatar colecionadas';
+
+  @override
+  String get event_memory_collection_message_avatar_frame =>
+      'As molduras de avatar limitadas que você obtiver depois aparecerão aqui.';
+
+  @override
+  String get event_memory_collection_message_collection_sticker =>
+      'Ainda não há stickers colecionados';
+
+  @override
+  String get event_memory_collection_message_sticker =>
+      'Os stickers que você coletar depois serão guardados aqui.';
+
+  @override
+  String get event_memory_collection_message_collection_chat_background =>
+      'Ainda não há fundos de chat colecionados';
+
+  @override
+  String get event_memory_collection_message_chat_background_variant_b =>
+      'Os fundos de chat limitados que você obtiver depois aparecerão aqui.';
+
+  @override
+  String get event_memory_collection_tab_title_collection_temporary =>
+      'Não foi possível carregar a coleção no momento';
+
+  @override
+  String get event_memory_collection_tab_title_collection_memory =>
+      'Ainda não há lembranças colecionadas';
+
+  @override
+  String get event_memory_collection_tab_subtitle_limited_memory_complete =>
+      'Depois de concluir uma lembrança limitada, você pode guardar seus momentos favoritos aqui.';
+
+  @override
+  String get event_memory_collection_item_card_label => 'Item limitado';
+
+  @override
+  String get event_memory_collection_confirm_delete_owned_item_message_delete =>
+      'Excluir item limitado?';
+
+  @override
+  String
+      event_memory_collection_confirm_delete_owned_item_message_after_delete_unavailable(
+          Object _itemTypeLabel) {
+    return 'Após a exclusão, você não poderá mais usar este $_itemTypeLabel,';
+  }
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_collection =>
+          'e ele também não aparecerá mais na “Coleção Shiguang”.\n\n';
+
+  @override
+  String get event_memory_collection_confirm_delete_owned_item_message_unavailable =>
+      'Isso significa que você abrirá mão do item limitado obtido desta vez, e esta ação não pode ser desfeita.\n\n';
+
+  @override
+  String
+      event_memory_collection_confirm_delete_owned_item_message_delete_variant_b(
+          Object value1) {
+    return 'Tem certeza de que deseja excluir “$value1”?';
+  }
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_delete_variant_c =>
+          'Item limitado excluído';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_not_found_delete =>
+          'Este item limitado não foi encontrado e talvez já tenha sido excluído';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_collection_current_delete =>
+          'Esta coleção não pode ser excluída no momento';
+
+  @override
+  String get event_memory_collection_show_preview_message =>
+      'Preparando imagem';
+
+  @override
+  String get event_memory_collection_show_preview_message_failed_load =>
+      'Falha ao carregar imagem';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save_current =>
+      'A versão web atualmente não permite salvar diretamente na galeria do celular';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save_memory =>
+      'É necessária permissão da galeria para salvar esta lembrança';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_memory =>
+      'A imagem da lembrança ainda não está pronta. Tente novamente.';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_failed_memory =>
+      'Falha ao gerar a imagem da lembrança';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save =>
+      'Salvo na galeria do celular ♡';
+
+  @override
+  String
+      get event_memory_collection_save_to_gallery_message_save_confirm_failed =>
+          'Falha ao salvar. Verifique a permissão da galeria e tente novamente.';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_title_collection_cancel =>
+          'Remover da coleção?';
+
+  @override
+  String get event_memory_collection_delete_collection_message_collection_cancel_memory =>
+      'Após remover da coleção, esta lembrança não aparecerá mais na “Coleção Shiguang”.\n\nTem certeza de que deseja removê-la?';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_message_try_again_later_collection_cancel_failed =>
+          'Falha ao remover da coleção. Tente novamente mais tarde.';
+
+  @override
+  String get event_memory_collection_message_collection_memory =>
+      'Coleção de lembranças';
+
+  @override
+  String get event_memory_collection_label_play => 'Reproduzir novamente';
+
+  @override
+  String get event_memory_collection_label_save => 'Salvando…';
+
+  @override
+  String get event_memory_collection_label_save_variant_b =>
+      'Salvar na galeria';
+
+  @override
+  String get event_memory_collection_collected_card_message_limited_memory =>
+      'Lianlian Shiguang・Lembrança limitada';
+
+  @override
+  String get event_memory_collection_create_state_message_end_story =>
+      'Alguns momentos\nnão desaparecem só porque a história terminou.';
+
+  @override
+  String get event_memory_collection_text_collection =>
+      'Esta lembrança salva não tem nenhuma Scene que possa ser reproduzida novamente';
+
+  @override
+  String get event_memory_collection_message => 'Pular';
+
+  @override
+  String get event_memory_collection_message_end => 'Toque para terminar';
+
+  @override
+  String get event_memory_collection_message_continue => 'Toque para continuar';
+
+  @override
+  String get event_memory_collection_message_variant_b =>
+      'Toque para mostrar o texto completo';
+
+  @override
+  String get event_memory_collection_collected_label_collection =>
+      'Acabou de ser salva';
+
+  @override
+  String get event_memory_collection_collected_item_label_collection_date =>
+      'Data da coleção não registrada';
+
+  @override
+  String event_memory_collection_collected_item_label_collection(
+      Object day, Object month, Object value1) {
+    return 'Salvo em $value1/$month/$day';
+  }
+
+  @override
+  String get event_memory_text_not_found_event =>
+      'Dados do evento não encontrados';
+
+  @override
+  String get event_memory_message_limited_memory_failed_load =>
+      'Falha ao carregar lembranças limitadas';
+
+  @override
+  String get event_memory_as_map_label_unlocked => 'Desbloqueado';
+
+  @override
+  String event_memory_as_map_label_unlock(Object currencyIcon,
+      Object currencyName, Object currentValue, Object requiredValue) {
+    return 'Acumule $currencyIcon $requiredValue $currencyName para desbloquear ($currentValue / $requiredValue)';
+  }
+
+  @override
+  String get event_memory_as_map_label_unlock_task_event_complete =>
+      'Desbloqueia após concluir a tarefa de evento especificada';
+
+  @override
+  String get event_memory_as_map_label_redeem_unlock_event =>
+      'Desbloqueia após resgatar o item de evento especificado';
+
+  @override
+  String get event_memory_as_map_label_unlock_variant_b =>
+      'Ainda não desbloqueado';
+
+  @override
+  String get event_memory_hero_message =>
+      'Guarde nesta estação um momento que pertença só a vocês dois.';
+
+  @override
+  String event_memory_hero_message_limited_memory(
+      Object totalCount, Object unlockedCount) {
+    return 'Lembranças limitadas  $unlockedCount / $totalCount';
+  }
+
+  @override
+  String get event_memory_status_label_unlocked => 'Desbloqueado・Não visto';
+
+  @override
+  String get event_memory_status_label => 'Visto';
+
+  @override
+  String get event_memory_status_label_collection => 'Colecionado';
+
+  @override
+  String get event_memory_footer_label_memory_start =>
+      'Você pode iniciar esta lembrança';
+
+  @override
+  String get event_memory_footer_label => 'Você pode assistir novamente';
+
+  @override
+  String get event_memory_footer_label_collection =>
+      'Salvo na Coleção Shiguang';
+
+  @override
+  String get event_memory_empty_message_limited_memory_event_public =>
+      'Este evento ainda não publicou lembranças limitadas';
+
+  @override
+  String get event_memory_performance_finish_message_memory =>
+      'Esta lembrança foi guardada.';
+
+  @override
+  String get event_memory_performance_finish_message_save_collection =>
+      'As coleções permanecem no jogo. A permissão da galeria só será solicitada ao salvar no celular.';
+
+  @override
+  String get event_memory_performance_finish_message => 'Processando…';
+
+  @override
+  String get event_memory_performance_finish_message_collection_memory =>
+      'Guardar esta lembrança';
+
+  @override
+  String get event_memory_performance_confirm_uncollect_memory_message_collection_cancel_memory_again_remove =>
+      'Ao remover, esta lembrança será retirada da “Coleção Shiguang”. Você ainda poderá assisti-la novamente e guardá-la outra vez depois.';
+
+  @override
+  String
+      get event_memory_performance_uncollect_memory_message_collection_login =>
+          'Entre na sua conta antes de gerenciar as coleções';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_collection_login_memory =>
+          'Entre na sua conta antes de guardar esta lembrança';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_collection_memory =>
+          'Lembrança guardada ♡';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_try_again_later_collection_failed =>
+          'Falha ao guardar. Tente novamente mais tarde.';
+
+  @override
+  String get event_memory_performance_text_panel_message_complete =>
+      'Toque para concluir';
+
+  @override
+  String get event_memory_performance_build_performance_message => 'Pular';
+
+  @override
+  String get event_memory_performance_text_play =>
+      'Nenhuma Scene disponível para reproduzir';
+
+  @override
+  String get event_memory_profile_change_profile_message_profile =>
+      'Alterar perfil Shiguang';
+
+  @override
+  String get event_memory_profile_message_profile_confirm =>
+      'Confirmar perfil Shiguang';
+
+  @override
+  String get event_memory_profile_center_text_profile_not_found =>
+      'Nenhum perfil Shiguang utilizável encontrado';
+
+  @override
+  String get event_memory_profile_center_message_memory =>
+      'Quem você será nesta lembrança?';
+
+  @override
+  String get event_memory_profile_center_message_profile_character_start =>
+      'O perfil Shiguang usado mais recentemente com este personagem foi selecionado primeiro. Você pode alterá-lo antes de começar.';
+
+  @override
+  String event_memory_profile_center_message(Object value1) {
+    return 'Como “$value1” com';
+  }
+
+  @override
+  String event_memory_profile_center_message_memory_variant_b(Object value1) {
+    return '“$value1” nesta lembrança';
+  }
+
+  @override
+  String get event_memory_profile_center_label_memory_start =>
+      'Iniciar lembrança';
+
+  @override
+  String get event_message_failed_load => 'Falha ao carregar dados do evento';
+
+  @override
+  String get event_message_not_found => 'Evento não encontrado';
+
+  @override
+  String get event_remaining_label => 'Evento em andamento';
+
+  @override
+  String event_remaining_label_days(Object value1) {
+    return 'Faltam $value1 dias';
+  }
+
+  @override
+  String event_remaining_label_hours(Object value1) {
+    return 'Faltam $value1 horas';
+  }
+
+  @override
+  String get event_remaining_label_end => 'Terminando em breve';
+
+  @override
+  String get event_balance_pill_tooltip_back => 'Voltar';
+
+  @override
+  String event_claim_task_message_claim_current(
+      Object currency, Object reward, Object value1, Object value2) {
+    return 'Você recebeu $value1 $reward $value2. Agora possui $currency';
+  }
+
+  @override
+  String get event_claim_task_message_reward_claim => 'Recompensa recebida';
+
+  @override
+  String get event_claim_task_message_claim_failed => 'Falha ao receber';
+
+  @override
+  String get event_claim_task_message_task_claim =>
+      'Esta tarefa já foi resgatada';
+
+  @override
+  String get event_claim_task_message_incomplete_task =>
+      'A tarefa ainda não foi concluída';
+
+  @override
+  String get event_task_list_label_task_load => 'Carregando tarefas…';
+
+  @override
+  String get event_task_list_label_task_current => 'Nenhuma tarefa no momento';
+
+  @override
+  String get event_task_list_label_task_login_progress =>
+      'Entre para ver o progresso das tarefas do evento';
+
+  @override
+  String get event_milestone_progress_label_reward_load =>
+      'Carregando recompensas acumuladas…';
+
+  @override
+  String get event_milestone_progress_label_reward_current =>
+      'Nenhuma recompensa acumulada no momento';
+
+  @override
+  String event_build_with_total_message_current(Object totalEarned) {
+    return 'Atual  $totalEarned';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_confirm => 'Confirmar resgate';
+
+  @override
+  String event_progress_ref_message_redeem_flowers(
+      Object itemName, Object price, Object rewardAmount, Object value1) {
+    return 'Usar $value1 $price para resgatar “$itemName”?\n\nApós o resgate, você receberá $rewardAmount Flores.';
+  }
+
+  @override
+  String event_progress_ref_message_redeem(
+      Object itemName, Object price, Object value1) {
+    return 'Usar $value1 $price para resgatar “$itemName”?';
+  }
+
+  @override
+  String event_progress_ref_message_redeem_success_flowers(
+      Object returnedReward) {
+    return 'Resgate concluído! Você recebeu $returnedReward Flores';
+  }
+
+  @override
+  String event_progress_ref_message_event_collection_redeem_success_add(
+      Object itemName) {
+    return 'Resgate concluído! “$itemName” foi adicionado à coleção do evento';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_failed => 'Falha no resgate';
+
+  @override
+  String get event_progress_ref_message_redeem_variant_b =>
+      'Este item já foi resgatado';
+
+  @override
+  String get event_progress_ref_message_insufficient => 'Moeda insuficiente';
+
+  @override
+  String event_progress_ref_message_insufficient_variant_b(Object value1) {
+    return '$value1 insuficiente';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_variant_c => 'Resgatar';
+
+  @override
+  String get event_progress_ref_message_redeem_variant_d => 'Resgatado';
+
+  @override
+  String event_message_redeem_flowers(Object rewardAmount) {
+    return 'Após o resgate, você receberá $rewardAmount Flores';
+  }
+
+  @override
+  String event_message_redeem(Object redeemedCount) {
+    return 'Resgatado $redeemedCount vezes';
+  }
+
+  @override
+  String get event_message_event_shop_login =>
+      'Entre para usar a loja do evento';
+
+  @override
+  String get event_message_redeem_current =>
+      'Nenhum item disponível para resgate no momento';
+
+  @override
+  String event_shop_item_card_message_flowers(Object rewardAmount) {
+    return 'Receba $rewardAmount Flores';
+  }
+
+  @override
+  String get event_message_insufficient => 'Insuficiente';
+
+  @override
+  String get notification_message_player => 'Imagem anexada pelo jogador';
+
+  @override
+  String notification_message_qixi_letter(Object value1) {
+    return 'Carta de Qixi de $value1';
+  }
+
+  @override
+  String recommendation_remaining_label_days(Object value1) {
+    return 'Faltam $value1 dias';
+  }
+
+  @override
+  String recommendation_remaining_label_hours(Object value1) {
+    return 'Faltam $value1 horas';
+  }
+
+  @override
+  String get settings_subtitle_character_days =>
+      'Deixe seu personagem favorito acompanhar você todos os dias';
+
+  @override
+  String moment_notification_comment_on_character_post(
+      Object authorName, Object commentText, Object senderNickname) {
+    return '$senderNickname deixou um comentário para $authorName: “$commentText”';
+  }
+
+  @override
+  String get inbox_content_text_message_customer_service_message_send =>
+      'Mensagens enviadas ao suporte';
+
+  @override
+  String get character_edit_relationship_none_label => 'Nenhum';
+
+  @override
+  String get auth_cancel_account_deletion_failed =>
+      'Falha ao cancelar a exclusão da conta. Tente novamente mais tarde.';
+
+  @override
+  String get auth_delete_account_failed => 'Falha ao excluir a conta';
+
+  @override
+  String get auth_request_account_deletion_failed =>
+      'Falha ao solicitar a exclusão da conta. Tente novamente mais tarde.';
+
+  @override
+  String get theme_font_shiguang_serif => 'Shiguang Serif';
+
+  @override
+  String get theme_font_clean_sans => 'Sans Limpa';
+
+  @override
+  String get theme_font_system => 'Fonte do sistema';
+
+  @override
+  String get theme_font_shiguang_serif_description =>
+      'Suave e literária, ideal para leitura imersiva';
+
+  @override
+  String get theme_font_clean_sans_description =>
+      'Clara e nítida, confortável para longas sessões de leitura';
+
+  @override
+  String get theme_font_system_description =>
+      'Seguir a fonte padrão do sistema do dispositivo';
 }

@@ -3,6 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:typed_data';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
 import '../services/toast_utils.dart';
 import 'moment_card.dart';
 import '../models/moment_model.dart';
@@ -36,6 +39,9 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
   String _currentAuthorName = '';
   String _currentAuthorAvatar = '';
   bool _isPostingComment = false;
+  final ImagePicker _commentImagePicker = ImagePicker();
+  XFile? _selectedCommentImage;
+  Uint8List? _selectedCommentImageBytes;
   @override
   void initState() {
     super.initState();
@@ -384,6 +390,124 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
     }
   }
 
+  Future<void> _pickCommentImage() async {
+    if (_isPostingComment) return;
+
+    try {
+      final picked = await _commentImagePicker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 72,
+        maxWidth: 1280,
+        maxHeight: 1280,
+      );
+      if (picked == null) return;
+
+      final bytes = await picked.readAsBytes();
+      if (!mounted) return;
+
+      setState(() {
+        _selectedCommentImage = picked;
+        _selectedCommentImageBytes = bytes;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      ToastUtils.showCenterToast(
+        context,
+        '讀取照片失敗：$error',
+        isError: true,
+      );
+    }
+  }
+
+  void _clearSelectedCommentImage() {
+    if (!mounted) return;
+    setState(() {
+      _selectedCommentImage = null;
+      _selectedCommentImageBytes = null;
+    });
+  }
+
+  String _commentImageContentType(String name) {
+    final lower = name.toLowerCase();
+    if (lower.endsWith('.png')) return 'image/png';
+    if (lower.endsWith('.webp')) return 'image/webp';
+    if (lower.endsWith('.heic') || lower.endsWith('.heif')) return 'image/heic';
+    return 'image/jpeg';
+  }
+
+  Future<Map<String, String>> _uploadCommentImage({
+    required String commentId,
+    required Uint8List bytes,
+    required String originalName,
+  }) async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      throw StateError('尚未登入');
+    }
+
+    final safeName = originalName.replaceAll(RegExp(r'[^A-Za-z0-9._-]'), '_');
+    final ext = safeName.contains('.') ? safeName.split('.').last : 'jpg';
+    final storagePath =
+        'moment_comment_images/${widget.postId}/$commentId/${DateTime.now().millisecondsSinceEpoch}.$ext';
+
+    final ref = FirebaseStorage.instance.ref(storagePath);
+    await ref.putData(
+      bytes,
+      SettableMetadata(
+        contentType: _commentImageContentType(originalName),
+        customMetadata: {
+          'ownerUserId': currentUser.uid,
+          'momentId': widget.postId,
+          'commentId': commentId,
+        },
+      ),
+    );
+
+    return {
+      'imageUrl': await ref.getDownloadURL(),
+      'imageStoragePath': storagePath,
+    };
+  }
+
+  Future<void> _showCommentImage(String imageUrl) async {
+    if (imageUrl.trim().isEmpty) return;
+    await showDialog<void>(
+      context: context,
+      barrierColor: Colors.black87,
+      builder: (dialogContext) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(14),
+        child: Stack(
+          children: [
+            InteractiveViewer(
+              minScale: 0.8,
+              maxScale: 4,
+              child: Center(
+                child: Image.network(
+                  imageUrl,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => const Icon(
+                    Icons.broken_image_outlined,
+                    color: Colors.white,
+                    size: 48,
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              right: 6,
+              top: 6,
+              child: IconButton.filled(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                icon: const Icon(Icons.close_rounded),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   // 3. ⚠️ 留言邏輯 (這段絕對不能刪掉喔！)
   Future<void> _saveCommentToDb(
       String content,
@@ -393,9 +517,10 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
     final currentUser =
         FirebaseAuth.instance.currentUser;
 
+    final hasImage = _selectedCommentImageBytes != null;
     if (_isPostingComment ||
         currentUser == null ||
-        content.trim().isEmpty) {
+        (content.trim().isEmpty && !hasImage)) {
       return;
     }
 
@@ -441,6 +566,21 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
       final commentRef =
       momentRef.collection('comments').doc();
 
+      String imageUrl = '';
+      String imageStoragePath = '';
+      final selectedBytes = _selectedCommentImageBytes;
+      final selectedImage = _selectedCommentImage;
+
+      if (selectedBytes != null && selectedImage != null) {
+        final uploaded = await _uploadCommentImage(
+          commentId: commentRef.id,
+          bytes: selectedBytes,
+          originalName: selectedImage.name,
+        );
+        imageUrl = uploaded['imageUrl'] ?? '';
+        imageStoragePath = uploaded['imageStoragePath'] ?? '';
+      }
+
       final batch = _db.batch();
 
       batch.set(
@@ -450,6 +590,8 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
           'authorId': safeAuthorId,
           'authorName': safeAuthorName,
           'authorAvatar': safeAuthorAvatar,
+          'imageUrl': imageUrl,
+          'imageStoragePath': imageStoragePath,
           'createdAt': FieldValue.serverTimestamp(),
           'parentCommentId':
           parentCommentId?.isNotEmpty == true
@@ -478,19 +620,24 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
 
       await batch.commit();
 
+      final notificationContent =
+      finalContent.isNotEmpty ? finalContent : '📷';
+
       await moment.sendCommentNotification(
         commentText: replyToName?.isNotEmpty == true
-            ? '@$replyToName $finalContent'
-            : finalContent,
+            ? '@$replyToName $notificationContent'
+            : notificationContent,
         senderNickname: safeAuthorName,
         commentId: commentRef.id,
       );
 
-      await _handleMentions(
-        text: finalContent,
-        postId: widget.postId,
-        senderName: safeAuthorName,
-      );
+      if (finalContent.isNotEmpty) {
+        await _handleMentions(
+          text: finalContent,
+          postId: widget.postId,
+          senderName: safeAuthorName,
+        );
+      }
 
       _commentController.clear();
       FocusScope.of(context).unfocus();
@@ -506,6 +653,8 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
         }
 
         _replyTarget = null;
+        _selectedCommentImage = null;
+        _selectedCommentImageBytes = null;
       });
     } catch (error, stackTrace) {
       debugPrint('❌ 詳細頁留言失敗：$error');
@@ -527,6 +676,249 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
         });
       }
     }
+  }
+
+
+  bool _isMyDetailComment(Map<String, dynamic> data) {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) return false;
+
+    final String uid = currentUser.uid;
+    final String authorId = data['authorId']?.toString().trim() ?? '';
+    final String ownerUserId = data['ownerUserId']?.toString().trim() ?? '';
+    final String createdBy = data['createdBy']?.toString().trim() ?? '';
+
+    return authorId == uid ||
+        ownerUserId == uid ||
+        createdBy == uid;
+  }
+
+  Future<void> _deleteDetailComment(
+      QueryDocumentSnapshot commentDoc,
+      ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null || _moment == null) return;
+
+    final data = commentDoc.data() as Map<String, dynamic>;
+    final bool isMyComment = _isMyDetailComment(data);
+    final bool isMomentOwner =
+        _moment!.createdBy == currentUser.uid;
+
+    if (!isMyComment && !isMomentOwner) return;
+
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.confirm_delete_title),
+        content: Text(l10n.comment_delete_confirm_desc),
+        actions: [
+          TextButton(
+            onPressed: () =>
+                Navigator.of(dialogContext).pop(false),
+            child: Text(l10n.cancelButton),
+          ),
+          TextButton(
+            onPressed: () =>
+                Navigator.of(dialogContext).pop(true),
+            child: Text(
+              l10n.delete_btn,
+              style: const TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    try {
+      final momentRef = _db
+          .collection('artifacts')
+          .doc(AppConfig.appId)
+          .collection('moments')
+          .doc(widget.postId);
+
+      final batch = _db.batch();
+
+      batch.delete(
+        momentRef.collection('comments').doc(commentDoc.id),
+      );
+
+      batch.update(
+        momentRef,
+        {
+          'commentCount': FieldValue.increment(-1),
+        },
+      );
+
+      await batch.commit();
+
+      final imageStoragePath =
+          data['imageStoragePath']?.toString().trim() ?? '';
+      if (imageStoragePath.isNotEmpty) {
+        try {
+          await FirebaseStorage.instance.ref(imageStoragePath).delete();
+        } catch (error) {
+          debugPrint('⚠️ 留言已刪除，但照片 Storage 清理失敗：$error');
+        }
+      }
+
+      if (!mounted) return;
+
+      if (_replyTarget?['commentId'] == commentDoc.id) {
+        setState(() {
+          _replyTarget = null;
+        });
+      }
+    } catch (error, stackTrace) {
+      debugPrint('❌ 詳細頁刪除留言失敗：$error');
+      debugPrintStack(stackTrace: stackTrace);
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        l10n.comment_delete_failed,
+        isError: true,
+      );
+    }
+  }
+
+  Future<void> _reportDetailComment(
+      QueryDocumentSnapshot commentDoc,
+      ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null) return;
+
+    final data = commentDoc.data() as Map<String, dynamic>;
+
+    if (_isMyDetailComment(data)) return;
+
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.comment_report_title),
+        content: Text(l10n.comment_report_confirm_desc),
+        actions: [
+          TextButton(
+            onPressed: () =>
+                Navigator.of(dialogContext).pop(false),
+            child: Text(l10n.cancelButton),
+          ),
+          ElevatedButton(
+            onPressed: () =>
+                Navigator.of(dialogContext).pop(true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange,
+            ),
+            child: Text(
+              l10n.comment_report_submit_btn,
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    try {
+      await _db.collection('reports').add({
+        'targetId': commentDoc.id,
+        'targetType': 'comment',
+        'momentId': widget.postId,
+        'content': data['content']?.toString() ?? '',
+        'authorId': data['authorId']?.toString() ?? '',
+        'reportedBy': currentUser.uid,
+        'createdAt': FieldValue.serverTimestamp(),
+        'status': 'pending',
+      });
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        l10n.comment_report_success,
+        customIcon: Icons.verified_user_rounded,
+      );
+    } catch (error, stackTrace) {
+      debugPrint('❌ 詳細頁檢舉留言失敗：$error');
+      debugPrintStack(stackTrace: stackTrace);
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        l10n.comment_report_failed,
+        isError: true,
+      );
+    }
+  }
+
+  void _showDetailCommentOptions(
+      QueryDocumentSnapshot commentDoc,
+      ) {
+    final l10n = AppLocalizations.of(context)!;
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null || _moment == null) return;
+
+    final data = commentDoc.data() as Map<String, dynamic>;
+    final bool isMyComment = _isMyDetailComment(data);
+    final bool isMomentOwner =
+        _moment!.createdBy == currentUser.uid;
+    final bool canDelete = isMyComment || isMomentOwner;
+    final bool canReport = !isMyComment;
+
+    if (!canDelete && !canReport) return;
+
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Wrap(
+          children: [
+            if (canDelete)
+              ListTile(
+                leading: const Icon(
+                  Icons.delete_forever,
+                  color: Colors.red,
+                ),
+                title: Text(
+                  l10n.comment_option_delete,
+                  style: const TextStyle(
+                    color: Colors.red,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _deleteDetailComment(commentDoc);
+                },
+              ),
+            if (canReport)
+              ListTile(
+                leading: const Icon(
+                  Icons.flag,
+                  color: Colors.orange,
+                ),
+                title: Text(
+                  l10n.comment_option_report,
+                  style: const TextStyle(
+                    color: Colors.orange,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _reportDetailComment(commentDoc);
+                },
+              ),
+          ],
+        ),
+      ),
+    );
   }
 
   // ✨ 新增：處理內文的 @Tag 邏輯 (貼文、留言皆可共用)
@@ -772,95 +1164,129 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
                           padding: EdgeInsets.only(
                             left: isReply ? 40 : 0,
                           ),
-                          child: ListTile(
-                            leading: CircleAvatar(
-                              radius: isReply ? 15 : 18,
-                              backgroundColor: Colors.grey[200],
-                              backgroundImage: getAvatarImageProvider(
-                                data['authorAvatar']
-                                    ?.toString()
-                                    .trim()
-                                    .isNotEmpty ==
-                                    true
-                                    ? data['authorAvatar'].toString().trim()
-                                    : 'assets/images/avatar1.png',
-                              ),
-                            ),
-                            title: Wrap(
-                              crossAxisAlignment:
-                              WrapCrossAlignment.center,
-                              spacing: 4,
-                              children: [
-                                Text(
-                                  authorName,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onLongPress: () =>
+                                _showDetailCommentOptions(commentDoc),
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                radius: isReply ? 15 : 18,
+                                backgroundColor: Colors.grey[200],
+                                backgroundImage: getAvatarImageProvider(
+                                  data['authorAvatar']
+                                      ?.toString()
+                                      .trim()
+                                      .isNotEmpty ==
+                                      true
+                                      ? data['authorAvatar'].toString().trim()
+                                      : 'assets/images/avatar1.png',
                                 ),
-                                if (isReply &&
-                                    replyToName.isNotEmpty) ...[
-                                  const Icon(
-                                    Icons.arrow_right,
-                                    size: 16,
-                                    color: Colors.grey,
-                                  ),
+                              ),
+                              title: Wrap(
+                                crossAxisAlignment:
+                                WrapCrossAlignment.center,
+                                spacing: 4,
+                                children: [
                                   Text(
-                                    '@$replyToName',
+                                    authorName,
                                     style: const TextStyle(
-                                      color: Colors.blueAccent,
-                                      fontSize: 12,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
+                                  if (isReply &&
+                                      replyToName.isNotEmpty) ...[
+                                    const Icon(
+                                      Icons.arrow_right,
+                                      size: 16,
+                                      color: Colors.grey,
+                                    ),
+                                    Text(
+                                      '@$replyToName',
+                                      style: const TextStyle(
+                                        color: Colors.blueAccent,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
                                 ],
-                              ],
-                            ),
-                            subtitle: Padding(
-                              padding: const EdgeInsets.only(
-                                top: 4,
                               ),
-                              child: Text(
-                                data['content']?.toString() ?? '',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: theme.colorScheme.onSurface,
+                              subtitle: Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if ((data['content']?.toString().trim() ?? '').isNotEmpty)
+                                      Text(
+                                        data['content'].toString(),
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          color: theme.colorScheme.onSurface,
+                                        ),
+                                      ),
+                                    if ((data['imageUrl']?.toString().trim() ?? '').isNotEmpty) ...[
+                                      if ((data['content']?.toString().trim() ?? '').isNotEmpty)
+                                        const SizedBox(height: 8),
+                                      GestureDetector(
+                                        onTap: () => _showCommentImage(
+                                          data['imageUrl'].toString().trim(),
+                                        ),
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(12),
+                                          child: Image.network(
+                                            data['imageUrl'].toString().trim(),
+                                            width: isReply ? 150 : 190,
+                                            height: isReply ? 150 : 190,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (_, __, ___) => Container(
+                                              width: isReply ? 150 : 190,
+                                              height: 90,
+                                              color: theme.colorScheme.surfaceContainerHighest,
+                                              alignment: Alignment.center,
+                                              child: const Icon(Icons.broken_image_outlined),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
                                 ),
                               ),
-                            ),
-                            trailing: TextButton(
-                              style: TextButton.styleFrom(
-                                minimumSize: Size.zero,
-                                padding: EdgeInsets.zero,
-                                tapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
-                              ),
-                              onPressed: () {
-                                final String? existingParentId =
-                                data['parentCommentId']
-                                    ?.toString()
-                                    .trim();
+                              trailing: TextButton(
+                                style: TextButton.styleFrom(
+                                  minimumSize: Size.zero,
+                                  padding: EdgeInsets.zero,
+                                  tapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                onPressed: () {
+                                  final String? existingParentId =
+                                  data['parentCommentId']
+                                      ?.toString()
+                                      .trim();
 
-                                final String rootCommentId =
-                                existingParentId != null &&
-                                    existingParentId.isNotEmpty
-                                    ? resolveRootCommentId(
-                                  existingParentId,
-                                )
-                                    : commentId;
+                                  final String rootCommentId =
+                                  existingParentId != null &&
+                                      existingParentId.isNotEmpty
+                                      ? resolveRootCommentId(
+                                    existingParentId,
+                                  )
+                                      : commentId;
 
-                                setState(() {
-                                  _replyTarget = {
-                                    'commentId': commentId,
-                                    'rootCommentId': rootCommentId,
-                                    'authorName': authorName,
-                                  };
-                                });
-                              },
-                              child: Text(
-                                l10n.comment_reply_btn,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.pinkAccent,
+                                  setState(() {
+                                    _replyTarget = {
+                                      'commentId': commentId,
+                                      'rootCommentId': rootCommentId,
+                                      'authorName': authorName,
+                                    };
+                                  });
+                                },
+                                child: Text(
+                                  l10n.comment_reply_btn,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.pinkAccent,
+                                  ),
                                 ),
                               ),
                             ),
@@ -1032,6 +1458,47 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
                   ),
                 ),
 
+              if (_selectedCommentImageBytes != null)
+                Container(
+                  width: double.infinity,
+                  color: theme.cardColor,
+                  padding: const EdgeInsets.fromLTRB(64, 10, 16, 2),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.memory(
+                            _selectedCommentImageBytes!,
+                            width: 88,
+                            height: 88,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Positioned(
+                          right: -10,
+                          top: -10,
+                          child: Material(
+                            color: theme.colorScheme.surface,
+                            shape: const CircleBorder(),
+                            elevation: 2,
+                            child: InkWell(
+                              customBorder: const CircleBorder(),
+                              onTap: _clearSelectedCommentImage,
+                              child: const Padding(
+                                padding: EdgeInsets.all(4),
+                                child: Icon(Icons.close_rounded, size: 16),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
               // ⬇️ 原本的輸入框
               Container(
                 padding: const EdgeInsets.symmetric(
@@ -1089,10 +1556,25 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 8),
+                      IconButton(
+                        tooltip: '加入照片',
+                        onPressed: _isPostingComment ? null : _pickCommentImage,
+                        icon: ImageIcon(
+                          const AssetImage(
+                            'assets/icons/icon_moment_photo_add.png',
+                          ),
+                          size: 26,
+                          color: _selectedCommentImageBytes != null
+                              ? theme.colorScheme.primary
+                              : theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(width: 2),
                       Expanded(
                         child: TextField(
                           controller: _commentController,
+                          enabled: !_isPostingComment,
                           decoration: InputDecoration(
                             hintText: _replyTarget != null
                                 ? l10n.moment_reply_hint(
@@ -1135,8 +1617,11 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
                             strokeWidth: 2,
                           ),
                         )
-                            : Icon(
-                          Icons.send_rounded,
+                            : ImageIcon(
+                          const AssetImage(
+                            'assets/images/chat/chat_send_plane_mask.png',
+                          ),
+                          size: 26,
                           color: theme.colorScheme.primary,
                         ),
                       ),

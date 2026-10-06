@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart'; // 記得確保有 import 這個來格式化時間
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import '../screens/moment_detail_page.dart'; // 🌟 記得匯入這頁！
+import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 
 class InboxPage extends StatelessWidget {
   const InboxPage({super.key});
@@ -55,7 +56,7 @@ class InboxPage extends StatelessWidget {
         reportReason != reportTitle
         ? '$reportTitle－$reportReason'
         : reportTitle)
-        : '客服回報';
+        : appL10n.inbox_customer_service_report;
 
     final String originalBody =
     (reportData['content'] ??
@@ -99,7 +100,7 @@ class InboxPage extends StatelessWidget {
 
         return AlertDialog(
           title: Text(
-            type == 'cs_reply' ? '客服回覆' : '已送出的客服信件',
+            type == 'cs_reply' ? '客服回覆' : appL10n.inbox_content_text_message_customer_service_message_send,
             style: const TextStyle(
               fontWeight: FontWeight.w700,
             ),
@@ -113,13 +114,13 @@ class InboxPage extends StatelessWidget {
                 crossAxisAlignment:
                 CrossAxisAlignment.start,
                 children: [
-                  label('玩家送出的標題'),
+                  label(appL10n.inbox_content_text_message_player_title_send),
                   const SizedBox(height: 6),
                   contentText(originalTitle),
 
                   const SizedBox(height: 18),
 
-                  label('玩家送出的內容'),
+                  label(appL10n.inbox_content_text_message_player_content_send),
                   const SizedBox(height: 6),
                   contentText(originalBody),
 

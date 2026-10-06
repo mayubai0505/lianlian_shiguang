@@ -11,6 +11,7 @@ import 'character_model.dart';
 import 'character_profile_page.dart';
 import 'event_page.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 
 // =========================================================
 // 🖼️ 推薦頁圖片共用快取
@@ -962,8 +963,8 @@ class _ActiveEventEntry extends StatelessWidget {
     if (end == null) return '活動進行中';
     final d = end.difference(DateTime.now());
     if (d.isNegative) return '活動已結束';
-    if (d.inDays >= 1) return '剩 ${d.inDays + 1} 天';
-    if (d.inHours >= 1) return '剩 ${d.inHours} 小時';
+    if (d.inDays >= 1) return appL10n.recommendation_remaining_label_days(d.inDays + 1);
+    if (d.inHours >= 1) return appL10n.recommendation_remaining_label_hours(d.inHours);
     return '即將結束';
   }
 

@@ -57,6 +57,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:showcaseview/showcaseview.dart';
 import 'chat_input_bar.dart';
 import 'scene_page.dart';
+import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 
 //聊天頁面ˋ
 enum ChatMode { daily, story, immersive, resonance, gemini }
@@ -2265,6 +2266,53 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
+  Future<void> _incrementCharacterPlayCount() async {
+    if (widget.isTestMode) return;
+
+    final characterId = _currentCharacter.id.trim().isNotEmpty
+        ? _currentCharacter.id.trim()
+        : widget.character.id.trim();
+
+    if (characterId.isEmpty) return;
+
+    try {
+      late final DocumentReference<Map<String, dynamic>> characterRef;
+
+      if (_currentCharacter.isPublic) {
+        characterRef = _db
+            .collection('artifacts')
+            .doc(_appId)
+            .collection('public_characters')
+            .doc(characterId);
+      } else {
+        final currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
+        final creatorUid = _currentCharacter.createdBy.trim().isNotEmpty
+            ? _currentCharacter.createdBy.trim()
+            : currentUid;
+
+        if (creatorUid.isEmpty) return;
+
+        characterRef = _db
+            .collection('artifacts')
+            .doc(_appId)
+            .collection('users')
+            .doc(creatorUid)
+            .collection('private_characters')
+            .doc(characterId);
+      }
+
+      await characterRef.set(
+        {
+          'playCount': FieldValue.increment(1),
+        },
+        SetOptions(merge: true),
+      );
+    } catch (e) {
+      // 聊天訊息已成功送出時，計數失敗不能反過來讓聊天顯示失敗。
+      debugPrint('⚠️ 更新角色聊天次數失敗：$e');
+    }
+  }
+
   Future<void> _saveUserMessageOnly({
     required String userText,
     String? imagePath,
@@ -2296,6 +2344,8 @@ class _ChatPageState extends State<ChatPage> {
       'path': storagePath ?? '',
       'timestamp': FieldValue.serverTimestamp(),
     });
+
+    await _incrementCharacterPlayCount();
 
     await _sessionDocRef?.update({
       'lastMessage': lastMessageText,
@@ -2400,13 +2450,13 @@ class _ChatPageState extends State<ChatPage> {
               color: theme.colorScheme.primary,
             ),
             const SizedBox(width: 8),
-            const Expanded(
-              child: Text('今日免費閒聊已達上限'),
+            Expanded(
+              child: Text(appL10n.chat_text),
             ),
           ],
         ),
-        content: const Text(
-          '今天的 10 次免費閒聊已使用完畢。\n\n接下來每次閒聊需支付 1 朵花花，是否繼續？',
+        content: Text(
+          appL10n.chat_message_flowers_today_continue,
         ),
         actions: [
           TextButton(
@@ -2420,7 +2470,7 @@ class _ChatPageState extends State<ChatPage> {
               shape: const StadiumBorder(),
             ),
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('同意並繼續'),
+            child: Text(appL10n.chat_text_continue),
           ),
         ],
       ),
@@ -3248,18 +3298,18 @@ class _ChatPageState extends State<ChatPage> {
 
             String emptyMessage() {
               if (ownedStickers.isEmpty) {
-                return '目前還沒有可使用的貼紙。';
+                return appL10n.chat_empty_message_label_current_sticker;
               }
 
               if (selectedTab == 0) {
-                return '還沒有最近使用的貼紙';
+                return appL10n.chat_empty_message_label_sticker;
               }
 
               if (selectedTab == 1) {
-                return '還沒有喜愛的貼紙';
+                return appL10n.chat_empty_message_label_sticker_variant_b;
               }
 
-              return '目前還沒有可使用的貼紙';
+              return appL10n.chat_empty_message_label_current_sticker_variant_b;
             }
 
             return SafeArea(
@@ -3321,7 +3371,7 @@ class _ChatPageState extends State<ChatPage> {
                           ),
 
                           Text(
-                            '我的貼紙',
+                            appL10n.chat_empty_message_sticker,
                             style: GoogleFonts
                                 .notoSerifTc(
                               fontSize: 17,
@@ -3357,7 +3407,7 @@ class _ChatPageState extends State<ChatPage> {
                       child: Row(
                         children: [
                           buildTab(
-                            '最近使用',
+                            appL10n.chat_empty_message,
                             0,
                           ),
 
@@ -3366,7 +3416,7 @@ class _ChatPageState extends State<ChatPage> {
                           ),
 
                           buildTab(
-                            '喜愛',
+                            appL10n.chat_empty_message_variant_b,
                             1,
                           ),
 
@@ -3550,7 +3600,7 @@ class _ChatPageState extends State<ChatPage> {
 
     if (imageUrl.isEmpty) {
       _showCenterToast(
-        '這張貼紙目前無法使用',
+        appL10n.chat_send_sticker_message_current_unavailable_sticker,
         isError: true,
       );
       return;
@@ -5588,6 +5638,7 @@ class _ChatPageState extends State<ChatPage> {
           await _messagesCollection!.add(userMessageData);
 
           userMessageId = userMessageRef.id;
+          await _incrementCharacterPlayCount();
 // 真正訊息已經寫入 Firestore，移除本機 pending 泡泡
           _removePendingMediaMessage(pendingMediaId);
           final userCharRef = _db
@@ -8736,7 +8787,7 @@ class _ChatPageState extends State<ChatPage> {
 
                                   final String sceneDisplayText = [
                                     if (sceneTitle.isNotEmpty)
-                                      '—— 劇場・$sceneTitle ——',
+                                      appL10n.chat_message_theater(sceneTitle),
                                     if (sceneDescription.isNotEmpty)
                                       sceneDescription,
                                   ].join('\n\n');
@@ -9342,7 +9393,7 @@ class _ChatPageState extends State<ChatPage> {
       onTap: onTap,
       borderRadius: BorderRadius.circular(18),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 5),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -11588,7 +11639,7 @@ class _ChatPageState extends State<ChatPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '將重新產生角色上一則回覆。',
+                        appL10n.chat_handle_regenerate_button_message_character_reply_again,
                         style: TextStyle(
                           color: theme.colorScheme.onSurface
                               .withValues(alpha: 0.72),
@@ -12112,7 +12163,7 @@ class _ChatPageState extends State<ChatPage> {
                       onChanged: _saveDraft,
                       onToolbox: _showToolbox,
                       // 🚧 送審版：貼圖功能底層保留，暫時隱藏入口。
-                      onSticker: null,
+                      onSticker: _showStickerPicker,
                       onRegenerate: _handleRegenerateButton,
                       onContinue: _handleContinueButton,
                       onStop: _stopGenerating,

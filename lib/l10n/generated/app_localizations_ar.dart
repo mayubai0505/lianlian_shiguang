@@ -8390,4 +8390,1518 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get chat_mode_resonance_cost_short => '10 زهور';
+
+  @override
+  String get notification_channel_chat_description =>
+      'يُستخدم لاستلام أحدث ردود الشخصيات وتذكيرات اللعبة.';
+
+  @override
+  String get subscription_star_contract_name =>
+      'Lianlian Shiguang · عهد النجوم';
+
+  @override
+  String moment_notification_comment_on_your_post(
+      Object commentText, Object senderNickname) {
+    return 'علّق $senderNickname على منشورك: “$commentText”';
+  }
+
+  @override
+  String get moment_notification_new_reply_title => 'رد جديد على منشورك! 💬';
+
+  @override
+  String get moment_notification_character_popularity_title =>
+      'شعبية الشخصية ترتفع بسرعة! 🔥';
+
+  @override
+  String get font_size_small => 'صغير';
+
+  @override
+  String get font_size_standard => 'قياسي';
+
+  @override
+  String get font_size_slightly_large => 'أكبر قليلًا';
+
+  @override
+  String get font_size_large => 'كبير';
+
+  @override
+  String get font_size_extra_large => 'كبير جدًا';
+
+  @override
+  String get font_selection_title => 'الخط';
+
+  @override
+  String get font_selection_description =>
+      'اختر الخط الأنسب لقراءة القصص والدردشة.';
+
+  @override
+  String get font_size_title => 'حجم الخط';
+
+  @override
+  String get font_selection_tagline => 'اكتب قصتك من جديد مع من تحب.';
+
+  @override
+  String font_selection_applied_message(Object value1) {
+    return 'تم تطبيق “$value1”';
+  }
+
+  @override
+  String get font_selection_local_storage_note =>
+      'يتم تطبيق الخط والحجم فورًا وحفظهما على هذا الجهاز. عند استعادة المظهر الافتراضي ستعود الإعدادات إلى “Shiguang Serif + قياسي”.';
+
+  @override
+  String get inbox_customer_service_report => 'بلاغ إلى خدمة العملاء';
+
+  @override
+  String get inbox_content_text_message_player_title_send =>
+      'العنوان المرسل من اللاعب';
+
+  @override
+  String get inbox_content_text_message_player_content_send =>
+      'المحتوى المرسل من اللاعب';
+
+  @override
+  String avatar_frame_equipped_message(Object value1) {
+    return 'تم تجهيز “$value1”';
+  }
+
+  @override
+  String get avatar_frame_unequip_frame_snackbar =>
+      'تمت إزالة إطار الصورة الرمزية';
+
+  @override
+  String get avatar_frame_unequip_frame_message_event =>
+      'إطار صورة رمزية للفعالية';
+
+  @override
+  String get avatar_frame_message => 'إطار الصورة الرمزية';
+
+  @override
+  String avatar_frame_load_failed(Object value1) {
+    return 'فشل تحميل إطارات الصور الرمزية: $value1';
+  }
+
+  @override
+  String get avatar_frame_parse_frames_message_select =>
+      'اختر إطار الصورة الرمزية الذي تريد استخدامه';
+
+  @override
+  String get avatar_frame_parse_frames_message_event =>
+      'تُحفظ إطارات الصور الرمزية التي تحصل عليها من الفعاليات بشكل دائم ويمكن تغييرها أو إزالتها في أي وقت.';
+
+  @override
+  String get avatar_frame_parse_frames_title =>
+      'عدم استخدام إطار للصورة الرمزية';
+
+  @override
+  String get avatar_frame_parse_frames_subtitle_avatar =>
+      'إظهار الصورة الرمزية الأصلية';
+
+  @override
+  String get avatar_frame_parse_frames_message_event_shop_redeem_current =>
+      'لا تملك أي إطارات للصور الرمزية بعد.\nستظهر هنا الإطارات التي تستبدلها من متجر الفعالية.';
+
+  @override
+  String get avatar_frame_parse_frames_message_event_variant_b =>
+      'إطار صورة رمزية محدود للفعالية';
+
+  @override
+  String get background_settings_message => 'خلفيات محدودة';
+
+  @override
+  String get background_title_exclusive_photo_current =>
+      'لا توجد صور حصرية بعد';
+
+  @override
+  String get background_subtitle_unlock_character_photo =>
+      'ستظهر هنا صور الشخصية التي تفتحها لاحقًا.';
+
+  @override
+  String get background_title_login => 'سجّل الدخول لعرض الخلفيات المحدودة';
+
+  @override
+  String get background_subtitle_redeem_chat_event =>
+      'تُحفظ هنا خلفيات الدردشة التي تحصل عليها من الفعاليات.';
+
+  @override
+  String get background_title => 'لم تحصل على أي خلفيات محدودة بعد';
+
+  @override
+  String get background_subtitle_event_shop_redeem_chat =>
+      'ستظهر هنا خلفيات الدردشة التي تستبدلها من متجر الفعالية.';
+
+  @override
+  String get background_is_limited_background_type_message_chat_event =>
+      'خلفية دردشة محدودة للفعالية';
+
+  @override
+  String background_is_limited_background_type_message_current_chat(
+      Object value1) {
+    return 'هل تريد تعيين “$value1” كخلفية للدردشة الحالية؟';
+  }
+
+  @override
+  String character_edit_message_character_settings(Object value1) {
+    return '【角色性格與設定】\n$value1';
+  }
+
+  @override
+  String character_edit_message(Object value1) {
+    return '【說話語氣與風格】\n$value1';
+  }
+
+  @override
+  String character_edit_message_variant_b(Object value1) {
+    return '【社交與環境互動】\n$value1';
+  }
+
+  @override
+  String character_edit_save_to_draft_message_current_character(Object value1) {
+    return 'الشخصية الرئيسية الحالية: 【$value1】\n';
+  }
+
+  @override
+  String character_edit_message_back(Object result) {
+    return '🚪 返回原本的 ProfilePage：$result';
+  }
+
+  @override
+  String character_edit_save_character_message(Object value1) {
+    return '📦 準備搬移 $value1 則記憶碎片：';
+  }
+
+  @override
+  String character_edit_message_complete(Object value1) {
+    return '✅ 已完成搬移 $value1 則記憶碎片';
+  }
+
+  @override
+  String character_edit_preload_first_voice_sample_message_background_start(
+      Object voiceId) {
+    return '⏳ 開始背景預載第一個 Voice：$voiceId';
+  }
+
+  @override
+  String get character_edit_preload_first_voice_sample_message_update =>
+      '⚠️ Voice 清單已更新，略過舊的預載結果';
+
+  @override
+  String
+      get character_edit_preload_first_voice_sample_message_background_complete =>
+          '✅ 第一個 Voice 已背景預載完成';
+
+  @override
+  String get character_edit_preload_first_voice_sample_message_failed =>
+      '⚠️ 第一個 Voice 預載失敗：';
+
+  @override
+  String character_edit_preload_first_voice_sample_message(Object value1) {
+    return '✅ matchVoiceFromBank 回傳：$value1';
+  }
+
+  @override
+  String get character_edit_error_voice => '語音服務回傳格式錯誤';
+
+  @override
+  String get character_edit_error_voice_variant_b => '語音服務沒有回傳 previews';
+
+  @override
+  String character_edit_message_success_voice_match(Object value1) {
+    return '✅ 成功配對 $value1 個 Voice Bank 聲音';
+  }
+
+  @override
+  String get character_edit_message_failed_match =>
+      '========== Voice Bank 配對失敗 ==========';
+
+  @override
+  String get character_edit_message_error_match =>
+      '========== Voice Bank 配對未知錯誤 ==========';
+
+  @override
+  String get character_edit_preview_voice_sample_error_preview => '試聽服務回傳格式錯誤';
+
+  @override
+  String get character_edit_preview_voice_sample_error_preview_variant_b =>
+      '試聽音訊資料為空';
+
+  @override
+  String get character_edit_preview_voice_sample_error_failed_preview =>
+      '試聽音訊解析失敗';
+
+  @override
+  String get character_edit_test_voice_settings_message_failed =>
+      '========== testVoiceSettings 失敗 ==========';
+
+  @override
+  String character_edit_confirm_voice_selection_message_selected(
+      Object realVoiceId) {
+    return '✅ Voice選定正式 Voice ID：$realVoiceId';
+  }
+
+  @override
+  String
+      get character_edit_confirm_voice_selection_message_save_failed_select =>
+          '========== 儲存 Voice Bank 選擇失敗 ==========';
+
+  @override
+  String
+      get character_edit_confirm_voice_selection_message_failed_voice_selected =>
+          '========== 選定 Voice Bank 聲音失敗 ==========';
+
+  @override
+  String get character_to_map_message_creator => 'منشئ غامض';
+
+  @override
+  String get character_get_character_by_id_message_load_background_story =>
+      'جارٍ تحميل القصة الخلفية...';
+
+  @override
+  String get character_get_character_by_id_message_sync =>
+      'جارٍ مزامنة القصة الافتتاحية...';
+
+  @override
+  String get character_get_character_by_id_message =>
+      'جارٍ إعداد الجملة الافتتاحية...';
+
+  @override
+  String get character_get_character_by_id_message_background =>
+      'جارٍ تحميل الخلفية...';
+
+  @override
+  String get character_get_character_by_id_message_load =>
+      'جارٍ تحميل عالم القصة...';
+
+  @override
+  String get character_get_character_by_id_message_load_settings =>
+      'جارٍ تحميل الإعدادات الأساسية للشخصية...';
+
+  @override
+  String get character_get_character_by_id_message_variant_b =>
+      'جارٍ تحميل الشخصية...';
+
+  @override
+  String get character_get_character_by_id_message_appearance =>
+      'جارٍ تحميل وصف المظهر...';
+
+  @override
+  String get character_get_character_by_id_message_variant_c =>
+      'جارٍ تحميل أسلوب الكلام...';
+
+  @override
+  String get character_get_character_by_id_message_load_variant_b =>
+      'لم يتم التحميل بعد';
+
+  @override
+  String get character_get_character_by_id_message_variant_d => 'غريب';
+
+  @override
+  String get character_get_character_by_id_message_load_variant_c =>
+      'جارٍ تحميل أمثلة الحوار...';
+
+  @override
+  String get character_get_character_by_id_message_variant_e => 'اللقاء الأول';
+
+  @override
+  String get character_get_character_by_id_message_variant_f => 'معارف';
+
+  @override
+  String get character_get_character_by_id_message_variant_g => 'علاقة غامضة';
+
+  @override
+  String get chat_input_message_sticker => 'ملصق';
+
+  @override
+  String get chat_text => 'لقد وصلت إلى حد الدردشة العادية المجانية لليوم';
+
+  @override
+  String get chat_message_flowers_today_continue =>
+      'لقد استخدمت جميع مرات الدردشة العادية المجانية العشر اليوم.\n\nمن الآن فصاعدًا، ستكلف كل دردشة عادية زهرة واحدة. هل تريد المتابعة؟';
+
+  @override
+  String get chat_text_continue => 'موافقة ومتابعة';
+
+  @override
+  String get chat_empty_message_label_current_sticker =>
+      'لا توجد ملصقات متاحة للاستخدام حاليًا.';
+
+  @override
+  String get chat_empty_message_label_sticker =>
+      'لا توجد ملصقات مستخدمة مؤخرًا بعد';
+
+  @override
+  String get chat_empty_message_label_sticker_variant_b =>
+      'لا توجد ملصقات مفضلة بعد';
+
+  @override
+  String get chat_empty_message_label_current_sticker_variant_b =>
+      'لا توجد ملصقات متاحة للاستخدام حاليًا';
+
+  @override
+  String get chat_empty_message_sticker => 'ملصقاتي';
+
+  @override
+  String get chat_empty_message => 'المستخدمة مؤخرًا';
+
+  @override
+  String get chat_empty_message_variant_b => 'المفضلة';
+
+  @override
+  String get chat_send_sticker_message_current_unavailable_sticker =>
+      'هذا الملصق غير متاح حاليًا';
+
+  @override
+  String chat_message_theater(Object sceneTitle) {
+    return '—— المسرح・$sceneTitle ——';
+  }
+
+  @override
+  String get chat_handle_regenerate_button_message_character_reply_again =>
+      'سيتم إنشاء رد الشخصية السابق من جديد.';
+
+  @override
+  String creator_profile_reason_tile_message_report_select_reason(
+      Object creatorName) {
+    return 'اختر سبب الإبلاغ عن “$creatorName”:';
+  }
+
+  @override
+  String get widget_key_message => 'الحالة';
+
+  @override
+  String get widget_key_message_variant_b => 'الموقع';
+
+  @override
+  String get widget_label_character => 'لا توجد حالة للشخصية بعد';
+
+  @override
+  String get widget_format_post_time_label_moment_latest => 'أحدث منشور';
+
+  @override
+  String get widget_format_post_time_label_update_moment =>
+      'تم تحديث منشور للتو';
+
+  @override
+  String widget_format_post_time_label_minutes_ago_update_moment(
+      Object value1) {
+    return 'تم تحديث منشور قبل $value1 دقيقة';
+  }
+
+  @override
+  String widget_format_post_time_label_hours_ago_update_moment(Object value1) {
+    return 'تم تحديث منشور قبل $value1 ساعة';
+  }
+
+  @override
+  String get widget_format_post_time_label_update_moment_days =>
+      'تم تحديث منشور أمس';
+
+  @override
+  String widget_format_post_time_label_update_moment_days_ago(Object value1) {
+    return 'تم تحديث منشور قبل $value1 يوم';
+  }
+
+  @override
+  String widget_format_post_time_label_update_moment_variant_b(
+      Object value1, Object value2) {
+    return 'تم تحديث منشور في $value1/$value2';
+  }
+
+  @override
+  String get widget_format_post_time_message_share_photo => 'شارك صورة';
+
+  @override
+  String get widget_format_post_time_message_update_moment => 'نشر تحديثًا';
+
+  @override
+  String get widget_format_post_time_message_current_character_moment =>
+      'لا توجد منشورات للشخصية بعد';
+
+  @override
+  String get widget_extract_daily_quote_message => 'الموقع:';
+
+  @override
+  String get widget_format_daily_quote_time_message_today =>
+      'لا توجد عبارة لليوم بعد';
+
+  @override
+  String get widget_load_period_care_state_message_today =>
+      '“لا ترهق نفسك اليوم. سأبقى معك ونأخذ الأمور على مهل.”';
+
+  @override
+  String widget_load_period_care_state_message_period_days(Object dayCount) {
+    return 'اليوم $dayCount من الدورة';
+  }
+
+  @override
+  String get widget_load_period_care_state_message_days =>
+      '“حاولي الراحة أبكر قليلًا هذه الأيام. لا ترهقي نفسك.”';
+
+  @override
+  String get widget_load_period_care_state_message_today_start =>
+      'من المتوقع أن تبدأ اليوم';
+
+  @override
+  String widget_load_period_care_state_message_days_variant_b(
+      Object daysUntil) {
+    return 'متبقي تقريبًا $daysUntil يوم';
+  }
+
+  @override
+  String get widget_load_period_care_state_message_today_variant_b =>
+      '“لقد بذلت جهدًا كبيرًا. اعتني بنفسك جيدًا اليوم.”';
+
+  @override
+  String get widget_load_period_care_state_message_period_end =>
+      'انتهت الدورة للتو';
+
+  @override
+  String get widget_load_period_care_state_message_today_variant_c =>
+      '“تذكّري أن تعتني بنفسك جيدًا اليوم أيضًا.”';
+
+  @override
+  String get widget_load_period_care_state_message_current_reminder =>
+      'لا يوجد تذكير خاص بالدورة حاليًا';
+
+  @override
+  String get widget_load_period_care_state_message =>
+      'لا توجد سجلات كافية للدورة بعد';
+
+  @override
+  String get widget_parse_character_birthday_message => 'السنة';
+
+  @override
+  String get widget_parse_character_birthday_message_variant_b => 'الشهر';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_character_birthday =>
+      'عيد ميلاد الشخصية';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_birthday_settings =>
+      'لم يتم تعيين عيد الميلاد';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_birthday_countdown(
+      Object birthdayLabel) {
+    return 'حتى عيد ميلاده・$birthdayLabel';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_today => 'إنه اليوم';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_days(Object days) {
+    return 'متبقي $days يوم';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message => 'منذ لقائه';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_variant_b =>
+      'لا يوجد سجل للقاء بعد';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_days_variant_b(
+      Object value1) {
+    return '$value1 يوم';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_variant_c =>
+      'يوم مهم';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_date_select =>
+      'لم يتم اختيار تاريخ';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_elapsed_days(
+      Object value1) {
+    return 'مرّ $value1 يوم';
+  }
+
+  @override
+  String get widget_settings_remove_title_character_latest =>
+      'أحدث منشور للشخصية';
+
+  @override
+  String get widget_settings_remove_subtitle_moment_latest =>
+      'شاهد آخر تحديث له دون فتح التطبيق.';
+
+  @override
+  String get widget_settings_remove_title_period => 'مرافقة خلال الدورة';
+
+  @override
+  String get widget_settings_remove_subtitle_character_end =>
+      'مزيد قليل من اهتمام الشخصية قبل الدورة وأثناءها وبعدها.';
+
+  @override
+  String get widget_settings_remove_title => 'عبارة اليوم';
+
+  @override
+  String get widget_settings_remove_subtitle_days =>
+      'كل يوم ستجد عبارة بانتظارك على الشاشة الرئيسية.';
+
+  @override
+  String get widget_settings_remove_title_reminder => 'المناسبات / التذكيرات';
+
+  @override
+  String get widget_settings_remove_subtitle_character_birthday_reminder =>
+      'تذكّروا معًا يوم اللقاء وأعياد الميلاد، ودع الشخصية تذكّرك بالأمور المهمة.';
+
+  @override
+  String get widget_settings_remove_title_character => 'حالة الشخصية';
+
+  @override
+  String get widget_settings_remove_subtitle_chat_latest_mood =>
+      'اعرض أحدث مزاج وحالة وموقع من الدردشة على الشاشة الرئيسية.';
+
+  @override
+  String get widget_settings_size_label => 'متوسط';
+
+  @override
+  String get widget_settings_size_label_message_send =>
+      'تم إرسال طلب الإضافة إلى الشاشة الرئيسية.';
+
+  @override
+  String get widget_settings_size_label_message_try_again_later_failed =>
+      'فشلت الإضافة إلى الشاشة الرئيسية. حاول مرة أخرى لاحقًا.';
+
+  @override
+  String get widget_settings_edit_saved_widget_message_character_reminder_again =>
+      'تم دمج “تذكير مهام الشخصية” القديم في “المناسبات / التذكيرات”. يُرجى إنشاؤه من جديد.';
+
+  @override
+  String get widget_settings_delete_saved_widget_title_delete_small =>
+      'حذف الأداة؟';
+
+  @override
+  String
+      widget_settings_delete_saved_widget_message_stop_display_long_press_home_after_delete(
+          Object value1, Object value2) {
+    return 'هل تريد حذف “$value1・$value2”؟\n\nبعد الحذف، ستتوقف هذه الأداة عن عرض محتوى الشخصية وسيُطلب من اللاعب الضغط مطولًا على الشاشة الرئيسية لإزالتها.';
+  }
+
+  @override
+  String get widget_settings_delete_saved_widget_message_delete_settings_small =>
+      'تم حذف إعدادات الأداة؛ وتم تعطيل الأداة المقابلة على الشاشة الرئيسية.';
+
+  @override
+  String get widget_settings_message_desktop_widget => 'أدوات الشاشة الرئيسية';
+
+  @override
+  String get widget_settings_message_character_days =>
+      'دع شخصيتك المفضلة ترافقك كل يوم.';
+
+  @override
+  String get widget_settings_message_small => 'أدواتي';
+
+  @override
+  String get widget_settings_message_desktop_widget_variant_b =>
+      'لا توجد أدوات على الشاشة الرئيسية بعد';
+
+  @override
+  String get widget_settings_message_character_reminder =>
+      'اختر شخصية مفضلة واعرض تذكيراتها أو منشوراتها أو حالتها على الشاشة الرئيسية.';
+
+  @override
+  String widget_settings_message_size(Object value1) {
+    return 'حجم $value1';
+  }
+
+  @override
+  String get widget_settings_tooltip => 'إضافة إلى الشاشة الرئيسية';
+
+  @override
+  String get widget_settings_tooltip_small => 'تعديل الأداة';
+
+  @override
+  String get widget_settings_tooltip_delete_small => 'حذف الأداة';
+
+  @override
+  String get widget_settings_message_desktop_widget_variant_c =>
+      'إضافة أداة إلى الشاشة الرئيسية';
+
+  @override
+  String get widget_settings_message_character_photo_content_select_small =>
+      'يمكن لكل أداة اختيار الشخصية وصورتها والمحتوى المعروض بشكل مستقل. ويمكنك أيضًا وضع عدة شخصيات على الشاشة الرئيسية في الوقت نفسه.';
+
+  @override
+  String get widget_settings_desktop_type_selection_message_select_small =>
+      'اختر أداة';
+
+  @override
+  String get widget_settings_desktop_type_selection_message_select =>
+      'اختر أولًا الطريقة التي تريد أن ترافقك بها الشخصية على الشاشة الرئيسية.';
+
+  @override
+  String
+      get widget_settings_go_to_photo_step_message_try_again_later_failed_load_character_photo =>
+          'فشل تحميل صور الشخصية. حاول مرة أخرى لاحقًا.';
+
+  @override
+  String get widget_settings_message_character_select => 'اختر شخصية';
+
+  @override
+  String get widget_settings_message_character_friend_days =>
+      'تظهر فقط الشخصيات التي أضفتها كأصدقاء أو سبق أن دردشت معها.';
+
+  @override
+  String get widget_settings_hint_character_search => 'البحث عن شخصيات';
+
+  @override
+  String get widget_settings_message_try_again_later_failed_load_character =>
+      'فشل تحميل الشخصيات. حاول مرة أخرى لاحقًا.';
+
+  @override
+  String get widget_settings_message_current_character_chat_friend_add =>
+      'لا توجد شخصيات مطابقة حاليًا. تحدث مع شخصية أولًا أو أضفها كصديق.';
+
+  @override
+  String get widget_settings_message_character_photo_select =>
+      'التالي・اختر صورة الشخصية';
+
+  @override
+  String
+      get widget_settings_desktop_photo_selection_message_character_photo_select =>
+          'اختر صورة الشخصية';
+
+  @override
+  String
+      widget_settings_desktop_photo_selection_message_current_affection_unlocked_photo(
+          Object value1) {
+    return 'الألفة الحالية $value1・يمكن استخدام الصور المفتوحة مباشرة.';
+  }
+
+  @override
+  String
+      get widget_settings_desktop_photo_selection_message_current_character_photo =>
+          'لا توجد صور متاحة لهذه الشخصية حاليًا.';
+
+  @override
+  String
+      widget_settings_desktop_photo_selection_message_required_affection_unlock_photo(
+          Object value1) {
+    return 'يلزم مستوى ألفة $value1 لفتح هذه الصورة.';
+  }
+
+  @override
+  String get widget_settings_message_photo_public => 'صورة عامة';
+
+  @override
+  String widget_settings_message_unlock(Object value1) {
+    return 'تُفتح عند ألفة $value1';
+  }
+
+  @override
+  String widget_settings_message_unlocked(Object value1) {
+    return 'مفتوحة・ألفة $value1';
+  }
+
+  @override
+  String get widget_settings_message_content_settings =>
+      'التالي・ضبط المحتوى المعروض';
+
+  @override
+  String get widget_settings_open_preview_message_player_select =>
+      'اختر أولًا فعالية / مهمة أنشأها لاعب.';
+
+  @override
+  String get widget_settings_pick_custom_memo_event_message_login_account =>
+      'سجّل الدخول أولًا.';
+
+  @override
+  String
+      get widget_settings_pick_custom_memo_event_message_memo_current_character =>
+          'لا توجد لهذه الشخصية أي فعاليات / مذكرات بعد.';
+
+  @override
+  String get widget_settings_pick_custom_memo_event_message_player_select =>
+      'اختر فعالية أنشأها لاعب';
+
+  @override
+  String get widget_settings_message_try_again_later_failed_load =>
+      'فشل تحميل الفعاليات. حاول مرة أخرى لاحقًا.';
+
+  @override
+  String get widget_settings_message_content_settings_variant_b =>
+      'ضبط المحتوى المعروض';
+
+  @override
+  String get widget_settings_subtitle_content =>
+      'عدّل ما تريد رؤيته على الشاشة الرئيسية.';
+
+  @override
+  String get widget_settings_message_small_variant_b => 'التالي・معاينة الأداة';
+
+  @override
+  String get widget_settings_title => 'عرض المنشورات';
+
+  @override
+  String get widget_settings_title_variant_b => 'إظهار صورة المنشور';
+
+  @override
+  String get widget_settings_title_variant_c => 'إظهار عدد الإعجابات';
+
+  @override
+  String get widget_settings_title_comment => 'إظهار عدد التعليقات';
+
+  @override
+  String get widget_settings_title_variant_d => 'الخصوصية والمرافقة';
+
+  @override
+  String get widget_settings_title_variant_e => 'وضع الخصوصية';
+
+  @override
+  String get widget_settings_subtitle_period_character =>
+      'اعرض على الشاشة الرئيسية اهتمام الشخصية فقط دون إظهار معلومات الدورة مباشرة.';
+
+  @override
+  String get widget_settings_title_variant_f => 'الوضع التفصيلي';
+
+  @override
+  String get widget_settings_subtitle_end =>
+      'يمكن عرض حالات الدورة مثل قرب البدء أو كونها جارية أو انتهائها للتو.';
+
+  @override
+  String get widget_settings_title_variant_g => 'إظهار حالة الدورة';
+
+  @override
+  String get widget_settings_title_time => 'إظهار الوقت';
+
+  @override
+  String get widget_settings_title_update => 'طريقة التحديث';
+
+  @override
+  String get widget_settings_message_update_days => 'التحديث مرة يوميًا';
+
+  @override
+  String get widget_settings_message_update =>
+      'التحديث في كل مرة يتم فيها فتح التطبيق';
+
+  @override
+  String get widget_settings_text_update => 'التحديث بعد فتح التطبيق';
+
+  @override
+  String get widget_settings_title_content => 'محتوى المناسبة';
+
+  @override
+  String get widget_settings_title_days => 'الأيام منذ اللقاء';
+
+  @override
+  String get widget_settings_subtitle_character_today_days =>
+      'اعرض عدد الأيام منذ أن التقيت بالشخصية وحتى اليوم.';
+
+  @override
+  String get widget_settings_subtitle_character_birthday =>
+      'اعرض المدة المتبقية حتى عيد ميلاد الشخصية.';
+
+  @override
+  String get widget_settings_title_player => 'فعالية / مهمة أنشأها لاعب';
+
+  @override
+  String get widget_settings_message_memo_character_select_reminder =>
+      'اختر فعالية أو مهمة من مذكرات / تذكيرات هذه الشخصية.';
+
+  @override
+  String widget_settings_message_selected(Object _selectedMemoContent) {
+    return 'المحدد: $_selectedMemoContent';
+  }
+
+  @override
+  String get widget_settings_message_select => 'اختر ما يصل إلى 3 عناصر';
+
+  @override
+  String get widget_settings_message_character =>
+      'يمكن لحالة الشخصية عرض ما يصل إلى 3 عناصر.';
+
+  @override
+  String get widget_settings_message_small_variant_c => 'معاينة الأداة';
+
+  @override
+  String get widget_settings_title_confirm => 'التأكيد النهائي';
+
+  @override
+  String get widget_settings_subtitle_large =>
+      'شاهد أولًا كيف سيبدو تقريبًا على الشاشة الرئيسية.';
+
+  @override
+  String get widget_settings_title_size => 'الحجم';
+
+  @override
+  String get widget_settings_title_variant_h => 'التخطيط';
+
+  @override
+  String get widget_settings_label_photo => 'صورة بملء الشاشة';
+
+  @override
+  String get widget_settings_label_character => 'بطاقة الشخصية';
+
+  @override
+  String get widget_settings_message_sync => 'جارٍ المزامنة…';
+
+  @override
+  String get widget_settings_message_desktop_widget_add =>
+      'إضافة أداة إلى الشاشة الرئيسية';
+
+  @override
+  String get widget_settings_sample_lines_message_today_end =>
+      '“انتهيت اليوم أبكر قليلًا مما توقعت.”';
+
+  @override
+  String get widget_settings_sample_lines_message_days =>
+      '“لا ترهق نفسك كثيرًا هذه الأيام.”';
+
+  @override
+  String get widget_settings_sample_lines_message_period => 'الدورة جارية';
+
+  @override
+  String get widget_settings_sample_lines_message_today =>
+      '“استرحي أكثر قليلًا اليوم.”';
+
+  @override
+  String get widget_settings_sample_lines_message_today_variant_b =>
+      '“لا تنسي أن تتناولي الطعام جيدًا اليوم أيضًا.”';
+
+  @override
+  String get widget_settings_sample_lines_label_birthday_countdown =>
+      'حتى عيد ميلاده';
+
+  @override
+  String get widget_settings_sample_lines_label_days => 'متبقي 12 يومًا';
+
+  @override
+  String get widget_settings_sample_lines_label_days_variant_b => '128 يومًا';
+
+  @override
+  String get widget_settings_sample_lines_message_mood => 'المزاج｜متعب قليلًا';
+
+  @override
+  String get widget_settings_sample_lines_message_end =>
+      'الحالة｜انتهى للتو من العمل';
+
+  @override
+  String get widget_settings_sample_lines_message => 'الموقع｜أسفل المكتب';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_b => 'العلاقة｜حبيب';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_c =>
+      'الملابس｜كنزة محاكة رمادية فاتحة';
+
+  @override
+  String get widget_settings_sample_lines_message_days_variant_b =>
+      'الطقس｜بارد قليلًا';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_d =>
+      'الفكرة｜أريد رؤيتك مبكرًا';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_e =>
+      'الفعل｜يرتب المكتب';
+
+  @override
+  String get widget_settings_sample_lines_message_affection =>
+      'الألفة｜هادئة وقريبة';
+
+  @override
+  String get edit_profile_message => 'زينة الملف الشخصي';
+
+  @override
+  String get edit_profile_message_current => 'غير مستخدمة حاليًا';
+
+  @override
+  String
+      get event_memory_character_load_characters_message_login_character_select =>
+          'سجّل الدخول قبل اختيار شخصية';
+
+  @override
+  String get event_memory_character_center_message_memory_select =>
+      'اختر من تريد أن تحتفظ معه بهذه الذكرى';
+
+  @override
+  String get event_memory_character_center_message_character_friend_add =>
+      'لن تظهر هنا إلا الشخصيات التي أنشأتها بنفسك والشخصيات التي أضفتها كأصدقاء.';
+
+  @override
+  String get event_memory_character_center_message_current_character_select =>
+      'لا توجد شخصيات متاحة للاختيار حاليًا';
+
+  @override
+  String
+      get event_memory_character_center_message_public_character_character_friend_add =>
+          'أنشئ شخصيتك الخاصة أو أضف شخصية عامة تعجبك كصديق أولًا.';
+
+  @override
+  String get event_memory_character_message_character_select =>
+      'اختر شخصية أولًا';
+
+  @override
+  String event_memory_character_message_continue(Object value1) {
+    return 'المتابعة مع $value1';
+  }
+
+  @override
+  String get event_memory_character_card_message_private => 'خاصتي・خاص';
+
+  @override
+  String get event_memory_character_error_label_load_again => 'إعادة التحميل';
+
+  @override
+  String
+      get event_memory_collection_show_collection_intro_if_needed_message_collection =>
+          'مجموعة Shiguang';
+
+  @override
+  String
+      get event_memory_collection_show_collection_intro_if_needed_message_collection_content =>
+          'هذه قائمة مجموعتك، ويمكنك هنا مشاهدة كل ما حفظته.';
+
+  @override
+  String get event_memory_collection_text_collection_login =>
+      'سجّل الدخول لعرض مجموعتك';
+
+  @override
+  String get event_memory_collection_message_memory => 'الذكريات';
+
+  @override
+  String get event_memory_collection_message_chat_background =>
+      'خلفيات الدردشة';
+
+  @override
+  String get event_memory_collection_message_avatar_frame_collection =>
+      'لا توجد إطارات صور رمزية محفوظة بعد';
+
+  @override
+  String get event_memory_collection_message_avatar_frame =>
+      'ستظهر هنا إطارات الصور الرمزية المحدودة التي تحصل عليها لاحقًا.';
+
+  @override
+  String get event_memory_collection_message_collection_sticker =>
+      'لا توجد ملصقات محفوظة بعد';
+
+  @override
+  String get event_memory_collection_message_sticker =>
+      'ستُحفظ هنا الملصقات التي تجمعها لاحقًا.';
+
+  @override
+  String get event_memory_collection_message_collection_chat_background =>
+      'لا توجد خلفيات دردشة محفوظة بعد';
+
+  @override
+  String get event_memory_collection_message_chat_background_variant_b =>
+      'ستظهر هنا خلفيات الدردشة المحدودة التي تحصل عليها لاحقًا.';
+
+  @override
+  String get event_memory_collection_tab_title_collection_temporary =>
+      'يتعذر تحميل المجموعة مؤقتًا';
+
+  @override
+  String get event_memory_collection_tab_title_collection_memory =>
+      'لا توجد ذكريات محفوظة بعد';
+
+  @override
+  String get event_memory_collection_tab_subtitle_limited_memory_complete =>
+      'بعد إكمال ذكرى محدودة، يمكنك الاحتفاظ بلحظاتك المفضلة هنا.';
+
+  @override
+  String get event_memory_collection_item_card_label => 'عنصر محدود';
+
+  @override
+  String get event_memory_collection_confirm_delete_owned_item_message_delete =>
+      'حذف العنصر المحدود؟';
+
+  @override
+  String
+      event_memory_collection_confirm_delete_owned_item_message_after_delete_unavailable(
+          Object _itemTypeLabel) {
+    return 'بعد الحذف، لن تتمكن من استخدام $_itemTypeLabel هذا بعد الآن،';
+  }
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_collection =>
+          'ولن يظهر أيضًا في “مجموعة Shiguang”.\n\n';
+
+  @override
+  String get event_memory_collection_confirm_delete_owned_item_message_unavailable =>
+      'هذا يعني أنك ستتخلى عن العنصر المحدود الذي حصلت عليه هذه المرة، ولا يمكن التراجع عن هذا الإجراء.\n\n';
+
+  @override
+  String
+      event_memory_collection_confirm_delete_owned_item_message_delete_variant_b(
+          Object value1) {
+    return 'هل أنت متأكد أنك تريد حذف “$value1”؟';
+  }
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_delete_variant_c =>
+          'تم حذف العنصر المحدود';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_not_found_delete =>
+          'تعذر العثور على هذا العنصر المحدود وربما تم حذفه بالفعل';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_collection_current_delete =>
+          'لا يمكن حذف هذه المجموعة حاليًا';
+
+  @override
+  String get event_memory_collection_show_preview_message =>
+      'جارٍ تجهيز الصورة';
+
+  @override
+  String get event_memory_collection_show_preview_message_failed_load =>
+      'فشل تحميل الصورة';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save_current =>
+      'إصدار الويب لا يدعم حاليًا الحفظ المباشر في معرض صور الهاتف';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save_memory =>
+      'يلزم إذن الوصول إلى معرض الصور لحفظ هذه الذكرى';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_memory =>
+      'صورة الذكرى ليست جاهزة بعد. حاول مرة أخرى.';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_failed_memory =>
+      'فشل إنشاء صورة الذكرى';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save =>
+      'تم الحفظ في معرض صور الهاتف ♡';
+
+  @override
+  String
+      get event_memory_collection_save_to_gallery_message_save_confirm_failed =>
+          'فشل الحفظ. تحقق من إذن معرض الصور وحاول مرة أخرى.';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_title_collection_cancel =>
+          'إزالة من المجموعة؟';
+
+  @override
+  String get event_memory_collection_delete_collection_message_collection_cancel_memory =>
+      'بعد الإزالة من المجموعة، لن تظهر هذه الذكرى في “مجموعة Shiguang”.\n\nهل أنت متأكد أنك تريد إزالتها؟';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_message_try_again_later_collection_cancel_failed =>
+          'فشلت الإزالة من المجموعة. حاول مرة أخرى لاحقًا.';
+
+  @override
+  String get event_memory_collection_message_collection_memory =>
+      'مجموعة الذكريات';
+
+  @override
+  String get event_memory_collection_label_play => 'تشغيل مرة أخرى';
+
+  @override
+  String get event_memory_collection_label_save => 'جارٍ الحفظ…';
+
+  @override
+  String get event_memory_collection_label_save_variant_b =>
+      'حفظ في معرض الصور';
+
+  @override
+  String get event_memory_collection_collected_card_message_limited_memory =>
+      'Lianlian Shiguang・ذكرى محدودة';
+
+  @override
+  String get event_memory_collection_create_state_message_end_story =>
+      'بعض اللحظات\nلا تختفي لمجرد أن القصة انتهت.';
+
+  @override
+  String get event_memory_collection_text_collection =>
+      'لا توجد Scene قابلة لإعادة التشغيل في هذه الذكرى المحفوظة';
+
+  @override
+  String get event_memory_collection_message => 'تخطي';
+
+  @override
+  String get event_memory_collection_message_end => 'اضغط للإنهاء';
+
+  @override
+  String get event_memory_collection_message_continue => 'اضغط للمتابعة';
+
+  @override
+  String get event_memory_collection_message_variant_b =>
+      'اضغط لعرض النص كاملًا';
+
+  @override
+  String get event_memory_collection_collected_label_collection =>
+      'تمت إضافتها للتو';
+
+  @override
+  String get event_memory_collection_collected_item_label_collection_date =>
+      'تاريخ الإضافة غير مسجل';
+
+  @override
+  String event_memory_collection_collected_item_label_collection(
+      Object day, Object month, Object value1) {
+    return 'تمت الإضافة في $value1/$month/$day';
+  }
+
+  @override
+  String get event_memory_text_not_found_event =>
+      'لم يتم العثور على بيانات الفعالية';
+
+  @override
+  String get event_memory_message_limited_memory_failed_load =>
+      'فشل تحميل الذكريات المحدودة';
+
+  @override
+  String get event_memory_as_map_label_unlocked => 'مفتوح';
+
+  @override
+  String event_memory_as_map_label_unlock(Object currencyIcon,
+      Object currencyName, Object currentValue, Object requiredValue) {
+    return 'اجمع $currencyIcon $requiredValue $currencyName للفتح ($currentValue / $requiredValue)';
+  }
+
+  @override
+  String get event_memory_as_map_label_unlock_task_event_complete =>
+      'يُفتح بعد إكمال مهمة الفعالية المحددة';
+
+  @override
+  String get event_memory_as_map_label_redeem_unlock_event =>
+      'يُفتح بعد استبدال عنصر الفعالية المحدد';
+
+  @override
+  String get event_memory_as_map_label_unlock_variant_b => 'غير مفتوح بعد';
+
+  @override
+  String get event_memory_hero_message =>
+      'احتفظ في هذا الموسم بلحظة لا تخص سوى كليكما.';
+
+  @override
+  String event_memory_hero_message_limited_memory(
+      Object totalCount, Object unlockedCount) {
+    return 'الذكريات المحدودة  $unlockedCount / $totalCount';
+  }
+
+  @override
+  String get event_memory_status_label_unlocked => 'مفتوح・لم تتم المشاهدة';
+
+  @override
+  String get event_memory_status_label => 'تمت المشاهدة';
+
+  @override
+  String get event_memory_status_label_collection => 'تمت الإضافة';
+
+  @override
+  String get event_memory_footer_label_memory_start => 'يمكنك بدء هذه الذكرى';
+
+  @override
+  String get event_memory_footer_label => 'يمكنك مشاهدتها مرة أخرى';
+
+  @override
+  String get event_memory_footer_label_collection =>
+      'محفوظة في مجموعة Shiguang';
+
+  @override
+  String get event_memory_empty_message_limited_memory_event_public =>
+      'لم يتم نشر أي ذكريات محدودة لهذه الفعالية بعد';
+
+  @override
+  String get event_memory_performance_finish_message_memory =>
+      'تم الاحتفاظ بهذه الذكرى.';
+
+  @override
+  String get event_memory_performance_finish_message_save_collection =>
+      'تبقى المجموعات داخل اللعبة. لا يُطلب إذن معرض الصور إلا عند الحفظ على الهاتف.';
+
+  @override
+  String get event_memory_performance_finish_message => 'جارٍ المعالجة…';
+
+  @override
+  String get event_memory_performance_finish_message_collection_memory =>
+      'إضافة هذه الذكرى إلى المجموعة';
+
+  @override
+  String get event_memory_performance_confirm_uncollect_memory_message_collection_cancel_memory_again_remove =>
+      'بعد الإزالة، ستُحذف هذه الذكرى من “مجموعة Shiguang”. ويمكنك لاحقًا مشاهدتها وإضافتها مرة أخرى.';
+
+  @override
+  String
+      get event_memory_performance_uncollect_memory_message_collection_login =>
+          'سجّل الدخول قبل إدارة المجموعات';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_collection_login_memory =>
+          'سجّل الدخول قبل إضافة هذه الذكرى إلى المجموعة';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_collection_memory =>
+          'تمت إضافة هذه الذكرى ♡';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_try_again_later_collection_failed =>
+          'فشلت الإضافة إلى المجموعة. حاول مرة أخرى لاحقًا.';
+
+  @override
+  String get event_memory_performance_text_panel_message_complete =>
+      'اضغط للإكمال';
+
+  @override
+  String get event_memory_performance_build_performance_message => 'تخطي';
+
+  @override
+  String get event_memory_performance_text_play =>
+      'لا توجد Scene متاحة للتشغيل';
+
+  @override
+  String get event_memory_profile_change_profile_message_profile =>
+      'تغيير ملف Shiguang';
+
+  @override
+  String get event_memory_profile_message_profile_confirm =>
+      'تأكيد ملف Shiguang';
+
+  @override
+  String get event_memory_profile_center_text_profile_not_found =>
+      'لم يتم العثور على ملف Shiguang صالح للاستخدام';
+
+  @override
+  String get event_memory_profile_center_message_memory =>
+      'بأي هوية ستبقى في هذه الذكرى؟';
+
+  @override
+  String get event_memory_profile_center_message_profile_character_start =>
+      'تم اختيار ملف Shiguang الذي استخدمته مؤخرًا مع هذه الشخصية أولًا. يمكنك تغييره قبل البدء.';
+
+  @override
+  String event_memory_profile_center_message(Object value1) {
+    return 'بصفة “$value1” مع';
+  }
+
+  @override
+  String event_memory_profile_center_message_memory_variant_b(Object value1) {
+    return '“$value1” في هذه الذكرى';
+  }
+
+  @override
+  String get event_memory_profile_center_label_memory_start => 'بدء الذكرى';
+
+  @override
+  String get event_message_failed_load => 'فشل تحميل بيانات الفعالية';
+
+  @override
+  String get event_message_not_found => 'الفعالية غير موجودة';
+
+  @override
+  String get event_remaining_label => 'الفعالية جارية';
+
+  @override
+  String event_remaining_label_days(Object value1) {
+    return 'متبقي $value1 يوم';
+  }
+
+  @override
+  String event_remaining_label_hours(Object value1) {
+    return 'متبقي $value1 ساعة';
+  }
+
+  @override
+  String get event_remaining_label_end => 'ستنتهي قريبًا';
+
+  @override
+  String get event_balance_pill_tooltip_back => 'رجوع';
+
+  @override
+  String event_claim_task_message_claim_current(
+      Object currency, Object reward, Object value1, Object value2) {
+    return 'تم استلام $value1 $reward $value2. لديك الآن $currency';
+  }
+
+  @override
+  String get event_claim_task_message_reward_claim => 'تم استلام المكافأة';
+
+  @override
+  String get event_claim_task_message_claim_failed => 'فشل الاستلام';
+
+  @override
+  String get event_claim_task_message_task_claim =>
+      'تم استلام مكافأة هذه المهمة بالفعل';
+
+  @override
+  String get event_claim_task_message_incomplete_task => 'المهمة لم تكتمل بعد';
+
+  @override
+  String get event_task_list_label_task_load => 'جارٍ تحميل المهام…';
+
+  @override
+  String get event_task_list_label_task_current => 'لا توجد مهام حاليًا';
+
+  @override
+  String get event_task_list_label_task_login_progress =>
+      'سجّل الدخول لعرض تقدم مهام الفعالية';
+
+  @override
+  String get event_milestone_progress_label_reward_load =>
+      'جارٍ تحميل المكافآت التراكمية…';
+
+  @override
+  String get event_milestone_progress_label_reward_current =>
+      'لا توجد مكافآت تراكمية حاليًا';
+
+  @override
+  String event_build_with_total_message_current(Object totalEarned) {
+    return 'الحالي  $totalEarned';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_confirm => 'تأكيد الاستبدال';
+
+  @override
+  String event_progress_ref_message_redeem_flowers(
+      Object itemName, Object price, Object rewardAmount, Object value1) {
+    return 'هل تريد استخدام $value1 $price لاستبدال “$itemName”؟\n\nبعد الاستبدال ستحصل على $rewardAmount زهرة.';
+  }
+
+  @override
+  String event_progress_ref_message_redeem(
+      Object itemName, Object price, Object value1) {
+    return 'هل تريد استخدام $value1 $price لاستبدال “$itemName”؟';
+  }
+
+  @override
+  String event_progress_ref_message_redeem_success_flowers(
+      Object returnedReward) {
+    return 'تم الاستبدال بنجاح! حصلت على $returnedReward زهرة';
+  }
+
+  @override
+  String event_progress_ref_message_event_collection_redeem_success_add(
+      Object itemName) {
+    return 'تم الاستبدال بنجاح! تمت إضافة “$itemName” إلى مجموعة الفعالية';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_failed => 'فشل الاستبدال';
+
+  @override
+  String get event_progress_ref_message_redeem_variant_b =>
+      'تم استبدال هذا العنصر بالفعل';
+
+  @override
+  String get event_progress_ref_message_insufficient => 'العملة غير كافية';
+
+  @override
+  String event_progress_ref_message_insufficient_variant_b(Object value1) {
+    return '$value1 غير كافٍ';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_variant_c => 'استبدال';
+
+  @override
+  String get event_progress_ref_message_redeem_variant_d => 'تم الاستبدال';
+
+  @override
+  String event_message_redeem_flowers(Object rewardAmount) {
+    return 'بعد الاستبدال ستحصل على $rewardAmount زهرة';
+  }
+
+  @override
+  String event_message_redeem(Object redeemedCount) {
+    return 'تم الاستبدال $redeemedCount مرة';
+  }
+
+  @override
+  String get event_message_event_shop_login =>
+      'سجّل الدخول لاستخدام متجر الفعالية';
+
+  @override
+  String get event_message_redeem_current =>
+      'لا توجد عناصر متاحة للاستبدال حاليًا';
+
+  @override
+  String event_shop_item_card_message_flowers(Object rewardAmount) {
+    return 'احصل على $rewardAmount زهرة';
+  }
+
+  @override
+  String get event_message_insufficient => 'غير كافٍ';
+
+  @override
+  String get notification_message_player => 'صورة مرفقة من اللاعب';
+
+  @override
+  String notification_message_qixi_letter(Object value1) {
+    return 'رسالة Qixi من $value1';
+  }
+
+  @override
+  String recommendation_remaining_label_days(Object value1) {
+    return 'متبقي $value1 يوم';
+  }
+
+  @override
+  String recommendation_remaining_label_hours(Object value1) {
+    return 'متبقي $value1 ساعة';
+  }
+
+  @override
+  String get settings_subtitle_character_days =>
+      'دع شخصيتك المفضلة ترافقك كل يوم';
+
+  @override
+  String moment_notification_comment_on_character_post(
+      Object authorName, Object commentText, Object senderNickname) {
+    return 'ترك $senderNickname تعليقًا لـ $authorName: “$commentText”';
+  }
+
+  @override
+  String get inbox_content_text_message_customer_service_message_send =>
+      'رسائل خدمة العملاء المرسلة';
+
+  @override
+  String get character_edit_relationship_none_label => 'لا شيء';
+
+  @override
+  String get auth_cancel_account_deletion_failed =>
+      'فشل إلغاء حذف الحساب. حاول مرة أخرى لاحقًا.';
+
+  @override
+  String get auth_delete_account_failed => 'فشل حذف الحساب';
+
+  @override
+  String get auth_request_account_deletion_failed =>
+      'فشل طلب حذف الحساب. حاول مرة أخرى لاحقًا.';
+
+  @override
+  String get theme_font_shiguang_serif => 'Shiguang Serif';
+
+  @override
+  String get theme_font_clean_sans => 'Sans نظيف';
+
+  @override
+  String get theme_font_system => 'خط النظام';
+
+  @override
+  String get theme_font_shiguang_serif_description =>
+      'ناعم وأدبي، مناسب للقراءة الغامرة';
+
+  @override
+  String get theme_font_clean_sans_description =>
+      'واضح ونظيف، مريح للقراءة لفترات طويلة';
+
+  @override
+  String get theme_font_system_description =>
+      'استخدم خط النظام الافتراضي للجهاز';
 }

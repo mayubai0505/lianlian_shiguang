@@ -13,6 +13,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'dart:math';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -311,7 +312,7 @@ class AuthService {
       return null;
     } catch (e) {
       print("❌ 取消刪除失敗: $e");
-      return "取消刪除帳號失敗，請稍後再試";
+      return appL10n.auth_cancel_account_deletion_failed;
     }
   }
 
@@ -328,7 +329,7 @@ class AuthService {
       return null;
     } catch(e){
       print("❌ 刪除失敗: $e");
-      return "刪除帳號失敗";
+      return appL10n.auth_delete_account_failed;
 
     }
   }
@@ -353,7 +354,7 @@ class AuthService {
       return null;
     } catch (e) {
       print("❌ 申請刪除失敗: $e");
-      return "申請刪除帳號失敗，請稍後再試";
+      return appL10n.auth_request_account_deletion_failed;
     }
   }
   String _generateRandomPlayerID() {

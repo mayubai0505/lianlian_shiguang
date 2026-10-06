@@ -8039,4 +8039,1452 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get chat_mode_resonance_cost_short => '花10個';
+
+  @override
+  String get notification_channel_chat_description =>
+      'キャラクターからの最新返信やゲームのお知らせを受け取るために使用します。';
+
+  @override
+  String get subscription_star_contract_name => '恋恋拾光・星の契約';
+
+  @override
+  String moment_notification_comment_on_your_post(
+      Object commentText, Object senderNickname) {
+    return '$senderNicknameさんがあなたの投稿にコメントしました：「$commentText」';
+  }
+
+  @override
+  String get moment_notification_new_reply_title => '投稿に新しい返信があります！💬';
+
+  @override
+  String get moment_notification_character_popularity_title =>
+      'キャラクターの人気急上昇！🔥';
+
+  @override
+  String get font_size_small => '小';
+
+  @override
+  String get font_size_standard => '標準';
+
+  @override
+  String get font_size_slightly_large => 'やや大';
+
+  @override
+  String get font_size_large => '大';
+
+  @override
+  String get font_size_extra_large => '特大';
+
+  @override
+  String get font_selection_title => 'フォント';
+
+  @override
+  String get font_selection_description => 'ストーリーやチャットを読みやすいフォントを選んでください。';
+
+  @override
+  String get font_size_title => '文字サイズ';
+
+  @override
+  String get font_selection_tagline => '好きな彼と、もう一度ふたりだけの物語を綴ろう。';
+
+  @override
+  String font_selection_applied_message(Object value1) {
+    return '「$value1」を適用しました';
+  }
+
+  @override
+  String get font_selection_local_storage_note =>
+      'フォントと文字サイズはすぐに反映され、この端末に保存されます。外観を初期設定に戻すと「拾光明朝＋標準サイズ」に戻ります。';
+
+  @override
+  String get inbox_customer_service_report => 'カスタマーサポートへの報告';
+
+  @override
+  String get inbox_content_text_message_player_title_send => 'プレイヤーが送信した件名';
+
+  @override
+  String get inbox_content_text_message_player_content_send => 'プレイヤーが送信した内容';
+
+  @override
+  String avatar_frame_equipped_message(Object value1) {
+    return '「$value1」を装備しました';
+  }
+
+  @override
+  String get avatar_frame_unequip_frame_snackbar => 'アバターフレームを外しました';
+
+  @override
+  String get avatar_frame_unequip_frame_message_event => 'イベントアバターフレーム';
+
+  @override
+  String get avatar_frame_message => 'アバターフレーム';
+
+  @override
+  String avatar_frame_load_failed(Object value1) {
+    return 'アバターフレームの読み込みに失敗しました：$value1';
+  }
+
+  @override
+  String get avatar_frame_parse_frames_message_select => '使用したいアバターフレームを選択';
+
+  @override
+  String get avatar_frame_parse_frames_message_event =>
+      'イベントで獲得したアバターフレームは永久に保持され、いつでも変更・解除できます。';
+
+  @override
+  String get avatar_frame_parse_frames_title => 'アバターフレームを使用しない';
+
+  @override
+  String get avatar_frame_parse_frames_subtitle_avatar => '元のアバターを表示';
+
+  @override
+  String get avatar_frame_parse_frames_message_event_shop_redeem_current =>
+      '所持しているアバターフレームはまだありません。\nイベントショップで交換するとここに表示されます。';
+
+  @override
+  String get avatar_frame_parse_frames_message_event_variant_b =>
+      'イベント限定アバターフレーム';
+
+  @override
+  String get background_settings_message => '限定背景';
+
+  @override
+  String get background_title_exclusive_photo_current => '専用写真はまだありません';
+
+  @override
+  String get background_subtitle_unlock_character_photo =>
+      '今後解放したキャラクター写真がここに表示されます。';
+
+  @override
+  String get background_title_login => 'ログインすると限定背景を確認できます';
+
+  @override
+  String get background_subtitle_redeem_chat_event =>
+      'イベント交換で獲得したチャット背景はここに保存されます。';
+
+  @override
+  String get background_title => '限定背景をまだ獲得していません';
+
+  @override
+  String get background_subtitle_event_shop_redeem_chat =>
+      'イベントショップで交換したチャット背景が今後ここに表示されます。';
+
+  @override
+  String get background_is_limited_background_type_message_chat_event =>
+      'イベント限定チャット背景';
+
+  @override
+  String background_is_limited_background_type_message_current_chat(
+      Object value1) {
+    return '「$value1」を現在のチャット背景に設定しますか？';
+  }
+
+  @override
+  String character_edit_message_character_settings(Object value1) {
+    return '【角色性格與設定】\n$value1';
+  }
+
+  @override
+  String character_edit_message(Object value1) {
+    return '【說話語氣與風格】\n$value1';
+  }
+
+  @override
+  String character_edit_message_variant_b(Object value1) {
+    return '【社交與環境互動】\n$value1';
+  }
+
+  @override
+  String character_edit_save_to_draft_message_current_character(Object value1) {
+    return '現在のメインキャラクター：【$value1】\n';
+  }
+
+  @override
+  String character_edit_message_back(Object result) {
+    return '🚪 返回原本的 ProfilePage：$result';
+  }
+
+  @override
+  String character_edit_save_character_message(Object value1) {
+    return '📦 準備搬移 $value1 則記憶碎片：';
+  }
+
+  @override
+  String character_edit_message_complete(Object value1) {
+    return '✅ 已完成搬移 $value1 則記憶碎片';
+  }
+
+  @override
+  String character_edit_preload_first_voice_sample_message_background_start(
+      Object voiceId) {
+    return '⏳ 開始背景預載第一個 Voice：$voiceId';
+  }
+
+  @override
+  String get character_edit_preload_first_voice_sample_message_update =>
+      '⚠️ Voice 清單已更新，略過舊的預載結果';
+
+  @override
+  String
+      get character_edit_preload_first_voice_sample_message_background_complete =>
+          '✅ 第一個 Voice 已背景預載完成';
+
+  @override
+  String get character_edit_preload_first_voice_sample_message_failed =>
+      '⚠️ 第一個 Voice 預載失敗：';
+
+  @override
+  String character_edit_preload_first_voice_sample_message(Object value1) {
+    return '✅ matchVoiceFromBank 回傳：$value1';
+  }
+
+  @override
+  String get character_edit_error_voice => '語音服務回傳格式錯誤';
+
+  @override
+  String get character_edit_error_voice_variant_b => '語音服務沒有回傳 previews';
+
+  @override
+  String character_edit_message_success_voice_match(Object value1) {
+    return '✅ 成功配對 $value1 個 Voice Bank 聲音';
+  }
+
+  @override
+  String get character_edit_message_failed_match =>
+      '========== Voice Bank 配對失敗 ==========';
+
+  @override
+  String get character_edit_message_error_match =>
+      '========== Voice Bank 配對未知錯誤 ==========';
+
+  @override
+  String get character_edit_preview_voice_sample_error_preview => '試聽服務回傳格式錯誤';
+
+  @override
+  String get character_edit_preview_voice_sample_error_preview_variant_b =>
+      '試聽音訊資料為空';
+
+  @override
+  String get character_edit_preview_voice_sample_error_failed_preview =>
+      '試聽音訊解析失敗';
+
+  @override
+  String get character_edit_test_voice_settings_message_failed =>
+      '========== testVoiceSettings 失敗 ==========';
+
+  @override
+  String character_edit_confirm_voice_selection_message_selected(
+      Object realVoiceId) {
+    return '✅ Voice選定正式 Voice ID：$realVoiceId';
+  }
+
+  @override
+  String
+      get character_edit_confirm_voice_selection_message_save_failed_select =>
+          '========== 儲存 Voice Bank 選擇失敗 ==========';
+
+  @override
+  String
+      get character_edit_confirm_voice_selection_message_failed_voice_selected =>
+          '========== 選定 Voice Bank 聲音失敗 ==========';
+
+  @override
+  String get character_to_map_message_creator => '謎のクリエイター';
+
+  @override
+  String get character_get_character_by_id_message_load_background_story =>
+      'バックストーリーを読み込み中...';
+
+  @override
+  String get character_get_character_by_id_message_sync => '初期ストーリーを同期中...';
+
+  @override
+  String get character_get_character_by_id_message => '最初のセリフを準備中...';
+
+  @override
+  String get character_get_character_by_id_message_background => '背景を読み込み中...';
+
+  @override
+  String get character_get_character_by_id_message_load => '世界観を読み込み中...';
+
+  @override
+  String get character_get_character_by_id_message_load_settings =>
+      'キャラクターの中核設定を読み込み中...';
+
+  @override
+  String get character_get_character_by_id_message_variant_b => '性格を読み込み中...';
+
+  @override
+  String get character_get_character_by_id_message_appearance =>
+      '外見設定を読み込み中...';
+
+  @override
+  String get character_get_character_by_id_message_variant_c => '口調を読み込み中...';
+
+  @override
+  String get character_get_character_by_id_message_load_variant_b => '未読み込み';
+
+  @override
+  String get character_get_character_by_id_message_variant_d => '見知らぬ人';
+
+  @override
+  String get character_get_character_by_id_message_load_variant_c =>
+      '会話例を読み込み中...';
+
+  @override
+  String get character_get_character_by_id_message_variant_e => '初対面';
+
+  @override
+  String get character_get_character_by_id_message_variant_f => '顔見知り';
+
+  @override
+  String get character_get_character_by_id_message_variant_g => '曖昧な関係';
+
+  @override
+  String get chat_input_message_sticker => 'スタンプ';
+
+  @override
+  String get chat_text => '本日の無料雑談上限に達しました';
+
+  @override
+  String get chat_message_flowers_today_continue =>
+      '本日の無料雑談10回を使い切りました。\n\nこれ以降の雑談は1回につき花1個が必要です。続けますか？';
+
+  @override
+  String get chat_text_continue => '同意して続ける';
+
+  @override
+  String get chat_empty_message_label_current_sticker => '現在使用できるスタンプはありません。';
+
+  @override
+  String get chat_empty_message_label_sticker => '最近使用したスタンプはまだありません';
+
+  @override
+  String get chat_empty_message_label_sticker_variant_b => 'お気に入りのスタンプはまだありません';
+
+  @override
+  String get chat_empty_message_label_current_sticker_variant_b =>
+      '現在使用できるスタンプはありません';
+
+  @override
+  String get chat_empty_message_sticker => 'マイスタンプ';
+
+  @override
+  String get chat_empty_message => '最近使用';
+
+  @override
+  String get chat_empty_message_variant_b => 'お気に入り';
+
+  @override
+  String get chat_send_sticker_message_current_unavailable_sticker =>
+      'このスタンプは現在使用できません';
+
+  @override
+  String chat_message_theater(Object sceneTitle) {
+    return '—— 劇場・$sceneTitle ——';
+  }
+
+  @override
+  String get chat_handle_regenerate_button_message_character_reply_again =>
+      'キャラクターの直前の返信を再生成します。';
+
+  @override
+  String creator_profile_reason_tile_message_report_select_reason(
+      Object creatorName) {
+    return '「$creatorName」を通報する理由を選択してください：';
+  }
+
+  @override
+  String get widget_key_message => '状態';
+
+  @override
+  String get widget_key_message_variant_b => '場所';
+
+  @override
+  String get widget_label_character => 'キャラクターの状態はまだありません';
+
+  @override
+  String get widget_format_post_time_label_moment_latest => '最新の投稿';
+
+  @override
+  String get widget_format_post_time_label_update_moment => 'たった今投稿を更新しました';
+
+  @override
+  String widget_format_post_time_label_minutes_ago_update_moment(
+      Object value1) {
+    return '$value1分前に投稿を更新しました';
+  }
+
+  @override
+  String widget_format_post_time_label_hours_ago_update_moment(Object value1) {
+    return '$value1時間前に投稿を更新しました';
+  }
+
+  @override
+  String get widget_format_post_time_label_update_moment_days => '昨日投稿を更新しました';
+
+  @override
+  String widget_format_post_time_label_update_moment_days_ago(Object value1) {
+    return '$value1日前に投稿を更新しました';
+  }
+
+  @override
+  String widget_format_post_time_label_update_moment_variant_b(
+      Object value1, Object value2) {
+    return '$value1/$value2に投稿を更新しました';
+  }
+
+  @override
+  String get widget_format_post_time_message_share_photo => '写真をシェアしました';
+
+  @override
+  String get widget_format_post_time_message_update_moment => '投稿を更新しました';
+
+  @override
+  String get widget_format_post_time_message_current_character_moment =>
+      'キャラクターの投稿はまだありません';
+
+  @override
+  String get widget_extract_daily_quote_message => '場所：';
+
+  @override
+  String get widget_format_daily_quote_time_message_today => '今日のひとことはまだありません';
+
+  @override
+  String get widget_load_period_care_state_message_today =>
+      '「今日は無理しすぎないで。僕がそばでゆっくり付き合うよ。」';
+
+  @override
+  String widget_load_period_care_state_message_period_days(Object dayCount) {
+    return '生理 $dayCount 日目';
+  }
+
+  @override
+  String get widget_load_period_care_state_message_days =>
+      '「この数日は少し早めに休んで。無理しすぎないでね。」';
+
+  @override
+  String get widget_load_period_care_state_message_today_start => '今日開始予定';
+
+  @override
+  String widget_load_period_care_state_message_days_variant_b(
+      Object daysUntil) {
+    return 'あと $daysUntil 日の予定';
+  }
+
+  @override
+  String get widget_load_period_care_state_message_today_variant_b =>
+      '「お疲れさま。今日はちゃんと自分をいたわってね。」';
+
+  @override
+  String get widget_load_period_care_state_message_period_end => '生理が終わったばかり';
+
+  @override
+  String get widget_load_period_care_state_message_today_variant_c =>
+      '「今日もちゃんと自分を大事にしてね。」';
+
+  @override
+  String get widget_load_period_care_state_message_current_reminder =>
+      '現在、特別な周期リマインダーはありません';
+
+  @override
+  String get widget_load_period_care_state_message => '周期記録がまだ十分ではありません';
+
+  @override
+  String get widget_parse_character_birthday_message => '年';
+
+  @override
+  String get widget_parse_character_birthday_message_variant_b => '月';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_character_birthday =>
+      'キャラクターの誕生日';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_birthday_settings =>
+      '誕生日未設定';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_birthday_countdown(
+      Object birthdayLabel) {
+    return '彼の誕生日まで・$birthdayLabel';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_today => '今日です';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_days(Object days) {
+    return 'あと $days 日';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message => '彼と出会って';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_variant_b =>
+      '出会いの記録はまだありません';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_days_variant_b(
+      Object value1) {
+    return '$value1 日';
+  }
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_variant_c => '大切な日';
+
+  @override
+  String get widget_build_birthday_countdown_lines_message_date_select =>
+      '日付未選択';
+
+  @override
+  String widget_build_birthday_countdown_lines_message_elapsed_days(
+      Object value1) {
+    return '$value1 日経過';
+  }
+
+  @override
+  String get widget_settings_remove_title_character_latest => 'キャラクターの最新投稿';
+
+  @override
+  String get widget_settings_remove_subtitle_moment_latest =>
+      'Appを開かなくても彼の最新投稿を確認できます。';
+
+  @override
+  String get widget_settings_remove_title_period => '生理期サポート';
+
+  @override
+  String get widget_settings_remove_subtitle_character_end =>
+      '始まる前・期間中・終わった後も、キャラクターから少し多めの気遣いを。';
+
+  @override
+  String get widget_settings_remove_title => '今日のひとこと';
+
+  @override
+  String get widget_settings_remove_subtitle_days =>
+      '毎日スマホを開くと、ホーム画面でひとことがあなたを待っています。';
+
+  @override
+  String get widget_settings_remove_title_reminder => '記念日／リマインダー';
+
+  @override
+  String get widget_settings_remove_subtitle_character_birthday_reminder =>
+      '出会った日や誕生日を一緒に覚えて、キャラクターに大切な予定を知らせてもらいましょう。';
+
+  @override
+  String get widget_settings_remove_title_character => 'キャラクター状態';
+
+  @override
+  String get widget_settings_remove_subtitle_chat_latest_mood =>
+      'チャットの最新の気分・状態・場所をホーム画面に表示します。';
+
+  @override
+  String get widget_settings_size_label => '中';
+
+  @override
+  String get widget_settings_size_label_message_send =>
+      'ホーム画面への追加リクエストを送信しました。';
+
+  @override
+  String get widget_settings_size_label_message_try_again_later_failed =>
+      'ホーム画面への追加に失敗しました。しばらくしてからもう一度お試しください。';
+
+  @override
+  String
+      get widget_settings_edit_saved_widget_message_character_reminder_again =>
+          '旧「キャラクターToDoリマインダー」は「記念日／リマインダー」に統合されました。もう一度作成してください。';
+
+  @override
+  String get widget_settings_delete_saved_widget_title_delete_small =>
+      'ウィジェットを削除しますか？';
+
+  @override
+  String
+      widget_settings_delete_saved_widget_message_stop_display_long_press_home_after_delete(
+          Object value1, Object value2) {
+    return '「$value1・$value2」を削除しますか？\n\n削除後、このウィジェットはキャラクター内容の表示を停止し、ホーム画面を長押しして削除するよう案内します。';
+  }
+
+  @override
+  String
+      get widget_settings_delete_saved_widget_message_delete_settings_small =>
+          'ウィジェット設定を削除しました。ホーム画面上の対応ウィジェットは無効になりました。';
+
+  @override
+  String get widget_settings_message_desktop_widget => 'ホーム画面ウィジェット';
+
+  @override
+  String get widget_settings_message_character_days => '好きなキャラクターと毎日を一緒に。';
+
+  @override
+  String get widget_settings_message_small => 'マイウィジェット';
+
+  @override
+  String get widget_settings_message_desktop_widget_variant_b =>
+      'ホーム画面ウィジェットはまだありません';
+
+  @override
+  String get widget_settings_message_character_reminder =>
+      '好きなキャラクターを選び、リマインダー・投稿・状態をホーム画面に表示できます。';
+
+  @override
+  String widget_settings_message_size(Object value1) {
+    return '$value1サイズ';
+  }
+
+  @override
+  String get widget_settings_tooltip => 'ホーム画面に追加';
+
+  @override
+  String get widget_settings_tooltip_small => 'ウィジェットを編集';
+
+  @override
+  String get widget_settings_tooltip_delete_small => 'ウィジェットを削除';
+
+  @override
+  String get widget_settings_message_desktop_widget_variant_c =>
+      'ホーム画面ウィジェットを追加';
+
+  @override
+  String get widget_settings_message_character_photo_content_select_small =>
+      '各ウィジェットごとにキャラクター、キャラクター写真、表示内容を個別に選べます。複数のキャラクターを同時にホーム画面へ配置することもできます。';
+
+  @override
+  String get widget_settings_desktop_type_selection_message_select_small =>
+      'ウィジェットを選択';
+
+  @override
+  String get widget_settings_desktop_type_selection_message_select =>
+      'まず、ホーム画面でどのように寄り添ってほしいかを選んでください。';
+
+  @override
+  String
+      get widget_settings_go_to_photo_step_message_try_again_later_failed_load_character_photo =>
+          'キャラクター写真の読み込みに失敗しました。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get widget_settings_message_character_select => 'キャラクターを選択';
+
+  @override
+  String get widget_settings_message_character_friend_days =>
+      '友だち追加済み、または一度でもチャットしたキャラクターのみ表示されます。';
+
+  @override
+  String get widget_settings_hint_character_search => 'キャラクターを検索';
+
+  @override
+  String get widget_settings_message_try_again_later_failed_load_character =>
+      'キャラクターの読み込みに失敗しました。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get widget_settings_message_current_character_chat_friend_add =>
+      '該当するキャラクターがいません。まずチャットするか、友だちに追加してみましょう。';
+
+  @override
+  String get widget_settings_message_character_photo_select => '次へ・キャラクター写真を選択';
+
+  @override
+  String
+      get widget_settings_desktop_photo_selection_message_character_photo_select =>
+          'キャラクター写真を選択';
+
+  @override
+  String
+      widget_settings_desktop_photo_selection_message_current_affection_unlocked_photo(
+          Object value1) {
+    return '現在の好感度 $value1・解放済みの写真はそのまま使用できます。';
+  }
+
+  @override
+  String
+      get widget_settings_desktop_photo_selection_message_current_character_photo =>
+          'このキャラクターには現在使用できる写真がありません。';
+
+  @override
+  String
+      widget_settings_desktop_photo_selection_message_required_affection_unlock_photo(
+          Object value1) {
+    return 'この写真を解放するには好感度 $value1 が必要です。';
+  }
+
+  @override
+  String get widget_settings_message_photo_public => '公開写真';
+
+  @override
+  String widget_settings_message_unlock(Object value1) {
+    return '好感度 $value1 で解放';
+  }
+
+  @override
+  String widget_settings_message_unlocked(Object value1) {
+    return '解放済み・好感度 $value1';
+  }
+
+  @override
+  String get widget_settings_message_content_settings => '次へ・表示内容を設定';
+
+  @override
+  String get widget_settings_open_preview_message_player_select =>
+      '先にプレイヤーが作成したイベント／ToDoを選択してください。';
+
+  @override
+  String get widget_settings_pick_custom_memo_event_message_login_account =>
+      '先にログインしてください。';
+
+  @override
+  String
+      get widget_settings_pick_custom_memo_event_message_memo_current_character =>
+          'このキャラクターにはまだイベント／メモがありません。';
+
+  @override
+  String get widget_settings_pick_custom_memo_event_message_player_select =>
+      'プレイヤー作成イベントを選択';
+
+  @override
+  String get widget_settings_message_try_again_later_failed_load =>
+      'イベントの読み込みに失敗しました。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get widget_settings_message_content_settings_variant_b => '表示内容を設定';
+
+  @override
+  String get widget_settings_subtitle_content => 'ホーム画面に表示したい内容を調整します。';
+
+  @override
+  String get widget_settings_message_small_variant_b => '次へ・ウィジェットをプレビュー';
+
+  @override
+  String get widget_settings_title => '投稿表示';
+
+  @override
+  String get widget_settings_title_variant_b => '投稿画像を表示';
+
+  @override
+  String get widget_settings_title_variant_c => 'いいね数を表示';
+
+  @override
+  String get widget_settings_title_comment => 'コメント数を表示';
+
+  @override
+  String get widget_settings_title_variant_d => 'プライバシーと寄り添い';
+
+  @override
+  String get widget_settings_title_variant_e => 'プライバシーモード';
+
+  @override
+  String get widget_settings_subtitle_period_character =>
+      'ホーム画面にはキャラクターからの気遣いだけを表示し、生理情報は直接表示しません。';
+
+  @override
+  String get widget_settings_title_variant_f => '詳細モード';
+
+  @override
+  String get widget_settings_subtitle_end => '開始間近・進行中・終了直後などの周期状態を表示できます。';
+
+  @override
+  String get widget_settings_title_variant_g => '周期状態を表示';
+
+  @override
+  String get widget_settings_title_time => '時間を表示';
+
+  @override
+  String get widget_settings_title_update => '更新方法';
+
+  @override
+  String get widget_settings_message_update_days => '1日1回更新';
+
+  @override
+  String get widget_settings_message_update => 'Appを開くたびに更新';
+
+  @override
+  String get widget_settings_text_update => 'Appを開いた後に更新';
+
+  @override
+  String get widget_settings_title_content => '記念日の内容';
+
+  @override
+  String get widget_settings_title_days => '出会ってからの日数';
+
+  @override
+  String get widget_settings_subtitle_character_today_days =>
+      'あなたとキャラクターが出会ってから今日までの日数を表示します。';
+
+  @override
+  String get widget_settings_subtitle_character_birthday =>
+      'キャラクターの誕生日まであとどのくらいかを表示します。';
+
+  @override
+  String get widget_settings_title_player => 'プレイヤー作成イベント／ToDo';
+
+  @override
+  String get widget_settings_message_memo_character_select_reminder =>
+      'このキャラクターのメモ／リマインダーからイベントまたはToDoを選択します。';
+
+  @override
+  String widget_settings_message_selected(Object _selectedMemoContent) {
+    return '選択済み：$_selectedMemoContent';
+  }
+
+  @override
+  String get widget_settings_message_select => '最大3項目まで選択';
+
+  @override
+  String get widget_settings_message_character => 'キャラクター状態は最大3項目まで表示できます。';
+
+  @override
+  String get widget_settings_message_small_variant_c => 'ウィジェットをプレビュー';
+
+  @override
+  String get widget_settings_title_confirm => '最終確認';
+
+  @override
+  String get widget_settings_subtitle_large => 'ホーム画面に置いたときの見た目を先に確認しましょう。';
+
+  @override
+  String get widget_settings_title_size => 'サイズ';
+
+  @override
+  String get widget_settings_title_variant_h => 'レイアウト';
+
+  @override
+  String get widget_settings_label_photo => '全面写真';
+
+  @override
+  String get widget_settings_label_character => 'キャラクターカード';
+
+  @override
+  String get widget_settings_message_sync => '同期中…';
+
+  @override
+  String get widget_settings_message_desktop_widget_add => 'ホーム画面ウィジェットを追加';
+
+  @override
+  String get widget_settings_sample_lines_message_today_end =>
+      '「今日は思ったより少し早く終わった。」';
+
+  @override
+  String get widget_settings_sample_lines_message_days => '「この数日は無理しすぎないで。」';
+
+  @override
+  String get widget_settings_sample_lines_message_period => '生理中';
+
+  @override
+  String get widget_settings_sample_lines_message_today => '「今日は少し多めに休んで。」';
+
+  @override
+  String get widget_settings_sample_lines_message_today_variant_b =>
+      '「今日もちゃんとご飯を食べるのを忘れないで。」';
+
+  @override
+  String get widget_settings_sample_lines_label_birthday_countdown => '彼の誕生日まで';
+
+  @override
+  String get widget_settings_sample_lines_label_days => 'あと12日';
+
+  @override
+  String get widget_settings_sample_lines_label_days_variant_b => '128日';
+
+  @override
+  String get widget_settings_sample_lines_message_mood => '気分｜少し疲れている';
+
+  @override
+  String get widget_settings_sample_lines_message_end => '状態｜仕事が終わったばかり';
+
+  @override
+  String get widget_settings_sample_lines_message => '場所｜会社の下';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_b => '関係｜恋人';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_c => '服装｜ライトグレーのニット';
+
+  @override
+  String get widget_settings_sample_lines_message_days_variant_b => '天気｜少し涼しい';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_d => '考え｜早く君に会いたい';
+
+  @override
+  String get widget_settings_sample_lines_message_variant_e => '行動｜机を片づけている';
+
+  @override
+  String get widget_settings_sample_lines_message_affection => '好感度｜穏やかで親しい';
+
+  @override
+  String get edit_profile_message => 'プロフィール装飾';
+
+  @override
+  String get edit_profile_message_current => '現在未使用';
+
+  @override
+  String
+      get event_memory_character_load_characters_message_login_character_select =>
+          'キャラクターを選ぶ前にログインしてください';
+
+  @override
+  String get event_memory_character_center_message_memory_select =>
+      'この思い出を一緒に残したい相手を選んでください';
+
+  @override
+  String get event_memory_character_center_message_character_friend_add =>
+      '自分で作成したキャラクターと、友だち追加済みのキャラクターだけが表示されます。';
+
+  @override
+  String get event_memory_character_center_message_current_character_select =>
+      '現在選択できるキャラクターはいません';
+
+  @override
+  String
+      get event_memory_character_center_message_public_character_character_friend_add =>
+          '自分のキャラクターを作成するか、好きな公開キャラクターを友だちに追加してください。';
+
+  @override
+  String get event_memory_character_message_character_select =>
+      '先にキャラクターを選択してください';
+
+  @override
+  String event_memory_character_message_continue(Object value1) {
+    return '$value1 と続ける';
+  }
+
+  @override
+  String get event_memory_character_card_message_private => '自分の・非公開';
+
+  @override
+  String get event_memory_character_error_label_load_again => '再読み込み';
+
+  @override
+  String
+      get event_memory_collection_show_collection_intro_if_needed_message_collection =>
+          '拾光コレクション';
+
+  @override
+  String
+      get event_memory_collection_show_collection_intro_if_needed_message_collection_content =>
+          'ここはコレクション一覧です。保存したすべての内容を確認できます。';
+
+  @override
+  String get event_memory_collection_text_collection_login =>
+      'コレクションを見るにはログインしてください';
+
+  @override
+  String get event_memory_collection_message_memory => '思い出';
+
+  @override
+  String get event_memory_collection_message_chat_background => 'チャット背景';
+
+  @override
+  String get event_memory_collection_message_avatar_frame_collection =>
+      'コレクションしたアバターフレームはまだありません';
+
+  @override
+  String get event_memory_collection_message_avatar_frame =>
+      '今後入手した限定アバターフレームがここに表示されます。';
+
+  @override
+  String get event_memory_collection_message_collection_sticker =>
+      'コレクションしたスタンプはまだありません';
+
+  @override
+  String get event_memory_collection_message_sticker => '今後集めたスタンプはここに保存されます。';
+
+  @override
+  String get event_memory_collection_message_collection_chat_background =>
+      'コレクションしたチャット背景はまだありません';
+
+  @override
+  String get event_memory_collection_message_chat_background_variant_b =>
+      '今後入手した限定チャット背景がここに表示されます。';
+
+  @override
+  String get event_memory_collection_tab_title_collection_temporary =>
+      '現在コレクションを読み込めません';
+
+  @override
+  String get event_memory_collection_tab_title_collection_memory =>
+      'コレクションした思い出はまだありません';
+
+  @override
+  String get event_memory_collection_tab_subtitle_limited_memory_complete =>
+      '限定思い出を完了すると、お気に入りの場面をここに残せます。';
+
+  @override
+  String get event_memory_collection_item_card_label => '限定アイテム';
+
+  @override
+  String get event_memory_collection_confirm_delete_owned_item_message_delete =>
+      '限定アイテムを削除しますか？';
+
+  @override
+  String
+      event_memory_collection_confirm_delete_owned_item_message_after_delete_unavailable(
+          Object _itemTypeLabel) {
+    return '削除すると、この$_itemTypeLabelは使用できなくなり、';
+  }
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_collection =>
+          '「拾光コレクション」にも表示されなくなります。\n\n';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_unavailable =>
+          'これは今回入手した限定アイテムを手放すことを意味し、この操作は元に戻せません。\n\n';
+
+  @override
+  String
+      event_memory_collection_confirm_delete_owned_item_message_delete_variant_b(
+          Object value1) {
+    return '「$value1」を削除してもよろしいですか？';
+  }
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_delete_variant_c =>
+          '限定アイテムを削除しました';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_not_found_delete =>
+          'この限定アイテムが見つかりません。すでに削除されている可能性があります';
+
+  @override
+  String
+      get event_memory_collection_confirm_delete_owned_item_message_collection_current_delete =>
+          'このコレクションは現在削除できません';
+
+  @override
+  String get event_memory_collection_show_preview_message => '画像を準備中';
+
+  @override
+  String get event_memory_collection_show_preview_message_failed_load =>
+      '画像の読み込みに失敗しました';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save_current =>
+      'Web版では現在、スマートフォンの写真ライブラリへ直接保存できません';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save_memory =>
+      'この思い出を保存するには写真ライブラリへのアクセス許可が必要です';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_memory =>
+      '思い出の画像はまだ準備できていません。もう一度お試しください。';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_failed_memory =>
+      '思い出画像の生成に失敗しました';
+
+  @override
+  String get event_memory_collection_save_to_gallery_message_save =>
+      'スマートフォンの写真ライブラリに保存しました ♡';
+
+  @override
+  String
+      get event_memory_collection_save_to_gallery_message_save_confirm_failed =>
+          '保存に失敗しました。写真ライブラリの権限を確認してもう一度お試しください。';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_title_collection_cancel =>
+          'コレクションから外しますか？';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_message_collection_cancel_memory =>
+          'コレクションを解除すると、この思い出は「拾光コレクション」に表示されなくなります。\n\nコレクションを解除してもよろしいですか？';
+
+  @override
+  String
+      get event_memory_collection_delete_collection_message_try_again_later_collection_cancel_failed =>
+          'コレクション解除に失敗しました。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get event_memory_collection_message_collection_memory => '思い出コレクション';
+
+  @override
+  String get event_memory_collection_label_play => 'もう一度再生';
+
+  @override
+  String get event_memory_collection_label_save => '保存中…';
+
+  @override
+  String get event_memory_collection_label_save_variant_b => '写真ライブラリに保存';
+
+  @override
+  String get event_memory_collection_collected_card_message_limited_memory =>
+      '恋恋拾光・限定思い出';
+
+  @override
+  String get event_memory_collection_create_state_message_end_story =>
+      '物語が終わっても、\n消えない瞬間がある。';
+
+  @override
+  String get event_memory_collection_text_collection =>
+      'このコレクションには再生できるSceneがありません';
+
+  @override
+  String get event_memory_collection_message => 'スキップ';
+
+  @override
+  String get event_memory_collection_message_end => 'タップして終了';
+
+  @override
+  String get event_memory_collection_message_continue => 'タップして続ける';
+
+  @override
+  String get event_memory_collection_message_variant_b => 'タップして全文を表示';
+
+  @override
+  String get event_memory_collection_collected_label_collection => 'たった今コレクション';
+
+  @override
+  String get event_memory_collection_collected_item_label_collection_date =>
+      'コレクション日未記録';
+
+  @override
+  String event_memory_collection_collected_item_label_collection(
+      Object day, Object month, Object value1) {
+    return '$value1/$month/$day にコレクション';
+  }
+
+  @override
+  String get event_memory_text_not_found_event => 'イベントデータが見つかりません';
+
+  @override
+  String get event_memory_message_limited_memory_failed_load =>
+      '限定思い出の読み込みに失敗しました';
+
+  @override
+  String get event_memory_as_map_label_unlocked => '解放済み';
+
+  @override
+  String event_memory_as_map_label_unlock(Object currencyIcon,
+      Object currencyName, Object currentValue, Object requiredValue) {
+    return '$currencyIcon $requiredValue $currencyName を累積して解放（$currentValue / $requiredValue）';
+  }
+
+  @override
+  String get event_memory_as_map_label_unlock_task_event_complete =>
+      '指定のイベントミッション完了後に解放';
+
+  @override
+  String get event_memory_as_map_label_redeem_unlock_event =>
+      '指定のイベント商品を交換後に解放';
+
+  @override
+  String get event_memory_as_map_label_unlock_variant_b => '未解放';
+
+  @override
+  String get event_memory_hero_message => 'この季節に、ふたりだけの瞬間を残そう。';
+
+  @override
+  String event_memory_hero_message_limited_memory(
+      Object totalCount, Object unlockedCount) {
+    return '限定思い出  $unlockedCount / $totalCount';
+  }
+
+  @override
+  String get event_memory_status_label_unlocked => '解放済み・未視聴';
+
+  @override
+  String get event_memory_status_label => '視聴済み';
+
+  @override
+  String get event_memory_status_label_collection => 'コレクション済み';
+
+  @override
+  String get event_memory_footer_label_memory_start => 'この思い出を開始できます';
+
+  @override
+  String get event_memory_footer_label => 'もう一度見ることができます';
+
+  @override
+  String get event_memory_footer_label_collection => '拾光コレクションに保存済み';
+
+  @override
+  String get event_memory_empty_message_limited_memory_event_public =>
+      'このイベントではまだ限定思い出が公開されていません';
+
+  @override
+  String get event_memory_performance_finish_message_memory => 'この思い出を残しました。';
+
+  @override
+  String get event_memory_performance_finish_message_save_collection =>
+      'コレクションはゲーム内に保存されます。写真ライブラリへの権限はスマートフォンに保存するときだけ求められます。';
+
+  @override
+  String get event_memory_performance_finish_message => '処理中…';
+
+  @override
+  String get event_memory_performance_finish_message_collection_memory =>
+      'この思い出をコレクション';
+
+  @override
+  String
+      get event_memory_performance_confirm_uncollect_memory_message_collection_cancel_memory_again_remove =>
+          '解除すると、この思い出は「拾光コレクション」から削除されます。あとで再び視聴してコレクションすることもできます。';
+
+  @override
+  String
+      get event_memory_performance_uncollect_memory_message_collection_login =>
+          'コレクションを管理するには先にログインしてください';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_collection_login_memory =>
+          'この思い出をコレクションするには先にログインしてください';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_collection_memory =>
+          'この思い出をコレクションしました ♡';
+
+  @override
+  String
+      get event_memory_performance_collect_memory_message_try_again_later_collection_failed =>
+          'コレクションに失敗しました。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get event_memory_performance_text_panel_message_complete => 'タップして完了';
+
+  @override
+  String get event_memory_performance_build_performance_message => 'スキップ';
+
+  @override
+  String get event_memory_performance_text_play => '再生できるSceneがありません';
+
+  @override
+  String get event_memory_profile_change_profile_message_profile =>
+      '拾光プロフィールを変更';
+
+  @override
+  String get event_memory_profile_message_profile_confirm => '拾光プロフィールを確認';
+
+  @override
+  String get event_memory_profile_center_text_profile_not_found =>
+      '使用できる拾光プロフィールが見つかりません';
+
+  @override
+  String get event_memory_profile_center_message_memory =>
+      'この思い出には、どの自分として残りますか？';
+
+  @override
+  String get event_memory_profile_center_message_profile_character_start =>
+      'このキャラクターと最近使用した拾光プロフィールを優先して選択しました。開始前に変更できます。';
+
+  @override
+  String event_memory_profile_center_message(Object value1) {
+    return '「$value1」として';
+  }
+
+  @override
+  String event_memory_profile_center_message_memory_variant_b(Object value1) {
+    return '「$value1」とこの思い出を残す';
+  }
+
+  @override
+  String get event_memory_profile_center_label_memory_start => '思い出を開始';
+
+  @override
+  String get event_message_failed_load => 'イベントデータの読み込みに失敗しました';
+
+  @override
+  String get event_message_not_found => 'イベントが見つかりません';
+
+  @override
+  String get event_remaining_label => 'イベント開催中';
+
+  @override
+  String event_remaining_label_days(Object value1) {
+    return '残り $value1 日';
+  }
+
+  @override
+  String event_remaining_label_hours(Object value1) {
+    return '残り $value1 時間';
+  }
+
+  @override
+  String get event_remaining_label_end => 'まもなく終了';
+
+  @override
+  String get event_balance_pill_tooltip_back => '戻る';
+
+  @override
+  String event_claim_task_message_claim_current(
+      Object currency, Object reward, Object value1, Object value2) {
+    return '$value1 $reward $value2 を受け取りました。現在 $currency 所持しています';
+  }
+
+  @override
+  String get event_claim_task_message_reward_claim => '報酬を受け取りました';
+
+  @override
+  String get event_claim_task_message_claim_failed => '受け取りに失敗しました';
+
+  @override
+  String get event_claim_task_message_task_claim => 'このミッションの報酬はすでに受け取っています';
+
+  @override
+  String get event_claim_task_message_incomplete_task => 'ミッションはまだ完了していません';
+
+  @override
+  String get event_task_list_label_task_load => 'ミッションを読み込み中…';
+
+  @override
+  String get event_task_list_label_task_current => '現在ミッションはありません';
+
+  @override
+  String get event_task_list_label_task_login_progress =>
+      'ログインするとイベントミッションの進捗を確認できます';
+
+  @override
+  String get event_milestone_progress_label_reward_load => '累積報酬を読み込み中…';
+
+  @override
+  String get event_milestone_progress_label_reward_current => '現在累積報酬はありません';
+
+  @override
+  String event_build_with_total_message_current(Object totalEarned) {
+    return '現在  $totalEarned';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_confirm => '交換を確認';
+
+  @override
+  String event_progress_ref_message_redeem_flowers(
+      Object itemName, Object price, Object rewardAmount, Object value1) {
+    return '$value1 $price を使って「$itemName」と交換しますか？\n\n交換後、花を $rewardAmount 個獲得できます。';
+  }
+
+  @override
+  String event_progress_ref_message_redeem(
+      Object itemName, Object price, Object value1) {
+    return '$value1 $price を使って「$itemName」と交換しますか？';
+  }
+
+  @override
+  String event_progress_ref_message_redeem_success_flowers(
+      Object returnedReward) {
+    return '交換成功！花を $returnedReward 個獲得しました';
+  }
+
+  @override
+  String event_progress_ref_message_event_collection_redeem_success_add(
+      Object itemName) {
+    return '交換成功！「$itemName」をイベントコレクションに追加しました';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_failed => '交換に失敗しました';
+
+  @override
+  String get event_progress_ref_message_redeem_variant_b => 'この商品はすでに交換済みです';
+
+  @override
+  String get event_progress_ref_message_insufficient => '通貨が足りません';
+
+  @override
+  String event_progress_ref_message_insufficient_variant_b(Object value1) {
+    return '$value1が足りません';
+  }
+
+  @override
+  String get event_progress_ref_message_redeem_variant_c => '交換';
+
+  @override
+  String get event_progress_ref_message_redeem_variant_d => '交換済み';
+
+  @override
+  String event_message_redeem_flowers(Object rewardAmount) {
+    return '交換後、花を $rewardAmount 個獲得できます';
+  }
+
+  @override
+  String event_message_redeem(Object redeemedCount) {
+    return '$redeemedCount 回交換済み';
+  }
+
+  @override
+  String get event_message_event_shop_login => 'ログインするとイベントショップを利用できます';
+
+  @override
+  String get event_message_redeem_current => '現在交換できる商品はありません';
+
+  @override
+  String event_shop_item_card_message_flowers(Object rewardAmount) {
+    return '花を $rewardAmount 個獲得';
+  }
+
+  @override
+  String get event_message_insufficient => '不足';
+
+  @override
+  String get notification_message_player => 'プレイヤー添付画像';
+
+  @override
+  String notification_message_qixi_letter(Object value1) {
+    return '$value1からの七夕の手紙';
+  }
+
+  @override
+  String recommendation_remaining_label_days(Object value1) {
+    return '残り $value1 日';
+  }
+
+  @override
+  String recommendation_remaining_label_hours(Object value1) {
+    return '残り $value1 時間';
+  }
+
+  @override
+  String get settings_subtitle_character_days => '好きなキャラクターと毎日を一緒に';
+
+  @override
+  String moment_notification_comment_on_character_post(
+      Object authorName, Object commentText, Object senderNickname) {
+    return '$senderNicknameさんが$authorNameさんにコメントしました：「$commentText」';
+  }
+
+  @override
+  String get inbox_content_text_message_customer_service_message_send =>
+      '送信済みのお問い合わせ';
+
+  @override
+  String get character_edit_relationship_none_label => 'なし';
+
+  @override
+  String get auth_cancel_account_deletion_failed =>
+      'アカウント削除のキャンセルに失敗しました。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get auth_delete_account_failed => 'アカウントの削除に失敗しました';
+
+  @override
+  String get auth_request_account_deletion_failed =>
+      'アカウント削除の申請に失敗しました。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get theme_font_shiguang_serif => '拾光明朝';
+
+  @override
+  String get theme_font_clean_sans => '清雅ゴシック';
+
+  @override
+  String get theme_font_system => 'システムフォント';
+
+  @override
+  String get theme_font_shiguang_serif_description => 'やわらかく文学的で、没入感のある読書に最適';
+
+  @override
+  String get theme_font_clean_sans_description => 'すっきり読みやすく、長時間の読書にも快適';
+
+  @override
+  String get theme_font_system_description => '端末の標準システムフォントに従う';
 }
