@@ -1,27 +1,38 @@
-import SwiftUI
+//
+//  LianLianWidget.swift
+//  LianLianWidget
+//
+//  iOS Home Widget for 戀戀拾光
+//
+
 import WidgetKit
+import SwiftUI
+import UIKit
 
 private let appGroupId = "group.com.yubaimo.lianlian_shiguang"
-private let widgetKind = "LianLianHomeWidget"
 
 struct LianLianWidgetEntry: TimelineEntry {
     let date: Date
+    let widgetType: String
     let characterName: String
-    let line1: String
-    let line2: String
-    let line3: String
-    let image: UIImage?
+    let layout: String
+    let lines: [String]
+    let imagePath: String?
 }
 
-struct LianLianWidgetProvider: TimelineProvider {
+struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> LianLianWidgetEntry {
         LianLianWidgetEntry(
             date: Date(),
+            widgetType: "character_status",
             characterName: "程聿",
-            line1: "心情｜有點疲倦",
-            line2: "狀態｜剛結束工作",
-            line3: "地點｜公司樓下",
-            image: nil
+            layout: "full_background",
+            lines: [
+                "心情｜平靜",
+                "狀態｜正在想妳",
+                "地點｜拾光咖啡館"
+            ],
+            imagePath: nil
         )
     }
 
@@ -37,127 +48,290 @@ struct LianLianWidgetProvider: TimelineProvider {
         completion: @escaping (Timeline<LianLianWidgetEntry>) -> Void
     ) {
         let entry = loadEntry()
-        completion(
-            Timeline(
-                entries: [entry],
-                policy: .never
-            )
+
+        // Flutter 端 HomeWidget.updateWidget(...) 會主動要求重新整理。
+        // 這裡不用固定每小時硬刷新。
+        let timeline = Timeline(
+            entries: [entry],
+            policy: .never
         )
+
+        completion(timeline)
     }
 
     private func loadEntry() -> LianLianWidgetEntry {
-        let prefs = UserDefaults(suiteName: appGroupId)
+        let defaults = UserDefaults(
+            suiteName: appGroupId
+        )
 
-        let name =
-            prefs?.string(forKey: "widget_character_name")
-            ?? "戀戀拾光"
+        let widgetType =
+            defaults?.string(
+                forKey: "widget_type"
+            ) ?? "character_status"
 
-        let line1 =
-            prefs?.string(forKey: "widget_line_1")
-            ?? ""
+        let characterName =
+            defaults?.string(
+                forKey: "widget_character_name"
+            ) ?? "戀戀拾光"
 
-        let line2 =
-            prefs?.string(forKey: "widget_line_2")
-            ?? ""
+        let layout =
+            defaults?.string(
+                forKey: "widget_layout"
+            ) ?? "full_background"
 
-        let line3 =
-            prefs?.string(forKey: "widget_line_3")
-            ?? ""
-
-        var image: UIImage? = nil
-
-        if let path = prefs?.string(forKey: "widget_image"),
-           FileManager.default.fileExists(atPath: path) {
-            image = UIImage(contentsOfFile: path)
+        let lines = [
+            defaults?.string(
+                forKey: "widget_line_1"
+            ) ?? "",
+            defaults?.string(
+                forKey: "widget_line_2"
+            ) ?? "",
+            defaults?.string(
+                forKey: "widget_line_3"
+            ) ?? "",
+            defaults?.string(
+                forKey: "widget_line_4"
+            ) ?? ""
+        ]
+        .filter {
+            !$0.trimmingCharacters(
+                in: .whitespacesAndNewlines
+            ).isEmpty
         }
+
+        let imagePath =
+            defaults?.string(
+                forKey: "widget_image"
+            )
 
         return LianLianWidgetEntry(
             date: Date(),
-            characterName: name,
-            line1: line1,
-            line2: line2,
-            line3: line3,
-            image: image
+            widgetType: widgetType,
+            characterName: characterName,
+            layout: layout,
+            lines: lines,
+            imagePath: imagePath
         )
     }
 }
 
 struct LianLianWidgetEntryView: View {
-    var entry: LianLianWidgetProvider.Entry
+    @Environment(\.widgetFamily)
+    private var family
+
+    let entry: LianLianWidgetEntry
+
+    private var loadedImage: UIImage? {
+        guard
+            let path = entry.imagePath,
+            !path.isEmpty
+        else {
+            return nil
+        }
+
+        if path.hasPrefix("file://"),
+           let url = URL(string: path) {
+            return UIImage(
+                contentsOfFile: url.path
+            )
+        }
+
+        return UIImage(
+            contentsOfFile: path
+        )
+    }
+
+    private var maxLineCount: Int {
+        switch family {
+        case .systemSmall:
+            return 2
+
+        case .systemMedium:
+            return 3
+
+        case .systemLarge:
+            return 4
+
+        default:
+            return 3
+        }
+    }
+
+    private var titleFontSize: CGFloat {
+        switch family {
+        case .systemSmall:
+            return 15
+
+        case .systemMedium:
+            return 17
+
+        case .systemLarge:
+            return 19
+
+        default:
+            return 16
+        }
+    }
+
+    private var lineFontSize: CGFloat {
+        switch family {
+        case .systemSmall:
+            return 11
+
+        case .systemMedium:
+            return 12
+
+        case .systemLarge:
+            return 13
+
+        default:
+            return 12
+        }
+    }
 
     var body: some View {
-        ZStack(alignment: .bottomLeading) {
-            if let image = entry.image {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFill()
-            } else {
-                LinearGradient(
-                    colors: [
-                        Color(red: 0.94, green: 0.87, blue: 0.97),
-                        Color(red: 0.99, green: 0.96, blue: 0.98)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            }
+        ZStack {
+            backgroundLayer
 
             LinearGradient(
                 colors: [
-                    Color.clear,
-                    Color.black.opacity(0.72)
+                    Color.black.opacity(
+                        loadedImage == nil
+                            ? 0.00
+                            : 0.08
+                    ),
+                    Color.black.opacity(
+                        loadedImage == nil
+                            ? 0.00
+                            : 0.48
+                    )
                 ],
                 startPoint: .top,
                 endPoint: .bottom
             )
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(entry.characterName)
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.white)
-                    .lineLimit(1)
-
-                if !entry.line1.isEmpty {
-                    Text(entry.line1)
-                        .font(.caption)
-                        .foregroundStyle(.white.opacity(0.95))
-                        .lineLimit(2)
-                }
-
-                if !entry.line2.isEmpty {
-                    Text(entry.line2)
-                        .font(.caption2)
-                        .foregroundStyle(.white.opacity(0.90))
-                        .lineLimit(1)
-                }
-
-                if !entry.line3.isEmpty {
-                    Text(entry.line3)
-                        .font(.caption2)
-                        .foregroundStyle(.white.opacity(0.90))
-                        .lineLimit(1)
-                }
-            }
-            .padding(14)
+            contentLayer
         }
-        .clipped()
-        .widgetURL(URL(string: "lianlianshiguang://widget"))
+    }
+
+    @ViewBuilder
+    private var backgroundLayer: some View {
+        if
+            entry.layout == "full_background",
+            let image = loadedImage
+        {
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFill()
+        } else {
+            Color(
+                red: 0.97,
+                green: 0.95,
+                blue: 0.98
+            )
+        }
+    }
+
+    private var contentLayer: some View {
+        VStack(
+            alignment: .leading,
+            spacing: family == .systemSmall
+                ? 5
+                : 7
+        ) {
+            Spacer(
+                minLength: 0
+            )
+
+            Text(
+                entry.characterName.isEmpty
+                    ? "戀戀拾光"
+                    : entry.characterName
+            )
+            .font(
+                .system(
+                    size: titleFontSize,
+                    weight: .semibold,
+                    design: .serif
+                )
+            )
+            .foregroundStyle(
+                loadedImage == nil
+                    ? Color.primary
+                    : Color.white
+            )
+            .lineLimit(1)
+
+            ForEach(
+                Array(
+                    entry.lines
+                        .prefix(maxLineCount)
+                        .enumerated()
+                ),
+                id: \.offset
+            ) { _, line in
+                Text(line)
+                    .font(
+                        .system(
+                            size: lineFontSize,
+                            weight: .regular,
+                            design: .serif
+                        )
+                    )
+                    .foregroundStyle(
+                        loadedImage == nil
+                            ? Color.primary.opacity(0.78)
+                            : Color.white.opacity(0.94)
+                    )
+                    .lineLimit(
+                        family == .systemLarge
+                            ? 2
+                            : 1
+                    )
+            }
+        }
+        .frame(
+            maxWidth: .infinity,
+            maxHeight: .infinity,
+            alignment: .bottomLeading
+        )
+        .padding(
+            family == .systemSmall
+                ? 14
+                : 16
+        )
     }
 }
 
-struct LianLianHomeWidget: Widget {
-    let kind: String = widgetKind
+struct LianLianWidget: Widget {
+    // 必須跟 Flutter DesktopWidgetNativeService.iosWidgetKind 完全一致。
+    let kind: String = "LianLianHomeWidget"
 
     var body: some WidgetConfiguration {
         StaticConfiguration(
             kind: kind,
-            provider: LianLianWidgetProvider()
+            provider: Provider()
         ) { entry in
-            LianLianWidgetEntryView(entry: entry)
+            if #available(iOS 17.0, *) {
+                LianLianWidgetEntryView(
+                    entry: entry
+                )
+                .containerBackground(
+                    .clear,
+                    for: .widget
+                )
+            } else {
+                LianLianWidgetEntryView(
+                    entry: entry
+                )
+            }
         }
-        .configurationDisplayName("戀戀拾光")
-        .description("讓喜歡的角色陪妳出現在每一天。")
+        .configurationDisplayName(
+            "戀戀拾光"
+        )
+        .description(
+            "把喜歡的角色與陪伴內容放在桌面。"
+        )
         .supportedFamilies([
             .systemSmall,
             .systemMedium,
@@ -166,9 +340,20 @@ struct LianLianHomeWidget: Widget {
     }
 }
 
-@main
-struct LianLianWidgetBundle: WidgetBundle {
-    var body: some Widget {
-        LianLianHomeWidget()
-    }
+#Preview(
+    as: .systemSmall
+) {
+    LianLianWidget()
+} timeline: {
+    LianLianWidgetEntry(
+        date: .now,
+        widgetType: "character_status",
+        characterName: "程聿",
+        layout: "full_background",
+        lines: [
+            "心情｜平靜",
+            "狀態｜正在想妳"
+        ],
+        imagePath: nil
+    )
 }
