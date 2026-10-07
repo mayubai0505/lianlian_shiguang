@@ -1752,13 +1752,29 @@ class _ChatPageState extends State<ChatPage> {
 
         final bool qixiLetterSent = data['qixiLetterSent'] == true;
         int initialFriendship = data['friendshipScore'] ?? 0;
-        // 每次進聊天室都從「閒聊」開始；玩家本次切換後維持到離開聊天室。
-        const modeName = 'gemini';
-        _currentMode = ChatMode.gemini;
-        if (data['chatMode'] != modeName) {
+
+        // 🧭 每個聊天室記住自己最後使用的聊天模式。
+        // 舊版 daily 已不再提供前台入口，因此遇到舊資料時自動遷移到 gemini。
+        final String storedModeName =
+            data['chatMode']?.toString().trim() ?? '';
+        final String resolvedModeName =
+        storedModeName == 'daily' || storedModeName.isEmpty
+            ? 'gemini'
+            : storedModeName;
+
+        final ChatMode restoredMode = ChatMode.values.firstWhere(
+              (mode) => mode.name == resolvedModeName,
+          orElse: () => ChatMode.gemini,
+        );
+
+        _currentMode = restoredMode;
+
+        // 只有舊資料、空值或無效值才校正 Firestore；
+        // 正常已儲存的 story / immersive / resonance / gemini 不再被覆寫。
+        if (storedModeName != restoredMode.name) {
           unawaited(
             sessionDocRef.set(
-              {'chatMode': modeName},
+              {'chatMode': restoredMode.name},
               SetOptions(merge: true),
             ),
           );

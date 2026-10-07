@@ -19,11 +19,47 @@ class DesktopWidgetNativeService {
       'com.yubaimo.lianlian_shiguang.widget.'
       'LianLianHomeWidgetProvider';
 
-  static const String iosWidgetKind =
-      'LianLianHomeWidget';
+  static const String iosWidgetKindSmall =
+      'LianLianHomeWidgetSmall';
+
+  static const String iosWidgetKindMedium =
+      'LianLianHomeWidgetMedium';
+
+  static const String iosWidgetKindLarge =
+      'LianLianHomeWidgetLarge';
+
+  static const List<String> iosWidgetKinds = <String>[
+    iosWidgetKindSmall,
+    iosWidgetKindMedium,
+    iosWidgetKindLarge,
+  ];
 
   static String _key(String widgetConfigId, String field) {
     return 'widget_${widgetConfigId}_$field';
+  }
+
+
+  static Future<void> _updateNativeWidgets() async {
+    if (Platform.isIOS) {
+      await HomeWidget.setAppGroupId(appGroupId);
+
+      for (final kind in iosWidgetKinds) {
+        await HomeWidget.updateWidget(
+          name: androidProviderName,
+          androidName: androidProviderName,
+          qualifiedAndroidName: androidQualifiedProviderName,
+          iOSName: kind,
+        );
+      }
+      return;
+    }
+
+    await HomeWidget.updateWidget(
+      name: androidProviderName,
+      androidName: androidProviderName,
+      qualifiedAndroidName: androidQualifiedProviderName,
+      iOSName: iosWidgetKindMedium,
+    );
   }
 
   static Future<void> saveAndRefresh({
@@ -35,6 +71,9 @@ class DesktopWidgetNativeService {
     required String size,
     required String layout,
     required Map<String, dynamic> settings,
+    double imageFocusX = 0.5,
+    double imageFocusY = 0.05,
+    double imageScale = 1.0,
     required List<String> displayLines,
     required bool requestPin,
   }) async {
@@ -95,21 +134,79 @@ class DesktopWidgetNativeService {
       appGroupId: groupId,
     );
 
+    await HomeWidget.saveWidgetData<double>(
+      _key(widgetConfigId, 'focus_x'),
+      imageFocusX.clamp(0.0, 1.0),
+      appGroupId: groupId,
+    );
+
+    await HomeWidget.saveWidgetData<double>(
+      _key(widgetConfigId, 'focus_y'),
+      imageFocusY.clamp(0.0, 1.0),
+      appGroupId: groupId,
+    );
+
+    await HomeWidget.saveWidgetData<double>(
+      _key(widgetConfigId, 'image_scale'),
+      imageScale.clamp(1.0, 3.0),
+      appGroupId: groupId,
+    );
+
     if (imageUrl.trim().isNotEmpty) {
       try {
-        await HomeWidget.saveImage(
-          _key(widgetConfigId, 'image'),
-          NetworkImage(imageUrl.trim()),
-          appGroupId: groupId,
-        );
+        final networkImage = NetworkImage(imageUrl.trim());
 
-        // Legacy fallback image.
-        await HomeWidget.saveImage(
-          'widget_image',
-          NetworkImage(imageUrl.trim()),
-          appGroupId: groupId,
-        );
-      } catch (_) {
+        if (Platform.isIOS) {
+          final resizedImage = ResizeImage(
+            networkImage,
+            width: 900,
+          );
+
+          final imagePath = await HomeWidget.saveImage(
+            _key(widgetConfigId, 'image'),
+            resizedImage,
+            appGroupId: groupId,
+          );
+
+          await HomeWidget.saveWidgetData<String>(
+            _key(widgetConfigId, 'image_path'),
+            imagePath,
+            appGroupId: groupId,
+          );
+
+          // Legacy fallback image.
+          final legacyImagePath = await HomeWidget.saveImage(
+            'widget_image',
+            resizedImage,
+            appGroupId: groupId,
+          );
+
+          await HomeWidget.saveWidgetData<String>(
+            'widget_image_path',
+            legacyImagePath,
+            appGroupId: groupId,
+          );
+
+          debugPrint(
+            '✅ iOS Widget image saved: $imagePath',
+          );
+        } else {
+          // Android 保持原本行為，不額外縮圖。
+          await HomeWidget.saveImage(
+            _key(widgetConfigId, 'image'),
+            networkImage,
+            appGroupId: groupId,
+          );
+
+          await HomeWidget.saveImage(
+            'widget_image',
+            networkImage,
+            appGroupId: groupId,
+          );
+        }
+      } catch (error, stackTrace) {
+        debugPrint('⚠️ Widget 圖片快取失敗：$error');
+        debugPrintStack(stackTrace: stackTrace);
         // Keep text usable even if an image cannot be cached.
       }
     }
@@ -131,12 +228,32 @@ class DesktopWidgetNativeService {
       return;
     }
 
-    await HomeWidget.updateWidget(
-      name: androidProviderName,
-      androidName: androidProviderName,
-      qualifiedAndroidName: androidQualifiedProviderName,
-      iOSName: iosWidgetKind,
+    await _updateNativeWidgets();
+  }
+
+
+  /// Keeps the iOS Widget Extension aware of every saved App-side widget
+  /// configuration. Android does not use this registry.
+  static Future<void> syncIosWidgetConfigIds(
+      Iterable<String> widgetConfigIds,
+      ) async {
+    if (!Platform.isIOS) return;
+
+    await HomeWidget.setAppGroupId(appGroupId);
+
+    final ids = widgetConfigIds
+        .map((id) => id.trim())
+        .where((id) => id.isNotEmpty)
+        .toSet()
+        .toList();
+
+    await HomeWidget.saveWidgetData<String>(
+      'ios_widget_config_ids_json',
+      jsonEncode(ids),
+      appGroupId: appGroupId,
     );
+
+    await _updateNativeWidgets();
   }
 
 
@@ -365,12 +482,7 @@ class DesktopWidgetNativeService {
         await HomeWidget.setAppGroupId(appGroupId);
       }
 
-      await HomeWidget.updateWidget(
-        name: androidProviderName,
-        androidName: androidProviderName,
-        qualifiedAndroidName: androidQualifiedProviderName,
-        iOSName: iosWidgetKind,
-      );
+      await _updateNativeWidgets();
     } catch (error) {
       debugPrint('⚠️ Widget 即時更新角色狀態失敗：$error');
     }
@@ -609,12 +721,7 @@ class DesktopWidgetNativeService {
 
       if (!didUpdateAny) return;
 
-      await HomeWidget.updateWidget(
-        name: androidProviderName,
-        androidName: androidProviderName,
-        qualifiedAndroidName: androidQualifiedProviderName,
-        iOSName: iosWidgetKind,
-      );
+      await _updateNativeWidgets();
     } catch (error) {
       debugPrint('⚠️ Widget 即時更新角色貼文失敗：$error');
     }
@@ -868,12 +975,7 @@ class DesktopWidgetNativeService {
 
       if (!didUpdateAny) return;
 
-      await HomeWidget.updateWidget(
-        name: androidProviderName,
-        androidName: androidProviderName,
-        qualifiedAndroidName: androidQualifiedProviderName,
-        iOSName: iosWidgetKind,
-      );
+      await _updateNativeWidgets();
     } catch (error) {
       debugPrint('⚠️ Widget App 開啟刷新今日一句失敗：$error');
     }
@@ -966,12 +1068,7 @@ class DesktopWidgetNativeService {
 
       if (!didUpdateAny) return;
 
-      await HomeWidget.updateWidget(
-        name: androidProviderName,
-        androidName: androidProviderName,
-        qualifiedAndroidName: androidQualifiedProviderName,
-        iOSName: iosWidgetKind,
-      );
+      await _updateNativeWidgets();
     } catch (error) {
       debugPrint('⚠️ Widget 即時更新今日一句失敗：$error');
     }
@@ -1204,12 +1301,7 @@ class DesktopWidgetNativeService {
 
       if (!didUpdateAny) return;
 
-      await HomeWidget.updateWidget(
-        name: androidProviderName,
-        androidName: androidProviderName,
-        qualifiedAndroidName: androidQualifiedProviderName,
-        iOSName: iosWidgetKind,
-      );
+      await _updateNativeWidgets();
     } catch (error) {
       debugPrint('⚠️ Widget 即時更新生理期陪伴失敗：$error');
     }
@@ -1489,12 +1581,7 @@ class DesktopWidgetNativeService {
 
       if (!didUpdateAny) return;
 
-      await HomeWidget.updateWidget(
-        name: androidProviderName,
-        androidName: androidProviderName,
-        qualifiedAndroidName: androidQualifiedProviderName,
-        iOSName: iosWidgetKind,
-      );
+      await _updateNativeWidgets();
     } catch (error) {
       debugPrint('⚠️ Widget 重新整理紀念日失敗：$error');
     }
@@ -1543,11 +1630,6 @@ class DesktopWidgetNativeService {
       appGroupId: groupId,
     );
 
-    await HomeWidget.updateWidget(
-      name: androidProviderName,
-      androidName: androidProviderName,
-      qualifiedAndroidName: androidQualifiedProviderName,
-      iOSName: iosWidgetKind,
-    );
+    await _updateNativeWidgets();
   }
 }

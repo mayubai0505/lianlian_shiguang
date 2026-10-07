@@ -118,6 +118,10 @@ class _DesktopWidgetRegistry {
       _prefsKey,
       jsonEncode(updated.map((entry) => entry.toJson()).toList()),
     );
+
+    await DesktopWidgetNativeService.syncIosWidgetConfigIds(
+      updated.map((entry) => entry.id),
+    );
   }
   static Future<void> update(_SavedDesktopWidget item) async {
     final prefs = await SharedPreferences.getInstance();
@@ -129,6 +133,10 @@ class _DesktopWidgetRegistry {
     await prefs.setString(
       _prefsKey,
       jsonEncode(updated.map((entry) => entry.toJson()).toList()),
+    );
+
+    await DesktopWidgetNativeService.syncIosWidgetConfigIds(
+      updated.map((entry) => entry.id),
     );
   }
 
@@ -142,6 +150,10 @@ class _DesktopWidgetRegistry {
     await prefs.setString(
       _prefsKey,
       jsonEncode(updated.map((entry) => entry.toJson()).toList()),
+    );
+
+    await DesktopWidgetNativeService.syncIosWidgetConfigIds(
+      updated.map((entry) => entry.id),
     );
   }
 
@@ -264,6 +276,11 @@ class _DesktopWidgetSettingsPageState
 
   Future<void> _reloadSavedWidgets() async {
     final items = await _DesktopWidgetRegistry.load();
+
+    await DesktopWidgetNativeService.syncIosWidgetConfigIds(
+      items.map((entry) => entry.id),
+    );
+
     if (!mounted) return;
 
     setState(() {
@@ -2950,6 +2967,9 @@ class _DesktopWidgetPreviewPageState
     extends State<DesktopWidgetPreviewPage> {
   String _size = 'medium';
   String _layout = 'full_background';
+  double _imageFocusX = 0.5;
+  double _imageFocusY = 0.05;
+  double _imageScale = 1.0;
   bool _isAddingToHomeScreen = false;
 
   @override
@@ -2957,6 +2977,42 @@ class _DesktopWidgetPreviewPageState
     super.initState();
     _size = widget.initialSize ?? 'medium';
     _layout = widget.initialLayout ?? 'full_background';
+
+    final storedFocusX = widget.settings['imageFocusX'];
+    final storedFocusY = widget.settings['imageFocusY'];
+
+    _imageFocusX = storedFocusX is num
+        ? storedFocusX.toDouble().clamp(0.0, 1.0)
+        : 0.5;
+
+    _imageFocusY = storedFocusY is num
+        ? storedFocusY.toDouble().clamp(0.0, 1.0)
+        : _defaultFocusYForSize(_size);
+
+    final storedScale = widget.settings['imageScale'];
+    _imageScale = storedScale is num
+        ? storedScale.toDouble().clamp(1.0, 3.0)
+        : 1.0;
+  }
+
+  double _defaultFocusYForSize(String size) {
+    switch (size) {
+      case 'small':
+        return 0.03;
+      case 'large':
+        return 0.33;
+      case 'medium':
+      default:
+        return 0.05;
+    }
+  }
+
+  void _resetImageFocus() {
+    setState(() {
+      _imageFocusX = 0.5;
+      _imageFocusY = _defaultFocusYForSize(_size);
+      _imageScale = 1.0;
+    });
   }
 
   String get _nativeWidgetType {
@@ -2985,6 +3041,13 @@ class _DesktopWidgetPreviewPageState
 
       final widgetConfigId = widget.editingWidgetId ??
           '${DateTime.now().microsecondsSinceEpoch}_${widget.characterId}';
+
+      final effectiveSettings = <String, dynamic>{
+        ...widget.settings,
+        'imageFocusX': _imageFocusX,
+        'imageFocusY': _imageFocusY,
+        'imageScale': _imageScale,
+      };
 
       List<String> displayLines;
       String displayImageUrl = widget.imageUrl;
@@ -3040,7 +3103,10 @@ class _DesktopWidgetPreviewPageState
         imageUrl: displayImageUrl,
         size: _size,
         layout: _layout,
-        settings: widget.settings,
+        settings: effectiveSettings,
+        imageFocusX: _imageFocusX,
+        imageFocusY: _imageFocusY,
+        imageScale: _imageScale,
         displayLines: displayLines,
         requestPin: widget.editingWidgetId == null,
       );
@@ -3056,7 +3122,7 @@ class _DesktopWidgetPreviewPageState
         imageUrl: widget.imageUrl,
         size: _size,
         layout: _layout,
-        settings: widget.settings,
+        settings: effectiveSettings,
         createdAtMs: DateTime.now().millisecondsSinceEpoch,
       );
 
@@ -3189,6 +3255,39 @@ class _DesktopWidgetPreviewPageState
                         ),
                       ],
                     ),
+                    if (Platform.isIOS) ...[
+                      const SizedBox(height: 18),
+                      _SettingsSectionTitle(
+                        title: '調整角色位置',
+                        primary: primary,
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: () => _openImageCropEditor(
+                            theme: theme,
+                            characterName: characterName,
+                          ),
+                          icon: const Icon(Icons.crop_free_rounded),
+                          label: Text(
+                            '放大／拖曳調整取景',
+                            style: GoogleFonts.notoSerifTc(
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        '進入調整畫面後可雙指縮放、單指拖曳，不會再帶著整個頁面一起上下跑。',
+                        style: GoogleFonts.notoSerifTc(
+                          fontSize: 12,
+                          height: 1.5,
+                          color: onSurface.withValues(alpha: 0.55),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -3242,18 +3341,46 @@ class _DesktopWidgetPreviewPageState
     required ThemeData theme,
     required String characterName,
   }) {
-    final width = MediaQuery.sizeOf(context).width - 44;
+    final availableWidth = MediaQuery.sizeOf(context).width - 44;
 
-    final double height = switch (_size) {
-      'small' => width * 0.42,
-      'large' => width * 0.90,
-      _ => width * 0.58,
-    };
+    final double previewWidth;
+    final double previewHeight;
 
-    return AnimatedContainer(
+    if (Platform.isIOS) {
+      switch (_size) {
+        case 'small':
+          previewWidth =
+          availableWidth > 300 ? 300 : availableWidth;
+          previewHeight = previewWidth;
+          break;
+        case 'medium':
+          previewWidth =
+          availableWidth > 620 ? 620 : availableWidth;
+          previewHeight = previewWidth * 0.50;
+          break;
+        case 'large':
+          previewWidth =
+          availableWidth > 520 ? 520 : availableWidth;
+          previewHeight = previewWidth;
+          break;
+        default:
+          previewWidth =
+          availableWidth > 620 ? 620 : availableWidth;
+          previewHeight = previewWidth * 0.50;
+      }
+    } else {
+      previewWidth = availableWidth;
+      previewHeight = switch (_size) {
+        'small' => availableWidth * 0.42,
+        'large' => availableWidth * 0.90,
+        _ => availableWidth * 0.58,
+      };
+    }
+
+    Widget preview = AnimatedContainer(
       duration: const Duration(milliseconds: 180),
-      width: double.infinity,
-      height: height,
+      width: previewWidth,
+      height: previewHeight,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(26),
         boxShadow: [
@@ -3269,6 +3396,266 @@ class _DesktopWidgetPreviewPageState
           ? _buildCardLayout(theme, characterName)
           : _buildFullLayout(theme, characterName),
     );
+
+    return Align(
+      alignment: Alignment.center,
+      child: preview,
+    );
+  }
+
+  Future<void> _openImageCropEditor({
+    required ThemeData theme,
+    required String characterName,
+  }) async {
+    double tempFocusX = _imageFocusX;
+    double tempFocusY = _imageFocusY;
+    double tempScale = _imageScale;
+
+    double scaleStartValue = tempScale;
+
+    final result = await showModalBottomSheet<Map<String, double>>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      enableDrag: false,
+      isDismissible: true,
+      backgroundColor: theme.colorScheme.surface,
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            final screenWidth = MediaQuery.sizeOf(context).width;
+            final editorWidth = screenWidth - 32;
+
+            final double editorHeight = switch (_size) {
+              'small' => editorWidth,
+              'large' => editorWidth,
+              _ => editorWidth * 0.50,
+            };
+
+            void updateFocusFromPan(DragUpdateDetails details) {
+              setSheetState(() {
+                final scaledWidth = editorWidth * tempScale;
+                final scaledHeight = editorHeight * tempScale;
+
+                tempFocusX = (
+                    tempFocusX -
+                        details.delta.dx / scaledWidth
+                ).clamp(0.0, 1.0);
+
+                tempFocusY = (
+                    tempFocusY -
+                        details.delta.dy / scaledHeight
+                ).clamp(0.0, 1.0);
+              });
+            }
+
+            void updateScaleStart(ScaleStartDetails details) {
+              scaleStartValue = tempScale;
+            }
+
+            void updateScale(ScaleUpdateDetails details) {
+              if (details.pointerCount < 2) return;
+
+              setSheetState(() {
+                tempScale = (
+                    scaleStartValue * details.scale
+                ).clamp(1.0, 3.0);
+              });
+            }
+
+            return Material(
+              color: theme.colorScheme.surface,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                  top: 8,
+                  bottom: MediaQuery.viewInsetsOf(context).bottom + 18,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            '調整角色取景',
+                            style: GoogleFonts.notoSerifTc(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          tooltip: '重設',
+                          onPressed: () {
+                            setSheetState(() {
+                              tempFocusX = 0.5;
+                              tempFocusY = _defaultFocusYForSize(_size);
+                              tempScale = 1.0;
+                              scaleStartValue = 1.0;
+                            });
+                          },
+                          icon: const Icon(Icons.refresh_rounded),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      '單指拖曳調整上下左右位置；雙指縮放調整大小。框內看到的，就是桌面小工具會顯示的範圍。',
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 12,
+                        height: 1.45,
+                        color:
+                        theme.colorScheme.onSurface.withValues(alpha: 0.58),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(24),
+                      child: SizedBox(
+                        width: editorWidth,
+                        height: editorHeight,
+                        child: Listener(
+                          onPointerDown: (_) {},
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+
+                            // 單指拖曳：只負責上下左右移動
+                            onPanUpdate: updateFocusFromPan,
+
+                            // 雙指縮放：只在 pointerCount >= 2 時改倍率
+                            onScaleStart: updateScaleStart,
+                            onScaleUpdate: updateScale,
+
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                Transform.scale(
+                                  scale: tempScale,
+                                  child: CachedNetworkImage(
+                                    imageUrl: widget.imageUrl,
+                                    fit: BoxFit.cover,
+                                    alignment: Alignment(
+                                      (tempFocusX * 2.0) - 1.0,
+                                      (tempFocusY * 2.0) - 1.0,
+                                    ),
+                                  ),
+                                ),
+                                IgnorePointer(
+                                  child: DecoratedBox(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Colors.white.withValues(
+                                          alpha: 0.80,
+                                        ),
+                                        width: 1.2,
+                                      ),
+                                      borderRadius: BorderRadius.circular(24),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        const Icon(Icons.zoom_out_rounded, size: 18),
+                        Expanded(
+                          child: Slider(
+                            value: tempScale,
+                            min: 1.0,
+                            max: 3.0,
+                            divisions: 20,
+                            onChanged: (value) {
+                              setSheetState(() {
+                                tempScale = value;
+                                scaleStartValue = value;
+                              });
+                            },
+                          ),
+                        ),
+                        const Icon(Icons.zoom_in_rounded, size: 18),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.open_with_rounded,
+                          size: 16,
+                          color: theme.colorScheme.primary,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          '位置：${(tempFocusX * 100).round()}% / ${(tempFocusY * 100).round()}%　'
+                              '縮放：${tempScale.toStringAsFixed(1)}×',
+                          style: GoogleFonts.notoSerifTc(
+                            fontSize: 11.5,
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.56,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => Navigator.pop(sheetContext),
+                            child: const Text('取消'),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: FilledButton(
+                            onPressed: () {
+                              Navigator.pop(
+                                sheetContext,
+                                <String, double>{
+                                  'focusX': tempFocusX,
+                                  'focusY': tempFocusY,
+                                  'scale': tempScale,
+                                },
+                              );
+                            },
+                            child: const Text('套用'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+
+    if (result == null || !mounted) return;
+
+    setState(() {
+      _imageFocusX = result['focusX'] ?? _imageFocusX;
+      _imageFocusY = result['focusY'] ?? _imageFocusY;
+      _imageScale = result['scale'] ?? _imageScale;
+    });
+  }
+
+  Alignment get _previewImageAlignment {
+    if (!Platform.isIOS) {
+      return const Alignment(0, -0.12);
+    }
+
+    return Alignment(
+      (_imageFocusX * 2.0) - 1.0,
+      (_imageFocusY * 2.0) - 1.0,
+    );
   }
 
   Widget _buildFullLayout(
@@ -3278,10 +3665,13 @@ class _DesktopWidgetPreviewPageState
     return Stack(
       fit: StackFit.expand,
       children: [
-        CachedNetworkImage(
-          imageUrl: widget.imageUrl,
-          fit: BoxFit.cover,
-          alignment: const Alignment(0, -0.12),
+        Transform.scale(
+          scale: Platform.isIOS ? _imageScale : 1.0,
+          child: CachedNetworkImage(
+            imageUrl: widget.imageUrl,
+            fit: BoxFit.cover,
+            alignment: _previewImageAlignment,
+          ),
         ),
         DecoratedBox(
           decoration: BoxDecoration(
@@ -3315,10 +3705,13 @@ class _DesktopWidgetPreviewPageState
         children: [
           Expanded(
             flex: 4,
-            child: CachedNetworkImage(
-              imageUrl: widget.imageUrl,
-              fit: BoxFit.cover,
-              alignment: const Alignment(0, -0.12),
+            child: Transform.scale(
+              scale: Platform.isIOS ? _imageScale : 1.0,
+              child: CachedNetworkImage(
+                imageUrl: widget.imageUrl,
+                fit: BoxFit.cover,
+                alignment: _previewImageAlignment,
+              ),
             ),
           ),
           Expanded(
@@ -3639,16 +4032,24 @@ class _SettingsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14),
-      decoration: BoxDecoration(
-        color: theme.cardColor.withValues(alpha: 0.48),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: theme.colorScheme.primary.withValues(alpha: 0.12),
+    final radius = BorderRadius.circular(18);
+
+    // ListTile / SwitchListTile must paint on a Material ancestor.
+    // Keep the card background on Material so ink effects stay visible.
+    return Material(
+      color: theme.cardColor.withValues(alpha: 0.48),
+      borderRadius: radius,
+      clipBehavior: Clip.antiAlias,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        decoration: BoxDecoration(
+          borderRadius: radius,
+          border: Border.all(
+            color: theme.colorScheme.primary.withValues(alpha: 0.12),
+          ),
         ),
+        child: Column(children: children),
       ),
-      child: Column(children: children),
     );
   }
 }
