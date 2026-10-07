@@ -130,7 +130,7 @@
         "placeholders": {
             "version": {
                 "type": "String",
-                "example": "1.7.73"
+                "example": "1.0.8.75"
             }
         }
     },
