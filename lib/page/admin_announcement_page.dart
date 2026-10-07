@@ -200,6 +200,14 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   String _supportStatus = 'pending';
   String _supportSearch = '';
   String _playerSearch = '';
+
+  // ==========================================
+  // ✨ 創作者計畫管理
+  // ==========================================
+  bool _isLoadingCreatorApplications = false;
+  List<Map<String, dynamic>> _creatorApplications = <Map<String, dynamic>>[];
+  String _creatorAdminFilter = 'pending';
+
   final Map<String, String> _adminNicknameCache = <String, String>{};
   final Map<String, String> _helpLanguages = const {
     'en': 'English',
@@ -213,9 +221,15 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     _dashboardFuture = _loadDashboardData();
 
     _tabController = TabController(
-      length: 7,
+      length: 8,
       vsync: this,
     );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _loadCreatorApplications();
+      }
+    });
 
   }
 
@@ -8376,6 +8390,431 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     );
   }
 
+  Future<void> _loadCreatorApplications() async {
+    if (_isLoadingCreatorApplications) return;
+
+    setState(() => _isLoadingCreatorApplications = true);
+
+    try {
+      final callable = _functions.httpsCallable('listCreatorApplications');
+      final result = await callable.call();
+      final data = result.data is Map
+          ? Map<String, dynamic>.from(result.data as Map)
+          : <String, dynamic>{};
+      final rawItems = data['items'];
+      final items = rawItems is List
+          ? rawItems
+          .whereType<Map>()
+          .map((item) => Map<String, dynamic>.from(item))
+          .toList()
+          : <Map<String, dynamic>>[];
+
+      if (!mounted) return;
+      setState(() => _creatorApplications = items);
+    } on FirebaseFunctionsException catch (e) {
+      if (!mounted) return;
+      ToastUtils.showCenterToast(
+        context,
+        e.message ?? '讀取創作者申請失敗',
+        isError: true,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ToastUtils.showCenterToast(
+        context,
+        '讀取創作者申請失敗：$e',
+        isError: true,
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoadingCreatorApplications = false);
+      }
+    }
+  }
+
+  String _creatorStatusText(String status) {
+    switch (status) {
+      case 'pending':
+        return '待審核';
+      case 'approved':
+        return '正常';
+      case 'rejected':
+        return '未通過';
+      case 'suspended':
+        return '已暫停';
+      case 'revoked':
+        return '已取消';
+      default:
+        return status;
+    }
+  }
+
+  Color _creatorStatusColor(String status) {
+    switch (status) {
+      case 'approved':
+        return Colors.green;
+      case 'pending':
+        return Colors.orange;
+      case 'suspended':
+        return Colors.deepOrange;
+      case 'revoked':
+      case 'rejected':
+        return Colors.redAccent;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  Future<void> _updateCreatorStatus(
+      Map<String, dynamic> creator,
+      String targetStatus,
+      ) async {
+    final uid = creator['uid']?.toString() ?? '';
+    final nickname = creator['nickname']?.toString().trim();
+    if (uid.isEmpty) return;
+
+    final bool needsReason =
+        targetStatus == 'rejected' ||
+            targetStatus == 'suspended' ||
+            targetStatus == 'revoked';
+
+    final reasonController = TextEditingController();
+    final String actionText;
+    final String title;
+
+    switch (targetStatus) {
+      case 'approved':
+        final currentStatus = creator['creatorStatus']?.toString() ?? '';
+        final restoring = currentStatus == 'suspended' || currentStatus == 'revoked';
+        actionText = restoring ? '恢復資格' : '通過申請';
+        title = restoring ? '恢復創作者資格' : '通過創作者申請';
+        break;
+      case 'rejected':
+        actionText = '確認未通過';
+        title = '申請未通過';
+        break;
+      case 'suspended':
+        actionText = '確認暫停';
+        title = '暫停創作者資格';
+        break;
+      case 'revoked':
+        actionText = '確認取消';
+        title = '取消創作者資格';
+        break;
+      default:
+        reasonController.dispose();
+        return;
+    }
+
+    final Map<String, dynamic>? result =
+    await showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(title),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('對象：${nickname?.isNotEmpty == true ? nickname : uid}'),
+            if (needsReason) ...[
+              const SizedBox(height: 14),
+              const Text(
+                '請自行填寫處理原因。送出後會同步寄到對方的戀戀信箱。',
+                style: TextStyle(fontSize: 12.5, color: Colors.grey),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: reasonController,
+                minLines: 3,
+                maxLines: 6,
+                maxLength: 300,
+                autofocus: true,
+                decoration: const InputDecoration(
+                  labelText: '原因（必填）',
+                  hintText: '請輸入實際處理原因',
+                  alignLabelWithHint: true,
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ] else ...[
+              const SizedBox(height: 12),
+              const Text('系統會自動寄送資格異動通知。'),
+            ],
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('取消'),
+          ),
+          FilledButton(
+            onPressed: () {
+              final reason = reasonController.text.trim();
+              if (needsReason && reason.isEmpty) {
+                ScaffoldMessenger.of(dialogContext).showSnackBar(
+                  const SnackBar(content: Text('請先填寫原因')),
+                );
+                return;
+              }
+              Navigator.of(dialogContext).pop({'reason': reason});
+            },
+            child: Text(actionText),
+          ),
+        ],
+      ),
+    );
+
+    final reason = result?['reason']?.toString().trim() ?? '';
+    reasonController.dispose();
+    if (result == null || !mounted) return;
+
+    try {
+      final callable = _functions.httpsCallable('adminUpdateCreatorStatus');
+      await callable.call({
+        'creatorUid': uid,
+        'targetStatus': targetStatus,
+        'reason': reason,
+      });
+
+      if (!mounted) return;
+      ToastUtils.showCenterToast(
+        context,
+        '$actionText完成，已寄送通知',
+        customIcon: Icons.verified_user_outlined,
+      );
+      await _loadCreatorApplications();
+    } on FirebaseFunctionsException catch (e) {
+      if (!mounted) return;
+      ToastUtils.showCenterToast(
+        context,
+        e.message ?? '更新創作者資格失敗',
+        isError: true,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ToastUtils.showCenterToast(
+        context,
+        '更新創作者資格失敗：$e',
+        isError: true,
+      );
+    }
+  }
+
+  Widget _buildCreatorAdminTab() {
+    final theme = Theme.of(context);
+    final filtered = _creatorAdminFilter == 'all'
+        ? _creatorApplications
+        : _creatorApplications
+        .where(
+          (item) =>
+      item['creatorStatus']?.toString() == _creatorAdminFilter,
+    )
+        .toList();
+
+    return RefreshIndicator(
+      onRefresh: _loadCreatorApplications,
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 18, 16, 80),
+        children: [
+          Row(
+            children: [
+              const Expanded(
+                child: Text(
+                  '創作者計畫管理',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
+              IconButton(
+                tooltip: '重新整理',
+                onPressed: _isLoadingCreatorApplications
+                    ? null
+                    : _loadCreatorApplications,
+                icon: const Icon(Icons.refresh_rounded),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            '審核申請、暫停或取消資格。停權／取消時原因由妳自行輸入，系統不會預設內容。',
+            style: TextStyle(
+              fontSize: 12.5,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.58),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final entry in const <String, String>{
+                'pending': '待審核',
+                'approved': '正式創作者',
+                'suspended': '已暫停',
+                'revoked': '已取消',
+                'rejected': '未通過',
+                'all': '全部',
+              }.entries)
+                ChoiceChip(
+                  label: Text(entry.value),
+                  selected: _creatorAdminFilter == entry.key,
+                  onSelected: (_) {
+                    setState(() => _creatorAdminFilter = entry.key);
+                  },
+                ),
+            ],
+          ),
+          const SizedBox(height: 18),
+          if (_isLoadingCreatorApplications)
+            const Padding(
+              padding: EdgeInsets.all(32),
+              child: Center(child: CircularProgressIndicator()),
+            )
+          else if (filtered.isEmpty)
+            const Card(
+              elevation: 0,
+              child: Padding(
+                padding: EdgeInsets.all(28),
+                child: Center(child: Text('目前沒有符合條件的創作者資料')),
+              ),
+            )
+          else
+            ...filtered.map((creator) {
+              final status = creator['creatorStatus']?.toString() ?? 'none';
+              final nickname = creator['nickname']?.toString().trim() ?? '';
+              final playerId = creator['playerID']?.toString().trim() ?? '';
+              final direction = creator['creatorDirection']?.toString().trim() ?? '';
+              final reason = creator['creatorApplicationReason']?.toString().trim() ?? '';
+              final statusReason = creator['creatorStatusReason']?.toString().trim() ?? '';
+              final publicCount = (creator['publicCharacterCount'] as num?)?.toInt() ?? 0;
+              final followerCount = (creator['followerCount'] as num?)?.toInt() ?? 0;
+              final totalLikes = (creator['totalLikes'] as num?)?.toInt() ?? 0;
+              final uid = creator['uid']?.toString() ?? '';
+
+              return Card(
+                elevation: 0,
+                margin: const EdgeInsets.only(bottom: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18),
+                  side: BorderSide(color: theme.colorScheme.outlineVariant),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  nickname.isNotEmpty ? nickname : '未命名創作者',
+                                  style: const TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 3),
+                                Text(
+                                  playerId.isNotEmpty ? 'Player ID：$playerId' : 'UID：$uid',
+                                  style: const TextStyle(fontSize: 11.5, color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: _creatorStatusColor(status).withValues(alpha: 0.10),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              _creatorStatusText(status),
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: _creatorStatusColor(status),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Wrap(
+                        spacing: 14,
+                        runSpacing: 6,
+                        children: [
+                          Text('公開角色 $publicCount'),
+                          Text('粉絲 $followerCount'),
+                          Text('總愛心 $totalLikes'),
+                        ],
+                      ),
+                      if (direction.isNotEmpty) ...[
+                        const SizedBox(height: 10),
+                        Text('創作方向：$direction'),
+                      ],
+                      if (reason.isNotEmpty) ...[
+                        const SizedBox(height: 6),
+                        Text('申請原因：$reason'),
+                      ],
+                      if (statusReason.isNotEmpty) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          '最近處理原因：$statusReason',
+                          style: const TextStyle(color: Colors.deepOrange),
+                        ),
+                      ],
+                      const SizedBox(height: 14),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          if (status == 'pending') ...[
+                            FilledButton.icon(
+                              onPressed: () => _updateCreatorStatus(creator, 'approved'),
+                              icon: const Icon(Icons.check_rounded, size: 18),
+                              label: const Text('通過'),
+                            ),
+                            OutlinedButton.icon(
+                              onPressed: () => _updateCreatorStatus(creator, 'rejected'),
+                              icon: const Icon(Icons.close_rounded, size: 18),
+                              label: const Text('未通過'),
+                            ),
+                          ],
+                          if (status == 'approved') ...[
+                            OutlinedButton.icon(
+                              onPressed: () => _updateCreatorStatus(creator, 'suspended'),
+                              icon: const Icon(Icons.pause_circle_outline_rounded, size: 18),
+                              label: const Text('暫停資格'),
+                            ),
+                            OutlinedButton.icon(
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: Colors.redAccent,
+                              ),
+                              onPressed: () => _updateCreatorStatus(creator, 'revoked'),
+                              icon: const Icon(Icons.person_off_outlined, size: 18),
+                              label: const Text('移除身份'),
+                            ),
+                          ],
+                          if (status == 'suspended' || status == 'revoked')
+                            FilledButton.icon(
+                              onPressed: () => _updateCreatorStatus(creator, 'approved'),
+                              icon: const Icon(Icons.restore_rounded, size: 18),
+                              label: const Text('恢復資格'),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final adminTheme = _adminTheme(context);
@@ -8438,6 +8877,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                     Tab(text: '總覽'),
                     Tab(text: '玩家'),
                     Tab(text: '客服'),
+                    Tab(text: '創作者'),
                     Tab(text: '內容'),
                     Tab(text: '營運'),
                     Tab(text: '分析'),
@@ -8453,6 +8893,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
               _LazyAdminTab(builder: _buildDashboardTab),
               _LazyAdminTab(builder: _buildPlayersTab),
               _LazyAdminTab(builder: _buildSupportCenterTab),
+              _LazyAdminTab(builder: _buildCreatorAdminTab),
               _LazyAdminTab(builder: _buildContentCenterTab),
               _LazyAdminTab(
                 builder: _buildCampaignCenterTab,
