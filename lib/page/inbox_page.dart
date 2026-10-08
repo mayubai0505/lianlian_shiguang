@@ -1,13 +1,107 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:intl/intl.dart'; // 記得確保有 import 這個來格式化時間
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import '../screens/moment_detail_page.dart'; // 🌟 記得匯入這頁！
 import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 
-class InboxPage extends StatelessWidget {
+class InboxPage extends StatefulWidget {
   const InboxPage({super.key});
+
+  @override
+  State<InboxPage> createState() => _InboxPageState();
+}
+
+class _InboxPageState extends State<InboxPage> {
+  bool _badgeSyncStarted = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _badgeSyncStarted) return;
+      _badgeSyncStarted = true;
+      _repairLegacyReadFieldsAndSyncBadge();
+    });
+  }
+
+  Future<void> _syncAppBadge() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    try {
+      final callable = FirebaseFunctions.instanceFor(
+        region: 'asia-east1',
+      ).httpsCallable(
+        'syncNotificationBadge',
+        options: HttpsCallableOptions(
+          timeout: const Duration(seconds: 15),
+        ),
+      );
+
+      await callable.call();
+      debugPrint('✅ App badge 已同步');
+    } on FirebaseFunctionsException catch (e) {
+      debugPrint('⚠️ App badge 同步失敗：${e.code} / ${e.message}');
+    } catch (e) {
+      debugPrint('⚠️ App badge 同步失敗：$e');
+    }
+  }
+
+  Future<void> _repairLegacyReadFieldsAndSyncBadge() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    try {
+      final mailboxRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('mailbox');
+
+      final snapshot = await mailboxRef.get();
+
+      WriteBatch? batch;
+      int repairCount = 0;
+
+      for (final doc in snapshot.docs) {
+        final data = doc.data();
+
+        final bool? isRead = data['isRead'] is bool
+            ? data['isRead'] as bool
+            : null;
+        final bool? legacyRead = data['read'] is bool
+            ? data['read'] as bool
+            : null;
+
+        final Map<String, dynamic> updates = <String, dynamic>{};
+
+        if (isRead == true && legacyRead != true) {
+          updates['read'] = true;
+        } else if (legacyRead == true && isRead != true) {
+          updates['isRead'] = true;
+        }
+
+        if (updates.isNotEmpty) {
+          batch ??= FirebaseFirestore.instance.batch();
+          batch.update(doc.reference, updates);
+          repairCount++;
+        }
+      }
+
+      if (batch != null) {
+        await batch.commit();
+        debugPrint('✅ 已修正 $repairCount 筆舊通知已讀欄位');
+      }
+    } catch (e) {
+      // 舊資料修正失敗不阻擋信箱使用。
+      debugPrint('⚠️ 修正舊通知已讀欄位失敗：$e');
+    }
+
+    await _syncAppBadge();
+  }
 
 
   Future<void> _openMailboxItem(
@@ -267,15 +361,26 @@ class InboxPage extends StatelessWidget {
                     ),
                   ],
                 ),
-                onTap: () {
-                  // 1. 點擊後，把這封信標記為「已讀」 (妳原本完美的寫法)
+                onTap: () async {
+                  // 1. 點擊後，同步更新新版 isRead 與舊版 read。
+                  //    舊版後端曾經用 read 計算 iOS badge，如果只改 isRead，
+                  //    桌面紅點就會被舊資料永久卡住。
                   if (!isRead) {
-                    FirebaseFirestore.instance
-                        .collection('users')
-                        .doc(currentUser.uid)
-                        .collection('mailbox')
-                        .doc(docs[index].id)
-                        .update({'isRead': true});
+                    try {
+                      await FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(currentUser.uid)
+                          .collection('mailbox')
+                          .doc(docs[index].id)
+                          .update({
+                        'isRead': true,
+                        'read': true,
+                      });
+
+                      await _syncAppBadge();
+                    } catch (e) {
+                      debugPrint('⚠️ 標記通知已讀失敗：$e');
+                    }
                   }
 
                   // ========================================================

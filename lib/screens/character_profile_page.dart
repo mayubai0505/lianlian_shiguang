@@ -27,6 +27,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../widgets/user_avatar_with_frame.dart';
 //角色卡片內容
 
 class CharacterProfilePage extends StatefulWidget {
@@ -4792,17 +4793,20 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                               children: [
                                 GestureDetector(
                                   onTap: _navigateToCreatorProfile,
-                                  child: CircleAvatar(
-                                    radius: 25,
+                                  child: UserAvatarWithFrame(
+                                    key: ValueKey(
+                                      'character_creator_$creatorId',
+                                    ),
+                                    userId: creatorId,
+                                    avatarImage: imageProvider,
+                                    size: 58,
+                                    avatarRadius: 25,
                                     backgroundColor: theme.colorScheme.primary
                                         .withValues(alpha: 0.08),
-                                    backgroundImage: imageProvider,
-                                    child: imageProvider == null
-                                        ? Icon(
+                                    fallbackChild: Icon(
                                       Icons.person_outline_rounded,
                                       color: theme.colorScheme.primary,
-                                    )
-                                        : null,
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(width: 12),

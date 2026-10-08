@@ -12715,7 +12715,6 @@ for (const doc of unreadSnapshot.docs) {
                 payload: {
                     aps: {
                         sound: "default",
-                        badge: unreadCount,
                     }
                 }
             }
@@ -12742,14 +12741,23 @@ exports.sendMailboxNotification = onDocumentCreated({
     const userId = event.params.userId;
     const mailId = event.params.mailId;
 
-const unreadSnapshot = await db
+const mailboxSnapshot = await db
     .collection("users")
     .doc(userId)
     .collection("mailbox")
-    .where("read", "==", false)
     .get();
 
-const unreadCount = unreadSnapshot.size;
+const unreadCount = mailboxSnapshot.docs.filter((doc) => {
+    const data = doc.data() || {};
+
+    // 新版以 isRead 為主，舊版 read 保留相容。
+    // 任一欄明確為 true，就視為已讀。
+    if (data.isRead === true || data.read === true) {
+        return false;
+    }
+
+    return true;
+}).length;
 
     const payload = {
         notification: {
@@ -12789,6 +12797,75 @@ const unreadCount = unreadSnapshot.size;
 
     return null;
 });
+
+// ============================================================================
+// 📛 同步 iOS App 圖示 Badge
+// Badge 只代表「戀戀信箱未讀通知數」，不再被聊天未讀訊息污染。
+// ============================================================================
+exports.syncNotificationBadge = onCall(
+    {
+        region: "asia-east1",
+        timeoutSeconds: 30,
+        memory: "256MiB",
+    },
+    async (request) => {
+        const userId = request.auth?.uid;
+
+        if (!userId) {
+            throw new HttpsError(
+                "unauthenticated",
+                "請先登入"
+            );
+        }
+
+        const mailboxSnapshot = await db
+            .collection("users")
+            .doc(userId)
+            .collection("mailbox")
+            .get();
+
+        const unreadCount = mailboxSnapshot.docs.filter((doc) => {
+            const data = doc.data() || {};
+
+            if (data.isRead === true || data.read === true) {
+                return false;
+            }
+
+            return true;
+        }).length;
+
+        await sendToUserDevices(userId, {
+            data: {
+                type: "badge_sync",
+                unreadCount: String(unreadCount),
+            },
+            android: {
+                priority: "normal",
+            },
+            apns: {
+                headers: {
+                    "apns-priority": "5",
+                    "apns-push-type": "background",
+                },
+                payload: {
+                    aps: {
+                        "content-available": 1,
+                        badge: unreadCount,
+                    },
+                },
+            },
+        });
+
+        console.log(
+            `✅ Badge 已同步 user=${userId}, unread=${unreadCount}`
+        );
+
+        return {
+            success: true,
+            unreadCount,
+        };
+    }
+);
 
 // 🌟 總裁專屬：殿堂級劇情書記官 (對話摘要生成)
 exports.generateStorySummary = onRequest({

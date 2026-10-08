@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/app_constants.dart';
+import '../services/toast_utils.dart';
 import '../utils/image_utils.dart';
 import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 
@@ -70,14 +71,18 @@ class _AvatarFramePickerPageState extends State<AvatarFramePickerPage> {
       await _cacheEquippedFrame(user.uid, frame);
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(appL10n.avatar_frame_equipped_message(frame.name))),
+      ToastUtils.showCenterToast(
+        context,
+        appL10n.avatar_frame_equipped_message(frame.name),
+        customIcon: Icons.check_circle_rounded,
       );
       Navigator.of(context).pop(true);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('裝備失敗：$e')),
+      ToastUtils.showCenterToast(
+        context,
+        '裝備失敗：$e',
+        isError: true,
       );
     } finally {
       if (mounted) setState(() => _savingKey = null);
@@ -98,14 +103,18 @@ class _AvatarFramePickerPageState extends State<AvatarFramePickerPage> {
       await _clearEquippedFrameCache(user.uid);
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(appL10n.avatar_frame_unequip_frame_snackbar)),
+      ToastUtils.showCenterToast(
+        context,
+        appL10n.avatar_frame_unequip_frame_snackbar,
+        customIcon: Icons.person_outline_rounded,
       );
       Navigator.of(context).pop(true);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('卸下失敗：$e')),
+      ToastUtils.showCenterToast(
+        context,
+        '卸下失敗：$e',
+        isError: true,
       );
     } finally {
       if (mounted) setState(() => _savingKey = null);

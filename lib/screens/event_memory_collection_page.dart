@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -18,6 +19,41 @@ import '../utils/image_utils.dart';
 import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 
 //拾光檔案
+
+// 同一個圖片 URL 在同一個 App session 內只主動預抓一次。
+// 網路圖片由 CachedNetworkImageProvider 負責磁碟快取，
+// precacheImage 再提前放進 Flutter 記憶體快取，讓切頁時能更快顯示。
+final Set<String> _collectionPrecacheRequested = <String>{};
+
+void _precacheCollectionImages(
+    BuildContext context,
+    Iterable<String> rawUrls,
+    ) {
+  final urls = rawUrls
+      .map((value) => value.trim())
+      .where((value) => value.isNotEmpty)
+      .toSet();
+
+  if (urls.isEmpty) return;
+
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (!context.mounted) return;
+
+    for (final url in urls) {
+      if (!_collectionPrecacheRequested.add(url)) continue;
+
+      final provider = _safeImageProvider(url);
+      if (provider == null) continue;
+
+      unawaited(
+        precacheImage(provider, context).catchError((Object error) {
+          _collectionPrecacheRequested.remove(url);
+          debugPrint('⚠️ 拾光收藏圖片預快取失敗：$url / $error');
+        }),
+      );
+    }
+  });
+}
 
 class EventMemoryCollectionPage extends StatefulWidget {
   const EventMemoryCollectionPage({super.key});
@@ -226,6 +262,11 @@ class _MemoryCollectionTab extends StatelessWidget {
         final memories =
         snapshot.data!.docs.map(_CollectedMemory.fromDocument).toList();
 
+        _precacheCollectionImages(
+          context,
+          memories.map((memory) => memory.characterImageSnapshot),
+        );
+
         if (memories.isEmpty) {
           return _CollectionState(
             title: appL10n.event_memory_collection_tab_title_collection_memory,
@@ -363,6 +404,11 @@ class _EventItemCollectionTab extends StatelessWidget {
           final bTime = b.acquiredAt?.millisecondsSinceEpoch ?? 0;
           return bTime.compareTo(aTime);
         });
+
+        _precacheCollectionImages(
+          context,
+          items.map((item) => item.imageUrl),
+        );
 
         if (items.isEmpty) {
           return _CollectionState(
@@ -1883,6 +1929,14 @@ ImageProvider? _safeImageProvider(String value) {
   if (trimmed.isEmpty) return null;
 
   try {
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      return CachedNetworkImageProvider(
+        trimmed,
+        maxWidth: 1600,
+        maxHeight: 1600,
+      );
+    }
+
     return getAvatarImageProvider(trimmed);
   } catch (_) {
     return null;

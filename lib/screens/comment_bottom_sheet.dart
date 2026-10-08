@@ -14,6 +14,7 @@ import '../models/comment_model.dart';
 import '../utils/image_utils.dart'; // 為了 getAvatarImageProvider
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+import '../widgets/user_avatar_with_frame.dart';
 
 //留言功能
 class CommentBottomSheet extends StatefulWidget {
@@ -179,9 +180,8 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
     try {
       final picked = await _commentImagePicker.pickImage(
         source: ImageSource.gallery,
-        imageQuality: 72,
-        maxWidth: 1280,
-        maxHeight: 1280,
+        imageQuality: 82,
+        maxWidth: 1600,
       );
       if (picked == null) return;
       final bytes = await picked.readAsBytes();
@@ -286,7 +286,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
   Future<void> _postComment() async {
     final l10n = AppLocalizations.of(context)!;
 
-    // 防止連點：一按送出就立刻鎖住，包含照片上傳期間。
+    // 防止連點送出多次留言 / 多封通知
     if (_isPostingComment) return;
 
     final String text = _commentController.text.trim();
@@ -294,10 +294,6 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
 
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) return;
-
-    setState(() {
-      _isPostingComment = true;
-    });
 
     final String finalContent = text;
     final Map<String, Comment> commentsById = <String, Comment>{
@@ -314,6 +310,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
         .collection('moments')
         .doc(widget.moment.id);
 
+    // ✅ 先手動建立 commentRef，這樣我們可以拿到固定 commentId
     final newCommentRef = momentRef.collection('comments').doc();
     final String commentId = newCommentRef.id;
 
@@ -326,12 +323,10 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
 
     String imageUrl = '';
     String imageStoragePath = '';
-    Comment? tempComment;
 
     try {
       final selectedBytes = _selectedCommentImageBytes;
       final selectedImage = _selectedCommentImage;
-
       if (selectedBytes != null && selectedImage != null) {
         final uploaded = await _uploadCommentImage(
           commentId: commentId,
@@ -341,33 +336,39 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
         imageUrl = uploaded['imageUrl'] ?? '';
         imageStoragePath = uploaded['imageStoragePath'] ?? '';
       }
+    } catch (error) {
+      if (mounted) {
+        ToastUtils.showCenterToast(context, '照片上傳失敗：$error', isError: true);
+      }
+      return;
+    }
 
-      tempComment = Comment(
-        id: commentId,
-        content: finalContent,
-        authorId: safeAuthorId,
-        authorName: safeAuthorName,
-        authorAvatar: _currentAuthorAvatar,
-        imageUrl: imageUrl,
-        imageStoragePath: imageStoragePath,
-        createdAt: Timestamp.now(),
-        parentCommentId: parentId,
-        replyToName: replyName,
-      );
+    final tempComment = Comment(
+      id: commentId,
+      content: finalContent,
+      authorId: safeAuthorId,
+      authorName: safeAuthorName,
+      authorAvatar: _currentAuthorAvatar,
+      imageUrl: imageUrl,
+      imageStoragePath: imageStoragePath,
+      createdAt: Timestamp.now(),
+      parentCommentId: parentId,
+      replyToName: replyName,
+    );
 
-      if (!mounted) return;
+    setState(() {
+      _isPostingComment = true;
+      _replyTarget = null;
+      _comments.add(tempComment);
+      if (parentId != null) {
+        _expandedReplyThreads.add(parentId);
+      }
+    });
 
-      setState(() {
-        _replyTarget = null;
-        _comments.add(tempComment!);
-        if (parentId != null) {
-          _expandedReplyThreads.add(parentId);
-        }
-      });
+    _commentController.clear();
+    FocusScope.of(context).unfocus();
 
-      _commentController.clear();
-      FocusScope.of(context).unfocus();
-
+    try {
       final batch = _db.batch();
 
       batch.set(newCommentRef, {
@@ -390,6 +391,17 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
 
       await batch.commit();
 
+      // ✅ 這裡補上 commentId，讓通知用固定 docId，不會重複寄三封
+      final notificationContent =
+      finalContent.isNotEmpty ? finalContent : '📷';
+      await widget.moment.sendCommentNotification(
+        commentText: replyName != null
+            ? "@$replyName $notificationContent"
+            : notificationContent,
+        senderNickname: safeAuthorName,
+        commentId: commentId,
+      );
+
       if (mounted) {
         setState(() {
           _selectedCommentImage = null;
@@ -397,28 +409,11 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
         });
       }
 
-      // 通知失敗不影響留言已成功送出。
-      final notificationContent =
-      finalContent.isNotEmpty ? finalContent : '📷';
-      try {
-        await widget.moment.sendCommentNotification(
-          commentText: replyName != null
-              ? "@$replyName $notificationContent"
-              : notificationContent,
-          senderNickname: safeAuthorName,
-          commentId: commentId,
-        );
-      } catch (notificationError) {
-        debugPrint('⚠️ 留言已送出，但通知發送失敗：$notificationError');
-      }
-
-      debugPrint("✅ 留言發送成功");
+      print("✅ 留言與通知發送成功！");
     } catch (e) {
-      if (tempComment != null && mounted) {
-        setState(() {
-          _comments.removeWhere((c) => c.id == tempComment!.id);
-        });
-      }
+      setState(() {
+        _comments.removeWhere((c) => c.id == tempComment.id);
+      });
 
       if (mounted) {
         ToastUtils.showCenterToast(
@@ -503,7 +498,13 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
           children: [
             ListTile(title: Text(l10n.comment_identity_title, style: const TextStyle(fontWeight: FontWeight.bold))),
             ListTile(
-              leading: const CircleAvatar(child: Icon(Icons.person)),
+              leading: UserAvatarWithFrame(
+                userId: FirebaseAuth.instance.currentUser?.uid ?? '',
+                avatarImage: getAvatarImageProvider(playerAvatar),
+                size: 44,
+                avatarRadius: 20,
+                fallbackChild: const Icon(Icons.person),
+              ),
               title: Text(l10n.comment_identity_myself),
               onTap: () {
                 setState(() {
@@ -684,8 +685,14 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
       child: GestureDetector(
         onLongPress: () => _showCommentOptions(comment),
         child: ListTile(
-          leading: CircleAvatar(
-            backgroundImage: getAvatarImageProvider(displayAvatar),
+          leading: UserAvatarWithFrame(
+            key: ValueKey('comment_avatar_${comment.authorId}'),
+            userId: comment.authorId,
+            avatarImage: getAvatarImageProvider(displayAvatar),
+            size: 44,
+            avatarRadius: 20,
+            backgroundColor:
+            Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
           ),
           title: Row(
             children: [
@@ -996,9 +1003,13 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                 children: [
                   GestureDetector(
                     onTap: _showIdentitySwitcher,
-                    child: CircleAvatar(
-                      radius: 18,
-                      backgroundImage: getAvatarImageProvider(_currentAuthorAvatar),
+                    child: UserAvatarWithFrame(
+                      key: ValueKey('comment_input_$_currentAuthorId'),
+                      userId: _currentAuthorId,
+                      avatarImage:
+                      getAvatarImageProvider(_currentAuthorAvatar),
+                      size: 42,
+                      avatarRadius: 18,
                       backgroundColor: Colors.grey[200],
                     ),
                   ),
@@ -1006,11 +1017,8 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                   IconButton(
                     tooltip: '加入照片',
                     onPressed: _isPostingComment ? null : _pickCommentImage,
-                    icon: ImageIcon(
-                      const AssetImage(
-                        'assets/icons/icon_moment_photo_add.png',
-                      ),
-                      size: 26,
+                    icon: Icon(
+                      Icons.image_outlined,
                       color: _selectedCommentImageBytes != null
                           ? Theme.of(context).colorScheme.primary
                           : Theme.of(context).colorScheme.onSurfaceVariant,
@@ -1021,7 +1029,6 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                   Expanded(
                     child: TextField(
                       controller: _commentController,
-                      enabled: !_isPostingComment,
                       decoration: InputDecoration(
                         hintText: l10n.comment_input_hint(safeAuthorName), // ✨ 輸入框提示
                         border: const OutlineInputBorder(
@@ -1037,23 +1044,13 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                     ),
                   ),
                   IconButton(
-                    tooltip: _isPostingComment ? '傳送中…' : '送出留言',
-                    onPressed: _isPostingComment ? null : _postComment,
-                    icon: _isPostingComment
-                        ? const SizedBox(
-                      width: 19,
-                      height: 19,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                      ),
-                    )
-                        : ImageIcon(
-                      const AssetImage(
-                        'assets/images/chat/chat_send_plane_mask.png',
-                      ),
-                      size: 26,
-                      color: Theme.of(context).colorScheme.primary,
+                    icon: Icon(
+                      Icons.send,
+                      color: _isPostingComment
+                          ? Colors.grey
+                          : Theme.of(context).colorScheme.primary,
                     ),
+                    onPressed: _isPostingComment ? null : _postComment,
                   ),
                 ],
               ),

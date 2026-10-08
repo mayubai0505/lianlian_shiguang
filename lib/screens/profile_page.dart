@@ -2229,7 +2229,7 @@ class _ProfilePageState extends State<ProfilePage>
                       ),
                     ),
                     IconButton(
-                      tooltip: '拾光收藏',
+                      tooltip: l10n.event_memory_collection_show_collection_intro_if_needed_message_collection,
                       onPressed: () {
                         Navigator.push(
                           context,

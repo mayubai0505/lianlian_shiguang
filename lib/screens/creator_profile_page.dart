@@ -17,6 +17,7 @@ import '../services/toast_utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
+import '../widgets/user_avatar_with_frame.dart';
 
 //創作者公開頁面
 class CreatorProfilePage extends StatelessWidget {
@@ -138,11 +139,10 @@ class CreatorProfilePage extends StatelessWidget {
 
         ImageProvider? imageProvider;
 
-        final String? finalPath =
-            avatarPath ?? photoUrl;
+        final String finalPath =
+        (avatarPath ?? photoUrl ?? '').trim();
 
-        if (finalPath != null &&
-            finalPath.isNotEmpty) {
+        if (finalPath.isNotEmpty) {
           if (finalPath.startsWith('http')) {
             imageProvider =
                 CachedNetworkImageProvider(finalPath);
@@ -1572,18 +1572,19 @@ class CreatorProfilePage extends StatelessWidget {
                             ),
                           ],
                         ),
-                        padding: const EdgeInsets.all(3),
-                        child: CircleAvatar(
+                        child: UserAvatarWithFrame(
+                          key: ValueKey('creator_header_$creatorId'),
+                          userId: creatorId,
+                          avatarImage: imageProvider,
+                          size: 104,
+                          avatarRadius: 46,
                           backgroundColor:
                           primaryColor.withValues(alpha: 0.08),
-                          backgroundImage: imageProvider,
-                          child: imageProvider == null
-                              ? Icon(
+                          fallbackChild: Icon(
                             Icons.person_rounded,
                             size: 44,
                             color: primaryColor.withValues(alpha: 0.32),
-                          )
-                              : null,
+                          ),
                         ),
                       ),
                     ),
