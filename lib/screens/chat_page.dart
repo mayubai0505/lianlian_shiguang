@@ -1799,6 +1799,10 @@ class _ChatPageState extends State<ChatPage> {
 
         _sessionDocRef = sessionDocRef;
         _messagesCollection = sessionDocRef.collection('messages'); // 這裡確保賦值
+
+        // 修復舊版曾因 gemini 條件而漏掉的「背景故事 + 角色第一句話」。
+        await _seedCharacterOpeningMessagesIfEmpty(sessionDocRef);
+
         _messagesStream = _messagesCollection!
             .orderBy('timestamp', descending: true)
             .snapshots();
@@ -1914,6 +1918,9 @@ class _ChatPageState extends State<ChatPage> {
         // 2. 乖乖把管線接好，絕對不讓 _messagesCollection 變成 Null！
         _sessionDocRef = sessionDocRef;
         _messagesCollection = sessionDocRef.collection('messages');
+
+        await _seedCharacterOpeningMessagesIfEmpty(sessionDocRef);
+
         _messagesStream = _messagesCollection!
             .orderBy('timestamp', descending: true)
             .snapshots();
@@ -1949,6 +1956,68 @@ class _ChatPageState extends State<ChatPage> {
       print("讀取舊聊天室失敗: $e");
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+
+  Future<void> _seedCharacterOpeningMessagesIfEmpty(
+      DocumentReference sessionRef,
+      ) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    final messagesRef = sessionRef.collection('messages');
+
+    // 已經有任何對話就完全不補，避免舊聊天室被重複插入開場。
+    final existing = await messagesRef.limit(1).get();
+    if (existing.docs.isNotEmpty) return;
+
+    String rawFirstLine = _currentCharacter.firstLine ?? '';
+    if (rawFirstLine.trim().isEmpty) {
+      rawFirstLine = l10n.chat_first_line_fallback;
+    }
+
+    final String firstLine = rawFirstLine
+        .replaceAll('{{玩家名字}}', _playerNickname)
+        .replaceAll('(玩家名字)', _playerNickname)
+        .trim();
+
+    final String rawInitialStory = _currentCharacter.initialStory ?? '';
+    final String initialStoryText = rawInitialStory
+        .replaceAll('{{玩家名字}}', _playerNickname)
+        .replaceAll('(玩家名字)', _playerNickname)
+        .trim();
+
+    final DateTime now = DateTime.now();
+    final batch = FirebaseFirestore.instance.batch();
+
+    // 背景故事先出現。
+    if (initialStoryText.isNotEmpty) {
+      final systemMsgRef = messagesRef.doc();
+      batch.set(systemMsgRef, {
+        'sender': 'system',
+        'text': initialStoryText,
+        'timestamp': Timestamp.fromDate(now),
+        'type': 'text',
+        'path': '',
+        'orderIndex': 0,
+      });
+    }
+
+    // 角色第一句話接在背景故事後面。
+    if (firstLine.isNotEmpty) {
+      final aiMsgRef = messagesRef.doc();
+      batch.set(aiMsgRef, {
+        'sender': 'ai',
+        'text': firstLine,
+        'type': 'text',
+        'path': '',
+        'timestamp': Timestamp.fromDate(
+          now.add(const Duration(milliseconds: 1)),
+        ),
+        'orderIndex': 1,
+      });
+    }
+
+    await batch.commit();
   }
 
   Future<void> _createNewChat(String chatMode) async {
@@ -1994,45 +2063,12 @@ class _ChatPageState extends State<ChatPage> {
       // 將建立房間的動作加入 batch
       batch.set(newSessionRef, newSessionData);
 
-      // 3. 處理系統訊息與開場白 (如果不是閒聊模式)
-      if (chatMode != 'gemini') {
-        String rawFirstLine = _currentCharacter.firstLine ?? '';
-        if (rawFirstLine.isEmpty) rawFirstLine = l10n.chat_first_line_fallback;
-        String firstLine = rawFirstLine.replaceAll('{{玩家名字}}', _playerNickname);
-
-        String rawInitialStory = _currentCharacter.initialStory ?? '';
-        String initialStoryText =
-        rawInitialStory.replaceAll('{{玩家名字}}', _playerNickname);
-
-        final DateTime now = DateTime.now();
-
-        // ✅ 故事介紹：固定比較早
-        if (initialStoryText.isNotEmpty) {
-          final systemMsgRef = newSessionRef.collection('messages').doc();
-          batch.set(systemMsgRef, {
-            'sender': 'system',
-            'text': initialStoryText,
-            'timestamp': Timestamp.fromDate(now),
-            'type': 'text',
-            'path': '',
-            'orderIndex': 0,
-          });
-        }
-
-        // ✅ 第一句：固定比較晚
-        final aiMsgRef = newSessionRef.collection('messages').doc();
-        batch.set(aiMsgRef, {
-          'sender': 'ai',
-          'text': firstLine,
-          'type': 'text',
-          'path': '',
-          'timestamp':
-          Timestamp.fromDate(now.add(const Duration(milliseconds: 1))),
-          'orderIndex': 1,
-        });
-      }
+      // 3. 開場訊息不分模式：背景故事 + 角色第一句話都必須保留。
+      //    先建立房間，再於 commit 後透過共用 helper 補入，避免閒聊模式被漏掉。
       // ✨✨✨ 4. 關鍵煞車：等待全部寫入成功！ ✨✨✨
       await batch.commit();
+
+      await _seedCharacterOpeningMessagesIfEmpty(newSessionRef);
 
       // 新房建立成功後，把建立前使用的 draft 身分綁定搬到正式 sessionId。
       if (resolvedProfileId != 'default') {
@@ -7444,41 +7480,9 @@ class _ChatPageState extends State<ChatPage> {
           _currentStoryLocation = null;
         });
 
-      // 3. 重新發送開場白
-      if (_currentMode != ChatMode.gemini) {
-        String firstLine = _currentCharacter.firstLine.isNotEmpty
-            ? _currentCharacter.firstLine.replaceAll(
-            '{{玩家名字}}',
-            _userProfileText.contains('名字:')
-                ? _userProfileText.split('名字:')[1].split('，')[0]
-                : l10n.chat_default_player_name)
-            : l10n.chat_default_greeting;
+      // 3. 重新發送背景故事與角色第一句話（所有模式都要保留）
+      await _seedCharacterOpeningMessagesIfEmpty(_sessionDocRef!);
 
-        String initialStoryText = _currentCharacter.initialStory.replaceAll(
-            '{{玩家名字}}',
-            _userProfileText.contains('名字:')
-                ? _userProfileText.split('名字:')[1].split('，')[0]
-                : l10n.chat_default_player_name);
-
-        if (initialStoryText.isNotEmpty) {
-          await _messagesCollection!.add({
-            'sender': 'system',
-            'text': initialStoryText,
-            'timestamp': FieldValue.serverTimestamp(),
-            'type': 'text',
-            'path': '',
-          });
-          await Future.delayed(const Duration(milliseconds: 500));
-        }
-
-        await _messagesCollection!.add({
-          'sender': 'ai',
-          'text': firstLine,
-          'type': 'text',
-          'path': '',
-          'timestamp': FieldValue.serverTimestamp(),
-        });
-      }
       if (mounted) {
         String snackBarText = resetType == 'full_reset'
             ? l10n.chat_reset_full_msg
