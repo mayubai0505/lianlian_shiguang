@@ -5655,6 +5655,49 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                                     retrievedSharedMemories: retrievedSharedMemories.length,
                                                                                                 });
 
+                                                                                                // 🩺 記憶健檢：只對管理員開啟追蹤的指定玩家寫入診斷資料。
+                                                                                                // 未開啟的玩家完全不增加這筆 debug Firestore 寫入。
+                                                                                                if (userData.memoryDebugEnabled === true) {
+                                                                                                    try {
+                                                                                                        await db
+                                                                                                            .collection("artifacts")
+                                                                                                            .doc(body.appId || APP_ID)
+                                                                                                            .collection("memory_debug_logs")
+                                                                                                            .add({
+                                                                                                                userId: String(uid || userId || ""),
+                                                                                                                characterId: String(charId || ""),
+                                                                                                                sessionId: safeSessionId,
+                                                                                                                playerProfileId: effectiveProfileId,
+                                                                                                                chatMode: String(chatMode || ""),
+                                                                                                                retrievalQuery: String(retrievalQuery || "").slice(-3000),
+                                                                                                                candidateCounts: {
+                                                                                                                    lore: loreCandidates.length,
+                                                                                                                    sharedMemory: sharedMemoryCandidates.length,
+                                                                                                                },
+                                                                                                                selectedLores: retrievedLores.map((item) => ({
+                                                                                                                    id: String(item?.id || ""),
+                                                                                                                    title: String(item?.title || "").slice(0, 120),
+                                                                                                                    content: String(item?.content || "").slice(0, 800),
+                                                                                                                })),
+                                                                                                                selectedMemories: retrievedSharedMemories.map((item) => ({
+                                                                                                                    id: String(item?.id || ""),
+                                                                                                                    scope: String(item?.scope || ""),
+                                                                                                                    factKey: String(item?.factKey || ""),
+                                                                                                                    factValue: String(item?.factValue || "").slice(0, 240),
+                                                                                                                    content: String(item?.content || "").slice(0, 800),
+                                                                                                                    confidence: Number(item?.confidence || 0),
+                                                                                                                    important: item?.important === true,
+                                                                                                                })),
+                                                                                                                createdAt: FieldValue.serverTimestamp(),
+                                                                                                            });
+                                                                                                    } catch (memoryDebugError) {
+                                                                                                        console.warn(
+                                                                                                            "⚠️ 記憶健檢追蹤寫入失敗，不影響聊天：",
+                                                                                                            memoryDebugError
+                                                                                                        );
+                                                                                                    }
+                                                                                                }
+
                                                                                                 // =========================================================================
                                                                                                 // 🎭 智慧多重宇宙分流：決定當前模式的 System Prompt
                                                                                                 // =========================================================================
@@ -10098,6 +10141,273 @@ const resultPayload = {
 
                                        }); // 👈 cors 結尾
                                    });     // 👈 getAiResponse onRequest 結尾
+
+
+
+// ============================================================
+// 🩺 管理後台：AI 記憶健檢
+// 只讀診斷資料，不改玩家記憶內容與 RAG 排序。
+// ============================================================
+exports.setMemoryDebugEnabled = onCall(
+    {
+        region: REGION,
+        timeoutSeconds: 30,
+        memory: "256MiB",
+    },
+    async (request) => {
+        requireRewardCampaignAdmin(request);
+
+        const targetUserId = String(request.data?.userId || "").trim();
+        const enabled = request.data?.enabled === true;
+
+        if (!targetUserId) {
+            throw new HttpsError("invalid-argument", "請提供玩家 UID");
+        }
+
+        await db.collection("users").doc(targetUserId).set(
+            {
+                memoryDebugEnabled: enabled,
+                memoryDebugUpdatedAt: FieldValue.serverTimestamp(),
+            },
+            {merge: true}
+        );
+
+        return {success: true, enabled};
+    }
+);
+
+
+exports.getMemoryHealthDiagnostics = onCall(
+    {
+        region: REGION,
+        timeoutSeconds: 60,
+        memory: "512MiB",
+    },
+    async (request) => {
+        requireRewardCampaignAdmin(request);
+
+        const appId = String(
+            request.data?.appId || APP_ID || "lianlianshiguang"
+        ).trim() || "lianlianshiguang";
+
+        const targetUserId = String(request.data?.userId || "").trim();
+        let characterId = String(request.data?.characterId || "").trim();
+        const sessionId = String(request.data?.sessionId || "").trim();
+        let playerProfileId = String(request.data?.playerProfileId || "").trim();
+
+        if (!targetUserId) {
+            throw new HttpsError("invalid-argument", "請提供玩家 UID");
+        }
+
+        const userRef = db.collection("users").doc(targetUserId);
+        const userSnapshot = await userRef.get();
+
+        if (!userSnapshot.exists) {
+            throw new HttpsError("not-found", "找不到這個玩家");
+        }
+
+        const userData = userSnapshot.data() || {};
+
+        if (sessionId) {
+            const sessionSnapshot = await db
+                .collection("artifacts")
+                .doc(appId)
+                .collection("chat_sessions")
+                .doc(sessionId)
+                .get();
+
+            if (sessionSnapshot.exists) {
+                const sessionData = sessionSnapshot.data() || {};
+                const sessionOwner = String(sessionData.userId || "").trim();
+
+                if (sessionOwner && sessionOwner !== targetUserId) {
+                    throw new HttpsError(
+                        "permission-denied",
+                        "這個聊天室不屬於指定玩家"
+                    );
+                }
+
+                if (!characterId) {
+                    characterId = String(sessionData.characterId || "").trim();
+                }
+                if (!playerProfileId) {
+                    playerProfileId = String(sessionData.playerProfileId || "").trim();
+                }
+            }
+        }
+
+        if (!playerProfileId) {
+            playerProfileId = String(
+                userData.activeProfileId ||
+                userData.defaultProfileId ||
+                "default"
+            ).trim() || "default";
+        }
+
+        const profileRef = userRef
+            .collection("profile_memories")
+            .doc(playerProfileId)
+            .collection("memories");
+
+        const profileSnapshot = await profileRef
+            .orderBy("timestamp", "desc")
+            .limit(200)
+            .get();
+
+        let characterSnapshot = null;
+        if (characterId) {
+            characterSnapshot = await userRef
+                .collection("profile_memories")
+                .doc(playerProfileId)
+                .collection("characters")
+                .doc(characterId)
+                .collection("memories")
+                .orderBy("timestamp", "desc")
+                .limit(200)
+                .get();
+        }
+
+        let sessionMemorySnapshot = null;
+        if (sessionId) {
+            sessionMemorySnapshot = await db
+                .collection("artifacts")
+                .doc(appId)
+                .collection("chat_sessions")
+                .doc(sessionId)
+                .collection("memories")
+                .orderBy("timestamp", "desc")
+                .limit(200)
+                .get();
+        }
+
+        const [jobsSnapshot, debugSnapshot] = await Promise.all([
+            db.collection("artifacts")
+                .doc(appId)
+                .collection("memory_jobs")
+                .where("userId", "==", targetUserId)
+                .limit(200)
+                .get(),
+            db.collection("artifacts")
+                .doc(appId)
+                .collection("memory_debug_logs")
+                .where("userId", "==", targetUserId)
+                .limit(100)
+                .get(),
+        ]);
+
+        function tsMillis(value) {
+            try {
+                return value?.toMillis?.() || 0;
+            } catch (_) {
+                return 0;
+            }
+        }
+
+        function normalizeMemoryDoc(doc, fallbackScope) {
+            const data = doc.data() || {};
+            return {
+                id: doc.id,
+                scope: String(data.scope || fallbackScope || ""),
+                text: String(data.text || data.content || ""),
+                factKey: String(data.factKey || ""),
+                factValue: String(data.factValue || ""),
+                category: String(data.category || ""),
+                confidence: Number(data.confidence || 0),
+                active: data.active !== false,
+                important: data.important === true,
+                sourceMessage: String(data.sourceMessage || ""),
+                timestampMs: tsMillis(data.timestamp || data.updatedAt),
+            };
+        }
+
+        function memoryStats(snapshot, scope) {
+            const rows = snapshot
+                ? snapshot.docs.map((doc) => normalizeMemoryDoc(doc, scope))
+                : [];
+            return {
+                totalLoaded: rows.length,
+                active: rows.filter((row) => row.active).length,
+                inactive: rows.filter((row) => !row.active).length,
+                rows: rows.slice(0, 100),
+            };
+        }
+
+        const jobs = jobsSnapshot.docs
+            .map((doc) => {
+                const data = doc.data() || {};
+                return {
+                    id: doc.id,
+                    status: String(data.status || "unknown"),
+                    characterId: String(data.characterId || ""),
+                    sessionId: String(data.sessionId || ""),
+                    playerProfileId: String(data.playerProfileId || ""),
+                    userMessage: String(data.userMessage || ""),
+                    attempts: Number(data.attempts || 0),
+                    memoryCreated: data.memoryCreated === true,
+                    memoryId: String(data.memoryId || ""),
+                    errorCode: String(data.errorCode || ""),
+                    errorMessage: String(data.errorMessage || ""),
+                    createdAtMs: tsMillis(data.createdAt),
+                    completedAtMs: tsMillis(data.completedAt),
+                };
+            })
+            .sort((a, b) => b.createdAtMs - a.createdAtMs);
+
+        const jobCounts = {};
+        for (const job of jobs) {
+            jobCounts[job.status] = Number(jobCounts[job.status] || 0) + 1;
+        }
+
+        const debugLogs = debugSnapshot.docs
+            .map((doc) => {
+                const data = doc.data() || {};
+                return {
+                    id: doc.id,
+                    characterId: String(data.characterId || ""),
+                    sessionId: String(data.sessionId || ""),
+                    playerProfileId: String(data.playerProfileId || ""),
+                    chatMode: String(data.chatMode || ""),
+                    retrievalQuery: String(data.retrievalQuery || ""),
+                    candidateCounts: data.candidateCounts || {},
+                    selectedLores: Array.isArray(data.selectedLores)
+                        ? data.selectedLores
+                        : [],
+                    selectedMemories: Array.isArray(data.selectedMemories)
+                        ? data.selectedMemories
+                        : [],
+                    createdAtMs: tsMillis(data.createdAt),
+                };
+            })
+            .sort((a, b) => b.createdAtMs - a.createdAtMs)
+            .slice(0, 30);
+
+        return {
+            success: true,
+            target: {
+                userId: targetUserId,
+                characterId,
+                sessionId,
+                playerProfileId,
+            },
+            debugEnabled: userData.memoryDebugEnabled === true,
+            limits: {
+                currentRagCandidateReadPerScope: 20,
+                currentRagSelectedMemories: 3,
+                currentRagSelectedMemoriesResonance: 4,
+                diagnosticsLoadCapPerScope: 200,
+            },
+            profile: memoryStats(profileSnapshot, "profile"),
+            character: memoryStats(characterSnapshot, "character"),
+            session: memoryStats(sessionMemorySnapshot, "session"),
+            jobs: {
+                totalLoaded: jobs.length,
+                counts: jobCounts,
+                rows: jobs.slice(0, 100),
+            },
+            ragDebugLogs: debugLogs,
+        };
+    }
+);
 
 
 // =====================================================

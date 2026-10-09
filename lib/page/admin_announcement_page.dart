@@ -200,6 +200,14 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   String _supportStatus = 'pending';
   String _supportSearch = '';
   String _playerSearch = '';
+  // 🩺 AI 記憶健檢
+  final TextEditingController _memoryUserIdController = TextEditingController();
+  final TextEditingController _memoryCharacterIdController = TextEditingController();
+  final TextEditingController _memorySessionIdController = TextEditingController();
+  final TextEditingController _memoryProfileIdController = TextEditingController();
+  bool _memoryHealthLoading = false;
+  bool _memoryDebugUpdating = false;
+  Map<String, dynamic>? _memoryHealthData;
 
   // ==========================================
   // ✨ 創作者計畫管理
@@ -221,7 +229,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     _dashboardFuture = _loadDashboardData();
 
     _tabController = TabController(
-      length: 8,
+      length: 9,
       vsync: this,
     );
 
@@ -236,6 +244,10 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   @override
   void dispose() {
     _tabController.dispose();
+    _memoryUserIdController.dispose();
+    _memoryCharacterIdController.dispose();
+    _memorySessionIdController.dispose();
+    _memoryProfileIdController.dispose();
     _titleController.dispose();
     _contentController.dispose();
     _rewardTitleController.dispose();
@@ -3164,43 +3176,60 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                       ),
                     ),
                   ),
-                  SegmentedButton<String>(
-                    segments: const [
-                      ButtonSegment(value: 'day', label: Text('日')),
-                      ButtonSegment(value: 'week', label: Text('週')),
-                      ButtonSegment(value: 'month', label: Text('月')),
+                  Wrap(
+                    spacing: 6,
+                    children: [
+                      for (final option in const [
+                        ('day', '日'),
+                        ('week', '週'),
+                        ('month', '月'),
+                      ])
+                        ChoiceChip(
+                          label: Text(option.$2),
+                          selected: _analyticsTrendPeriod == option.$1,
+                          showCheckmark: false,
+                          onSelected: (_) {
+                            if (_analyticsTrendPeriod == option.$1) return;
+                            setState(() {
+                              _analyticsTrendPeriod = option.$1;
+                            });
+                          },
+                        ),
                     ],
-                    selected: {_analyticsTrendPeriod},
-                    showSelectedIcon: false,
-                    onSelectionChanged: (value) {
-                      if (value.isEmpty) return;
-                      setState(() => _analyticsTrendPeriod = value.first);
-                    },
                   ),
                 ],
               ),
             ),
           ),
           const SizedBox(height: 10),
-          _buildTrendMetricBars(
-            items: selectedTrend,
-            valueKey: 'granted',
-            label: '花花發放',
-            money: false,
+          KeyedSubtree(
+            key: ValueKey('granted_$_analyticsTrendPeriod'),
+            child: _buildTrendMetricBars(
+              items: selectedTrend,
+              valueKey: 'granted',
+              label: '花花發放（${_analyticsTrendPeriod == 'day' ? '日' : _analyticsTrendPeriod == 'week' ? '週' : '月'}）',
+              money: false,
+            ),
           ),
           const SizedBox(height: 10),
-          _buildTrendMetricBars(
-            items: selectedTrend,
-            valueKey: 'spent',
-            label: '花花消耗',
-            money: false,
+          KeyedSubtree(
+            key: ValueKey('spent_$_analyticsTrendPeriod'),
+            child: _buildTrendMetricBars(
+              items: selectedTrend,
+              valueKey: 'spent',
+              label: '花花消耗（${_analyticsTrendPeriod == 'day' ? '日' : _analyticsTrendPeriod == 'week' ? '週' : '月'}）',
+              money: false,
+            ),
           ),
           const SizedBox(height: 10),
-          _buildTrendMetricBars(
-            items: selectedTrend,
-            valueKey: 'revenueTwd',
-            label: '營收',
-            money: true,
+          KeyedSubtree(
+            key: ValueKey('revenue_$_analyticsTrendPeriod'),
+            child: _buildTrendMetricBars(
+              items: selectedTrend,
+              valueKey: 'revenueTwd',
+              label: '營收（${_analyticsTrendPeriod == 'day' ? '日' : _analyticsTrendPeriod == 'week' ? '週' : '月'}）',
+              money: true,
+            ),
           ),
         ],
       ),
@@ -8882,6 +8911,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                     Tab(text: '營運'),
                     Tab(text: '分析'),
                     Tab(text: '系統'),
+                    Tab(text: '記憶'),
                   ],
                 ),
               ),
@@ -8901,9 +8931,483 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
               ),
               _LazyAdminTab(builder: _buildAnalyticsTab),
               _LazyAdminTab(builder: _buildSystemHealthTab),
+              _LazyAdminTab(builder: _buildMemoryHealthTab),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+
+  Future<void> _loadMemoryHealth() async {
+    final userId = _memoryUserIdController.text.trim();
+    if (userId.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('請先輸入玩家 UID')),
+      );
+      return;
+    }
+
+    setState(() => _memoryHealthLoading = true);
+
+    try {
+      final callable = _functions.httpsCallable(
+        'getMemoryHealthDiagnostics',
+        options: HttpsCallableOptions(
+          timeout: const Duration(seconds: 60),
+        ),
+      );
+
+      final result = await callable.call({
+        'userId': userId,
+        'characterId': _memoryCharacterIdController.text.trim(),
+        'sessionId': _memorySessionIdController.text.trim(),
+        'playerProfileId': _memoryProfileIdController.text.trim(),
+        'appId': AppConfig.appId,
+      });
+
+      if (!mounted) return;
+
+      final raw = result.data;
+      setState(() {
+        _memoryHealthData = raw is Map
+            ? Map<String, dynamic>.from(raw)
+            : <String, dynamic>{};
+      });
+    } on FirebaseFunctionsException catch (e) {
+      if (!mounted) return;
+      ToastUtils.showCenterToast(
+        context,
+        e.message ?? '記憶健檢失敗：${e.code}',
+        isError: true,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ToastUtils.showCenterToast(
+        context,
+        '記憶健檢失敗：$e',
+        isError: true,
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _memoryHealthLoading = false);
+      }
+    }
+  }
+
+  Future<void> _setMemoryDebugEnabled(bool enabled) async {
+    final userId = _memoryUserIdController.text.trim();
+    if (userId.isEmpty || _memoryDebugUpdating) return;
+
+    setState(() => _memoryDebugUpdating = true);
+
+    try {
+      final callable = _functions.httpsCallable(
+        'setMemoryDebugEnabled',
+        options: HttpsCallableOptions(
+          timeout: const Duration(seconds: 30),
+        ),
+      );
+
+      await callable.call({
+        'userId': userId,
+        'enabled': enabled,
+      });
+
+      await _loadMemoryHealth();
+    } catch (e) {
+      if (!mounted) return;
+      ToastUtils.showCenterToast(
+        context,
+        '更新記憶追蹤失敗：$e',
+        isError: true,
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _memoryDebugUpdating = false);
+      }
+    }
+  }
+
+  String _memoryTime(dynamic millis) {
+    final value = millis is num ? millis.toInt() : 0;
+    if (value <= 0) return '—';
+    final date = DateTime.fromMillisecondsSinceEpoch(value);
+    final two = (int n) => n.toString().padLeft(2, '0');
+    return '${date.year}/${two(date.month)}/${two(date.day)} '
+        '${two(date.hour)}:${two(date.minute)}';
+  }
+
+  Widget _memoryInfoChip(String label, dynamic value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        '$label：$value',
+        style: const TextStyle(fontSize: 12.5),
+      ),
+    );
+  }
+
+  Widget _buildMemoryScopeCard(String title, dynamic raw) {
+    final data = raw is Map
+        ? Map<String, dynamic>.from(raw)
+        : <String, dynamic>{};
+
+    final rows = data['rows'] is List
+        ? (data['rows'] as List)
+        .whereType<Map>()
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList()
+        : <Map<String, dynamic>>[];
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 14),
+      child: ExpansionTile(
+        initiallyExpanded: true,
+        title: Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.w700),
+        ),
+        subtitle: Text(
+          '載入 ${data['totalLoaded'] ?? 0} 筆｜'
+              '啟用 ${data['active'] ?? 0}｜'
+              '被取代 ${data['inactive'] ?? 0}',
+        ),
+        children: [
+          if (rows.isEmpty)
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Text('目前沒有這一層的記憶'),
+            )
+          else
+            ...rows.take(40).map((row) {
+              final active = row['active'] != false;
+              final confidence =
+              (row['confidence'] is num)
+                  ? (row['confidence'] as num).toDouble()
+                  : 0.0;
+              return ListTile(
+                dense: true,
+                leading: Icon(
+                  active
+                      ? Icons.psychology_alt_outlined
+                      : Icons.history_toggle_off_rounded,
+                  color: active
+                      ? Theme.of(context).colorScheme.primary
+                      : Colors.grey,
+                ),
+                title: Text(
+                  (row['text'] ?? '').toString().isEmpty
+                      ? '(空白記憶)'
+                      : (row['text'] ?? '').toString(),
+                ),
+                subtitle: Text(
+                  'factKey=${row['factKey'] ?? ''}  '
+                      'value=${row['factValue'] ?? ''}\n'
+                      'confidence=${confidence.toStringAsFixed(2)}  '
+                      '${_memoryTime(row['timestampMs'])}\n'
+                      '來源：${row['sourceMessage'] ?? ''}',
+                ),
+                isThreeLine: true,
+              );
+            }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMemoryJobsCard(dynamic raw) {
+    final data = raw is Map
+        ? Map<String, dynamic>.from(raw)
+        : <String, dynamic>{};
+
+    final counts = data['counts'] is Map
+        ? Map<String, dynamic>.from(data['counts'] as Map)
+        : <String, dynamic>{};
+
+    final rows = data['rows'] is List
+        ? (data['rows'] as List)
+        .whereType<Map>()
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList()
+        : <Map<String, dynamic>>[];
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 14),
+      child: ExpansionTile(
+        initiallyExpanded: true,
+        title: const Text(
+          'Memory Jobs',
+          style: TextStyle(fontWeight: FontWeight.w700),
+        ),
+        subtitle: Text(
+          '共 ${data['totalLoaded'] ?? 0} 筆｜'
+              'completed ${counts['completed'] ?? 0}｜'
+              'failed ${counts['failed'] ?? 0}｜'
+              'skipped ${counts['skipped'] ?? 0}｜'
+              'pending ${counts['pending'] ?? 0}',
+        ),
+        children: [
+          if (rows.isEmpty)
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Text('目前沒有 Memory Job'),
+            )
+          else
+            ...rows.take(50).map((row) {
+              final status = (row['status'] ?? 'unknown').toString();
+              final isBad = status == 'failed';
+              return ListTile(
+                dense: true,
+                leading: Icon(
+                  isBad
+                      ? Icons.error_outline_rounded
+                      : Icons.task_alt_rounded,
+                  color: isBad ? Colors.redAccent : Colors.green,
+                ),
+                title: Text(
+                  '[$status] ${(row['userMessage'] ?? '').toString()}',
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Text(
+                  '${_memoryTime(row['createdAtMs'])}  '
+                      'attempts=${row['attempts'] ?? 0}\n'
+                      'memoryCreated=${row['memoryCreated'] == true}  '
+                      'memoryId=${row['memoryId'] ?? ''}\n'
+                      '${row['errorCode'] ?? ''} ${row['errorMessage'] ?? ''}',
+                ),
+                isThreeLine: true,
+              );
+            }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRagDebugCard(dynamic raw) {
+    final rows = raw is List
+        ? raw
+        .whereType<Map>()
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList()
+        : <Map<String, dynamic>>[];
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 14),
+      child: ExpansionTile(
+        initiallyExpanded: true,
+        title: const Text(
+          'RAG 本輪實際抓到的記憶',
+          style: TextStyle(fontWeight: FontWeight.w700),
+        ),
+        subtitle: Text(
+          rows.isEmpty
+              ? '尚無追蹤紀錄；先開啟記憶追蹤再實際聊一輪'
+              : '最近 ${rows.length} 輪',
+        ),
+        children: [
+          if (rows.isEmpty)
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Text(
+                '這裡只在記憶追蹤開啟時記錄，不會讓所有玩家平常聊天增加 debug 寫入。',
+              ),
+            )
+          else
+            ...rows.take(20).map((row) {
+              final selected = row['selectedMemories'] is List
+                  ? row['selectedMemories'] as List
+                  : const [];
+
+              final candidateCounts = row['candidateCounts'] is Map
+                  ? Map<String, dynamic>.from(row['candidateCounts'] as Map)
+                  : <String, dynamic>{};
+
+              return ExpansionTile(
+                title: Text(
+                  '${_memoryTime(row['createdAtMs'])} · '
+                      '${row['chatMode'] ?? ''}',
+                ),
+                subtitle: Text(
+                  '候選 ${candidateCounts['sharedMemory'] ?? 0} '
+                      '→ 實際送入 ${selected.length} 條',
+                ),
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        '檢索文字：${row['retrievalQuery'] ?? ''}',
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ),
+                  ),
+                  ...selected.asMap().entries.map((entry) {
+                    final item = entry.value is Map
+                        ? Map<String, dynamic>.from(entry.value as Map)
+                        : <String, dynamic>{};
+                    return ListTile(
+                      dense: true,
+                      leading: CircleAvatar(
+                        radius: 13,
+                        child: Text('${entry.key + 1}'),
+                      ),
+                      title: Text(
+                        '[${item['scope'] ?? ''}] '
+                            '${item['content'] ?? ''}',
+                      ),
+                      subtitle: Text(
+                        'factKey=${item['factKey'] ?? ''}  '
+                            'confidence=${item['confidence'] ?? 0}',
+                      ),
+                    );
+                  }),
+                ],
+              );
+            }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMemoryHealthTab() {
+    final data = _memoryHealthData;
+    final debugEnabled = data?['debugEnabled'] == true;
+    final limits = data?['limits'] is Map
+        ? Map<String, dynamic>.from(data!['limits'] as Map)
+        : <String, dynamic>{};
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _adminPageHeader(
+            title: 'AI 記憶健檢',
+            subtitle: '只做診斷，不改記憶內容。可查看三層記憶、Memory Jobs 與 RAG 本輪實際取回內容。',
+            icon: Icons.psychology_alt_outlined,
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: [
+              SizedBox(
+                width: 300,
+                child: TextField(
+                  controller: _memoryUserIdController,
+                  decoration: const InputDecoration(
+                    labelText: '玩家 UID（必填）',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 300,
+                child: TextField(
+                  controller: _memoryCharacterIdController,
+                  decoration: const InputDecoration(
+                    labelText: '角色 ID（選填）',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 300,
+                child: TextField(
+                  controller: _memorySessionIdController,
+                  decoration: const InputDecoration(
+                    labelText: 'Session ID（建議填）',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 300,
+                child: TextField(
+                  controller: _memoryProfileIdController,
+                  decoration: const InputDecoration(
+                    labelText: 'Player Profile ID（選填）',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              FilledButton.icon(
+                onPressed:
+                _memoryHealthLoading ? null : _loadMemoryHealth,
+                icon: _memoryHealthLoading
+                    ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+                    : const Icon(Icons.health_and_safety_outlined),
+                label: const Text('開始健檢'),
+              ),
+              OutlinedButton.icon(
+                onPressed: _memoryDebugUpdating ||
+                    _memoryUserIdController.text.trim().isEmpty
+                    ? null
+                    : () => _setMemoryDebugEnabled(!debugEnabled),
+                icon: Icon(
+                  debugEnabled
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                ),
+                label: Text(
+                  debugEnabled ? '關閉記憶追蹤' : '開啟記憶追蹤',
+                ),
+              ),
+              if (data != null) ...[
+                _memoryInfoChip(
+                  'RAG 每層候選讀取',
+                  limits['currentRagCandidateReadPerScope'] ?? 20,
+                ),
+                _memoryInfoChip(
+                  '一般模式實際取回',
+                  limits['currentRagSelectedMemories'] ?? 3,
+                ),
+                _memoryInfoChip(
+                  '共鳴模式實際取回',
+                  limits['currentRagSelectedMemoriesResonance'] ?? 4,
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: 18),
+          if (data == null)
+            const Card(
+              child: Padding(
+                padding: EdgeInsets.all(18),
+                child: Text(
+                  '輸入玩家 UID 後按「開始健檢」。若要確認 RAG 本輪到底抓到哪幾條，先開啟記憶追蹤，再用該玩家實際聊天一輪後重新健檢。',
+                ),
+              ),
+            )
+          else ...[
+            _buildMemoryScopeCard('Profile 記憶', data['profile']),
+            _buildMemoryScopeCard('Character 記憶', data['character']),
+            _buildMemoryScopeCard('Session 記憶', data['session']),
+            _buildMemoryJobsCard(data['jobs']),
+            _buildRagDebugCard(data['ragDebugLogs']),
+          ],
+        ],
       ),
     );
   }
