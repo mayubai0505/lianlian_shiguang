@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:app_badge_plus/app_badge_plus.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -42,8 +44,17 @@ class _InboxPageState extends State<InboxPage> {
         ),
       );
 
-      await callable.call();
-      debugPrint('✅ App badge 已同步');
+      final response = await callable.call();
+      final raw = response.data;
+      final dynamic countValue = raw is Map ? raw['unreadCount'] : null;
+      final int? unreadCount = countValue is num
+          ? countValue.toInt()
+          : int.tryParse('$countValue');
+      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS &&
+          unreadCount != null && FirebaseAuth.instance.currentUser?.uid == user.uid) {
+        await AppBadgePlus.updateBadge(unreadCount < 0 ? 0 : unreadCount);
+      }
+      debugPrint('✅ App badge 已同步：$unreadCount');
     } on FirebaseFunctionsException catch (e) {
       debugPrint('⚠️ App badge 同步失敗：${e.code} / ${e.message}');
     } catch (e) {

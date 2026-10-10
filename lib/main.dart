@@ -25,6 +25,7 @@ import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'services/reminder_notification_service.dart';
 import 'package:home_widget/home_widget.dart';
+import 'package:app_badge_plus/app_badge_plus.dart';
 
 String? globalActiveCharacterId;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -294,6 +295,32 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     return locale.languageCode;
   }
 
+  // 📛 從信箱未讀數同步 iOS 桌面圖示。背景 APNs 可能被延遲，
+  // 因此 App 開啟／回到前景時直接設定原生 Badge，不再只等靜默推播。
+  Future<void> _syncIOSAppBadgeFromMailbox() async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) return;
+    if (FirebaseAuth.instance.currentUser == null) return;
+
+    try {
+      final callable = FirebaseFunctions.instanceFor(
+        region: 'asia-east1',
+      ).httpsCallable(
+        'syncNotificationBadge',
+        options: HttpsCallableOptions(timeout: const Duration(seconds: 15)),
+      );
+      final response = await callable.call();
+      if (FirebaseAuth.instance.currentUser == null) return;
+      final data = response.data;
+      final dynamic raw = data is Map ? data['unreadCount'] : null;
+      final int? unread = raw is num ? raw.toInt() : int.tryParse('$raw');
+      if (unread == null) return;
+      await AppBadgePlus.updateBadge(unread < 0 ? 0 : unread);
+      debugPrint('✅ iOS 桌面 Badge 已直接同步：$unread');
+    } catch (e) {
+      debugPrint('⚠️ iOS 桌面 Badge 同步失敗：$e');
+    }
+  }
+
   Future<void> _syncNotificationLocale(Locale locale) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
@@ -482,6 +509,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     if (state ==
         AppLifecycleState.resumed) {
       _updateUserStatus(true);
+      unawaited(_syncIOSAppBadgeFromMailbox());
 
       unawaited(
         _recordDailyAppActivity(),
@@ -557,6 +585,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Future<void> _initializeAfterAppStarted() async {
     // 啟動後工作彼此獨立，不要讓其中一項網路請求拖住下一項。
     unawaited(_recordDailyAppActivity());
+    unawaited(_syncIOSAppBadgeFromMailbox());
 
     unawaited(
       setupPushNotifications()
