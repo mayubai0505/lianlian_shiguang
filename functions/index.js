@@ -7296,31 +7296,30 @@ ${persistentPreferenceDirective}
                                                                            function findResidualWriterArtifacts(rawText) {
                                                                                const text = String(rawText || "");
                                                                                const issues = [];
-
                                                                                if (!text) return issues;
 
-                                                                               // 合法中文疊字白名單：這些本來就可能自然出現在小說正文。
-                                                                               const allowedRepeats = new Set([
-                                                                                   "微微", "慢慢", "輕輕", "淡淡", "靜靜", "緩緩", "細細", "默默",
-                                                                                   "漸漸", "悄悄", "匆匆", "好好", "稍稍", "牢牢", "常常", "剛剛",
-                                                                                   "天天", "人人", "處處", "種種", "點點", "步步", "偏偏", "明明",
-                                                                                   "往往", "紛紛", "頻頻", "隱隱", "遠遠", "早早", "久久", "深深",
-                                                                                   "看看", "想想", "說說", "問問", "聽聽", "試試", "等等", "走走",
-                                                                                   "坐坐", "笑笑", "幫幫", "抱抱", "親親", "摸摸", "拍拍", "敲敲",
-                                                                                   "晃晃", "搖搖", "轉轉", "碰碰", "聞聞", "嚐嚐", "猜猜", "聊聊",
-                                                                                   "找找", "等等", "慢慢", "暖暖", "冷冷", "白白", "黑黑", "紅紅",
-                                                                                   "小小", "大大", "短短", "長長", "滿滿", "空空", "薄薄", "厚厚",
-                                                                                   "栩栩", "楚楚", "耿耿", "歷歷", "孜孜", "亭亭", "盈盈", "侃侃"
-                                                                               ]);
+                                                                               // 不再以 AA 疊字本身當錯誤：正常中文、擬聲詞、角色口癖
+                                                                               // 都可能含「死死／草草／將將」，不能只靠 regex 斷言不自然。
+                                                                               // 只攔截明確的連續生成循環，例如 4 字以上同字連發，
+                                                                               // 或同一個 2～12 字片語連續重複 >= 4 次（長片語 >= 3 次）。
+                                                                               // 保留對單一奇怪詞的觀測，交由後續語言品質評估處理，
+                                                                               // 不會因為「難難」就讓玩家整則回覆失敗。
+                                                                               if (/([\u3400-\u9fff])\1{3,}/u.test(text)) {
+                                                                                   issues.push("repeat:long-single-character-run");
+                                                                               }
 
-                                                                               const duplicateHan = /([\u3400-\u9fff])\1/g;
-                                                                               let match;
+                                                                               if (/([\u3400-\u9fff]{2,3})\1{3,}/u.test(text)) {
+                                                                                   issues.push("repeat:short-phrase-loop");
+                                                                               }
 
-                                                                               while ((match = duplicateHan.exec(text)) !== null) {
-                                                                                   const pair = match[0];
-                                                                                   if (!allowedRepeats.has(pair)) {
-                                                                                       issues.push(`duplicate:${pair}`);
-                                                                                   }
+                                                                               if (/([\u3400-\u9fff]{4,12})\1{2,}/u.test(text)) {
+                                                                                   issues.push("repeat:long-phrase-loop");
+                                                                               }
+
+                                                                               // 一整句連續複製三遍以上，屬於高信心生成循環；
+                                                                               // 短的「哈哈」「不要不要」不在這個檢測範圍。
+                                                                               if (/([^。！？\n]{6,}[。！？])\s*\1\s*\1/u.test(text)) {
+                                                                                   issues.push("repeat:sentence-loop");
                                                                                }
 
                                                                                if (/(?:\r?\n|\\n)\s*n\s*(?:\r?\n|\\n)/.test(text)) {
@@ -7331,7 +7330,6 @@ ${persistentPreferenceDirective}
                                                                                    issues.push("duplicate:punctuation");
                                                                                }
 
-                                                                               // 只抓先前實測出現過、明顯不是台灣中文正文需要的英文殘詞。
                                                                                if (/\b(?:indifferently|suddenly|softly|quietly)\b/i.test(text)) {
                                                                                    issues.push("stray:english-adverb");
                                                                                }
@@ -7341,19 +7339,6 @@ ${persistentPreferenceDirective}
 
                                                                            function compressResidualWriterArtifacts(rawText) {
                                                                                let text = sanitizeWriterArtifacts(String(rawText || ""));
-
-                                                                               const allowedRepeats = new Set([
-                                                                                   "微微", "慢慢", "輕輕", "淡淡", "靜靜", "緩緩", "細細", "默默",
-                                                                                   "漸漸", "悄悄", "匆匆", "好好", "稍稍", "牢牢", "常常", "剛剛",
-                                                                                   "天天", "人人", "處處", "種種", "點點", "步步", "偏偏", "明明",
-                                                                                   "往往", "紛紛", "頻頻", "隱隱", "遠遠", "早早", "久久", "深深",
-                                                                                   "看看", "想想", "說說", "問問", "聽聽", "試試", "等等", "走走",
-                                                                                   "坐坐", "笑笑", "幫幫", "抱抱", "親親", "摸摸", "拍拍", "敲敲",
-                                                                                   "晃晃", "搖搖", "轉轉", "碰碰", "聞聞", "嚐嚐", "猜猜", "聊聊",
-                                                                                   "找找", "暖暖", "冷冷", "白白", "黑黑", "紅紅", "小小", "大大",
-                                                                                   "短短", "長長", "滿滿", "空空", "薄薄", "厚厚", "栩栩", "楚楚",
-                                                                                   "耿耿", "歷歷", "孜孜", "亭亭", "盈盈", "侃侃"
-                                                                               ]);
 
                                                                                // 不做全域「非白名單中文字重複 → 單字」。
                                                                                // 這種壓縮可能把缺字型錯誤變成另一個錯字，例如
@@ -8014,7 +7999,7 @@ const residualWriterArtifacts =
                                                                                    /function\s*\(/i,
                                                                                    /console\.log/i,
                                                                                    /punctuinc/i,
-                                                                                   /\b\d+\.\d+\.\d+\b/,
+                                                                                   // YYYY.MM.DD 日期合法，不視為程式碼污染。
                                                                                ];
 
                                                                                const isSuspiciousOutput =
@@ -24158,3 +24143,172 @@ try {
             } // for 迴圈結束
     }
 );
+
+// ============================================================
+// 創作者合作認證：待審核 -> 待簽約 -> 已認證
+// 以 users/{uid}.creatorStatus 為統一狀態來源。
+// 管理頁面不具備直接繞過簽約的開通能力。
+// ============================================================
+const CREATOR_ADMIN_STATUSES = ["pending", "contract_pending", "approved", "suspended", "revoked", "rejected"];
+
+exports.listCreatorApplications = onCall({region: REGION, timeoutSeconds: 60}, async (request) => {
+  requireRewardCampaignAdmin(request);
+  // 分狀態查詢避免讀取整個 users 集合；每組至多 200 位。
+  const snapshots = await Promise.all(CREATOR_ADMIN_STATUSES.map(status =>
+    db.collection("users").where("creatorStatus", "==", status).limit(200).get()
+  ));
+  const items = [];
+  for (let i = 0; i < snapshots.length; i++) {
+    for (const doc of snapshots[i].docs) {
+      const d = doc.data() || {};
+      items.push({
+        uid: doc.id,
+        nickname: String(d.nickname || d.displayName || ""),
+        playerID: String(d.playerID || d.playerId || ""),
+        creatorStatus: CREATOR_ADMIN_STATUSES[i],
+        creatorDirection: String(d.creatorDirection || ""),
+        creatorApplicationReason: String(d.creatorApplicationReason || ""),
+        creatorStatusReason: String(d.creatorStatusReason || ""),
+        publicCharacterCount: Number(d.publicCharacterCount || 0),
+        followerCount: Number(d.followerCount || 0),
+        totalLikes: Number(d.totalLikes || 0),
+        creatorReviewedAt: d.creatorReviewedAt?.toDate?.()?.toISOString() || null,
+        creatorContractSignedAt: d.creatorContractSignedAt?.toDate?.()?.toISOString() || null,
+      });
+    }
+  }
+  return {items};
+});
+
+exports.adminUpdateCreatorStatus = onCall({region: REGION, timeoutSeconds: 60}, async (request) => {
+  const adminUid = requireRewardCampaignAdmin(request);
+  const {creatorUid, targetStatus, reason} = request.data || {};
+  const uid = String(creatorUid || "").trim();
+  const status = String(targetStatus || "").trim();
+  const explanation = String(reason || "").trim();
+  if (!uid || !CREATOR_ADMIN_STATUSES.includes(status) || status === "pending") {
+    throw new HttpsError("invalid-argument", "無效的創作者或目標狀態");
+  }
+  if (["rejected", "suspended", "revoked"].includes(status) && !explanation) {
+    throw new HttpsError("invalid-argument", "此操作必須填寫原因");
+  }
+  if (explanation.length > 300) throw new HttpsError("invalid-argument", "原因過長");
+
+  const userRef = db.collection("users").doc(uid);
+  const transition = await db.runTransaction(async tx => {
+    const snap = await tx.get(userRef);
+    if (!snap.exists) throw new HttpsError("not-found", "找不到創作者帳號");
+    const user = snap.data() || {};
+    const current = String(user.creatorStatus || "none");
+    const allowed = {
+      pending: ["contract_pending", "rejected"],
+      contract_pending: ["approved", "revoked"],
+      approved: ["suspended", "revoked"],
+      suspended: ["contract_pending", "revoked"],
+      revoked: ["contract_pending"],
+      rejected: ["contract_pending"],
+    };
+    if (!(allowed[current] || []).includes(status)) {
+      throw new HttpsError("failed-precondition", `不允許從 ${current} 變更成 ${status}`);
+    }
+    const changes = {
+      creatorStatus: status,
+      creatorStatusReason: explanation,
+      creatorStatusUpdatedAt: FieldValue.serverTimestamp(),
+      creatorStatusUpdatedBy: adminUid,
+      // 僅已認證可以使用合作創作者後台。
+      creatorDashboardEnabled: status === "approved",
+      creatorVerified: status === "approved",
+    };
+    if (status === "contract_pending") {
+      changes.creatorReviewedAt = FieldValue.serverTimestamp();
+      changes.creatorContractSignedAt = FieldValue.delete();
+    }
+    if (status === "approved") changes.creatorContractSignedAt = FieldValue.serverTimestamp();
+    tx.update(userRef, changes);
+    const auditRef = db.collection("creator_admin_audit").doc();
+    tx.set(auditRef, {creatorUid: uid, previousStatus: current, targetStatus: status,
+      reason: explanation, changedBy: adminUid, changedAt: FieldValue.serverTimestamp()});
+    return {previousStatus: current};
+  });
+
+  // 通知發送獨立於資格交易，失敗不可回滾已完成的資格變更。
+  const titles = {contract_pending:"創作者合作審核通過", approved:"創作者後台已開通",
+    rejected:"創作者申請審核結果", suspended:"創作者合作資格暫停", revoked:"創作者合作資格已取消"};
+  const bodies = {contract_pending:"妳的合作申請已通過初步審核。請等待官方寄送合作合約；雙方完成簽約後，才會開通專屬創作者後台。",
+    approved:"官方已確認雙方完成合約簽署，妳的專屬創作者後台權限現已開通。",
+    rejected:`申請未通過。原因：${explanation}`, suspended:`合作資格已暫停。原因：${explanation}`,
+    revoked:`合作認證已取消，妳仍可作為一般創作者管理既有角色與作品。原因：${explanation}`};
+  try {
+    await userRef.collection("mailbox").add({type:"creator_status", title:titles[status] || "創作者資格通知",
+      body:bodies[status] || "創作者資格已更新。", isRead:false, read:false,
+      createdAt:FieldValue.serverTimestamp()});
+  } catch (e) { logger.error("creator status mailbox delivery failed", {creatorUid:uid, status, error:String(e)}); }
+  return {success:true, previousStatus:transition.previousStatus, creatorStatus:status};
+});
+
+
+// 管理員手動認證：僅已完成雙方簽約的提前合作創作者。
+// 與一般待審核 -> 待簽約流程分離，僅使用 server SDK 執行。
+exports.adminFindCreatorCandidate = onCall({region: REGION, timeoutSeconds: 30}, async (request) => {
+  requireRewardCampaignAdmin(request);
+  const query = String(request.data?.query || "").trim();
+  if (!query || query.length > 128) throw new HttpsError("invalid-argument", "請輸入有效的 UID 或玩家 ID");
+  let snap = await db.collection("users").doc(query).get();
+  if (!snap.exists) {
+    const found = await db.collection("users").where("playerID", "==", query).limit(2).get();
+    if (found.size > 1) throw new HttpsError("failed-precondition", "此玩家 ID 對應多個帳號，請改用 UID");
+    if (!found.empty) snap = found.docs[0];
+  }
+  if (!snap.exists) {
+    const found = await db.collection("users").where("playerId", "==", query).limit(2).get();
+    if (found.size > 1) throw new HttpsError("failed-precondition", "此玩家 ID 對應多個帳號，請改用 UID");
+    if (!found.empty) snap = found.docs[0];
+  }
+  if (!snap.exists) return {user: null};
+  const d = snap.data() || {};
+  return {user: {uid: snap.id, nickname: String(d.nickname || d.displayName || ""),
+    playerID: String(d.playerID || d.playerId || ""),
+    creatorStatus: String(d.creatorStatus || "none")}};
+});
+
+exports.adminManuallyVerifyCreator = onCall({region: REGION, timeoutSeconds: 60}, async (request) => {
+  const adminUid = requireRewardCampaignAdmin(request);
+  const uid = String(request.data?.creatorUid || "").trim();
+  if (!uid || uid.length > 128 || request.data?.contractConfirmed !== true) {
+    throw new HttpsError("invalid-argument", "必須指定玩家並確認雙方已完成合約簽署");
+  }
+  if (uid === adminUid) throw new HttpsError("failed-precondition", "不可自行授予合作創作者資格");
+  const userRef = db.collection("users").doc(uid);
+  const result = await db.runTransaction(async tx => {
+    const snap = await tx.get(userRef);
+    if (!snap.exists) throw new HttpsError("not-found", "找不到指定玩家");
+    const d = snap.data() || {};
+    const previousStatus = String(d.creatorStatus || "none");
+    if (previousStatus === "approved" || d.creatorVerified === true) {
+      throw new HttpsError("already-exists", "這位玩家已經是認證創作者");
+    }
+    tx.update(userRef, {
+      creatorStatus: "approved",
+      creatorVerified: true,
+      creatorDashboardEnabled: true,
+      creatorContractSignedAt: FieldValue.serverTimestamp(),
+      creatorStatusUpdatedAt: FieldValue.serverTimestamp(),
+      creatorStatusUpdatedBy: adminUid,
+      creatorStatusReason: "管理員確認提前簽約並手動認證",
+    });
+    tx.set(db.collection("creator_admin_audit").doc(), {
+      creatorUid: uid, previousStatus, targetStatus: "approved",
+      action: "manual_contract_verification", contractConfirmed: true,
+      changedBy: adminUid, changedAt: FieldValue.serverTimestamp(),
+    });
+    // 同一交易寄站內信，避免權限已開通卻未收到通知。
+    tx.set(userRef.collection("mailbox").doc(), {
+      type: "creator_status", title: "官方合作創作者認證完成",
+      body: "官方已確認雙方合作合約完成簽署，妳的專屬創作者後台資格已開通。",
+      isRead: false, read: false, createdAt: FieldValue.serverTimestamp(),
+    });
+    return {previousStatus};
+  });
+  return {success: true, creatorUid: uid, creatorStatus: "approved", previousStatus: result.previousStatus};
+});

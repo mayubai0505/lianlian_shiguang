@@ -12527,14 +12527,21 @@ class _ChatPageState extends State<ChatPage> {
             // 玩家改成「淡主題色泡泡＋深色文字」，
             // AI 則保留白/淡 surface，對話文字使用主題色。
             // 對話固定黑色；旁白／動作跟著聊天室主題色。
-            final normalStyle = const TextStyle(
-              color: Colors.black,
+            // 深色主題時玩家訊息使用高對比文字；淺色主題維持原配色。
+            // 不修改 AI 文字與聊天室其他顏色。
+            final bool isDarkChatTheme = theme.brightness == Brightness.dark;
+            final normalStyle = TextStyle(
+              color: isUserMessage && isDarkChatTheme
+                  ? theme.colorScheme.onSurface
+                  : Colors.black,
               fontSize: 15,
               height: 1.62,
             );
 
             final actionStyle = TextStyle(
-              color: primary,
+              color: isUserMessage && isDarkChatTheme
+                  ? theme.colorScheme.onSurface.withValues(alpha: 0.86)
+                  : primary,
               fontSize: 15,
               height: 1.62,
             );

@@ -115,6 +115,63 @@ class _InboxPageState extends State<InboxPage> {
   }
 
 
+  // 客服狀態以 reports 文件為準，信箱僅呈現進度，不另存一份易過期狀態。
+  String _customerServiceStatusLabel(String? rawStatus, {bool hasReply = false}) {
+    if (hasReply) return '已回覆';
+    switch ((rawStatus ?? '').trim().toLowerCase()) {
+      case 'processing':
+      case 'in_progress':
+      case 'reviewing':
+        return '處理中／審核中';
+      case 'resolved':
+      case 'replied':
+      case 'completed':
+        return '已回覆';
+      case 'rejected':
+        return '已結案';
+      default:
+        return '已寄出';
+    }
+  }
+
+  Widget _customerServiceStatusChip(String reportId, String type) {
+    if (reportId.isEmpty) {
+      return _statusText(type == 'cs_reply' ? '已回覆' : '已寄出');
+    }
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: FirebaseFirestore.instance.collection('reports').doc(reportId).snapshots(),
+      builder: (context, snapshot) {
+        // 讀取失敗時不要把案件誤顯示成已回覆。
+        final report = snapshot.data?.data();
+        if (report != null) {
+          final owner = (report['reporterId'] ?? report['userId'] ?? report['createdBy'] ?? '').toString();
+          if (owner.isNotEmpty && owner != userId) return const SizedBox.shrink();
+        }
+        final status = _customerServiceStatusLabel(
+          report?['status']?.toString(),
+          hasReply: type == 'cs_reply' ||
+              ((report?['adminReply'] ?? '').toString().trim().isNotEmpty),
+        );
+        return _statusText(status);
+      },
+    );
+  }
+
+  Widget _statusText(String value) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primary.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(value, style: TextStyle(
+        color: theme.colorScheme.primary, fontSize: 11, fontWeight: FontWeight.w600,
+      )),
+    );
+  }
+
   Future<void> _openMailboxItem(
       BuildContext context, {
         required Map<String, dynamic> data,
@@ -122,6 +179,7 @@ class _InboxPageState extends State<InboxPage> {
       }) async {
     final String type = (data['type'] ?? '').toString();
     final String reportId = (data['reportId'] ?? '').toString().trim();
+    final String mailboxCaseNumber = (data['caseNumber'] ?? '').toString().trim();
 
     // 一般通知維持原本行為；客服信才進完整信件內容。
     if (type != 'cs_received' && type != 'cs_reply') {
@@ -150,11 +208,12 @@ class _InboxPageState extends State<InboxPage> {
             reportData['subject'] ??
             reportData['categoryLabel'] ??
             reportData['reason'] ??
+            data['originalTitle'] ??
             ''
     ).toString().trim();
 
     final String reportReason =
-    (reportData['reason'] ?? '').toString().trim();
+    (reportData['reason'] ?? data['originalReason'] ?? '').toString().trim();
 
     final String originalTitle = reportTitle.isNotEmpty
         ? (reportReason.isNotEmpty &&
@@ -167,9 +226,19 @@ class _InboxPageState extends State<InboxPage> {
     (reportData['content'] ??
         reportData['body'] ??
         reportData['message'] ??
+        data['originalBody'] ??
         '')
         .toString()
         .trim();
+
+    // 使用最新案件資料取得編號和目前進度，舊信也有相容顯示。
+    final String caseNumber =
+    (reportData['caseNumber'] ?? mailboxCaseNumber).toString().trim();
+    final String statusLabel = _customerServiceStatusLabel(
+      reportData['status']?.toString(),
+      hasReply: type == 'cs_reply' ||
+          (reportData['adminReply'] ?? '').toString().trim().isNotEmpty,
+    );
 
     final String replyBody =
     type == 'cs_reply'
@@ -219,6 +288,16 @@ class _InboxPageState extends State<InboxPage> {
                 crossAxisAlignment:
                 CrossAxisAlignment.start,
                 children: [
+                  if (caseNumber.isNotEmpty) ...[
+                    label('案件編號'),
+                    const SizedBox(height: 5),
+                    contentText(caseNumber),
+                    const SizedBox(height: 16),
+                  ],
+                  label('處理進度'),
+                  const SizedBox(height: 6),
+                  _statusText(statusLabel),
+                  const SizedBox(height: 18),
                   label(appL10n.inbox_content_text_message_player_title_send),
                   const SizedBox(height: 6),
                   contentText(originalTitle),
@@ -312,6 +391,9 @@ class _InboxPageState extends State<InboxPage> {
               final DateTime? date = (data['createdAt'] as Timestamp?)?.toDate();
               final bool isRead = data['isRead'] ?? false; // 判斷已讀/未讀
               final String bodyText = (data['body'] ?? '').toString();
+              final String mailType = (data['type'] ?? '').toString();
+              final String mailReportId = (data['reportId'] ?? '').toString().trim();
+              final bool isCustomerService = mailType == 'cs_received' || mailType == 'cs_reply';
               return ListTile(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 // 未讀的信件，給一個淡淡的粉色背景
@@ -365,6 +447,10 @@ class _InboxPageState extends State<InboxPage> {
                         fontSize: 14,
                       ),
                     ),
+                    if (isCustomerService) ...[
+                      const SizedBox(height: 7),
+                      _customerServiceStatusChip(mailReportId, mailType),
+                    ],
                     const SizedBox(height: 6),
                     Text(
                       date != null ? DateFormat('MM/dd HH:mm').format(date) : '',

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -200,6 +201,10 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   String _supportStatus = 'pending';
   String _supportSearch = '';
   String _playerSearch = '';
+  Timer? _playerSearchDebounce;
+  late Future<List<DocumentSnapshot<Map<String, dynamic>>>> _playersFuture;
+  int _dashboardRequestSerial = 0;
+
   // 🩺 AI 記憶健檢
   final TextEditingController _memoryUserIdController = TextEditingController();
   final TextEditingController _memoryCharacterIdController = TextEditingController();
@@ -215,6 +220,11 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   bool _isLoadingCreatorApplications = false;
   List<Map<String, dynamic>> _creatorApplications = <Map<String, dynamic>>[];
   String _creatorAdminFilter = 'pending';
+  final TextEditingController _manualCreatorSearchController = TextEditingController();
+  Map<String, dynamic>? _manualCreatorCandidate;
+  bool _manualCreatorSearching = false;
+  bool _manualCreatorActivating = false;
+
 
   final Map<String, String> _adminNicknameCache = <String, String>{};
   final Map<String, String> _helpLanguages = const {
@@ -227,6 +237,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     super.initState();
 
     _dashboardFuture = _loadDashboardData();
+    _playersFuture = _queryAdminPlayers('');
 
     _tabController = TabController(
       length: 9,
@@ -243,6 +254,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
 
   @override
   void dispose() {
+    _playerSearchDebounce?.cancel();
+    _manualCreatorSearchController.dispose();
     _tabController.dispose();
     _memoryUserIdController.dispose();
     _memoryCharacterIdController.dispose();
@@ -886,6 +899,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
           'compensationFlowerPoints': flowerAmount,
           'compensatedBy': adminUid,
           'resolvedAt': FieldValue.serverTimestamp(),
+          'adminUpdatedAt': FieldValue.serverTimestamp(),
+          'adminUpdatedBy': adminUid,
         },
       );
 
@@ -2196,165 +2211,98 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   }
 
   Future<Map<String, dynamic>> _loadDashboardData() async {
-    try {
-      final dashboardCallable =
-      _functions.httpsCallable(
-        'getAdminDashboardStats',
-        options: HttpsCallableOptions(
-          timeout:
-          const Duration(seconds: 120),
-        ),
-      );
-
-      final recommendationCallable =
-      _functions.httpsCallable(
-        'getRecommendationConversionStats',
-        options: HttpsCallableOptions(
-          timeout:
-          const Duration(seconds: 30),
-        ),
-      );
-
-      final flowerCallable =
-      _functions.httpsCallable(
-        'getAdminFlowerStats',
-        options: HttpsCallableOptions(
-          timeout:
-          const Duration(seconds: 60),
-        ),
-      );
-
-      final revenueCallable =
-      _functions.httpsCallable(
-        'getAdminRevenueStats',
-        options: HttpsCallableOptions(
-          timeout:
-          const Duration(seconds: 60),
-        ),
-      );
-
-      final analyticsCallable =
-      _functions.httpsCallable(
-        'getAdminOperationsAnalytics',
-        options: HttpsCallableOptions(
-          timeout:
-          const Duration(seconds: 120),
-        ),
-      );
-
-      final results =
-      await Future.wait([
-        dashboardCallable.call(),
-        recommendationCallable.call(),
-        flowerCallable.call(),
-        revenueCallable.call(),
-      ]);
-
-      final dashboardResult = results[0];
-
-      final recommendationResult =
-      results[1];
-
-      final flowerResult =
-      results[2];
-
-      final revenueResult =
-      results[3];
-
-      if (dashboardResult.data is! Map) {
-        throw Exception(
-          '管理後台統計資料格式不正確',
-        );
-      }
-
-      final data =
-      Map<String, dynamic>.from(
-        dashboardResult.data as Map,
-      );
-
-      if (revenueResult.data is Map) {
-        data['revenue'] =
-        Map<String, dynamic>.from(
-          revenueResult.data as Map,
-        );
-      }
-
-      if (recommendationResult.data
-      is Map) {
-        data['recommendationConversion'] =
-        Map<String, dynamic>.from(
-          recommendationResult.data as Map,
-        );
-      }
-
-      if (flowerResult.data is Map) {
-        final flowerData =
-        Map<String, dynamic>.from(
-          flowerResult.data as Map,
-        );
-
-        data['flowerGranted'] =
-            (flowerData['flowerGranted']
-            as num?)
-                ?.toInt() ??
-                0;
-
-        data['flowerSpent'] =
-            (flowerData['flowerSpent']
-            as num?)
-                ?.toInt() ??
-                0;
-      }
-
-      // 新營運分析是加掛功能：就算尚未部署或暫時讀取失敗，
-      // 原本後台統計也照常顯示，不互相拖累。
-      try {
-        final analyticsResult = await analyticsCallable.call();
-        if (analyticsResult.data is Map) {
-          data['operationsAnalytics'] =
-          Map<String, dynamic>.from(
-            analyticsResult.data as Map,
-          );
-        }
-      } catch (error) {
-        debugPrint('⚠️ 營運分析讀取失敗，保留原後台資料：$error');
-      }
-
-      debugPrint(
-        '📊 管理後台統計讀取成功：'
-            'activeUsers=${data['todayActiveUsers']} '
-            'todaySessions=${data['todayChatSessions']} '
-            'sessions7d=${data['sessions7d']}',
-      );
-
-      return data;
-    } on FirebaseFunctionsException catch (error, stackTrace) {
-      debugPrint(
-        '❌ 管理後台統計 Function 失敗：'
-            '${error.code} ${error.message}',
-      );
-
-      debugPrint(
-        'details: ${error.details}',
-      );
-
-      debugPrintStack(
-        stackTrace: stackTrace,
-      );
-
-      rethrow;
-    } catch (error, stackTrace) {
-      debugPrint(
-        '❌ 讀取管理後台統計失敗：$error',
-      );
-
-      debugPrintStack(
-        stackTrace: stackTrace,
-      );
-
-      rethrow;
+    final serial = ++_dashboardRequestSerial;
+    final dashboardCallable = _functions.httpsCallable(
+      'getAdminDashboardStats',
+      options: HttpsCallableOptions(timeout: const Duration(seconds: 120)),
+    );
+    // 先取得總覽基本資料；其他四個獨立統計不再卡住第一畫面。
+    final dashboardResult = await dashboardCallable.call();
+    if (dashboardResult.data is! Map) {
+      throw Exception('管理後台統計資料格式不正確');
     }
+    final data = Map<String, dynamic>.from(dashboardResult.data as Map);
+    if (mounted && serial == _dashboardRequestSerial) {
+      unawaited(_loadDashboardExtras(data, serial));
+    }
+    return data;
   }
+
+  Future<void> _loadDashboardExtras(Map<String, dynamic> data, int serial) async {
+    Future<void> loadOne(String functionName, void Function(Map<String, dynamic>) merge) async {
+      try {
+        final result = await _functions.httpsCallable(
+          functionName,
+          options: HttpsCallableOptions(timeout: const Duration(seconds: 90)),
+        ).call();
+        if (result.data is! Map || !mounted || serial != _dashboardRequestSerial) return;
+        merge(Map<String, dynamic>.from(result.data as Map));
+        // 已完成的 Future 直接重建，不顯示整頁 loading。
+        setState(() => _dashboardFuture = Future.value(Map<String, dynamic>.from(data)));
+      } catch (error) {
+        debugPrint('⚠️ $functionName 載入失敗，其他統計保持可用：$error');
+      }
+    }
+
+    await Future.wait<void>([
+      loadOne('getRecommendationConversionStats', (value) => data['recommendationConversion'] = value),
+      loadOne('getAdminRevenueStats', (value) => data['revenue'] = value),
+      loadOne('getAdminFlowerStats', (value) {
+        data['flowerGranted'] = (value['flowerGranted'] as num?)?.toInt() ?? 0;
+        data['flowerSpent'] = (value['flowerSpent'] as num?)?.toInt() ?? 0;
+      }),
+      loadOne('getAdminOperationsAnalytics', (value) => data['operationsAnalytics'] = value),
+    ]);
+  }
+
+  void _onAdminPlayerSearchChanged(String value) {
+    final query = value.trim();
+    _playerSearchDebounce?.cancel();
+    _playerSearchDebounce = Timer(const Duration(milliseconds: 350), () {
+      if (!mounted || query == _playerSearch) return;
+      setState(() {
+        _playerSearch = query;
+        _playersFuture = _queryAdminPlayers(query);
+      });
+    });
+  }
+
+  Future<List<DocumentSnapshot<Map<String, dynamic>>>> _queryAdminPlayers(String query) async {
+    final users = FirebaseFirestore.instance.collection('users');
+    if (query.isEmpty) {
+      final snapshot = await users.limit(35).get();
+      return snapshot.docs;
+    }
+
+    // Firestore 不支援任意子字串搜尋；採 UID 精確比對、玩家 ID／
+    // 暱稱／email 精確比對，以及暱稱／玩家 ID 前綴查詢。
+    final requests = <Future<QuerySnapshot<Map<String, dynamic>>>>[
+      users.where('playerID', isEqualTo: query).limit(15).get(),
+      users.where('nickname', isEqualTo: query).limit(15).get(),
+      users.where('email', isEqualTo: query).limit(15).get(),
+      users.orderBy('nickname').startAt([query]).endAt(['$query\uf8ff']).limit(25).get(),
+      users.orderBy('playerID').startAt([query]).endAt(['$query\uf8ff']).limit(25).get(),
+    ];
+    final results = await Future.wait(requests.map((request) async {
+      try { return await request; } catch (error) {
+        debugPrint('⚠️ 玩家搜尋其中一個索引查詢失敗：$error');
+        return null;
+      }
+    }));
+    final output = <String, DocumentSnapshot<Map<String, dynamic>>>{};
+    for (final result in results) {
+      for (final doc in result?.docs ?? <QueryDocumentSnapshot<Map<String, dynamic>>>[]) {
+        output[doc.id] = doc;
+      }
+    }
+    // UID 精確讀取單一文件，避免掃描 users；不存在也不影響其他查詢。
+    try {
+      final doc = await users.doc(query).get();
+      if (doc.exists) output[doc.id] = doc;
+    } catch (_) {}
+    return output.values.toList();
+  }
+
 
   Future<Map<String, dynamic>>
   _loadSystemHealth() async {
@@ -3499,14 +3447,14 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
           child: TextField(
             decoration: const InputDecoration(
               prefixIcon: Icon(Icons.search_rounded),
-              hintText: '搜尋 UID / 玩家 ID / 暱稱',
+              hintText: '輸入 UID / 玩家 ID / 暱稱開頭 / Email',
             ),
-            onChanged: (value) => setState(() => _playerSearch = value.trim().toLowerCase()),
+            onChanged: _onAdminPlayerSearchChanged,
           ),
         ),
         Expanded(
-          child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-            stream: FirebaseFirestore.instance.collection('users').limit(300).snapshots(),
+          child: FutureBuilder<List<DocumentSnapshot<Map<String, dynamic>>>>(
+            future: _playersFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -3515,17 +3463,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                 return Center(child: Text('讀取玩家失敗：${snapshot.error}'));
               }
 
-              final docs = (snapshot.data?.docs ?? []).where((doc) {
-                if (_playerSearch.isEmpty) return true;
-                final data = doc.data();
-                final haystack = [
-                  doc.id,
-                  data['playerID'],
-                  data['nickname'],
-                  data['email'],
-                ].whereType<Object>().map((e) => e.toString().toLowerCase()).join(' ');
-                return haystack.contains(_playerSearch);
-              }).toList();
+              final docs = snapshot.data ?? <DocumentSnapshot<Map<String, dynamic>>>[];
 
               if (docs.isEmpty) {
                 return const Center(child: Text('找不到符合的玩家'));
@@ -3537,7 +3475,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                 separatorBuilder: (_, __) => const SizedBox(height: 10),
                 itemBuilder: (context, index) {
                   final doc = docs[index];
-                  final data = doc.data();
+                  final data = doc.data() ?? <String, dynamic>{};
                   final nickname = data['nickname']?.toString().trim();
                   final playerId = data['playerID']?.toString().trim() ?? '';
                   final flowers = (data['flowerPoints'] as num?)?.toInt() ?? 0;
@@ -3748,9 +3686,9 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
 
     // 待處理案件改成「處理中」後，直接切到處理中清單，
     // 避免案件看起來像突然消失。
-    if (status == 'processing' && _supportStatus != 'processing') {
+    if ((status == 'processing' || status == 'reviewing') && _supportStatus != status) {
       setState(() {
-        _supportStatus = 'processing';
+        _supportStatus = status;
       });
     }
 
@@ -3758,10 +3696,14 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       context,
       status == 'processing'
           ? '案件已移到「處理中」，仍可繼續回覆玩家'
+          : status == 'reviewing'
+          ? '案件已移到「審核中」，仍可繼續回覆玩家'
           : status == 'rejected'
           ? '案件已標記為駁回'
           : '案件狀態已更新',
-      customIcon: status == 'processing'
+      customIcon: status == 'reviewing'
+          ? Icons.fact_check_outlined
+          : status == 'processing'
           ? Icons.hourglass_top_rounded
           : status == 'rejected'
           ? Icons.do_not_disturb_alt_rounded
@@ -3775,7 +3717,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     final statusOptions = <String, String>{
       'pending': '待處理',
       'processing': '處理中',
-      'resolved': '已完成',
+      'reviewing': '審核中',
+      'resolved': '已回覆',
       'rejected': '已駁回',
     };
 
@@ -4029,6 +3972,30 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                                         size: 17,
                                       ),
                                       label: const Text('開始處理'),
+                                    ),
+                                  if (_supportStatus == 'processing')
+                                    OutlinedButton.icon(
+                                      style: OutlinedButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 13,
+                                          vertical: 11,
+                                        ),
+                                      ),
+                                      onPressed: () => _setReportStatus(doc.id, 'reviewing'),
+                                      icon: const Icon(Icons.fact_check_outlined, size: 17),
+                                      label: const Text('轉審核中'),
+                                    ),
+                                  if (_supportStatus == 'reviewing')
+                                    OutlinedButton.icon(
+                                      style: OutlinedButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 13,
+                                          vertical: 11,
+                                        ),
+                                      ),
+                                      onPressed: () => _setReportStatus(doc.id, 'processing'),
+                                      icon: const Icon(Icons.hourglass_top_rounded, size: 17),
+                                      label: const Text('轉處理中'),
                                     ),
                                   if (!resolved && _supportStatus != 'rejected')
                                     OutlinedButton.icon(
@@ -8466,7 +8433,9 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       case 'pending':
         return '待審核';
       case 'approved':
-        return '正常';
+        return '已認證';
+      case 'contract_pending':
+        return '待簽約';
       case 'rejected':
         return '未通過';
       case 'suspended':
@@ -8482,6 +8451,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     switch (status) {
       case 'approved':
         return Colors.green;
+      case 'contract_pending':
+        return Colors.blue;
       case 'pending':
         return Colors.orange;
       case 'suspended':
@@ -8512,11 +8483,13 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     final String title;
 
     switch (targetStatus) {
+      case 'contract_pending':
+        actionText = '審核通過';
+        title = '審核通過・待簽約';
+        break;
       case 'approved':
-        final currentStatus = creator['creatorStatus']?.toString() ?? '';
-        final restoring = currentStatus == 'suspended' || currentStatus == 'revoked';
-        actionText = restoring ? '恢復資格' : '通過申請';
-        title = restoring ? '恢復創作者資格' : '通過創作者申請';
+        actionText = '確認簽約完成並開通';
+        title = '確認雙方已簽約';
         break;
       case 'rejected':
         actionText = '確認未通過';
@@ -8567,7 +8540,11 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
               ),
             ] else ...[
               const SizedBox(height: 12),
-              const Text('系統會自動寄送資格異動通知。'),
+              Text(targetStatus == 'contract_pending'
+                  ? '通過後進入待簽約，不會開通創作者後台。請另外寄送合作合約。'
+                  : targetStatus == 'approved'
+                  ? '確認雙方已完成簽署後，才會開通創作者權限。'
+                  : '系統會寄送資格異動通知。'),
             ],
           ],
         ),
@@ -8629,6 +8606,158 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     }
   }
 
+  Future<void> _findManualCreatorCandidate() async {
+    final query = _manualCreatorSearchController.text.trim();
+    if (query.isEmpty || _manualCreatorSearching) return;
+    setState(() {
+      _manualCreatorSearching = true;
+      _manualCreatorCandidate = null;
+    });
+    try {
+      final result = await _functions.httpsCallable('adminFindCreatorCandidate').call({
+        'query': query,
+      });
+      final raw = result.data;
+      final candidate = raw is Map && raw['user'] is Map
+          ? Map<String, dynamic>.from(raw['user'] as Map)
+          : null;
+      if (!mounted) return;
+      setState(() => _manualCreatorCandidate = candidate);
+      if (candidate == null) {
+        ToastUtils.showCenterToast(context, '找不到符合的玩家', isError: true);
+      }
+    } on FirebaseFunctionsException catch (e) {
+      if (!mounted) return;
+      ToastUtils.showCenterToast(context, e.message ?? '搜尋失敗', isError: true);
+    } catch (e) {
+      if (!mounted) return;
+      ToastUtils.showCenterToast(context, '搜尋失敗：$e', isError: true);
+    } finally {
+      if (mounted) setState(() => _manualCreatorSearching = false);
+    }
+  }
+
+  Future<void> _manualActivateCreator() async {
+    final candidate = _manualCreatorCandidate;
+    final uid = candidate?['uid']?.toString() ?? '';
+    if (uid.isEmpty || _manualCreatorActivating) return;
+    bool signedConfirmed = false;
+    final bool confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, refreshDialog) => AlertDialog(
+          title: const Text('手動開通官方合作創作者'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('玩家：${candidate?['nickname'] ?? uid}'),
+              const SizedBox(height: 10),
+              const Text('此操作會立即開通專屬創作者後台並寄送通知。請先確認雙方合約均已完成簽署。'),
+              CheckboxListTile(
+                contentPadding: EdgeInsets.zero,
+                value: signedConfirmed,
+                title: const Text('我已確認雙方完成合作合約簽署'),
+                onChanged: (value) => refreshDialog(() => signedConfirmed = value == true),
+                controlAffinity: ListTileControlAffinity.leading,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('取消'),
+            ),
+            FilledButton(
+              onPressed: signedConfirmed
+                  ? () => Navigator.pop(dialogContext, true)
+                  : null,
+              child: const Text('確認簽約並開通'),
+            ),
+          ],
+        ),
+      ),
+    ) ?? false;
+    if (!confirmed || !mounted) return;
+    setState(() => _manualCreatorActivating = true);
+    try {
+      await _functions.httpsCallable('adminManuallyVerifyCreator').call({
+        'creatorUid': uid,
+        'contractConfirmed': true,
+      });
+      if (!mounted) return;
+      ToastUtils.showCenterToast(
+        context, '已開通官方合作創作者資格',
+        customIcon: Icons.verified_user_outlined,
+      );
+      setState(() => _manualCreatorCandidate = null);
+      await _loadCreatorApplications();
+    } on FirebaseFunctionsException catch (e) {
+      if (!mounted) return;
+      ToastUtils.showCenterToast(context, e.message ?? '手動認證失敗', isError: true);
+    } catch (e) {
+      if (!mounted) return;
+      ToastUtils.showCenterToast(context, '手動認證失敗：$e', isError: true);
+    } finally {
+      if (mounted) setState(() => _manualCreatorActivating = false);
+    }
+  }
+
+  Widget _buildManualCreatorVerificationCard(ThemeData theme) {
+    final user = _manualCreatorCandidate;
+    final status = user?['creatorStatus']?.toString() ?? 'none';
+    final isApproved = status == 'approved';
+    return Card(
+      elevation: 0,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('提前簽約・手動認證',
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 5),
+            Text('使用 UID 或玩家 ID 精確搜尋。完成雙方簽約後才可開通，並保留審計紀錄。',
+                style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.65))),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _manualCreatorSearchController,
+              decoration: InputDecoration(
+                labelText: '玩家 UID / 玩家 ID',
+                border: const OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  tooltip: '搜尋玩家',
+                  onPressed: _manualCreatorSearching ? null : _findManualCreatorCandidate,
+                  icon: _manualCreatorSearching
+                      ? const SizedBox.square(dimension: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2))
+                      : const Icon(Icons.search_rounded),
+                ),
+              ),
+              textInputAction: TextInputAction.search,
+              onSubmitted: (_) => _findManualCreatorCandidate(),
+            ),
+            if (user != null) ...[
+              const SizedBox(height: 12),
+              Text('暱稱：${user['nickname'] ?? '未命名玩家'}'),
+              SelectableText('UID：${user['uid'] ?? ''}'),
+              Text('玩家 ID：${user['playerID'] ?? '—'}'),
+              Text('目前資格：${_creatorStatusText(status)}'),
+              const SizedBox(height: 10),
+              FilledButton.icon(
+                onPressed: isApproved || _manualCreatorActivating
+                    ? null : _manualActivateCreator,
+                icon: const Icon(Icons.verified_user_outlined),
+                label: Text(isApproved ? '已是認證創作者' :
+                _manualCreatorActivating ? '開通中…' : '確認已簽約・手動開通'),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildCreatorAdminTab() {
     final theme = Theme.of(context);
     final filtered = _creatorAdminFilter == 'all'
@@ -8664,7 +8793,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
           ),
           const SizedBox(height: 6),
           Text(
-            '審核申請、暫停或取消資格。停權／取消時原因由妳自行輸入，系統不會預設內容。',
+            '審核通過後先寄送合約；雙方簽約完成，才開通創作者後台。取消認證不影響原有作品。',
             style: TextStyle(
               fontSize: 12.5,
               color: theme.colorScheme.onSurface.withValues(alpha: 0.58),
@@ -8677,7 +8806,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
             children: [
               for (final entry in const <String, String>{
                 'pending': '待審核',
-                'approved': '正式創作者',
+                'contract_pending': '待簽約',
+                'approved': '已認證',
                 'suspended': '已暫停',
                 'revoked': '已取消',
                 'rejected': '未通過',
@@ -8692,6 +8822,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                 ),
             ],
           ),
+          const SizedBox(height: 16),
+          _buildManualCreatorVerificationCard(theme),
           const SizedBox(height: 18),
           if (_isLoadingCreatorApplications)
             const Padding(
@@ -8787,6 +8919,11 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                         const SizedBox(height: 6),
                         Text('申請原因：$reason'),
                       ],
+                      if (status == 'contract_pending') ...[
+                        const SizedBox(height: 8),
+                        const Text('等待雙方完成合作合約簽署；目前未開通創作者後台。',
+                            style: TextStyle(fontSize: 12.5, color: Colors.blueGrey)),
+                      ],
                       if (statusReason.isNotEmpty) ...[
                         const SizedBox(height: 8),
                         Text(
@@ -8801,14 +8938,26 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                         children: [
                           if (status == 'pending') ...[
                             FilledButton.icon(
-                              onPressed: () => _updateCreatorStatus(creator, 'approved'),
+                              onPressed: () => _updateCreatorStatus(creator, 'contract_pending'),
                               icon: const Icon(Icons.check_rounded, size: 18),
-                              label: const Text('通過'),
+                              label: const Text('審核通過・待簽約'),
                             ),
                             OutlinedButton.icon(
                               onPressed: () => _updateCreatorStatus(creator, 'rejected'),
                               icon: const Icon(Icons.close_rounded, size: 18),
                               label: const Text('未通過'),
+                            ),
+                          ],
+                          if (status == 'contract_pending') ...[
+                            FilledButton.icon(
+                              onPressed: () => _updateCreatorStatus(creator, 'approved'),
+                              icon: const Icon(Icons.verified_outlined, size: 18),
+                              label: const Text('確認簽約・開通'),
+                            ),
+                            OutlinedButton.icon(
+                              onPressed: () => _updateCreatorStatus(creator, 'revoked'),
+                              icon: const Icon(Icons.close_rounded, size: 18),
+                              label: const Text('取消合作'),
                             ),
                           ],
                           if (status == 'approved') ...[
@@ -8828,9 +8977,9 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                           ],
                           if (status == 'suspended' || status == 'revoked')
                             FilledButton.icon(
-                              onPressed: () => _updateCreatorStatus(creator, 'approved'),
+                              onPressed: () => _updateCreatorStatus(creator, 'contract_pending'),
                               icon: const Icon(Icons.restore_rounded, size: 18),
-                              label: const Text('恢復資格'),
+                              label: const Text('重新審核・待簽約'),
                             ),
                         ],
                       ),

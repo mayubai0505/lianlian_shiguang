@@ -450,7 +450,10 @@ class _FeedbackPageState
               ? 'moment'
               : 'contact_us',
 
+          // 客服進度：pending 已寄出、processing 處理中、resolved 已回覆。
+          // 顯示名稱由新版信箱根據實際 reports.status 決定。
           'status': 'pending',
+          'statusUpdatedAt': FieldValue.serverTimestamp(),
 
           // 玩家填寫內容
           'content':
@@ -542,8 +545,16 @@ class _FeedbackPageState
           'reportId':
           reportRef.id,
 
+          // 保存送出當時的內容：舊案件或 reports 權限讀取失敗時，
+          // 玩家仍可在信箱查看自己提交的問題。
+          'originalTitle': _categoryLabel(_selectedCategory),
+          'originalReason': _selectedReason,
+          'originalBody': feedbackText,
+
           'isRead':
           false,
+          // 相容舊版 badge 已讀計算。
+          'read': false,
 
           'createdAt':
           FieldValue.serverTimestamp(),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lianlian_shiguang/page/inbox_page.dart';
+import 'package:lianlian_shiguang/screens/moment_detail_page.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -25,7 +26,6 @@ import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'services/reminder_notification_service.dart';
 import 'package:home_widget/home_widget.dart';
-import 'package:app_badge_plus/app_badge_plus.dart';
 
 String? globalActiveCharacterId;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -295,32 +295,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     return locale.languageCode;
   }
 
-  // 📛 從信箱未讀數同步 iOS 桌面圖示。背景 APNs 可能被延遲，
-  // 因此 App 開啟／回到前景時直接設定原生 Badge，不再只等靜默推播。
-  Future<void> _syncIOSAppBadgeFromMailbox() async {
-    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) return;
-    if (FirebaseAuth.instance.currentUser == null) return;
-
-    try {
-      final callable = FirebaseFunctions.instanceFor(
-        region: 'asia-east1',
-      ).httpsCallable(
-        'syncNotificationBadge',
-        options: HttpsCallableOptions(timeout: const Duration(seconds: 15)),
-      );
-      final response = await callable.call();
-      if (FirebaseAuth.instance.currentUser == null) return;
-      final data = response.data;
-      final dynamic raw = data is Map ? data['unreadCount'] : null;
-      final int? unread = raw is num ? raw.toInt() : int.tryParse('$raw');
-      if (unread == null) return;
-      await AppBadgePlus.updateBadge(unread < 0 ? 0 : unread);
-      debugPrint('✅ iOS 桌面 Badge 已直接同步：$unread');
-    } catch (e) {
-      debugPrint('⚠️ iOS 桌面 Badge 同步失敗：$e');
-    }
-  }
-
   Future<void> _syncNotificationLocale(Locale locale) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
@@ -509,7 +483,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     if (state ==
         AppLifecycleState.resumed) {
       _updateUserStatus(true);
-      unawaited(_syncIOSAppBadgeFromMailbox());
 
       unawaited(
         _recordDailyAppActivity(),
@@ -585,7 +558,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Future<void> _initializeAfterAppStarted() async {
     // 啟動後工作彼此獨立，不要讓其中一項網路請求拖住下一項。
     unawaited(_recordDailyAppActivity());
-    unawaited(_syncIOSAppBadgeFromMailbox());
 
     unawaited(
       setupPushNotifications()
@@ -752,47 +724,58 @@ class _ChatLoaderWrapperState extends State<ChatLoaderWrapper> {
 // ==========================================
 void _handleNotificationClick(RemoteMessage message) {
   final data = message.data;
-  debugPrint("🚨 收到推播的 Data 內容: $data");
+  final type = (data['type'] ?? '').toString().trim();
+  final postId = (data['postId'] ?? '').toString().trim();
+  debugPrint('🚨 收到推播點擊：type=$type, postId=$postId');
 
-  // 🌍 路線一：如果是聊天訊息，維持原本的邏輯，去對應的聊天室
-  if (data['type'] == 'chat') {
-    final String charId = data['characterId']?.toString() ?? '';
-    final String sessionId = data['sessionId']?.toString() ?? '';
-
+  // 聊天推播保留原本聊天室跳轉。
+  if (type == 'chat') {
+    final charId = (data['characterId'] ?? '').toString().trim();
+    final sessionId = (data['sessionId'] ?? '').toString().trim();
     if (charId.isEmpty) {
-      debugPrint("❌ 嚴重錯誤：找不到有效的 characterId");
+      debugPrint('❌ 聊天推播缺少 characterId');
       return;
     }
-
     navigatorKey.currentState?.pushNamedAndRemoveUntil(
       '/chat',
           (route) => route.isFirst,
-      arguments: {
-        'characterId': charId,
-        'sessionId': sessionId,
-      },
+      arguments: {'characterId': charId, 'sessionId': sessionId},
     );
+    return;
   }
-  // 路線二：社交互動 / 關注更新 → 私密信箱
-  else if (data['type'] == 'like' ||
-      data['type'] == 'comment' ||
-      data['type'] == 'follow' ||
-      data['type'] == 'creator_moment' ||
-      data['type'] == 'character_moment') {
-    debugPrint("📫 玩家點擊了社交通知，準備導向私密信箱頁面");
 
-    navigatorKey.currentState?.push(
-      MaterialPageRoute(builder: (context) => const InboxPage()),
-    );
-  }
-  // 路線三：官方公告 → 公告列表
-  else if (data['type'] == 'global_announcement') {
+  // 官方公告仍前往公告清單，不誤導至信箱。
+  if (type == 'global_announcement') {
     navigatorKey.currentState?.push(
       MaterialPageRoute(
         builder: (context) => const AnnouncementListPage(),
       ),
     );
+    return;
   }
+
+  // 按讚、留言、追蹤創作者／角色的貼文通知：
+  // 後端 sendMailboxNotification 已帶 postId，直接進入對應貼文。
+  const postTypes = <String>{
+    'like', 'comment', 'new_post', 'creator_moment',
+    'character_moment', 'character_auto_like', 'character_auto_reply',
+  };
+  if (postId.isNotEmpty && postTypes.contains(type)) {
+    debugPrint('📝 社交通知直接開啟貼文：$postId');
+    navigatorKey.currentState?.push(
+      MaterialPageRoute(
+        builder: (context) => MomentDetailPage(postId: postId),
+      ),
+    );
+    return;
+  }
+
+  // 郵件、客服、關注等非貼文通知，統一開啟目前的新版 InboxPage。
+  // 舊的通知若沒有 postId，也回信箱而不是打開空白貼文。
+  debugPrint('📫 非貼文通知或缺少 postId，開啟新版信箱：$type');
+  navigatorKey.currentState?.push(
+    MaterialPageRoute(builder: (context) => const InboxPage()),
+  );
 }
 
 Future<void> _saveFcmTokenForCurrentUser(String token) async {
