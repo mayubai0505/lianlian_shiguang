@@ -12,7 +12,9 @@ import 'package:google_fonts/google_fonts.dart';
 // 🍎 蘋果審查專用總開關：送審前設為 true (會隱藏VIP頁籤)，審核通過上架後改回 false！
 const bool isAppleReviewMode = true;
 class StorePage extends StatefulWidget {
-  const StorePage({super.key});
+  /// 0：月卡、1：花花儲值、2：收支明細。一般入口預設仍為月卡。
+  final int initialTabIndex;
+  const StorePage({super.key, this.initialTabIndex = 0});
 
   @override
   State<StorePage> createState() => _StorePageState();
@@ -47,6 +49,7 @@ class _StorePageState extends State<StorePage> {
 
     return DefaultTabController(
       length: 3,
+      initialIndex: widget.initialTabIndex.clamp(0, 2).toInt(),
       child: Scaffold(
         backgroundColor: theme.colorScheme.surface,
         body: SafeArea(

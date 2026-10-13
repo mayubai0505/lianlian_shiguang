@@ -218,6 +218,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   // ✨ 創作者計畫管理
   // ==========================================
   bool _isLoadingCreatorApplications = false;
+  String? _creatorApplicationLoadError;
   List<Map<String, dynamic>> _creatorApplications = <Map<String, dynamic>>[];
   String _creatorAdminFilter = 'pending';
   final TextEditingController _manualCreatorSearchController = TextEditingController();
@@ -2238,7 +2239,9 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         if (result.data is! Map || !mounted || serial != _dashboardRequestSerial) return;
         merge(Map<String, dynamic>.from(result.data as Map));
         // 已完成的 Future 直接重建，不顯示整頁 loading。
-        setState(() => _dashboardFuture = Future.value(Map<String, dynamic>.from(data)));
+        setState(() {
+          _dashboardFuture = Future.value(Map<String, dynamic>.from(data));
+        });
       } catch (error) {
         debugPrint('⚠️ $functionName 載入失敗，其他統計保持可用：$error');
       }
@@ -8389,7 +8392,10 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   Future<void> _loadCreatorApplications() async {
     if (_isLoadingCreatorApplications) return;
 
-    setState(() => _isLoadingCreatorApplications = true);
+    setState(() {
+      _isLoadingCreatorApplications = true;
+      _creatorApplicationLoadError = null;
+    });
 
     try {
       final callable = _functions.httpsCallable('listCreatorApplications');
@@ -8406,9 +8412,14 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
           : <Map<String, dynamic>>[];
 
       if (!mounted) return;
-      setState(() => _creatorApplications = items);
+      setState(() {
+        _creatorApplications = items;
+        _creatorApplicationLoadError = null;
+      });
     } on FirebaseFunctionsException catch (e) {
       if (!mounted) return;
+      setState(() => _creatorApplicationLoadError =
+      '創作者申請讀取失敗：${e.code} / ${e.message ?? '請確認 listCreatorApplications 已部署及管理員權限'}');
       ToastUtils.showCenterToast(
         context,
         e.message ?? '讀取創作者申請失敗',
@@ -8416,6 +8427,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       );
     } catch (e) {
       if (!mounted) return;
+      setState(() => _creatorApplicationLoadError = '創作者申請讀取失敗：$e');
       ToastUtils.showCenterToast(
         context,
         '讀取創作者申請失敗：$e',
@@ -8825,169 +8837,190 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
           const SizedBox(height: 16),
           _buildManualCreatorVerificationCard(theme),
           const SizedBox(height: 18),
+          if (_creatorApplicationLoadError != null)
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(_creatorApplicationLoadError!,
+                        style: TextStyle(color: theme.colorScheme.error)),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: _isLoadingCreatorApplications ? null : _loadCreatorApplications,
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('重新讀取申請'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           if (_isLoadingCreatorApplications)
             const Padding(
               padding: EdgeInsets.all(32),
               child: Center(child: CircularProgressIndicator()),
             )
+          else if (_creatorApplicationLoadError != null)
+            const SizedBox.shrink()
           else if (filtered.isEmpty)
-            const Card(
-              elevation: 0,
-              child: Padding(
-                padding: EdgeInsets.all(28),
-                child: Center(child: Text('目前沒有符合條件的創作者資料')),
-              ),
-            )
-          else
-            ...filtered.map((creator) {
-              final status = creator['creatorStatus']?.toString() ?? 'none';
-              final nickname = creator['nickname']?.toString().trim() ?? '';
-              final playerId = creator['playerID']?.toString().trim() ?? '';
-              final direction = creator['creatorDirection']?.toString().trim() ?? '';
-              final reason = creator['creatorApplicationReason']?.toString().trim() ?? '';
-              final statusReason = creator['creatorStatusReason']?.toString().trim() ?? '';
-              final publicCount = (creator['publicCharacterCount'] as num?)?.toInt() ?? 0;
-              final followerCount = (creator['followerCount'] as num?)?.toInt() ?? 0;
-              final totalLikes = (creator['totalLikes'] as num?)?.toInt() ?? 0;
-              final uid = creator['uid']?.toString() ?? '';
-
-              return Card(
+              const Card(
                 elevation: 0,
-                margin: const EdgeInsets.only(bottom: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
-                  side: BorderSide(color: theme.colorScheme.outlineVariant),
-                ),
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  nickname.isNotEmpty ? nickname : '未命名創作者',
-                                  style: const TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.bold,
+                  padding: EdgeInsets.all(28),
+                  child: Center(child: Text('目前沒有符合條件的創作者資料')),
+                ),
+              )
+            else
+              ...filtered.map((creator) {
+                final status = creator['creatorStatus']?.toString() ?? 'none';
+                final nickname = creator['nickname']?.toString().trim() ?? '';
+                final playerId = creator['playerID']?.toString().trim() ?? '';
+                final direction = creator['creatorDirection']?.toString().trim() ?? '';
+                final reason = creator['creatorApplicationReason']?.toString().trim() ?? '';
+                final statusReason = creator['creatorStatusReason']?.toString().trim() ?? '';
+                final publicCount = (creator['publicCharacterCount'] as num?)?.toInt() ?? 0;
+                final followerCount = (creator['followerCount'] as num?)?.toInt() ?? 0;
+                final totalLikes = (creator['totalLikes'] as num?)?.toInt() ?? 0;
+                final uid = creator['uid']?.toString() ?? '';
+
+                return Card(
+                  elevation: 0,
+                  margin: const EdgeInsets.only(bottom: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                    side: BorderSide(color: theme.colorScheme.outlineVariant),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    nickname.isNotEmpty ? nickname : '未命名創作者',
+                                    style: const TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 3),
-                                Text(
-                                  playerId.isNotEmpty ? 'Player ID：$playerId' : 'UID：$uid',
-                                  style: const TextStyle(fontSize: 11.5, color: Colors.grey),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: _creatorStatusColor(status).withValues(alpha: 0.10),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              _creatorStatusText(status),
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: _creatorStatusColor(status),
+                                  const SizedBox(height: 3),
+                                  Text(
+                                    playerId.isNotEmpty ? 'Player ID：$playerId' : 'UID：$uid',
+                                    style: const TextStyle(fontSize: 11.5, color: Colors.grey),
+                                  ),
+                                ],
                               ),
                             ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: _creatorStatusColor(status).withValues(alpha: 0.10),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                _creatorStatusText(status),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: _creatorStatusColor(status),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Wrap(
+                          spacing: 14,
+                          runSpacing: 6,
+                          children: [
+                            Text('公開角色 $publicCount'),
+                            Text('粉絲 $followerCount'),
+                            Text('總愛心 $totalLikes'),
+                          ],
+                        ),
+                        if (direction.isNotEmpty) ...[
+                          const SizedBox(height: 10),
+                          Text('創作方向：$direction'),
+                        ],
+                        if (reason.isNotEmpty) ...[
+                          const SizedBox(height: 6),
+                          Text('申請原因：$reason'),
+                        ],
+                        if (status == 'contract_pending') ...[
+                          const SizedBox(height: 8),
+                          const Text('等待雙方完成合作合約簽署；目前未開通創作者後台。',
+                              style: TextStyle(fontSize: 12.5, color: Colors.blueGrey)),
+                        ],
+                        if (statusReason.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            '最近處理原因：$statusReason',
+                            style: const TextStyle(color: Colors.deepOrange),
                           ),
                         ],
-                      ),
-                      const SizedBox(height: 12),
-                      Wrap(
-                        spacing: 14,
-                        runSpacing: 6,
-                        children: [
-                          Text('公開角色 $publicCount'),
-                          Text('粉絲 $followerCount'),
-                          Text('總愛心 $totalLikes'),
-                        ],
-                      ),
-                      if (direction.isNotEmpty) ...[
-                        const SizedBox(height: 10),
-                        Text('創作方向：$direction'),
-                      ],
-                      if (reason.isNotEmpty) ...[
-                        const SizedBox(height: 6),
-                        Text('申請原因：$reason'),
-                      ],
-                      if (status == 'contract_pending') ...[
-                        const SizedBox(height: 8),
-                        const Text('等待雙方完成合作合約簽署；目前未開通創作者後台。',
-                            style: TextStyle(fontSize: 12.5, color: Colors.blueGrey)),
-                      ],
-                      if (statusReason.isNotEmpty) ...[
-                        const SizedBox(height: 8),
-                        Text(
-                          '最近處理原因：$statusReason',
-                          style: const TextStyle(color: Colors.deepOrange),
+                        const SizedBox(height: 14),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            if (status == 'pending') ...[
+                              FilledButton.icon(
+                                onPressed: () => _updateCreatorStatus(creator, 'contract_pending'),
+                                icon: const Icon(Icons.check_rounded, size: 18),
+                                label: const Text('審核通過・待簽約'),
+                              ),
+                              OutlinedButton.icon(
+                                onPressed: () => _updateCreatorStatus(creator, 'rejected'),
+                                icon: const Icon(Icons.close_rounded, size: 18),
+                                label: const Text('未通過'),
+                              ),
+                            ],
+                            if (status == 'contract_pending') ...[
+                              FilledButton.icon(
+                                onPressed: () => _updateCreatorStatus(creator, 'approved'),
+                                icon: const Icon(Icons.verified_outlined, size: 18),
+                                label: const Text('確認簽約・開通'),
+                              ),
+                              OutlinedButton.icon(
+                                onPressed: () => _updateCreatorStatus(creator, 'revoked'),
+                                icon: const Icon(Icons.close_rounded, size: 18),
+                                label: const Text('取消合作'),
+                              ),
+                            ],
+                            if (status == 'approved') ...[
+                              OutlinedButton.icon(
+                                onPressed: () => _updateCreatorStatus(creator, 'suspended'),
+                                icon: const Icon(Icons.pause_circle_outline_rounded, size: 18),
+                                label: const Text('暫停資格'),
+                              ),
+                              OutlinedButton.icon(
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: Colors.redAccent,
+                                ),
+                                onPressed: () => _updateCreatorStatus(creator, 'revoked'),
+                                icon: const Icon(Icons.person_off_outlined, size: 18),
+                                label: const Text('移除身份'),
+                              ),
+                            ],
+                            if (status == 'suspended' || status == 'revoked')
+                              FilledButton.icon(
+                                onPressed: () => _updateCreatorStatus(creator, 'contract_pending'),
+                                icon: const Icon(Icons.restore_rounded, size: 18),
+                                label: const Text('重新審核・待簽約'),
+                              ),
+                          ],
                         ),
                       ],
-                      const SizedBox(height: 14),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          if (status == 'pending') ...[
-                            FilledButton.icon(
-                              onPressed: () => _updateCreatorStatus(creator, 'contract_pending'),
-                              icon: const Icon(Icons.check_rounded, size: 18),
-                              label: const Text('審核通過・待簽約'),
-                            ),
-                            OutlinedButton.icon(
-                              onPressed: () => _updateCreatorStatus(creator, 'rejected'),
-                              icon: const Icon(Icons.close_rounded, size: 18),
-                              label: const Text('未通過'),
-                            ),
-                          ],
-                          if (status == 'contract_pending') ...[
-                            FilledButton.icon(
-                              onPressed: () => _updateCreatorStatus(creator, 'approved'),
-                              icon: const Icon(Icons.verified_outlined, size: 18),
-                              label: const Text('確認簽約・開通'),
-                            ),
-                            OutlinedButton.icon(
-                              onPressed: () => _updateCreatorStatus(creator, 'revoked'),
-                              icon: const Icon(Icons.close_rounded, size: 18),
-                              label: const Text('取消合作'),
-                            ),
-                          ],
-                          if (status == 'approved') ...[
-                            OutlinedButton.icon(
-                              onPressed: () => _updateCreatorStatus(creator, 'suspended'),
-                              icon: const Icon(Icons.pause_circle_outline_rounded, size: 18),
-                              label: const Text('暫停資格'),
-                            ),
-                            OutlinedButton.icon(
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: Colors.redAccent,
-                              ),
-                              onPressed: () => _updateCreatorStatus(creator, 'revoked'),
-                              icon: const Icon(Icons.person_off_outlined, size: 18),
-                              label: const Text('移除身份'),
-                            ),
-                          ],
-                          if (status == 'suspended' || status == 'revoked')
-                            FilledButton.icon(
-                              onPressed: () => _updateCreatorStatus(creator, 'contract_pending'),
-                              icon: const Icon(Icons.restore_rounded, size: 18),
-                              label: const Text('重新審核・待簽約'),
-                            ),
-                        ],
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              );
-            }),
+                );
+              }),
         ],
       ),
     );

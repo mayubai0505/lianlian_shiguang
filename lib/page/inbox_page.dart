@@ -4,6 +4,7 @@ import 'package:app_badge_plus/app_badge_plus.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart'; // 記得確保有 import 這個來格式化時間
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import '../screens/moment_detail_page.dart'; // 🌟 記得匯入這頁！
@@ -169,6 +170,66 @@ class _InboxPageState extends State<InboxPage> {
       child: Text(value, style: TextStyle(
         color: theme.colorScheme.primary, fontSize: 11, fontWeight: FontWeight.w600,
       )),
+    );
+  }
+
+  // 官方合作創作者寄來的長信：保留完整內文與換行，可捲動閱讀。
+  Future<void> _openCreatorFanMail(
+      BuildContext context,
+      Map<String, dynamic> mail,
+      ) async {
+    final theme = Theme.of(context);
+    final sender = (mail['creatorName'] ?? '創作者').toString().trim();
+    final subject = (mail['title'] ?? '創作者來信').toString().trim();
+    final body = (mail['body'] ?? '').toString();
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          titlePadding: const EdgeInsets.fromLTRB(24, 22, 24, 8),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(children: [
+                Icon(Icons.mark_email_read_outlined,
+                    color: theme.colorScheme.primary, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text('合作創作者來信',
+                      style: GoogleFonts.notoSerifTc(
+                          fontSize: 16, fontWeight: FontWeight.w600)),
+                ),
+              ]),
+              const SizedBox(height: 12),
+              Text(subject.isEmpty ? '創作者來信' : subject,
+                  style: GoogleFonts.notoSerifTc(
+                      fontSize: 19, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 8),
+              Text('寄件人：${sender.isEmpty ? '創作者' : sender}',
+                  style: TextStyle(fontSize: 13,
+                      color: theme.colorScheme.onSurfaceVariant)),
+            ],
+          ),
+          content: SizedBox(
+            width: 520,
+            child: SingleChildScrollView(
+              child: SelectableText(body.isEmpty ? '（此信件沒有內文）' : body,
+                style: TextStyle(
+                  fontSize: 15, height: 1.75,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('關閉'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -394,6 +455,7 @@ class _InboxPageState extends State<InboxPage> {
               final String mailType = (data['type'] ?? '').toString();
               final String mailReportId = (data['reportId'] ?? '').toString().trim();
               final bool isCustomerService = mailType == 'cs_received' || mailType == 'cs_reply';
+              final bool isCreatorFanMail = mailType == 'creator_fan_mail';
               return ListTile(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 // 未讀的信件，給一個淡淡的粉色背景
@@ -404,7 +466,11 @@ class _InboxPageState extends State<InboxPage> {
                       backgroundColor: isRead ? Colors.grey[200] : Colors.pink[50],
                       // 未讀顯示粉色愛心，已讀顯示灰色信封
                       child: Icon(
-                        isRead ? Icons.mark_email_read_outlined : Icons.favorite,
+                        isCreatorFanMail
+                            ? Icons.mail_outline_rounded
+                            : isCustomerService
+                            ? Icons.support_agent_rounded
+                            : (isRead ? Icons.mark_email_read_outlined : Icons.favorite),
                         color: isRead ? Colors.grey : Colors.pinkAccent,
                       ),
                     ),
@@ -510,6 +576,10 @@ class _InboxPageState extends State<InboxPage> {
                     debugPrint(
                       "🚀 傳送門啟動：有人關注我，看看他是誰",
                     );
+                  } else if (type == 'creator_fan_mail') {
+                    if (context.mounted) {
+                      await _openCreatorFanMail(context, data);
+                    }
                   } else if (type == 'cs_received' ||
                       type == 'cs_reply') {
                     _openMailboxItem(

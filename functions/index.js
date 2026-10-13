@@ -24151,7 +24151,15 @@ try {
 // ============================================================
 const CREATOR_ADMIN_STATUSES = ["pending", "contract_pending", "approved", "suspended", "revoked", "rejected"];
 
-exports.listCreatorApplications = onCall({region: REGION, timeoutSeconds: 60}, async (request) => {
+exports.listCreatorApplications = onCall({
+  region: REGION,
+  timeoutSeconds: 60,
+  memory: "256MiB",
+  cpu: 1,
+  minInstances: 0,
+  maxInstances: 1,
+  concurrency: 1,
+}, async (request) => {
   requireRewardCampaignAdmin(request);
   // 分狀態查詢避免讀取整個 users 集合；每組至多 200 位。
   const snapshots = await Promise.all(CREATOR_ADMIN_STATUSES.map(status =>
@@ -24311,4 +24319,425 @@ exports.adminManuallyVerifyCreator = onCall({region: REGION, timeoutSeconds: 60}
     return {previousStatus};
   });
   return {success: true, creatorUid: uid, creatorStatus: "approved", previousStatus: result.previousStatus};
+});
+
+
+// ============================================================
+// 官方合作創作者：粉絲站內信 1.2
+// 配額：台灣日曆日 單人 30 封／群發 5 次；標題 100、正文 5000 字素。
+// 群發：工作佇列 + 排程分批投遞；每位收件者以 jobId 作唯一鍵。
+// ============================================================
+const CREATOR_FAN_MAIL_LIMITS = Object.freeze({single:30, broadcast:5, title:100, body:5000});
+function creatorFanMailDayKey() {
+  return new Intl.DateTimeFormat('en-CA', {timeZone:'Asia/Taipei', year:'numeric', month:'2-digit', day:'2-digit'}).format(new Date());
+}
+function creatorFanMailVerified(d) {
+  return d.creatorStatus === 'approved' && d.creatorVerified === true && d.creatorDashboardEnabled === true;
+}
+function creatorFanMailCharCount(s) {
+  // JS Array.from counts Unicode code points (including emoji, but not grapheme clusters).
+  return Array.from(new Intl.Segmenter('zh-Hant', {granularity:'grapheme'}).segment(s)).length;
+}
+function creatorFanMailValidate(title, body) {
+  if (!title || creatorFanMailCharCount(title) > CREATOR_FAN_MAIL_LIMITS.title) {
+    throw new HttpsError('invalid-argument', '標題須為 1～100 字');
+  }
+  if (!body || creatorFanMailCharCount(body) > CREATOR_FAN_MAIL_LIMITS.body) {
+    throw new HttpsError('invalid-argument', '內文須為 1～5000 字');
+  }
+}
+function creatorFanMailUsageRef(uid, day) {
+  return db.collection('creator_fan_mail_usage').doc(`${uid}_${day}`);
+}
+exports.getCreatorFanMailOverview = onCall({region: REGION, timeoutSeconds:30}, async (request) => {
+  const uid = request.auth?.uid;
+  if (!uid) throw new HttpsError('unauthenticated', '請先登入');
+  const [creator, usage, jobs] = await Promise.all([
+    db.collection('users').doc(uid).get(),
+    creatorFanMailUsageRef(uid, creatorFanMailDayKey()).get(),
+    db.collection('creator_fan_mail_jobs').where('creatorUid','==',uid).orderBy('createdAt','desc').limit(20).get(),
+  ]);
+  if (!creator.exists || !creatorFanMailVerified(creator.data() || {})) {
+    throw new HttpsError('permission-denied', '目前沒有合作創作者寄信資格');
+  }
+  const counters = usage.data() || {};
+  return {day:creatorFanMailDayKey(), singleUsed:Number(counters.singleUsed||0),
+    broadcastUsed:Number(counters.broadcastUsed||0), singleLimit:30, broadcastLimit:5,
+    jobs:jobs.docs.map(x => {const d=x.data()||{};return {id:x.id, mode:d.mode, title:d.title,
+      status:d.status, delivered:Number(d.delivered||0), createdAt:d.createdAt?.toDate?.()?.toISOString()||null,
+      finishedAt:d.finishedAt?.toDate?.()?.toISOString()||null, error:String(d.error||'')};})};
+});
+
+exports.sendCreatorFanMail = onCall({region: REGION, timeoutSeconds:60, maxInstances:20}, async (request) => {
+  const uid = request.auth?.uid;
+  if (!uid) throw new HttpsError('unauthenticated', '請先登入');
+  const mode = String(request.data?.mode||'');
+  const title = String(request.data?.title||'').trim();
+  const body = String(request.data?.body||'').trim();
+  const recipientUid = String(request.data?.recipientUid||'').trim();
+  const requestId = String(request.data?.requestId||'').trim();
+  if (!['single','broadcast'].includes(mode)) throw new HttpsError('invalid-argument','無效寄信類型');
+  if (!/^[a-zA-Z0-9_-]{12,80}$/.test(requestId)) throw new HttpsError('invalid-argument','寄送識別碼無效');
+  creatorFanMailValidate(title,body);
+  if (mode==='single' && (!recipientUid || recipientUid===uid || recipientUid.includes('/'))) {
+    throw new HttpsError('invalid-argument','請選擇有效粉絲');
+  }
+  const day=creatorFanMailDayKey();
+  const creatorRef=db.collection('users').doc(uid);
+  const usageRef=creatorFanMailUsageRef(uid,day);
+  const jobRef=db.collection('creator_fan_mail_jobs').doc(`${uid}_${requestId}`);
+  const result=await db.runTransaction(async tx => {
+    const [creator,usage,job,follower] = await Promise.all([
+      tx.get(creatorRef),tx.get(usageRef),tx.get(jobRef),
+      mode==='single' ? tx.get(creatorRef.collection('followers').doc(recipientUid)) : Promise.resolve(null),
+    ]);
+    if (!creator.exists || !creatorFanMailVerified(creator.data()||{})) {
+      throw new HttpsError('permission-denied','合作資格已失效');
+    }
+    if (job.exists) {
+      const prev=job.data()||{};
+      if (prev.mode!==mode || prev.title!==title || prev.body!==body || (prev.recipientUid||'')!== (mode==='single'?recipientUid:'')) {
+        throw new HttpsError('already-exists','寄送識別碼已被其他內容使用');
+      }
+      return {jobId:jobRef.id,status:prev.status||'queued',alreadySubmitted:true};
+    }
+    if (mode==='single' && !follower?.exists) throw new HttpsError('failed-precondition','該玩家目前未追蹤妳');
+    const u=usage.data()||{};
+    const key=mode==='single'?'singleUsed':'broadcastUsed';
+    const limit=CREATOR_FAN_MAIL_LIMITS[mode];
+    if (Number(u[key]||0)>=limit) throw new HttpsError('resource-exhausted',`今日${mode==='single'?'單人私信':'群發'}次數已達上限`);
+    tx.set(usageRef,{creatorUid:uid,day,[key]:FieldValue.increment(1),updatedAt:FieldValue.serverTimestamp()},{merge:true});
+    const displayName=String(creator.data()?.nickname || creator.data()?.displayName || '合作創作者').slice(0,80);
+    tx.create(jobRef,{creatorUid:uid,mode,recipientUid:mode==='single'?recipientUid:'',title,body,
+      creatorName:displayName,status:'queued',delivered:0,lastFollowerId:'',
+      createdAt:FieldValue.serverTimestamp(),updatedAt:FieldValue.serverTimestamp(),day});
+    return {jobId:jobRef.id,status:'queued',alreadySubmitted:false};
+  });
+  return result;
+});
+
+// 每分鐘處理最多 5 個工作、每工作最多 120 位；不會在單次 callable 中掃描全部粉絲。
+// Transaction 內完成「信件寫入 + 游標更新」，失敗回滾，不重複寄送。
+exports.processCreatorFanMailJobs = onSchedule({schedule:'every 1 minutes', timeZone:'Asia/Taipei',region:REGION,
+  timeoutSeconds:540,memory:'512MiB'},async () => {
+  const jobs=await db.collection('creator_fan_mail_jobs').where('status','in',['queued','processing']).limit(5).get();
+  for (const job of jobs.docs) {
+    const work=job.data()||{};
+    const uid=String(work.creatorUid||'');
+    if (!uid) continue;
+    const lease=crypto.randomUUID();
+    const claimed=await db.runTransaction(async tx=>{
+      const snap=await tx.get(job.ref);
+      const d=snap.data()||{};
+      if (!['queued','processing'].includes(d.status))return false;
+      const lock=d.leaseUntil?.toMillis?.()||0;
+      if (lock>Date.now())return false;
+      tx.update(job.ref,{status:'processing',leaseId:lease,
+        leaseUntil:Timestamp.fromMillis(Date.now()+240000),updatedAt:FieldValue.serverTimestamp()});
+      return true;
+    });
+    if (!claimed)continue;
+    try {
+      const creatorSnap=await db.collection('users').doc(uid).get();
+      if (!creatorSnap.exists || !creatorFanMailVerified(creatorSnap.data()||{})) {
+        await db.runTransaction(async tx=>{const j=await tx.get(job.ref);if(j.data()?.leaseId===lease)
+          tx.update(job.ref,{status:'cancelled',leaseUntil:FieldValue.delete(),updatedAt:FieldValue.serverTimestamp(),
+            error:'合作創作者資格失效'});});
+        continue;
+      }
+      let followers=[];
+      if(work.mode==='single') {
+        const follow=await db.collection('users').doc(uid).collection('followers').doc(work.recipientUid).get();
+        followers=follow.exists?[follow]:[];
+      } else {
+        let q=db.collection('users').doc(uid).collection('followers').orderBy(admin.firestore.FieldPath.documentId());
+        if(work.lastFollowerId)q=q.startAfter(work.lastFollowerId);
+        followers=(await q.limit(120).get()).docs;
+      }
+      if (!followers.length) {
+        await db.runTransaction(async tx=>{const j=await tx.get(job.ref);if(j.data()?.leaseId===lease)
+          tx.update(job.ref,{status:'completed',finishedAt:FieldValue.serverTimestamp(),
+            leaseUntil:FieldValue.delete(),updatedAt:FieldValue.serverTimestamp()});});
+        continue;
+      }
+      // 批次讀取封鎖設定並驗證使用者存在，避免寄給封鎖創作者的帳號。
+      const recipientIds=followers.map(f=>f.id).filter(id=>id && id!==uid);
+      const blockSnaps=await Promise.all(recipientIds.map(id=>db.collection('users').doc(id)
+        .collection('blockedCreators').doc(uid).get()));
+      const eligible=recipientIds.filter((_,i)=>!blockSnaps[i].exists);
+      await db.runTransaction(async tx=>{
+        const j=await tx.get(job.ref);
+        if(j.data()?.leaseId!==lease) throw new Error('job lease lost');
+        const creator=await tx.get(db.collection('users').doc(uid));
+        if(!creator.exists||!creatorFanMailVerified(creator.data()||{}))throw new Error('creator revoked');
+        const refs=eligible.map(id=>db.collection('users').doc(id).collection('mailbox').doc(`fan_${job.id}`));
+        const existing=await Promise.all(refs.map(ref=>tx.get(ref)));
+        let added=0;
+        for(let i=0;i<refs.length;i++) {
+          if(existing[i].exists)continue;
+          tx.create(refs[i],{type:'creator_fan_mail',creatorUid:uid,creatorName:work.creatorName,
+            title:work.title,body:work.body,mailJobId:job.id,read:false,isRead:false,
+            createdAt:FieldValue.serverTimestamp()});
+          added++;
+        }
+        const done=work.mode==='single'||followers.length<120;
+        tx.update(job.ref,{lastFollowerId:followers[followers.length-1].id,
+          delivered:FieldValue.increment(added),status:done?'completed':'processing',
+          ...(done?{finishedAt:FieldValue.serverTimestamp()}:{}),
+          leaseUntil:FieldValue.delete(),leaseId:FieldValue.delete(),updatedAt:FieldValue.serverTimestamp()});
+      });
+    }catch(error){
+      logger.error('Creator fan mail processing failed',{jobId:job.id,error:String(error)});
+      await db.runTransaction(async tx=>{const j=await tx.get(job.ref);if(j.data()?.leaseId===lease)
+        tx.update(job.ref,{status:'failed',error:String(error).slice(0,300),leaseId:FieldValue.delete(),
+          leaseUntil:FieldValue.delete(),updatedAt:FieldValue.serverTimestamp()});});
+    }
+  }
+});
+
+
+// ============================================================
+// 官方合作創作者 v1.4：以創作者自己的花花贈送目前追蹤的粉絲
+// 1~20 位，每人 1~1000 朵、單筆最多 5000 朵。
+// 全程 Firestore transaction；requestId 固定，重試不重扣。
+// ============================================================
+const CREATOR_GIFT_MAX_RECIPIENTS = 20;
+const CREATOR_GIFT_MAX_PER_FAN = 1000;
+const CREATOR_GIFT_MAX_TOTAL = 5000;
+
+exports.giftCreatorFlowers = onCall({region: REGION, timeoutSeconds: 60, maxInstances: 15}, async (request) => {
+  const creatorUid = request.auth?.uid;
+  if (!creatorUid) throw new HttpsError('unauthenticated', '請先登入');
+  const input = request.data || {};
+  const requestId = String(input.requestId || '').trim();
+  const amount = input.amount;
+  const note = String(input.note || '').trim();
+  const recipients = input.recipientUids;
+  if (!/^[a-zA-Z0-9_-]{12,80}$/.test(requestId)) throw new HttpsError('invalid-argument', '交易識別碼無效');
+  if (!Array.isArray(recipients) || recipients.length < 1 || recipients.length > CREATOR_GIFT_MAX_RECIPIENTS ||
+      !recipients.every(x => typeof x === 'string' && x.length > 0 && x.length <= 128 && !x.includes('/'))) {
+    throw new HttpsError('invalid-argument', '請選擇 1～20 位有效粉絲');
+  }
+  if (new Set(recipients).size !== recipients.length || recipients.includes(creatorUid)) {
+    throw new HttpsError('invalid-argument', '粉絲名單重複或包含自己');
+  }
+  if (!Number.isSafeInteger(amount) || amount < 1 || amount > CREATOR_GIFT_MAX_PER_FAN) {
+    throw new HttpsError('invalid-argument', '每位粉絲花花須為 1～1000 朵');
+  }
+  const total = amount * recipients.length;
+  if (total > CREATOR_GIFT_MAX_TOTAL) throw new HttpsError('invalid-argument', '單次最多可贈送 5000 朵花花');
+  if (creatorFanMailCharCount(note) > 300) throw new HttpsError('invalid-argument', '祝福文字最多 300 字');
+
+  const normalizedRecipients = [...recipients].sort();
+  const contentHash = crypto.createHash('sha256').update(JSON.stringify({normalizedRecipients, amount, note})).digest('hex');
+  const creatorRef = db.collection('users').doc(creatorUid);
+  const giftRef = db.collection('creator_flower_gifts').doc(`${creatorUid}_${requestId}`);
+  const userRefs = normalizedRecipients.map(uid => db.collection('users').doc(uid));
+  const followerRefs = normalizedRecipients.map(uid => creatorRef.collection('followers').doc(uid));
+  const result = await db.runTransaction(async tx => {
+    // 交易內先讀所有文件，再做任何寫入。
+    const snapshots = await Promise.all([
+      tx.get(creatorRef), tx.get(giftRef),
+      ...followerRefs.map(ref => tx.get(ref)),
+      ...userRefs.map(ref => tx.get(ref)),
+    ]);
+    const creatorSnap = snapshots[0];
+    const existing = snapshots[1];
+    if (existing.exists) {
+      const prior = existing.data() || {};
+      if (prior.contentHash !== contentHash) throw new HttpsError('already-exists', '這個交易識別碼已用於另一筆贈送');
+      return {success:true, alreadySubmitted:true, giftId:giftRef.id, total:Number(prior.total||total), recipientCount:recipients.length};
+    }
+    if (!creatorSnap.exists || !creatorFanMailVerified(creatorSnap.data() || {})) {
+      throw new HttpsError('permission-denied', '目前沒有官方合作創作者資格');
+    }
+    const creatorData = creatorSnap.data() || {};
+    const balance = Number(creatorData.flowerPoints);
+    if (!Number.isSafeInteger(balance) || balance < 0) throw new HttpsError('failed-precondition', '花花餘額資料異常');
+    if (balance < total) throw new HttpsError('failed-precondition', '花花餘額不足', {
+      reason: 'insufficient_balance', balance, required:total, shortage:total - balance,
+    });
+    const followerSnapshots = snapshots.slice(2, 2 + recipients.length);
+    const receiverSnapshots = snapshots.slice(2 + recipients.length);
+    if (followerSnapshots.some(s => !s.exists) || receiverSnapshots.some(s => !s.exists)) {
+      throw new HttpsError('failed-precondition', '粉絲名單已變更，請重新選擇');
+    }
+    const displayName = String(creatorData.nickname || creatorData.displayName || '合作創作者').slice(0, 80);
+    tx.update(creatorRef, {flowerPoints: FieldValue.increment(-total)});
+    const timestamp = FieldValue.serverTimestamp();
+    tx.create(giftRef, {creatorUid, recipientUids:normalizedRecipients, amountPerRecipient:amount,
+      total, note, creatorName:displayName, contentHash, status:'completed', createdAt:timestamp});
+    tx.create(creatorRef.collection('flower_logs').doc(`creator_gift_out_${requestId}`), {
+      type:'creator_gift_out', title:'贈送粉絲花花', amount:-total, recipientCount:recipients.length,
+      giftId:giftRef.id, createdAt:timestamp,
+    });
+    for (let i=0; i<userRefs.length; i++) {
+      const receiverUid = normalizedRecipients[i];
+      const receiverRef = userRefs[i];
+      tx.update(receiverRef, {flowerPoints:FieldValue.increment(amount)});
+      tx.create(receiverRef.collection('flower_logs').doc(`creator_gift_in_${giftRef.id}`), {
+        type:'creator_gift_in', title:'合作創作者贈送', amount, creatorUid, creatorName:displayName,
+        giftId:giftRef.id, createdAt:timestamp,
+      });
+      tx.create(receiverRef.collection('mailbox').doc(`creator_gift_${giftRef.id}`), {
+        type:'creator_flower_gift', title:`${displayName} 贈送了 ${amount} 朵花花`,
+        body: note ? `妳收到 ${amount} 朵花花！\n\n${note}` : `妳收到 ${amount} 朵花花！`,
+        creatorUid, creatorName:displayName, flowerAmount:amount, giftId:giftRef.id,
+        isRead:false, read:false, createdAt:timestamp,
+      });
+    }
+    return {success:true, alreadySubmitted:false, giftId:giftRef.id, total, recipientCount:recipients.length};
+  });
+  return result;
+});
+
+
+// 合作創作者申請：前端不可以直接寫入 creatorStatus / creatorVerified。
+exports.submitCreatorCooperationApplication = onCall({region: REGION, timeoutSeconds: 30}, async (request) => {
+  const uid = request.auth?.uid;
+  if (!uid) throw new HttpsError('unauthenticated', '請先登入帳號');
+  const raw = request.data || {};
+  if (typeof raw.creatorDirection !== 'string' || typeof raw.creatorApplicationReason !== 'string') {
+    throw new HttpsError('invalid-argument', '請填寫創作方向與合作動機');
+  }
+  const direction = raw.creatorDirection.trim();
+  const reason = raw.creatorApplicationReason.trim();
+  const count = (value) => Array.from(new Intl.Segmenter('zh-Hant', {granularity: 'grapheme'}).segment(value)).length;
+  if (count(direction) < 2 || count(direction) > 100 || count(reason) < 10 || count(reason) > 500) {
+    throw new HttpsError('invalid-argument', '創作方向須為 2～100 字，合作動機須為 10～500 字');
+  }
+  const ref = db.collection('users').doc(uid);
+  await db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    if (!snap.exists) throw new HttpsError('not-found', '找不到玩家帳號');
+    const data = snap.data() || {};
+    const current = String(data.creatorStatus || 'none');
+    if (!['none', '', 'rejected'].includes(current)) {
+      throw new HttpsError('failed-precondition', '已有申請紀錄或合作資格，不能重複送出');
+    }
+    if (data.creatorVerified === true || data.creatorDashboardEnabled === true) {
+      throw new HttpsError('failed-precondition', '已取得合作權限的帳號無法重新申請');
+    }
+    tx.update(ref, {
+      creatorStatus: 'pending',
+      creatorVerified: false,
+      creatorDashboardEnabled: false,
+      creatorDirection: direction,
+      creatorApplicationReason: reason,
+      creatorAppliedAt: FieldValue.serverTimestamp(),
+      creatorStatusUpdatedAt: FieldValue.serverTimestamp(),
+      creatorStatusReason: FieldValue.delete(),
+    });
+    tx.set(db.collection('creator_application_audit').doc(), {
+      creatorUid: uid, action: 'submitted', previousStatus: current,
+      submittedAt: FieldValue.serverTimestamp(),
+    });
+  });
+  return {success: true, creatorStatus: 'pending'};
+});
+
+
+// ============================================================
+// 官方合作創作者 v1.6：每月「新建且首次公開」3 位角色，手動領 300 花
+// 僅伺服器建立的事件帳本用於領獎，前端無權寫入以下集合。
+// 啟用前必須限制 client 對 creator_character_origins / creator_character_publications /
+// creator_monthly_rewards 的讀寫：一般玩家僅允許透過 callable 取得進度，完全禁止直寫。
+// ============================================================
+const CREATOR_MONTH_REWARD_AMOUNT = 300;
+function creatorRewardMonth(date = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-US', {timeZone:'Asia/Taipei',year:'numeric',month:'2-digit'}).formatToParts(date);
+  const m = Object.fromEntries(parts.map(x=>[x.type,x.value]));
+  return `${m.year}-${m.month}`;
+}
+function creatorRewardError(code,msg) {throw new HttpsError(code,msg);}
+function creatorRewardOriginRef(uid, charId) {
+  return db.collection('creator_character_origins').doc(`${uid}_${charId}`);
+}
+async function recordCreatorOrigin(uid, charId, eventTime, kind) {
+  if (!uid || !charId) return;
+  await creatorRewardOriginRef(uid,charId).create({uid,charId,firstSeenAt:Timestamp.fromDate(eventTime),firstSeenMonth:creatorRewardMonth(eventTime),source:kind}).catch(e=>{
+    if (Number(e.code) !== 6 && e.code !== 'already-exists') throw e;
+  });
+}
+// 草稿的建立事件由後端記錄；後續搬到公開集合時不會重設出生月份。
+exports.creatorRewardTrackDraftBirth = onDocumentCreated({document:'draft_characters/{characterId}',region:REGION},async(event)=>{
+  const d=event.data?.data()||{};
+  const uid=String(d.createdBy||'');
+  if(uid) await recordCreatorOrigin(uid,event.params.characterId,new Date(event.time),'draft');
+});
+exports.creatorRewardTrackPrivateBirth = onDocumentCreated({document:'artifacts/{appId}/users/{userId}/private_characters/{characterId}',region:REGION},async(event)=>{
+  if(event.params.appId!==APP_ID) return;
+  const d=event.data?.data()||{};
+  const uid=event.params.userId;
+  if(String(d.createdBy||uid)!==uid)return;
+  await recordCreatorOrigin(uid,event.params.characterId,new Date(event.time),'private');
+});
+exports.creatorRewardTrackPublicBirth = onDocumentCreated({document:'artifacts/{appId}/public_characters/{characterId}',region:REGION},async(event)=>{
+  if(event.params.appId!==APP_ID)return;
+  const d=event.data?.data()||{};
+  const uid=String(d.createdBy||''); const charId=event.params.characterId;
+  if(!uid || d.isPublic===false)return;
+  const publishedAt=new Date(event.time);
+  const publishedMonth=creatorRewardMonth(publishedAt);
+  const pubRef=db.collection('creator_character_publications').doc(`${uid}_${charId}`);
+  // 純新公開建立者使用真正 Firestore serverTimestamp() 當出生時間。
+  // 由私人/草稿搬家者必須依賴先前出生事件；如事件延遲，必須之後重試。
+  const recordedCreatedAt=d.createdAt;
+  const createdMs=recordedCreatedAt?.toMillis?.()??0;
+  const cleanNewPublic=createdMs>0 && Math.abs(publishedAt.getTime()-createdMs)<5*60*1000;
+  const origRef=creatorRewardOriginRef(uid,charId);
+  await db.runTransaction(async tx=>{
+    const [orig,pub]=await Promise.all([tx.get(origRef),tx.get(pubRef)]);
+    if(pub.exists)return;
+    // 若先前有私人/草稿建立事件，優先使用該首次建立月份。
+    // 若無且 createdAt ~= 真正發佈事件才視為直接新建公開角色。
+    const birthMonth=orig.exists?orig.data().firstSeenMonth:(cleanNewPublic?publishedMonth:null);
+    if(!orig.exists && cleanNewPublic) tx.create(origRef,{uid,charId,firstSeenAt:Timestamp.fromDate(publishedAt),firstSeenMonth:publishedMonth,source:'public'});
+    tx.create(pubRef,{uid,charId,firstPublishedAt:Timestamp.fromDate(publishedAt),firstPublishedMonth:publishedMonth,
+      firstCreatedMonth:birthMonth, eligibleAtPublication:birthMonth===publishedMonth,
+      createdAtClient:recordedCreatedAt??null});
+  });
+});
+async function creatorRewardEligible(uid,month) {
+  // 一個月最多按 Firestore 文件配額讀取 200 個候選；未滿 3 個無法領。
+  const records=await db.collection('creator_character_publications').where('uid','==',uid)
+    .limit(500).get();
+  const candidates=records.docs.filter(d=>d.data().firstPublishedMonth===month && d.data().eligibleAtPublication===true && d.data().firstCreatedMonth===month);
+  const valid=[];
+  for(const chunkStart of Array.from({length:Math.ceil(candidates.length/25)},(_,i)=>i*25)) {
+    const chunk=candidates.slice(chunkStart,chunkStart+25);
+    const snaps=await Promise.all(chunk.map(d=>db.collection('artifacts').doc(APP_ID).collection('public_characters').doc(d.data().charId).get()));
+    snaps.forEach((s,i)=>{if(s.exists && s.data()?.createdBy===uid && s.data()?.isPublic!==false && s.data()?.isDraft!==true)valid.push(chunk[i].data().charId);});
+  }
+  return valid;
+}
+exports.getCreatorMonthlyReward = onCall({region:REGION,timeoutSeconds:60},async request=>{
+  const uid=request.auth?.uid;if(!uid)creatorRewardError('unauthenticated','請先登入');
+  const user=await db.collection('users').doc(uid).get();
+  if(!user.exists||!creatorFanMailVerified(user.data()||{}))creatorRewardError('permission-denied','沒有合作創作者權限');
+  const month=creatorRewardMonth();
+  const [ids,claimed]=await Promise.all([creatorRewardEligible(uid,month),db.collection('creator_monthly_rewards').doc(`${uid}_${month}`).get()]);
+  return {month,qualifyingCount:Math.min(ids.length,3),claimed:claimed.exists,reward:CREATOR_MONTH_REWARD_AMOUNT};
+});
+exports.claimCreatorMonthlyReward = onCall({region:REGION,timeoutSeconds:90},async request=>{
+  const uid=request.auth?.uid;if(!uid)creatorRewardError('unauthenticated','請先登入');
+  const month=creatorRewardMonth();
+  const ids=await creatorRewardEligible(uid,month);
+  if(ids.length<3)creatorRewardError('failed-precondition','本月尚未完成 3 位新建且公開的角色');
+  const userRef=db.collection('users').doc(uid);
+  const rewardRef=db.collection('creator_monthly_rewards').doc(`${uid}_${month}`);
+  const result=await db.runTransaction(async tx=>{
+    const [user,reward,...publicDocs]=await Promise.all([
+      tx.get(userRef),tx.get(rewardRef),...ids.slice(0,3).map(id=>tx.get(db.collection('artifacts').doc(APP_ID).collection('public_characters').doc(id)))]);
+    if(reward.exists)return {claimed:true,alreadyClaimed:true,month};
+    if(!user.exists||!creatorFanMailVerified(user.data()||{}))creatorRewardError('permission-denied','合作資格已暫停或取消');
+    if(publicDocs.some(d=>!d.exists||d.data()?.createdBy!==uid||d.data()?.isPublic===false))creatorRewardError('failed-precondition','角色公開狀態已變動，請重新整理');
+    tx.create(rewardRef,{uid,month,amount:CREATOR_MONTH_REWARD_AMOUNT,characterIds:ids.slice(0,3),createdAt:FieldValue.serverTimestamp()});
+    tx.update(userRef,{flowerPoints:FieldValue.increment(CREATOR_MONTH_REWARD_AMOUNT)});
+    tx.create(userRef.collection('flower_logs').doc(`creator_monthly_reward_${month}`),{
+      type:'creator_monthly_reward',title:`${month} 合作創作者每月創作獎勵`,amount:CREATOR_MONTH_REWARD_AMOUNT,
+      rewardMonth:month,createdAt:FieldValue.serverTimestamp()});
+    return {claimed:true,alreadyClaimed:false,month,amount:CREATOR_MONTH_REWARD_AMOUNT};
+  });
+  return result;
 });

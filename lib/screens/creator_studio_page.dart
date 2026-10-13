@@ -4,11 +4,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import '../services/toast_utils.dart';
 import 'character_edit_page.dart';
+import 'official_creator_studio_page.dart';
 import 'package:rxdart/rxdart.dart'; // 🌟 記得這個一定要有！
 import 'dart:io'; // 🌟 讀取手機本機檔案必備！
 import 'character_model.dart';
 import '../utils/image_utils.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 // 私人工作室
 class CreatorStudioPage extends StatelessWidget {
@@ -280,6 +282,90 @@ class CreatorStudioPage extends StatelessWidget {
                           64,
                         ),
                         children: [
+                          // 每位玩家都看得到合作計畫入口，只有認證者進入專區。
+                          StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                            stream: FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots(),
+                            builder: (context, creatorSnapshot) {
+                              if (creatorSnapshot.hasError) {
+                                return const Padding(padding: EdgeInsets.only(bottom: 16), child: Text('合作資格暫時無法讀取'));
+                              }
+                              if (!creatorSnapshot.hasData || !creatorSnapshot.data!.exists) {
+                                return const SizedBox.shrink();
+                              }
+                              final creatorData = creatorSnapshot.data!.data() ?? <String, dynamic>{};
+                              final verified = creatorData['creatorStatus'] == 'approved' &&
+                                  creatorData['creatorVerified'] == true &&
+                                  creatorData['creatorDashboardEnabled'] == true;
+                              final status = (creatorData['creatorStatus'] ?? 'none').toString();
+                              final String title = verified ? '官方合作創作者專區' : '成為官方合作創作者';
+                              final String subtitle = verified ? '粉絲管理・創作數據・專屬福利' :
+                              switch (status) {
+                                'pending' => '申請已送出・官方審核中',
+                                'contract_pending' => '初審通過・等待合約簽署',
+                                'approved' => '合作認證資料同步中，請稍後再試',
+                                'suspended' => '合作資格已暫停，請聯繫官方',
+                                'revoked' => '合作資格已取消，請聯繫官方',
+                                'rejected' => '申請未通過・可重新申請',
+                                _ => '申請加入合作計畫，解鎖專屬創作者工具',
+                              };
+                              final canApply = status == 'none' || status.isEmpty || status == 'rejected';
+                              final benefits = !verified && canApply;
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 20),
+                                child: Material(
+                                  color: primary.withValues(alpha: 0.07),
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(20),
+                                    onTap: verified
+                                        ? () => Navigator.of(context).push(MaterialPageRoute(
+                                        builder: (_) => const OfficialCreatorStudioPage()))
+                                        : canApply
+                                        ? () => Navigator.of(context).push(MaterialPageRoute(
+                                        builder: (_) => const _CreatorCooperationApplicationPage()))
+                                        : () => showDialog<void>(
+                                      context: context,
+                                      builder: (ctx) => AlertDialog(
+                                        title: Text(title),
+                                        content: Text(subtitle),
+                                        actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('知道了'))],
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                                      child: Row(children: [
+                                        Icon(verified ? Icons.verified_outlined : Icons.workspace_premium_outlined,
+                                            color: primary, size: 30),
+                                        const SizedBox(width: 12),
+                                        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                          Text(title, style: GoogleFonts.notoSerifTc(
+                                              fontWeight: FontWeight.w600, color: theme.colorScheme.onSurface, fontSize: 16)),
+                                          const SizedBox(height: 4),
+                                          Text(subtitle, style: TextStyle(fontSize: 12,
+                                              color: theme.colorScheme.onSurface.withValues(alpha: 0.65))),
+                                          if (benefits) ...[
+                                            const SizedBox(height: 12),
+                                            Text('加入合作計畫，解鎖專屬權益', style: GoogleFonts.notoSerifTc(fontWeight: FontWeight.w600)),
+                                            const SizedBox(height: 8),
+                                            const Text('🌸 每月創作獎勵：當月新建並公開 3 位不同角色，可手動領取 300 朵花花（每月限一次）。', style: TextStyle(fontSize: 12, height: 1.6)),
+                                            const Text('• 粉絲管理與公開角色創作數據', style: TextStyle(fontSize: 12, height: 1.6)),
+                                            const Text('• 粉絲信件：單人私信與全體公告（依每日額度）', style: TextStyle(fontSize: 12, height: 1.6)),
+                                            const Text('• 粉絲福利：使用自己的花花贈送追蹤者', style: TextStyle(fontSize: 12, height: 1.6)),
+                                            const SizedBox(height: 7),
+                                            Text('須經官方審核並完成簽約；私人角色、草稿、舊角色重新公開皆不列入每月獎勵。',
+                                                style: TextStyle(fontSize: 11, height: 1.5, color: theme.colorScheme.onSurfaceVariant)),
+                                            const SizedBox(height: 8),
+                                            Text('點此了解並提交申請 →', style: TextStyle(fontSize: 12, color: primary, fontWeight: FontWeight.w600)),
+                                          ],
+                                        ])),
+                                        Icon(Icons.chevron_right_rounded, color: primary),
+                                      ]),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                           Align(
                             alignment: Alignment.centerRight,
                             child: OutlinedButton.icon(
@@ -875,6 +961,98 @@ class CreatorStudioPage extends StatelessWidget {
           Text(l10n.studio_empty_subtitle, style: const TextStyle(color: Colors.grey)),
         ],
       ),
+    );
+  }
+}
+
+// 合作創作者申請表：只有 Cloud Function 可以將申請狀態設為 pending。
+class _CreatorCooperationApplicationPage extends StatefulWidget {
+  const _CreatorCooperationApplicationPage();
+  @override
+  State<_CreatorCooperationApplicationPage> createState() => _CreatorCooperationApplicationPageState();
+}
+
+class _CreatorCooperationApplicationPageState extends State<_CreatorCooperationApplicationPage> {
+  final _directionController = TextEditingController();
+  final _reasonController = TextEditingController();
+  bool _submitting = false;
+
+  @override
+  void dispose() {
+    _directionController.dispose();
+    _reasonController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (_submitting) return;
+    final direction = _directionController.text.trim();
+    final reason = _reasonController.text.trim();
+    if (direction.length < 2 || direction.length > 100 || reason.length < 10 || reason.length > 500) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('創作方向須為 2～100 字，申請原因須為 10～500 字')));
+      return;
+    }
+    final accepted = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('確認提出合作申請'),
+        content: const Text('申請送出後將由官方審核；通過初審不等於合作資格已生效，仍須完成雙方簽約。'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('取消')),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('確認送出')),
+        ],
+      ),
+    );
+    if (accepted != true || !mounted) return;
+    setState(() => _submitting = true);
+    try {
+      final result = await FirebaseFunctions.instanceFor(region: 'asia-east1')
+          .httpsCallable('submitCreatorCooperationApplication',
+          options: HttpsCallableOptions(timeout: const Duration(seconds: 30)))
+          .call({'creatorDirection': direction, 'creatorApplicationReason': reason});
+      if (!mounted) return;
+      final success = result.data is Map && result.data['success'] == true;
+      if (!success) throw StateError('申請結果未確認');
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('申請已送出，請等待官方審核')));
+      Navigator.of(context).pop();
+    } on FirebaseFunctionsException catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message ?? '申請失敗，請稍後重試')));
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('申請暫時無法送出，請稍後重試')));
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Scaffold(
+      appBar: AppBar(title: Text('合作創作者申請', style: GoogleFonts.notoSerifTc(fontWeight: FontWeight.w600))),
+      body: SafeArea(child: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          Text('加入戀戀拾光合作計畫', style: GoogleFonts.notoSerifTc(fontSize: 20, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 10),
+          Text('請簡單介紹妳的創作方向與合作動機。送出後會進入官方審核；初審通過後仍須完成雙方合約簽署，才會開通合作創作者專區。',
+              style: TextStyle(height: 1.7, color: theme.colorScheme.onSurfaceVariant)),
+          const SizedBox(height: 22),
+          TextField(controller: _directionController, maxLength: 100, enabled: !_submitting,
+              decoration: const InputDecoration(labelText: '創作方向', hintText: '例如：現代戀愛、奇幻、懸疑等', border: OutlineInputBorder())),
+          const SizedBox(height: 10),
+          TextField(controller: _reasonController, maxLength: 500, enabled: !_submitting,
+              minLines: 5, maxLines: 8,
+              decoration: const InputDecoration(labelText: '申請原因／合作動機', hintText: '請介紹創作經驗，以及希望如何與平台合作', border: OutlineInputBorder())),
+          const SizedBox(height: 8),
+          FilledButton.icon(onPressed: _submitting ? null : _submit,
+              icon: _submitting ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.send_outlined),
+              label: Text(_submitting ? '送出中…' : '提交合作申請')),
+          const SizedBox(height: 12),
+          Text('提醒：申請不保證通過，請勿在欄位內填寫身分證字號、銀行帳號或其他敏感個資。',
+              style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurfaceVariant)),
+        ],
+      )),
     );
   }
 }
