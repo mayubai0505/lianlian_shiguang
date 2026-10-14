@@ -21472,6 +21472,13 @@ exports.getAdminOperationsAnalytics = onCall(
                 : []
         );
 
+        const internalTesterUids = new Set();
+        for (const userDoc of usersSnapshot.docs) {
+            if (isInternalTesterForAnalytics(userDoc.id, userDoc.data() || {}, configuredTesterUids)) {
+                internalTesterUids.add(userDoc.id);
+            }
+        }
+
         const allInventoryRows = [];
         const normalInventoryRows = [];
         const internalTesterRows = [];
@@ -21513,6 +21520,9 @@ exports.getAdminOperationsAnalytics = onCall(
             },
         };
 
+        const calculateEconomy = (excludeInternal) => {
+        let unattributedModeEventCount = 0;
+        let unattributedFlowerLogCount = 0;
         const grantSources = {
             freeTask: 0,
             monthlyDaily: 0,
@@ -21591,6 +21601,11 @@ exports.getAdminOperationsAnalytics = onCall(
         if (modeEventSnapshot) {
             for (const doc of modeEventSnapshot.docs) {
                 const data = doc.data() || {};
+                const eventUid = String(data.uid || data.userId || data.playerUid || data.createdBy || "").trim();
+                if (excludeInternal && (!eventUid || internalTesterUids.has(eventUid))) {
+                    if (!eventUid) unattributedModeEventCount++;
+                    continue;
+                }
                 const createdAt = data.createdAt?.toDate?.();
                 if (!createdAt || createdAt < monthStart || createdAt >= tomorrowStart) continue;
 
@@ -21611,6 +21626,11 @@ exports.getAdminOperationsAnalytics = onCall(
 
         for (const doc of flowerSnapshot.docs) {
             const data = doc.data() || {};
+            const transactionUid = doc.ref.parent.parent?.id || "";
+            if (excludeInternal && (!transactionUid || internalTesterUids.has(transactionUid))) {
+                if (!transactionUid) unattributedFlowerLogCount++;
+                continue;
+            }
             const createdAt = data.createdAt?.toDate?.();
             if (!createdAt) continue;
 
@@ -21740,6 +21760,8 @@ exports.getAdminOperationsAnalytics = onCall(
 
         return {
             generatedAt: new Date().toISOString(),
+            unattributedModeEventCount,
+            unattributedFlowerLogCount,
             month: {
                 revenueTwd: monthRevenueTwd,
                 payingUsers: monthPayingUsers,
@@ -21764,7 +21786,18 @@ exports.getAdminOperationsAnalytics = onCall(
                 week: weeklyTrend,
                 month: monthlyTrend,
             },
+        };
+        };
+        const formalEconomy = calculateEconomy(true);
+        const allEconomy = calculateEconomy(false);
+        return {
+            ...formalEconomy,
             flowerInventory,
+            economyComparison: {
+                excludingInternalTesters: formalEconomy,
+                allPlayers: allEconomy,
+                internalTesterCount: internalTesterUids.size,
+            },
         };
     }
 );
@@ -24151,15 +24184,7 @@ try {
 // ============================================================
 const CREATOR_ADMIN_STATUSES = ["pending", "contract_pending", "approved", "suspended", "revoked", "rejected"];
 
-exports.listCreatorApplications = onCall({
-  region: REGION,
-  timeoutSeconds: 60,
-  memory: "256MiB",
-  cpu: 1,
-  minInstances: 0,
-  maxInstances: 1,
-  concurrency: 1,
-}, async (request) => {
+exports.listCreatorApplications = onCall({region: REGION, timeoutSeconds: 60}, async (request) => {
   requireRewardCampaignAdmin(request);
   // 分狀態查詢避免讀取整個 users 集合；每組至多 200 位。
   const snapshots = await Promise.all(CREATOR_ADMIN_STATUSES.map(status =>
@@ -24740,4 +24765,74 @@ exports.claimCreatorMonthlyReward = onCall({region:REGION,timeoutSeconds:90},asy
     return {claimed:true,alreadyClaimed:false,month,amount:CREATOR_MONTH_REWARD_AMOUNT};
   });
   return result;
+});
+
+// ============================================================
+// 角色聲音邀請：玩家只可請求既有角色，通知由 Admin SDK 寫入創作者專屬信箱。
+// 同一玩家對同一角色固定 document ID，避免重複推播與洗版。
+// ============================================================
+exports.requestCharacterVoice = onCall({
+  region: REGION,
+  timeoutSeconds: 30,
+  memory: "256MiB",
+  maxInstances: 5,
+}, async (request) => {
+  if (!request.auth?.uid) {
+    throw new HttpsError("unauthenticated", "請先登入再提出聲音邀請");
+  }
+  const playerUid = request.auth.uid;
+  const characterId = String(request.data?.characterId || "").trim();
+  if (!/^[a-zA-Z0-9_-]{1,160}$/.test(characterId)) {
+    throw new HttpsError("invalid-argument", "角色 ID 不正確");
+  }
+  const characterRef = db.collection("artifacts").doc(APP_ID)
+      .collection("public_characters").doc(characterId);
+  const characterSnap = await characterRef.get();
+  if (!characterSnap.exists) {
+    throw new HttpsError("not-found", "這位角色已不存在");
+  }
+  const character = characterSnap.data() || {};
+  const creatorUid = String(character.createdBy || "").trim();
+  const characterName = String(character.name || "角色").trim().slice(0, 100);
+  const voiceId = String(character.voiceId || character.voice_id || "").trim();
+  if (voiceId) {
+    return {sent: false, voiceAvailable: true};
+  }
+  if (!creatorUid) {
+    throw new HttpsError("failed-precondition", "找不到角色創作者");
+  }
+  const creatorSnap = await db.collection("users").doc(creatorUid).get();
+  if (!creatorSnap.exists) {
+    throw new HttpsError("failed-precondition", "找不到創作者帳號");
+  }
+  const playerSnap = await db.collection("users").doc(playerUid).get();
+  const player = playerSnap.data() || {};
+  const playerName = String(player.nickname || player.displayName ||
+      request.auth.token?.name || "有位玩家").trim().slice(0, 60) || "有位玩家";
+  const requestId = "voice_request_" + crypto.createHash("sha256")
+      .update(playerUid + ":" + characterId).digest("hex").slice(0, 36);
+  const mailRef = db.collection("users").doc(creatorUid)
+      .collection("mailbox").doc(requestId);
+  try {
+    await mailRef.create({
+      type: "voice_request",
+      title: "角色聲音邀請",
+      body: `${playerName} 正在期待「${characterName}」的聲音！要不要幫角色建立專屬聲音呢？`,
+      fromUserId: playerUid,
+      fromUserName: playerName,
+      toUserId: creatorUid,
+      characterId,
+      characterName,
+      createdAt: FieldValue.serverTimestamp(),
+      isRead: false,
+      read: false,
+    });
+  } catch (error) {
+    if (error?.code === 6 || error?.code === "6" ||
+        String(error?.message || "").includes("ALREADY_EXISTS")) {
+      return {sent: false, alreadyRequested: true};
+    }
+    throw error;
+  }
+  return {sent: true, alreadyRequested: false};
 });

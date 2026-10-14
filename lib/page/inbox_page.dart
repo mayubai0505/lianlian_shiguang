@@ -7,7 +7,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart'; // 記得確保有 import 這個來格式化時間
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
-import '../screens/moment_detail_page.dart'; // 🌟 記得匯入這頁！
+import '../screens/moment_detail_page.dart';
 import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 
 class InboxPage extends StatefulWidget {
@@ -233,6 +233,38 @@ class _InboxPageState extends State<InboxPage> {
     );
   }
 
+  // 聲音邀請為純通知：點開即可閱讀，不需要創作者回覆或選擇。
+  Future<void> _openVoiceRequestMail(
+      BuildContext context, {
+        required Map<String, dynamic> mail,
+      }) async {
+    final characterName = (mail['characterName'] ?? '這位角色').toString().trim();
+    final playerName = (mail['fromUserName'] ?? '有位玩家').toString().trim();
+    final originalBody = (mail['body'] ?? '').toString().trim();
+    final message = originalBody.isNotEmpty
+        ? originalBody
+        : '$playerName 很期待聽見「$characterName」的聲音呢～\n\n要不要找個時間，為角色挑選一個專屬聲音呢？';
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(
+          '有人正在期待角色的聲音！',
+          style: GoogleFonts.notoSerifTc(fontWeight: FontWeight.w600),
+        ),
+        content: SingleChildScrollView(
+          child: SelectableText(message),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('關閉'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _openMailboxItem(
       BuildContext context, {
         required Map<String, dynamic> data,
@@ -450,7 +482,7 @@ class _InboxPageState extends State<InboxPage> {
             itemBuilder: (context, index) {
               final data = docs[index].data() as Map<String, dynamic>;
               final DateTime? date = (data['createdAt'] as Timestamp?)?.toDate();
-              final bool isRead = data['isRead'] ?? false; // 判斷已讀/未讀
+              final bool isRead = data['isRead'] == true || data['read'] == true; // 新舊已讀欄位相容
               final String bodyText = (data['body'] ?? '').toString();
               final String mailType = (data['type'] ?? '').toString();
               final String mailReportId = (data['reportId'] ?? '').toString().trim();
@@ -576,6 +608,10 @@ class _InboxPageState extends State<InboxPage> {
                     debugPrint(
                       "🚀 傳送門啟動：有人關注我，看看他是誰",
                     );
+                  } else if (type == 'voice_request') {
+                    if (context.mounted) {
+                      await _openVoiceRequestMail(context, mail: data);
+                    }
                   } else if (type == 'creator_fan_mail') {
                     if (context.mounted) {
                       await _openCreatorFanMail(context, data);

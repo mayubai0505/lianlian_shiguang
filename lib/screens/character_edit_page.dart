@@ -31,7 +31,8 @@ import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 class CharacterEditPage extends StatefulWidget {
   final DocumentSnapshot? draftDoc;
   final Character? character;
-  const CharacterEditPage({super.key, this.character,this.draftDoc});
+  final bool openVoiceTab;
+  const CharacterEditPage({super.key, this.character,this.draftDoc, this.openVoiceTab = false});
 
   @override
   _CharacterEditPageState createState() => _CharacterEditPageState();
@@ -3094,6 +3095,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         },
         child: DefaultTabController(
           length: 4,
+          initialIndex: widget.openVoiceTab ? 1 : 0,
           child: Scaffold(
             backgroundColor: theme.scaffoldBackgroundColor,
             appBar: AppBar(

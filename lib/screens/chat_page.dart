@@ -4590,7 +4590,60 @@ class _ChatPageState extends State<ChatPage> {
   }
 
 // --- 處理通話按鈕點擊 ---
+  // 聊天室所有通話入口統一檢查：沒有聲音不能進入確認頁或扣花花。
+  bool get _characterHasCallVoice =>
+      (widget.character.voiceId ?? '').trim().isNotEmpty;
+
+  void _showMissingCallVoiceDialog() {
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            const Icon(Icons.volume_mute_rounded, color: Colors.orangeAccent),
+            const SizedBox(width: 8),
+            Flexible(child: Text(l10n.no_voice_available)),
+          ],
+        ),
+        content: Text(l10n.chat_no_voice_msg(widget.character.name)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.cancelButton),
+          ),
+          FilledButton.icon(
+            icon: const Icon(Icons.touch_app_rounded),
+            label: Text(l10n.chat_poke_btn),
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+              try {
+                await _sendPoke(
+                  widget.character.id,
+                  widget.character.createdBy,
+                  widget.character.name,
+                );
+                if (mounted) ToastUtils.success(context, l10n.chat_poke_success);
+              } catch (error) {
+                debugPrint('❌ 聲音邀請寄送失敗：$error');
+                if (mounted) {
+                  ToastUtils.error(context, '聲音邀請暫時無法送出，請稍後再試');
+                }
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _handleCallPress(BuildContext context) async {
+    if (!_characterHasCallVoice) {
+      _showMissingCallVoiceDialog();
+      return;
+    }
     final l10n = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
 
@@ -5158,6 +5211,10 @@ class _ChatPageState extends State<ChatPage> {
 
   // 🚀 執行通話導航與扣款 (ChatPage 專用版)
   void _executeCallSequence(String selectedLanguage, bool shouldSave) async {
+    if (!_characterHasCallVoice) {
+      _showMissingCallVoiceDialog();
+      return;
+    }
     final l10n = AppLocalizations.of(context)!;
     if (_isCalling) return;
     String? customBgUrl;
@@ -7582,41 +7639,21 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  // 使用後端驗證收件者、角色歸屬並確保同一玩家同一角色只寄送一次。
   Future<void> _sendPoke(
       String characterId, String creatorId, String characterName) async {
-    final l10n = AppLocalizations.of(context)!;
-    final currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser == null) return;
-    // 取得玩家名稱，若無則顯示「神秘玩家」
-    final String playerName =
-        currentUser.displayName ?? l10n.chat_mysterious_player;
-
-    try {
-      // 🌟 在通知集合中新增一筆「聲線請求」
-      await FirebaseFirestore.instance.collection('mailbox').add({
-        'type': 'voice_request',
-        'fromUserId': currentUser.uid,
-        'fromUserName': playerName,
-        'toUserId': creatorId, // 接收者：角色的創作者
-        'characterId': characterId,
-        'characterName': characterName,
-        'message': l10n.chat_poke_message(playerName, characterName),
-        'createdAt': FieldValue.serverTimestamp(),
-        'isRead': false, // 預設為未讀，之後可用來控制小紅點
-      });
-
-      // 🌟 同時更新角色的「被期待次數」，方便創作者統計人氣
-      await FirebaseFirestore.instance
-          .collection('artifacts')
-          .doc(_appId) // 請確保這裡有妳的 appId
-          .collection('public_characters')
-          .doc(characterId)
-          .update({
-        'poke_count': FieldValue.increment(1),
-      });
-    } catch (e) {
-      debugPrint("發送戳戳失敗: $e");
-      rethrow;
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) throw StateError('請先登入');
+    final result = await FirebaseFunctions.instanceFor(region: 'asia-east1')
+        .httpsCallable('requestCharacterVoice',
+        options: HttpsCallableOptions(timeout: const Duration(seconds: 30)))
+        .call({'characterId': characterId});
+    final data = result.data;
+    final already = data is Map && data['alreadyRequested'] == true;
+    if (already) {
+      debugPrint('ℹ️ 玩家已提出過角色聲音邀請：$characterId');
+    } else {
+      debugPrint('✅ 角色聲音邀請已送至創作者信箱：$characterId');
     }
   }
 
@@ -9902,72 +9939,8 @@ class _ChatPageState extends State<ChatPage> {
               onPressed: () {
                 // 🌟 1. 先關閉對話框選單
                 Navigator.pop(context);
-                // 🌟 2. 判斷是否有聲線 ID
-                if (widget.character.voiceId == null ||
-                    widget.character.voiceId!.isEmpty) {
-                  // 🎭 3. 跳出第一個 SnackBar：提示目前沒聲音 + 「戳一下」按鈕
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext dialogContext) => AlertDialog(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)),
-                      title: Row(
-                        children: [
-                          const Icon(Icons.volume_mute_rounded,
-                              color: Colors.orangeAccent, size: 28),
-                          const SizedBox(width: 8),
-                          Text(l10n.no_voice_available,
-                              style: TextStyle(
-                                  color:
-                                  Theme.of(context).colorScheme.onSurface)),
-                        ],
-                      ),
-                      // 這裡放入你原本的沒語音提示文字
-                      content: Text(
-                          l10n.chat_no_voice_msg(widget.character.name),
-                          style: const TextStyle(fontSize: 16)),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(dialogContext),
-                          child: Text(l10n.cancelButton ?? '取消',
-                              style: const TextStyle(color: Colors.grey)),
-                        ),
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.pinkAccent,
-                            foregroundColor: Colors.white,
-                            shape: const StadiumBorder(),
-                          ),
-                          icon: const Icon(Icons.touch_app,
-                              size: 18), // 加個可愛的點擊圖示
-                          label: Text(l10n.chat_poke_btn), // 你的「戳一下」按鈕
-                          onPressed: () async {
-                            // 1. 玩家按下戳戳後，先關閉這個催更彈窗
-                            Navigator.pop(dialogContext);
-
-                            // 2. 執行你的雲端戳戳邏輯
-                            try {
-                              await _sendPoke(
-                                  widget.character.id,
-                                  widget.character.createdBy,
-                                  widget.character.name);
-
-                              // 🌟 3. 成功後，華麗呼叫你的自動消失小彈窗！
-                              if (mounted) {
-                                _showCenterToast(l10n.chat_poke_success);
-                              }
-                            } catch (e) {
-                              debugPrint("戳戳失敗: $e");
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                  );
-                } else {
-                  // ✅ 6. 如果有聲線 ID，直接進入打電話流程
-                  _handleCallPress(context);
-                }
+                // 全部通話入口統一由 _handleCallPress 做聲線驗證。
+                _handleCallPress(context);
               },
               child: Container(
                 padding: const EdgeInsets.all(12),

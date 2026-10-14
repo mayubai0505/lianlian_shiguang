@@ -192,10 +192,14 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
 
   // 📈 營運分析趨勢切換：day / week / month
   String _analyticsTrendPeriod = 'day';
+  bool _analyticsIncludeTesters = false;
 
   // 📊 Dashboard Future 快取
   // 避免只切換「日 / 週 / 月」時，整頁重新呼叫 API 並顯示 loading。
   late Future<Map<String, dynamic>> _dashboardFuture;
+  late Future<Map<String, dynamic>> _operationsAnalyticsFuture;
+  // 進階統計獨立狀態，避免重新指派 Future 造成 FutureBuilder 等待狀態。
+  Map<String, dynamic> _dashboardExtras = <String, dynamic>{};
 
   // 後台 2.0 狀態
   String _supportStatus = 'pending';
@@ -236,8 +240,9 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   @override
   void initState() {
     super.initState();
-
+    debugAdminAuth();
     _dashboardFuture = _loadDashboardData();
+    _operationsAnalyticsFuture = _loadOperationsAnalyticsDirect();
     _playersFuture = _queryAdminPlayers('');
 
     _tabController = TabController(
@@ -295,6 +300,25 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     _eventPageBottomLeftUrlController.dispose();
     _eventPageBottomRightUrlController.dispose();
     super.dispose();
+  }
+
+  Future<void> debugAdminAuth() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    debugPrint('ADMIN AUTH user exists: ${user != null}');
+
+    if (user == null) return;
+
+    debugPrint('ADMIN AUTH UID: ${user.uid}');
+    debugPrint('ADMIN AUTH project: ${FirebaseAuth.instance.app.options.projectId}');
+
+    try {
+      final token = await user.getIdTokenResult(true);
+      debugPrint('ADMIN AUTH token exists: ${token.token?.isNotEmpty == true}');
+      debugPrint('ADMIN AUTH token expiry: ${token.expirationTime}');
+    } catch (e) {
+      debugPrint('ADMIN AUTH token refresh failed: $e');
+    }
   }
 
   Future<void> _backfillMomentSearchKeywords() async {
@@ -977,24 +1001,22 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
 
       await batch.commit();
 
+      // 已寄信且結案：更新總覽計數，保留中央 Toast 顯示方式。
+      if (mounted) {
+        setState(() {
+          _dashboardFuture = _loadDashboardData();
+        });
+      }
+
+      // 資料庫批次提交成功後，使用既有「畫面中間」通知，不使用底部 SnackBar。
+      debugPrint('✅ 客服回覆已提交：reportId=$reportId, uid=$reporterId, flowers=$flowerAmount');
       if (!mounted) return;
-
-      // StreamBuilder 可能正因 resolved 而重建，
-      // 再讓一個 frame 過去。
-      await Future<void>.delayed(
-        const Duration(
-          milliseconds: 150,
-        ),
-      );
-
-      if (!mounted) return;
-
       ToastUtils.showCenterToast(
         context,
-        flowerAmount > 0 ? '已處理並補償 $flowerAmount 點花花' : '已處理並寄送回信！',
-        customIcon: flowerAmount > 0
-            ? Icons.local_florist_rounded
-            : Icons.mark_email_read_rounded,
+        flowerAmount > 0
+            ? '已成功寄送客服回覆，並補償 $flowerAmount 朵花花'
+            : '已成功寄送客服回覆給玩家',
+        customIcon: Icons.mark_email_read_rounded,
       );
     } catch (e, stackTrace) {
       debugPrint(
@@ -2224,26 +2246,87 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     }
     final data = Map<String, dynamic>.from(dashboardResult.data as Map);
     if (mounted && serial == _dashboardRequestSerial) {
+      _dashboardExtras = <String, dynamic>{'operationsAnalyticsLoading': true};
       unawaited(_loadDashboardExtras(data, serial));
     }
     return data;
   }
 
+  // v2.0: 營運分析與基本總覽分開監聽，避免非同步 extras 更新後被隱藏。
+  Future<Map<String, dynamic>> _loadOperationsAnalyticsDirect() async {
+    debugPrint('📊 [v2.0] 營運分析專用 Future 開始請求');
+    try {
+      final result = await _functions.httpsCallable(
+        'getAdminOperationsAnalytics',
+        options: HttpsCallableOptions(timeout: const Duration(seconds: 90)),
+      ).call().timeout(const Duration(seconds: 95));
+      if (result.data is! Map) {
+        throw const FormatException('營運分析回傳格式不是 Map');
+      }
+      final analytics = Map<String, dynamic>.from(result.data as Map);
+      debugPrint('📊 [v2.0] 營運分析已取得，欄位=${analytics.keys.toList()}, month=${analytics['month'] is Map}');
+      if (analytics.isEmpty) {
+        throw const FormatException('營運分析回傳空資料');
+      }
+      return analytics;
+    } catch (error, stackTrace) {
+      debugPrint('❌ [v2.0] 營運分析專用 Future 失敗：$error');
+      debugPrintStack(stackTrace: stackTrace);
+      rethrow;
+    }
+  }
+
   Future<void> _loadDashboardExtras(Map<String, dynamic> data, int serial) async {
-    Future<void> loadOne(String functionName, void Function(Map<String, dynamic>) merge) async {
+    // 每次載入總覽，都讓營運分析呈現明確的等待 / 失敗 / 成功狀態。
+    data['operationsAnalyticsLoading'] = true;
+    debugPrint('📊 營運分析開始載入，serial=$serial');
+    data.remove('operationsAnalyticsError');
+
+    void publish() {
+      if (!mounted || serial != _dashboardRequestSerial) return;
+      setState(() {
+        _dashboardExtras = Map<String, dynamic>.from(data);
+      });
+    }
+
+    Future<void> loadOne(
+        String functionName,
+        void Function(Map<String, dynamic>) merge,
+        ) async {
       try {
+        debugPrint('📊 $functionName 開始請求');
+        // 額外在 Future 層設置明確的逾時，避免 SDK/連線等待無限停住。
         final result = await _functions.httpsCallable(
           functionName,
           options: HttpsCallableOptions(timeout: const Duration(seconds: 90)),
-        ).call();
-        if (result.data is! Map || !mounted || serial != _dashboardRequestSerial) return;
+        ).call().timeout(
+          const Duration(seconds: 95),
+          onTimeout: () => throw TimeoutException('$functionName 等待超過 95 秒'),
+        );
+        debugPrint('📊 $functionName 已收到回應');
+        if (!mounted || serial != _dashboardRequestSerial) return;
+        if (result.data is! Map) {
+          throw const FormatException('後端回傳資料格式不是 Map');
+        }
         merge(Map<String, dynamic>.from(result.data as Map));
-        // 已完成的 Future 直接重建，不顯示整頁 loading。
-        setState(() {
-          _dashboardFuture = Future.value(Map<String, dynamic>.from(data));
-        });
-      } catch (error) {
+        if (functionName == 'getAdminOperationsAnalytics') {
+          data['operationsAnalyticsLoading'] = false;
+          data.remove('operationsAnalyticsError');
+          debugPrint('✅ 營運分析已成功載入');
+        }
+        publish();
+      } catch (error, stackTrace) {
         debugPrint('⚠️ $functionName 載入失敗，其他統計保持可用：$error');
+        debugPrintStack(stackTrace: stackTrace);
+        if (!mounted || serial != _dashboardRequestSerial) return;
+        if (functionName == 'getAdminOperationsAnalytics') {
+          data['operationsAnalyticsLoading'] = false;
+          debugPrint('❌ 營運分析讀取失敗，顯示錯誤卡片：$error');
+          data['operationsAnalyticsError'] = error is FirebaseFunctionsException
+              ? '[${error.code}] ${error.message ?? '未提供詳細原因'}'
+              : error.toString();
+          publish();
+        }
       }
     }
 
@@ -2254,7 +2337,6 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         data['flowerGranted'] = (value['flowerGranted'] as num?)?.toInt() ?? 0;
         data['flowerSpent'] = (value['flowerSpent'] as num?)?.toInt() ?? 0;
       }),
-      loadOne('getAdminOperationsAnalytics', (value) => data['operationsAnalytics'] = value),
     ]);
   }
 
@@ -2272,23 +2354,27 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
 
   Future<List<DocumentSnapshot<Map<String, dynamic>>>> _queryAdminPlayers(String query) async {
     final users = FirebaseFirestore.instance.collection('users');
-    if (query.isEmpty) {
+    final needle = query.trim().toLowerCase();
+    if (needle.isEmpty) {
       final snapshot = await users.limit(35).get();
       return snapshot.docs;
     }
 
-    // Firestore 不支援任意子字串搜尋；採 UID 精確比對、玩家 ID／
-    // 暱稱／email 精確比對，以及暱稱／玩家 ID 前綴查詢。
-    final requests = <Future<QuerySnapshot<Map<String, dynamic>>>>[
-      users.where('playerID', isEqualTo: query).limit(15).get(),
-      users.where('nickname', isEqualTo: query).limit(15).get(),
-      users.where('email', isEqualTo: query).limit(15).get(),
-      users.orderBy('nickname').startAt([query]).endAt(['$query\uf8ff']).limit(25).get(),
-      users.orderBy('playerID').startAt([query]).endAt(['$query\uf8ff']).limit(25).get(),
+    // 先用索引查常見欄位；再有限量地補查中文暱稱包含搜尋。
+    // Firestore 原生不支援 contains；避免無限制掃描所有玩家。
+    final fields = <String>[
+      'nickname', 'playerID', 'email', 'displayName', 'name', 'username',
     ];
+    final requests = <Future<QuerySnapshot<Map<String, dynamic>>>>[];
+    for (final field in fields) {
+      requests.add(users.where(field, isEqualTo: query.trim()).limit(15).get());
+      requests.add(users.orderBy(field).startAt([query.trim()]).endAt(['${query.trim()}\uf8ff']).limit(25).get());
+    }
     final results = await Future.wait(requests.map((request) async {
-      try { return await request; } catch (error) {
-        debugPrint('⚠️ 玩家搜尋其中一個索引查詢失敗：$error');
+      try {
+        return await request;
+      } catch (error) {
+        debugPrint('⚠️ 玩家搜尋索引查詢失敗：$error');
         return null;
       }
     }));
@@ -2298,11 +2384,34 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         output[doc.id] = doc;
       }
     }
-    // UID 精確讀取單一文件，避免掃描 users；不存在也不影響其他查詢。
     try {
-      final doc = await users.doc(query).get();
+      final doc = await users.doc(query.trim()).get();
       if (doc.exists) output[doc.id] = doc;
-    } catch (_) {}
+    } catch (error) {
+      debugPrint('⚠️ 玩家 UID 搜尋失敗：$error');
+    }
+
+    // 索引無結果時，最多補查前 300 位玩家的顯示名稱包含比對。
+    // 這不是完整全站搜尋；資料量大時應建立 searchKeywords 索引。
+    if (output.isEmpty) {
+      try {
+        final candidates = await users.limit(300).get();
+        for (final doc in candidates.docs) {
+          final data = doc.data();
+          final searchable = <String>[
+            doc.id,
+            for (final field in fields) data[field]?.toString() ?? '',
+          ];
+          if (searchable.any((text) => text.toLowerCase().contains(needle))) {
+            output[doc.id] = doc;
+          }
+        }
+        debugPrint('🔎 玩家包含搜尋：掃描 ${candidates.docs.length} 筆，符合 ${output.length} 筆');
+      } catch (error) {
+        debugPrint('⚠️ 玩家包含搜尋失敗：$error');
+      }
+    }
+    debugPrint('🔎 玩家搜尋「$query」結果：${output.length} 筆');
     return output.values.toList();
   }
 
@@ -2876,15 +2985,24 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     );
   }
 
-  Widget _buildOperationsAnalytics(Map<String, dynamic> analytics) {
-    if (analytics.isEmpty) {
+  Widget _buildOperationsAnalytics(
+      Map<String, dynamic> analytics, {
+        required ValueChanged<String> onTrendPeriodChanged,
+        required VoidCallback onAudienceChanged,
+      }) {
+    final comparison = _asStringMap(analytics['economyComparison']);
+    final audienceData = _asStringMap(comparison[
+    _analyticsIncludeTesters ? 'allPlayers' : 'excludingInternalTesters'
+    ]);
+    final displayedAnalytics = audienceData.isNotEmpty ? audienceData : analytics;
+    if (displayedAnalytics.isEmpty) {
       return const SizedBox.shrink();
     }
 
-    final month = _asStringMap(analytics['month']);
-    final grants = _asStringMap(analytics['grantSources']);
-    final spend = _asStringMap(analytics['spendUses']);
-    final trends = _asStringMap(analytics['trends']);
+    final month = _asStringMap(displayedAnalytics['month']);
+    final grants = _asStringMap(displayedAnalytics['grantSources']);
+    final spend = _asStringMap(displayedAnalytics['spendUses']);
+    final trends = _asStringMap(displayedAnalytics['trends']);
     final inventory = _asStringMap(analytics['flowerInventory']);
     final inventoryAll = _asStringMap(inventory['allPlayers']);
     final inventoryNormal = _asStringMap(inventory['excludingInternalTesters']);
@@ -2914,6 +3032,23 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
             title: '營運數據分析',
             subtitle: '在原本後台資料之外，加上本月營收、花花來源 / 用途、模式比例與趨勢。',
             icon: Icons.insights_outlined,
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 6,
+            children: [
+              ChoiceChip(
+                label: const Text('正式玩家（排除內測）'),
+                selected: !_analyticsIncludeTesters,
+                onSelected: (_) => onAudienceChanged(),
+              ),
+              ChoiceChip(
+                label: const Text('全體玩家（含內測）'),
+                selected: _analyticsIncludeTesters,
+                onSelected: (_) => onAudienceChanged(),
+              ),
+            ],
           ),
           const SizedBox(height: 14),
           GridView.count(
@@ -3010,7 +3145,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
           const SizedBox(height: 12),
           _analyticsSectionTitle(
             title: '玩家花花庫存分布',
-            subtitle: '同時看全體與排除內測玩家，避免早期測試花花把正式營運數據拉高。',
+            subtitle: '內測標記同時套用至發放、消耗、儲值、營收及日／週／月趨勢；上方可切換全體與正式玩家。',
             icon: Icons.inventory_2_outlined,
           ),
           const SizedBox(height: 10),
@@ -3141,9 +3276,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                           showCheckmark: false,
                           onSelected: (_) {
                             if (_analyticsTrendPeriod == option.$1) return;
-                            setState(() {
-                              _analyticsTrendPeriod = option.$1;
-                            });
+                            onTrendPeriodChanged(option.$1);
                           },
                         ),
                     ],
@@ -3203,7 +3336,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
           );
         }
 
-        final data = snapshot.data ?? <String, dynamic>{};
+        final data = <String, dynamic>{...?(snapshot.data), ..._dashboardExtras};
         String v(String key) => '${data[key] ?? 0}';
 
         return RefreshIndicator(
@@ -3211,6 +3344,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
             final nextFuture = _loadDashboardData();
             setState(() {
               _dashboardFuture = nextFuture;
+              _operationsAnalyticsFuture = _loadOperationsAnalyticsDirect();
             });
             await nextFuture;
           },
@@ -3237,7 +3371,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                     _adminStatCard(label: '今日活躍玩家', value: v('todayActiveUsers'), icon: Icons.bolt_outlined, caption: '聊天室活動'),
                     _adminStatCard(label: '目前公開角色', value: v('publicCharacters'), icon: Icons.auto_awesome_outlined),
                     _adminStatCard(label: '今日新增角色', value: v('todayNewCharacters'), icon: Icons.person_pin_circle_outlined),
-                    _adminStatCard(label: '待處理客服', value: v('pendingReports'), icon: Icons.support_agent_outlined),
+                    _adminStatCard(label: '待處理／處理中客服', value: v('pendingReports'), icon: Icons.support_agent_outlined),
                     _adminStatCard(label: '今日活躍聊天室', value: v('todayChatSessions'), icon: Icons.forum_outlined),
                     _adminStatCard(label: '今日花花發放 / 消耗', value: '${v('flowerGranted')} / ${v('flowerSpent')}', icon: Icons.local_florist_outlined),
                     _adminStatCard(label: '有效月卡人數', value: v('monthlyActive'), icon: Icons.workspace_premium_outlined),
@@ -3260,8 +3394,59 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                   title: '最近 7 天聊天室活動',
                 ),
               ),
-              _buildOperationsAnalytics(
-                _asStringMap(data['operationsAnalytics']),
+              FutureBuilder<Map<String, dynamic>>(
+                future: _operationsAnalyticsFuture,
+                builder: (context, analyticsSnapshot) {
+                  if (analyticsSnapshot.connectionState != ConnectionState.done) {
+                    return const Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Center(child: Text('營運數據分析載入中…')),
+                    );
+                  }
+                  if (analyticsSnapshot.hasError) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('營運數據分析讀取失敗',
+                                  style: TextStyle(fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 8),
+                              SelectableText(analyticsSnapshot.error.toString()),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                  final analytics = analyticsSnapshot.data ?? <String, dynamic>{};
+                  if (analytics.isEmpty) {
+                    return const Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Text('營運分析回傳空資料，尚無可顯示圖表。'),
+                    );
+                  }
+                  // 僅重建營運圖表，不必重新呼叫後端或等待總覽 Future。
+                  return StatefulBuilder(
+                    builder: (context, refreshAnalytics) =>
+                        _buildOperationsAnalytics(
+                          analytics,
+                          onTrendPeriodChanged: (period) {
+                            refreshAnalytics(() {
+                              _analyticsTrendPeriod = period;
+                            });
+                          },
+                          onAudienceChanged: () {
+                            refreshAnalytics(() {
+                              _analyticsIncludeTesters = !_analyticsIncludeTesters;
+                            });
+                          },
+                        ),
+                  );
+                },
               ),
             ],
           ),
@@ -3337,8 +3522,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         title: Text(currentlyTester ? '取消內測標記' : '標記為內測玩家'),
         content: Text(
           currentlyTester
-              ? '取消後，$displayName 會重新納入「排除內測玩家」的正式營運庫存統計。'
-              : '標記後，$displayName 仍會出現在全體數據，但會從正式玩家庫存統計中排除。',
+              ? '取消後，$displayName 會重新納入正式營運統計（花花、營收、趨勢）。'
+              : '標記後，$displayName 仍會出現在全體數據，但會從正式玩家營運統計中排除。',
         ),
         actions: [
           TextButton(
@@ -3355,30 +3540,50 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
 
     if (confirmed != true || !mounted) return;
 
-    await FirebaseFirestore.instance.collection('users').doc(uid).set(
-      {
-        'analyticsExcludeFromEconomy': !currentlyTester,
+    final targetValue = !currentlyTester;
+    final userRef = FirebaseFirestore.instance.collection('users').doc(uid);
+    try {
+      debugPrint('🧪 內測標記準備寫入：uid=$uid, target=$targetValue');
+      // 直接更新既有玩家文件；文件不存在時不能誤建一個空白帳號。
+      await userRef.update({
+        'analyticsExcludeFromEconomy': targetValue,
         'analyticsTesterUpdatedAt': FieldValue.serverTimestamp(),
         'analyticsTesterUpdatedBy': FirebaseAuth.instance.currentUser?.uid ?? '',
-      },
-      SetOptions(merge: true),
-    );
+      });
 
-    if (!mounted) return;
+      // 強制向伺服器驗證，不以 Firestore 本機快取判斷是否成功。
+      final verifiedDoc = await userRef.get(const GetOptions(source: Source.server));
+      final actualValue = verifiedDoc.data()?['analyticsExcludeFromEconomy'];
+      if (!verifiedDoc.exists || actualValue != targetValue) {
+        throw StateError('伺服器驗證失敗：預期 $targetValue，實際 $actualValue');
+      }
+      debugPrint('✅ 內測標記伺服器驗證成功：uid=$uid, value=$actualValue');
 
-    ToastUtils.showCenterToast(
-      context,
-      currentlyTester ? '已取消內測玩家標記' : '已標記為內測玩家',
-      customIcon: currentlyTester
-          ? Icons.person_outline_rounded
-          : Icons.science_outlined,
-    );
-
-    final nextFuture = _loadDashboardData();
-    setState(() {
-      _dashboardFuture = nextFuture;
-    });
-    await nextFuture;
+      if (!mounted) return;
+      setState(() {
+        _playersFuture = _queryAdminPlayers(_playerSearch.trim());
+        _dashboardFuture = _loadDashboardData();
+        _operationsAnalyticsFuture = _loadOperationsAnalyticsDirect();
+      });
+      ToastUtils.showCenterToast(
+        context,
+        targetValue ? '內測標記已儲存並通過伺服器驗證' : '已取消內測標記並通過伺服器驗證',
+        customIcon: targetValue ? Icons.science_outlined : Icons.person_outline_rounded,
+      );
+    } catch (error, stackTrace) {
+      debugPrint('❌ 內測標記寫入或驗證失敗：uid=$uid, error=$error');
+      debugPrintStack(stackTrace: stackTrace);
+      if (!mounted) return;
+      ToastUtils.showCenterToast(
+        context,
+        '內測標記未能確認儲存：$error',
+        isError: true,
+      );
+      // 刷新清單，避免畫面留著可能過期的標記。
+      setState(() {
+        _playersFuture = _queryAdminPlayers(_playerSearch.trim());
+      });
+    }
   }
 
   Future<void> _toggleUserAdminRestriction({
@@ -3450,7 +3655,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
           child: TextField(
             decoration: const InputDecoration(
               prefixIcon: Icon(Icons.search_rounded),
-              hintText: '輸入 UID / 玩家 ID / 暱稱開頭 / Email',
+              hintText: '搜尋暱稱 / 玩家 ID / UID / Email',
             ),
             onChanged: _onAdminPlayerSearchChanged,
           ),
@@ -3469,7 +3674,9 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
               final docs = snapshot.data ?? <DocumentSnapshot<Map<String, dynamic>>>[];
 
               if (docs.isEmpty) {
-                return const Center(child: Text('找不到符合的玩家'));
+                return Center(child: Text(_playerSearch.isEmpty
+                    ? '目前沒有玩家資料'
+                    : '找不到「$_playerSearch」；包含搜尋僅補查前 300 筆玩家資料'));
               }
 
               return ListView.separated(
@@ -3521,7 +3728,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                         _adminInfoLine('月卡狀態', monthlyActive ? '有效' : '未啟用 / 已到期'),
                         _adminInfoLine('註冊時間', created == null ? '未記錄' : DateFormat('yyyy/MM/dd HH:mm').format(created)),
                         _adminInfoLine('帳號狀態', suspended ? '已停權' : '正常'),
-                        _adminInfoLine('營運統計身分', internalTester ? '內測玩家（正式庫存統計排除）' : '一般玩家'),
+                        _adminInfoLine('營運統計身分', internalTester ? '內測玩家（正式營運統計排除）' : '一般玩家'),
                         const SizedBox(height: 14),
                         Wrap(
                           spacing: 8,
@@ -3686,6 +3893,10 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     }, SetOptions(merge: true));
 
     if (!mounted) return;
+    // 狀態變更後同步刷新總覽計數。客服列表由 snapshots 自動更新。
+    setState(() {
+      _dashboardFuture = _loadDashboardData();
+    });
 
     // 待處理案件改成「處理中」後，直接切到處理中清單，
     // 避免案件看起來像突然消失。
@@ -3711,6 +3922,56 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
           : status == 'rejected'
           ? Icons.do_not_disturb_alt_rounded
           : Icons.check_circle_outline_rounded,
+    );
+  }
+
+  Future<void> _showSupportReportImage(String imageUrl) async {
+    final url = imageUrl.trim();
+    if (url.isEmpty || !mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => Dialog(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 850, maxHeight: 700),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 8, 4, 4),
+                child: Row(
+                  children: [
+                    const Expanded(child: Text('玩家回報附圖')),
+                    IconButton(
+                      tooltip: '關閉',
+                      onPressed: () => Navigator.of(dialogContext).pop(),
+                      icon: const Icon(Icons.close_rounded),
+                    ),
+                  ],
+                ),
+              ),
+              Flexible(
+                child: InteractiveViewer(
+                  minScale: 0.5,
+                  maxScale: 5,
+                  child: Image.network(
+                    url,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      debugPrint('❌ 客服附圖放大讀取失敗：$error');
+                      return Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: SelectableText(
+                          '圖片無法讀取，請檢查 Firebase Storage 權限或圖片網址。\n\n錯誤：$error\n\n圖片網址：$url',
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -3920,8 +4181,44 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                               const SizedBox(height: 8),
                               Text(text, style: GoogleFonts.notoSerifTc(fontSize: 12.5, height: 1.55)),
                               if (imageUrl.isNotEmpty) ...[
-                                const SizedBox(height: 9),
-                                Text('含附件圖片', style: TextStyle(fontSize: 11, color: primary)),
+                                const SizedBox(height: 12),
+                                Text('玩家附圖', style: TextStyle(fontSize: 12, color: primary, fontWeight: FontWeight.w600)),
+                                const SizedBox(height: 7),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Material(
+                                    color: theme.colorScheme.surfaceContainerHighest,
+                                    child: InkWell(
+                                      onTap: () => _showSupportReportImage(imageUrl),
+                                      child: SizedBox(
+                                        width: 220,
+                                        height: 145,
+                                        child: Image.network(
+                                          imageUrl,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (context, error, stackTrace) {
+                                            debugPrint('❌ 客服附圖縮圖讀取失敗：$error');
+                                            return Padding(
+                                              padding: const EdgeInsets.all(12),
+                                              child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  const Icon(Icons.broken_image_outlined, size: 30),
+                                                  const SizedBox(height: 7),
+                                                  const Text('圖片無法讀取', style: TextStyle(fontSize: 12)),
+                                                  const SizedBox(height: 4),
+                                                  const Text('點此查看錯誤及圖片網址', textAlign: TextAlign.center, style: TextStyle(fontSize: 10)),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                const Text('點圖片可放大查看', style: TextStyle(fontSize: 11, color: Colors.grey)),
                               ],
                               if (resolved && (data['adminReply']?.toString().trim().isNotEmpty ?? false)) ...[
                                 const SizedBox(height: 10),
@@ -7822,7 +8119,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-        final data = snapshot.data ?? <String, dynamic>{};
+        final data = <String, dynamic>{...?(snapshot.data), ..._dashboardExtras};
         final recommendation =
         Map<String, dynamic>.from(
           data['recommendationConversion'] ??
@@ -9102,10 +9399,22 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
           body: TabBarView(
             controller: _tabController,
             children: [
-              _LazyAdminTab(builder: _buildDashboardTab),
-              _LazyAdminTab(builder: _buildPlayersTab),
-              _LazyAdminTab(builder: _buildSupportCenterTab),
-              _LazyAdminTab(builder: _buildCreatorAdminTab),
+              _LazyAdminTab(
+                builder: _buildDashboardTab,
+                cacheChild: false, // 讓客服狀態更新後總覽計數同步顯示
+              ),
+              _LazyAdminTab(
+                builder: _buildPlayersTab,
+                cacheChild: false, // 玩家搜尋與內測標記更新需重建畫面
+              ),
+              _LazyAdminTab(
+                builder: _buildSupportCenterTab,
+                cacheChild: false, // 讓客服狀態篩選、案件操作立即重建
+              ),
+              _LazyAdminTab(
+                builder: _buildCreatorAdminTab,
+                cacheChild: false, // 創作者審核狀態、篩選及操作按鈕需即時更新
+              ),
               _LazyAdminTab(builder: _buildContentCenterTab),
               _LazyAdminTab(
                 builder: _buildCampaignCenterTab,
