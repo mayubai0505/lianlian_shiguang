@@ -14,6 +14,7 @@ import 'screens/main_page.dart';
 import 'screens/chat_page.dart';
 import 'page/announcement_page.dart';
 import 'services/theme_notifier.dart';
+import 'services/account_preferences_sync.dart';
 import 'firebase_options.dart';
 import 'services/locale_notifier.dart';
 import 'package:flutter/foundation.dart';
@@ -282,6 +283,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   String? _lastHomeWidgetLaunchUri;
   DateTime? _lastHomeWidgetLaunchAt;
   String? _lastSyncedNotificationLocale;
+  AccountPreferencesSync? _accountSync;
+  StreamSubscription<User?>? _accountAuthSubscription;
+  bool _accountSyncInitialized = false;
 
   String _notificationLocaleCode(Locale locale) {
     if (locale.languageCode == 'zh') {
@@ -319,6 +323,20 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_accountSyncInitialized) return;
+    _accountSyncInitialized = true;
+    _accountSync = AccountPreferencesSync(
+      context.read<ThemeNotifier>(),
+      context.read<LocaleNotifier>(),
+    );
+    _accountAuthSubscription = FirebaseAuth.instance.authStateChanges().listen(
+          (user) => _accountSync?.bindAccount(user?.uid),
+    );
+  }
+
+  @override
   void initState() {
     super.initState();
 
@@ -344,6 +362,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    _accountAuthSubscription?.cancel();
+    _accountSync?.dispose();
     _homeWidgetClickSubscription?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();

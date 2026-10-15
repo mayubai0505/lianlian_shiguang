@@ -297,19 +297,44 @@ class CreatorStudioPage extends StatelessWidget {
                                   creatorData['creatorVerified'] == true &&
                                   creatorData['creatorDashboardEnabled'] == true;
                               final status = (creatorData['creatorStatus'] ?? 'none').toString();
-                              final String title = verified ? '官方合作創作者專區' : '成為官方合作創作者';
+                              final int revocationCount = (creatorData['creatorRevocationCount'] is num)
+                                  ? (creatorData['creatorRevocationCount'] as num).toInt()
+                                  : (status == 'revoked' ? 1 : 0);
+                              final rawRevokedAt = creatorData['creatorRevokedAt'] ?? creatorData['creatorStatusUpdatedAt'];
+                              final DateTime? revokedAt = rawRevokedAt is Timestamp ? rawRevokedAt.toDate() : null;
+                              final DateTime? reapplyAt = revokedAt?.add(const Duration(days: 3));
+                              final bool permanentlyBlocked = false; // TEST ONLY: 暫不執行正式五次封鎖
+                              final bool withinNoticePeriod = status == 'revoked' &&
+                                  (reapplyAt == null || DateTime.now().isBefore(reapplyAt));
+                              // TEST ONLY: allow submitting during the 3-day notice period.
+                              // Restore !withinNoticePeriod here when enabling production cooldown.
+                              final bool canReapplyRevoked = status == 'revoked' && !permanentlyBlocked;
+                              final String reapplyDate = reapplyAt == null ? '' :
+                              '${reapplyAt.year}/${reapplyAt.month.toString().padLeft(2, '0')}/${reapplyAt.day.toString().padLeft(2, '0')} '
+                                  '${reapplyAt.hour.toString().padLeft(2, '0')}:${reapplyAt.minute.toString().padLeft(2, '0')}';
+                              final String title = verified
+                                  ? '官方合作創作者專區'
+                                  : (status == 'revoked' && withinNoticePeriod)
+                                  ? '合作創作者資格異動通知'
+                                  : '成為官方合作創作者';
                               final String subtitle = verified ? '粉絲管理・創作數據・專屬福利' :
                               switch (status) {
                                 'pending' => '申請已送出・官方審核中',
                                 'contract_pending' => '初審通過・等待合約簽署',
                                 'approved' => '合作認證資料同步中，請稍後再試',
                                 'suspended' => '合作資格已暫停，請聯繫官方',
-                                'revoked' => '合作資格已取消，請聯繫官方',
+                                'revoked' => permanentlyBlocked
+                                    ? '合作資格已累計取消 $revocationCount 次，已達申請次數上限，後續將無法再次提出合作申請。如有疑問，請聯繫官方。'
+                                    : withinNoticePeriod
+                                    ? '您的合作創作者資格已取消。本次為流程測試，不計入正式取消次數。提醒將顯示至 $reapplyDate；目前可以立即重新申請。正式上線後將恢復三天等待期與累計五次限制。'
+                                    : '申請加入合作計畫，解鎖專屬創作者工具',
                                 'rejected' => '申請未通過・可重新申請',
                                 _ => '申請加入合作計畫，解鎖專屬創作者工具',
                               };
-                              final canApply = status == 'none' || status.isEmpty || status == 'rejected';
-                              final benefits = !verified && canApply;
+                              final canApply = status == 'none' || status.isEmpty ||
+                                  status == 'rejected' || canReapplyRevoked;
+                              final benefits = !verified && canApply &&
+                                  !(status == 'revoked' && withinNoticePeriod);
                               return Padding(
                                 padding: const EdgeInsets.only(bottom: 20),
                                 child: Material(
@@ -321,8 +346,25 @@ class CreatorStudioPage extends StatelessWidget {
                                         ? () => Navigator.of(context).push(MaterialPageRoute(
                                         builder: (_) => const OfficialCreatorStudioPage()))
                                         : canApply
-                                        ? () => Navigator.of(context).push(MaterialPageRoute(
-                                        builder: (_) => const _CreatorCooperationApplicationPage()))
+                                        ? () async {
+                                      final submitted = await Navigator.of(context).push<bool>(
+                                        MaterialPageRoute(
+                                          builder: (_) => const _CreatorCooperationApplicationPage(),
+                                        ),
+                                      );
+
+                                      if (!context.mounted || submitted != true) return;
+
+                                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                                        if (!context.mounted) return;
+
+                                        ToastUtils.showCenterToast(
+                                          context,
+                                          '申請已送出，請等待官方審核',
+                                          customIcon: Icons.check_circle_outline_rounded,
+                                        );
+                                      });
+                                    }
                                         : () => showDialog<void>(
                                       context: context,
                                       builder: (ctx) => AlertDialog(
@@ -989,8 +1031,7 @@ class _CreatorCooperationApplicationPageState extends State<_CreatorCooperationA
     final direction = _directionController.text.trim();
     final reason = _reasonController.text.trim();
     if (direction.length < 2 || direction.length > 100 || reason.length < 10 || reason.length > 500) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('創作方向須為 2～100 字，申請原因須為 10～500 字')));
+      ToastUtils.showCenterToast(context, '創作方向須為 2～100 字，申請原因須為 10～500 字', isError: true);
       return;
     }
     final accepted = await showDialog<bool>(
@@ -1014,12 +1055,12 @@ class _CreatorCooperationApplicationPageState extends State<_CreatorCooperationA
       if (!mounted) return;
       final success = result.data is Map && result.data['success'] == true;
       if (!success) throw StateError('申請結果未確認');
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('申請已送出，請等待官方審核')));
-      Navigator.of(context).pop();
+
+      Navigator.of(context).pop(true);
     } on FirebaseFunctionsException catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message ?? '申請失敗，請稍後重試')));
+      if (mounted) ToastUtils.showCenterToast(context, e.message ?? '申請失敗，請稍後重試', isError: true);
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('申請暫時無法送出，請稍後重試')));
+      if (mounted) ToastUtils.showCenterToast(context, '申請暫時無法送出，請稍後重試', isError: true);
     } finally {
       if (mounted) setState(() => _submitting = false);
     }

@@ -15,8 +15,29 @@ class LocaleNotifier extends ChangeNotifier {
 
   int _changeVersion = 0;
 
+  late final Future<void> localReady;
   LocaleNotifier() {
-    _loadLocale();
+    localReady = _loadLocale();
+  }
+
+  String get syncedLocaleTag => _locale.scriptCode == null
+      ? _locale.languageCode
+      : '${_locale.languageCode}_${_locale.scriptCode}';
+
+  Future<void> applySyncedLocale(String localeTag) async {
+    // 與本機讀取共用正規化邏輯；非支援語系不覆蓋。
+    const supported = <String>{'zh_Hant', 'zh_Hans', 'en', 'ja', 'ko',
+      'vi', 'id', 'th', 'ar', 'fr', 'ms', 'es', 'hi', 'pt'};
+    if (!supported.contains(localeTag)) return;
+    _changeVersion++;
+    final parts = localeTag.split('_');
+    final next = _normalizeLocale(parts.length == 2
+        ? Locale.fromSubtags(languageCode: parts[0], scriptCode: parts[1])
+        : Locale(parts[0]));
+    _locale = next;
+    _currentLocale = next;
+    await _saveLocale(next);
+    notifyListeners();
   }
 
   void setLocale(Locale newLocale) {

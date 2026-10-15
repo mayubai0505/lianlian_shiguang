@@ -2254,12 +2254,16 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
 
   // v2.0: 營運分析與基本總覽分開監聽，避免非同步 extras 更新後被隱藏。
   Future<Map<String, dynamic>> _loadOperationsAnalyticsDirect() async {
+    // 後端 Functions 上限為 120 秒；讓前端保留額外的網路傳輸時間。
+    // 長期仍需優化 Firestore 查詢，不能只靠延長 timeout。
+    final stopwatch = Stopwatch()..start();
     debugPrint('📊 [v2.0] 營運分析專用 Future 開始請求');
     try {
       final result = await _functions.httpsCallable(
         'getAdminOperationsAnalytics',
-        options: HttpsCallableOptions(timeout: const Duration(seconds: 90)),
-      ).call().timeout(const Duration(seconds: 95));
+        options: HttpsCallableOptions(timeout: const Duration(seconds: 135)),
+      ).call().timeout(const Duration(seconds: 140));
+      debugPrint('📊 [v2.0] 營運分析網路請求耗時：${stopwatch.elapsedMilliseconds}ms');
       if (result.data is! Map) {
         throw const FormatException('營運分析回傳格式不是 Map');
       }
@@ -8787,7 +8791,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
             targetStatus == 'suspended' ||
             targetStatus == 'revoked';
 
-    final reasonController = TextEditingController();
+    // 使用 TextField.onChanged 保留文字，避免 Dialog 關閉動畫期間提前釋放 Controller。
+    String reasonInput = '';
     final String actionText;
     final String title;
 
@@ -8813,7 +8818,6 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         title = '取消創作者資格';
         break;
       default:
-        reasonController.dispose();
         return;
     }
 
@@ -8835,7 +8839,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
               ),
               const SizedBox(height: 10),
               TextField(
-                controller: reasonController,
+                onChanged: (value) => reasonInput = value,
                 minLines: 3,
                 maxLines: 6,
                 maxLength: 300,
@@ -8864,7 +8868,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
           ),
           FilledButton(
             onPressed: () {
-              final reason = reasonController.text.trim();
+              final reason = reasonInput.trim();
               if (needsReason && reason.isEmpty) {
                 ScaffoldMessenger.of(dialogContext).showSnackBar(
                   const SnackBar(content: Text('請先填寫原因')),
@@ -8880,7 +8884,6 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     );
 
     final reason = result?['reason']?.toString().trim() ?? '';
-    reasonController.dispose();
     if (result == null || !mounted) return;
 
     try {

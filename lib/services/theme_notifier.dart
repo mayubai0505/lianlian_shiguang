@@ -590,8 +590,37 @@ class ThemeNotifier extends ChangeNotifier {
     await prefs.setDouble('app_font_scale', safeScale);
   }
 
+  late final Future<void> localReady;
   ThemeNotifier() {
-    loadTheme();
+    localReady = loadTheme();
+  }
+
+  Map<String, dynamic> get syncedAppearance => {
+    'theme': _currentThemeEnum.name,
+    'font': _currentFont.name,
+    'fontScale': _fontScale,
+    'customColor': _customColor.toARGB32(),
+  };
+
+  Future<void> applySyncedAppearance(Map<String, dynamic> data) async {
+    final themeName = data['theme']?.toString();
+    final fontName = data['font']?.toString();
+    _currentThemeEnum = AppTheme.values.firstWhere(
+            (v) => v.name == themeName, orElse: () => _currentThemeEnum);
+    _currentFont = AppFont.values.firstWhere(
+            (v) => v.name == fontName, orElse: () => _currentFont);
+    if (data['fontScale'] is num) {
+      _fontScale = (data['fontScale'] as num).toDouble().clamp(0.9, 1.35).toDouble();
+    }
+    if (data['customColor'] is num) {
+      _customColor = Color((data['customColor'] as num).toInt());
+    }
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('app_theme', _currentThemeEnum.name);
+    await prefs.setString('app_font', _currentFont.name);
+    await prefs.setDouble('app_font_scale', _fontScale);
+    await prefs.setInt('custom_color_value', _customColor.toARGB32());
+    notifyListeners();
   }
 
   // 在 ThemeNotifier 類別裡新增：

@@ -12,9 +12,8 @@ import 'package:audioplayers/audioplayers.dart'; // ✨ 加上這個
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'dart:typed_data';
-import 'package:flutter/foundation.dart';
 
+import 'package:flutter/foundation.dart';
 
 // 通話介面
 
@@ -245,9 +244,9 @@ class _CallOverlayState extends State<CallOverlay> {
 即使玩家用中文跟你說話，你也必須用 ${widget.selectedLanguage} 回應，並維持角色個性。
 \n⚠️ 【雙語字幕模式（極度重要）】：
 語音必須使用：「${widget.selectedLanguage}」。
-字幕必須使用：「玩家輸入的語言」（請你自動偵測玩家上一句話是用什麼語言打字的。若為開場白，字幕請預設使用繁體中文）。
+字幕必須一律使用「台灣繁體中文（zh-TW）」，不受玩家語音、輸入語言、角色背景或語音語言影響。禁止簡體中文字及中國大陸用語；即使輸入是簡體中文，也要以台灣繁體中文提供字幕。
 你的回覆「必須」同時包含這兩種語言，並嚴格使用「|」符號隔開！
-格式：[${widget.selectedLanguage}語音台詞] | [玩家輸入語言的字幕台詞]
+格式：[${widget.selectedLanguage}語音台詞] | [台灣繁體中文字幕]
 絕對禁止破壞此格式，且不要加任何多餘的說明。
 """;
 

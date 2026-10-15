@@ -13482,40 +13482,88 @@ exports.directCallAiStream = onRequest({
             responseType: 'stream' // 告訴 axios 我們要接水管，不要一次拿一桶
         });
 
-        // 5. 監聽 OpenRouter 噴過來的水滴 (資料碎塊)
-        response.data.on('data', (chunk) => {
-            // OpenRouter 回傳的格式是 SSE (Server-Sent Events)
-            const lines = chunk.toString('utf8').split('\n').filter(line => line.trim() !== '');
+        // 通話回憶只保存「|」後面的字幕：在寫回前將字幕轉成台灣繁體。
+        // 保留「|」前的即時語音原文，不影響 ElevenLabs 的多語音輸出。
+        const callSubtitleToTw = OpenCC.Converter({ from: 'cn', to: 'tw' });
+        let callSubtitleStarted = false;
+        let callSubtitleBuffer = '';
+        let callStreamClosed = false;
+        const flushCallSubtitle = (force = false) => {
+            if (!callSubtitleBuffer) return;
+            // 保留最後六字給詞彙級轉換，避免模型逐字串流時切斷簡繁詞組。
+            const chars = Array.from(callSubtitleBuffer);
+            const flushCount = force ? chars.length : Math.max(0, chars.length - 6);
+            if (flushCount === 0) return;
+            const part = chars.slice(0, flushCount).join('');
+            callSubtitleBuffer = chars.slice(flushCount).join('');
+            res.write(callSubtitleToTw(part));
+        };
+        const closeCallStream = () => {
+            if (callStreamClosed) return;
+            callStreamClosed = true;
+            flushCallSubtitle(true);
+            res.end();
+        };
 
-            for (const line of lines) {
-                if (line === 'data: [DONE]') {
-                    res.end();
-                    return;
-                }
-                if (line.startsWith('data: ')) {
-                    try {
-                        const data = JSON.parse(line.slice(6));
-                        // 把 AI 想到的字單獨抓出來
-                        const content = data.choices[0]?.delta?.content || "";
-                        if (content) {
-                            res.write(content); // 🚀 光速噴射給 Flutter 前端！
-                        }
-                    } catch (e) {
-                        // 忽略偶爾被截斷的 JSON 碎塊
+        // 5. SSE 事件可能被網路切成任意多個 chunk；必須累積到完整一行再解析。
+        // 避免 JSON 只收到一半就被忽略，造成通話字幕與回憶缺字。
+        const { StringDecoder } = require('string_decoder');
+        const callSseDecoder = new StringDecoder('utf8');
+        let callSsePending = '';
+        const processCallSseLine = (rawLine) => {
+            if (callStreamClosed) return;
+            const line = rawLine.trim();
+            if (!line.startsWith('data:')) return;
+            const payload = line.slice(5).trim();
+            if (payload === '[DONE]') {
+                closeCallStream();
+                return;
+            }
+            if (!payload) return;
+            try {
+                const data = JSON.parse(payload);
+                const content = data.choices?.[0]?.delta?.content || '';
+                if (!content) return;
+                if (!callSubtitleStarted) {
+                    const pipe = content.indexOf('|');
+                    if (pipe === -1) {
+                        res.write(content); // 語音原文不進行簡繁轉換
+                    } else {
+                        callSubtitleStarted = true;
+                        res.write(content.slice(0, pipe + 1));
+                        callSubtitleBuffer += content.slice(pipe + 1);
+                        flushCallSubtitle();
                     }
+                } else {
+                    callSubtitleBuffer += content;
+                    flushCallSubtitle();
                 }
+            } catch (error) {
+                logger.warn('directCallAiStream: 收到無法解析的完整 SSE 資料行', {
+                    reason: String(error?.message || error),
+                });
+            }
+        };
+        response.data.on('data', (chunk) => {
+            if (callStreamClosed) return;
+            callSsePending += callSseDecoder.write(chunk);
+            let lineEnd;
+            while ((lineEnd = callSsePending.indexOf('\n')) !== -1) {
+                const line = callSsePending.slice(0, lineEnd);
+                callSsePending = callSsePending.slice(lineEnd + 1);
+                processCallSseLine(line);
+                if (callStreamClosed) break;
             }
         });
-
-        // 當 AI 講完話，關閉通道
         response.data.on('end', () => {
-            res.end();
+            if (callStreamClosed) return;
+            callSsePending += callSseDecoder.end();
+            if (callSsePending.trim()) processCallSseLine(callSsePending);
+            closeCallStream();
         });
-
-        // 處理 OpenRouter 突然斷線的情況
         response.data.on('error', (err) => {
-            console.error("OpenRouter 資料流中斷:", err);
-            res.end();
+            console.error('OpenRouter 資料流中斷:', err);
+            closeCallStream();
         });
 
     } catch (err) {
@@ -21433,36 +21481,68 @@ exports.getAdminOperationsAnalytics = onCall(
         const sevenDayStart = new Date(todayStart.getTime() - 6 * 24 * 60 * 60 * 1000);
         const eightWeekStart = new Date(todayStart.getTime() - 55 * 24 * 60 * 60 * 1000);
 
-        const flowerSnapshot = await db
-            .collectionGroup("flower_logs")
-            .where("createdAt", ">=", Timestamp.fromDate(sixMonthStart))
-            .where("createdAt", "<", Timestamp.fromDate(tomorrowStart))
-            .get();
+        // Three independent Firestore reads run concurrently rather than sequentially.
+        // Timings help identify expensive queries without changing analytics semantics.
+        const analyticsStartedAt = Date.now();
+        const timedRead = async (label, read) => {
+            const startedAt = Date.now();
+            try {
+                const snapshot = await read();
+                console.info("[operationsAnalytics] read", {
+                    label,
+                    durationMs: Date.now() - startedAt,
+                    documents: snapshot.size ?? (snapshot.exists ? 1 : 0),
+                });
+                return snapshot;
+            } catch (error) {
+                console.error("[operationsAnalytics] read failed", {
+                    label,
+                    durationMs: Date.now() - startedAt,
+                    message: error?.message || String(error),
+                });
+                throw error;
+            }
+        };
 
-        let modeEventSnapshot = null;
-        try {
-            modeEventSnapshot = await db
-                .collection("artifacts")
-                .doc(APP_ID)
-                .collection("chat_mode_events")
-                .where("createdAt", ">=", Timestamp.fromDate(monthStart))
-                .where("createdAt", "<", Timestamp.fromDate(tomorrowStart))
-                .get();
-        } catch (error) {
-            console.warn("⚠️ chat_mode_events 讀取失敗，將以舊花花紀錄補足：", error?.message || error);
-        }
+        const [flowerSnapshot, modeEventSnapshot, usersSnapshot, analyticsConfigSnapshot] =
+            await Promise.all([
+                timedRead("flower_logs", () => db
+                    .collectionGroup("flower_logs")
+                    .where("createdAt", ">=", Timestamp.fromDate(sixMonthStart))
+                    .where("createdAt", "<", Timestamp.fromDate(tomorrowStart))
+                    .get()),
+                timedRead("chat_mode_events", () => db
+                    .collection("artifacts")
+                    .doc(APP_ID)
+                    .collection("chat_mode_events")
+                    .where("createdAt", ">=", Timestamp.fromDate(monthStart))
+                    .where("createdAt", "<", Timestamp.fromDate(tomorrowStart))
+                    .get()).catch((error) => {
+                    console.warn("⚠️ chat_mode_events 讀取失敗，將以舊花花紀錄補足：", error?.message || error);
+                    return null;
+                }),
+                timedRead("users", () => db.collection("users").get()),
+                timedRead("operations_analytics_config", () => db
+                    .collection("artifacts")
+                    .doc(APP_ID)
+                    .collection("admin_settings")
+                    .doc("operations_analytics")
+                    .get()),
+            ]);
 
-        // ============================================================
-        // 🌸 玩家花花庫存：全體 / 排除內測 / 內測玩家
-        // ============================================================
-        const [usersSnapshot, analyticsConfigSnapshot] = await Promise.all([
-            db.collection("users").get(),
-            db.collection("artifacts")
-                .doc(APP_ID)
-                .collection("admin_settings")
-                .doc("operations_analytics")
-                .get(),
-        ]);
+        // Cache month boundaries instead of recalculating them for each flower log.
+        const monthBoundaries = Array.from({ length: 6 }, (_, i) => ({
+            start: getTaipeiMonthStart(now, i - 5),
+            end: getTaipeiMonthStart(now, i - 4),
+        }));
+        const monthBucketIndex = (createdAt) => {
+            for (let i = 0; i < monthBoundaries.length; i++) {
+                if (createdAt >= monthBoundaries[i].start && createdAt < monthBoundaries[i].end) {
+                    return i;
+                }
+            }
+            return -1;
+        };
 
         const configuredTesterUids = new Set(
             Array.isArray(analyticsConfigSnapshot.data()?.internalTesterUids)
@@ -21656,16 +21736,10 @@ exports.getAdminOperationsAnalytics = onCall(
             }
 
             // 月趨勢
-            for (let i = 0; i < 6; i++) {
-                const bucketStart = getTaipeiMonthStart(now, i - 5);
-                const bucketEnd = getTaipeiMonthStart(now, i - 4);
-                if (createdAt >= bucketStart && createdAt < bucketEnd) {
-                    if (Number.isFinite(amount)) {
-                        if (amount > 0) monthlyTrend[i].granted += amount;
-                        if (amount < 0) monthlyTrend[i].spent += Math.abs(amount);
-                    }
-                    break;
-                }
+            const monthIndex = monthBucketIndex(createdAt);
+            if (monthIndex >= 0 && Number.isFinite(amount)) {
+                if (amount > 0) monthlyTrend[monthIndex].granted += amount;
+                if (amount < 0) monthlyTrend[monthIndex].spent += Math.abs(amount);
             }
 
             const revenueInfo = getRevenuePurchaseInfo(data);
@@ -21682,13 +21756,8 @@ exports.getAdminOperationsAnalytics = onCall(
                         const idx = getBucketIndex(createdAt, eightWeekStart.getTime(), 7 * 24 * 60 * 60 * 1000, 8);
                         if (idx >= 0) weeklyTrend[idx].revenueTwd += revenueInfo.revenueTwd;
                     }
-                    for (let i = 0; i < 6; i++) {
-                        const bucketStart = getTaipeiMonthStart(now, i - 5);
-                        const bucketEnd = getTaipeiMonthStart(now, i - 4);
-                        if (createdAt >= bucketStart && createdAt < bucketEnd) {
-                            monthlyTrend[i].revenueTwd += revenueInfo.revenueTwd;
-                            break;
-                        }
+                    if (monthIndex >= 0) {
+                        monthlyTrend[monthIndex].revenueTwd += revenueInfo.revenueTwd;
                     }
                 }
 
@@ -21790,6 +21859,12 @@ exports.getAdminOperationsAnalytics = onCall(
         };
         const formalEconomy = calculateEconomy(true);
         const allEconomy = calculateEconomy(false);
+        console.info("[operationsAnalytics] completed", {
+            durationMs: Date.now() - analyticsStartedAt,
+            flowerLogCount: flowerSnapshot.size,
+            modeEventCount: modeEventSnapshot?.size ?? 0,
+            userCount: usersSnapshot.size,
+        });
         return {
             ...formalEconomy,
             flowerInventory,
@@ -24244,6 +24319,14 @@ exports.adminUpdateCreatorStatus = onCall({region: REGION, timeoutSeconds: 60}, 
     if (!(allowed[current] || []).includes(status)) {
       throw new HttpsError("failed-precondition", `不允許從 ${current} 變更成 ${status}`);
     }
+    // 每次真正轉入 revoked 才計一次；舊版已被取消的帳號視為至少一次。
+    const previousRevocationsRaw = Number(user.creatorRevocationCount);
+    const previousRevocations = Number.isSafeInteger(previousRevocationsRaw) && previousRevocationsRaw >= 0
+      ? previousRevocationsRaw : (current === "revoked" ? 1 : 0);
+    // TEST ONLY: 不在測試期間套用正式累計上限；正式上線前必須恢復。
+    // if (status === "contract_pending" && current === "revoked" && previousRevocations >= 5) {
+    //   throw new HttpsError("failed-precondition", "此帳號累計取消創作者資格達五次，不能再次開通");
+    // }
     const changes = {
       creatorStatus: status,
       creatorStatusReason: explanation,
@@ -24258,6 +24341,11 @@ exports.adminUpdateCreatorStatus = onCall({region: REGION, timeoutSeconds: 60}, 
       changes.creatorContractSignedAt = FieldValue.delete();
     }
     if (status === "approved") changes.creatorContractSignedAt = FieldValue.serverTimestamp();
+    if (status === "revoked") {
+      // TEST ONLY: 保留既有正式取消累計，不因測試操作增加。
+      // changes.creatorRevocationCount = previousRevocations + 1;
+      changes.creatorRevokedAt = FieldValue.serverTimestamp();
+    }
     tx.update(userRef, changes);
     const auditRef = db.collection("creator_admin_audit").doc();
     tx.set(auditRef, {creatorUid: uid, previousStatus: current, targetStatus: status,
@@ -24637,11 +24725,22 @@ exports.submitCreatorCooperationApplication = onCall({region: REGION, timeoutSec
     if (!snap.exists) throw new HttpsError('not-found', '找不到玩家帳號');
     const data = snap.data() || {};
     const current = String(data.creatorStatus || 'none');
-    if (!['none', '', 'rejected'].includes(current)) {
+    if (!['none', '', 'rejected', 'revoked'].includes(current)) {
       throw new HttpsError('failed-precondition', '已有申請紀錄或合作資格，不能重複送出');
     }
     if (data.creatorVerified === true || data.creatorDashboardEnabled === true) {
       throw new HttpsError('failed-precondition', '已取得合作權限的帳號無法重新申請');
+    }
+    if (current === 'revoked') {
+      const countRaw = Number(data.creatorRevocationCount);
+      const revocationCount = Number.isSafeInteger(countRaw) && countRaw >= 0 ? countRaw : 1;
+      // TEST ONLY: 測試期間不啟用五次封鎖；正式上線前恢復。
+      // if (revocationCount >= 5) {
+      //   throw new HttpsError('failed-precondition', '累計取消創作者資格達五次，無法再次申請');
+      // }
+      // TEST ONLY (2026-10-15): temporarily bypass the 72-hour reapplication cooldown.
+      // Keep creatorRevocationCount and creatorRevokedAt untouched for the future production rule.
+      // Restore the server-side 72-hour timestamp check before public release.
     }
     tx.update(ref, {
       creatorStatus: 'pending',
