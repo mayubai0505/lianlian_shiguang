@@ -8725,7 +8725,8 @@ if (sessionId) {
         // ==================================================
         if (
             chatMode === "story" ||
-            chatMode === "immersive"
+            chatMode === "immersive" ||
+            chatMode === "resonance"
         ) {
             try {
                 // 擷取具有辨識度的動作段落。

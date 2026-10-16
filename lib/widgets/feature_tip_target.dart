@@ -1,3 +1,4 @@
+import '../services/tutorial_seen_sync.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 const bool kFeatureTipDebugShowAll = false;
@@ -181,7 +182,7 @@ class _FeatureTipTargetState extends State<FeatureTipTarget> {
     }
 
     final prefs = await SharedPreferences.getInstance();
-    final hasClosed = prefs.getBool(_prefsKey) ?? false;
+    final hasClosed = await TutorialSeenSync.hasSeen(_prefsKey);
 
     if (!mounted) return;
 
@@ -301,7 +302,7 @@ class _FeatureTipTargetState extends State<FeatureTipTarget> {
     }
 
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_prefsKey, true);
+    await TutorialSeenSync.markSeen(_prefsKey);
 
     final scopeKey = widget.scopeKey;
 

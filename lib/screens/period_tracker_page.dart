@@ -1,3 +1,4 @@
+import '../services/tutorial_seen_sync.dart';
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -337,10 +338,10 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
 
   Future<void> _showFirstUseGuide() async {
     final prefs = await SharedPreferences.getInstance();
-    final hasSeen = prefs.getBool('seen_period_tracker_guide_v2') ?? false;
+    final hasSeen = await TutorialSeenSync.hasSeen('seen_period_tracker_guide_v2');
     if (!hasSeen && mounted) {
       await _showGuide();
-      await prefs.setBool('seen_period_tracker_guide_v2', true);
+      await TutorialSeenSync.markSeen('seen_period_tracker_guide_v2');
     }
   }
 

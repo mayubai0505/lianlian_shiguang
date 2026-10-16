@@ -80,7 +80,63 @@ class _SavedDesktopWidget {
 class _DesktopWidgetRegistry {
   static const String _prefsKey = 'desktop_widget_registry_v1';
 
+  static CollectionReference<Map<String, dynamic>>? get _cloudCollection {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null || uid.isEmpty) return null;
+    return FirebaseFirestore.instance.collection('users').doc(uid)
+        .collection('desktopWidgetConfigs');
+  }
+
+  static Future<void> _writeCloud(_SavedDesktopWidget item) async {
+    final collection = _cloudCollection;
+    if (collection == null) return;
+    try {
+      await collection.doc(item.id).set(item.toJson());
+    } catch (e) {
+      debugPrint('⚠️ 桌面小工具設定同步失敗: $e');
+    }
+  }
+
   static Future<List<_SavedDesktopWidget>> load() async {
+    // 優先使用雲端配置。沒有連線時退回本機，避免設定畫面空白。
+    final collection = _cloudCollection;
+    if (collection != null) {
+      try {
+        final snap = await collection.get(const GetOptions(source: Source.server))
+            .timeout(const Duration(seconds: 5));
+        final cloud = snap.docs.map((d) => _SavedDesktopWidget.fromJson(d.data()))
+            .where((d) => d.id.isNotEmpty).toList();
+        if (cloud.isNotEmpty) {
+          cloud.sort((a,b) => b.createdAtMs.compareTo(a.createdAtMs));
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setBool('desktop_widget_cloud_migrated_${FirebaseAuth.instance.currentUser!.uid}', true);
+          await prefs.setString(_prefsKey, jsonEncode(cloud.map((e) => e.toJson()).toList()));
+          return cloud;
+        }
+        // 雲端清單為空時避免任意重上傳「已被別的裝置刪掉」的舊清單；
+        // 只在沒有雲端初始化標記的第一次執行遷移。
+        final prefs = await SharedPreferences.getInstance();
+        final migrationKey = 'desktop_widget_cloud_migrated_${FirebaseAuth.instance.currentUser!.uid}';
+        if (prefs.getBool(migrationKey) == true) {
+          await prefs.setString(_prefsKey, '[]');
+          return const <_SavedDesktopWidget>[];
+        }
+        final raw = prefs.getString(_prefsKey);
+        if (raw != null && raw.isNotEmpty) {
+          final decoded = jsonDecode(raw);
+          if (decoded is List) {
+            for (final element in decoded.whereType<Map>()) {
+              final item = _SavedDesktopWidget.fromJson(Map<String,dynamic>.from(element));
+              if (item.id.isNotEmpty) await _writeCloud(item);
+            }
+          }
+        }
+        await prefs.setBool(migrationKey, true);
+      } catch (e) {
+        debugPrint('⚠️ 桌面小工具雲端讀取失敗，改用本機快取: $e');
+      }
+    }
+
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(_prefsKey);
     if (raw == null || raw.trim().isEmpty) {
@@ -119,6 +175,7 @@ class _DesktopWidgetRegistry {
       jsonEncode(updated.map((entry) => entry.toJson()).toList()),
     );
 
+    await _writeCloud(item);
     await DesktopWidgetNativeService.syncIosWidgetConfigIds(
       updated.map((entry) => entry.id),
     );
@@ -135,6 +192,7 @@ class _DesktopWidgetRegistry {
       jsonEncode(updated.map((entry) => entry.toJson()).toList()),
     );
 
+    await _writeCloud(item);
     await DesktopWidgetNativeService.syncIosWidgetConfigIds(
       updated.map((entry) => entry.id),
     );
@@ -152,6 +210,14 @@ class _DesktopWidgetRegistry {
       jsonEncode(updated.map((entry) => entry.toJson()).toList()),
     );
 
+    final collection = _cloudCollection;
+    if (collection != null) {
+      try {
+        await collection.doc(widgetId).delete();
+      } catch (e) {
+        debugPrint('⚠️ 刪除雲端小工具配置失敗: $e');
+      }
+    }
     await DesktopWidgetNativeService.syncIosWidgetConfigIds(
       updated.map((entry) => entry.id),
     );

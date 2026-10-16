@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
+import 'dart:async';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lianlian_shiguang/l10n/app_l10n.dart';
@@ -283,6 +288,11 @@ class ThemeNotifier extends ChangeNotifier {
   Color _customColor = const Color(0xFF8D76BE);
   String? _backgroundImagePath; // 📸 私藏背景路徑
   String? _activeCharacterBackground;
+  String? _activeRoomId;
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _roomBackgroundSubscription;
+  String? _remoteBackgroundUrl;
+  String? get remoteBackgroundUrl => _remoteBackgroundUrl;
+
   AppTheme get currentThemeEnum => _currentThemeEnum;
   AppFont get currentFont => _currentFont;
   double get fontScale => _fontScale;
@@ -366,7 +376,9 @@ class ThemeNotifier extends ChangeNotifier {
       if (_backgroundImagePath != null) {
         return BoxDecoration(
           image: DecorationImage(
-            image: FileImage(File(_backgroundImagePath!)),
+            image: _backgroundImagePath!.startsWith('http')
+                ? CachedNetworkImageProvider(_backgroundImagePath!) as ImageProvider
+                : FileImage(File(_backgroundImagePath!)) as ImageProvider,
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
               Colors.black.withValues(alpha:0.2),
@@ -433,40 +445,101 @@ class ThemeNotifier extends ChangeNotifier {
   // 避免同一角色的 A 房、B 房互相覆蓋背景。
   String _chatRoomBackgroundKey(String sessionId) => 'chat_bg_$sessionId';
 
+  DocumentReference<Map<String, dynamic>>? _roomBackgroundRef(String sessionId) {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null || uid.isEmpty || sessionId.trim().isEmpty) return null;
+    return FirebaseFirestore.instance.collection('users').doc(uid)
+        .collection('chatRoomBackgrounds').doc(sessionId.trim());
+  }
+
   Future<void> setChatRoomBackground(String sessionId, String path) async {
-    final safeSessionId = sessionId.trim();
-    if (safeSessionId.isEmpty) return;
-
+    final id = sessionId.trim();
+    if (id.isEmpty) return;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_chatRoomBackgroundKey(safeSessionId), path);
-
-    _activeCharacterBackground = path;
-    notifyListeners();
+    await prefs.setString(_chatRoomBackgroundKey(id), path);
+    if (_activeRoomId == id) {
+      _activeCharacterBackground = path;
+      notifyListeners();
+    }
+    final ref = _roomBackgroundRef(id);
+    if (ref != null) {
+      try {
+        await ref.set({'path': path, 'updatedAt': FieldValue.serverTimestamp()});
+      } catch (e) {
+        debugPrint('⚠️ 聊天室背景雲端寫入失敗: $e');
+      }
+    }
   }
 
   Future<void> resetChatRoomBackground(String sessionId) async {
-    final safeSessionId = sessionId.trim();
-    if (safeSessionId.isEmpty) return;
-
+    final id = sessionId.trim();
+    if (id.isEmpty) return;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_chatRoomBackgroundKey(safeSessionId));
-
-    _activeCharacterBackground = null;
-    notifyListeners();
+    await prefs.remove(_chatRoomBackgroundKey(id));
+    if (_activeRoomId == id) {
+      _activeCharacterBackground = null;
+      notifyListeners();
+    }
+    final ref = _roomBackgroundRef(id);
+    if (ref != null) {
+      try {
+        // 空字串是明確的重置標記，不刪除文件以免舊裝置還原。
+        await ref.set({'path': '', 'updatedAt': FieldValue.serverTimestamp()});
+      } catch (e) {
+        debugPrint('⚠️ 聊天室背景雲端重置失敗: $e');
+      }
+    }
   }
 
   Future<void> loadChatRoomBackground(String sessionId) async {
-    final safeSessionId = sessionId.trim();
-    if (safeSessionId.isEmpty) {
+    final id = sessionId.trim();
+    await _roomBackgroundSubscription?.cancel();
+    _roomBackgroundSubscription = null;
+    _activeRoomId = id;
+    if (id.isEmpty) {
       _activeCharacterBackground = null;
       notifyListeners();
       return;
     }
-
     final prefs = await SharedPreferences.getInstance();
-    _activeCharacterBackground =
-        prefs.getString(_chatRoomBackgroundKey(safeSessionId));
+    if (_activeRoomId != id) return;
+    final local = prefs.getString(_chatRoomBackgroundKey(id));
+    _activeCharacterBackground = local;
     notifyListeners();
+
+    final ref = _roomBackgroundRef(id);
+    if (ref == null) return;
+    _roomBackgroundSubscription = ref.snapshots().listen((snap) async {
+      if (_activeRoomId != id) return;
+      if (!snap.exists) {
+        // 舊版只存在本機：伺服器確定無資料才遷移。
+        if (snap.metadata.isFromCache || local == null || local.isEmpty) return;
+        try {
+          await FirebaseFirestore.instance.runTransaction((tx) async {
+            final latest = await tx.get(ref);
+            if (!latest.exists) {
+              tx.set(ref, {'path': local, 'updatedAt': FieldValue.serverTimestamp()});
+            }
+          });
+        } catch (e) {
+          debugPrint('⚠️ 舊聊天室背景遷移失敗: $e');
+        }
+        return;
+      }
+      final value = snap.data()?['path']?.toString() ?? '';
+      final currentPrefs = await SharedPreferences.getInstance();
+      if (_activeRoomId != id) return;
+      if (value.isEmpty) {
+        await currentPrefs.remove(_chatRoomBackgroundKey(id));
+      } else {
+        await currentPrefs.setString(_chatRoomBackgroundKey(id), value);
+      }
+      final next = value.isEmpty ? null : value;
+      if (_activeCharacterBackground != next) {
+        _activeCharacterBackground = next;
+        notifyListeners();
+      }
+    }, onError: (Object e) => debugPrint('⚠️ 聊天室背景雲端監聽失敗: $e'));
   }
 
   // 只清空目前畫面上的聊天室背景，不刪除任何已儲存設定。
@@ -535,6 +608,21 @@ class ThemeNotifier extends ChangeNotifier {
     // 沒有此聊天室專屬背景，只使用主題顏色；不要帶入全域主題照片。
     return chatDefaultBackground;
   }
+  // 由帳號同步監聽套用雲端圖片，不觸發新一輪上傳。
+  Future<void> applyRemoteBackgroundUrl(String? url) async {
+    final normalized = url?.trim() ?? '';
+    if (_remoteBackgroundUrl == normalized) return;
+    _remoteBackgroundUrl = normalized;
+    _backgroundImagePath = normalized.isEmpty ? null : normalized;
+    final prefs = await SharedPreferences.getInstance();
+    if (normalized.isEmpty) {
+      await prefs.remove('background_image_path');
+    } else {
+      await prefs.setString('background_image_path', normalized);
+    }
+    notifyListeners();
+  }
+
   // 📸 設定背景圖
   Future<void> setBackgroundImage(String path) async {
     _backgroundImagePath = path;
@@ -543,6 +631,26 @@ class ThemeNotifier extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('background_image_path', path);
     await prefs.setString('app_theme', AppTheme.custom.name);
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+    try {
+      String url = path.trim();
+      if (!url.startsWith('https://') && !url.startsWith('http://')) {
+        if (kIsWeb) return; // Web 需改走 Uint8List 上傳入口，不能使用 dart:io。
+        final localFile = File(path);
+        if (!await localFile.exists()) return;
+        final storageRef = FirebaseStorage.instance.ref()
+            .child('user_backgrounds/$uid/theme_background');
+        final task = await storageRef.putFile(localFile);
+        url = await task.ref.getDownloadURL();
+      }
+      await FirebaseFirestore.instance.collection('users').doc(uid).set({
+        'customBackgroundUrl': url,
+      }, SetOptions(merge: true));
+      _remoteBackgroundUrl = url;
+    } catch (e) {
+      debugPrint('⚠️ 自訂背景圖片雲端同步失敗: $e');
+    }
   }
 
   // 🔍 【新增】讀取特定角色的專屬聊天背景
@@ -635,6 +743,16 @@ class ThemeNotifier extends ChangeNotifier {
     // 2. 清除本地儲存紀錄
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('background_image_path');
+    _remoteBackgroundUrl = '';
+    final resetUid = FirebaseAuth.instance.currentUser?.uid;
+    if (resetUid != null) {
+      try {
+        await FirebaseFirestore.instance.collection('users').doc(resetUid)
+            .set({'customBackgroundUrl': ''}, SetOptions(merge: true));
+      } catch (e) {
+        debugPrint('⚠️ 清除雲端自訂背景失敗: $e');
+      }
+    }
     await prefs.remove('custom_color_value');
     await prefs.setString('app_theme', _currentThemeEnum.name);
     await prefs.setString('app_font', _currentFont.name);
@@ -655,6 +773,9 @@ class ThemeNotifier extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     // 載入照片
     _backgroundImagePath = prefs.getString('background_image_path');
+    if ((_backgroundImagePath ?? '').startsWith('http')) {
+      _remoteBackgroundUrl = _backgroundImagePath;
+    }
     // 載入顏色
     final colorValue = prefs.getInt('custom_color_value');
     if (colorValue != null) _customColor = Color(colorValue);
@@ -676,4 +797,10 @@ class ThemeNotifier extends ChangeNotifier {
 
     notifyListeners();
   }
+  @override
+  void dispose() {
+    _roomBackgroundSubscription?.cancel();
+    super.dispose();
+  }
+
 }

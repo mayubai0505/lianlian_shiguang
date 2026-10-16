@@ -1,3 +1,4 @@
+import '../services/tutorial_seen_sync.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -236,7 +237,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
   Future<void> _checkChatHomeTutorial() async {
     final prefs = await SharedPreferences.getInstance();
     // 注意這裡的鑰匙名字不一樣喔！叫做 'seen_chat_home_tips'
-    bool hasSeen = prefs.getBool('seen_chat_home_tips') ?? false;
+    bool hasSeen = await TutorialSeenSync.hasSeen('seen_chat_home_tips');
 
     if (!hasSeen) {
       if (mounted) {
@@ -245,7 +246,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
         });
       }
       // ✍️ 寫下紀錄，下次不再打擾
-      await prefs.setBool('seen_chat_home_tips', true);
+      await TutorialSeenSync.markSeen('seen_chat_home_tips');
     }
   }
 

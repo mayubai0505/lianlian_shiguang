@@ -1,3 +1,4 @@
+import '../services/tutorial_seen_sync.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -61,6 +62,7 @@ class _MomentCardState extends State<MomentCard> {
   bool _isBookmarked = false;
   bool _isOpeningMomentAction = false;
   String _resolvedAuthorAvatar = '';
+  int _avatarRequestVersion = 0;
   // 🔑 宣告 5 把氣泡追蹤鑰匙 (新增在這裡)
   final GlobalKey _likeKey = GlobalKey();
   final GlobalKey _bookmarkKey = GlobalKey();
@@ -84,7 +86,8 @@ class _MomentCardState extends State<MomentCard> {
   void initState() {
     super.initState();
     _likeCount = widget.moment.likeCount;
-    _resolvedAuthorAvatar = '';
+    // 先顯示貼文已儲存的頭像，避免等待最新資料時閃出預設頭像。
+    _resolvedAuthorAvatar = widget.moment.authorAvatar.trim();
     _checkIfLiked();
     _checkIfBookmarked();
     _refreshLatestAuthorAvatar();
@@ -105,7 +108,7 @@ class _MomentCardState extends State<MomentCard> {
     if (oldWidget.moment.id != widget.moment.id ||
         oldWidget.moment.authorId != widget.moment.authorId ||
         oldWidget.moment.authorAvatar != widget.moment.authorAvatar) {
-      _resolvedAuthorAvatar = '';
+      _resolvedAuthorAvatar = widget.moment.authorAvatar.trim();
       _refreshLatestAuthorAvatar();
     }
   }
@@ -121,14 +124,14 @@ class _MomentCardState extends State<MomentCard> {
 
     final prefs = await SharedPreferences.getInstance();
 
-    bool hasSeen = prefs.getBool('seen_moment_card_tips') ?? false;
+    bool hasSeen = await TutorialSeenSync.hasSeen('seen_moment_card_tips');
 
     // 4. 真正發射氣泡！(因為已經延遲過了，不需要再用 addPostFrameCallback，直接射！)
     if (!hasSeen) {
       try {
         ShowCaseWidget.of(context).startShowCase([_likeKey, _bookmarkKey]);
         // 寫下紀錄
-        await prefs.setBool('seen_moment_card_tips', true);
+        await TutorialSeenSync.markSeen('seen_moment_card_tips');
       } catch (e) {
         print("⚠️ 找不到 ShowCaseWidget: $e");
       }
@@ -137,6 +140,9 @@ class _MomentCardState extends State<MomentCard> {
 
 
   Future<void> _refreshLatestAuthorAvatar() async {
+    // 防止重用卡片後，上一筆非同步請求覆蓋新貼文的頭像。
+    final requestVersion = ++_avatarRequestVersion;
+    final momentId = widget.moment.id;
     try {
       String latestAvatar = '';
 
@@ -190,7 +196,10 @@ class _MomentCardState extends State<MomentCard> {
         }
       }
 
-      if (!mounted || latestAvatar.isEmpty) return;
+      if (!mounted ||
+          requestVersion != _avatarRequestVersion ||
+          widget.moment.id != momentId ||
+          latestAvatar.isEmpty) return;
 
       if (_resolvedAuthorAvatar != latestAvatar) {
         setState(() {
@@ -1339,10 +1348,14 @@ class _MomentCardState extends State<MomentCard> {
                     },
                     child: CircleAvatar(
                       radius: 24,
-                      backgroundImage: getAvatarImageProvider(
-                        _resolvedAuthorAvatar,
-                      ),
+                      backgroundImage: _resolvedAuthorAvatar.isNotEmpty
+                          ? getAvatarImageProvider(_resolvedAuthorAvatar)
+                          : null,
                       backgroundColor: primary.withValues(alpha: 0.08),
+                      child: _resolvedAuthorAvatar.isEmpty
+                          ? Icon(Icons.person_outline_rounded,
+                          color: primary.withValues(alpha: 0.45))
+                          : null,
                     ),
                   ),
                   const SizedBox(width: 12),

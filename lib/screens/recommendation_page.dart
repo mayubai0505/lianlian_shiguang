@@ -89,7 +89,6 @@ class RecommendationPageState extends State<RecommendationPage> {
   List<_RecommendationItem> _featuredItems = <_RecommendationItem>[];
   List<_RecommendationItem> _matchedItems = <_RecommendationItem>[];
   List<_RecommendationItem> _exploreItems = <_RecommendationItem>[];
-  final Set<String> _preloadedImageKeys = <String>{};
 
   _RecommendationPhaseInfo _phase = const _RecommendationPhaseInfo();
 
@@ -278,18 +277,8 @@ class RecommendationPageState extends State<RecommendationPage> {
         _errorMessage = null;
       });
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-
-        _precacheRecommendationImages(
-          context,
-          <_RecommendationItem>[
-            ...featured,
-            ...matchedPool,
-            ...exploreItems,
-          ],
-        );
-      });
+      // 首屏卡片由 Flutter 依可視範圍自行載入圖片。
+      // 不再同時預載所有推薦圖片，避免冷啟動時與首屏爭搶網路和解碼資源。
 
       loadStopwatch.stop();
       debugPrint(
@@ -301,7 +290,7 @@ class RecommendationPageState extends State<RecommendationPage> {
       if (!full && !_didScheduleFullRefresh) {
         _didScheduleFullRefresh = true;
 
-        Future<void>.delayed(const Duration(milliseconds: 350), () async {
+        Future<void>.delayed(const Duration(seconds: 3), () async {
           if (!mounted) return;
 
           try {
@@ -571,32 +560,6 @@ class RecommendationPageState extends State<RecommendationPage> {
       if (first.isNotEmpty) return first;
     }
     return character.avatarPath.trim();
-  }
-
-  void _precacheRecommendationImages(
-      BuildContext context,
-      Iterable<_RecommendationItem> items,
-      ) {
-    for (final item in items) {
-      final imageUrl = _imageUrl(item.character).trim();
-      if (imageUrl.isEmpty) continue;
-
-      const cacheWidth = 720;
-      final cacheKey = '$cacheWidth::$imageUrl';
-      if (_preloadedImageKeys.contains(cacheKey)) continue;
-
-      _preloadedImageKeys.add(cacheKey);
-
-      final provider = _recommendationImageProvider(
-        imageUrl,
-        cacheWidth: cacheWidth,
-      );
-
-      precacheImage(provider, context).catchError((error) {
-        _preloadedImageKeys.remove(cacheKey);
-        debugPrint('預載推薦頁角色圖片失敗：$error');
-      });
-    }
   }
 
   Future<void> _openCharacter(Character character) async {

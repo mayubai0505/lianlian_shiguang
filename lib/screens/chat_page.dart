@@ -12191,13 +12191,20 @@ class _ChatPageState extends State<ChatPage> {
     return Consumer<ThemeNotifier>(
       child: chatScaffold,
       builder: (context, themeNotifier, child) {
-        final bool hasPhotoBackground = !_useDefaultBackgroundForNewRoom &&
-            (themeNotifier.activeCharacterBackground != null ||
+        // 雲端聊天室背景可能在本機設定載入後才到達。
+        // 不可只依賴 _useDefaultBackgroundForNewRoom 的舊值，
+        // 否則 B 裝置會收到背景卻仍畫出預設底色。
+        final hasRoomBackground =
+            (themeNotifier.activeCharacterBackground ?? '').trim().isNotEmpty;
+        final useDefaultBackground =
+            _useDefaultBackgroundForNewRoom && !hasRoomBackground;
+        final bool hasPhotoBackground = !useDefaultBackground &&
+            (hasRoomBackground ||
                 (themeNotifier.currentThemeEnum == AppTheme.custom &&
                     themeNotifier.backgroundImagePath != null));
 
         return Container(
-          decoration: _useDefaultBackgroundForNewRoom
+          decoration: useDefaultBackground
               ? themeNotifier.chatDefaultBackground
               : themeNotifier.characterChatBackground,
           child: Stack(

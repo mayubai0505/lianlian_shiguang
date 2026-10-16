@@ -423,7 +423,7 @@ class _ProfilePageState extends State<ProfilePage>
       });
 
       // ✨ 同步回本地快取，下次打開 App 速度會更快
-      _updateLocalCache(data);
+      _updateLocalCache(data, _userId!);
     });
   }
 
@@ -515,30 +515,41 @@ class _ProfilePageState extends State<ProfilePage>
   }
 
   // ✨ 輔助小工具：把雲端抓到的最新資料順手存進本地快取
-  Future<void> _updateLocalCache(Map<String, dynamic> data) async {
-    final prefs = await SharedPreferences.getInstance();
-    if (data.containsKey('nickname')) await prefs.setString(
-        'nickname', data['nickname']);
-    if (data.containsKey('bio')) {
-      await prefs.setString(
-        'bio',
-        data['bio']?.toString() ?? '',
-      );
-    }
-    if (data.containsKey('avatarPath')) await prefs.setString(
-        'avatarPath', data['avatarPath']);
+  // 帳號專屬快取：只作載入加速。Firestore 仍是個人資料唯一來源。
+  String _profileCacheKey(String uid, String field) =>
+      'playerProfile_${uid}_$field';
 
+  Future<void> _updateLocalCache(Map<String, dynamic> data, String uid) async {
+    if (FirebaseAuth.instance.currentUser?.uid != uid) return;
+    final prefs = await SharedPreferences.getInstance();
+    if (FirebaseAuth.instance.currentUser?.uid != uid) return;
+    if (data.containsKey('nickname')) {
+      await prefs.setString(_profileCacheKey(uid, 'nickname'),
+          data['nickname']?.toString() ?? '');
+    }
+    if (data.containsKey('bio')) {
+      await prefs.setString(_profileCacheKey(uid, 'bio'),
+          data['bio']?.toString() ?? '');
+    }
+    if (data.containsKey('avatarPath')) {
+      await prefs.setString(_profileCacheKey(uid, 'avatarPath'),
+          data['avatarPath']?.toString() ?? 'assets/images/avatar1.png');
+    }
+    if (data.containsKey('playerID')) {
+      await prefs.setString(_profileCacheKey(uid, 'playerID'),
+          data['playerID']?.toString() ?? '');
+    }
     if (data.containsKey('profileLinks') && data['profileLinks'] is List) {
       final encoded = (data['profileLinks'] as List)
           .map((item) {
-        if (item is Map) {
-          return '${(item['name'] ?? '').toString().trim()}\t${(item['url'] ?? '').toString().trim()}';
-        }
-        return '';
-      })
+            if (item is Map) {
+              return '${(item['name'] ?? '').toString().trim()}\t${(item['url'] ?? '').toString().trim()}';
+            }
+            return '';
+          })
           .where((item) => item.isNotEmpty)
           .join('\n');
-      await prefs.setString('profileLinksDisplayCache', encoded);
+      await prefs.setString(_profileCacheKey(uid, 'profileLinks'), encoded);
     }
   }
 
@@ -1102,17 +1113,19 @@ class _ProfilePageState extends State<ProfilePage>
   Future<void> _loadProfileFromCache() async {
     final prefs = await SharedPreferences.getInstance();
     final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null || currentUser.uid != _userId) return;
+    final uid = currentUser.uid;
     final l10n = AppLocalizations.of(context)!;
 
-    if (mounted) {
+    if (mounted && FirebaseAuth.instance.currentUser?.uid == uid) {
       setState(() {
-        // 優先序：本地緩存 > Firebase 帳號名稱 > 溫柔的預設值
-        _nickname = prefs.getString('nickname') ?? (currentUser?.displayName ?? l10n.title_time_travel);
-        _bio = prefs.getString('bio') ?? '';
-        _avatarPath = prefs.getString('avatarPath') ?? (currentUser?.photoURL ?? 'assets/images/avatar1.png');
-        _playerID = prefs.getString('playerID') ?? '';
+        // 僅使用目前登入帳號的本機快取，避免換帳號時顯示其他玩家資料。
+        _nickname = prefs.getString(_profileCacheKey(uid, 'nickname')) ?? (currentUser.displayName ?? l10n.title_time_travel);
+        _bio = prefs.getString(_profileCacheKey(uid, 'bio')) ?? '';
+        _avatarPath = prefs.getString(_profileCacheKey(uid, 'avatarPath')) ?? (currentUser.photoURL ?? 'assets/images/avatar1.png');
+        _playerID = prefs.getString(_profileCacheKey(uid, 'playerID')) ?? '';
 
-        final cachedLinks = prefs.getString('profileLinksDisplayCache') ?? '';
+        final cachedLinks = prefs.getString(_profileCacheKey(uid, 'profileLinks')) ?? '';
         _profileLinks = cachedLinks
             .split('\n')
             .where((line) => line.trim().isNotEmpty)

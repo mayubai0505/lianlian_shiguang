@@ -7,6 +7,7 @@ import '../services/auth_service.dart';
 import '../services/theme_notifier.dart'; // ✨ 引入主題大腦
 import '../services/toast_utils.dart';
 import 'feedback_page.dart';
+import 'notification_preferences_page.dart';
 import 'help_page.dart';
 import 'language_selection_page.dart'; // ✨ 引入語言選擇頁面
 import 'change_password_page.dart';
@@ -537,6 +538,18 @@ class _SettingsPageState extends State<SettingsPage> {
                       );
                     },
                     theme: theme,
+                  ),
+
+                  _buildSettingsTile(
+                    iconData: Icons.notifications_active_outlined,
+                    title: '通知偏好',
+                    subtitle: '設定想收到的通知類型，跨裝置同步',
+                    theme: theme,
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const NotificationPreferencesPage(),
+                      ),
+                    ),
                   ),
 
                   _buildSettingsTile(

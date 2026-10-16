@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'theme_notifier.dart';
 import 'locale_notifier.dart';
 
@@ -46,9 +47,13 @@ class AccountPreferencesSync {
 
     final ref = FirebaseFirestore.instance.collection('users').doc(uid);
     _subscription = ref.snapshots(includeMetadataChanges: true).listen(
-      (snap) async {
+          (snap) async {
         if (_disposed || generation != _generation) return;
         final root = snap.data() ?? <String, dynamic>{};
+        final remotePhoto = root['customBackgroundUrl'];
+        if (remotePhoto is String) {
+          await theme.applyRemoteBackgroundUrl(remotePhoto);
+        }
         final remote = root['accountPreferences'];
         if (remote is Map && remote.isNotEmpty) {
           final data = Map<String, dynamic>.from(remote);

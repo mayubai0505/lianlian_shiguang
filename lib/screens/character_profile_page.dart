@@ -1,3 +1,4 @@
+import '../services/tutorial_seen_sync.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
@@ -411,7 +412,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
 
   Future<void> _checkEchoTutorial() async {
     final prefs = await SharedPreferences.getInstance();
-    bool hasSeen = prefs.getBool('seen_profile_echo_tip') ?? false;
+    bool hasSeen = await TutorialSeenSync.hasSeen('seen_profile_echo_tip');
 
     if (!hasSeen) {
       if (mounted) {
@@ -420,7 +421,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
         });
       }
       // ✍️ 寫下紀錄，這輩子只彈這一次！
-      await prefs.setBool('seen_profile_echo_tip', true);
+      await TutorialSeenSync.markSeen('seen_profile_echo_tip');
     }
   }
 
@@ -963,9 +964,9 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 30,
+                              fontSize: 26,
                               height: 1.1,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w400,
                               letterSpacing: 2,
                               shadows: [
                                 Shadow(
@@ -3365,25 +3366,53 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
         ListView(
           padding: const EdgeInsets.fromLTRB(24, 28, 24, 150),
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Flexible(
-                  child: Text(
-                    widget.character.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.notoSerifTc(
-                      color: textColor,
-                      fontSize: 36,
-                      fontWeight: FontWeight.w700,
-                      height: 1.05,
-                      letterSpacing: 1.0,
+            // 角色名稱：24px 起，單行可逐步縮至 16px；仍放不下則以 16px 換成兩行。
+            // 後續「世界觀故事標題」上線時，也可共用此排版邏輯。
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final title = widget.character.name.trim();
+                final availableWidth = constraints.maxWidth;
+                final textScaler = MediaQuery.textScalerOf(context);
+                final textDirection = Directionality.of(context);
+
+                double fontSize = 24;
+                bool fitsSingleLine(double size) {
+                  final painter = TextPainter(
+                    text: TextSpan(
+                      text: title,
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: size,
+                        fontWeight: FontWeight.w400,
+                        height: 1.1,
+                        letterSpacing: 0.3,
+                      ),
                     ),
+                    maxLines: 1,
+                    textDirection: textDirection,
+                    textScaler: textScaler,
+                  )..layout(maxWidth: availableWidth);
+                  return !painter.didExceedMaxLines;
+                }
+
+                while (fontSize > 16 && !fitsSingleLine(fontSize)) {
+                  fontSize -= 1;
+                }
+                final singleLine = fitsSingleLine(fontSize);
+
+                return Text(
+                  title,
+                  maxLines: singleLine ? 1 : 2,
+                  softWrap: !singleLine,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.notoSerifTc(
+                    color: textColor,
+                    fontSize: fontSize,
+                    fontWeight: FontWeight.w400,
+                    height: 1.25,
+                    letterSpacing: 0.3,
                   ),
-                ),
-                const SizedBox(width: 8),
-              ],
+                );
+              },
             ),
             const SizedBox(height: 10),
             Text(

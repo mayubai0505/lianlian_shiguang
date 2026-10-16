@@ -327,13 +327,18 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     super.didChangeDependencies();
     if (_accountSyncInitialized) return;
     _accountSyncInitialized = true;
-    _accountSync = AccountPreferencesSync(
-      context.read<ThemeNotifier>(),
-      context.read<LocaleNotifier>(),
-    );
-    _accountAuthSubscription = FirebaseAuth.instance.authStateChanges().listen(
-          (user) => _accountSync?.bindAccount(user?.uid),
-    );
+    // Delay account sync until Navigator has mounted its initial route.
+    // Remote theme/locale updates can otherwise rebuild MaterialApp during startup.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _accountSync != null) return;
+      _accountSync = AccountPreferencesSync(
+        context.read<ThemeNotifier>(),
+        context.read<LocaleNotifier>(),
+      );
+      _accountAuthSubscription = FirebaseAuth.instance.authStateChanges().listen(
+            (user) => _accountSync?.bindAccount(user?.uid),
+      );
+    });
   }
 
   @override
@@ -662,10 +667,27 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
 
           // 🏠 把 FutureBuilder 換成這個完美放權版！
-          home: FirebaseAuth.instance.currentUser != null
-              ? const MainPage()
-              : const LoginPage(),
+          // Keep the root route widget stable during theme/locale sync.
+          home: const _AuthLandingPage(),
         );
+      },
+    );
+  }
+}
+
+// Stable home route: login changes update its contents, not MaterialApp.home.
+class _AuthLandingPage extends StatelessWidget {
+  const _AuthLandingPage();
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      initialData: FirebaseAuth.instance.currentUser,
+      builder: (context, snapshot) {
+        return snapshot.data == null
+            ? const LoginPage()
+            : const MainPage();
       },
     );
   }

@@ -1,3 +1,4 @@
+import '../services/tutorial_seen_sync.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -99,7 +100,7 @@ class MomentsPageState extends State<MomentsPage> {
   Future<void> _checkTutorialStatus() async {
     final prefs = await SharedPreferences.getInstance();
     // 尋找 'seen_moments_tips'，如果找不到就當作沒看過 (false)
-    bool hasSeen = prefs.getBool('seen_moments_tips') ?? false;
+    bool hasSeen = await TutorialSeenSync.hasSeen('seen_moments_tips');
 
     if (!hasSeen) {
       // 如果沒看過，就把開關打開，允許畫面發射氣泡！
@@ -109,7 +110,7 @@ class MomentsPageState extends State<MomentsPage> {
         });
       }
       // ✍️ 立刻在記事本寫下紀錄：他看過了！(下次進來就會是 true)
-      await prefs.setBool('seen_moments_tips', true);
+      await TutorialSeenSync.markSeen('seen_moments_tips');
     } else {
       // 🌟 如果他以前看過了，我們直接把接力棒解鎖給卡片
       // 這樣即使沒彈右上角氣泡，卡片底下的功能也能正常運作！

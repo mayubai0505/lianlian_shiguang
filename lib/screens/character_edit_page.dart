@@ -362,6 +362,22 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       List<Map<String, dynamic>>.from(
         data['npcCharacters'] ?? [],
       );
+      // 保留草稿的進階設定，跨裝置重新開啟也能完整還原。
+      _customOutputFormatController.text =
+          data['customOutputFormat']?.toString() ?? '';
+      _likesController.text = data['likes']?.toString() ?? '';
+      _dislikesController.text = data['dislikes']?.toString() ?? '';
+      _secretsController.text = data['secrets']?.toString() ?? '';
+      _dialogueExamplesController.text =
+          data['dialogueExamples']?.toString() ?? '';
+      _stageStrangerController.text = data['stageStranger']?.toString() ?? '';
+      _stageAcquaintanceController.text =
+          data['stageAcquaintance']?.toString() ?? '';
+      _stageIntimateController.text = data['stageIntimate']?.toString() ?? '';
+      _socialInteractionController.text =
+          data['socialInteraction']?.toString() ?? '';
+      _playerIdentityController.text =
+          data['playerIdentity']?.toString() ?? '';
 
       // 4. 【專屬語音】(修正為資料庫的下底線格式：voice_id)
       _generatedVoiceId = data['voice_id'];
@@ -641,24 +657,25 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
           ? _customRelationshipController.text.trim()
           : (_selectedRelationship == 'relationship_none' ? '' : (_selectedRelationship ?? ''));
 
-      // 🌟 2. 確保在草稿模式下，如果還沒上傳，優先抓取本機路徑 (localFile.path)
-      _galleryPhotos.sort((a, b) => a.requiredAffection.compareTo(b.requiredAffection));
-      List<String> galleryPathsOnly = _galleryPhotos
-          .map((p) {
-        if (p.imageUrl.isNotEmpty) return p.imageUrl;
-        if (p.localFile != null) return p.localFile!.path;
-        return '';
-      })
-          .where((path) => path.isNotEmpty)
+      // 圖片先上傳至 Storage，Firestore 草稿不可儲存只在 A 手機有效的路徑。
+      // 已有雲端網址的圖片不重複上傳。
+      for (final photo in _galleryPhotos) {
+        if (photo.imageUrl.trim().isEmpty && photo.localFile != null) {
+          photo.imageUrl = await _uploadImageFile(photo.localFile!);
+          photo.localFile = null;
+        }
+      }
+      _galleryPhotos.sort(
+            (a, b) => a.requiredAffection.compareTo(b.requiredAffection),
+      );
+      final galleryPathsOnly = _galleryPhotos
+          .map((p) => p.imageUrl.trim())
+          .where((url) => url.isNotEmpty)
           .toList();
-
-// ✨ 修正 1：確保本機的圖片路徑也有被存進草稿裡
-      final galleryData = _galleryPhotos.map((p) {
-        return {
-          'url': p.imageUrl.isNotEmpty ? p.imageUrl : (p.localFile?.path ?? ''),
-          'req': p.requiredAffection,
-          'desc': p.description,
-        };
+      final galleryData = _galleryPhotos.map((p) => <String, dynamic>{
+        'url': p.imageUrl,
+        'req': p.requiredAffection,
+        'desc': p.description,
       }).toList();
       // 🌟 3. 大頭貼防護罩：從剛才整理好的 galleryPathsOnly 拿第一張，絕對不會拿到空字串
       String currentAvatarPath = widget.character?.avatarPath ?? 'assets/images/blank_avatar.png';
@@ -711,7 +728,9 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       final String draftBannerPath;
 
       if (_bannerLocalFile != null) {
-        draftBannerPath = _bannerLocalFile!.path;
+        draftBannerPath = await _uploadImageFile(_bannerLocalFile!);
+        _bannerImagePath = draftBannerPath;
+        _bannerLocalFile = null;
       } else if (_isRemovingBanner) {
         draftBannerPath = '';
       } else {
@@ -798,7 +817,11 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       debugPrint('🟣 準備寫入草稿：currentDraftId=$_currentDraftId');
 
       if (_currentDraftId != null) {
-
+        final existing = await _db.collection('draft_characters')
+            .doc(_currentDraftId).get();
+        if (existing.exists && existing.data()?['createdBy'] != user.uid) {
+          throw StateError('草稿所屬帳號不符，已停止儲存');
+        }
         await _db
             .collection('draft_characters')
             .doc(_currentDraftId)

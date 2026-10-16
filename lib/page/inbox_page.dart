@@ -451,7 +451,12 @@ class _InboxPageState extends State<InboxPage> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          var docs = snapshot.data!.docs;
+          // 角色發布動態（new_post）不列入私人信箱。
+          // 只過濾顯示，不刪除歷史資料，也不影響其他通知。
+          final docs = snapshot.data!.docs.where((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+            return (data['type'] ?? '').toString() != 'new_post';
+          }).toList();
 
           if (docs.isEmpty) {
             return Center(
