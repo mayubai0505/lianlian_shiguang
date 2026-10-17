@@ -274,6 +274,8 @@ class _ChatPageState extends State<ChatPage> {
     FlowerStage(threshold: 5000, imagePath: 'assets/images/flower_stage_6.png'),
   ];
   String? _activeAiRequestId;
+  // 已停止的請求即使晚到，也不能重新出現在目前聊天室。
+  final Set<String> _cancelledAiRequestIds = <String>{};
   String _createAiRequestId() {
     final userId = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous';
 
@@ -6784,6 +6786,9 @@ class _ChatPageState extends State<ChatPage> {
 
     // 先讓畫面立刻恢復，不必等待取消 API。
     _activeAiRequestId = null;
+    if (requestId != null && requestId.isNotEmpty) {
+      _cancelledAiRequestIds.add(requestId);
+    }
 
     _httpClient?.close();
     _httpClient = null;
@@ -11927,9 +11932,16 @@ class _ChatPageState extends State<ChatPage> {
                                     snapshot.error
                                         .toString())));
 
+                      // Firestore 監聽不經過 HTTP 回覆的取消檢查。
+                      // 用後端寫入的 clientRequestId 過濾已停止的晚到訊息。
                       final messages = snapshot.data!.docs
-                          .map((doc) =>
-                          ChatMessage.fromFirestore(doc))
+                          .where((doc) {
+                        final data = doc.data() as Map<String, dynamic>;
+                        final requestId =
+                        (data['clientRequestId'] ?? '').toString();
+                        return !_cancelledAiRequestIds.contains(requestId);
+                      })
+                          .map((doc) => ChatMessage.fromFirestore(doc))
                           .toList();
                       _localMessages = messages;
 

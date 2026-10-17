@@ -37,6 +37,7 @@ const elevenLabsApiKey = defineSecret("ELEVENLABS_API_KEY");
 const deepseekApiKey = defineSecret('DEEPSEEK_API_KEY');
 const geminiApiKey = defineSecret('GEMINI_API_KEY');
 const xaiApiKey = defineSecret('XAI_API_KEY');
+const anthropicApiKey = defineSecret('ANTHROPIC_API_KEY');
 const stripeSecretKey = defineSecret("STRIPE_SECRET_KEY");
 const stripeWebhookSecret = defineSecret("STRIPE_WEBHOOK_SECRET");
 const crypto = require("crypto");
@@ -679,6 +680,86 @@ async function callOpenRouter({
     return data;
 }
 
+// Claude 官方 Messages API；轉成既有 OpenAI-compatible 結果格式以保留後端解析流程。
+async function callAnthropicDirect({modelId, requestBody, abortController, timeoutMs = 95_000}) {
+    const timeoutController = new AbortController();
+    const timer = setTimeout(() => timeoutController.abort(), timeoutMs);
+    const signal = abortController?.signal
+        ? AbortSignal.any([timeoutController.signal, abortController.signal])
+        : timeoutController.signal;
+    try {
+        const sourceMessages = Array.isArray(requestBody?.messages) ? requestBody.messages : [];
+        const systemParts = [];
+        const messages = [];
+        for (const msg of sourceMessages) {
+            const content = typeof msg.content === "string" ? msg.content :
+                (Array.isArray(msg.content) ? msg.content.map(p => p?.text || "").join("\n") : String(msg.content || ""));
+            if (msg.role === "system" || msg.role === "developer") {
+                if (content.trim()) systemParts.push(content);
+                continue;
+            }
+            const role = msg.role === "assistant" ? "assistant" : "user";
+            if (messages.length && messages[messages.length - 1].role === role) {
+                messages[messages.length - 1].content += "\n\n" + content;
+            } else {
+                messages.push({role, content});
+            }
+        }
+        if (messages.length === 0 || messages[0].role !== "user") {
+            messages.unshift({role: "user", content: "請依照系統設定開始回覆。"});
+        }
+        const body = {
+            model: modelId,
+            max_tokens: Number(requestBody.max_tokens) || 2600,
+            messages,
+        };
+        if (systemParts.length) body.system = systemParts.join("\n\n");
+        // Sonnet 5.5 不接受非預設 temperature；故不轉送 temperature/response_format/reasoning_effort。
+        const response = await fetch("https://api.anthropic.com/v1/messages", {
+            method: "POST",
+            headers: {
+                "x-api-key": anthropicApiKey.value(),
+                "anthropic-version": "2023-06-01",
+                "content-type": "application/json",
+            },
+            body: JSON.stringify(body),
+            signal,
+        });
+        const raw = await response.text();
+        let data;
+        try { data = JSON.parse(raw); } catch (_) { throw new Error("Anthropic 回傳格式異常"); }
+        if (!response.ok) {
+            const error = new Error(data?.error?.message || `Anthropic HTTP ${response.status}`);
+            error.statusCode = response.status;
+            error.result = data;
+            throw error;
+        }
+        const content = Array.isArray(data.content)
+            ? data.content.filter(block => block?.type === "text").map(block => block.text || "").join("\n") : "";
+        return {
+            model: data.model || modelId,
+            usage: {
+                prompt_tokens: Number(data.usage?.input_tokens || 0),
+                completion_tokens: Number(data.usage?.output_tokens || 0),
+                total_tokens: Number(data.usage?.input_tokens || 0) + Number(data.usage?.output_tokens || 0),
+            },
+            choices: [{
+                message: {role: "assistant", content},
+                finish_reason: data.stop_reason === "max_tokens" ? "length" :
+                    data.stop_reason === "refusal" ? "content_filter" : "stop",
+            }],
+        };
+    } catch (err) {
+        if (err?.name === "AbortError") {
+            if (abortController?.signal?.aborted) throw new Error("PLAYER_DISCONNECTED");
+            throw new Error("AI 回覆時間太久，已主動中止");
+        }
+        throw err;
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
 function isGeminiDirectModel(modelId) {
     const id = String(modelId || "");
     return id.startsWith("google/gemini") || id.startsWith("gemini-");
@@ -706,6 +787,11 @@ function normalizeModelIdForRequest(modelId) {
 function getAiProviderConfig(modelId) {
     const isGemini = isGeminiDirectModel(modelId);
     const isXai = isXaiDirectModel(modelId);
+    const isAnthropic = String(modelId || "").startsWith("claude-");
+
+    if (isAnthropic) {
+        return {provider: "anthropic", apiUrl: "https://api.anthropic.com/v1/messages", modelIdForRequest: modelId};
+    }
 
     if (isGemini) {
         return {
@@ -911,7 +997,10 @@ function estimateAiCallCost({
   } else if (normalizedModel.includes("gemini-3-flash")) {
     inputUsdPerMillion = 0.50;
     outputUsdPerMillion = 3.00;
-  } else if (normalizedModel.includes("grok-4.6")) {
+    } else if (normalizedModel.includes("claude-sonnet-5-5")) {
+     inputUsdPerMillion = 2.0;
+     outputUsdPerMillion = 10.0;
+   } else if (normalizedModel.includes("grok-4.6")) {
     // Usually overridden by xAI's exact cost ticks above.
     const longContext = inputTokens >= 200_000;
     inputUsdPerMillion = longContext ? 4.0 : 2.0;
@@ -1205,20 +1294,21 @@ async function callAiWithRetry({
       };
     }
 
-    const result = await callOpenRouter({
-      apiUrl:
-        providerConfig.apiUrl,
-
-      apiKey:
-        providerConfig.apiKey,
-
-      modelId:
-        providerConfig.modelIdForRequest,
-
-      requestBody: providerRequestBody,
-      abortController,
-      timeoutMs,
-    });
+    const result = providerConfig.provider === "anthropic"
+      ? await callAnthropicDirect({
+          modelId: providerConfig.modelIdForRequest,
+          requestBody: providerRequestBody,
+          abortController,
+          timeoutMs,
+        })
+      : await callOpenRouter({
+          apiUrl: providerConfig.apiUrl,
+          apiKey: providerConfig.apiKey,
+          modelId: providerConfig.modelIdForRequest,
+          requestBody: providerRequestBody,
+          abortController,
+          timeoutMs,
+        });
 
     // HTTP 200 不代表模型真的成功產生內容。
     // Gemini 會用 200 + finish_reason=content_filter: PROHIBITED_CONTENT 擋掉回覆；
@@ -3424,7 +3514,7 @@ exports.getAiResponse = onRequest({
     minInstances: 0,
     memory: "512Mi",
     timeoutSeconds: 300,
-    secrets: [openRouterApiKey, geminiApiKey, xaiApiKey],
+    secrets: [openRouterApiKey, geminiApiKey, xaiApiKey, anthropicApiKey],
 }, (req, res) => {
     return cors(req, res, async () => {
         try {
@@ -4205,7 +4295,7 @@ const cancellationRef =
             // 🧠 Mode + Writer Router v2
             // 模式決定「玩法與價格」；Writer Router 再決定模型。
             // 閒聊維持 OpenRouter；Story / Immersive / Resonance
-            // 依場景在 Gemini 與 Grok 之間切換。
+            // Story=Gemini、Immersive=Kimi、Resonance=Claude；成人場景依規則 Grok 分流。
             // =====================================================
             const modeConfig = {
                 // 目前 App 的輕量閒聊模式：維持既有 OpenRouter 組合
@@ -4236,7 +4326,7 @@ const cancellationRef =
 
                 immersive: {
                     cost: 7,
-                    modelId: "google/gemini-3-flash-preview",
+                    modelId: "moonshotai/kimi-k2.5",
                     fallbackModelId: "deepseek/deepseek-v3.2",
                     maxTokens: 2600,
                     temperature: 0.95,
@@ -4245,7 +4335,7 @@ const cancellationRef =
                 // ✨ 新增：共鳴 Premium 模式
                 resonance: {
                     cost: 10,
-                    modelId: "google/gemini-3.1-pro-preview",
+                    modelId: "claude-sonnet-5-5",
                     fallbackModelId: "deepseek/deepseek-v3.2",
                     maxTokens: 3200,
                     temperature: 0.95,
@@ -4374,8 +4464,8 @@ const cancellationRef =
                     ...base,
                     writerTier:
                         mode === "resonance"
-                            ? "gemini_pro"
-                            : "gemini_flash",
+                            ? "claude_sonnet"
+                            : mode === "immersive" ? "kimi_k2_5" : "gemini_flash",
                     requiresHighFreedom: false,
                     routeReason: highFreedom.reason,
                 };
@@ -4413,6 +4503,16 @@ const cancellationRef =
             - 成人張力優先透過停頓、視線、距離、對話潛台詞、接觸節奏與角色克制推進。
             - 不要一下跨過多個互動階段；每輪自然往前一個階段即可。
             - 不要因成人張力突然改成粗俗、俗套霸總或純色情文體。
+            【Grok 成人分流｜人物與節奏連續】
+            - 成人模型接棒不代表人物換人；保留原角色語感、脾氣、矛盾、社交與工作生活，不能突然變成只會調情的固定模板。
+            - 成人互動不需要每輪升級，不得把普通觸碰、沉默或一時親近當成持續性行為的同意。
+            - 玩家是否同意、疼痛、拒絕、停止或受傷，均以玩家已明確提供的事實為準，不替玩家補出愉悅、默許或傷勢消失。
+            - 維持所屬故事／沉浸／共鳴模式的第一行時間、第二行地點、全形括號旁白、台詞「」以及 statusBar／創作者狀態欄。
+            【成人互動的停止與傷害處理｜優先於人物強勢設定】
+            - 性互動必須建立在參與者持續、自願的同意上。拒絕、要求停止、失去反應能力或撤回同意時，立即停止性互動；不得把拒絕寫成調情或默許。
+            - 一旦出現出血、受傷、明確的疼痛或其他疑似身體損傷，立即中止性行為，不得描寫角色明知對方受傷仍繼續或加重傷害，也不得將流血描述成興奮、佔有或愛的證明。
+            - 停止後角色可依人設展現慌亂、冷靜、愧疚、不耐或其他合理情緒，但實際行動必須優先確認安全、避免進一步傷害，必要時尋求醫療協助；不要擅自代玩家表達同意或否認疼痛。
+            - 危險、黑暗、霸道等人物特質可保留在對話與世界劇情中，不能用來覆蓋上述身體安全界線。
             `
                     : "";
 
@@ -5066,6 +5166,7 @@ let relationContext = "";
             11. 不替玩家新增台詞、重大選擇、重大感情結論、同意、拒絕或不可逆決定。
             12. 可以描寫角色主動做了什麼，但不要自動補玩家「沉默、愣住、緊張、害羞、點頭、微笑、看懂了、感受到」等反應。
             12-A. 玩家若明確表示「不想說話／別問了／停下／不要碰我／讓我一個人」等停止或拒絕意圖，角色可以有符合人設的情緒與反應，但必須停止逼問、強迫肢體互動或把拒絕解讀成撒嬌、欲擒故縱；可以選擇留在附近、轉開話題或等待玩家再次主動。
+            12-B. 親密或性互動中若出現出血、受傷、明確疼痛、無法同意或撤回同意，必須停止性互動，不得以角色強勢、劇情需要或玩家沉默為由繼續；優先確認安全與必要照護，不替玩家補出同意或疼痛消失。
 
             【既定事實與 NPC】
             - 不得為了證明角色在乎玩家，而自行創造「有名字的親屬／NPC」、精確親屬關係、重大共同事件、重大事故或不存在的共同回憶。
@@ -6222,12 +6323,36 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
 
             ${previousStyleExcerpt ? `【文風連續】\n以下是上一輪實際正文節錄：\n${previousStyleExcerpt}\n延續它的敘事密度、句長、節奏與角色語感。即使 Writer 模型切換，也不要突然改成另一種文體。` : ""}
 
+            【人物內在決策｜人格優先】
+            - 根據創作者原始角色設定及已發生的開場／故事事實來演繹，不要將黑暗角色自動改造成守法、公平、禮貌的調查員。
+            - 從角色自己的目的、利益、資訊、情緒、權力與習慣決定下一步，而不是為了秀性格標籤、刻意寫金句或套用「不是 A 而是 B」的戲劇句型。
+            - 角色可以冷酷、強硬、欺瞞或不公平，也可以輕鬆、嘴硬、幽默；依人設和現場因果，不無故放大單一特質。
+            - 創作者已確立的劇情事實不可重新改寫；新情報先保持為 NPC 的情報、判斷或說法，不可擅自確立重大未知真相。
+            - 讓 NPC 有自己的生意、職責、關係與行動；不強制每個 NPC 每輪發言。
+
+            【沉浸專屬｜今晚對照測試定案】
+            - 以「我就是這個角色」的當下利益、欲望、權力、人格與資訊差決定言行，不先編漂亮台詞、不把黑道人物修飾成公平守法的理想伴侶。
+            - 玩家和角色可以有真實衝突；冷酷、陰狠、霸道和危險人設可自然展現，但不為了表演黑暗面而每輪無因升級暴力或親密。
+            - 原始開場的債務、人物遭遇、組織地位及既有選擇優先，不得悄悄改寫成其他類型的案件；角色猜測不得直接當作世界真相。
+            - NPC 可以推進自己的故事，絕不代玩家說出新台詞、答應條件、產生愛意或決定是否合作。
+            - 每一輪 response 第一行時間、第二行地點；第三行起以全形括號旁白和「」台詞交錯。外層 JSON 僅供後端解析。
+
+            【劇情與情感動態平衡】
+            - 沉浸模式同時具備互動小說和戀愛演繹能力，依世界觀規模、角色人設、當前事件及玩家意圖調整重心；不以角色數量判斷。
+            - 大型世界觀允許 NPC、勢力和事件獨立發展；單人日常可著重情感互動。劇情與戀愛能並行或交替，不必每輪同時推進。
+            - 玩家拒絕、反抗或質疑不等於角色必須升級威脅，更不自動代表角色產生興趣、佔有慾或好感。
+            - 允許創造合理事件與情報，但須區分客觀事實、角色推測及已知資訊；角色不得無故知道未取得的情報。
+            - NPC 可以依自己的人格接受、迴避或拒絕玩家尚未完成的動作，但不得代替玩家完成行為。
+            - 尊重創作者角色性格與危險世界觀，不強制美化反派，亦不無故升級暴力或浪漫化拒絕。
+
             【寫法】
             - 先像人，再像角色。先回應玩家最新一句，再自然延續。
             - 寫成自然、有畫面感的商業戀愛小說，但不要像規則執行器。
             - 角色可以有自己的反應、決定、節奏與主動行動，不要只圍著玩家最新一句打轉。
             - 可以自由創造低風險生活細節、普通小習慣、臨時事件、場景物件與合理 NPC 行動。
-            - 不替玩家新增台詞、重大選擇、重大感情結論或不可逆決定；少量低風險微反應可以自然補足。
+            - 禁止新增玩家本輪未說過的任何台詞（包括代答、反駁、求饒、接受邀請）；原始開場已發生的台詞僅可視為既定歷史。
+            - 可少量銜接玩家已開始、沒有決定性的普通動作；不能代替玩家決定情緒、同意、拒絕、屈服、接受物品、跟隨或其他重要行動。
+            - NPC 可主動行動、施壓、發問或離開，即使與玩家意願衝突；但不把玩家受到的外部強制寫成其主動選擇。
             - 已提供的重大關係、重大共同歷史、重要 NPC 關係、玩家正式資料與精確既定事實不得擅自改寫。
             - 不得自行宣稱精確的相識／交往／同居／婚姻時長或精確時間，例如「三個月了」「我們交往一年了」；除非角色設定、共同回憶或本輪已知對話明確提供。若時間不明，只能保持模糊表述。
             - 不確定的重要既有事實保持模糊，不要硬定案。
@@ -6242,18 +6367,16 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
             - 需要長度時，用真正的新互動、資訊、事件或關係變化增加內容，不用重複描寫灌字。
 
             【時間與場景連續】
-            - response 前兩行固定：
-          時間：${lastStoryTime || "根據當前情境自然承接"}
-          地點：${lastStoryLocation || "當前地點"}
-            - 第一行代表本輪開始時狀態；storyTime / storyLocation 代表本輪結束後狀態。
+            - response 第一行固定為「時間：${lastStoryTime || "自然承接上一輪"}」，第二行固定為「地點：${lastStoryLocation || "當前地點"}」，兩行不可合併或省略；時間地點需依本輪實際進展連續更新。
+            - storyTime / storyLocation 代表本輪結束後的實際狀態，且必須與正文一致。
             - 沒有真正發生時間流逝或移動時，不要憑空跳時間或地點。
             - 承接最近對話的人物位置、物件位置與已完成動作，不要瞬移或重演上一輪。
 
             【排版】
-            - 第一行以外，非台詞敘事使用全形括號（）。
-            - 角色台詞使用「」並自然分段。
+            - 第三行起，所有非台詞的動作、環境、心理與敘事旁白使用全形括號（）包覆，維持 Flutter 既有的主題色區分；人物台詞以「」呈現並獨立分段。
+            - 角色台詞使用「」並自然分段；正文不要出現「玩家」「NPC」「系統」等遊戲內部稱呼。
             - 不得替玩家補出「」中的新台詞。
-            - 正文至少 700 個中文字，建議約 700～1000 字；場景自然完成優先，不要為湊字數灌水。
+            - 正文長度依事件複雜度彈性決定；需要時可寫長，但不可為湊字數灌水。
 
             ${customOutputFormatDirective}
 
@@ -6309,6 +6432,13 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
 
             ${previousStyleExcerpt ? `【文風連續】\n以下是上一輪實際正文節錄：\n${previousStyleExcerpt}\n以此作為文體錨點，延續敘事密度、句長、情緒節奏與角色語感；不要模仿原句或機械複製。` : ""}
 
+            【共鳴專屬｜人物情緒有重量，不強制深情】
+            - 角色可以在乎卻抗拒、愧疚卻不認錯、嘴硬、固執、自私、偏執、冷漠或誤解玩家；不能把所有人寫成善於溝通的心理諮商師。
+            - 情緒由長期事件、信任、誤會、矛盾與個人利益累積；短暫親密、關心或道歉不能自動確立關係或消除衝突。
+            - 以人物選擇、台詞、事件結果和必要的生活細節表達心理深度，不替讀者反覆分析、標註情感結論或堆砌華麗形容。
+            - 共鳴不是強制戀愛：黑道、權謀、家庭、奇幻、職場與日常情節仍可以自主發展；角色不需要為玩家放下自己的責任或黑暗面。
+            - 不替玩家產生新台詞、情緒、原諒、擁抱、同意或重要行動；維持時間／地點各一行、全形括號旁白、狀態欄和 JSON 資料結構。
+
             【Premium 寫法】
             - 先像人，再像角色。先回應玩家，再讓人物與場景真正發生變化。
             - 比沉浸模式更重視情緒層次、人物關係張力、語言質感與場景完成度，但不要因此變成華麗空話。
@@ -6324,9 +6454,12 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
             - 不確定的重要既有事實保持模糊，不要硬定案。
             - 玩家明確停止某話題時尊重停止，不要為了戲劇張力強迫追問。
             - 強勢、危險、霸道只是角色底色，不是每輪都必須演出的標籤。
+            - 從角色當下的目的、利益、已知資訊、情緒與行事習慣推導反應，不先設計一句漂亮的金句或套用「不是 A 而是 B」的固定戲劇句型。
+            - 不把道德有缺陷或危險的角色自動改造成公平、守法、耐心的完美伴侶；也不為了強調黑暗人設而無因升級衝突。保留創作者原始設定與既有故事因果。
+            - 角色可以直率、尖刻、幽默、嘴硬、拒絕或沉默，保持獨特的說話習慣；不要由旁白替他辯解或解說每句話的情感含義。
             - 模型即使由 Gemini 切換 Grok，也必須維持上一輪的文體與角色聲線。
             - 用有效的新內容完成長篇，不用模板化感官堆疊灌字。
-            - 正文建議約 700～1100 個中文字；這是寫作目標，不是後端硬性門檻。自然完整優先，但也不要因為「自然完成」而縮成只有一百多字的極短回覆。
+            - 沉浸模式每輪正文至少 700 個中文字，目標 800～1000 字；時間、地點及狀態欄不算正文。不得輸出只有一兩百字的短篇。用符合人物動機的對話、行動與事件自然完成篇幅，不重複灌水，也不替玩家新增台詞或重要選擇。
 
             【時間與場景連續】
             - response 前兩行固定：
@@ -6548,7 +6681,7 @@ systemPrompt += `
             systemPrompt += `
 
         【💎 最終輸出格式與好感度結算指令 (極度重要)】
-        1. **稱呼規範**：對方（玩家）的名字是「${playerName}」。在回覆中，請親暱地稱呼玩家為「${playerName}」，或隨著劇情推進，幫玩家取親密的稱呼或綽號，例如：親愛的${playerName}、寶貝等。
+        1. **稱呼規範**：對方名字為「${playerName}」。可視人設及當前關係自然使用名字、第二人稱或既有暱稱；不得強制親暱稱呼，不得無根據使用「寶貝」「親愛的」，也不得稱呼對方為「玩家」。
         2. **好感度評定**：根據對話內容評定「affectionChange」。
            - 日常閒聊：0 ~ +2
            - 體貼關懷：+3 ~ +5
@@ -6559,7 +6692,7 @@ systemPrompt += `
 
         格式如下：
         {
-          "response": "請先填入情境與旁白描寫，再填入角色對話。記得稱呼對方為『${playerName}』。",
+          "response": "第一行時間、第二行地點；其後全形括號旁白與「」台詞自然交錯，不強制使用任何暱稱。",
           "affectionChange": 數字,
           "voiceText": "純台詞提取"
         }
@@ -6593,14 +6726,12 @@ ${persistentPreferenceDirective}
        請直接進入角色扮演，描寫環境與感官，並對「${playerName}」說出第一句話！
        ⚠️ 絕對禁止說旁白廢話。`;
 
-       } else if (checkMsg.includes("繼續") || checkMsg.includes("然後") || checkMsg === "..." || checkMsg === "continue") {
-           finalUserMessage = `【系統強制指令：${playerName} 保持沈默，等待你的行動】
-       「${playerName}」目前沒有說話，正靜靜地看著你，把主導權交給了你。
-       請你以角色身份，主動對「${playerName}」打破沈默！
-       你可以：
-       1. 做出拉近距離的肢體動作。
-       2. 主動詢問或推進互動。
-       ⚠️ 絕對禁止快轉時間，維持細膩描寫。`;
+       } else if (/^(?:繼續|繼續吧|繼續故事|接著|然後呢|然後|\.\.\.|…|continue)[！!。.…\s]*$/i.test(checkMsg)) {
+           finalUserMessage = `【玩家要求延續既有情節，沒有補充新台詞或動作】
+       請從已發生的劇情與 NPC 目前的目標、職責、生活和世界事件自然推進。
+       不可自行設定「${playerName}」正注視誰、保持沉默、等待、同意、害羞或主動親近；也不得新增其台詞、情緒、重大行動與親密同意。
+       NPC 可自主回應、工作、調查、行動、離開或推進事件；不強制靠近、觸碰、提問、加速親密關係或停在原地等待。
+       依目前模式維持時間／地點前兩行、全形括號旁白、創作者結尾狀態欄及玩家選擇的 statusBar JSON 欄位。`;
 
        } else if (checkMsg.includes("【轉發了一則動態】")) {
            finalUserMessage = `【系統強制指令：${playerName} 轉發了一則動態給你】
@@ -6618,9 +6749,10 @@ ${persistentPreferenceDirective}
            finalUserMessage = `${userMessage}
 
        【系統強制指令】
-       1. 稱呼對方為「${playerName}」。
-       2. 歷史連貫。
-       3. 前兩行依序包含時間與地點。`;
+       1. 依照創作者角色設定與目前關係自然稱呼對方，不強制親暱稱謂。
+       2. 承接真實歷史、玩家當輪文字與已建立的世界事件，不替玩家增補新的發言或決定。
+       3. 故事、沉浸、共鳴回覆第一行為時間、第二行為地點；所有非台詞旁白使用全形括號（），台詞使用「」。
+       4. 玩家選擇的 statusBar 與創作者自訂狀態欄維持原始欄位、順序、顯示條件與既有處理流程。`;
        }
 
                    const abortController = new AbortController();
@@ -6651,7 +6783,7 @@ ${persistentPreferenceDirective}
 
                           const maxTokens =
                               chatMode === "resonance" ? 3200 :
-                              chatMode === "immersive" ? 2600 :
+                              chatMode === "immersive" ? 3800 :
                               chatMode === "story"     ? 2400 :
                               chatMode === "daily"     ? 600  :
                               chatMode === "gemini"    ? 180  :
@@ -6779,6 +6911,7 @@ ${persistentPreferenceDirective}
                                        TARGET_LENGTH = 500;
                                        MAX_LOOPS = 2;
                                    } else if (chatMode === "immersive") {
+                                       // Kimi 沉浸：每輪正文最低 700 個中文字；不足時完整重寫一次。
                                        TARGET_LENGTH = 700;
                                        MAX_LOOPS = 2;
                                    } else if (chatMode === "story") {
@@ -7017,7 +7150,7 @@ ${persistentPreferenceDirective}
                                                                            // 必須預留足夠長度，避免正文太長時把狀態欄切掉。
                                                                            const MAX_RESPONSE_LENGTH =
                                                                                chatMode === "resonance" ? 5200 :
-                                                                               chatMode === "immersive" ? 4500 :
+                                                                               chatMode === "immersive" ? 7000 :
                                                                                chatMode === "story" ? 3500 :
                                                                                chatMode === "daily" ? 600 :
                                                                                500;
@@ -7086,7 +7219,7 @@ ${persistentPreferenceDirective}
                                                                                // v2.4.5.1：共鳴使用 Gemini Pro 時，low thinking 與 JSON 也會占用輸出預算。
                                                                                // 4096 是安全上限，不是要求模型一定生成到 4096；正文仍以自然完成為優先。
                                                                                chatMode === "resonance" ? 4096 :
-                                                                               chatMode === "immersive" ? 2600 :
+                                                                               chatMode === "immersive" ? 3800 :
                                                                                chatMode === "story" ? 2200 :
                                                                                chatMode === "daily" ? 400 :
                                                                                700;
@@ -7555,8 +7688,26 @@ ${persistentPreferenceDirective}
                                                                            // 第一輪若 <500 且正常完成，只再重寫一次；第二輪不論長度都接受。
                                                                            let resonanceSoftFloorRetryUsed = false;
 
+                                                                           // 只在沉浸模式按「正文中文字」判斷篇幅；不讓時間／地點或狀態欄灌水過關。
+                                                                           function measuredWriterLength(text) {
+                                                                               if (chatMode !== "immersive") return String(text || "").length;
+                                                                               let body = String(text || "")
+                                                                                   .replace(/^時間：[^\n]*\n地點：[^\n]*\n?/, "");
+                                                                               if (customOutputFormat) {
+                                                                                   const firstLine = String(customOutputFormat)
+                                                                                       .split(/\r?\n/).map(s => s.trim())
+                                                                                       .find(s => s && !s.startsWith("【") && !s.startsWith("#"));
+                                                                                   if (firstLine) {
+                                                                                       const at = body.indexOf(firstLine);
+                                                                                       if (at > 0) body = body.slice(0, at);
+                                                                                   }
+                                                                               }
+                                                                               // 全形括號本身不計字數；僅計真正的中文字。
+                                                                               return (body.match(/\p{Script=Han}/gu) || []).length;
+                                                                           }
+
                                                                            while (
-                                                                               finalResponseText.length < TARGET_LENGTH &&
+                                                                               measuredWriterLength(finalResponseText) < TARGET_LENGTH &&
                                                                                (
                                                                                    loopCount < MAX_LOOPS ||
                                                                                    retryCount < MAX_AI_RETRIES
@@ -7576,7 +7727,8 @@ ${persistentPreferenceDirective}
                                                                                            chatMode === "resonance" &&
                                                                                            nextAiCallReason !== "initial"
                                                                                        ) {
-                                                                                           targetModel = "google/gemini-3-flash-preview";
+                                                                                           // 共鳴補寫仍使用 Claude；避免補救回合悄悄切回 Gemini。
+                                                                                           targetModel = config.modelId;
                                                                                        }
 
                                                                                        // 🚀 2. 轉轍器一號：DeepSeek 改回走 OpenRouter 深夜專車！
@@ -8276,7 +8428,7 @@ const residualWriterArtifacts =
                                                                                // v2.4.5.5：Resonance 短回覆軟門檻。
                                                                                // 第一輪正常完成但 <500：一定再完整重寫一次；第二輪直接接受。
                                                                                if (chatMode === "resonance" && hasCompleteStatus) {
-                                                                                   if (finalResponseText.length >= TARGET_LENGTH) {
+                                                                                   if (measuredWriterLength(finalResponseText) >= TARGET_LENGTH) {
                                                                                        break;
                                                                                    }
                                                                                    if (!resonanceSoftFloorRetryUsed) {
@@ -8288,11 +8440,14 @@ const residualWriterArtifacts =
                                                                                    }
                                                                                } else if (
                                                                                    (
-                                                                                       finalResponseText.length >= TARGET_LENGTH &&
+                                                                                       measuredWriterLength(finalResponseText) >= TARGET_LENGTH &&
                                                                                        hasCompleteStatus
                                                                                    ) ||
                                                                                    loopCount >= MAX_LOOPS
                                                                                ) {
+                                                                                   if (chatMode === "immersive" && measuredWriterLength(finalResponseText) < TARGET_LENGTH) {
+                                                                                       console.warn(`⚠️ Kimi 沉浸仍未達 700 個中文字：${measuredWriterLength(finalResponseText)}；已用盡重寫次數，請檢查 AI 成本與回覆品質。`);
+                                                                                   }
                                                                                    break;
                                                                                }
 
@@ -8304,7 +8459,7 @@ const residualWriterArtifacts =
                                                                                }
 
                                                                                console.log(
-                                                                                   `[暴力接文] 目前字數 ${finalResponseText.length}，啟動第 ${loopCount + 1} 次催稿...`
+                                                                                   `[短回覆重寫] 目前有效字數 ${measuredWriterLength(finalResponseText)}，啟動第 ${loopCount + 1} 次重寫...`
                                                                                );
 
                                                                                const retryUserIndex = currentMessages.length - 1;
