@@ -24,7 +24,9 @@ class _InboxPageState extends State<InboxPage> {
   void initState() {
     super.initState();
 
+    debugPrint('[BADGE] InboxPage.initState 進入信箱');
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      debugPrint('[BADGE] 信箱首幀完成 mounted=$mounted started=$_badgeSyncStarted');
       if (!mounted || _badgeSyncStarted) return;
       _badgeSyncStarted = true;
       _repairLegacyReadFieldsAndSyncBadge();
@@ -33,8 +35,12 @@ class _InboxPageState extends State<InboxPage> {
 
   Future<void> _syncAppBadge() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
+    if (user == null) {
+      debugPrint('[BADGE] 同步略過：目前沒有登入的使用者');
+      return;
+    }
 
+    debugPrint('[BADGE] 準備呼叫 syncNotificationBadge，平台=$defaultTargetPlatform');
     try {
       final callable = FirebaseFunctions.instanceFor(
         region: 'asia-east1',
@@ -46,14 +52,20 @@ class _InboxPageState extends State<InboxPage> {
       );
 
       final response = await callable.call();
+      debugPrint('[BADGE] 後端呼叫完成，回傳型別=${response.data.runtimeType}');
       final raw = response.data;
       final dynamic countValue = raw is Map ? raw['unreadCount'] : null;
       final int? unreadCount = countValue is num
           ? countValue.toInt()
           : int.tryParse('$countValue');
+      debugPrint('[BADGE] 後端未讀數=$unreadCount（null 代表資料格式異常）');
       if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS &&
           unreadCount != null && FirebaseAuth.instance.currentUser?.uid == user.uid) {
+        debugPrint('[BADGE] iOS 準備更新桌面徽章為 $unreadCount');
         await AppBadgePlus.updateBadge(unreadCount < 0 ? 0 : unreadCount);
+        debugPrint('[BADGE] iOS 徽章更新呼叫完成');
+      } else {
+        debugPrint('[BADGE] 未執行 iOS 徽章更新（Android/Web 或回傳無效／帳號變更）');
       }
       debugPrint('✅ App badge 已同步：$unreadCount');
     } on FirebaseFunctionsException catch (e) {
@@ -64,8 +76,12 @@ class _InboxPageState extends State<InboxPage> {
   }
 
   Future<void> _repairLegacyReadFieldsAndSyncBadge() async {
+    debugPrint('[BADGE] 開始檢查信箱舊版已讀欄位');
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
+    if (user == null) {
+      debugPrint('[BADGE] 檢查略過：目前沒有登入的使用者');
+      return;
+    }
 
     try {
       final mailboxRef = FirebaseFirestore.instance
@@ -73,7 +89,25 @@ class _InboxPageState extends State<InboxPage> {
           .doc(user.uid)
           .collection('mailbox');
 
+      debugPrint('[BADGE] 準備讀取 Firestore mailbox');
       final snapshot = await mailboxRef.get();
+      debugPrint('[BADGE] 信箱讀取完成，共 ${snapshot.docs.length} 筆');
+      final hidden = <String>{'new_post', 'character_moment'};
+      int visibleUnread = 0;
+      int hiddenUnread = 0;
+      final unreadByType = <String, int>{};
+      for (final doc in snapshot.docs) {
+        final data = doc.data();
+        if (data['isRead'] == true || data['read'] == true) continue;
+        final type = (data['type'] ?? 'unknown').toString().trim();
+        unreadByType[type] = (unreadByType[type] ?? 0) + 1;
+        if (hidden.contains(type)) {
+          hiddenUnread++;
+        } else {
+          visibleUnread++;
+        }
+      }
+      debugPrint('[BADGE] 未讀統計：可見=$visibleUnread、已隱藏=$hiddenUnread、依類型=$unreadByType');
 
       WriteBatch? batch;
       int repairCount = 0;
@@ -104,15 +138,20 @@ class _InboxPageState extends State<InboxPage> {
       }
 
       if (batch != null) {
+        debugPrint('[BADGE] 準備修正 $repairCount 筆舊通知已讀欄位');
         await batch.commit();
         debugPrint('✅ 已修正 $repairCount 筆舊通知已讀欄位');
+      } else {
+        debugPrint('[BADGE] 已讀欄位無須修正');
       }
     } catch (e) {
       // 舊資料修正失敗不阻擋信箱使用。
       debugPrint('⚠️ 修正舊通知已讀欄位失敗：$e');
     }
 
+    debugPrint('[BADGE] 準備進行後端徽章同步');
     await _syncAppBadge();
+    debugPrint('[BADGE] 信箱徽章同步流程結束');
   }
 
 
@@ -455,7 +494,9 @@ class _InboxPageState extends State<InboxPage> {
           // 只過濾顯示，不刪除歷史資料，也不影響其他通知。
           final docs = snapshot.data!.docs.where((doc) {
             final data = doc.data() as Map<String, dynamic>;
-            return (data['type'] ?? '').toString() != 'new_post';
+            return !const {'new_post', 'character_moment'}.contains(
+              (data['type'] ?? '').toString().trim(),
+            );
           }).toList();
 
           if (docs.isEmpty) {

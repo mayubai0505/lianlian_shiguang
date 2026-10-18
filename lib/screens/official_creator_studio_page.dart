@@ -6,6 +6,13 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/services.dart';
 import 'package:characters/characters.dart';
 import 'store_page.dart';
+import 'dart:convert';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+import 'dart:math' as math;
+import 'package:image_picker/image_picker.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import '../services/toast_utils.dart';
 
 /// 官方合作創作者專區第一版。
 /// 注意：畫面上的權限檢查不能取代 Cloud Functions 的後端驗證。
@@ -42,7 +49,7 @@ class OfficialCreatorStudioPage extends StatelessWidget {
               !_isVerified(snapshot.data!.data() ?? <String, dynamic>{})) {
             return const Center(child: Padding(
               padding: EdgeInsets.all(24),
-              child: Text('目前沒有官方合作創作者權限。\n如已完成簽約，請聯繫官方確認開通狀態。',
+              child: Text('目前沒有官方合作創作者權限。\n如已審核通過，請聯繫官方確認開通狀態。',
                   textAlign: TextAlign.center),
             ));
           }
@@ -79,17 +86,14 @@ class OfficialCreatorStudioPage extends StatelessWidget {
               Text('專屬工具', style: GoogleFonts.notoSerifTc(
                   fontSize: 19, fontWeight: FontWeight.w600)),
               const SizedBox(height: 12),
-              _tool(context, Icons.people_outline_rounded, '粉絲管理', '查看追蹤自己的玩家', onTap: () => _openPage(context, const _OfficialFollowersPage())),
-              _tool(context, Icons.bar_chart_rounded, '創作數據', '公開角色與遊玩次數', onTap: () => _openPage(context, const _OfficialCreatorStatsPage())),
-              _tool(context, Icons.mail_outline_rounded, '粉絲信件', '寄送訊息給追蹤者', onTap: () => _openPage(context, const _CreatorFanMailPage())),
-              _tool(context, Icons.card_giftcard_outlined, '粉絲福利', '贈送自己的花花給追蹤者', onTap: () => _openPage(context, _CreatorFlowerGiftPage(onOpenShop: onOpenShop))),
-              _tool(context, Icons.local_florist_outlined, '每月創作獎勵', '當月新建並公開 3 位角色，領取 300 花花', onTap: () => _openPage(context, const _CreatorMonthlyRewardPage())),
-              _tool(context, Icons.image_outlined, '專屬橫幅', '設定創作者頁面圖片'),
-              _tool(context, Icons.info_outline_rounded, '合作資訊', '查看合作資格與公告'),
-              const SizedBox(height: 12),
-              Text('創作數據、粉絲名單、粉絲信件及花花福利已加入；專屬橫幅等功能仍在規劃中。',
-                  style: TextStyle(fontSize: 12,
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6))),
+              _tool(context, '粉絲管理', '查看追蹤者、移除粉絲', onTap: () => _openPage(context, const _OfficialFollowersPage())),
+              _tool(context, '創作數據', '角色人氣與累計遊玩次數', onTap: () => _openPage(context, const _OfficialCreatorStatsPage())),
+              _tool(context, '作品集管理', '調整公開角色的展示順序', onTap: () => _openPage(context, const _CreatorPortfolioPage())),
+              _tool(context, '粉絲信件', '寄送訊息給追蹤者', onTap: () => _openPage(context, const _CreatorFanMailPage())),
+              _tool(context, '粉絲福利', '贈送自己的花花給追蹤者', onTap: () => _openPage(context, _CreatorFlowerGiftPage(onOpenShop: onOpenShop))),
+              _tool(context, '每月創作獎勵', '新建並公開 3 位角色，可領取 300 花花', onTap: () => _openPage(context, const _CreatorMonthlyRewardPage())),
+              _tool(context, '專屬橫幅', '設定創作者公開頁面的橫幅圖片', onTap: () => _openPage(context, const _CreatorBannerPage())),
+              _tool(context, '合作資訊', '合作狀態、權益與公告', onTap: () => _openPage(context, const _CreatorCooperationPage())),
             ],
           );
         },
@@ -101,26 +105,19 @@ class OfficialCreatorStudioPage extends StatelessWidget {
     Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => page));
   }
 
-  Widget _tool(BuildContext context, IconData icon, String title, String subtitle, {VoidCallback? onTap}) {
+  Widget _tool(BuildContext context, String title, String subtitle, {VoidCallback? onTap}) {
     final theme = Theme.of(context);
     return Card(
-      margin: const EdgeInsets.only(bottom: 10),
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.16)),
-      ),
-      child: ListTile(
-        onTap: onTap,
-        leading: Icon(icon, color: theme.colorScheme.primary),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-        subtitle: Text(subtitle),
-        trailing: onTap == null
-            ? const Text('規劃中', style: TextStyle(fontSize: 12))
-            : const Icon(Icons.chevron_right_rounded),
-      ),
+      margin: const EdgeInsets.only(bottom: 10), elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.16))),
+      child: ListTile(onTap: onTap,
+          title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+          subtitle: Text(subtitle),
+          trailing: const Icon(Icons.chevron_right_rounded)),
     );
   }
+
 }
 
 
@@ -217,7 +214,7 @@ class _OfficialCreatorStatsPage extends StatelessWidget {
                   child: Text('還沒有公開角色，發布後就會顯示在這裡。')),
             for (final character in sorted)
               Card(child: ListTile(
-                leading: Icon(Icons.auto_stories_outlined, color: theme.colorScheme.primary),
+                leading: _StudioAvatar(url: _studioCharacterImage(character.data()), size: 48),
                 title: Text((character.data()['name'] ?? '未命名角色').toString()),
                 subtitle: const Text('累計遊玩次數（playCount）'),
                 trailing: Text('${character.data()['playCount'] is num ? (character.data()['playCount'] as num).toInt() : 0}'),
@@ -234,8 +231,7 @@ class _OfficialCreatorStatsPage extends StatelessWidget {
   Widget _metricCard(BuildContext context, String title, String value, IconData icon) {
     final theme = Theme.of(context);
     return Card(child: Padding(padding: const EdgeInsets.all(15), child: Row(children: [
-      Icon(icon, color: theme.colorScheme.primary),
-      const SizedBox(width: 12),
+
       Expanded(child: Text(title)),
       Text(value, style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w700)),
     ])));
@@ -266,7 +262,7 @@ class _OfficialFollowersPage extends StatelessWidget {
             Text('追蹤者名單', style: GoogleFonts.notoSerifTc(
                 fontSize: 20, fontWeight: FontWeight.w600)),
             const SizedBox(height: 5),
-            Text('目前顯示最多 100 位追蹤者；僅展示暱稱，不公開私人聯絡資料。',
+            Text('目前顯示最多 100 位追蹤者；僅顯示公開暱稱與頭像。',
                 style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurfaceVariant)),
             const SizedBox(height: 12),
             for (final entry in entries)
@@ -282,6 +278,24 @@ class _FollowerItem extends StatelessWidget {
   final String followerId;
   const _FollowerItem({required this.followerId});
 
+  Future<void> _confirmRemoveFollower(BuildContext context, String id, String name) async {
+    final accepted = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
+      title: const Text('移除粉絲'),
+      content: Text('確定將「$name」移出追蹤者名單嗎？對方將不再追蹤妳，但未來仍可再次追蹤。'),
+      actions: [TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('取消')),
+        FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('確認移除'))],
+    ));
+    if (accepted != true || !context.mounted) return;
+    try {
+      await FirebaseFunctions.instanceFor(region: 'asia-east1')
+          .httpsCallable('removeCreatorFollower').call({'followerUid': id});
+      if (context.mounted) ToastUtils.showCenterToast(context, '已移除粉絲');
+    } catch (e) {
+      if (context.mounted) ToastUtils.showCenterToast(context, '移除失敗，請稍後重試', isError: true);
+      debugPrint('移除粉絲失敗：$e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
@@ -290,15 +304,490 @@ class _FollowerItem extends StatelessWidget {
         final data = snap.data?.data() ?? <String, dynamic>{};
         final nickname = (data['nickname'] ?? '').toString().trim();
         return Card(child: ListTile(
-          leading: const CircleAvatar(child: Icon(Icons.person_outline_rounded)),
-          title: Text(nickname.isNotEmpty ? nickname : '玩家'),
+          leading: _StudioAvatar(url: (data['avatarPath'] ?? data['photoURL'] ?? '').toString(), size: 44),
+          title: Text(nickname.isNotEmpty ? nickname : (data['displayName'] ?? '玩家').toString()),
           subtitle: snap.hasError ? const Text('無法載入公開資料') : null,
+          trailing: TextButton(
+              onPressed: () => _confirmRemoveFollower(context, followerId, nickname.isEmpty ? '這位玩家' : nickname),
+              child: const Text('移除粉絲')),
         ));
       },
     );
   }
 }
 
+
+// 共用：角色圖片欄位依目前資料 schema 選擇，遠端圖使用快取。
+String _studioCharacterImage(Map<String, dynamic> data) {
+  for (final key in ['avatarPath', 'bannerImagePath', 'imageUrl', 'imageURL', 'avatarUrl', 'avatarURL', 'coverImage', 'imagePath', 'image']) {
+    final value = data[key];
+    if (value is String && value.trim().isNotEmpty) return value.trim();
+  }
+  final images = data['images'];
+  if (images is List && images.isNotEmpty && images.first is String) return (images.first as String).trim();
+  return '';
+}
+
+class _StudioAvatar extends StatelessWidget {
+  final String url;
+  final double size;
+  const _StudioAvatar({required this.url, this.size = 44});
+  @override
+  Widget build(BuildContext context) {
+    final path = url.trim();
+    final fallback = Center(child: Icon(Icons.person_outline_rounded, color: Theme.of(context).colorScheme.primary));
+    return ClipRRect(borderRadius: BorderRadius.circular(size / 2), child: SizedBox(
+      width: size, height: size,
+      child: path.startsWith('http')
+          ? CachedNetworkImage(imageUrl: path, fit: BoxFit.cover,
+          placeholder: (_, __) => fallback, errorWidget: (_, __, ___) => fallback)
+          : path.isNotEmpty ? Image.asset(path, fit: BoxFit.cover, errorBuilder: (_, __, ___) => fallback) : fallback,
+    ));
+  }
+}
+
+class _CreatorBannerPage extends StatefulWidget {
+  const _CreatorBannerPage();
+  @override State<_CreatorBannerPage> createState() => _CreatorBannerPageState();
+}
+class _CreatorBannerPageState extends State<_CreatorBannerPage> {
+  bool _busy = false;
+  Future<void> _upload() async {
+    if (_busy) return;
+    try {
+      final picked = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 2048,
+        maxHeight: 2048,
+        imageQuality: 90,
+      );
+      if (picked == null || !mounted) return;
+      final original = await picked.readAsBytes();
+      if (!mounted) return;
+      // 先讓使用者確認 2.5:1 裁切範圍；取消不會更新橫幅。
+      final cropped = await Navigator.of(context).push<Uint8List>(
+        MaterialPageRoute(builder: (_) => _CreatorBannerCropPage(bytes: original)),
+      );
+      if (cropped == null || !mounted) return;
+      if (cropped.length > 2200000) {
+        ToastUtils.showCenterToast(context, '裁切後圖片仍過大，請使用其他圖片', isError: true);
+        return;
+      }
+      setState(() => _busy = true);
+      await FirebaseFunctions.instanceFor(region: 'asia-east1')
+          .httpsCallable('updateCreatorBanner', options: HttpsCallableOptions(timeout: const Duration(seconds: 90)))
+          .call({'imageBase64': base64Encode(cropped), 'operation': 'upload'});
+      if (mounted) ToastUtils.showCenterToast(context, '橫幅已更新');
+    } on FirebaseFunctionsException catch (e, st) {
+      final message = (e.message ?? '').trim();
+      debugPrint('[CREATOR_BANNER] 上傳失敗 code=${e.code} message=$message details=${e.details}');
+      debugPrintStack(stackTrace: st);
+      if (mounted) ToastUtils.showCenterToast(context,
+          '橫幅上傳失敗（${e.code}）${message.isEmpty ? '' : '：$message'}', isError: true);
+    } catch (e, st) {
+      debugPrint('[CREATOR_BANNER] 圖片處理或上傳失敗：$e');
+      debugPrintStack(stackTrace: st);
+      if (mounted) ToastUtils.showCenterToast(context, '圖片處理失敗，請重新選擇圖片', isError: true);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+  Future<void> _remove() async {
+    setState(() => _busy = true);
+    try {
+      await FirebaseFunctions.instanceFor(region: 'asia-east1')
+          .httpsCallable('updateCreatorBanner').call({'operation': 'remove'});
+      if (mounted) ToastUtils.showCenterToast(context, '已移除橫幅');
+    } catch (e) {
+      if (mounted) ToastUtils.showCenterToast(context, '移除失敗', isError: true);
+      debugPrint('移除橫幅失敗：$e');
+    } finally { if (mounted) setState(() => _busy = false); }
+  }
+  @override Widget build(BuildContext context) {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    return Scaffold(appBar: AppBar(title: const Text('專屬橫幅')),
+        body: _CreatorAccessGate(child: uid == null ? const Center(child: Text('請先登入')) :
+        StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+          stream: FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
+          builder: (context, snapshot) {
+            final url = (snapshot.data?.data()?['creatorBannerUrl'] ?? '').toString();
+            return ListView(padding: const EdgeInsets.all(20), children: [
+              const Text('公開頁橫幅', style: TextStyle(fontSize: 19, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 12),
+              AspectRatio(aspectRatio: 2.5, child: ClipRRect(borderRadius: BorderRadius.circular(16),
+                  child: url.startsWith('http') ? CachedNetworkImage(imageUrl: url, fit: BoxFit.cover,
+                      errorWidget: (_, __, ___) => const Center(child: Text('圖片讀取失敗')))
+                      : Container(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.07),
+                      alignment: Alignment.center, child: const Text('尚未設定橫幅')))),
+              const SizedBox(height: 12),
+              const Text('選擇照片後可在白色取景框內調整位置、縮放，確認後才上傳。'),
+              const SizedBox(height: 18),
+              FilledButton(onPressed: _busy ? null : _upload, child: Text(_busy ? '處理中…' : '選擇圖片並裁切')),
+              if (url.isNotEmpty) TextButton(onPressed: _busy ? null : _remove, child: const Text('移除目前橫幅')),
+            ]);
+          },
+        )));
+  }
+}
+
+// 使用 Flutter 內建 Canvas 裁切，避免額外安裝圖片套件或修改 Android/iOS 設定。
+// 固定輸出 960x384 PNG，符合既有 callable 的 2.2MB 上傳限制。
+class _CreatorBannerCropPage extends StatefulWidget {
+  final Uint8List bytes;
+  const _CreatorBannerCropPage({required this.bytes});
+
+  @override
+  State<_CreatorBannerCropPage> createState() => _CreatorBannerCropPageState();
+}
+
+class _CreatorBannerCropPageState extends State<_CreatorBannerCropPage> {
+  ui.Image? _source;
+  bool _working = false;
+  double _zoom = 1;
+  double _gestureStartZoom = 1;
+  Offset _offset = Offset.zero;
+  Offset _gestureStartOffset = Offset.zero;
+  Offset _gestureStartFocal = Offset.zero;
+
+  @override
+  void initState() {
+    super.initState();
+    _decode();
+  }
+
+  Future<void> _decode() async {
+    try {
+      final codec = await ui.instantiateImageCodec(widget.bytes);
+      final frame = await codec.getNextFrame();
+      codec.dispose();
+      if (!mounted) {
+        frame.image.dispose();
+        return;
+      }
+      debugPrint('[CREATOR_BANNER] 原圖尺寸=${frame.image.width}x${frame.image.height}');
+      setState(() => _source = frame.image);
+    } catch (error, stack) {
+      debugPrint('[CREATOR_BANNER] 解碼失敗：$error');
+      debugPrintStack(stackTrace: stack);
+      if (mounted) ToastUtils.showCenterToast(context, '無法開啟這張圖片', isError: true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _source?.dispose();
+    super.dispose();
+  }
+
+  double _baseScale(ui.Image image, Size crop) =>
+      math.max(crop.width / image.width, crop.height / image.height);
+
+  Offset _clampOffset(ui.Image image, Size crop, double zoom, Offset offset) {
+    final scale = _baseScale(image, crop) * zoom;
+    final maxX = math.max(0.0, (image.width * scale - crop.width) / 2);
+    final maxY = math.max(0.0, (image.height * scale - crop.height) / 2);
+    return Offset(
+      offset.dx.clamp(-maxX, maxX).toDouble(),
+      offset.dy.clamp(-maxY, maxY).toDouble(),
+    );
+  }
+
+  Future<void> _confirm(Size crop) async {
+    final image = _source;
+    if (image == null || _working) return;
+    setState(() => _working = true);
+    try {
+      final scale = _baseScale(image, crop) * _zoom;
+      final sourceWidth = crop.width / scale;
+      final sourceHeight = crop.height / scale;
+      final left = (image.width - sourceWidth) / 2 - _offset.dx / scale;
+      final top = (image.height - sourceHeight) / 2 - _offset.dy / scale;
+      final sourceRect = Rect.fromLTWH(left, top, sourceWidth, sourceHeight);
+      final recorder = ui.PictureRecorder();
+      final canvas = Canvas(recorder);
+      canvas.drawImageRect(
+        image,
+        sourceRect,
+        const Rect.fromLTWH(0, 0, 960, 384),
+        Paint()..filterQuality = FilterQuality.high,
+      );
+      final picture = recorder.endRecording();
+      final resultImage = await picture.toImage(960, 384);
+      picture.dispose();
+      final data = await resultImage.toByteData(format: ui.ImageByteFormat.png);
+      resultImage.dispose();
+      if (data == null) throw StateError('圖片輸出失敗');
+      final result = data.buffer.asUint8List();
+      if (!mounted) return;
+      if (result.length > 2200000) {
+        ToastUtils.showCenterToast(context, '裁切後檔案過大，請更換照片', isError: true);
+        return;
+      }
+      Navigator.of(context).pop(result);
+    } catch (error, stack) {
+      debugPrint('[CREATOR_BANNER] 裁切失敗：$error');
+      debugPrintStack(stackTrace: stack);
+      if (mounted) ToastUtils.showCenterToast(context, '裁切失敗，請再試一次', isError: true);
+    } finally {
+      if (mounted) setState(() => _working = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final image = _source;
+    final theme = Theme.of(context);
+    return Scaffold(
+      appBar: AppBar(title: const Text('調整橫幅取景')),
+      body: SafeArea(
+        child: LayoutBuilder(builder: (context, constraints) {
+          final cropWidth = math.min(math.max(1.0, constraints.maxWidth - 44), 600.0);
+          final crop = Size(cropWidth, cropWidth / 2.5);
+          final editorHeight = math.min(
+            math.max(crop.height + 60, constraints.maxHeight * 0.52),
+            math.max(crop.height + 60, constraints.maxHeight - 180),
+          );
+          final editorSize = Size(constraints.maxWidth, editorHeight);
+          return Column(children: [
+            const SizedBox(height: 12),
+            Text('移動照片，選擇橫幅要顯示的範圍',
+                style: GoogleFonts.notoSerifTc(fontSize: 14, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 6),
+            Text('單指拖曳位置・雙指縮放・也可以用下方滑桿',
+                style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurfaceVariant)),
+            const SizedBox(height: 14),
+            SizedBox(
+              width: editorSize.width,
+              height: editorSize.height,
+              child: image == null
+                  ? const Center(child: CircularProgressIndicator())
+                  : GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onScaleStart: (details) {
+                  _gestureStartZoom = _zoom;
+                  _gestureStartOffset = _offset;
+                  _gestureStartFocal = details.localFocalPoint;
+                },
+                onScaleUpdate: (details) {
+                  final nextZoom = (_gestureStartZoom * details.scale).clamp(1.0, 5.0).toDouble();
+                  final ratio = nextZoom / _gestureStartZoom;
+                  final middle = Offset(editorSize.width / 2, editorSize.height / 2);
+                  final relative = _gestureStartFocal - middle - _gestureStartOffset;
+                  final nextOffset = details.localFocalPoint - middle - relative * ratio;
+                  setState(() {
+                    _zoom = nextZoom;
+                    _offset = _clampOffset(image, crop, _zoom, nextOffset);
+                  });
+                },
+                child: CustomPaint(
+                  size: editorSize,
+                  painter: _CreatorBannerFramingPainter(
+                    image: image,
+                    crop: crop,
+                    zoom: _zoom,
+                    offset: _offset,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text('白框內的畫面，就是上傳後的橫幅（2.5：1）',
+                style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurfaceVariant)),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(children: [
+                const Text('縮放', style: TextStyle(fontSize: 12)),
+                Expanded(child: Slider(
+                  value: _zoom,
+                  min: 1,
+                  max: 5,
+                  onChanged: image == null || _working ? null : (value) => setState(() {
+                    _zoom = value;
+                    _offset = _clampOffset(image, crop, value, _offset);
+                  }),
+                )),
+                Text('${_zoom.toStringAsFixed(1)}×', style: const TextStyle(fontSize: 12)),
+              ]),
+            ),
+            TextButton(
+              onPressed: image == null || _working ? null : () => setState(() {
+                _zoom = 1;
+                _offset = Offset.zero;
+              }),
+              child: const Text('重設位置'),
+            ),
+            const Spacer(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 18),
+              child: Row(children: [
+                Expanded(child: OutlinedButton(
+                  onPressed: _working ? null : () => Navigator.of(context).pop(),
+                  child: const Text('取消'),
+                )),
+                const SizedBox(width: 12),
+                Expanded(child: FilledButton(
+                  onPressed: image == null || _working ? null : () => _confirm(crop),
+                  child: Text(_working ? '裁切中…' : '確認裁切並上傳'),
+                )),
+              ]),
+            ),
+          ]);
+        }),
+      ),
+    );
+  }
+}
+
+// 編輯區保留原圖比例；白框是實際輸出區域，框外加深方便取景。
+// 畫面繪製和輸出都使用相同的 baseScale/zoom/offset 計算。
+class _CreatorBannerFramingPainter extends CustomPainter {
+  final ui.Image image;
+  final Size crop;
+  final double zoom;
+  final Offset offset;
+  const _CreatorBannerFramingPainter({
+    required this.image,
+    required this.crop,
+    required this.zoom,
+    required this.offset,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawColor(const Color(0xFF252329), BlendMode.src);
+    final center = Offset(size.width / 2, size.height / 2);
+    final factor = math.max(crop.width / image.width, crop.height / image.height) * zoom;
+    final pictureSize = Size(image.width * factor, image.height * factor);
+    final destination = Rect.fromCenter(
+      center: center + offset,
+      width: pictureSize.width,
+      height: pictureSize.height,
+    );
+    canvas.drawImageRect(
+      image,
+      Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble()),
+      destination,
+      Paint()..filterQuality = FilterQuality.high,
+    );
+    final focus = Rect.fromCenter(center: center, width: crop.width, height: crop.height);
+    final shade = Paint()..color = const Color(0xBB111015);
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, focus.top), shade);
+    canvas.drawRect(Rect.fromLTWH(0, focus.bottom, size.width, size.height - focus.bottom), shade);
+    canvas.drawRect(Rect.fromLTWH(0, focus.top, focus.left, focus.height), shade);
+    canvas.drawRect(Rect.fromLTWH(focus.right, focus.top, size.width - focus.right, focus.height), shade);
+    canvas.drawRect(focus, Paint()
+      ..color = const Color(0xFFFFFFFF)
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke);
+    final grid = Paint()..color = const Color(0x88FFFFFF)..strokeWidth = 0.65;
+    for (var i = 1; i <= 2; i++) {
+      final dx = focus.left + focus.width * i / 3;
+      final dy = focus.top + focus.height * i / 3;
+      canvas.drawLine(Offset(dx, focus.top), Offset(dx, focus.bottom), grid);
+      canvas.drawLine(Offset(focus.left, dy), Offset(focus.right, dy), grid);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _CreatorBannerFramingPainter old) =>
+      old.image != image || old.crop != crop || old.zoom != zoom || old.offset != offset;
+}
+
+class _CreatorCooperationPage extends StatelessWidget {
+  const _CreatorCooperationPage();
+  @override Widget build(BuildContext context) {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    return Scaffold(appBar: AppBar(title: const Text('合作資訊')),
+        body: _CreatorAccessGate(child: uid == null ? const Center(child: Text('請先登入')) :
+        StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+          stream: FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
+          builder: (context, snap) {
+            final data = snap.data?.data() ?? <String, dynamic>{};
+            final verified = _officialCreatorVerified(data);
+            return ListView(padding: const EdgeInsets.all(20), children: [
+              const Text('合作資格', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 8),
+              Text(verified ? '已認證合作創作者' : '資格確認中'),
+              const Divider(height: 32),
+              const Text('目前可使用的專屬工具', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 10),
+              const Text('粉絲管理、創作數據、作品集管理、粉絲信件、花花福利、每月創作獎勵及專屬橫幅。'),
+              const Divider(height: 32),
+              const Text('每月創作獎勵', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 10),
+              const Text('依目前系統規則，當月新建且首次公開 3 位符合資格的角色，可申請領取 300 朵花花。實際資格與核發以後端審核結果為準。'),
+              const Divider(height: 32),
+              const Text('官方公告與合約', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 10),
+              const Text('合作條款以雙方實際簽署的版本與官方正式通知為準；此頁不取代合作契約。若有資格或權益相關疑問，請聯繫官方。'),
+            ]);
+          },
+        )));
+  }
+}
+
+class _CreatorPortfolioPage extends StatefulWidget {
+  const _CreatorPortfolioPage();
+  @override State<_CreatorPortfolioPage> createState() => _CreatorPortfolioPageState();
+}
+class _CreatorPortfolioPageState extends State<_CreatorPortfolioPage> {
+  bool _saving = false;
+  Future<void> _save(List<String> ids) async {
+    setState(() => _saving = true);
+    try {
+      await FirebaseFunctions.instanceFor(region: 'asia-east1')
+          .httpsCallable('updateCreatorPortfolio').call({'characterIds': ids});
+      if (mounted) ToastUtils.showCenterToast(context, '展示順序已更新');
+    } catch (e) {
+      if (mounted) ToastUtils.showCenterToast(context, '儲存失敗，請稍後重試', isError: true);
+      debugPrint('作品集排序失敗：$e');
+    } finally { if (mounted) setState(() => _saving = false); }
+  }
+  @override Widget build(BuildContext context) {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return const Scaffold(body: Center(child: Text('請先登入')));
+    return Scaffold(appBar: AppBar(title: const Text('作品集管理')),
+        body: _CreatorAccessGate(child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+          stream: FirebaseFirestore.instance.collection('artifacts')
+              .doc(const String.fromEnvironment('APP_ID', defaultValue: 'lianlianshiguang'))
+              .collection('public_characters').where('createdBy', isEqualTo: uid).snapshots(),
+          builder: (context, snap) {
+            if (!snap.hasData) return const Center(child: CircularProgressIndicator());
+            return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+              stream: FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
+              builder: (context, userSnap) {
+                final saved = (userSnap.data?.data()?['creatorPortfolioOrder'] as List?)?.map((e) => e.toString()).toList() ?? [];
+                final chars = [...snap.data!.docs]..sort((a, b) {
+                  final ai = saved.indexOf(a.id), bi = saved.indexOf(b.id);
+                  return (ai < 0 ? 99999 : ai).compareTo(bi < 0 ? 99999 : bi);
+                });
+                return ListView(padding: const EdgeInsets.all(16), children: [
+                  const Text('調整公開角色的展示順序，第一位將排在作品集最前面。'),
+                  const SizedBox(height: 12),
+                  for (var i = 0; i < chars.length; i++) Card(child: ListTile(
+                    leading: _StudioAvatar(url: _studioCharacterImage(chars[i].data())),
+                    title: Text((chars[i].data()['name'] ?? '未命名角色').toString()),
+                    subtitle: Text('展示位置 ${i + 1}'),
+                    trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+                      IconButton(tooltip: '往前', onPressed: _saving || i == 0 ? null : () {
+                        final ids = chars.map((e) => e.id).toList();
+                        final temp = ids[i - 1]; ids[i - 1] = ids[i]; ids[i] = temp;
+                        _save(ids);
+                      }, icon: const Icon(Icons.keyboard_arrow_up)),
+                      IconButton(tooltip: '往後', onPressed: _saving || i == chars.length - 1 ? null : () {
+                        final ids = chars.map((e) => e.id).toList();
+                        final temp = ids[i + 1]; ids[i + 1] = ids[i]; ids[i] = temp;
+                        _save(ids);
+                      }, icon: const Icon(Icons.keyboard_arrow_down)),
+                    ]),
+                  )),
+                ]);
+              },
+            );
+          },
+        )));
+  }
+}
 
 // 官方合作創作者：粉絲站內信（所有真正寄送都走 Cloud Functions）
 class _CreatorFanMailPage extends StatefulWidget {

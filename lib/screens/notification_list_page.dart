@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:app_badge_plus/app_badge_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,6 +29,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
   bool _isSelectionMode = false;
   bool _isSyncingRewardMail = false;
   bool _showCollectedOnly = false;
+  static const Set<String> _hiddenMomentTypes = <String>{'new_post', 'character_moment'};
   final Set<String> _selectedMailIds = <String>{};
   final FirebaseFunctions _functions = FirebaseFunctions.instanceFor(
     region: 'asia-east1',
@@ -36,8 +39,12 @@ class _NotificationListPageState extends State<NotificationListPage> {
   void initState() {
     super.initState();
 
+    debugPrint('[BADGE] NotificationListPage.initState：進入目前使用的信箱');
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _syncRewardCampaignsToMailbox();
+      if (!mounted) return;
+      debugPrint('[BADGE] 新信箱首幀完成，開始同步');
+      unawaited(_syncRewardCampaignsToMailbox());
+      unawaited(_diagnoseMailboxAndSyncBadge());
     });
   }
 
@@ -67,6 +74,79 @@ class _NotificationListPageState extends State<NotificationListPage> {
     }
   }
 
+  // 診斷用：查清隱藏通知與舊版 read 欄位，避免把徽章問題誤判成無未讀。
+  Future<void> _diagnoseMailboxAndSyncBadge() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      debugPrint('[BADGE] 無登入使用者，略過');
+      return;
+    }
+    try {
+      debugPrint('[BADGE] 準備讀取 Firestore mailbox');
+      final snapshot = await FirebaseFirestore.instance
+          .collection('users').doc(user.uid).collection('mailbox').get();
+      int visibleUnread = 0;
+      int hiddenUnread = 0;
+      int legacyReadMismatch = 0;
+      final Map<String, int> types = <String, int>{};
+      for (final doc in snapshot.docs) {
+        final data = doc.data();
+        final type = (data['type'] ?? 'unknown').toString().trim();
+        final unread = data['isRead'] != true && data['read'] != true;
+        if (unread) {
+          types[type] = (types[type] ?? 0) + 1;
+          if (_hiddenMomentTypes.contains(type)) {
+            hiddenUnread++;
+          } else {
+            visibleUnread++;
+          }
+        }
+        if ((data['isRead'] == true) != (data['read'] == true)) {
+          legacyReadMismatch++;
+        }
+      }
+      debugPrint('[BADGE] 信箱讀取完成：總共 ${snapshot.docs.length} 筆');
+      debugPrint('[BADGE] 未讀統計：可見=$visibleUnread、已隱藏=$hiddenUnread、已讀欄位不一致=$legacyReadMismatch、分類=$types');
+    } catch (error) {
+      debugPrint('[BADGE] 讀取信箱診斷失敗：$error');
+    }
+    await _syncAppBadge();
+  }
+
+  Future<void> _syncAppBadge() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    try {
+      debugPrint('[BADGE] 準備呼叫 syncNotificationBadge');
+      final response = await _functions.httpsCallable(
+        'syncNotificationBadge',
+        options: HttpsCallableOptions(timeout: const Duration(seconds: 15)),
+      ).call();
+      final raw = response.data;
+      final dynamic countValue = raw is Map ? raw['unreadCount'] : null;
+      final int? count = countValue is num
+          ? countValue.toInt()
+          : int.tryParse('$countValue');
+      debugPrint('[BADGE] 後端未讀數=$count；平台=$defaultTargetPlatform');
+      if (count == null) {
+        debugPrint('[BADGE] 後端未回傳有效未讀數，跳過系統徽章更新');
+        return;
+      }
+      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS &&
+          FirebaseAuth.instance.currentUser?.uid == user.uid) {
+        await AppBadgePlus.updateBadge(count < 0 ? 0 : count);
+        debugPrint('[BADGE] iOS 桌面徽章已要求更新為 $count');
+      } else {
+        debugPrint('[BADGE] Android 紅點由系統通知中心控制；本次不清除系統通知');
+      }
+      debugPrint('✅ App badge 已同步：$count');
+    } on FirebaseFunctionsException catch (error) {
+      debugPrint('[BADGE] 同步失敗：${error.code} / ${error.message}');
+    } catch (error) {
+      debugPrint('[BADGE] 同步失敗：$error');
+    }
+  }
+
   // 點擊信件時，標記為已讀
   Future<void> _markAsRead(String userId, String docId) async {
     await FirebaseFirestore.instance
@@ -74,7 +154,9 @@ class _NotificationListPageState extends State<NotificationListPage> {
         .doc(userId)
         .collection('mailbox')
         .doc(docId)
-        .update({'isRead': true});
+        .update({'isRead': true, 'read': true});
+    debugPrint('[BADGE] 信件標記已讀完成，重新計算徽章');
+    await _syncAppBadge();
   }
 
   Future<void> _toggleMailCollected({
@@ -208,6 +290,8 @@ class _NotificationListPageState extends State<NotificationListPage> {
       }
 
       await batch.commit();
+      debugPrint('[BADGE] 批次刪除完成，重新計算徽章');
+      await _syncAppBadge();
 
       if (!mounted) return;
 
@@ -659,7 +743,13 @@ class _NotificationListPageState extends State<NotificationListPage> {
                   );
                 }
 
-                final allMailbox = snapshot.data!.docs;
+                // 角色新瞬間只保留推播，不進目前的私人信箱；歷史資料不刪除。
+                final allMailbox = snapshot.data!.docs.where((doc) {
+                  final data = doc.data() as Map<String, dynamic>;
+                  return !_hiddenMomentTypes.contains(
+                    (data['type'] ?? '').toString().trim(),
+                  );
+                }).toList();
 
                 final mailbox = _showCollectedOnly
                     ? allMailbox.where((doc) {
@@ -706,7 +796,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
                     final doc = mailbox[index];
                     final data = doc.data() as Map<String, dynamic>;
 
-                    final bool isRead = data['isRead'] ?? true;
+                    final bool isRead = data['isRead'] == true || data['read'] == true;
                     final String type =
                         data['type']?.toString() ?? 'system';
                     final bool isQixiLetter =

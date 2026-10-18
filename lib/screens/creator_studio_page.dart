@@ -320,7 +320,7 @@ class CreatorStudioPage extends StatelessWidget {
                               final String subtitle = verified ? '粉絲管理・創作數據・專屬福利' :
                               switch (status) {
                                 'pending' => '申請已送出・官方審核中',
-                                'contract_pending' => '初審通過・等待合約簽署',
+                                'contract_pending' => '舊申請待官方確認',
                                 'approved' => '合作認證資料同步中，請稍後再試',
                                 'suspended' => '合作資格已暫停，請聯繫官方',
                                 'revoked' => permanentlyBlocked
@@ -394,7 +394,7 @@ class CreatorStudioPage extends StatelessWidget {
                                             const Text('• 粉絲信件：單人私信與全體公告（依每日額度）', style: TextStyle(fontSize: 12, height: 1.6)),
                                             const Text('• 粉絲福利：使用自己的花花贈送追蹤者', style: TextStyle(fontSize: 12, height: 1.6)),
                                             const SizedBox(height: 7),
-                                            Text('須經官方審核並完成簽約；私人角色、草稿、舊角色重新公開皆不列入每月獎勵。',
+                                            Text('須經官方審核通過；私人角色、草稿、舊角色重新公開皆不列入每月獎勵。',
                                                 style: TextStyle(fontSize: 11, height: 1.5, color: theme.colorScheme.onSurfaceVariant)),
                                             const SizedBox(height: 8),
                                             Text('點此了解並提交申請 →', style: TextStyle(fontSize: 12, color: primary, fontWeight: FontWeight.w600)),
@@ -1038,7 +1038,7 @@ class _CreatorCooperationApplicationPageState extends State<_CreatorCooperationA
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('確認提出合作申請'),
-        content: const Text('申請送出後將由官方審核；通過初審不等於合作資格已生效，仍須完成雙方簽約。'),
+        content: const Text('申請送出後將由官方審核；審核通過後即開通創作者專區，正式合作合約另行公告。'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('取消')),
           FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('確認送出')),
@@ -1076,7 +1076,7 @@ class _CreatorCooperationApplicationPageState extends State<_CreatorCooperationA
         children: [
           Text('加入戀戀拾光合作計畫', style: GoogleFonts.notoSerifTc(fontSize: 20, fontWeight: FontWeight.w600)),
           const SizedBox(height: 10),
-          Text('請簡單介紹妳的創作方向與合作動機。送出後會進入官方審核；初審通過後仍須完成雙方合約簽署，才會開通合作創作者專區。',
+          Text('請簡單介紹妳的創作方向與合作動機。送出後會進入官方審核；通過後即可使用創作者專區。正式合作授權與契約將另行公告。',
               style: TextStyle(height: 1.7, color: theme.colorScheme.onSurfaceVariant)),
           const SizedBox(height: 22),
           TextField(controller: _directionController, maxLength: 100, enabled: !_submitting,

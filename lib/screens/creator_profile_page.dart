@@ -70,6 +70,9 @@ class CreatorProfilePage extends StatelessWidget {
         String? photoUrl;
         String? avatarPath;
         String creatorBio = '';
+        String creatorBannerUrl = '';
+        bool creatorVerified = false;
+        List<String> creatorPortfolioOrder = [];
         List<Map<String, String>> profileLinks = <Map<String, String>>[];
 
         if (userSnapshot.hasData &&
@@ -112,6 +115,12 @@ class CreatorProfilePage extends StatelessWidget {
 
           avatarPath =
           userData['avatarPath'] as String?;
+
+          creatorBannerUrl = (userData['creatorBannerUrl'] ?? '').toString().trim();
+          creatorVerified = userData['creatorStatus'] == 'approved' &&
+              userData['creatorVerified'] == true && userData['creatorDashboardEnabled'] == true;
+          creatorPortfolioOrder = (userData['creatorPortfolioOrder'] as List?)
+              ?.map((e) => e.toString()).toList() ?? <String>[];
 
           creatorBio =
               (userData['bio'] ?? '')
@@ -232,6 +241,14 @@ class CreatorProfilePage extends StatelessWidget {
                   ),
                 )
                     .toList();
+
+                if (creatorPortfolioOrder.isNotEmpty) {
+                  characters.sort((a, b) {
+                    final ai = creatorPortfolioOrder.indexOf(a.id);
+                    final bi = creatorPortfolioOrder.indexOf(b.id);
+                    return (ai < 0 ? 99999 : ai).compareTo(bi < 0 ? 99999 : bi);
+                  });
+                }
 
                 final int totalLikes =
                 characters.fold<int>(
@@ -387,6 +404,8 @@ class CreatorProfilePage extends StatelessWidget {
                               displayNickname: displayNickname,
                               displayPlayerID: displayPlayerID,
                               creatorBio: creatorBio,
+                              bannerUrl: creatorBannerUrl,
+                              isVerifiedCreator: creatorVerified,
                               imageProvider: imageProvider,
                               isOwner: isOwner,
                               workCount: characters.length,
@@ -1533,6 +1552,8 @@ class CreatorProfilePage extends StatelessWidget {
         required String displayNickname,
         required String displayPlayerID,
         required String creatorBio,
+        required String bannerUrl,
+        required bool isVerifiedCreator,
         required ImageProvider? imageProvider,
         required bool isOwner,
         required int workCount,
@@ -1547,6 +1568,12 @@ class CreatorProfilePage extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
       child: Column(
         children: [
+          if (bannerUrl.startsWith('http')) ...[
+            ClipRRect(borderRadius: BorderRadius.circular(18), child: AspectRatio(
+                aspectRatio: 2.6, child: CachedNetworkImage(imageUrl: bannerUrl, fit: BoxFit.cover,
+                errorWidget: (_, __, ___) => const SizedBox.shrink()))),
+            const SizedBox(height: 16),
+          ],
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -1610,17 +1637,16 @@ class CreatorProfilePage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      displayNickname,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.notoSerifTc(
-                        fontSize: 23,
-                        fontWeight: FontWeight.w700,
-                        color: textColor,
-                        letterSpacing: 0.2,
-                      ),
-                    ),
+                    Row(children: [
+                      Flexible(child: Text(displayNickname, maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.notoSerifTc(fontSize: 23,
+                              fontWeight: FontWeight.w700, color: textColor, letterSpacing: 0.2))),
+                      if (isVerifiedCreator) ...[
+                        const SizedBox(width: 5),
+                        const Icon(Icons.verified_rounded, color: Color(0xFF3989CC), size: 19),
+                      ],
+                    ]),
                     const SizedBox(height: 5),
                     Text(
                       'ID: $displayPlayerID',

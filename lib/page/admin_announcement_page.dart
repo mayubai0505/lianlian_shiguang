@@ -8748,7 +8748,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       case 'approved':
         return '已認證';
       case 'contract_pending':
-        return '待簽約';
+        return '舊待簽約案件';
       case 'rejected':
         return '未通過';
       case 'suspended':
@@ -8797,13 +8797,9 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     final String title;
 
     switch (targetStatus) {
-      case 'contract_pending':
-        actionText = '審核通過';
-        title = '審核通過・待簽約';
-        break;
       case 'approved':
-        actionText = '確認簽約完成並開通';
-        title = '確認雙方已簽約';
+        actionText = '審核通過並開通';
+        title = '確認開通創作者資格';
         break;
       case 'rejected':
         actionText = '確認未通過';
@@ -8853,10 +8849,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
               ),
             ] else ...[
               const SizedBox(height: 12),
-              Text(targetStatus == 'contract_pending'
-                  ? '通過後進入待簽約，不會開通創作者後台。請另外寄送合作合約。'
-                  : targetStatus == 'approved'
-                  ? '確認雙方已完成簽署後，才會開通創作者權限。'
+              Text(targetStatus == 'approved'
+                  ? '審核通過後會立即開通創作者後台並寄送通知；此操作不代表已完成合約簽署。'
                   : '系統會寄送資格異動通知。'),
             ],
           ],
@@ -8953,7 +8947,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     final candidate = _manualCreatorCandidate;
     final uid = candidate?['uid']?.toString() ?? '';
     if (uid.isEmpty || _manualCreatorActivating) return;
-    bool signedConfirmed = false;
+    bool activationConfirmed = false;
     final bool confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => StatefulBuilder(
@@ -8965,12 +8959,12 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
             children: [
               Text('玩家：${candidate?['nickname'] ?? uid}'),
               const SizedBox(height: 10),
-              const Text('此操作會立即開通專屬創作者後台並寄送通知。請先確認雙方合約均已完成簽署。'),
+              const Text('此操作會立即開通專屬創作者後台並寄送通知。此操作不代表已完成合作契約簽署。'),
               CheckboxListTile(
                 contentPadding: EdgeInsets.zero,
-                value: signedConfirmed,
-                title: const Text('我已確認雙方完成合作合約簽署'),
-                onChanged: (value) => refreshDialog(() => signedConfirmed = value == true),
+                value: activationConfirmed,
+                title: const Text('我確認要直接開通此玩家的創作者資格'),
+                onChanged: (value) => refreshDialog(() => activationConfirmed = value == true),
                 controlAffinity: ListTileControlAffinity.leading,
               ),
             ],
@@ -8981,10 +8975,10 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
               child: const Text('取消'),
             ),
             FilledButton(
-              onPressed: signedConfirmed
+              onPressed: activationConfirmed
                   ? () => Navigator.pop(dialogContext, true)
                   : null,
-              child: const Text('確認簽約並開通'),
+              child: const Text('確認開通'),
             ),
           ],
         ),
@@ -8995,7 +8989,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     try {
       await _functions.httpsCallable('adminManuallyVerifyCreator').call({
         'creatorUid': uid,
-        'contractConfirmed': true,
+        'activationConfirmed': true,
       });
       if (!mounted) return;
       ToastUtils.showCenterToast(
@@ -9026,10 +9020,10 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('提前簽約・手動認證',
+            const Text('手動開通創作者',
                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
             const SizedBox(height: 5),
-            Text('使用 UID 或玩家 ID 精確搜尋。完成雙方簽約後才可開通，並保留審計紀錄。',
+            Text('使用 UID 或玩家 ID 精確搜尋。管理員確認後即可直接開通，並保留審計紀錄。',
                 style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.65))),
             const SizedBox(height: 12),
             TextField(
@@ -9061,7 +9055,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                     ? null : _manualActivateCreator,
                 icon: const Icon(Icons.verified_user_outlined),
                 label: Text(isApproved ? '已是認證創作者' :
-                _manualCreatorActivating ? '開通中…' : '確認已簽約・手動開通'),
+                _manualCreatorActivating ? '開通中…' : '手動開通'),
               ),
             ],
           ],
@@ -9105,7 +9099,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
           ),
           const SizedBox(height: 6),
           Text(
-            '審核通過後先寄送合約；雙方簽約完成，才開通創作者後台。取消認證不影響原有作品。',
+            '審核通過立即開通創作者後台；合作合約另行公告。取消認證不影響原有作品。',
             style: TextStyle(
               fontSize: 12.5,
               color: theme.colorScheme.onSurface.withValues(alpha: 0.58),
@@ -9118,7 +9112,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
             children: [
               for (final entry in const <String, String>{
                 'pending': '待審核',
-                'contract_pending': '待簽約',
+                'contract_pending': '舊待簽約',
                 'approved': '已認證',
                 'suspended': '已暫停',
                 'revoked': '已取消',
@@ -9254,7 +9248,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                         ],
                         if (status == 'contract_pending') ...[
                           const SizedBox(height: 8),
-                          const Text('等待雙方完成合作合約簽署；目前未開通創作者後台。',
+                          const Text('這是舊版待簽約案件，請由管理員逐筆確認是否開通。',
                               style: TextStyle(fontSize: 12.5, color: Colors.blueGrey)),
                         ],
                         if (statusReason.isNotEmpty) ...[
@@ -9271,9 +9265,9 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                           children: [
                             if (status == 'pending') ...[
                               FilledButton.icon(
-                                onPressed: () => _updateCreatorStatus(creator, 'contract_pending'),
+                                onPressed: () => _updateCreatorStatus(creator, 'approved'),
                                 icon: const Icon(Icons.check_rounded, size: 18),
-                                label: const Text('審核通過・待簽約'),
+                                label: const Text('審核通過・直接開通'),
                               ),
                               OutlinedButton.icon(
                                 onPressed: () => _updateCreatorStatus(creator, 'rejected'),
@@ -9285,7 +9279,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                               FilledButton.icon(
                                 onPressed: () => _updateCreatorStatus(creator, 'approved'),
                                 icon: const Icon(Icons.verified_outlined, size: 18),
-                                label: const Text('確認簽約・開通'),
+                                label: const Text('確認開通'),
                               ),
                               OutlinedButton.icon(
                                 onPressed: () => _updateCreatorStatus(creator, 'revoked'),
@@ -9310,9 +9304,9 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                             ],
                             if (status == 'suspended' || status == 'revoked')
                               FilledButton.icon(
-                                onPressed: () => _updateCreatorStatus(creator, 'contract_pending'),
+                                onPressed: () => _updateCreatorStatus(creator, 'approved'),
                                 icon: const Icon(Icons.restore_rounded, size: 18),
-                                label: const Text('重新審核・待簽約'),
+                                label: const Text('重新開通'),
                               ),
                           ],
                         ),

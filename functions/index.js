@@ -10986,6 +10986,41 @@ exports.notifyFollowersOnNewMomentV2 = onDocumentCreated(
                 name: actorName,
             });
 
+            // 角色的新瞬間僅發 FCM 橫幅，不存進私人信箱。
+            // 直接推播不設定 aps.badge，避免改動信箱未讀徽章。
+            if (!isCreatorPost) {
+                try {
+                    await sendToUserDevices(followerId, {
+                        notification: {
+                            title: text.title,
+                            body: text.body,
+                        },
+                        data: {
+                            type: "character_moment",
+                            postId: String(momentId),
+                            characterId: String(characterId),
+                            creatorId: String(creatorId),
+                            click_action: "FLUTTER_NOTIFICATION_CLICK",
+                        },
+                        android: {
+                            priority: "high",
+                            notification: {
+                                channelId: "high_importance_channel",
+                                sound: "default",
+                                defaultVibrateTimings: true,
+                            },
+                        },
+                        apns: {
+                            payload: {aps: {sound: "default"}},
+                        },
+                    });
+                } catch (error) {
+                    console.warn(`角色新瞬間推播失敗 follower=${followerId}, moment=${momentId}`, error);
+                }
+                continue;
+            }
+
+            // 創作者本人發文維持既有信箱與推播行為。
             const mailRef = db
                 .collection("users")
                 .doc(followerId)
@@ -13201,6 +13236,9 @@ const mailboxSnapshot = await db
 const unreadCount = mailboxSnapshot.docs.filter((doc) => {
     const data = doc.data() || {};
 
+    // 舊版角色瞬間信件不再計入 App 圖示徽章。
+    if (["character_moment", "new_post"].includes(String(data.type || ""))) return false;
+
     // 新版以 isRead 為主，舊版 read 保留相容。
     // 任一欄明確為 true，就視為已讀。
     if (data.isRead === true || data.read === true) {
@@ -13277,6 +13315,10 @@ exports.syncNotificationBadge = onCall(
 
         const unreadCount = mailboxSnapshot.docs.filter((doc) => {
             const data = doc.data() || {};
+
+            if (["character_moment", "new_post"].includes(String(data.type || ""))) {
+                return false;
+            }
 
             if (data.isRead === true || data.read === true) {
                 return false;
@@ -24409,9 +24451,9 @@ try {
 );
 
 // ============================================================
-// 創作者合作認證：待審核 -> 待簽約 -> 已認證
-// 以 users/{uid}.creatorStatus 為統一狀態來源。
-// 管理頁面不具備直接繞過簽約的開通能力。
+// 創作者申請：待審核 -> 審核通過直接開通。
+// 保留 contract_pending 僅供既有歷史案件由管理員個別處理。
+// 未來正式合約授權另行處理，不推定已簽約。
 // ============================================================
 const CREATOR_ADMIN_STATUSES = ["pending", "contract_pending", "approved", "suspended", "revoked", "rejected"];
 
@@ -24465,12 +24507,12 @@ exports.adminUpdateCreatorStatus = onCall({region: REGION, timeoutSeconds: 60}, 
     const user = snap.data() || {};
     const current = String(user.creatorStatus || "none");
     const allowed = {
-      pending: ["contract_pending", "rejected"],
-      contract_pending: ["approved", "revoked"],
+      pending: ["approved", "rejected"],
+      contract_pending: ["approved", "rejected", "revoked"],
       approved: ["suspended", "revoked"],
-      suspended: ["contract_pending", "revoked"],
-      revoked: ["contract_pending"],
-      rejected: ["contract_pending"],
+      suspended: ["approved", "revoked"],
+      revoked: ["approved"],
+      rejected: ["approved"],
     };
     if (!(allowed[current] || []).includes(status)) {
       throw new HttpsError("failed-precondition", `不允許從 ${current} 變更成 ${status}`);
@@ -24492,11 +24534,10 @@ exports.adminUpdateCreatorStatus = onCall({region: REGION, timeoutSeconds: 60}, 
       creatorDashboardEnabled: status === "approved",
       creatorVerified: status === "approved",
     };
-    if (status === "contract_pending") {
+    if (status === "approved") {
       changes.creatorReviewedAt = FieldValue.serverTimestamp();
-      changes.creatorContractSignedAt = FieldValue.delete();
+      // 未實際簽署合約，不寫入 creatorContractSignedAt。
     }
-    if (status === "approved") changes.creatorContractSignedAt = FieldValue.serverTimestamp();
     if (status === "revoked") {
       // TEST ONLY: 保留既有正式取消累計，不因測試操作增加。
       // changes.creatorRevocationCount = previousRevocations + 1;
@@ -24513,7 +24554,7 @@ exports.adminUpdateCreatorStatus = onCall({region: REGION, timeoutSeconds: 60}, 
   const titles = {contract_pending:"創作者合作審核通過", approved:"創作者後台已開通",
     rejected:"創作者申請審核結果", suspended:"創作者合作資格暫停", revoked:"創作者合作資格已取消"};
   const bodies = {contract_pending:"妳的合作申請已通過初步審核。請等待官方寄送合作合約；雙方完成簽約後，才會開通專屬創作者後台。",
-    approved:"官方已確認雙方完成合約簽署，妳的專屬創作者後台權限現已開通。",
+    approved:"妳的創作者申請已通過官方審核，專屬創作者後台權限已開通。正式合作授權與合約將另行公告。",
     rejected:`申請未通過。原因：${explanation}`, suspended:`合作資格已暫停。原因：${explanation}`,
     revoked:`合作認證已取消，妳仍可作為一般創作者管理既有角色與作品。原因：${explanation}`};
   try {
@@ -24525,8 +24566,7 @@ exports.adminUpdateCreatorStatus = onCall({region: REGION, timeoutSeconds: 60}, 
 });
 
 
-// 管理員手動認證：僅已完成雙方簽約的提前合作創作者。
-// 與一般待審核 -> 待簽約流程分離，僅使用 server SDK 執行。
+// 管理員手動開通：不以簽約為前提，僅使用 server SDK 並留存審計紀錄。
 exports.adminFindCreatorCandidate = onCall({region: REGION, timeoutSeconds: 30}, async (request) => {
   requireRewardCampaignAdmin(request);
   const query = String(request.data?.query || "").trim();
@@ -24552,8 +24592,8 @@ exports.adminFindCreatorCandidate = onCall({region: REGION, timeoutSeconds: 30},
 exports.adminManuallyVerifyCreator = onCall({region: REGION, timeoutSeconds: 60}, async (request) => {
   const adminUid = requireRewardCampaignAdmin(request);
   const uid = String(request.data?.creatorUid || "").trim();
-  if (!uid || uid.length > 128 || request.data?.contractConfirmed !== true) {
-    throw new HttpsError("invalid-argument", "必須指定玩家並確認雙方已完成合約簽署");
+  if (!uid || uid.length > 128 || request.data?.activationConfirmed !== true) {
+    throw new HttpsError("invalid-argument", "必須指定玩家並確認手動開通");
   }
   if (uid === adminUid) throw new HttpsError("failed-precondition", "不可自行授予合作創作者資格");
   const userRef = db.collection("users").doc(uid);
@@ -24569,20 +24609,20 @@ exports.adminManuallyVerifyCreator = onCall({region: REGION, timeoutSeconds: 60}
       creatorStatus: "approved",
       creatorVerified: true,
       creatorDashboardEnabled: true,
-      creatorContractSignedAt: FieldValue.serverTimestamp(),
+      creatorReviewedAt: FieldValue.serverTimestamp(),
       creatorStatusUpdatedAt: FieldValue.serverTimestamp(),
       creatorStatusUpdatedBy: adminUid,
-      creatorStatusReason: "管理員確認提前簽約並手動認證",
+      creatorStatusReason: "管理員手動開通創作者資格",
     });
     tx.set(db.collection("creator_admin_audit").doc(), {
       creatorUid: uid, previousStatus, targetStatus: "approved",
-      action: "manual_contract_verification", contractConfirmed: true,
+      action: "manual_creator_activation", activationConfirmed: true,
       changedBy: adminUid, changedAt: FieldValue.serverTimestamp(),
     });
     // 同一交易寄站內信，避免權限已開通卻未收到通知。
     tx.set(userRef.collection("mailbox").doc(), {
       type: "creator_status", title: "官方合作創作者認證完成",
-      body: "官方已確認雙方合作合約完成簽署，妳的專屬創作者後台資格已開通。",
+      body: "妳的創作者資格已由官方審核開通，現在可以使用專屬創作者後台。正式合作合約將另行公告。",
       isRead: false, read: false, createdAt: FieldValue.serverTimestamp(),
     });
     return {previousStatus};
@@ -25090,4 +25130,76 @@ exports.requestCharacterVoice = onCall({
     throw error;
   }
   return {sent: true, alreadyRequested: false};
+});
+
+// ===== 合作創作者後台 v2：所有寫入均由 Firebase Auth + Firestore 資格驗證 =====
+async function requireCreatorStudioUid(request) {
+  const uid = request.auth?.uid;
+  if (!uid) throw new HttpsError('unauthenticated', '請先登入');
+  const snap = await db.collection('users').doc(uid).get();
+  if (!snap.exists || !creatorFanMailVerified(snap.data() || {})) {
+    throw new HttpsError('permission-denied', '沒有有效的合作創作者資格');
+  }
+  return uid;
+}
+
+exports.removeCreatorFollower = onCall({region: REGION, timeoutSeconds: 30}, async request => {
+  const uid = await requireCreatorStudioUid(request);
+  const followerUid = String(request.data?.followerUid || '').trim();
+  if (!followerUid || followerUid === uid || !/^[a-zA-Z0-9_-]{6,128}$/.test(followerUid)) {
+    throw new HttpsError('invalid-argument', '無效的追蹤者');
+  }
+  const follower = db.collection('users').doc(uid).collection('followers').doc(followerUid);
+  const following = db.collection('users').doc(followerUid).collection('following').doc(uid);
+  const result = await db.runTransaction(async tx => {
+    const doc = await tx.get(follower);
+    if (!doc.exists) return {removed: false};
+    tx.delete(follower);
+    tx.delete(following);
+    return {removed: true};
+  });
+  return result;
+});
+
+exports.updateCreatorPortfolio = onCall({region: REGION, timeoutSeconds: 30}, async request => {
+  const uid = await requireCreatorStudioUid(request);
+  const ids = request.data?.characterIds;
+  if (!Array.isArray(ids) || ids.length > 300 || ids.some(x => typeof x !== 'string' || !x || x.length > 200) || new Set(ids).size !== ids.length) {
+    throw new HttpsError('invalid-argument', '作品清單無效');
+  }
+  const chars = await db.collection('artifacts').doc(APP_ID).collection('public_characters')
+    .where('createdBy', '==', uid).get();
+  const allowed = new Set(chars.docs.map(d => d.id));
+  if (ids.some(x => !allowed.has(x))) throw new HttpsError('permission-denied', '作品不屬於此創作者');
+  await db.collection('users').doc(uid).update({creatorPortfolioOrder: ids});
+  return {success: true};
+});
+
+exports.updateCreatorBanner = onCall({region: REGION, timeoutSeconds: 90, memory: '512MiB'}, async request => {
+  const uid = await requireCreatorStudioUid(request);
+  const op = String(request.data?.operation || '');
+  const userRef = db.collection('users').doc(uid);
+  const file = require('firebase-admin/storage').getStorage().bucket().file(`creator_banners/${uid}/banner`);
+  if (op === 'remove') {
+    await userRef.update({creatorBannerUrl: FieldValue.delete()});
+    await file.delete({ignoreNotFound: true});
+    return {success: true};
+  }
+  if (op !== 'upload') throw new HttpsError('invalid-argument', '無效操作');
+  const raw = request.data?.imageBase64;
+  if (typeof raw !== 'string' || raw.length > 3100000 || raw.length < 80 || !/^[a-zA-Z0-9+/=]+$/.test(raw)) {
+    throw new HttpsError('invalid-argument', '圖片資料格式或大小不符');
+  }
+  const buffer = Buffer.from(raw, 'base64');
+  if (buffer.length > 2200000) throw new HttpsError('invalid-argument', '圖片需小於 2.2 MB');
+  const jpg = buffer[0] === 0xFF && buffer[1] === 0xD8 && buffer[2] === 0xFF;
+  const png = buffer.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]));
+  if (!jpg && !png) throw new HttpsError('invalid-argument', '僅支援 JPEG 或 PNG');
+  const token = crypto.randomUUID();
+  const contentType = jpg ? 'image/jpeg' : 'image/png';
+  await file.save(buffer, {resumable: false, metadata: {contentType,
+    metadata: {firebaseStorageDownloadTokens: token}}, validation: 'md5'});
+  const url = `https://firebasestorage.googleapis.com/v0/b/${encodeURIComponent(file.bucket.name)}/o/${encodeURIComponent(file.name)}?alt=media&token=${token}`;
+  await userRef.update({creatorBannerUrl: url, creatorBannerUpdatedAt: FieldValue.serverTimestamp()});
+  return {success: true};
 });
