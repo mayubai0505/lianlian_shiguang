@@ -24814,6 +24814,64 @@ const CREATOR_GIFT_MAX_RECIPIENTS = 20;
 const CREATOR_GIFT_MAX_PER_FAN = 1000;
 const CREATOR_GIFT_MAX_TOTAL = 5000;
 
+// 創作者送花收件人搜尋：以追蹤關係文件 ID 游標分頁，
+// 伺服器分批取得真實玩家暱稱。無全量資料下載至手機。
+// Firestore 不支援跨 followers/users join；暱稱包含搜尋會逐批掃描，
+// 因此搜尋結果以「繼續搜尋」載入後續批次，不能視為一次查完全部粉絲。
+exports.searchCreatorGiftFollowers = onCall({region: REGION, timeoutSeconds: 60, maxInstances: 15}, async (request) => {
+  const creatorUid = request.auth?.uid;
+  if (!creatorUid) throw new HttpsError('unauthenticated', '請先登入');
+  const data = request.data || {};
+  const keyword = String(data.keyword || '').trim().toLocaleLowerCase('zh-Hant');
+  if (keyword.length > 80) throw new HttpsError('invalid-argument', '搜尋文字過長');
+  const pageSize = Number(data.pageSize || 20);
+  if (!Number.isSafeInteger(pageSize) || pageSize < 1 || pageSize > 30) {
+    throw new HttpsError('invalid-argument', '每頁筆數不正確');
+  }
+  const cursor = data.cursor == null ? '' : String(data.cursor);
+  if (cursor && (cursor.length > 128 || cursor.includes('/'))) {
+    throw new HttpsError('invalid-argument', '分頁游標無效');
+  }
+  const creatorSnap = await db.collection('users').doc(creatorUid).get();
+  if (!creatorSnap.exists || !creatorFanMailVerified(creatorSnap.data() || {})) {
+    throw new HttpsError('permission-denied', '目前沒有合作創作者資格');
+  }
+  const followers = db.collection('users').doc(creatorUid).collection('followers');
+  const scanLimit = keyword ? 150 : pageSize;
+  let query = followers.orderBy(FieldPath.documentId()).limit(scanLimit + 1);
+  if (cursor) query = query.startAfter(cursor);
+  const snapshot = await query.get();
+  const scannedDocs = snapshot.docs.slice(0, scanLimit);
+  const hasMore = snapshot.docs.length > scanLimit;
+  const items = [];
+  let lastProcessedId = null;
+  let processedCount = 0;
+  // 取得滿 pageSize 位符合者就停止；下一次從最後處理的 UID 接續。
+  for (let i = 0; i < scannedDocs.length && items.length < pageSize; i += 30) {
+    const batch = scannedDocs.slice(i, i + Math.min(30, pageSize - items.length));
+    const profiles = await db.getAll(...batch.map(doc => db.collection('users').doc(doc.id)));
+    for (let j = 0; j < batch.length; j++) {
+      lastProcessedId = batch[j].id;
+      processedCount++;
+      const u = profiles[j];
+      if (!u.exists) continue;
+      const profile = u.data() || {};
+      const name = String(profile.nickname || profile.displayName || profile.name || '').trim() || '未設定暱稱的玩家';
+      const avatar = String(profile.avatarPath || profile.photoURL || profile.photoUrl || profile.avatarUrl || '').trim();
+      const uid = batch[j].id;
+      if (!keyword || name.toLocaleLowerCase('zh-Hant').includes(keyword) || uid.toLowerCase().includes(keyword)) {
+        items.push({uid, name: name.slice(0, 120), avatar: avatar.slice(0, 2048)});
+      }
+    }
+  }
+  const more = !!lastProcessedId && (hasMore || processedCount < scannedDocs.length);
+  return {
+    items,
+    nextCursor: more ? lastProcessedId : null,
+    scanned: processedCount,
+  };
+});
+
 exports.giftCreatorFlowers = onCall({region: REGION, timeoutSeconds: 60, maxInstances: 15}, async (request) => {
   const creatorUid = request.auth?.uid;
   if (!creatorUid) throw new HttpsError('unauthenticated', '請先登入');
@@ -24875,7 +24933,7 @@ exports.giftCreatorFlowers = onCall({region: REGION, timeoutSeconds: 60, maxInst
     tx.update(creatorRef, {flowerPoints: FieldValue.increment(-total)});
     const timestamp = FieldValue.serverTimestamp();
     tx.create(giftRef, {creatorUid, recipientUids:normalizedRecipients, amountPerRecipient:amount,
-      total, note, creatorName:displayName, contentHash, status:'completed', createdAt:timestamp});
+      total, note, creatorName:displayName, contentHash, status:'pending_claim', claimMode:'mailbox', createdAt:timestamp});
     tx.create(creatorRef.collection('flower_logs').doc(`creator_gift_out_${requestId}`), {
       type:'creator_gift_out', title:'贈送粉絲花花', amount:-total, recipientCount:recipients.length,
       giftId:giftRef.id, createdAt:timestamp,
@@ -24883,21 +24941,65 @@ exports.giftCreatorFlowers = onCall({region: REGION, timeoutSeconds: 60, maxInst
     for (let i=0; i<userRefs.length; i++) {
       const receiverUid = normalizedRecipients[i];
       const receiverRef = userRefs[i];
-      tx.update(receiverRef, {flowerPoints:FieldValue.increment(amount)});
-      tx.create(receiverRef.collection('flower_logs').doc(`creator_gift_in_${giftRef.id}`), {
-        type:'creator_gift_in', title:'合作創作者贈送', amount, creatorUid, creatorName:displayName,
-        giftId:giftRef.id, createdAt:timestamp,
-      });
       tx.create(receiverRef.collection('mailbox').doc(`creator_gift_${giftRef.id}`), {
         type:'creator_flower_gift', title:`${displayName} 贈送了 ${amount} 朵花花`,
-        body: note ? `妳收到 ${amount} 朵花花！\n\n${note}` : `妳收到 ${amount} 朵花花！`,
+        body: note ? `妳有 ${amount} 朵花花待領取，請開啟信件領取。\n\n${note}` : `妳有 ${amount} 朵花花待領取，請開啟信件領取。`,
         creatorUid, creatorName:displayName, flowerAmount:amount, giftId:giftRef.id,
+        claimStatus:'pending', claimed:false,
         isRead:false, read:false, createdAt:timestamp,
       });
     }
     return {success:true, alreadySubmitted:false, giftId:giftRef.id, total, recipientCount:recipients.length};
   });
   return result;
+});
+
+
+// 玩家從自己的信箱手動領取創作者贈送的花花；單一信件交易保證不可重領。
+// 2026-10-19 之前已直接入帳的舊信件不含 claimStatus=pending，因此不允許再領。
+exports.claimCreatorFlowerGift = onCall({region: REGION, timeoutSeconds: 30}, async (request) => {
+  const uid = request.auth?.uid;
+  if (!uid) throw new HttpsError('unauthenticated', '請先登入');
+  const giftId = String(request.data?.giftId || '').trim();
+  if (!/^[a-zA-Z0-9_-]{12,200}$/.test(giftId)) throw new HttpsError('invalid-argument', '禮物識別碼無效');
+  const receiverRef = db.collection('users').doc(uid);
+  const mailRef = receiverRef.collection('mailbox').doc(`creator_gift_${giftId}`);
+  const giftRef = db.collection('creator_flower_gifts').doc(giftId);
+  const logRef = receiverRef.collection('flower_logs').doc(`creator_gift_in_${giftId}`);
+  return await db.runTransaction(async tx => {
+    const [mailSnap, giftSnap, receiverSnap] = await Promise.all([
+      tx.get(mailRef), tx.get(giftRef), tx.get(receiverRef),
+    ]);
+    if (!mailSnap.exists || !giftSnap.exists || !receiverSnap.exists) {
+      throw new HttpsError('not-found', '找不到可領取的花花');
+    }
+    const mail = mailSnap.data() || {};
+    const gift = giftSnap.data() || {};
+    if (mail.type !== 'creator_flower_gift' || mail.giftId !== giftId ||
+        gift.claimMode !== 'mailbox' || gift.status !== 'pending_claim' ||
+        !Array.isArray(gift.recipientUids) || !gift.recipientUids.includes(uid) ||
+        Number(mail.flowerAmount) !== Number(gift.amountPerRecipient)) {
+      throw new HttpsError('failed-precondition', '此信件不屬於可領取的花花禮物');
+    }
+    if (mail.claimStatus === 'claimed' || mail.claimed === true) {
+      return {success:true, alreadyClaimed:true, amount:Number(mail.flowerAmount)};
+    }
+    if (mail.claimStatus !== 'pending') {
+      throw new HttpsError('failed-precondition', '此禮物不可領取');
+    }
+    const amount = Number(mail.flowerAmount);
+    if (!Number.isSafeInteger(amount) || amount < 1 || amount > CREATOR_GIFT_MAX_PER_FAN) {
+      throw new HttpsError('failed-precondition', '花花數量異常');
+    }
+    tx.update(receiverRef, {flowerPoints:FieldValue.increment(amount)});
+    tx.update(mailRef, {claimStatus:'claimed', claimed:true, claimedAt:FieldValue.serverTimestamp()});
+    tx.create(logRef, {
+      type:'creator_gift_in', title:'合作創作者贈送', amount,
+      creatorUid:gift.creatorUid, creatorName:gift.creatorName,
+      giftId, createdAt:FieldValue.serverTimestamp(),
+    });
+    return {success:true, alreadyClaimed:false, amount};
+  });
 });
 
 
@@ -25202,4 +25304,230 @@ exports.updateCreatorBanner = onCall({region: REGION, timeoutSeconds: 90, memory
   const url = `https://firebasestorage.googleapis.com/v0/b/${encodeURIComponent(file.bucket.name)}/o/${encodeURIComponent(file.name)}?alt=media&token=${token}`;
   await userRef.update({creatorBannerUrl: url, creatorBannerUpdatedAt: FieldValue.serverTimestamp()});
   return {success: true};
+});
+
+
+// === Creator support cases v1: all reads/writes through authenticated callables. ===
+
+// Creator support attachments: private Storage objects, never public download tokens.
+const CREATOR_SUPPORT_MAX_IMAGE_BYTES = 2 * 1024 * 1024;
+function creatorSupportImageData(raw) {
+  if(typeof raw !== 'string' || raw.length < 40 || raw.length > 2900000 || !/^[A-Za-z0-9+/=]+$/.test(raw)) throw new HttpsError('invalid-argument','截圖資料無效');
+  const bytes=Buffer.from(raw,'base64');
+  const png=bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]));
+  const jpg=bytes[0]===255&&bytes[1]===216&&bytes[2]===255;
+  if(!png&&!jpg||bytes.length>CREATOR_SUPPORT_MAX_IMAGE_BYTES) throw new HttpsError('invalid-argument','僅支援小於 2MB 的 JPG/PNG 截圖');
+  return {bytes,contentType:png?'image/png':'image/jpeg'};
+}
+async function creatorSupportNotify(uid, title, body, caseId) {
+  try { await sendToUserDevices(uid,{notification:{title,body},data:{type:'creator_support',caseId:String(caseId),click_action:'FLUTTER_NOTIFICATION_CLICK'}}); }
+  catch(e){logger.warn('Creator support FCM failed', {code:e?.code||'',message:e?.message||''});}
+}
+async function creatorSupportNotifyAdmins(title,body,caseId) {
+  await Promise.allSettled([...REWARD_CAMPAIGN_ADMIN_UIDS].map(uid=>creatorSupportNotify(uid,title,body,caseId)));
+}
+async function creatorSupportAuthorizeImage(request,caseId) {
+  const uid=creatorSupportUid(request);
+  if(!/^[A-Za-z0-9]{1,100}$/.test(caseId))throw new HttpsError('invalid-argument','案件ID無效');
+  const ref=creatorSupportRoot().doc(caseId),snap=await ref.get();
+  if(!snap.exists)throw new HttpsError('not-found','案件不存在');
+  const isAdmin=REWARD_CAMPAIGN_ADMIN_UIDS.has(uid);
+  if(!isAdmin){if(snap.data().creatorId!==uid)throw new HttpsError('permission-denied','無權使用此案件附件');await creatorSupportCreator(request);}
+  return {ref,snap,isAdmin};
+}
+exports.uploadCreatorSupportImage = onCall({region:REGION,timeoutSeconds:90,memory:'512MiB'},async request=>{
+  const caseId=String(request.data?.caseId||'');const {ref}=await creatorSupportAuthorizeImage(request,caseId);
+  const {bytes,contentType}=creatorSupportImageData(request.data?.imageBase64);
+  const messageId=String(request.data?.messageId||'').trim();
+  if(messageId&&!/^[A-Za-z0-9]{1,100}$/.test(messageId))throw new HttpsError('invalid-argument','訊息 ID 無效');
+  if(messageId){
+   const msg=await ref.collection('messages').doc(messageId).get();
+   if(!msg.exists)throw new HttpsError('not-found','找不到這則回覆');
+   if(msg.data()?.senderId!==request.auth?.uid)throw new HttpsError('permission-denied','只能為自己發出的回覆附圖');
+   if(msg.data()?.recalledAt)throw new HttpsError('failed-precondition','訊息已收回');
+  }
+  const images=await ref.collection('images').get();
+  if(images.size>=60)throw new HttpsError('resource-exhausted','這個案件的圖片已達上限');
+  if(images.docs.filter(d=>String(d.data().messageId||'')===messageId).length>=3)throw new HttpsError('resource-exhausted','每則訊息最多 3 張截圖');
+  const imgRef=ref.collection('images').doc();
+  const bucket=require('firebase-admin/storage').getStorage().bucket();
+  const file=bucket.file(`creator_support/${caseId}/${imgRef.id}`);
+  await file.save(bytes,{resumable:false,validation:'md5',metadata:{contentType,cacheControl:'private,no-store'}});
+  try {await imgRef.create({path:file.name,messageId,contentType,size:bytes.length,createdAt:FieldValue.serverTimestamp()});}
+  catch(e){await file.delete({ignoreNotFound:true});throw e;}
+  return {imageId:imgRef.id};
+});
+exports.getCreatorSupportImage = onCall({region:REGION,timeoutSeconds:45,memory:'512MiB'},async request=>{
+  const caseId=String(request.data?.caseId||''),imageId=String(request.data?.imageId||'');
+  const {ref}=await creatorSupportAuthorizeImage(request,caseId);
+  if(!/^[A-Za-z0-9]{1,100}$/.test(imageId))throw new HttpsError('invalid-argument','圖片ID無效');
+  const doc=await ref.collection('images').doc(imageId).get();if(!doc.exists)throw new HttpsError('not-found','找不到圖片');
+  const mid=String(doc.data()?.messageId||'');if(mid){const m=await ref.collection('messages').doc(mid).get();if(!m.exists||m.data()?.recalledAt||(m.data()?.hiddenFor||[]).includes(request.auth.uid))throw new HttpsError('not-found','圖片已不可查看');}
+  const path=String(doc.data()?.path||'');if(!path.startsWith(`creator_support/${caseId}/`))throw new HttpsError('permission-denied','圖片路徑異常');
+  const [bytes]=await require('firebase-admin/storage').getStorage().bucket().file(path).download();
+  if(bytes.length>CREATOR_SUPPORT_MAX_IMAGE_BYTES)throw new HttpsError('resource-exhausted','圖片超出限制');
+  return {imageBase64:bytes.toString('base64'),contentType:doc.data().contentType||'image/jpeg'};
+});
+
+const CREATOR_SUPPORT_CATEGORIES = new Set(['角色管理問題','AI 角色互動異常','創作者後台問題','合作與權益問題','其他問題']);
+const CREATOR_SUPPORT_STATUSES = new Set(['pending','in_progress','waiting_creator','resolved']);
+const creatorSupportRoot = () => db.collection('creator_support_cases');
+function creatorSupportUid(request) { const uid=request.auth?.uid; if(!uid) throw new HttpsError('unauthenticated','請先登入'); return uid; }
+function creatorSupportAdmin(request) { return requireRewardCampaignAdmin(request); }
+async function creatorSupportCreator(request) {
+ const uid=creatorSupportUid(request); const s=await db.collection('users').doc(uid).get();
+ if(!s.exists || !creatorFanMailVerified(s.data()||{})) throw new HttpsError('permission-denied','目前沒有合作創作者權限');
+ return {uid, data:s.data()||{}};
+}
+function creatorSupportText(raw,max,label,required=true) {
+ const s=typeof raw==='string'?raw.trim():'';
+ if ((required&&!s) || s.length>max) throw new HttpsError('invalid-argument',`${label}格式不正確（最多 ${max} 字）`);
+ return s;
+}
+function creatorSupportPublic(d,id) {
+ return {id,creatorId:d.creatorId||'',creatorName:d.creatorName||'',category:d.category||'',characterId:d.characterId||'',title:d.title||'',description:d.description||'',status:d.status||'pending',createdAt:d.createdAt?.toMillis?.()||0,updatedAt:d.updatedAt?.toMillis?.()||0,lastReplyAt:d.lastReplyAt?.toMillis?.()||0,lastReplyBy:d.lastReplyBy||'',adminUnreadCount:Number(d.adminUnreadCount||0),creatorUnreadCount:Number(d.creatorUnreadCount||0),internalNote:d.internalNote||''};
+}
+exports.createCreatorSupportCase = onCall({region:REGION,timeoutSeconds:30},async request=>{
+ const {uid,data}=await creatorSupportCreator(request);
+ const d=request.data||{}; const category=creatorSupportText(d.category,32,'分類'); if(!CREATOR_SUPPORT_CATEGORIES.has(category)) throw new HttpsError('invalid-argument','問題分類無效');
+ const title=creatorSupportText(d.title,80,'標題'); const description=creatorSupportText(d.description,3000,'問題描述');
+ const characterId=creatorSupportText(d.characterId,160,'角色ID',false);
+ if(characterId){const ch=await db.collection('artifacts').doc(APP_ID).collection('public_characters').doc(characterId).get();if(!ch.exists||ch.data()?.createdBy!==uid)throw new HttpsError('permission-denied','只能選擇自己的角色');}
+ const day=creatorFanMailDayKey();const limitRef=db.collection('creator_support_daily').doc(`${uid}_${day}`);const ref=creatorSupportRoot().doc();const first=ref.collection('messages').doc();
+ await db.runTransaction(async tx=>{
+  const snap=await tx.get(limitRef);if(Number(snap.data()?.count||0)>=5)throw new HttpsError('resource-exhausted','今天新增案件已達 5 件，仍可回覆既有案件');
+  tx.set(limitRef,{count:FieldValue.increment(1),updatedAt:FieldValue.serverTimestamp()},{merge:true});
+  tx.create(ref,{creatorId:uid,creatorName:String(data.nickname||data.displayName||'合作創作者').slice(0,80),category,characterId,title,description,status:'pending',createdAt:FieldValue.serverTimestamp(),updatedAt:FieldValue.serverTimestamp(),lastReplyAt:FieldValue.serverTimestamp(),lastReplyBy:'creator',adminUnreadCount:1,creatorUnreadCount:0,internalNote:''});
+  tx.create(first,{senderId:uid,senderRole:'creator',body:description,createdAt:FieldValue.serverTimestamp()});
+ }); await creatorSupportNotifyAdmins('新創作者問題回報',title,ref.id); return {caseId:ref.id};
+});
+exports.listCreatorSupportCases = onCall({region:REGION,timeoutSeconds:30},async request=>{
+ const uid=creatorSupportUid(request); const isAdmin=REWARD_CAMPAIGN_ADMIN_UIDS.has(uid)&&request.data?.asCreator!==true;
+ if(!isAdmin) await creatorSupportCreator(request);
+ const limit=20;const start=String(request.data?.cursor||'');if(start&&!/^[A-Za-z0-9]{1,100}$/.test(start))throw new HttpsError('invalid-argument','游標不正確');
+ let q=isAdmin?creatorSupportRoot().orderBy(FieldPath.documentId()):creatorSupportRoot().where('creatorId','==',uid).orderBy(FieldPath.documentId());
+ if(start)q=q.startAfter(start);
+ const docs=(await q.limit(limit+1).get()).docs;const page=docs.slice(0,limit);
+ return {items:page.map(d=>{const x=creatorSupportPublic(d.data(),d.id);if(!isAdmin)delete x.internalNote;return x;}),nextCursor:docs.length>limit?page[page.length-1].id:null};
+});
+exports.getCreatorSupportCase = onCall({region:REGION,timeoutSeconds:30},async request=>{
+ const uid=creatorSupportUid(request),id=String(request.data?.caseId||'').trim();if(!/^[A-Za-z0-9]{1,100}$/.test(id))throw new HttpsError('invalid-argument','案件ID無效');
+ const ref=creatorSupportRoot().doc(id),snap=await ref.get();if(!snap.exists)throw new HttpsError('not-found','案件不存在');const d=snap.data()||{};const isAdmin=REWARD_CAMPAIGN_ADMIN_UIDS.has(uid)&&request.data?.asCreator!==true;
+ if(!isAdmin && d.creatorId!==uid)throw new HttpsError('permission-denied','無權查看此案件');
+ if(!isAdmin)await creatorSupportCreator(request);
+ const messages=await ref.collection('messages').orderBy('createdAt').limit(300).get();
+ await ref.update({[isAdmin?'adminUnreadCount':'creatorUnreadCount']:0});
+ const info=creatorSupportPublic(d,id);if(!isAdmin)delete info.internalNote;
+ const images=await ref.collection('images').orderBy('createdAt').limit(60).get();return {case:info,images:images.docs.filter(x=>{const mid=String(x.data().messageId||'');const msg=messages.docs.find(m=>m.id===mid);return !mid||(msg&&!msg.data().recalledAt&&!(msg.data().hiddenFor||[]).includes(uid));}).map(x=>({id:x.id,messageId:x.data().messageId||'',contentType:x.data().contentType||''})),messages:messages.docs.filter(m=>!(m.data().hiddenFor||[]).includes(uid)).map(m=>({id:m.id,senderId:m.data().senderId||'',senderRole:m.data().senderRole||'',body:m.data().recalledAt?'':(m.data().body||''),recalled:!!m.data().recalledAt,edited:!!m.data().editedAt,createdAt:m.data().createdAt?.toMillis?.()||0}))};
+});
+// Stable creator support replies: caller-provided idempotency key, transactional write, non-fatal FCM.
+exports.replyCreatorSupportCase = onCall({region:REGION,timeoutSeconds:45},async request=>{
+ const uid=creatorSupportUid(request);
+ const id=String(request.data?.caseId||'').trim();
+ if(!/^[A-Za-z0-9]{1,100}$/.test(id)) throw new HttpsError('invalid-argument','案件ID無效');
+ const suppliedRequestId=String(request.data?.requestId||'').trim();
+ if(suppliedRequestId && !/^[A-Za-z0-9_-]{12,100}$/.test(suppliedRequestId)) throw new HttpsError('invalid-argument','訊息識別碼無效');
+ // Backwards compatibility: legacy clients can still reply; only updated clients get retry deduplication.
+ const requestId=suppliedRequestId || crypto.randomUUID();
+ const hasImages=request.data?.hasImages===true;
+ const body=creatorSupportText(request.data?.body,3000,'回覆內容',!hasImages);
+ if(!body&&!hasImages) throw new HttpsError('invalid-argument','請輸入文字或選擇圖片');
+ const isAdmin=REWARD_CAMPAIGN_ADMIN_UIDS.has(uid)&&request.data?.asCreator!==true;
+ const ref=creatorSupportRoot().doc(id);
+ // Deterministic, unguessable document ID scoped to sender, case and request key.
+ const messageId=crypto.createHash('sha256').update(JSON.stringify([id,uid,requestId])).digest('hex');
+ const msg=ref.collection('messages').doc(messageId);
+ let committed=false;
+ try {
+  // Check eligibility even on retries; access must never be granted by a cached receipt alone.
+  if(!isAdmin) await creatorSupportCreator(request);
+  const outcome=await db.runTransaction(async tx=>{
+   const [caseSnap,priorSnap]=await Promise.all([tx.get(ref),tx.get(msg)]);
+   if(!caseSnap.exists) throw new HttpsError('not-found','案件不存在');
+   const d=caseSnap.data()||{};
+   if(!isAdmin&&d.creatorId!==uid) throw new HttpsError('permission-denied','無權回覆此案件');
+   if(priorSnap.exists){
+    const prior=priorSnap.data()||{};
+    // Do not replay the same key with different content, even after message edits.
+    if(prior.senderId!==uid || prior.originalBody!==body || prior.originalHasImages!==hasImages || prior.senderRole!==(isAdmin?'admin':'creator'))
+      throw new HttpsError('already-exists','此訊息識別碼已被不同內容使用');
+    return {alreadySubmitted:true};
+   }
+   if(d.status==='resolved'&&!isAdmin) throw new HttpsError('failed-precondition','案件已結案，請由官方重新開啟');
+   tx.create(msg,{senderRole:isAdmin?'admin':'creator',senderId:uid,body,
+    originalBody:body,originalHasImages:hasImages,createdAt:FieldValue.serverTimestamp()});
+   tx.update(ref,{updatedAt:FieldValue.serverTimestamp(),lastReplyAt:FieldValue.serverTimestamp(),lastReplyBy:isAdmin?'admin':'creator',
+    status:!isAdmin&&d.status==='waiting_creator'?'in_progress':d.status,
+    ...(isAdmin?{creatorUnreadCount:FieldValue.increment(1)}:{adminUnreadCount:FieldValue.increment(1)})});
+   return {alreadySubmitted:false};
+  });
+  committed=true;
+  logger.info('creator_support_reply_persisted',{caseId:id,messageId,actorRole:isAdmin?'admin':'creator',replayed:outcome.alreadySubmitted});
+  if(!outcome.alreadySubmitted){
+   // Notification is best effort; it must never turn a committed message into an INTERNAL error.
+   try {
+    if(isAdmin){
+     const caseSnap=await ref.get();
+     await creatorSupportNotify(caseSnap.data()?.creatorId,'創作者問題回報有新回覆','官方已回覆妳的案件',id);
+    } else await creatorSupportNotifyAdmins('創作者有新回覆','有新的案件訊息待查看',id);
+   } catch(notifyError){
+    logger.warn('creator_support_reply_notification_failed',{caseId:id,messageId,code:notifyError?.code||'',error:String(notifyError?.message||notifyError)});
+   }
+  }
+  return {success:true,messageId,alreadySubmitted:outcome.alreadySubmitted};
+ } catch(error){
+  logger.error('creator_support_reply_failed',{caseId:id,actorRole:isAdmin?'admin':'creator',committed,code:error?.code||'',error:String(error?.message||error)});
+  if(error instanceof HttpsError) throw error;
+  throw new HttpsError('internal','客服回覆暫時無法處理，請稍後重試');
+ }
+});
+
+exports.updateCreatorSupportCase = onCall({region:REGION,timeoutSeconds:30},async request=>{
+ creatorSupportAdmin(request);const id=String(request.data?.caseId||''),ref=creatorSupportRoot().doc(id);
+ if(!/^[A-Za-z0-9]{1,100}$/.test(id))throw new HttpsError('invalid-argument','案件ID無效');
+ const status=request.data?.status;const note=request.data?.internalNote;
+ if(status===undefined&&note===undefined)throw new HttpsError('invalid-argument','沒有修改內容');
+ const update={updatedAt:FieldValue.serverTimestamp()};
+ if(status!==undefined){if(!CREATOR_SUPPORT_STATUSES.has(status))throw new HttpsError('invalid-argument','狀態無效');update.status=status;update.creatorUnreadCount=FieldValue.increment(1);}
+ if(note!==undefined)update.internalNote=creatorSupportText(note,2000,'內部備註',false);
+ await ref.update(update);if(status!==undefined)await creatorSupportNotify((await ref.get()).data().creatorId,'創作者案件狀態已更新',`案件狀態：${status}`,id);return {success:true};
+});
+
+// 文字訊息：編輯／60 秒內收回／僅自己隱藏。全部使用 Admin SDK 驗證。
+exports.manageCreatorSupportMessage = onCall({region:REGION,timeoutSeconds:30},async request=>{
+ const uid=creatorSupportUid(request);
+ const caseId=String(request.data?.caseId||'');
+ const messageId=String(request.data?.messageId||'');
+ const operation=String(request.data?.operation||'');
+ if(!/^[A-Za-z0-9]{1,100}$/.test(caseId)||!/^[A-Za-z0-9]{1,100}$/.test(messageId))throw new HttpsError('invalid-argument','案件或訊息 ID 無效');
+ if(!['edit','recall','delete'].includes(operation))throw new HttpsError('invalid-argument','操作類型無效');
+ const ref=creatorSupportRoot().doc(caseId);
+ const msgRef=ref.collection('messages').doc(messageId);
+ const isAdmin=REWARD_CAMPAIGN_ADMIN_UIDS.has(uid)&&request.data?.asCreator!==true;
+ if(!isAdmin)await creatorSupportCreator(request);
+ await db.runTransaction(async tx=>{
+  const caseSnap=await tx.get(ref);
+  const msgSnap=await tx.get(msgRef);
+  if(!caseSnap.exists||!msgSnap.exists)throw new HttpsError('not-found','案件或訊息不存在');
+  if(!isAdmin&&caseSnap.data().creatorId!==uid)throw new HttpsError('permission-denied','無權操作案件');
+  const m=msgSnap.data()||{};
+  if(m.senderId!==uid)throw new HttpsError('permission-denied','只能操作自己發送的訊息');
+  if(m.recalledAt)throw new HttpsError('failed-precondition','訊息已收回');
+  if(operation==='delete'){
+   tx.update(msgRef,{hiddenFor:FieldValue.arrayUnion(uid)});
+   return;
+  }
+  if((m.hiddenFor||[]).includes(uid))throw new HttpsError('failed-precondition','訊息已刪除');
+  if(operation==='edit'){
+   const body=creatorSupportText(request.data?.body,3000,'訊息內容');
+   if(!String(m.body||'').trim())throw new HttpsError('failed-precondition','純圖片訊息不能編輯文字');
+   tx.update(msgRef,{body,editedAt:FieldValue.serverTimestamp()});
+   return;
+  }
+  const sent=m.createdAt?.toMillis?.();
+  if(!Number.isFinite(sent)||Date.now()-sent>60000||Date.now()<sent)
+   throw new HttpsError('failed-precondition','已超過 60 秒收回期限');
+  tx.update(msgRef,{body:'',recalledAt:FieldValue.serverTimestamp()});
+ });
+ return {success:true};
 });

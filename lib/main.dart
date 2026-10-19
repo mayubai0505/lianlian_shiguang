@@ -621,7 +621,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
             return MediaQuery(
               data: mediaQuery.copyWith(
-                textScaler: TextScaler.linear(themeNotifier.fontScale),
+                // 桌面網頁加大字級；手機 / 平板保持原有玩家設定。
+                textScaler: TextScaler.linear(themeNotifier.fontScale *
+                    (kIsWeb && mediaQuery.size.width >= 900 ? 1.18 : 1.0)),
               ),
               child: child ?? const SizedBox.shrink(),
             );

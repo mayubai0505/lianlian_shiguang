@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-import 'package:app_badge_plus/app_badge_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -29,7 +27,6 @@ class _NotificationListPageState extends State<NotificationListPage> {
   bool _isSelectionMode = false;
   bool _isSyncingRewardMail = false;
   bool _showCollectedOnly = false;
-  static const Set<String> _hiddenMomentTypes = <String>{'new_post', 'character_moment'};
   final Set<String> _selectedMailIds = <String>{};
   final FirebaseFunctions _functions = FirebaseFunctions.instanceFor(
     region: 'asia-east1',
@@ -39,12 +36,8 @@ class _NotificationListPageState extends State<NotificationListPage> {
   void initState() {
     super.initState();
 
-    debugPrint('[BADGE] NotificationListPage.initState：進入目前使用的信箱');
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      debugPrint('[BADGE] 新信箱首幀完成，開始同步');
-      unawaited(_syncRewardCampaignsToMailbox());
-      unawaited(_diagnoseMailboxAndSyncBadge());
+      _syncRewardCampaignsToMailbox();
     });
   }
 
@@ -74,79 +67,6 @@ class _NotificationListPageState extends State<NotificationListPage> {
     }
   }
 
-  // 診斷用：查清隱藏通知與舊版 read 欄位，避免把徽章問題誤判成無未讀。
-  Future<void> _diagnoseMailboxAndSyncBadge() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      debugPrint('[BADGE] 無登入使用者，略過');
-      return;
-    }
-    try {
-      debugPrint('[BADGE] 準備讀取 Firestore mailbox');
-      final snapshot = await FirebaseFirestore.instance
-          .collection('users').doc(user.uid).collection('mailbox').get();
-      int visibleUnread = 0;
-      int hiddenUnread = 0;
-      int legacyReadMismatch = 0;
-      final Map<String, int> types = <String, int>{};
-      for (final doc in snapshot.docs) {
-        final data = doc.data();
-        final type = (data['type'] ?? 'unknown').toString().trim();
-        final unread = data['isRead'] != true && data['read'] != true;
-        if (unread) {
-          types[type] = (types[type] ?? 0) + 1;
-          if (_hiddenMomentTypes.contains(type)) {
-            hiddenUnread++;
-          } else {
-            visibleUnread++;
-          }
-        }
-        if ((data['isRead'] == true) != (data['read'] == true)) {
-          legacyReadMismatch++;
-        }
-      }
-      debugPrint('[BADGE] 信箱讀取完成：總共 ${snapshot.docs.length} 筆');
-      debugPrint('[BADGE] 未讀統計：可見=$visibleUnread、已隱藏=$hiddenUnread、已讀欄位不一致=$legacyReadMismatch、分類=$types');
-    } catch (error) {
-      debugPrint('[BADGE] 讀取信箱診斷失敗：$error');
-    }
-    await _syncAppBadge();
-  }
-
-  Future<void> _syncAppBadge() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-    try {
-      debugPrint('[BADGE] 準備呼叫 syncNotificationBadge');
-      final response = await _functions.httpsCallable(
-        'syncNotificationBadge',
-        options: HttpsCallableOptions(timeout: const Duration(seconds: 15)),
-      ).call();
-      final raw = response.data;
-      final dynamic countValue = raw is Map ? raw['unreadCount'] : null;
-      final int? count = countValue is num
-          ? countValue.toInt()
-          : int.tryParse('$countValue');
-      debugPrint('[BADGE] 後端未讀數=$count；平台=$defaultTargetPlatform');
-      if (count == null) {
-        debugPrint('[BADGE] 後端未回傳有效未讀數，跳過系統徽章更新');
-        return;
-      }
-      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS &&
-          FirebaseAuth.instance.currentUser?.uid == user.uid) {
-        await AppBadgePlus.updateBadge(count < 0 ? 0 : count);
-        debugPrint('[BADGE] iOS 桌面徽章已要求更新為 $count');
-      } else {
-        debugPrint('[BADGE] Android 紅點由系統通知中心控制；本次不清除系統通知');
-      }
-      debugPrint('✅ App badge 已同步：$count');
-    } on FirebaseFunctionsException catch (error) {
-      debugPrint('[BADGE] 同步失敗：${error.code} / ${error.message}');
-    } catch (error) {
-      debugPrint('[BADGE] 同步失敗：$error');
-    }
-  }
-
   // 點擊信件時，標記為已讀
   Future<void> _markAsRead(String userId, String docId) async {
     await FirebaseFirestore.instance
@@ -154,9 +74,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
         .doc(userId)
         .collection('mailbox')
         .doc(docId)
-        .update({'isRead': true, 'read': true});
-    debugPrint('[BADGE] 信件標記已讀完成，重新計算徽章');
-    await _syncAppBadge();
+        .update({'isRead': true});
   }
 
   Future<void> _toggleMailCollected({
@@ -276,6 +194,14 @@ class _NotificationListPageState extends State<NotificationListPage> {
       final db =
           FirebaseFirestore.instance;
 
+      // 未領取的創作者禮物必須保留信件入口，避免玩家失去領取管道。
+      final pendingChecks = await Future.wait(_selectedMailIds.map((mailId) =>
+          db.collection('users').doc(userId).collection('mailbox').doc(mailId).get()));
+      if (pendingChecks.any((mail) => mail.data()?['type'] == 'creator_flower_gift' &&
+          mail.data()?['claimStatus'] == 'pending')) {
+        if (mounted) ToastUtils.showCenterToast(context, '請先領取花花，再刪除禮物信件', isError: true);
+        return;
+      }
       final batch = db.batch();
 
       for (final mailId
@@ -290,8 +216,6 @@ class _NotificationListPageState extends State<NotificationListPage> {
       }
 
       await batch.commit();
-      debugPrint('[BADGE] 批次刪除完成，重新計算徽章');
-      await _syncAppBadge();
 
       if (!mounted) return;
 
@@ -743,13 +667,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
                   );
                 }
 
-                // 角色新瞬間只保留推播，不進目前的私人信箱；歷史資料不刪除。
-                final allMailbox = snapshot.data!.docs.where((doc) {
-                  final data = doc.data() as Map<String, dynamic>;
-                  return !_hiddenMomentTypes.contains(
-                    (data['type'] ?? '').toString().trim(),
-                  );
-                }).toList();
+                final allMailbox = snapshot.data!.docs;
 
                 final mailbox = _showCollectedOnly
                     ? allMailbox.where((doc) {
@@ -796,7 +714,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
                     final doc = mailbox[index];
                     final data = doc.data() as Map<String, dynamic>;
 
-                    final bool isRead = data['isRead'] == true || data['read'] == true;
+                    final bool isRead = data['isRead'] ?? true;
                     final String type =
                         data['type']?.toString() ?? 'system';
                     final bool isQixiLetter =
@@ -1121,6 +1039,23 @@ class _NotificationListPageState extends State<NotificationListPage> {
                             return;
                           }
 
+                          if (type == 'creator_flower_gift' &&
+                              data['claimStatus'] == 'pending') {
+                            if (!isRead) await _markAsRead(userId, doc.id);
+                            if (!context.mounted) return;
+                            await Navigator.push(context, MaterialPageRoute(
+                              builder: (_) => _CreatorGiftClaimDetailPage(
+                                giftId: data['giftId']?.toString() ?? '',
+                                title: title,
+                                body: body,
+                                amount: (data['flowerAmount'] as num?)?.toInt() ?? 0,
+                                userId: userId,
+                                mailId: doc.id,
+                              ),
+                            ));
+                            return;
+                          }
+
                           if (type == 'reward_campaign') {
                             await _openRewardCampaignDetail(
                               userId: userId,
@@ -1267,6 +1202,69 @@ class _NotificationListPageState extends State<NotificationListPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// 創作者贈禮專用：僅「新版待領取信件」會進入此頁。
+class _CreatorGiftClaimDetailPage extends StatefulWidget {
+  final String giftId;
+  final String title;
+  final String body;
+  final int amount;
+  final String userId;
+  final String mailId;
+  const _CreatorGiftClaimDetailPage({
+    required this.giftId, required this.title, required this.body,
+    required this.amount, required this.userId, required this.mailId,
+  });
+  @override
+  State<_CreatorGiftClaimDetailPage> createState() => _CreatorGiftClaimDetailPageState();
+}
+
+class _CreatorGiftClaimDetailPageState extends State<_CreatorGiftClaimDetailPage> {
+  bool _busy = false;
+  Future<void> _claim() async {
+    if (_busy || widget.giftId.isEmpty) return;
+    setState(() => _busy = true);
+    try {
+      final result = await FirebaseFunctions.instanceFor(region: 'asia-east1')
+          .httpsCallable('claimCreatorFlowerGift').call({'giftId': widget.giftId});
+      final data = result.data is Map ? Map<String, dynamic>.from(result.data as Map) : <String, dynamic>{};
+      if (!mounted) return;
+      ToastUtils.showCenterToast(context,
+          data['alreadyClaimed'] == true ? '這份花花已領取過' : '成功領取 ${data['amount'] ?? widget.amount} 朵花花！',
+          customIcon: Icons.local_florist_rounded);
+    } on FirebaseFunctionsException catch (e) {
+      if (mounted) ToastUtils.showCenterToast(context, e.message ?? '領取失敗，請稍後再試', isError: true);
+    } catch (e) {
+      if (mounted) ToastUtils.showCenterToast(context, '領取失敗，請檢查網路後再試', isError: true);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+  @override
+  Widget build(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
+    return Scaffold(
+      appBar: AppBar(title: const Text('創作者贈禮')),
+      body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+        stream: FirebaseFirestore.instance.collection('users').doc(widget.userId)
+            .collection('mailbox').doc(widget.mailId).snapshots(),
+        builder: (context, snapshot) {
+          final claimed = snapshot.data?.data()?['claimStatus'] == 'claimed';
+          return ListView(padding: const EdgeInsets.all(24), children: [
+            Text(widget.title, style: GoogleFonts.notoSerifTc(fontSize: 21, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 18),
+            Text(widget.body, style: GoogleFonts.notoSerifTc(fontSize: 15, height: 1.7)),
+            const SizedBox(height: 24),
+            Text('${widget.amount} 朵花花', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: primary)),
+            const SizedBox(height: 20),
+            FilledButton(onPressed: claimed || _busy ? null : _claim,
+                child: Text(claimed ? '已領取' : _busy ? '領取中…' : '領取花花')),
+          ]);
+        },
       ),
     );
   }

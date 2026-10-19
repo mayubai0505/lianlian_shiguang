@@ -11,6 +11,7 @@ import '../services/app_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/toast_utils.dart';
+import '../screens/creator_support_center_page.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
@@ -3992,6 +3993,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
 
     return Column(
       children: [
+        Padding(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8), child: SizedBox(width: double.infinity, child: OutlinedButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CreatorSupportAdminPage())), child: const Text('創作者問題回報案件')))),
         _adminPageHeader(
           title: '客服案件中心',
           subtitle: '同一位玩家的客服與檢舉會收在同一張卡片裡。每一件仍可獨立回覆、駁回或刪除。',
