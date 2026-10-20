@@ -569,7 +569,6 @@ class CreatorProfilePage extends StatelessWidget {
       ToastUtils.showCenterToast(
         context,
         l10n.creator_profile_report_success,
-        customIcon: Icons.flag_outlined,
       );
     } catch (e) {
       debugPrint('❌ 檢舉創作者失敗：$e');
@@ -620,12 +619,6 @@ class CreatorProfilePage extends StatelessWidget {
           ),
           title: Row(
             children: [
-              const Icon(
-                Icons.block_rounded,
-                color: Colors.redAccent,
-                size: 22,
-              ),
-              const SizedBox(width: 8),
               Text(
                 '封鎖創作者',
                 style: GoogleFonts.notoSerifTc(
@@ -737,7 +730,6 @@ class CreatorProfilePage extends StatelessWidget {
       ToastUtils.showCenterToast(
         context,
         l10n.creator_profile_block_success(creatorName),
-        customIcon: Icons.block_rounded,
       );
 
       return true;
@@ -1166,10 +1158,8 @@ class CreatorProfilePage extends StatelessWidget {
 
                     return _buildCreatorMomentEmptyState(
                       theme: theme,
-                      icon: Icons.error_outline_rounded,
                       title: l10n.profilePageMomentsLoadFailed,
                       description: l10n.profilePageTryAgainLater,
-                      isError: true,
                     );
                   }
 
@@ -1248,8 +1238,6 @@ class CreatorProfilePage extends StatelessWidget {
 
                     return _buildCreatorMomentEmptyState(
                       theme: theme,
-                      icon:
-                      Icons.dynamic_feed_outlined,
                       title: title,
                       description: description,
                     );
@@ -1293,7 +1281,6 @@ class CreatorProfilePage extends StatelessWidget {
                               context,
                               AppLocalizations.of(context)!
                                   .task_social_tour_complete,
-                              customIcon: Icons.tour_rounded,
                             );
                           }
                         },
@@ -1381,27 +1368,15 @@ class CreatorProfilePage extends StatelessWidget {
   }
   Widget _buildCreatorMomentEmptyState({
     required ThemeData theme,
-    required IconData icon,
     required String title,
     required String description,
-    bool isError = false,
   }) {
     return ListView(
       physics:
       const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(24),
       children: [
-        const SizedBox(height: 50),
-        Icon(
-          icon,
-          size: 58,
-          color: isError
-              ? theme.colorScheme.error
-              .withValues(alpha: 0.55)
-              : theme.colorScheme.primary
-              .withValues(alpha: 0.40),
-        ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 26),
         Text(
           title,
           textAlign: TextAlign.center,
@@ -1530,8 +1505,6 @@ class CreatorProfilePage extends StatelessWidget {
       ToastUtils.showCenterToast(
         context,
         l10n.profilePageMomentDeleted,
-        customIcon:
-        Icons.delete_outline_rounded,
       );
     } catch (e) {
       debugPrint('❌ 刪除工作坊動態失敗：$e');
@@ -1954,9 +1927,6 @@ class CreatorProfilePage extends StatelessWidget {
         currentlyFollowing
             ? l10n.creatorProfileUnfollowed
             : l10n.creatorProfileFollowedCreator(creatorName),
-        customIcon: currentlyFollowing
-            ? Icons.person_remove_outlined
-            : Icons.person_add_alt_1_rounded,
       );
     } catch (e) {
       debugPrint(

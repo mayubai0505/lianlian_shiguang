@@ -735,7 +735,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ToastUtils.showCenterToast(
         context,
         l10n.editProfileNoChanges,
-        customIcon: Icons.info_outline_rounded,
+
       );
       return;
     }
@@ -1028,7 +1028,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         ToastUtils.showCenterToast(
           context,
           l10n.profile_saved_success,
-          customIcon: Icons.account_circle_rounded,
+
         );
 
         await Future.delayed(
@@ -1251,7 +1251,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ToastUtils.showCenterToast(
         context,
         l10n.error_birthdate_locked,
-        customIcon: Icons.lock_rounded, // 💡 總裁精選：最直覺的「上鎖」圖示，清楚傳達規則不可動搖
+
         // 💡 總裁秘技：如果想更強調「日期」的概念，
         // 也可以換成 Icons.event_busy_rounded (行事曆打叉) 或是 Icons.edit_off_rounded (禁止編輯)！
       );
@@ -1394,7 +1394,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ToastUtils.showCenterToast(
         context,
         l10n.avatar_updated_success,
-        customIcon: Icons.face_retouching_natural_rounded,
+
       );
     } catch (e) {
       debugPrint("❌ 裁切頭像失敗: $e");
@@ -1849,12 +1849,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     const SizedBox(height: 18),
                     Row(
                       children: [
-                        Icon(
-                          Icons.auto_awesome_outlined,
-                          size: 19,
-                          color: primaryColor.withValues(alpha: 0.72),
-                        ),
-                        const SizedBox(width: 8),
                         Text(
                           appL10n.edit_profile_message,
                           style: GoogleFonts.notoSerifTc(
@@ -2022,13 +2016,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         padding: const EdgeInsets.symmetric(vertical: 6),
                         child: Row(
                           children: [
-                            Icon(
-                              Icons.cake_outlined,
-                              size: 22,
-                              color:
-                              primaryColor.withValues(alpha: 0.75),
-                            ),
-                            const SizedBox(width: 14),
                             Expanded(
                               child: Text(
                                 _birthDate == null
@@ -2076,12 +2063,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
                   Row(
                     children: [
-                      Icon(
-                        Icons.link_rounded,
-                        size: 19,
-                        color: primaryColor.withValues(alpha: 0.72),
-                      ),
-                      const SizedBox(width: 8),
                       Text(
                         l10n.edit_profile_social_links,
                         style: GoogleFonts.notoSerifTc(

@@ -594,8 +594,6 @@ class _FeedbackPageState
       ToastUtils.showCenterToast(
         context,
         l10n.feedback_submit_success,
-        customIcon:
-        Icons.mark_email_read_rounded,
       );
     } catch (error, stackTrace) {
       debugPrint(
@@ -758,11 +756,7 @@ class _FeedbackPageState
                                   child: Image.asset(
                                     'assets/images/contact/contact_section_flower.png',
                                     fit: BoxFit.contain,
-                                    errorBuilder: (_, __, ___) => Icon(
-                                      Icons.local_florist_outlined,
-                                      color: primary.withValues(alpha: 0.78),
-                                      size: 24,
-                                    ),
+                                    errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                                   ),
                                 ),
                               ),
@@ -808,11 +802,6 @@ class _FeedbackPageState
                               decoration: _contactFieldBox(theme),
                               child: Row(
                                 children: [
-                                  Icon(
-                                    Icons.support_agent_rounded,
-                                    color: primary,
-                                  ),
-                                  const SizedBox(width: 11),
                                   Text(
                                     _categoryLabel(_selectedCategory),
                                     style: GoogleFonts.notoSerifTc(
@@ -938,12 +927,6 @@ class _FeedbackPageState
                           const SizedBox(height: 28),
                           Row(
                             children: [
-                              Icon(
-                                Icons.add_photo_alternate_outlined,
-                                color: primary,
-                                size: 27,
-                              ),
-                              const SizedBox(width: 9),
                               Expanded(
                                 child: Text(
                                   _requiresScreenshot
@@ -982,12 +965,6 @@ class _FeedbackPageState
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(
-                                  Icons.verified_user_outlined,
-                                  size: 14,
-                                  color: primary.withValues(alpha: 0.55),
-                                ),
-                                const SizedBox(width: 4),
                                 Text(
                                   l10n.feedback_footer_message,
                                   style: GoogleFonts.notoSerifTc(

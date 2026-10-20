@@ -158,7 +158,7 @@ class MomentsPageState extends State<MomentsPage> {
         ToastUtils.showCenterToast(
           context,
           l10n.task_social_tour_complete,
-          customIcon: Icons.tour_rounded,
+
         );
       }
     } catch (e) {
@@ -481,10 +481,7 @@ class MomentsPageState extends State<MomentsPage> {
         ToastUtils.showCenterToast(
           context,
           l10n.delete_success,
-          customIcon:
-          Icons.delete_outline_rounded, // 💡 總裁精選：最直覺的空心垃圾桶圖示，視覺負擔極低
-          // 💡 總裁秘技：如果是針對較輕量的元素（例如標籤或小文字），
-          // 使用 Icons.clear_all_rounded 或 Icons.backspace_outlined 也能展現極佳的品味！
+
         );
       }
     } catch (e) {
@@ -534,14 +531,6 @@ class MomentsPageState extends State<MomentsPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              isPublicTab
-                  ? Icons.auto_awesome_outlined
-                  : Icons.favorite_border_rounded,
-              size: 34,
-              color: theme.colorScheme.primary.withValues(alpha: 0.28),
-            ),
-            const SizedBox(height: 16),
             Text(
               isPublicTab
                   ? l10n.empty_public_moments_prompt
@@ -661,7 +650,6 @@ class MomentsPageState extends State<MomentsPage> {
       ),
       builder: (context) {
         Widget menuTile({
-          required IconData icon,
           required String title,
           required VoidCallback onTap,
           bool showArrow = false,
@@ -670,20 +658,6 @@ class MomentsPageState extends State<MomentsPage> {
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 24,
               vertical: 2,
-            ),
-            leading: Container(
-              width: 36,
-              height: 36,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: primary.withValues(alpha: 0.075),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                icon,
-                color: primary.withValues(alpha: 0.82),
-                size: 20,
-              ),
             ),
             title: Text(
               title,
@@ -735,7 +709,6 @@ class MomentsPageState extends State<MomentsPage> {
                       .withValues(alpha: 0.24),
                 ),
                 menuTile(
-                  icon: Icons.edit_note_rounded,
                   title: l10n.moment_create_title,
                   onTap: () {
                     Navigator.pop(context);
@@ -743,7 +716,6 @@ class MomentsPageState extends State<MomentsPage> {
                   },
                 ),
                 menuTile(
-                  icon: Icons.schedule_rounded,
                   title: l10n.character_post_schedule,
                   onTap: () {
                     Navigator.pop(context);
@@ -762,7 +734,6 @@ class MomentsPageState extends State<MomentsPage> {
                   ),
                 ),
                 menuTile(
-                  icon: Icons.eco_outlined,
                   title: l10n.liked_content,
                   showArrow: true,
                   onTap: () {
@@ -779,7 +750,6 @@ class MomentsPageState extends State<MomentsPage> {
                   },
                 ),
                 menuTile(
-                  icon: Icons.park_outlined,
                   title: l10n.my_favorites,
                   showArrow: true,
                   onTap: () {
@@ -796,7 +766,6 @@ class MomentsPageState extends State<MomentsPage> {
                   },
                 ),
                 menuTile(
-                  icon: Icons.visibility_off_outlined,
                   title: l10n.hidden_moments,
                   showArrow: true,
                   onTap: () {
@@ -909,11 +878,6 @@ class MomentsPageState extends State<MomentsPage> {
                           color: onSurface.withValues(alpha: 0.46),
                           fontSize: 12,
                         ),
-                      ),
-                      trailing: Icon(
-                        Icons.edit_note_rounded,
-                        color: primary.withValues(alpha: 0.66),
-                        size: 20,
                       ),
                       onTap: () {
                         Navigator.pop(context);
@@ -1612,7 +1576,7 @@ class _PersistentFeedState extends State<PersistentFeed>
       ToastUtils.showCenterToast(
         context,
         l10n.hide_moment_success, // ✨ 替換
-        customIcon: Icons.visibility_off_outlined,
+
       );
     } catch (e) {
       debugPrint('隱藏動態失敗: $e');
@@ -1622,7 +1586,7 @@ class _PersistentFeedState extends State<PersistentFeed>
       ToastUtils.showCenterToast(
         context,
         l10n.hide_moment_failed, // ✨ 替換
-        customIcon: Icons.error_outline_rounded,
+
       );
     }
   }
@@ -1634,7 +1598,7 @@ class _PersistentFeedState extends State<PersistentFeed>
       ToastUtils.showCenterToast(
         context,
         l10n.block_character_not_found, // ✨ 替換
-        customIcon: Icons.info_outline_rounded,
+
       );
       return;
     }
@@ -1713,7 +1677,7 @@ class _PersistentFeedState extends State<PersistentFeed>
       ToastUtils.showCenterToast(
         context,
         l10n.block_character_success(moment.authorName), // ✨ 替換：帶入角色名稱參數
-        customIcon: Icons.block_rounded,
+
       );
     } catch (e) {
       debugPrint('封鎖角色失敗: $e');
@@ -1723,7 +1687,7 @@ class _PersistentFeedState extends State<PersistentFeed>
       ToastUtils.showCenterToast(
         context,
         l10n.block_character_failed, // ✨ 替換
-        customIcon: Icons.error_outline_rounded,
+
       );
     }
   }

@@ -244,7 +244,6 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
             if (cgList.isEmpty) {
               return _buildEmptyLimitedState(
                 context,
-                icon: Icons.photo_library_outlined,
                 title: appL10n.background_title_exclusive_photo_current,
                 subtitle: appL10n.background_subtitle_unlock_character_photo,
               );
@@ -301,7 +300,6 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
     if (currentUserId == null) {
       return _buildEmptyLimitedState(
         context,
-        icon: Icons.lock_outline_rounded,
         title: appL10n.background_title_login,
         subtitle: appL10n.background_subtitle_redeem_chat_event,
       );
@@ -375,7 +373,6 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
         if (items.isEmpty) {
           return _buildEmptyLimitedState(
             context,
-            icon: Icons.wallpaper_outlined,
             title: appL10n.background_title,
             subtitle: appL10n.background_subtitle_event_shop_redeem_chat,
           );
@@ -492,7 +489,6 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
 
   Widget _buildEmptyLimitedState(
       BuildContext context, {
-        required IconData icon,
         required String title,
         required String subtitle,
       }) {
@@ -504,12 +500,6 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              size: 46,
-              color: theme.colorScheme.primary.withValues(alpha: 0.52),
-            ),
-            const SizedBox(height: 12),
             Text(
               title,
               textAlign: TextAlign.center,
@@ -683,7 +673,6 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
                                 l10n.affection_required_to_unlock(
                                   cg.requiredAffection,
                                 ),
-                                customIcon: Icons.lock_person_rounded,
                               );
                             }
                           },
@@ -881,11 +870,7 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
     return Container(
       color: Colors.grey.shade200,
       alignment: Alignment.center,
-      child: const Icon(
-        Icons.broken_image_outlined,
-        color: Colors.grey,
-        size: 46,
-      ),
+      child: const SizedBox.shrink(),
     );
   }
 
@@ -990,7 +975,6 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
               ToastUtils.showCenterToast(
                 pageContext,
                 l10n.reset_bg_success,
-                customIcon: Icons.wallpaper_rounded,
               );
             },
             child: Text(

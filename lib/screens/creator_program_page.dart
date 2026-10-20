@@ -198,22 +198,13 @@ class _CreatorProgramPageState extends State<CreatorProgramPage> {
           ...benefits.map(
                 (text) => Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(Icons.auto_awesome_rounded, size: 17, color: primary),
-                  const SizedBox(width: 9),
-                  Expanded(
-                    child: Text(
-                      text,
-                      style: GoogleFonts.notoSerifTc(
-                        fontSize: 13,
-                        height: 1.55,
-                        color: onSurface.withValues(alpha: 0.72),
-                      ),
-                    ),
-                  ),
-                ],
+              child: Text(
+                text,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 13,
+                  height: 1.55,
+                  color: onSurface.withValues(alpha: 0.72),
+                ),
               ),
             ),
           ),
@@ -298,15 +289,14 @@ class _CreatorProgramPageState extends State<CreatorProgramPage> {
           const SizedBox(height: 18),
           SizedBox(
             width: double.infinity,
-            child: FilledButton.icon(
+            child: FilledButton(
               onPressed: _submitting ? null : _submitApplication,
-              icon: _submitting
+              child: _submitting
                   ? const SizedBox.square(
                 dimension: 18,
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
-                  : const Icon(Icons.send_rounded),
-              label: Text(_submitting ? '送出中…' : '送出申請'),
+                  : const Text('送出申請'),
             ),
           ),
           const SizedBox(height: 8),
@@ -329,33 +319,27 @@ class _CreatorProgramPageState extends State<CreatorProgramPage> {
       ) {
     String title;
     String description;
-    IconData icon;
 
     switch (status) {
       case 'pending':
         title = '申請審核中';
         description = '申請已送達，審核約需 1～3 天。完成後會透過戀戀信箱通知你。';
-        icon = Icons.hourglass_top_rounded;
         break;
       case 'approved':
         title = '創作者資格已通過 🎉';
         description = '恭喜加入《戀戀拾光》創作者計畫！創作者後台、粉絲管理與推薦橫幅會在接下來的功能中與這個資格連動。';
-        icon = Icons.verified_rounded;
         break;
       case 'suspended':
         title = '創作者資格暫停';
         description = '目前暫時無法使用創作者專屬功能。請查看戀戀信箱中的官方通知。';
-        icon = Icons.pause_circle_outline_rounded;
         break;
       case 'revoked':
         title = '創作者資格已取消';
         description = '目前無法使用創作者專屬功能。若有疑問，可透過客服聯繫官方。';
-        icon = Icons.person_off_outlined;
         break;
       default:
         title = '創作者資格狀態';
         description = '目前狀態：$status';
-        icon = Icons.info_outline_rounded;
     }
 
     return Container(
@@ -369,8 +353,6 @@ class _CreatorProgramPageState extends State<CreatorProgramPage> {
       ),
       child: Column(
         children: [
-          Icon(icon, size: 42, color: theme.colorScheme.primary),
-          const SizedBox(height: 12),
           Text(
             title,
             textAlign: TextAlign.center,

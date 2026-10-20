@@ -546,7 +546,6 @@ class _MemoryAppBar extends StatelessWidget {
               ),
             ),
           ),
-          Icon(Icons.auto_awesome_rounded, color: accent, size: 20),
         ],
       ),
     );
@@ -800,12 +799,6 @@ class _MemoryChapterCard extends StatelessWidget {
                             errorWidget: (_, __, ___) =>
                             const SizedBox.shrink(),
                           ),
-                        if (!hasImage)
-                          Icon(
-                            Icons.collections_bookmark_outlined,
-                            color: accent.withValues(alpha: 0.72),
-                            size: 34,
-                          ),
                         if (!unlocked)
                           ColoredBox(
                             color: Colors.black.withValues(alpha: 0.32),
@@ -945,12 +938,6 @@ class _EmptyMemoryState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.collections_bookmark_outlined,
-              size: 46,
-              color: accent.withValues(alpha: 0.55),
-            ),
-            const SizedBox(height: 12),
             Text(
               appL10n.event_memory_empty_message_limited_memory_event_public,
               textAlign: TextAlign.center,

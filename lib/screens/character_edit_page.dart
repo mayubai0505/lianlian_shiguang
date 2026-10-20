@@ -842,7 +842,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         ToastUtils.showCenterToast(
           context,
           l10n.draft_saved_success,
-          customIcon: Icons.save_rounded, // 💡 用「磁碟片/儲存」或是 Icons.edit_document，給予滿滿的安心感
+
         );
       }
     } catch (e) {
@@ -2525,7 +2525,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       ToastUtils.showCenterToast(
         context,
         l10n.voice_bind_first,
-        customIcon: Icons.mic_external_off_rounded,
+
       );
       return;
     }
@@ -2714,7 +2714,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
           l10n.voice_bind_success(
             widget.character!.name,
           ),
-          customIcon: Icons.cloud_done_rounded,
+
         );
       } else {
         if (!mounted) return;
@@ -2722,7 +2722,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         ToastUtils.showCenterToast(
           context,
           l10n.voice_bind_success_draft,
-          customIcon: Icons.edit_note_rounded,
+
         );
       }
     } on FirebaseException catch (
@@ -2860,7 +2860,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     ToastUtils.showCenterToast(
       context,
       l10n.test_mode_notice,
-      customIcon: Icons.chat_bubble_outline_rounded,
+
     );
 
     Navigator.push(
@@ -4163,13 +4163,6 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                       ? Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.panorama_outlined,
-                        size: 42,
-                        color: theme.colorScheme.primary
-                            .withValues(alpha: 0.65),
-                      ),
-                      const SizedBox(height: 10),
                       Text(
                         l10n.characterBannerSelect,
                         style: theme.textTheme.bodyMedium?.copyWith(
@@ -4404,12 +4397,6 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.add_photo_alternate_outlined,
-                    size: 42,
-                    color: theme.colorScheme.primary.withValues(alpha: 0.65),
-                  ),
-                  const SizedBox(height: 8),
                   Text(
                     l10n.characterEditCharacterImage,
                     style: theme.textTheme.bodyMedium?.copyWith(
@@ -4526,9 +4513,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                               fit: BoxFit.cover,
                               errorBuilder:
                                   (context, error, stackTrace) =>
-                              const Icon(
-                                Icons.broken_image_outlined,
-                              ),
+                                  Container(color: Colors.grey.shade200),
                             ),
                           ),
                         ),
@@ -4606,7 +4591,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       ToastUtils.showCenterToast(
         context,
         l10n.gallery_upload_limit,
-        customIcon: Icons.photo_library_rounded, // 💡 總裁精選：用「相簿/畫廊」圖示，直覺告知容量已滿
+
         // 💡 總裁秘技：如果想稍微帶點提醒意味，也可以用 Icons.filter_9_plus_rounded (代表超過9個)
       );
       return;

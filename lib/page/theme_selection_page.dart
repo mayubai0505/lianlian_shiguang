@@ -384,7 +384,6 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
                 ),
               ],
             ),
-            Icon(Icons.share_outlined, size: 16, color: secondary),
           ],
         ),
         const SizedBox(height: 17),
@@ -514,8 +513,6 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.auto_awesome, size: 17, color: _previewColor),
-        const SizedBox(width: 8),
         Text(
           title,
           style: GoogleFonts.notoSerifTc(
@@ -613,8 +610,6 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.eco_outlined, color: _previewColor, size: 18),
-            const SizedBox(width: 7),
             Flexible(
               child: Text(
                 l10n.theme_selection_previewing(_themeName(_selectedOption.theme, l10n)),
@@ -739,7 +734,6 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
       l10n.theme_selection_applied(
         _themeName(_selectedOption.theme, l10n),
       ),
-      customIcon: Icons.check_rounded,
     );
   }
 }

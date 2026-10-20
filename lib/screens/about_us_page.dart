@@ -279,12 +279,6 @@ class _AboutUsPageState extends State<AboutUsPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.menu_book_outlined,
-              size: 62,
-              color: primary.withValues(alpha: 0.20),
-            ),
-            const SizedBox(height: 16),
             Text(
               l10n.about_us_empty_hint,
               textAlign: TextAlign.center,

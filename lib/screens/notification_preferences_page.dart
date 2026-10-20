@@ -16,12 +16,12 @@ class NotificationPreferencesPage extends StatefulWidget {
 
 class _NotificationPreferencesPageState
     extends State<NotificationPreferencesPage> {
-  static const _options = <(String, String, String, IconData)>[
-    ('chat', '角色聊天', '角色回覆訊息的推播', Icons.forum_outlined),
-    ('moments', '新瞬間', '關注的創作者及角色發布新貼文', Icons.photo_library_outlined),
-    ('social', '社交通知', '按讚、留言、追蹤與角色互動', Icons.people_outline),
-    ('announcements', '官方公告', '一般官方公告推播', Icons.campaign_outlined),
-    ('events', '活動提醒', '活動即將結束的推播', Icons.event_outlined),
+  static const _options = <(String, String, String)>[
+    ('chat', '角色聊天', '角色回覆訊息的推播'),
+    ('moments', '新瞬間', '關注的創作者及角色發布新貼文'),
+    ('social', '社交通知', '按讚、留言、追蹤與角色互動'),
+    ('announcements', '官方公告', '一般官方公告推播'),
+    ('events', '活動提醒', '活動即將結束的推播'),
   ];
   final Map<String, bool> _pending = <String, bool>{};
   final Set<String> _saving = <String>{};
@@ -55,51 +55,49 @@ class _NotificationPreferencesPageState
   @override
   Widget build(BuildContext context) {
     final uid = FirebaseAuth.instance.currentUser?.uid;
-    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(title: const Text('通知偏好')),
       body: uid == null
           ? const Center(child: Text('請先登入帳號'))
           : StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-              stream: FirebaseFirestore.instance
-                  .collection('users').doc(uid).snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return const Center(child: Text('無法讀取通知偏好，請稍後再試'));
-                }
-                if (!snapshot.hasData) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                final raw = snapshot.data!.data()?['notificationPreferences'];
-                final preferences = raw is Map
-                    ? Map<String, dynamic>.from(raw)
-                    : <String, dynamic>{};
-                return ListView(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  children: [
-                    for (final (key, title, subtitle, icon) in _options)
-                      SwitchListTile.adaptive(
-                        secondary: Icon(icon, color: theme.colorScheme.primary),
-                        title: Text(title),
-                        subtitle: Text(subtitle),
-                        value: _pending[key] ?? (preferences[key] != false),
-                        onChanged: _saving.contains(key)
-                            ? null
-                            : (value) => _setPreference(key, value),
-                      ),
-                    const Padding(
-                      padding: EdgeInsets.all(20),
-                      child: Text(
-                        '此處設定同步至同一玩家帳號的所有裝置。'
-                        '手機系統通知權限需在各裝置分別設定。'
-                        '關閉推播不會刪除遊戲內信箱或已收到的通知。',
-                        style: TextStyle(fontSize: 12, height: 1.6),
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
+        stream: FirebaseFirestore.instance
+            .collection('users').doc(uid).snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const Center(child: Text('無法讀取通知偏好，請稍後再試'));
+          }
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final raw = snapshot.data!.data()?['notificationPreferences'];
+          final preferences = raw is Map
+              ? Map<String, dynamic>.from(raw)
+              : <String, dynamic>{};
+          return ListView(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            children: [
+              for (final (key, title, subtitle) in _options)
+                SwitchListTile.adaptive(
+                  title: Text(title),
+                  subtitle: Text(subtitle),
+                  value: _pending[key] ?? (preferences[key] != false),
+                  onChanged: _saving.contains(key)
+                      ? null
+                      : (value) => _setPreference(key, value),
+                ),
+              const Padding(
+                padding: EdgeInsets.all(20),
+                child: Text(
+                  '此處設定同步至同一玩家帳號的所有裝置。'
+                      '手機系統通知權限需在各裝置分別設定。'
+                      '關閉推播不會刪除遊戲內信箱或已收到的通知。',
+                  style: TextStyle(fontSize: 12, height: 1.6),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }

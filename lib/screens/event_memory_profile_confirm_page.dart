@@ -402,25 +402,7 @@ class _EventMemoryProfileConfirmPageState
                         size: 74,
                         accent: visual.accent,
                       ),
-                      Transform.translate(
-                        offset: const Offset(-4, 0),
-                        child: Container(
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                            color: visual.cardColor,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: visual.accent.withValues(alpha: 0.18),
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.favorite_rounded,
-                            size: 16,
-                            color: visual.accent,
-                          ),
-                        ),
-                      ),
+                      const SizedBox(width: 12),
                       Transform.translate(
                         offset: const Offset(-8, 0),
                         child: CircleAvatar(
@@ -585,9 +567,6 @@ class _MemoryAvatar extends StatelessWidget {
             ? null
             : DecorationImage(image: provider, fit: BoxFit.cover),
       ),
-      child: provider == null
-          ? const Icon(Icons.person_rounded)
-          : null,
     );
   }
 }

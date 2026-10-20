@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lianlian_shiguang/page/inbox_page.dart';
 import 'package:lianlian_shiguang/screens/moment_detail_page.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -27,6 +26,7 @@ import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'services/reminder_notification_service.dart';
 import 'package:home_widget/home_widget.dart';
+import 'screens/notification_list_page.dart';
 
 String? globalActiveCharacterId;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -769,7 +769,13 @@ class _ChatLoaderWrapperState extends State<ChatLoaderWrapper> {
 void _handleNotificationClick(RemoteMessage message) {
   final data = message.data;
   final type = (data['type'] ?? '').toString().trim();
-  final postId = (data['postId'] ?? '').toString().trim();
+  // 相容較早版本的貼文通知欄位；以實際保存的 postId 為優先。
+  final postId = [
+    data['postId'],
+    data['momentId'],
+    data['targetPostId'],
+  ].map((value) => value?.toString().trim() ?? '')
+      .firstWhere((value) => value.isNotEmpty, orElse: () => '');
   debugPrint('🚨 收到推播點擊：type=$type, postId=$postId');
 
   // 聊天推播保留原本聊天室跳轉。
@@ -814,11 +820,11 @@ void _handleNotificationClick(RemoteMessage message) {
     return;
   }
 
-  // 郵件、客服、關注等非貼文通知，統一開啟目前的新版 InboxPage。
+  // 郵件、客服、關注等非貼文通知，統一開啟新版通知列表。
   // 舊的通知若沒有 postId，也回信箱而不是打開空白貼文。
   debugPrint('📫 非貼文通知或缺少 postId，開啟新版信箱：$type');
   navigatorKey.currentState?.push(
-    MaterialPageRoute(builder: (context) => const InboxPage()),
+    MaterialPageRoute(builder: (context) => const NotificationListPage()),
   );
 }
 

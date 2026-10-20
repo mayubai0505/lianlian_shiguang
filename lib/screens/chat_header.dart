@@ -152,11 +152,7 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
                           return Image.asset(
                             _legacyFlowerAsset(friendship),
                             fit: BoxFit.contain,
-                            errorBuilder: (_, __, ___) => Icon(
-                              Icons.eco_outlined,
-                              size: 14,
-                              color: primary.withValues(alpha: 0.72),
-                            ),
+                            errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                           );
                         },
                       ),
@@ -192,11 +188,7 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
                               child: Image.asset(
                                 _giftFlowerAsset(context),
                                 fit: BoxFit.contain,
-                                errorBuilder: (_, __, ___) => Icon(
-                                  Icons.local_florist_rounded,
-                                  size: 16,
-                                  color: primary.withValues(alpha: 0.82),
-                                ),
+                                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                               ),
                             ),
                             const SizedBox(width: 3),
@@ -257,21 +249,13 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
                                     width: 30,
                                     height: 30,
                                     child: option.asset == null
-                                        ? Icon(
-                                      option.fallbackIcon,
-                                      size: 21,
-                                      color: primary.withValues(alpha: 0.78),
-                                    )
+                                        ? const SizedBox.shrink()
                                         : Image.asset(
                                       option.asset!,
                                       fit: BoxFit.contain,
                                       color: primary,
                                       colorBlendMode: BlendMode.srcIn,
-                                      errorBuilder: (_, __, ___) => Icon(
-                                        option.fallbackIcon,
-                                        size: 21,
-                                        color: primary.withValues(alpha: 0.78),
-                                      ),
+                                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                                     ),
                                   ),
                                   const SizedBox(width: 10),
@@ -315,11 +299,7 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
                                     fit: BoxFit.contain,
                                     color: primary,
                                     colorBlendMode: BlendMode.srcIn,
-                                    errorBuilder: (_, __, ___) => Icon(
-                                      Icons.call_outlined,
-                                      size: 21,
-                                      color: primary.withValues(alpha: 0.78),
-                                    ),
+                                    errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                                   ),
                                 ),
                                 const SizedBox(width: 10),

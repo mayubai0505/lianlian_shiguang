@@ -541,7 +541,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
 
                   _buildSettingsTile(
-                    iconData: Icons.notifications_active_outlined,
+                    maskAsset: 'assets/images/setting/settings_notification_bell.png',
                     title: '通知偏好',
                     subtitle: '設定想收到的通知類型，跨裝置同步',
                     theme: theme,

@@ -300,29 +300,9 @@ class BackpackPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  height: 1,
-                  color: primary.withValues(alpha: 0.10),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Icon(
-                  Icons.auto_awesome,
-                  size: 11,
-                  color: primary.withValues(alpha: 0.40),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  height: 1,
-                  color: primary.withValues(alpha: 0.10),
-                ),
-              ),
-            ],
+          Container(
+            height: 1,
+            color: primary.withValues(alpha: 0.10),
           ),
           const SizedBox(height: 18),
           SizedBox(
@@ -383,32 +363,12 @@ class BackpackPage extends StatelessWidget {
             color: primary.withValues(alpha: 0.12),
           ),
         ),
-        title: Row(
-          children: [
-            Container(
-              width: 34,
-              height: 34,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: primary.withValues(alpha: 0.08),
-              ),
-              child: Icon(
-                Icons.key_rounded,
-                size: 18,
-                color: primary,
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                l10n.open_exclusive_story,
-                style: GoogleFonts.notoSerifTc(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
+        title: Text(
+          l10n.open_exclusive_story,
+          style: GoogleFonts.notoSerifTc(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         content: Text(
           l10n.confirm_use_egg(eggData['title']),
@@ -444,7 +404,6 @@ class BackpackPage extends StatelessWidget {
               ToastUtils.showCenterToast(
                 context,
                 '✨ ${l10n.guiding_into_story(eggData['title'])}',
-                customIcon: Icons.auto_awesome,
               );
 
               // 觸發聊天室回呼

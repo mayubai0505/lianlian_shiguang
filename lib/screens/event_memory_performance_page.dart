@@ -600,7 +600,6 @@ class _EventMemoryPerformancePageState
       setState(() => _isCollected = false);
       _showMessage(
         '已取消收藏',
-        customIcon: Icons.bookmark_remove_outlined,
       );
       return true;
     } catch (e) {
@@ -675,7 +674,6 @@ class _EventMemoryPerformancePageState
       setState(() => _isCollected = true);
       _showMessage(
         appL10n.event_memory_performance_collect_memory_message_collection_memory,
-        customIcon: Icons.bookmark_added_rounded,
       );
       return true;
     } catch (e) {
@@ -746,7 +744,6 @@ class _EventMemoryPerformancePageState
 
       _showMessage(
         '已儲存到手機相簿 ♡',
-        customIcon: Icons.photo_library_rounded,
       );
 
       return true;
@@ -829,12 +826,6 @@ class _EventMemoryPerformancePageState
     if (provider == null) {
       return Container(
         color: const Color(0xFF17131E),
-        alignment: Alignment.center,
-        child: const Icon(
-          Icons.person_rounded,
-          size: 72,
-          color: Colors.white54,
-        ),
       );
     }
 
@@ -865,12 +856,6 @@ class _EventMemoryPerformancePageState
             alignment: Alignment.center,
             errorBuilder: (_, __, ___) => Container(
               color: const Color(0xFF17131E),
-              alignment: Alignment.center,
-              child: const Icon(
-                Icons.broken_image_outlined,
-                size: 64,
-                color: Colors.white54,
-              ),
             ),
           ),
         ),
@@ -910,12 +895,6 @@ class _EventMemoryPerformancePageState
           if (isEnding) ...[
             Row(
               children: [
-                const Icon(
-                  Icons.auto_awesome_rounded,
-                  color: Colors.white70,
-                  size: 16,
-                ),
-                const SizedBox(width: 6),
                 Text(
                   '回憶',
                   style: GoogleFonts.notoSerifTc(

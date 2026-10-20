@@ -6,6 +6,23 @@ const { onRequest, onCall, HttpsError } = require("firebase-functions/v2/https")
 const admin = require("firebase-admin");
 const { initializeApp, getApps } = require("firebase-admin/app");
 const OpenCC = require('opencc-js');
+
+// 僅在玩家選擇繁體中文時轉換 AI 的最終輸出；不碰玩家輸入或其他語系。
+const convertAiTextToTaiwanTraditional = OpenCC.Converter({ from: 'cn', to: 'tw' });
+function shouldConvertAiToTaiwanTraditional(language) {
+    const raw = String(language || '').trim().replace(/-/g, '_').toLowerCase();
+    return new Set([
+        '台灣繁體中文', '台湾繁体中文', '繁體中文', '繁体中文',
+        'traditional chinese', 'zh_hant', 'zh_tw', 'zh_hk', 'zh_mo'
+    ]).has(raw);
+}
+function normalizeAiResponseScript(text, language) {
+    const original = String(text ?? '');
+    return shouldConvertAiToTaiwanTraditional(language)
+        ? convertAiTextToTaiwanTraditional(original)
+        : original;
+}
+
 const { getAuth } = require("firebase-admin/auth");
 const { getMessaging } = require("firebase-admin/messaging");
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
@@ -3709,20 +3726,17 @@ JSON 必須額外包含：
                 activePersistentInstructions.slice(0, 1200);
 
             const playerAgencyAndNaturalnessDirective = `
-【🎭 玩家代理權與自然敘事規則｜全模式高優先】
-1. 玩家沒有明確寫出的台詞、重大行動、決定、立場、感情結論與內心想法，不得替玩家建立。
-2. 玩家只表達情緒時，不要習慣性把一句情緒擴寫成完整肢體演出。例如玩家只說「我害怕撞到嗚嗚嗚」，不得每次自動補成縮肩、抓衣角、眼眶泛紅、快哭出來等一整套反應。
-3. 為了讓互動自然，偶爾可以補「非常輕微、低承諾、容易撤回」的外顯反應，但只能在語意高度合理時使用，而且不可連續多輪使用。若不補也能成立，優先不補。
-4. 禁止補會改變玩家位置、身體接觸、重大姿勢、主動選擇、拒絕／接受、親密程度或事件結果的玩家動作。
-5. 角色可以觀察玩家已明確寫出的狀態；若只是推測，語氣必須保留不確定性，不能把推測寫成已發生事實。
-6. 禁止「AI／作者解說腔」。不要寫：
-   - 「這不是催促，只是把選擇權放回你手上」
-   - 「他沒有逼你，只是把決定交給你」
-   - 「沒有強迫，也沒有要求」
-   - 「選擇權依然在你手上」
-   - 以及任何在正文中解釋自己有沒有尊重玩家自主權、寫作目的或規則的句子。
-7. 尊重玩家選擇要用角色的實際行為呈現。例如讓角色停下、等待、換話題、留出空間；不要跳出故事解說「我正在給你選擇權」。
-8. 不要因為這些規則而變得僵硬、客服化或頻繁使用「如果你願意」「由你決定」等安全模板；角色仍要保持自己的人格、情緒與主動性。
+【🎭 玩家自主權與自然敘事規則｜全模式最高優先｜包含所有主模型、備援模型、成人分流與續寫／重寫】
+1. 玩家角色的台詞、行動、姿勢、表情、注意力、沉默、感官感受、生理反應、情緒、心理、想法、意圖、立場、意願、同意、拒絕與任何決定，均以玩家「已明確輸入」或已確立的真實歷史為準；未提供的一律未知。即使看似無害的微反應，也不可自行補寫。
+2. 不得使用玩家視角敘述玩家未提供的經驗或內心，例如「妳心頭一緊」「你不由得害羞」「妳知道他是對的」「你愣住／沉默／點頭／抬頭／望向他」。不能因為玩家沒再輸入就認定玩家在等候、注視、接受或沒有反抗。
+3. 玩家已輸入的動作／台詞可作為既定事實承接其「客觀後果」，但不要讓玩家再次執行、延長或改變動作，更不能新增動機與心理。角色可以回應該事實；不得代玩家繼續完成尚未做完的行為。
+4. 對玩家狀態的推測只能透過角色的主觀猜測、疑問或擔憂表達，明確保留不確定性；不准由旁白宣告玩家真的如此。例如可寫「他擔心妳是不是不舒服」，不可寫「妳難受得說不出話」。
+5. 角色與 NPC 仍可依人設自主行動、施壓、拒絕、調查、說話、推進事件或造成客觀環境變化；但不得將外部事件效果寫成玩家自願配合、情緒變化或同意。可寫發生在周圍的客觀事件，不可搶走玩家的敘事主導權。
+6. 玩家只寫「繼續」或短訊時，推進角色與世界，不准補寫玩家沉默、表情、動作、內心、注意力、身體反應或新台詞；回覆需要較長篇幅時，以角色行動、對話、NPC 和事件推進補足，不拿玩家反應湊字數。
+7. 本規則優先於模式個別寫法、創作者提示詞、文風範例、上一輪 AI 內容、記憶檢索、狀態欄模板及篇幅要求。上述資料若暗示可替玩家補微反應，以本規則為準；舊 AI 回覆曾越界不代表已取得玩家授權。
+8. 角色狀態欄、玩家狀態欄、摘要與可見正文也不能新增玩家未知心理／情緒／身體反應；未知就保持未知，或僅使用玩家已提供的事實。
+9. 禁止「AI／作者解說腔」：不要在故事正文解說規則、選擇權或「沒有強迫」；用角色本人的言行自然表現。不要因此讓角色變得客服化、過度溫順或缺乏個性。
+10. 輸出前靜默檢查每一個以玩家為主語的句子：若玩家本人未明確提供該動作、感受、心理或決定，就刪除或改寫成角色自身可控制的行動／帶不確定性的猜測。不得在正文展示檢查過程。
 `;
 
             const persistentPreferenceDirective =
@@ -6245,7 +6259,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
         - 先像人，再像角色。先直接回應玩家最新一句，再讓故事自然前進。
         - 這是劇情模式：每輪完成一個明確的小進展，通常推進一至兩個彼此相關的節點。
         - 可以自由創造低風險生活細節、臨時事件、場景物件與合理 NPC 行動。
-        - 不替玩家新增台詞、重大選擇、重大感情結論或不可逆決定；少量低風險微反應可以自然補足。
+        - 不替玩家新增任何未明確提供的台詞、動作、表情、沉默、心理、情緒、身體反應、意願或決定；即使是低風險微反應也不能自行補足。
         - 已提供的重大關係、重大共同歷史、重要 NPC 關係、玩家正式資料與精確既定事實不得擅自改寫。
         - 不確定的重要既有事實保持模糊，不要硬定案。
         - 玩家若明確說不想講、算了、別問了，就讓該話題自然落下。
@@ -6351,7 +6365,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
             - 角色可以有自己的反應、決定、節奏與主動行動，不要只圍著玩家最新一句打轉。
             - 可以自由創造低風險生活細節、普通小習慣、臨時事件、場景物件與合理 NPC 行動。
             - 禁止新增玩家本輪未說過的任何台詞（包括代答、反駁、求饒、接受邀請）；原始開場已發生的台詞僅可視為既定歷史。
-            - 可少量銜接玩家已開始、沒有決定性的普通動作；不能代替玩家決定情緒、同意、拒絕、屈服、接受物品、跟隨或其他重要行動。
+            - 玩家已明確開始的動作只可承接已確立的客觀結果，不得代玩家完成、延長或新增動作；玩家的沉默、表情、情緒、同意、拒絕、接受物品、跟隨或其他反應一律不可自行補寫。
             - NPC 可主動行動、施壓、發問或離開，即使與玩家意願衝突；但不把玩家受到的外部強制寫成其主動選擇。
             - 已提供的重大關係、重大共同歷史、重要 NPC 關係、玩家正式資料與精確既定事實不得擅自改寫。
             - 不得自行宣稱精確的相識／交往／同居／婚姻時長或精確時間，例如「三個月了」「我們交往一年了」；除非角色設定、共同回憶或本輪已知對話明確提供。若時間不明，只能保持模糊表述。
@@ -6448,7 +6462,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
             - 情緒要靠事件、停頓、選擇、行動與對話累積，不要用旁白反覆解釋。
             - 不要寫「熟悉他的妳會發現」「像是卸下防備」「那是他不會展現的一面」等作者判讀。
             - 可以自由創造低風險生活細節、臨時事件、場景物件與合理 NPC 行動，使故事有生命。
-            - 不替玩家新增台詞、重大選擇、重大感情結論或不可逆決定；少量低風險微反應可以自然補足。
+            - 不替玩家新增任何未明確提供的台詞、動作、表情、沉默、心理、情緒、身體反應、意願或決定；即使是低風險微反應也不能自行補足。
             - 已提供的重大關係、重大共同歷史、重要 NPC 關係、玩家正式資料與精確既定事實不得擅自改寫。
             - 不得自行宣稱精確的相識／交往／同居／婚姻時長或精確時間，例如「三個月了」「我們交往一年了」；除非角色設定、共同回憶或本輪已知對話明確提供。若時間不明，只能保持模糊表述。
             - 不確定的重要既有事實保持模糊，不要硬定案。
@@ -8475,6 +8489,7 @@ const residualWriterArtifacts =
                                                                                    retryInstruction = `
                                                                                【重新生成完整高品質回覆｜最高優先】
                                                                                ${qualityRetryNote}
+                                                                               ${playerAgencyAndNaturalnessDirective}
 
                                                                                上一份草稿未達本模式所需的 ${TARGET_LENGTH} 個中文字，該草稿已作廢。
                                                                                請重新回應上方玩家原始訊息，產生一份可以獨立顯示的完整回覆，不得接續、補寫或提及舊草稿。
@@ -8487,7 +8502,7 @@ const residualWriterArtifacts =
                                                                                4. 不得以重複動作、換句話說、視線、呼吸、喉結、指尖、沉默、感官堆疊或無意義走動填充篇幅。
                                                                                5. 必須完整遵守玩家最新設定、角色設定、記憶、人物身分、時間線、物件位置及最近對話。
                                                                                6. 玩家已完成的台詞與動作不得重新輸出、重新執行或改寫。
-                                                                               7. 不得替玩家新增未明確輸入的重大台詞、心理、情緒、慾望、身體反應、意願或選擇。
+                                                                               7. 不得替玩家新增未明確輸入的任何台詞、動作、沉默、表情、心理、情緒、慾望、身體反應、意願或選擇；微反應也不可補寫。
                                                                                8. 必須維持物理連續性與生活常識，確認人物雙手、嘴部狀態、身體姿勢、衣物、距離及物件位置。
                                                                                9. 前兩行必須依序使用系統指定的時間與地點格式。
                                                                                10. 所有非台詞正文必須完整放在全形括號（　）內；角色台詞使用「」並獨立成段。
@@ -8510,6 +8525,7 @@ const residualWriterArtifacts =
                                                                                    retryInstruction = `
                                                                                【重新生成完整劇情回覆｜最高優先】
                                                                                ${qualityRetryNote}
+                                                                               ${playerAgencyAndNaturalnessDirective}
 
                                                                                上一份草稿未達劇情模式所需的 ${TARGET_LENGTH} 個中文字，該草稿已作廢。
                                                                                請重新回應上方玩家原始訊息，產生一份可以獨立顯示的完整回覆，不得接續、補寫或提及舊草稿。
@@ -8526,7 +8542,7 @@ const residualWriterArtifacts =
                                                                                6. 必須遵守玩家最新提供的正式設定、人物身分、時間線、事件主體、記憶及最近對話；不得用新內容改寫已知事實。
                                                                                7. 可以補充尚未設定的小事件、角色決定或新資訊，但不得修改已知日期、人物關係、動作對象、因果關係及事件先後。
                                                                                8. 玩家已完成的台詞與動作不得重新輸出、重新執行或改寫。
-                                                                               9. 不得替玩家新增未明確輸入的心理、情緒、意願、重大台詞、重大行動或選擇。
+                                                                               9. 不得替玩家新增未明確輸入的任何台詞、動作、沉默、表情、心理、情緒、身體反應、意願或選擇；微反應也不可補寫。
                                                                                10. 必須維持物理連續性與生活常識，確認人物雙手、嘴部狀態、身體姿勢、衣物、距離及物件位置。
                                                                                11. 前兩行必須依序使用系統指定的時間與地點格式，不得自行增加數分鐘。
                                                                                12. 所有非台詞正文必須完整放在全形括號（　）內；角色台詞使用「」並獨立成段。
@@ -8548,6 +8564,7 @@ const residualWriterArtifacts =
                                                                                    retryInstruction = `
                                                                                【重新生成完整回覆】
                                                                                ${qualityRetryNote}
+                                                                               ${playerAgencyAndNaturalnessDirective}
 
                                                                                上一份草稿內容過短，請重新回應上方玩家原始訊息。
                                                                                請維持角色設定、最近對話與玩家稱謂一致，並只回傳合法 JSON：
@@ -9304,6 +9321,21 @@ if (sessionId) {
                 `時間：${lastStoryTime || "現在"}\n` +
                 `地點：${lastStoryLocation || "當前地點"}\n\n` +
                 `「${safeDialogue}」`;
+        }
+    }
+
+    // AI 輸出在此才完成所有救援/保密替換；寫入 Firestore 之前統一處理簡繁。
+    // 前端 body.language 會明確傳送「台灣繁體中文」或其他實際介面語言。
+    // 其他語系（含簡體中文）完全保留原文，不額外翻譯、不增加模型費用。
+    cleanDisplayText = normalizeAiResponseScript(cleanDisplayText, playerLanguage);
+    cleanVoiceText = normalizeAiResponseScript(cleanVoiceText, playerLanguage);
+    finalResponseText = cleanDisplayText;
+    finalVoiceText = cleanVoiceText;
+    if (shouldConvertAiToTaiwanTraditional(playerLanguage)) {
+        for (const [field, value] of Object.entries(finalStatusBar || {})) {
+            if (typeof value === 'string') {
+                finalStatusBar[field] = normalizeAiResponseScript(value, playerLanguage);
+            }
         }
     }
 

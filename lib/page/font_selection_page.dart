@@ -95,8 +95,6 @@ class FontSelectionPage extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.format_size_rounded),
-                        const SizedBox(width: 9),
                         Expanded(
                           child: Text(
                             appL10n.font_size_title,
@@ -168,7 +166,6 @@ class FontSelectionPage extends StatelessWidget {
                         ToastUtils.showCenterToast(
                           context,
                           appL10n.font_selection_applied_message(font.label),
-                          customIcon: Icons.text_fields_rounded,
                         );
                       },
                       child: Container(

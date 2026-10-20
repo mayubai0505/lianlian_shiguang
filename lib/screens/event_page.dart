@@ -998,7 +998,6 @@ class _TaskListState extends State<_TaskList> {
         reward > 0
             ? appL10n.event_claim_task_message_claim_current(currency, reward, widget.currencyIcon, widget.currencyName)
             : appL10n.event_claim_task_message_reward_claim,
-        customIcon: Icons.check_circle_rounded,
       );
     } on FirebaseFunctionsException catch (error) {
       if (!mounted) return;
@@ -1749,7 +1748,6 @@ class _EventShopPageState extends State<EventShopPage> {
         returnedReward > 0
             ? appL10n.event_progress_ref_message_redeem_success_flowers(returnedReward)
             : appL10n.event_progress_ref_message_event_collection_redeem_success_add(itemName),
-        customIcon: Icons.check_circle_rounded,
       );
     } on FirebaseFunctionsException catch (error) {
       if (!mounted) return;
@@ -2050,12 +2048,6 @@ class _EventShopPageState extends State<EventShopPage> {
                         ),
                         errorWidget: (_, __, ___) => Container(
                           color: widget.accentColor.withValues(alpha: 0.04),
-                          alignment: Alignment.center,
-                          child: Icon(
-                            Icons.storefront_rounded,
-                            size: 40,
-                            color: widget.accentColor.withValues(alpha: 0.35),
-                          ),
                         ),
                       ),
                     ),
@@ -2411,12 +2403,6 @@ class _ShopFallback extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: colors.primary.withValues(alpha: 0.05),
-      alignment: Alignment.center,
-      child: Icon(
-        Icons.card_giftcard_rounded,
-        color: colors.primary.withValues(alpha: 0.38),
-        size: 36,
-      ),
     );
   }
 }
@@ -2495,12 +2481,6 @@ class _EventUnavailablePage extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          Icon(
-            Icons.event_busy_outlined,
-            size: 48,
-            color: colors.primary.withValues(alpha: 0.35),
-          ),
-          const SizedBox(height: 14),
           Text(
             message,
             style: GoogleFonts.notoSerifTc(

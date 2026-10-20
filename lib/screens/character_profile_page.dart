@@ -637,7 +637,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
       ToastUtils.showCenterToast(
         context,
         l10n.follow_own_warning,
-        customIcon: Icons.front_hand_rounded,
       );
       return;
     }
@@ -703,9 +702,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
     ToastUtils.showCenterToast(
       context,
       wasFollowing ? l10n.creatorProfileUnfollowed : l10n.creatorProfileFollowedCreator(resolvedCreatorName),
-      customIcon: wasFollowing
-          ? Icons.person_remove_outlined
-          : Icons.person_add_alt_1_rounded,
     );
 
     // 第二階段：通知失敗不能影響追蹤結果
@@ -842,13 +838,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                           ],
                         ),
                       ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.auto_awesome,
-                          size: 72,
-                          color: Colors.white54,
-                        ),
-                      ),
                     );
                   },
                 )
@@ -896,12 +885,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                 right: 24,
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.auto_awesome,
-                      color: Color(0xFFE9CFF3),
-                      size: 18,
-                    ),
-                    SizedBox(width: 7),
                     Text(
                       l10n.app_name,
                       style: TextStyle(
@@ -1001,12 +984,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                           if (hasCreatorName)
                             Row(
                               children: [
-                                const Icon(
-                                  Icons.edit_outlined,
-                                  color: Colors.white70,
-                                  size: 13,
-                                ),
-                                const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
                                     l10n.characterProfileCardCreator(creatorName),
@@ -1385,7 +1362,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
               context,
               l10n.snackbar_friend_removed(
                   widget.character.name), // 確保妳的 l10n 檔案裡有定義這個 Key
-              customIcon: Icons.person_remove_rounded,
             );
           }
         } catch (e) {
@@ -1411,7 +1387,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
           ToastUtils.showCenterToast(
             context,
             l10n.snackbar_friend_added(widget.character.name),
-            customIcon: Icons.person_add_alt_1_rounded,
           );
         }
       }
@@ -1540,7 +1515,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
       ToastUtils.showCenterToast(
         context,
         l10n.like_own_char_warning,
-        customIcon: Icons.front_hand_rounded,
       );
       return;
     }
@@ -1634,7 +1608,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
       ToastUtils.showCenterToast(
         context,
         nowLiked ? l10n.like_success_msg : l10n.unlike_success_msg,
-        customIcon: nowLiked ? Icons.favorite : Icons.favorite_border,
       );
     } catch (e) {
       if (mounted) {
@@ -1695,8 +1668,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
       ToastUtils.showCenterToast(
         context,
         l10n.followed_creator_msg(widget.character.creatorName),
-        customIcon:
-        Icons.person_add_alt_1_rounded, // 💡 用帶有「+」號的人物圖示，完美傳達「加入追蹤」的意象！
       );
     }
   }
@@ -1713,9 +1684,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           // 💡 注意：這裡的 const 被我拆到裡面的 Icon 和 SizedBox 去了
           title: Row(children: [
-            const Icon(Icons.sentiment_very_dissatisfied,
-                color: Colors.blueGrey),
-            const SizedBox(width: 8),
             Text(l10n.dislike_dialog_title) // ✨ 替換：不太喜歡這個角色？
           ]),
           content: Column(
@@ -1751,8 +1719,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                   ToastUtils.showCenterToast(
                     context,
                     l10n.dislike_thanks,
-                    customIcon: Icons
-                        .feedback_outlined, // 💡 總裁細節：用「意見回饋」的圖示，比直接放一個倒讚 (thumb_down) 讓人感覺更舒服且被尊重！
                   );
                 }
                 await FirebaseFirestore.instance
@@ -1875,7 +1841,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
         ToastUtils.showCenterToast(
           context,
           l10n.report_success,
-          customIcon: Icons.shield_outlined, // 💡 總裁細節：使用「安全盾牌」圖示，傳遞滿滿的保護與安心感！
         );
       }
     } catch (e) {
@@ -1936,8 +1901,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
         ToastUtils.showCenterToast(
           context,
           l10n.lore_delete_success,
-          customIcon:
-          Icons.auto_delete_outlined, // 💡 使用帶有科技感或魔法感的刪除圖示，非常符合「清除記憶」的意境！
         );
       }
     } catch (e) {
@@ -2047,7 +2010,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                   ToastUtils.showCenterToast(
                     context,
                     l10n.lore_add_success,
-                    customIcon: Icons.library_add_check_rounded,
                   );
                   Navigator.of(context).pop();
                 } catch (e) {
@@ -2271,8 +2233,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
         ToastUtils.showCenterToast(
           context,
           l10n.echo_clear_success,
-          customIcon: Icons
-              .delete_sweep_rounded, // 💡 總裁細節：用「輕輕掃去」的圖示，比生硬的垃圾桶更符合 Echo 消散的詩意！
         );
       }
     } catch (e) {
@@ -2635,11 +2595,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                             color: Colors.white70,
                           ),
                         ),
-                        errorWidget: (_, __, ___) => const Icon(
-                          Icons.broken_image_outlined,
-                          size: 54,
-                          color: Colors.white54,
-                        ),
+                        errorWidget: (_, __, ___) => const SizedBox.shrink(),
                       ),
                     ),
                   ),
@@ -2817,13 +2773,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
           ) {
         return const ColoredBox(
           color: Colors.black,
-          child: Center(
-            child: Icon(
-              Icons.broken_image_outlined,
-              size: 80,
-              color: Colors.grey,
-            ),
-          ),
         );
       },
     );
@@ -3182,15 +3131,12 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                     ),
                     tabs: [
                       Tab(
-                        icon: const Icon(Icons.person_outline_rounded, size: 23),
                         text: l10n.tab_private_profile,
                       ),
                       Tab(
-                        icon: const Icon(Icons.auto_stories_outlined, size: 23),
                         text: l10n.characterProfileCharacterIntro,
                       ),
                       Tab(
-                        icon: const Icon(Icons.public_rounded, size: 23),
                         text: l10n.tab_time_echoes,
                       ),
                     ],
@@ -3606,12 +3552,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
               Row(
                 children: [
                   if (widget.character.birthday.isNotEmpty) ...[
-                    Icon(
-                      Icons.calendar_month_outlined,
-                      size: 17,
-                      color: textColor.withValues(alpha: 0.38),
-                    ),
-                    const SizedBox(width: 6),
                     Text(
                       '${l10n.charBirthdayLabel}  ${widget.character.birthday}',
                       style: GoogleFonts.notoSerifTc(
@@ -3631,12 +3571,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                     const SizedBox(width: 14),
                   ],
                   if (widget.character.height.isNotEmpty) ...[
-                    Icon(
-                      Icons.straighten_rounded,
-                      size: 17,
-                      color: textColor.withValues(alpha: 0.38),
-                    ),
-                    const SizedBox(width: 6),
                     Flexible(
                       child: Text(
                         '${l10n.charHeightLabel}  ${widget.character.height}',
@@ -3672,7 +3606,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                     if (displayLikes.isNotEmpty)
                       _buildLiteraryPreferenceLine(
                         theme: theme,
-                        icon: Icons.favorite_border_rounded,
                         titleAndContent: l10n.char_likes(displayLikes),
                         accent: theme.colorScheme.primary,
                       ),
@@ -3687,7 +3620,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                     if (displayDislikes.isNotEmpty)
                       _buildLiteraryPreferenceLine(
                         theme: theme,
-                        icon: Icons.heart_broken_outlined,
                         titleAndContent: l10n.char_dislikes(displayDislikes),
                         accent: textColor.withValues(alpha: 0.58),
                       ),
@@ -3706,11 +3638,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                   fit: BoxFit.contain,
                   color: theme.colorScheme.primary.withValues(alpha: 0.68),
                   colorBlendMode: BlendMode.srcIn,
-                  errorBuilder: (_, __, ___) => Icon(
-                    Icons.auto_stories_outlined,
-                    color: theme.colorScheme.primary,
-                    size: 24,
-                  ),
+                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -3774,27 +3702,12 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
 
   Widget _buildLiteraryPreferenceLine({
     required ThemeData theme,
-    required IconData icon,
     required String titleAndContent,
     required Color accent,
   }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          width: 34,
-          height: 34,
-          decoration: BoxDecoration(
-            color: accent.withValues(alpha: 0.08),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            icon,
-            size: 18,
-            color: accent,
-          ),
-        ),
-        const SizedBox(width: 10),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.only(top: 5),
@@ -4103,7 +4016,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                   ToastUtils.showCenterToast(
                     context,
                     l10n.lore_edit_success,
-                    customIcon: Icons.task_alt_rounded,
                   );
                   Navigator.of(context).pop();
                 } catch (e) {
@@ -4477,7 +4389,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                         : () => ToastUtils.showCenterToast(
                       context,
                       l10n.lore_not_open_msg,
-                      customIcon: Icons.lock_outline_rounded,
                     ),
                   ),
                 );
@@ -4621,21 +4532,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Container(
-                                  width: 48,
-                                  height: 48,
-                                  decoration: BoxDecoration(
-                                    color:
-                                    pageTheme.colorScheme.primaryContainer,
-                                    borderRadius: BorderRadius.circular(14),
-                                  ),
-                                  child: Icon(
-                                    Icons.mail_outline_rounded,
-                                    color: pageTheme
-                                        .colorScheme.onPrimaryContainer,
-                                  ),
-                                ),
-                                const SizedBox(width: 14),
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
@@ -4702,9 +4598,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
       child: Center(
         child: Column(
           children: [
-            Icon(Icons.mail_outline,
-                size: 60, color: Colors.grey.withValues(alpha: 0.5)),
-            SizedBox(height: 16),
             Text(
                 _isCreator
                     ? l10n.lore_write_first(_pronoun)
@@ -5472,8 +5365,6 @@ class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
                           ToastUtils.showCenterToast(
                             context,
                             l10n.gallery_reset_bg,
-                            customIcon: Icons
-                                .refresh_rounded, // 💡 用「重置/刷新」圖示，與「重置背景」的語意完美對應
                           );
                         } else {
                           // ✨ 情況 B：玩家按了「還沒選中」的照片 ➡️ 執行設定！
@@ -5546,7 +5437,6 @@ class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
               // 萬一網址掛掉顯示的錯誤圖
               errorWidget: (context, url, error) => Container(
                 color: Colors.grey.shade300,
-                child: const Icon(Icons.broken_image, color: Colors.grey),
               ),
             ),
 
@@ -5590,7 +5480,6 @@ class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
     ToastUtils.showCenterToast(
       context,
       l10n.gallery_unlocked_msg(desc),
-      customIcon: Icons.lock_open_rounded, // 💡 用「解鎖」的圖示，呼應解鎖成功的情境，絕妙！
     );
   }
 
@@ -5601,7 +5490,6 @@ class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
     ToastUtils.showCenterToast(
       context,
       l10n.gallery_lock_msg(req.toString()),
-      customIcon: Icons.lock_outline_rounded, // 💡 使用相同的鎖頭圖示，與系統的「鎖定」狀態語彙完全一致
     );
   }
 

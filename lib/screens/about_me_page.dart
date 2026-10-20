@@ -98,12 +98,9 @@ class _AboutMePageState extends State<AboutMePage> {
       try {
         await _memoriesCollection.doc(memoryId).delete();
         if (mounted) {
-          // ✨ 總裁級：刪除回憶的儀式感，用輕柔的圖示，讓那片葉子飄得更有質感！
           ToastUtils.showCenterToast(
             context,
             l10n.memory_erased_msg + ' 🍃',
-            customIcon: Icons.auto_delete_rounded, // 💡 總裁精選：自動刪除圖示，簡潔俐落
-            // 💡 總裁秘技：搭配你原本的 '🍃' 文字，這種圖示+文字的雙重慰藉，效果絕佳！
           );
         }
       } catch (e) {
@@ -157,12 +154,9 @@ class _AboutMePageState extends State<AboutMePage> {
       try {
         await _memoriesCollection.doc(memory.id).update({'text': newText.trim()});
         if (mounted) {
-          // ✨ 總裁級：記憶重塑的閃耀瞬間，讓星星符號在畫面中央綻放光芒！
           ToastUtils.showCenterToast(
             context,
             l10n.memory_re_recorded_msg + ' ✨',
-            customIcon: Icons.auto_awesome_rounded, // 💡 總裁精選：完美的「閃耀/魔法」圖示，與你的 ✨ 完美雙重呼應！
-            // 💡 總裁秘技：Duration 已經封裝在 ToastUtils 裡，不用再手動設定，代碼更乾淨！
           );
         }
       } catch (e) {
@@ -317,12 +311,6 @@ class _AboutMePageState extends State<AboutMePage> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          Icons.menu_book_rounded,
-                          size: 64,
-                          color: primary.withValues(alpha: 0.22),
-                        ),
-                        const SizedBox(height: 18),
                         Text(
                           l10n.empty_notebook_msg,
                           textAlign: TextAlign.center,
@@ -473,12 +461,6 @@ class _AboutMePageState extends State<AboutMePage> {
 
                 Row(
                   children: [
-                    Icon(
-                      Icons.schedule_rounded,
-                      size: 14,
-                      color: onSurface.withValues(alpha: 0.34),
-                    ),
-                    const SizedBox(width: 5),
                     Text(
                       DateFormat('HH:mm').format(memory.timestamp),
                       style: GoogleFonts.notoSerifTc(
@@ -493,14 +475,14 @@ class _AboutMePageState extends State<AboutMePage> {
                           ? l10n.remove_special_focus
                           : l10n.mark_special_focus,
                       onPressed: () => _toggleFavoriteStatus(memory),
-                      icon: Icon(
-                        memory.isFavorite
-                            ? Icons.favorite_rounded
-                            : Icons.favorite_border_rounded,
+                      icon: Image.asset(
+                        'assets/images/chat/chat_pin_bookmark.png',
+                        width: 21,
+                        height: 21,
                         color: memory.isFavorite
                             ? primary
                             : onSurface.withValues(alpha: 0.34),
-                        size: 21,
+                        colorBlendMode: BlendMode.srcIn,
                       ),
                       padding: const EdgeInsets.all(5),
                       constraints: const BoxConstraints(),
@@ -511,10 +493,12 @@ class _AboutMePageState extends State<AboutMePage> {
                     IconButton(
                       tooltip: l10n.edit_btn,
                       onPressed: () => _editMemory(memory),
-                      icon: Icon(
-                        Icons.edit_outlined,
+                      icon: Image.asset(
+                        'assets/images/profile/profile_quill_mask.png',
+                        width: 20,
+                        height: 20,
                         color: onSurface.withValues(alpha: 0.38),
-                        size: 20,
+                        colorBlendMode: BlendMode.srcIn,
                       ),
                       padding: const EdgeInsets.all(5),
                       constraints: const BoxConstraints(),
@@ -525,10 +509,12 @@ class _AboutMePageState extends State<AboutMePage> {
                     IconButton(
                       tooltip: l10n.delete_btn,
                       onPressed: () => _deleteMemory(memory.id),
-                      icon: Icon(
-                        Icons.delete_outline_rounded,
+                      icon: Image.asset(
+                        'assets/images/chat/chat_msg_delete_mask.png',
+                        width: 20,
+                        height: 20,
                         color: Colors.redAccent.withValues(alpha: 0.70),
-                        size: 20,
+                        colorBlendMode: BlendMode.srcIn,
                       ),
                       padding: const EdgeInsets.all(5),
                       constraints: const BoxConstraints(),
@@ -543,5 +529,4 @@ class _AboutMePageState extends State<AboutMePage> {
       ),
     );
   }
-
 }

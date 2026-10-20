@@ -10,6 +10,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/image_utils.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
@@ -127,56 +128,89 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
   Future<void> _loadPlayerProfile() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
+    final uid = user.uid;
     final l10n = AppLocalizations.of(context)!;
 
     String name = _resolvedPlayerName;
     String avatarPath = user.photoURL?.trim() ?? '';
 
+    // 與 ProfilePage 使用相同的「帳號專屬」本機快取：
+    // 先顯示玩家自己的頭像，再由 Firestore 的最新資料覆蓋。
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (!mounted || FirebaseAuth.instance.currentUser?.uid != uid) return;
+
+      final cachedName =
+          prefs.getString('playerProfile_${uid}_nickname')?.trim() ?? '';
+      final cachedAvatar =
+          prefs.getString('playerProfile_${uid}_avatarPath')?.trim() ?? '';
+      if (cachedName.isNotEmpty) name = cachedName;
+      if (cachedAvatar.isNotEmpty) avatarPath = cachedAvatar;
+
+      if (avatarPath.isNotEmpty) {
+        setState(() {
+          _resolvedPlayerName = name;
+          _playerAvatarPath = avatarPath;
+        });
+      }
+    } catch (error) {
+      debugPrint('⚠️ 紀念書讀取玩家頭像快取失敗：$error');
+    }
+
+    // Firestore 與個人主頁使用同一份 users/{uid}.avatarPath。
     try {
       final doc = await FirebaseFirestore.instance
           .collection('users')
-          .doc(user.uid)
+          .doc(uid)
           .get();
+      if (!mounted || FirebaseAuth.instance.currentUser?.uid != uid) return;
 
       final data = doc.data();
-
       if (data != null) {
         final nickname = data['nickname']?.toString().trim() ?? '';
         final savedAvatar = data['avatarPath']?.toString().trim() ?? '';
-
-        if (nickname.isNotEmpty) {
-          name = nickname;
-        }
-
-        if (savedAvatar.isNotEmpty) {
-          avatarPath = savedAvatar;
-        }
+        if (nickname.isNotEmpty) name = nickname;
+        if (savedAvatar.isNotEmpty) avatarPath = savedAvatar;
       }
-    } catch (_) {
-      // 雲端暫時讀不到時保留目前資料，不中斷閱讀。
+    } catch (error) {
+      // 離線或暫時讀取失敗時，使用同帳號快取，不退回系統預設頭像。
+      debugPrint('⚠️ 紀念書讀取玩家頭像 Firestore 資料失敗：$error');
     }
 
-    if (!mounted) return;
-
-    if (name.trim().isEmpty) {
-      name = l10n.chat_book_player;
-    }
-
+    if (!mounted || FirebaseAuth.instance.currentUser?.uid != uid) return;
+    if (name.trim().isEmpty) name = l10n.chat_book_player;
     if (avatarPath.trim().isEmpty) {
       avatarPath = 'assets/images/avatar1.png';
     }
 
+    // 圖片確實無法解碼時，才依序嘗試 Firebase Auth 頭像和預設頭像。
+    // 避免無效網址讓紀念書一直卡在圖片載入失敗的狀態。
+    Future<bool> canLoad(String path) async {
+      try {
+        await precacheImage(getAvatarImageProvider(path), context);
+        return true;
+      } catch (error) {
+        debugPrint('⚠️ 紀念書玩家頭像圖片載入失敗：$error');
+        return false;
+      }
+    }
+
+    if (!await canLoad(avatarPath)) {
+      final authAvatar = user.photoURL?.trim() ?? '';
+      if (authAvatar.isNotEmpty &&
+          authAvatar != avatarPath &&
+          await canLoad(authAvatar)) {
+        avatarPath = authAvatar;
+      } else {
+        avatarPath = 'assets/images/avatar1.png';
+      }
+    }
+
+    if (!mounted || FirebaseAuth.instance.currentUser?.uid != uid) return;
     setState(() {
       _resolvedPlayerName = name;
       _playerAvatarPath = avatarPath;
     });
-
-    try {
-      await precacheImage(
-        getAvatarImageProvider(_playerAvatarPath),
-        context,
-      );
-    } catch (_) {}
 
     try {
       await precacheImage(
@@ -1051,12 +1085,6 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
-                        Icons.photo_library_outlined,
-                        size: 15,
-                        color: primary,
-                      ),
-                      const SizedBox(width: 5),
                       Text(
                         l10n.chat_book_change_cover,
                         style: GoogleFonts.notoSerifTc(
@@ -1490,11 +1518,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
           errorBuilder: (_, __, ___) => Container(
             color: primary.withValues(alpha: 0.07),
             alignment: Alignment.center,
-            child: Icon(
-              Icons.person_outline_rounded,
-              size: 16,
-              color: primary.withValues(alpha: 0.55),
-            ),
+
           ),
         ),
       ),

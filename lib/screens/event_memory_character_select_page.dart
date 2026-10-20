@@ -326,7 +326,6 @@ class _EventMemoryCharacterSelectPageState
                       _SectionHeader(
                         title: '我的角色',
                         count: _myCharacters.length,
-                        icon: Icons.auto_awesome_rounded,
                         visual: visual,
                       ),
                       _CharacterGrid(
@@ -342,7 +341,6 @@ class _EventMemoryCharacterSelectPageState
                       _SectionHeader(
                         title: '好友角色',
                         count: _friendCharacters.length,
-                        icon: Icons.favorite_border_rounded,
                         visual: visual,
                       ),
                       _CharacterGrid(
@@ -364,12 +362,6 @@ class _EventMemoryCharacterSelectPageState
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(
-                                  Icons.people_outline_rounded,
-                                  size: 48,
-                                  color: accent.withValues(alpha: 0.45),
-                                ),
-                                const SizedBox(height: 12),
                                 Text(
                                   appL10n.event_memory_character_center_message_current_character_select,
                                   style: GoogleFonts.notoSerifTc(
@@ -502,13 +494,11 @@ class _SelectableMemoryCharacter {
 class _SectionHeader extends StatelessWidget {
   final String title;
   final int count;
-  final IconData icon;
   final _CharacterSelectVisual visual;
 
   const _SectionHeader({
     required this.title,
     required this.count,
-    required this.icon,
     this.visual = const _CharacterSelectVisual(),
   });
 
@@ -520,8 +510,6 @@ class _SectionHeader extends StatelessWidget {
       sliver: SliverToBoxAdapter(
         child: Row(
           children: [
-            Icon(icon, size: 19, color: visual.accent),
-            const SizedBox(width: 7),
             Text(
               title,
               style: GoogleFonts.notoSerifTc(
@@ -756,14 +744,6 @@ class _Avatar extends StatelessWidget {
           fit: BoxFit.cover,
         ),
       ),
-      alignment: Alignment.center,
-      child: provider == null
-          ? Icon(
-        Icons.person_rounded,
-        size: size * 0.43,
-        color: accent,
-      )
-          : null,
     );
   }
 }
@@ -785,8 +765,6 @@ class _ErrorState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline_rounded, size: 42),
-            const SizedBox(height: 10),
             Text(
               message,
               textAlign: TextAlign.center,

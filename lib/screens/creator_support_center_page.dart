@@ -313,7 +313,20 @@ Widget build(BuildContext context) => Scaffold(
           ),
          ),
          const SizedBox(width: 8),
-         IconButton(tooltip:'附加截圖（最多 3 張）',onPressed:busy||pickedImages.length>=3?null:pickReplyImages,icon:const Icon(Icons.add_photo_alternate_outlined)),
+         IconButton(
+          tooltip: '附加截圖（最多 3 張）',
+          onPressed: busy || pickedImages.length >= 3 ? null : pickReplyImages,
+          icon: Image.asset(
+           'assets/images/chat/chat_tool_photo_mask.png',
+           width: 24,
+           height: 24,
+           fit: BoxFit.contain,
+           color: busy || pickedImages.length >= 3
+               ? Theme.of(context).disabledColor
+               : Theme.of(context).colorScheme.primary,
+           colorBlendMode: BlendMode.srcIn,
+          ),
+         ),
          FilledButton(
           onPressed: busy ? null : send,
           child: const Text('送出'),
@@ -385,3 +398,4 @@ class _SupportEditMessageDialogState extends State<_SupportEditMessageDialog> {
   ],
  );
 }
+

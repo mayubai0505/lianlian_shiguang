@@ -378,7 +378,6 @@ class _DesktopWidgetSettingsPageState
       ToastUtils.showCenterToast(
         context,
         appL10n.widget_settings_size_label_message_send,
-        customIcon: Icons.add_to_home_screen_rounded,
       );
     } catch (error, stackTrace) {
       debugPrint(
@@ -475,7 +474,6 @@ class _DesktopWidgetSettingsPageState
     ToastUtils.showCenterToast(
       context,
       appL10n.widget_settings_delete_saved_widget_message_delete_settings_small,
-      customIcon: Icons.delete_outline_rounded,
     );
   }
 
@@ -636,17 +634,11 @@ class _DesktopWidgetSettingsPageState
                                     Container(
                                       color: theme.colorScheme
                                           .secondaryContainer,
-                                      child: const Icon(
-                                        Icons.person_rounded,
-                                      ),
                                     ),
                               )
                                   : Container(
                                 color: theme.colorScheme
                                     .secondaryContainer,
-                                child: const Icon(
-                                  Icons.person_rounded,
-                                ),
                               ),
                             ),
                             Expanded(
@@ -790,12 +782,6 @@ class _DesktopWidgetSettingsPageState
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(
-                        Icons.info_outline_rounded,
-                        size: 20,
-                        color: primary.withValues(alpha: 0.75),
-                      ),
-                      const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           appL10n.widget_settings_message_character_photo_content_select_small,
@@ -1800,12 +1786,6 @@ class _DesktopWidgetSetupStartPageState
   Widget _imageFallback(ThemeData theme) {
     return Container(
       color: theme.colorScheme.secondaryContainer,
-      alignment: Alignment.center,
-      child: Icon(
-        Icons.person_rounded,
-        size: 52,
-        color: theme.colorScheme.onSecondaryContainer,
-      ),
     );
   }
 }
@@ -2027,13 +2007,6 @@ class _DesktopWidgetPhotoSelectionPageState
                                     Container(
                                       color: theme.colorScheme
                                           .secondaryContainer,
-                                      alignment: Alignment.center,
-                                      child: Icon(
-                                        Icons.person_rounded,
-                                        size: 52,
-                                        color: theme.colorScheme
-                                            .onSecondaryContainer,
-                                      ),
                                     ),
                               ),
                               Align(
@@ -2430,11 +2403,6 @@ class _DesktopWidgetDisplaySettingsPageState
                     padding: const EdgeInsets.fromLTRB(20, 2, 20, 14),
                     child: Row(
                       children: [
-                        Icon(
-                          Icons.event_note_rounded,
-                          color: primary,
-                        ),
-                        const SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             appL10n.widget_settings_pick_custom_memo_event_message_player_select,
@@ -2502,19 +2470,6 @@ class _DesktopWidgetDisplaySettingsPageState
                               const EdgeInsets.fromLTRB(15, 13, 13, 13),
                               child: Row(
                                 children: [
-                                  Container(
-                                    width: 46,
-                                    height: 46,
-                                    decoration: BoxDecoration(
-                                      color: primary.withValues(alpha: 0.10),
-                                      borderRadius: BorderRadius.circular(14),
-                                    ),
-                                    child: Icon(
-                                      Icons.notifications_none_rounded,
-                                      color: primary,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
@@ -2899,12 +2854,6 @@ class _DesktopWidgetDisplaySettingsPageState
                 ),
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.calendar_month_rounded,
-                      color: primary,
-                      size: 22,
-                    ),
-                    const SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         '${_selectedMemoDate!.year}/${_selectedMemoDate!.month.toString().padLeft(2, '0')}/${_selectedMemoDate!.day.toString().padLeft(2, '0')}',
@@ -3650,12 +3599,6 @@ class _DesktopWidgetPreviewPageState
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.open_with_rounded,
-                          size: 16,
-                          color: theme.colorScheme.primary,
-                        ),
-                        const SizedBox(width: 6),
                         Text(
                           '位置：${(tempFocusX * 100).round()}% / ${(tempFocusY * 100).round()}%　'
                               '縮放：${tempScale.toStringAsFixed(1)}×',

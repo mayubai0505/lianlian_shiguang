@@ -14,6 +14,22 @@ import '../models/comment_model.dart';
 import '../utils/image_utils.dart'; // 為了 getAvatarImageProvider
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+import '../widgets/user_avatar_with_frame.dart';import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:typed_data';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../services/toast_utils.dart';
+import 'character_model.dart';
+// ⚠️ 總裁請注意：這裡的 import 請替換成您實際的檔案路徑
+import '../models/moment_model.dart';
+import '../models/comment_model.dart';
+import '../utils/image_utils.dart'; // 為了 getAvatarImageProvider
+import '../services/app_constants.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import '../widgets/user_avatar_with_frame.dart';
 
 //留言功能
@@ -1017,11 +1033,15 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                   IconButton(
                     tooltip: '加入照片',
                     onPressed: _isPostingComment ? null : _pickCommentImage,
-                    icon: Icon(
-                      Icons.image_outlined,
+                    icon: Image.asset(
+                      'assets/images/chat/chat_tool_photo_mask.png',
+                      width: 24,
+                      height: 24,
+                      fit: BoxFit.contain,
                       color: _selectedCommentImageBytes != null
                           ? Theme.of(context).colorScheme.primary
                           : Theme.of(context).colorScheme.onSurfaceVariant,
+                      colorBlendMode: BlendMode.srcIn,
                     ),
                   ),
                   const SizedBox(width: 2),
@@ -1044,11 +1064,15 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                     ),
                   ),
                   IconButton(
-                    icon: Icon(
-                      Icons.send,
+                    icon: Image.asset(
+                      'assets/images/chat/chat_send_plane_mask.png',
+                      width: 24,
+                      height: 24,
+                      fit: BoxFit.contain,
                       color: _isPostingComment
                           ? Colors.grey
                           : Theme.of(context).colorScheme.primary,
+                      colorBlendMode: BlendMode.srcIn,
                     ),
                     onPressed: _isPostingComment ? null : _postComment,
                   ),

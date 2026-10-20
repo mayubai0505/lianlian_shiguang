@@ -231,12 +231,12 @@ class _WelcomeGuidePageState extends State<WelcomeGuidePage> {
 }
 
 class _GuidePageLayout extends StatelessWidget {
-  final Widget illustration;
+  final Widget? illustration;
   final String title;
   final Widget content;
 
   const _GuidePageLayout({
-    required this.illustration,
+    this.illustration,
     required this.title,
     required this.content,
   });
@@ -255,12 +255,14 @@ class _GuidePageLayout extends StatelessWidget {
       ),
       child: Column(
         children: [
-          SizedBox(
-            width: 118,
-            height: 118,
-            child: Center(child: illustration),
-          ),
-          const SizedBox(height: 24),
+          if (illustration != null) ...[
+            SizedBox(
+              width: 118,
+              height: 118,
+              child: Center(child: illustration!),
+            ),
+            const SizedBox(height: 24),
+          ],
           Text(
             title,
             textAlign: TextAlign.center,
@@ -319,19 +321,6 @@ class _ChatModePage extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return _GuidePageLayout(
-      illustration: Container(
-        width: 96,
-        height: 96,
-        decoration: BoxDecoration(
-          color: colorScheme.primary.withValues(alpha: 0.08),
-          shape: BoxShape.circle,
-        ),
-        child: Icon(
-          Icons.chat_bubble_outline_rounded,
-          size: 42,
-          color: colorScheme.primary,
-        ),
-      ),
       title: l10n.welcome_guide_chat_title,
       content: Column(
         children: [
@@ -345,9 +334,9 @@ class _ChatModePage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 22),
-           _ModeCard(
+          _ModeCard(
             iconAsset: 'assets/images/chat/chat_mode_daily_mask.png',
-            title: l10n.welcome_guide_daily_title,
+            title: l10n.chat_mode_gemini,
             description: l10n.welcome_guide_daily_description,
           ),
           const SizedBox(height: 12),
@@ -388,19 +377,6 @@ class _EncounterPage extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return _GuidePageLayout(
-      illustration: Container(
-        width: 96,
-        height: 96,
-        decoration: BoxDecoration(
-          color: colorScheme.primary.withValues(alpha: 0.08),
-          shape: BoxShape.circle,
-        ),
-        child: Icon(
-          Icons.local_florist_outlined,
-          size: 42,
-          color: colorScheme.primary,
-        ),
-      ),
       title: l10n.welcome_guide_encounter_title,
       content: Column(
         children: [

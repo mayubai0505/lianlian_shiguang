@@ -193,7 +193,6 @@ class _ChatSideMenuState extends State<ChatSideMenu> {
               if (widget.showModelSelector) ...[
                 _MenuTile(
                   asset: 'assets/images/chat/chat_menu_model_mask.png',
-                  fallbackIcon: Icons.tune_rounded,
                   label: widget.modelLabel,
                   onTap: () {
                     setState(() {
@@ -229,7 +228,6 @@ class _ChatSideMenuState extends State<ChatSideMenu> {
                           _ModeTile(
                             asset:
                             'assets/images/chat/chat_menu_model_mask.png',
-                            fallbackIcon: Icons.chat_bubble_outline_rounded,
                             label: widget.dailyLabel,
                             selected: _selectedModeId == 'gemini',
                             disabled: _switchingMode,
@@ -238,7 +236,6 @@ class _ChatSideMenuState extends State<ChatSideMenu> {
                           _ModeTile(
                             asset:
                             'assets/images/chat/chat_mode_story_mask.png',
-                            fallbackIcon: Icons.menu_book_rounded,
                             label: widget.storyLabel,
                             selected: _selectedModeId == 'story',
                             disabled: _switchingMode,
@@ -247,7 +244,6 @@ class _ChatSideMenuState extends State<ChatSideMenu> {
                           _ModeTile(
                             asset:
                             'assets/images/chat/chat_mode_immersive_mask.png',
-                            fallbackIcon: Icons.dark_mode_outlined,
                             label: widget.immersiveLabel,
                             selected: _selectedModeId == 'immersive',
                             disabled: _switchingMode,
@@ -256,7 +252,6 @@ class _ChatSideMenuState extends State<ChatSideMenu> {
                           _ModeTile(
                             asset:
                             'assets/images/chat/chat_menu_model_mask.png',
-                            fallbackIcon: Icons.favorite_border_rounded,
                             label: widget.resonanceLabel,
                             selected: _selectedModeId == 'resonance',
                             disabled: _switchingMode,
@@ -266,7 +261,6 @@ class _ChatSideMenuState extends State<ChatSideMenu> {
                           _ModeTile(
                             asset:
                             'assets/images/chat/chat_menu_call_mask.png',
-                            fallbackIcon: Icons.call_outlined,
                             label: widget.callLabel,
                             selected: false,
                             disabled: false,
@@ -282,19 +276,16 @@ class _ChatSideMenuState extends State<ChatSideMenu> {
 
               _MenuTile(
                 asset: 'assets/images/chat/chat_menu_search_mask.png',
-                fallbackIcon: Icons.search_rounded,
                 label: widget.searchLabel,
                 onTap: widget.onSearch,
               ),
               _MenuTile(
                 asset: 'assets/images/chat/chat_menu_save_mask.png',
-                fallbackIcon: Icons.download_outlined,
                 label: widget.saveTranscriptLabel,
                 onTap: widget.onSaveTranscript,
               ),
               _MenuTile(
                 asset: 'assets/images/chat/chat_menu_gallery_mask.png',
-                fallbackIcon: Icons.auto_stories_outlined,
                 label: widget.galleryLabel,
                 onTap: widget.onGallery,
               ),
@@ -303,25 +294,21 @@ class _ChatSideMenuState extends State<ChatSideMenu> {
               _SectionTitle(label: l10n.chat_side_menu_section_relationship),
               _MenuTile(
                 asset: 'assets/images/chat/chat_menu_related_mask.png',
-                fallbackIcon: Icons.person_outline_rounded,
                 label: widget.aboutMeLabel,
                 onTap: widget.onAboutMe,
               ),
               _MenuTile(
                 asset: 'assets/images/chat/chat_menu_about_us_mask.png',
-                fallbackIcon: Icons.favorite_border_rounded,
                 label: widget.aboutUsLabel,
                 onTap: widget.onAboutUs,
               ),
               _MenuTile(
                 asset: 'assets/images/chat/chat_menu_memo_mask.png',
-                fallbackIcon: Icons.note_alt_outlined,
                 label: widget.memoLabel,
                 onTap: widget.onMemo,
               ),
               _MenuTile(
                 asset: 'assets/images/chat/chat_menu_period_mask.png',
-                fallbackIcon: Icons.calendar_month_outlined,
                 label: widget.periodLabel,
                 onTap: widget.onPeriod,
               ),
@@ -331,7 +318,6 @@ class _ChatSideMenuState extends State<ChatSideMenu> {
               _MenuTile(
                 asset:
                 'assets/images/chat/chat_menu_reset_memory_mask.png',
-                fallbackIcon: Icons.restart_alt_rounded,
                 label: widget.resetLabel,
                 onTap: widget.onReset,
                 danger: true,
@@ -372,7 +358,7 @@ class _SectionTitle extends StatelessWidget {
 
 class _MenuTile extends StatelessWidget {
   final String asset;
-  final IconData fallbackIcon;
+
   final String label;
   final VoidCallback onTap;
   final bool danger;
@@ -380,7 +366,6 @@ class _MenuTile extends StatelessWidget {
 
   const _MenuTile({
     required this.asset,
-    required this.fallbackIcon,
     required this.label,
     required this.onTap,
     this.danger = false,
@@ -414,11 +399,7 @@ class _MenuTile extends StatelessWidget {
                   fit: BoxFit.contain,
                   color: color.withValues(alpha: danger ? 0.92 : 0.86),
                   colorBlendMode: BlendMode.srcIn,
-                  errorBuilder: (_, __, ___) => Icon(
-                    fallbackIcon,
-                    size: 25,
-                    color: color.withValues(alpha: danger ? 0.92 : 0.80),
-                  ),
+                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                 ),
               ),
             ),
@@ -452,7 +433,7 @@ class _MenuTile extends StatelessWidget {
 
 class _ModeTile extends StatelessWidget {
   final String asset;
-  final IconData fallbackIcon;
+
   final String label;
   final bool selected;
   final bool disabled;
@@ -460,7 +441,6 @@ class _ModeTile extends StatelessWidget {
 
   const _ModeTile({
     required this.asset,
-    required this.fallbackIcon,
     required this.label,
     required this.selected,
     required this.disabled,
@@ -502,17 +482,7 @@ class _ModeTile extends StatelessWidget {
                     : 0.74,
               ),
               colorBlendMode: BlendMode.srcIn,
-              errorBuilder: (_, __, ___) => Icon(
-                fallbackIcon,
-                size: 22,
-                color: primary.withValues(
-                  alpha: disabled
-                      ? 0.38
-                      : selected
-                      ? 0.95
-                      : 0.72,
-                ),
-              ),
+              errorBuilder: (_, __, ___) => const SizedBox.shrink(),
             ),
             const SizedBox(width: 11),
             Expanded(

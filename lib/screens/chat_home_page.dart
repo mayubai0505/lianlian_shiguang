@@ -17,7 +17,6 @@ import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:showcaseview/showcaseview.dart'; // 🌟 記得加這行
 import 'package:shared_preferences/shared_preferences.dart';
-import '../services/reminder_notification_service.dart';
 //聊天室的名稱更改
 class ChatHomePage extends StatefulWidget {
   const ChatHomePage({super.key});
@@ -294,13 +293,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: Row(
-            children: [
-              const Icon(Icons.edit_note, color: Colors.blueGrey),
-              const SizedBox(width: 8),
-              Text(l10n.rename_chat_title),
-            ],
-          ),
+          title: Text(l10n.rename_chat_title),
           content: TextField(
             controller: nameController,
             autofocus: true,
@@ -343,7 +336,6 @@ class _ChatHomePageState extends State<ChatHomePage> {
           ToastUtils.showCenterToast(
             context,
             l10n.room_name_updated,
-            customIcon: Icons.drive_file_rename_outline_rounded, // 💡 總裁精選：對應「修改名稱」的畫筆圖示
           );
         }
       } catch (e) {
@@ -403,7 +395,6 @@ class _ChatHomePageState extends State<ChatHomePage> {
       ToastUtils.showCenterToast(
         context,
         l10n.delete_success,
-        customIcon: Icons.delete_outline_rounded,
       );
     } catch (e) {
       if (!mounted) return;

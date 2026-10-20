@@ -552,7 +552,6 @@ class _EventItemCardState extends State<_EventItemCard> {
       ToastUtils.showCenterToast(
         context,
         appL10n.event_memory_collection_confirm_delete_owned_item_message_delete_variant_c,
-        customIcon: Icons.delete_outline_rounded,
       );
     } on FirebaseFunctionsException catch (e) {
       debugPrint(
@@ -1050,7 +1049,6 @@ class _EventMemoryCollectionDetailPageState
       ToastUtils.showCenterToast(
         context,
         appL10n.event_memory_collection_save_to_gallery_message_save,
-        customIcon: Icons.photo_library_rounded,
       );
     } on GalException catch (e) {
       debugPrint('❌ 收藏回憶儲存失敗：${e.type}');
@@ -1113,7 +1111,6 @@ class _EventMemoryCollectionDetailPageState
       ToastUtils.showCenterToast(
         context,
         '已取消收藏',
-        customIcon: Icons.bookmark_remove_rounded,
       );
       Navigator.of(context).pop();
     } catch (e) {
@@ -1671,22 +1668,12 @@ class _CollectedMemoryReplayPageState extends State<_CollectedMemoryReplayPage>
                             const SizedBox(height: 8),
                           ],
                           if (scene.type == 'ending') ...[
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.auto_awesome_rounded,
-                                  color: Colors.white70,
-                                  size: 16,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  '回憶',
-                                  style: GoogleFonts.notoSerifTc(
-                                    color: Colors.white70,
-                                    fontSize: 11,
-                                  ),
-                                ),
-                              ],
+                            Text(
+                              '回憶',
+                              style: GoogleFonts.notoSerifTc(
+                                color: Colors.white70,
+                                fontSize: 11,
+                              ),
                             ),
                             const SizedBox(height: 8),
                           ],

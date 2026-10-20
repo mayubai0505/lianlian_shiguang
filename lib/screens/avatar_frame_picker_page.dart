@@ -74,7 +74,6 @@ class _AvatarFramePickerPageState extends State<AvatarFramePickerPage> {
       ToastUtils.showCenterToast(
         context,
         appL10n.avatar_frame_equipped_message(frame.name),
-        customIcon: Icons.check_circle_rounded,
       );
       Navigator.of(context).pop(true);
     } catch (e) {
@@ -106,7 +105,6 @@ class _AvatarFramePickerPageState extends State<AvatarFramePickerPage> {
       ToastUtils.showCenterToast(
         context,
         appL10n.avatar_frame_unequip_frame_snackbar,
-        customIcon: Icons.person_outline_rounded,
       );
       Navigator.of(context).pop(true);
     } catch (e) {

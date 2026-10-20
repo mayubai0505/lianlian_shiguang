@@ -643,12 +643,10 @@ class _MomentCardState extends State<MomentCard> {
 
                                   if (mounted) {
                                     ToastUtils.showCenterToast(
-                                      this.context,
-                                      l10n.moment_forward_success(
-                                        char.name,
-                                      ),
-                                      customIcon:
-                                      Icons.send_rounded,
+                                        this.context,
+                                        l10n.moment_forward_success(
+                                          char.name,
+                                        )
                                     );
                                   }
 
@@ -859,7 +857,6 @@ class _MomentCardState extends State<MomentCard> {
   Future<void> _showMoreOptions() async {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final primary = theme.colorScheme.primary;
     final onSurface = theme.colorScheme.onSurface;
 
     await showModalBottomSheet(
@@ -873,33 +870,14 @@ class _MomentCardState extends State<MomentCard> {
       ),
       builder: (context) {
         Widget actionTile({
-          required IconData icon,
           required String title,
           required VoidCallback onTap,
           bool destructive = false,
         }) {
-          final color = destructive
-              ? theme.colorScheme.error
-              : primary.withValues(alpha: 0.82);
-
           return ListTile(
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 24,
               vertical: 2,
-            ),
-            leading: Container(
-              width: 36,
-              height: 36,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.075),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                icon,
-                size: 20,
-                color: color,
-              ),
             ),
             title: Text(
               title,
@@ -923,7 +901,6 @@ class _MomentCardState extends State<MomentCard> {
               children: [
                 if (widget.moment.createdBy == widget.currentUserId) ...[
                   actionTile(
-                    icon: Icons.edit_note_rounded,
                     title: l10n.moment_edit_title,
                     onTap: () {
                       Navigator.pop(context);
@@ -931,7 +908,6 @@ class _MomentCardState extends State<MomentCard> {
                     },
                   ),
                   actionTile(
-                    icon: Icons.delete_outline_rounded,
                     title: l10n.moment_action_delete,
                     destructive: true,
                     onTap: () {
@@ -941,7 +917,6 @@ class _MomentCardState extends State<MomentCard> {
                   ),
                 ] else ...[
                   actionTile(
-                    icon: Icons.flag_outlined,
                     title: l10n.moment_action_report,
                     onTap: () {
                       Navigator.pop(context);
@@ -949,7 +924,6 @@ class _MomentCardState extends State<MomentCard> {
                     },
                   ),
                   actionTile(
-                    icon: Icons.visibility_off_outlined,
                     title: l10n.hide_moment_title,
                     onTap: () {
                       Navigator.pop(context);
@@ -957,7 +931,6 @@ class _MomentCardState extends State<MomentCard> {
                     },
                   ),
                   actionTile(
-                    icon: Icons.block_rounded,
                     title: l10n.block_char,
                     destructive: true,
                     onTap: () {
@@ -1081,12 +1054,13 @@ class _MomentCardState extends State<MomentCard> {
 
               // 第一個按鈕：App 內轉發 / 私訊
               ListTile(
-                leading: Icon(
-                  Icons.send_outlined,
-                  color: Theme.of(context)
-                      .colorScheme
-                      .primary
-                      .withValues(alpha: 0.82),
+                leading: Image.asset(
+                  'assets/images/chat/chat_send_plane_mask.png',
+                  width: 24,
+                  height: 24,
+                  fit: BoxFit.contain,
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.82),
+                  colorBlendMode: BlendMode.srcIn,
                 ),
                 title: Text(
                   l10n.moment_forward_hint,
@@ -1453,10 +1427,7 @@ class _MomentCardState extends State<MomentCard> {
                           height: 200,
                           alignment: Alignment.center,
                           color: onSurface.withValues(alpha: 0.025),
-                          child: Icon(
-                            Icons.broken_image_outlined,
-                            color: onSurface.withValues(alpha: 0.28),
-                          ),
+                          child: const SizedBox.shrink(),
                         );
                       },
                     ),
@@ -1475,12 +1446,13 @@ class _MomentCardState extends State<MomentCard> {
                         description: l10n.tip_post_like,
                         child: IconButton(
                           visualDensity: VisualDensity.compact,
-                          icon: Icon(
-                            _isLiked
-                                ? Icons.eco_rounded
-                                : Icons.eco_outlined,
-                            size: 21,
+                          icon: Image.asset(
+                            'assets/images/chat/chat_gift_flower.png',
+                            width: 21,
+                            height: 21,
+                            fit: BoxFit.contain,
                             color: _isLiked ? primary : actionColor,
+                            colorBlendMode: BlendMode.srcIn,
                           ),
                           onPressed: () {
                             _hideTipsThenRun(
@@ -1492,12 +1464,13 @@ class _MomentCardState extends State<MomentCard> {
                     else
                       IconButton(
                         visualDensity: VisualDensity.compact,
-                        icon: Icon(
-                          _isLiked
-                              ? Icons.eco_rounded
-                              : Icons.eco_outlined,
-                          size: 21,
+                        icon: Image.asset(
+                          'assets/images/chat/chat_gift_flower.png',
+                          width: 21,
+                          height: 21,
+                          fit: BoxFit.contain,
                           color: _isLiked ? primary : actionColor,
+                          colorBlendMode: BlendMode.srcIn,
                         ),
                         onPressed: () {
                           _hideTipsThenRun(
@@ -1507,10 +1480,13 @@ class _MomentCardState extends State<MomentCard> {
                       ),
                     IconButton(
                       visualDensity: VisualDensity.compact,
-                      icon: Icon(
-                        Icons.chat_bubble_outline_rounded,
-                        size: 20,
+                      icon: Image.asset(
+                        'assets/images/chat/chat_mode_daily_mask.png',
+                        width: 20,
+                        height: 20,
+                        fit: BoxFit.contain,
                         color: actionColor,
+                        colorBlendMode: BlendMode.srcIn,
                       ),
                       onPressed: () {
                         _hideTipsThenRun(() async {
@@ -1531,10 +1507,13 @@ class _MomentCardState extends State<MomentCard> {
                     const SizedBox(width: 2),
                     IconButton(
                       visualDensity: VisualDensity.compact,
-                      icon: Icon(
-                        Icons.send_outlined,
-                        size: 21,
+                      icon: Image.asset(
+                        'assets/images/chat/chat_send_plane_mask.png',
+                        width: 21,
+                        height: 21,
+                        fit: BoxFit.contain,
                         color: actionColor,
+                        colorBlendMode: BlendMode.srcIn,
                       ),
                       onPressed: () {
                         _hideTipsThenRun(() => _onSharePressed());
@@ -1547,14 +1526,13 @@ class _MomentCardState extends State<MomentCard> {
                         description: l10n.tip_post_bookmark,
                         child: IconButton(
                           visualDensity: VisualDensity.compact,
-                          icon: Icon(
-                            _isBookmarked
-                                ? Icons.park_rounded
-                                : Icons.park_outlined,
-                            size: 22,
-                            color: _isBookmarked
-                                ? primary
-                                : actionColor,
+                          icon: Image.asset(
+                            'assets/images/chat/chat_pin_bookmark.png',
+                            width: 22,
+                            height: 22,
+                            fit: BoxFit.contain,
+                            color: _isBookmarked ? primary : actionColor,
+                            colorBlendMode: BlendMode.srcIn,
                           ),
                           onPressed: () {
                             _hideTipsThenRun(
@@ -1566,14 +1544,13 @@ class _MomentCardState extends State<MomentCard> {
                     else
                       IconButton(
                         visualDensity: VisualDensity.compact,
-                        icon: Icon(
-                          _isBookmarked
-                              ? Icons.park_rounded
-                              : Icons.park_outlined,
-                          size: 22,
-                          color: _isBookmarked
-                              ? primary
-                              : actionColor,
+                        icon: Image.asset(
+                          'assets/images/chat/chat_pin_bookmark.png',
+                          width: 22,
+                          height: 22,
+                          fit: BoxFit.contain,
+                          color: _isBookmarked ? primary : actionColor,
+                          colorBlendMode: BlendMode.srcIn,
                         ),
                         onPressed: () {
                           _hideTipsThenRun(

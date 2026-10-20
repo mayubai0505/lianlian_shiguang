@@ -542,11 +542,11 @@ class _ProfilePageState extends State<ProfilePage>
     if (data.containsKey('profileLinks') && data['profileLinks'] is List) {
       final encoded = (data['profileLinks'] as List)
           .map((item) {
-            if (item is Map) {
-              return '${(item['name'] ?? '').toString().trim()}\t${(item['url'] ?? '').toString().trim()}';
-            }
-            return '';
-          })
+        if (item is Map) {
+          return '${(item['name'] ?? '').toString().trim()}\t${(item['url'] ?? '').toString().trim()}';
+        }
+        return '';
+      })
           .where((item) => item.isNotEmpty)
           .join('\n');
       await prefs.setString(_profileCacheKey(uid, 'profileLinks'), encoded);
@@ -2220,8 +2220,13 @@ class _ProfilePageState extends State<ProfilePage>
                   Theme.of(context).scaffoldBackgroundColor,
                   forceElevated: innerBoxIsScrolled,
                   actions: [
+                    // 各按鈕使用各自的實際點擊區，不再以 Transform 平移圖示。
+                    // 原本公告圖示右移 30px、收藏右移 15px，視覺位置與
+                    // HitTest 區域錯開，容易點公告卻開啟收藏。
                     IconButton(
                       tooltip: l10n.profile_tooltip_announcement,
+                      constraints: const BoxConstraints(minWidth: 64, minHeight: 48),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -2230,42 +2235,36 @@ class _ProfilePageState extends State<ProfilePage>
                           ),
                         );
                       },
-                      icon: Transform.translate(
-                        offset: const Offset(30, -3),
-                        child: _buildTintedProfileAsset(
-                          maskAsset:
-                          'assets/images/profile/announcement_mask.png',
-                          size: 40,
-                          color: theme.colorScheme.primary,
-                          opacity: 0.62,
-                        ),
+                      icon: _buildTintedProfileAsset(
+                        maskAsset: 'assets/images/profile/announcement_mask.png',
+                        size: 36,
+                        color: theme.colorScheme.primary,
+                        opacity: 0.62,
                       ),
                     ),
                     IconButton(
                       tooltip: l10n.event_memory_collection_show_collection_intro_if_needed_message_collection,
+                      constraints: const BoxConstraints(minWidth: 64, minHeight: 48),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
                       onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) =>
-                            const EventMemoryCollectionPage(),
+                            builder: (_) => const EventMemoryCollectionPage(),
                           ),
                         );
                       },
-                      icon: Transform.translate(
-                        offset: const Offset(15, -2),
-                        child: _buildTintedProfileAsset(
-                          maskAsset:
-                          'assets/icons/icon_profile_collection.png',
-                          size: 40,
-                          color: theme.colorScheme.primary,
-                          opacity: 0.62,
-                        ),
+                      icon: _buildTintedProfileAsset(
+                        maskAsset: 'assets/icons/icon_profile_collection.png',
+                        size: 36,
+                        color: theme.colorScheme.primary,
+                        opacity: 0.62,
                       ),
                     ),
-
                     IconButton(
                       tooltip: l10n.profile_tooltip_settings,
+                      constraints: const BoxConstraints(minWidth: 56, minHeight: 48),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -2275,14 +2274,12 @@ class _ProfilePageState extends State<ProfilePage>
                         );
                       },
                       icon: _buildTintedProfileAsset(
-                        maskAsset:
-                        'assets/images/profile/top_settings_mask.png',
-                        size: 40,
+                        maskAsset: 'assets/images/profile/top_settings_mask.png',
+                        size: 36,
                         color: theme.colorScheme.primary,
                         opacity: 0.62,
                       ),
                     ),
-
                   ],
                 ),
 
@@ -2392,49 +2389,6 @@ class _ProfilePageState extends State<ProfilePage>
       debugPrint('讀取背包失敗: $e');
     }
   }
-
-  void _showProfileUtilityMenu({
-    required User? currentUser,
-  }) {
-    final l10n = AppLocalizations.of(context)!;
-    showModalBottomSheet(
-      context: context,
-      showDragHandle: true,
-      builder: (sheetContext) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (!isAppleReviewMode)
-                ListTile(
-                  leading: const Icon(Icons.card_giftcard_outlined),
-                  title: Text(l10n.profile_tooltip_backpack),
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    _openProfileBackpack(currentUser);
-                  },
-                ),
-              ListTile(
-                leading: const Icon(Icons.mail_outline_rounded),
-                title: Text(l10n.title_time_letters),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const AnnouncementListPage(),
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 8),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
 
   Color _darkenProfileIconColor(
       Color color, {
@@ -3582,7 +3536,7 @@ class _ProfilePageState extends State<ProfilePage>
             child: Padding(
               padding: const EdgeInsets.fromLTRB(18, 12, 12, 4),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   TextButton.icon(
                     onPressed: () async {
@@ -3614,7 +3568,6 @@ class _ProfilePageState extends State<ProfilePage>
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                     ),
                   ),
-                  const SizedBox(width: 2),
                   IconButton(
                     tooltip: l10n.profilePageCreateCharacter,
                     onPressed: _createCharacter,

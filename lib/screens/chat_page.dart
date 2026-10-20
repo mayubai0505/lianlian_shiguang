@@ -525,11 +525,7 @@ class _ChatPageState extends State<ChatPage> {
                     height: 28,
                     fit: BoxFit.contain,
                     errorBuilder: (context, error, stackTrace) {
-                      return const Icon(
-                        Icons.favorite_rounded,
-                        size: 24,
-                        color: Color(0xFFE87AA5),
-                      );
+                      return const SizedBox(width: 28, height: 28);
                     },
                   ),
                   const SizedBox(width: 8),
@@ -638,15 +634,7 @@ class _ChatPageState extends State<ChatPage> {
                                 error,
                                 stackTrace,
                                 ) {
-                              return Icon(
-                                isCompleted
-                                    ? Icons.favorite_rounded
-                                    : Icons.favorite_border_rounded,
-                                size: 32,
-                                color: isCompleted
-                                    ? const Color(0xFFE87AA5)
-                                    : const Color(0xFF9A8EA2),
-                              );
+                              return const SizedBox(width: 46, height: 46);
                             },
                           ),
                         ),
@@ -1301,8 +1289,6 @@ class _ChatPageState extends State<ChatPage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
-            const Icon(Icons.stars, color: Colors.pinkAccent),
-            const SizedBox(width: 8),
             Text(l10n.starlightContractTitle),
           ],
         ),
@@ -1378,9 +1364,6 @@ class _ChatPageState extends State<ChatPage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
-            const Icon(Icons.card_membership_rounded,
-                color: Colors.amber, size: 28),
-            const SizedBox(width: 8),
             Text(l10n.referral_success_title), // 🌟 換成翻譯變數
           ],
         ),
@@ -2499,11 +2482,6 @@ class _ChatPageState extends State<ChatPage> {
         ),
         title: Row(
           children: [
-            Icon(
-              Icons.local_florist_rounded,
-              color: theme.colorScheme.primary,
-            ),
-            const SizedBox(width: 8),
             Expanded(
               child: Text(appL10n.chat_text),
             ),
@@ -4473,9 +4451,6 @@ class _ChatPageState extends State<ChatPage> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.mail_outline,
-                      color: Colors.pinkAccent, size: 40),
-                  const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -4605,8 +4580,6 @@ class _ChatPageState extends State<ChatPage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
-            const Icon(Icons.volume_mute_rounded, color: Colors.orangeAccent),
-            const SizedBox(width: 8),
             Flexible(child: Text(l10n.no_voice_available)),
           ],
         ),
@@ -4658,8 +4631,6 @@ class _ChatPageState extends State<ChatPage> {
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Row(
             children: [
-              const Icon(Icons.lock_person_outlined, color: Colors.blueAccent),
-              const SizedBox(width: 8),
               // 替換：需要登入
               Text(l10n.call_login_title,
                   style: TextStyle(
@@ -5540,11 +5511,6 @@ class _ChatPageState extends State<ChatPage> {
                 ),
                 title: Row(
                   children: [
-                    const Icon(
-                      Icons.local_florist,
-                      color: Colors.pinkAccent,
-                    ),
-                    const SizedBox(width: 8),
                     Text(
                       l10n.chat_points_not_enough_title,
                       style: TextStyle(
@@ -7477,8 +7443,6 @@ class _ChatPageState extends State<ChatPage> {
       builder: (BuildContext context) => AlertDialog(
         title: Row(
           children: [
-            Icon(Icons.restart_alt_rounded, color: Colors.red),
-            SizedBox(width: 8),
             Text(l10n.chat_reset_title),
           ],
         ),
@@ -8016,11 +7980,7 @@ class _ChatPageState extends State<ChatPage> {
       height: 180,
       color: theme.colorScheme.secondaryContainer,
       alignment: Alignment.center,
-      child: Icon(
-        Icons.broken_image_outlined,
-        size: 36,
-        color: theme.colorScheme.onSecondaryContainer,
-      ),
+      child: const SizedBox.shrink(),
     );
   }
 
@@ -10098,8 +10058,6 @@ class _ChatPageState extends State<ChatPage> {
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Row(
             children: [
-              const Icon(Icons.local_florist, color: Colors.pinkAccent), // 花朵圖示
-              const SizedBox(width: 8),
               // ✨ 替換：心意不足
               Text(l10n.gift_insufficient_title,
                   style: TextStyle(
@@ -12641,13 +12599,7 @@ class _ChatPageState extends State<ChatPage> {
                     ),
                   ),
                 ),
-                errorWidget: (_, __, ___) => Center(
-                  child: Icon(
-                    Icons.broken_image_outlined,
-                    size: 34,
-                    color: onSurface.withValues(alpha: 0.36),
-                  ),
-                ),
+                errorWidget: (_, __, ___) => const SizedBox.expand(),
               ),
             );
           } else if (type == 'image') {
