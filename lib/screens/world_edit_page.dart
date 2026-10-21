@@ -534,7 +534,7 @@ class _WorldImage {
 
 class _WorldNpc {
   _WorldNpc({
-    this.id = '', this.kind = 'npc', this.name = '', this.role = '',
+    String id = '', this.kind = 'npc', this.name = '', this.role = '',
     this.gender = '', this.birthday = '', this.age = '', this.appearance = '',
     this.personality = '', this.background = '', this.speechStyle = '',
     this.relationships = '', this.avatarUrl = '', this.avatarFile,
