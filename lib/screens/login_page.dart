@@ -253,7 +253,6 @@ class _LoginPageState extends State<LoginPage> {
                       ToastUtils.showCenterToast(
                         dialogContext,
                         l10n.email_policy_open_failed(title),
-                        customIcon: Icons.link_off_rounded,
                       );
                     }
                   } finally {
@@ -273,11 +272,6 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     title: Row(
                       children: [
-                        const Icon(
-                          Icons.description_outlined,
-                          color: Color(0xFF7B1FA2),
-                        ),
-                        const SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             title,
@@ -344,16 +338,6 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           child: Row(
                             children: [
-                              Icon(
-                                hasOpenedPolicy
-                                    ? Icons
-                                    .check_circle_outline
-                                    : Icons.info_outline,
-                                color: hasOpenedPolicy
-                                    ? Colors.green
-                                    : Colors.grey,
-                              ),
-                              const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
                                   hasOpenedPolicy
@@ -500,7 +484,6 @@ class _LoginPageState extends State<LoginPage> {
         ToastUtils.showCenterToast(
           context,
           l10n.email_policy_status_check_failed,
-          customIcon: Icons.error_outline,
         );
       }
 
@@ -562,7 +545,6 @@ class _LoginPageState extends State<LoginPage> {
         ToastUtils.showCenterToast(
           context,
           l10n.auth_error_network_failed,
-          customIcon: Icons.cloud_off_rounded,
         );
       }
     } finally {
@@ -1022,12 +1004,6 @@ class _PolicyWebViewPageState extends State<_PolicyWebViewPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.error_outline_rounded,
-                      size: 58,
-                      color: theme.colorScheme.primary,
-                    ),
-                    const SizedBox(height: 18),
                     Text(
                       l10n.email_policy_page_load_failed,
                       style: const TextStyle(

@@ -279,21 +279,6 @@ class _MomentSearchPageState extends State<MomentSearchPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                width: 82,
-                height: 82,
-                decoration: BoxDecoration(
-                  color: primary.withValues(alpha: 0.045),
-                  shape: BoxShape.circle,
-                ),
-                alignment: Alignment.center,
-                child: Icon(
-                  Icons.search_rounded,
-                  size: 32,
-                  color: primary.withValues(alpha: 0.30),
-                ),
-              ),
-              const SizedBox(height: 18),
               Text(
                 l10n.moment_search_instruction,
                 textAlign: TextAlign.center,
@@ -317,12 +302,6 @@ class _MomentSearchPageState extends State<MomentSearchPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.search_off_rounded,
-                size: 42,
-                color: primary.withValues(alpha: 0.24),
-              ),
-              const SizedBox(height: 14),
               Text(
                 l10n.moment_search_no_results,
                 textAlign: TextAlign.center,

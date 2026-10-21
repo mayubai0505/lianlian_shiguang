@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import '../services/toast_utils.dart';
 import 'character_edit_page.dart';
+import 'world_edit_page.dart';
 import 'official_creator_studio_page.dart';
 import 'package:rxdart/rxdart.dart'; // 🌟 記得這個一定要有！
 import 'dart:io'; // 🌟 讀取手機本機檔案必備！
@@ -13,8 +14,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
 // 私人工作室
-class CreatorStudioPage extends StatelessWidget {
+class CreatorStudioPage extends StatefulWidget {
   const CreatorStudioPage({super.key});
+
+  @override
+  State<CreatorStudioPage> createState() => _CreatorStudioPageState();
+}
+
+class _CreatorStudioPageState extends State<CreatorStudioPage> {
+  int _selectedStudioTab = 0;
 
   // ✨ 總裁專屬：刪除草稿與清理雲端圖片的邏輯
   Future<void> _deleteDraft(BuildContext context, String docId, String? avatarUrl) async {
@@ -237,8 +245,19 @@ class CreatorStudioPage extends StatelessWidget {
                     ],
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                  child: Row(
+                    children: [
+                      Expanded(child: _studioTabButton(context, '我的角色', 0, Icons.people_outline_rounded)),
+                      const SizedBox(width: 10),
+                      Expanded(child: _studioTabButton(context, '我的開放世界', 1, Icons.public_rounded)),
+                    ],
+                  ),
+                ),
                 Expanded(
-                  child: StreamBuilder<Map<String, List<QueryDocumentSnapshot>>>(
+                  child: _selectedStudioTab == 0
+                      ? StreamBuilder<Map<String, List<QueryDocumentSnapshot>>>(
                     stream: combinedStream,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState ==
@@ -494,7 +513,8 @@ class CreatorStudioPage extends StatelessWidget {
                         ],
                       );
                     },
-                  ),
+                  )
+                      : _buildWorldStudio(context, theme, user.uid),
                 ),
               ],
             ),
@@ -503,6 +523,198 @@ class CreatorStudioPage extends StatelessWidget {
       ),
     );
   }
+  Widget _studioTabButton(BuildContext context, String label, int index, IconData icon) {
+    final selected = _selectedStudioTab == index;
+    final theme = Theme.of(context);
+    return Material(
+      color: selected ? theme.colorScheme.primary.withValues(alpha: 0.12) : theme.colorScheme.surface,
+      borderRadius: BorderRadius.circular(15),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(15),
+        onTap: () => setState(() => _selectedStudioTab = index),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: theme.colorScheme.primary.withValues(alpha: selected ? 0.48 : 0.18)),
+          ),
+          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Icon(icon, size: 17, color: theme.colorScheme.primary),
+            const SizedBox(width: 5),
+            Flexible(child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.notoSerifTc(fontSize: 14, fontWeight: selected ? FontWeight.bold : FontWeight.w500))),
+          ]),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWorldStudio(BuildContext context, ThemeData theme, String uid) {
+    // 依照 WorldEditPage 實際使用的兩個資料位置，避免與角色資料混用。
+    final worldStream = FirebaseFirestore.instance
+        .collection('artifacts')
+        .doc(const String.fromEnvironment('APP_ID', defaultValue: 'lianlianshiguang'))
+        .collection('worlds')
+        .where('createdBy', isEqualTo: uid)
+        .snapshots();
+    final draftStream = FirebaseFirestore.instance
+        .collection('draft_worlds')
+        .where('createdBy', isEqualTo: uid)
+        .snapshots();
+
+    return StreamBuilder<Map<String, List<QueryDocumentSnapshot>>>(
+      stream: Rx.combineLatest2(worldStream, draftStream,
+              (QuerySnapshot worlds, QuerySnapshot drafts) => {
+            'worlds': worlds.docs,
+            'drafts': drafts.docs,
+          }),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text('讀取開放世界失敗：${snapshot.error}'),
+          ));
+        }
+        if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+        final worlds = snapshot.data!['worlds'] ?? <QueryDocumentSnapshot>[];
+        final drafts = snapshot.data!['drafts'] ?? <QueryDocumentSnapshot>[];
+        final publicWorlds = worlds.where((d) {
+          final data = d.data() as Map<String, dynamic>;
+          return data['status'] == 'public' || data['isPublic'] == true;
+        }).toList();
+        final privateWorlds = worlds.where((d) {
+          final data = d.data() as Map<String, dynamic>;
+          return data['status'] != 'public' && data['isPublic'] != true;
+        }).toList();
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(18, 12, 18, 64),
+          children: [
+            Align(
+              alignment: Alignment.centerRight,
+              child: OutlinedButton.icon(
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => const WorldEditPage(),
+                )),
+                icon: const Icon(Icons.add_rounded),
+                label: const Text('創建開放世界'),
+              ),
+            ),
+            const SizedBox(height: 18),
+            _worldSection(context, theme, '已公開世界', '其他玩家可以探索',
+                Icons.public_rounded, publicWorlds, 'public'),
+            const SizedBox(height: 24),
+            _worldSection(context, theme, '私人世界', '只有自己可以查看與編輯',
+                Icons.lock_outline_rounded, privateWorlds, 'private'),
+            const SizedBox(height: 24),
+            _worldSection(context, theme, '世界觀草稿', '尚未建立完成的世界',
+                Icons.edit_note_rounded, drafts, 'draft'),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _worldSection(BuildContext context, ThemeData theme, String title,
+      String subtitle, IconData icon, List<QueryDocumentSnapshot> docs, String status) {
+    final primary = theme.colorScheme.primary;
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface.withValues(alpha: 0.70),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: primary.withValues(alpha: 0.17)),
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Icon(icon, size: 34, color: primary),
+          const SizedBox(width: 12),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(title, style: GoogleFonts.notoSerifTc(fontSize: 20, fontWeight: FontWeight.w600)),
+            Text(subtitle, style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurfaceVariant)),
+          ])),
+          Text('${docs.length}', style: GoogleFonts.notoSerifTc(fontSize: 17, color: primary)),
+        ]),
+        const SizedBox(height: 14),
+        if (docs.isEmpty)
+          Padding(padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Center(child: Text('目前沒有${status == 'draft' ? '草稿' : '世界觀'}',
+                  style: TextStyle(color: theme.colorScheme.onSurfaceVariant))))
+        else
+          ...docs.map((doc) => _worldCard(context, theme, doc, status)),
+      ]),
+    );
+  }
+
+  Widget _worldCard(BuildContext context, ThemeData theme,
+      QueryDocumentSnapshot doc, String status) {
+    final data = doc.data() as Map<String, dynamic>;
+    final name = (data['name'] ?? '').toString().trim();
+    final cover = (data['coverImage'] ?? '').toString();
+    final statusText = status == 'draft' ? '草稿' : status == 'public' ? '公開' : '私人';
+    return Card(
+      margin: const EdgeInsets.only(bottom: 10),
+      elevation: 0,
+      child: ListTile(
+        contentPadding: const EdgeInsets.all(10),
+        leading: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: SizedBox(width: 60, height: 60,
+              child: cover.startsWith('https://')
+                  ? Image.network(cover, fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => const Icon(Icons.landscape_outlined))
+                  : const Icon(Icons.landscape_outlined, size: 32)),
+        ),
+        title: Text(name.isEmpty ? '未命名世界觀' : name, maxLines: 1, overflow: TextOverflow.ellipsis),
+        subtitle: Text(statusText),
+        trailing: status == 'draft'
+            ? IconButton(
+          tooltip: '刪除世界觀草稿',
+          icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
+          onPressed: () => _deleteWorldDraft(context, doc.id),
+        )
+            : const Icon(Icons.chevron_right_rounded),
+        onTap: () => Navigator.of(context).push(MaterialPageRoute(
+          builder: (_) => status == 'draft'
+              ? WorldEditPage(draftId: doc.id)
+              : WorldEditPage(worldId: doc.id),
+        )),
+        onLongPress: status == 'private'
+            ? () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('私人試玩功能將於世界觀聊天室串接後開放'),
+        ))
+            : null,
+      ),
+    );
+  }
+
+  Future<void> _deleteWorldDraft(BuildContext context, String id) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('刪除世界觀草稿？'),
+        content: const Text('刪除後無法恢復。已上傳的圖片不會一併刪除。'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('取消')),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('刪除')),
+        ],
+      ),
+    );
+    if (confirm != true) return;
+    try {
+      final ref = FirebaseFirestore.instance.collection('draft_worlds').doc(id);
+      final current = await ref.get();
+      if (!current.exists || current.data()?['createdBy'] != user.uid) {
+        throw StateError('找不到自己的草稿');
+      }
+      await ref.delete();
+      if (context.mounted) ToastUtils.showCenterToast(context, '世界觀草稿已刪除');
+    } catch (e) {
+      if (context.mounted) ToastUtils.showCenterToast(context, '刪除失敗：$e', isError: true);
+    }
+  }
+
   Widget _buildStudioSection({
     required BuildContext context,
     required ThemeData theme,

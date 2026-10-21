@@ -24,6 +24,7 @@ import 'all_friends_page.dart';
 import 'character_model.dart';
 import 'settings_page.dart';
 import 'character_edit_page.dart';
+import 'world_edit_page.dart';
 import 'store_page.dart';
 import '../page/announcement_page.dart';
 import '../services/app_constants.dart';
@@ -41,6 +42,7 @@ import 'moment_card.dart';
 import 'edit_moment_page.dart';
 import 'create_moment_page.dart';
 import '../services/daily_task_service.dart';
+import '../widgets/creator_verified_badge.dart';
 //個人主頁
 
 class ProfilePage extends StatefulWidget {
@@ -106,6 +108,7 @@ class _ProfilePageState extends State<ProfilePage>
   bool _isLikeClaimed = false;
   bool _isClaimingCheckIn = false;
   bool _isBirthdayToday = false; // ✨ 新進一個狀態變數來記錄今天是否生日
+  bool _isVerifiedCreator = false; // 官方合作創作者認證徽章
   bool _hasActiveMonthlyCard = false;   // 是否持有有效月卡
   bool _isMonthlyRewardClaimed = false; // 今日月卡任務是否已領取
   bool _isDefaultTheme(BuildContext context) {
@@ -169,6 +172,7 @@ class _ProfilePageState extends State<ProfilePage>
           _cachedProfileMoments = <Moment>[];
           _profileMomentsLoaded = false;
           _profileMomentsError = null;
+          _isVerifiedCreator = false;
         });
       }
     });
@@ -397,6 +401,7 @@ class _ProfilePageState extends State<ProfilePage>
         _avatarPath = data['avatarPath'] ?? _avatarPath;
         _flowerPoints = data['flowerPoints'] ?? 0;
         _bio = data['bio']?.toString().trim() ?? '';
+        _isVerifiedCreator = CreatorVerifiedBadge.isVerifiedCreator(data);
 
         // 個人連結：直接使用玩家儲存在 users/{uid} 的 profileLinks。
         final rawProfileLinks = data['profileLinks'];
@@ -849,7 +854,6 @@ class _ProfilePageState extends State<ProfilePage>
       ToastUtils.showCenterToast(
         context,
         l10n.task_reward_claimed(taskName, rewardAmount.toString()),
-        customIcon: Icons.emoji_events_rounded,
       );
     } catch (e) {
       if (!mounted) return;
@@ -1158,7 +1162,7 @@ class _ProfilePageState extends State<ProfilePage>
                 Navigator.pop(context, 'gemini');
               },
               child: ListTile(
-                leading: Icon(Icons.chat_bubble_outline),
+
                 title: Text(l10n.mode_chat), // 順便在字面上讓玩家知道這是免費的
                 subtitle: Text(l10n.mode_daily_desc),
               ),
@@ -1168,7 +1172,7 @@ class _ProfilePageState extends State<ProfilePage>
                 Navigator.pop(context, 'story'); // 返回 'story'
               },
               child:ListTile(
-                leading: Icon(Icons.book_outlined),
+
                 title: Text(l10n.chatModeStory),
                 subtitle: Text(l10n.mode_story_desc),
               ),
@@ -1357,8 +1361,6 @@ class _ProfilePageState extends State<ProfilePage>
       ToastUtils.showCenterToast(
         context,
         l10n.profile_referral_success,
-        customIcon:
-        Icons.handshake_rounded,
       );
 
       _inviteCodeController.clear();
@@ -1493,20 +1495,6 @@ class _ProfilePageState extends State<ProfilePage>
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: Colors.green.withValues(alpha: 0.12),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.check_circle_rounded,
-                      color: Colors.green,
-                      size: 20,
-                    ),
-                  ),
-
                   const SizedBox(width: 10),
 
                   Expanded(
@@ -1575,13 +1563,7 @@ class _ProfilePageState extends State<ProfilePage>
                 children: [
                   Row(
                     children: [
-                      const Icon(
-                        Icons.mark_chat_read_outlined,
-                        color: Colors.amber,
-                        size: 17,
-                      ),
 
-                      const SizedBox(width: 8),
 
                       Expanded(
                         child: Text(
@@ -1751,11 +1733,6 @@ class _ProfilePageState extends State<ProfilePage>
                           ),
                           title: Row(
                             children: [
-                              const Icon(
-                                Icons.info_outline,
-                                color: Colors.pinkAccent,
-                              ),
-                              const SizedBox(width: 8),
                               Text(
                                 l10n.profile_referral_rule_title,
                                 style: const TextStyle(
@@ -1824,8 +1801,6 @@ class _ProfilePageState extends State<ProfilePage>
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Row(
             children: [
-              Icon(Icons.backpack_outlined, color: Colors.pink),
-              SizedBox(width: 8),
               Text(l10n.profile_backpack_title),
             ],
           ),
@@ -1868,11 +1843,6 @@ class _ProfilePageState extends State<ProfilePage>
                       children: [
                         Row(
                           children: [
-                            Icon(
-                              totalSpent >= 10000 ? Icons.card_giftcard : Icons.lock_outline,
-                              color: totalSpent >= 10000 ? primaryColor : Colors.grey,
-                            ),
-                            const SizedBox(width: 8),
                             Text(
                               l10n.profile_backpack_vip_gift_title,
                               style: TextStyle(
@@ -1953,8 +1923,6 @@ class _ProfilePageState extends State<ProfilePage>
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               title: Row(
                 children: [
-                  Icon(Icons.card_giftcard, color: Colors.pink),
-                  SizedBox(width: 8),
                   Text(l10n.profile_physical_gift_title),
                 ],
               ),
@@ -2770,6 +2738,10 @@ class _ProfilePageState extends State<ProfilePage>
                       ),
                     ),
                   ),
+                  if (_isVerifiedCreator) ...[
+                    const SizedBox(width: 7),
+                    const CreatorVerifiedBadge(verified: true, size: 20),
+                  ],
                   if (_isBirthdayToday) ...[
                     const SizedBox(width: 7),
                     Icon(
@@ -2807,7 +2779,6 @@ class _ProfilePageState extends State<ProfilePage>
                           ToastUtils.showCenterToast(
                             context,
                             l10n.toast_id_copied,
-                            customIcon: Icons.copy_rounded,
                           );
                         },
                         borderRadius: BorderRadius.circular(20),
@@ -3385,12 +3356,7 @@ class _ProfilePageState extends State<ProfilePage>
                               ),
                             ),
                           ),
-                          const SizedBox(width: 5),
-                          Icon(
-                            Icons.open_in_new_rounded,
-                            size: 13,
-                            color: theme.colorScheme.primary.withValues(alpha: 0.58),
-                          ),
+
                         ],
                       ),
                     ),
@@ -3494,13 +3460,7 @@ class _ProfilePageState extends State<ProfilePage>
         padding: const EdgeInsets.symmetric(vertical: 18),
         child: Column(
           children: [
-            Icon(
-              Icons.edit_note_rounded,
-              size: 36,
-              color: theme.colorScheme.primary
-                  .withValues(alpha: 0.65),
-            ),
-            const SizedBox(height: 8),
+
             Text(
               l10n.profilePageNoBio,
               style: GoogleFonts.notoSerifTc(
@@ -3568,15 +3528,30 @@ class _ProfilePageState extends State<ProfilePage>
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                     ),
                   ),
-                  IconButton(
-                    tooltip: l10n.profilePageCreateCharacter,
-                    onPressed: _createCharacter,
-                    visualDensity: VisualDensity.compact,
+                  PopupMenuButton<String>(
+                    tooltip: '新增創作',
                     icon: Icon(
                       Icons.add_rounded,
                       size: 24,
                       color: theme.colorScheme.primary,
                     ),
+                    onSelected: (selection) async {
+                      if (selection == 'character') {
+                        await _createCharacter();
+                      } else if (selection == 'world') {
+                        await _createWorld();
+                      }
+                    },
+                    itemBuilder: (menuContext) => const [
+                      PopupMenuItem<String>(
+                        value: 'character',
+                        child: Text('創建角色'),
+                      ),
+                      PopupMenuItem<String>(
+                        value: 'world',
+                        child: Text('創建開放世界'),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -3590,12 +3565,7 @@ class _ProfilePageState extends State<ProfilePage>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.person_add_alt_1_rounded,
-                      size: 56,
-                      color: theme.colorScheme.primary.withValues(alpha: 0.38),
-                    ),
-                    const SizedBox(height: 14),
+
                     Text(
                       l10n.profilePageNoCharacters,
                       textAlign: TextAlign.center,
@@ -3668,7 +3638,6 @@ class _ProfilePageState extends State<ProfilePage>
         ToastUtils.showCenterToast(
           context,
           message,
-          customIcon: Icons.person_remove_rounded,
         );
       }
       return;
@@ -3682,7 +3651,6 @@ class _ProfilePageState extends State<ProfilePage>
         ToastUtils.showCenterToast(
           context,
           message,
-          customIcon: Icons.manage_accounts_rounded,
         );
       }
     }
@@ -3703,17 +3671,13 @@ class _ProfilePageState extends State<ProfilePage>
           fit: StackFit.expand,
           children: [
             Image(
-              image: getAvatarImageProvider(imagePath),
-              fit: BoxFit.cover,
-              filterQuality: FilterQuality.high,
-              errorBuilder: (_, __, ___) => Container(
-                color: theme.colorScheme.primary.withValues(alpha: 0.07),
-                child: Icon(
-                  Icons.person_outline_rounded,
-                  size: 52,
-                  color: theme.colorScheme.primary.withValues(alpha: 0.32),
-                ),
-              ),
+                image: getAvatarImageProvider(imagePath),
+                fit: BoxFit.cover,
+                filterQuality: FilterQuality.high,
+                errorBuilder: (_, __, ___) => Container(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.07),
+                  child: const SizedBox.shrink(),
+                )
             ),
             Positioned.fill(
               child: DecoratedBox(
@@ -3889,8 +3853,6 @@ class _ProfilePageState extends State<ProfilePage>
             ToastUtils.showCenterToast(
               context,
               message,
-              customIcon:
-              Icons.person_remove_rounded,
             );
           }
 
@@ -3914,8 +3876,6 @@ class _ProfilePageState extends State<ProfilePage>
             ToastUtils.showCenterToast(
               context,
               message,
-              customIcon:
-              Icons.manage_accounts_rounded,
             );
           }
         }
@@ -3963,14 +3923,7 @@ class _ProfilePageState extends State<ProfilePage>
                             .withValues(
                           alpha: 0.08,
                         ),
-                        child: Icon(
-                          Icons.person_rounded,
-                          size: 56,
-                          color: primaryColor
-                              .withValues(
-                            alpha: 0.4,
-                          ),
-                        ),
+                        child: const SizedBox.shrink(),
                       );
                     },
                   ),
@@ -4098,16 +4051,7 @@ class _ProfilePageState extends State<ProfilePage>
 
                   Row(
                     children: [
-                      Icon(
-                        Icons
-                            .play_circle_outline_rounded,
-                        size: 15,
-                        color: theme
-                            .colorScheme.onSurface
-                            .withValues(
-                          alpha: 0.5,
-                        ),
-                      ),
+
                       const SizedBox(width: 4),
                       Text(
                         _formatPoints(playCount),
@@ -4123,16 +4067,7 @@ class _ProfilePageState extends State<ProfilePage>
 
                       const Spacer(),
 
-                      Icon(
-                        Icons.favorite_border_rounded,
-                        size: 15,
-                        color: theme
-                            .colorScheme.onSurface
-                            .withValues(
-                          alpha: 0.5,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
+
                       Text(
                         _formatPoints(likesCount),
                         style: TextStyle(
@@ -4411,13 +4346,7 @@ class _ProfilePageState extends State<ProfilePage>
                       padding: const EdgeInsets.all(24),
                       children: [
                         const SizedBox(height: 60),
-                        Icon(
-                          Icons.error_outline_rounded,
-                          size: 56,
-                          color: theme.colorScheme.error
-                              .withValues(alpha: 0.6),
-                        ),
-                        const SizedBox(height: 16),
+
                         Text(
                           l10n.profilePageMomentsLoadFailed,
                           textAlign: TextAlign.center,
@@ -4483,13 +4412,7 @@ class _ProfilePageState extends State<ProfilePage>
                       padding: const EdgeInsets.all(24),
                       children: [
                         const SizedBox(height: 40),
-                        Icon(
-                          Icons.dynamic_feed_outlined,
-                          size: 56,
-                          color: theme.colorScheme.primary
-                              .withValues(alpha: 0.4),
-                        ),
-                        const SizedBox(height: 16),
+
                         Text(
                           emptyTitle,
                           textAlign: TextAlign.center,
@@ -4711,8 +4634,6 @@ class _ProfilePageState extends State<ProfilePage>
       ToastUtils.showCenterToast(
         context,
         l10n.profilePageMomentDeleted,
-        customIcon:
-        Icons.delete_outline_rounded,
       );
     } catch (e) {
       debugPrint('❌ 刪除動態失敗：$e');
@@ -4758,7 +4679,6 @@ class _ProfilePageState extends State<ProfilePage>
         ToastUtils.showCenterToast(
           context,
           l10n.task_social_tour_complete,
-          customIcon: Icons.tour_rounded,
         );
       }
     } catch (e) {
@@ -5156,6 +5076,20 @@ class _ProfilePageState extends State<ProfilePage>
     }
   }
 
+  Future<void> _createWorld() async {
+    final result = await Navigator.push<Map<String, dynamic>>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const WorldEditPage(),
+      ),
+    );
+
+    if (!mounted || result == null) return;
+    if (result['changed'] == true) {
+      await _refreshData();
+    }
+  }
+
   Widget _buildSectionTitle(String title) {
     return Text(title,
         style: GoogleFonts.notoSerifTc(
@@ -5422,8 +5356,6 @@ class _ProfilePageState extends State<ProfilePage>
               ToastUtils.showCenterToast(
                 context,
                 message,
-                customIcon:
-                Icons.person_remove_rounded,
               );
             }
 
@@ -5440,8 +5372,6 @@ class _ProfilePageState extends State<ProfilePage>
               ToastUtils.showCenterToast(
                 context,
                 message,
-                customIcon:
-                Icons.manage_accounts_rounded,
               );
             }
           }
@@ -5495,8 +5425,6 @@ class _ProfilePageState extends State<ProfilePage>
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.lock, color: Colors.amber),
-                  SizedBox(width: 8),
                   Text(l10n.chat_secret_file_title, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                 ],
               ),
@@ -5507,13 +5435,7 @@ class _ProfilePageState extends State<ProfilePage>
                 backgroundImage: avatarPath.isNotEmpty
                     ? getAvatarImageProvider(avatarPath)
                     : null,
-                child: avatarPath.isEmpty
-                    ? const Icon(
-                  Icons.person,
-                  color: Colors.grey,
-                  size: 40,
-                )
-                    : null,
+                child: null,
               ),
               const SizedBox(height: 16),
               Text(

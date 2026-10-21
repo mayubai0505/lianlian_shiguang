@@ -61,8 +61,6 @@ class CharacterReportService {
         ToastUtils.showCenterToast(
           context,
           l10n.character_report_submitted,
-          customIcon:
-          Icons.flag_outlined,
         );
       }
     } catch (e, stackTrace) {

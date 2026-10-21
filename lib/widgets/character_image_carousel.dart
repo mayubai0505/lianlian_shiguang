@@ -87,13 +87,6 @@ class _CharacterImageCarouselState
     if (publicImages.isEmpty) {
       return Container(
         color: Colors.grey[300],
-        child: const Center(
-          child: Icon(
-            Icons.hide_image_outlined,
-            size: 50,
-            color: Colors.grey,
-          ),
-        ),
       );
     }
 

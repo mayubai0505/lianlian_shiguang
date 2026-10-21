@@ -333,7 +333,6 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
       ToastUtils.showCenterToast(
         context,
         l10n.moment_like_success,
-        customIcon: Icons.eco_rounded,
       );
     } catch (e) {
       debugPrint("按讚失敗: $e");
@@ -486,11 +485,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
                 child: Image.network(
                   imageUrl,
                   fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) => const Icon(
-                    Icons.broken_image_outlined,
-                    color: Colors.white,
-                    size: 48,
-                  ),
+                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                 ),
               ),
             ),
@@ -843,7 +838,6 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
       ToastUtils.showCenterToast(
         context,
         l10n.comment_report_success,
-        customIcon: Icons.verified_user_rounded,
       );
     } catch (error, stackTrace) {
       debugPrint('❌ 詳細頁檢舉留言失敗：$error');
@@ -1242,8 +1236,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
                                               width: isReply ? 150 : 190,
                                               height: 90,
                                               color: theme.colorScheme.surfaceContainerHighest,
-                                              alignment: Alignment.center,
-                                              child: const Icon(Icons.broken_image_outlined),
+
                                             ),
                                           ),
                                         ),
@@ -1435,9 +1428,6 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
                       horizontal: 16, vertical: 8),
                   child: Row(
                     children: [
-                      const Icon(Icons.reply,
-                          size: 16, color: Colors.grey),
-                      const SizedBox(width: 8),
                       Text(
                         l10n.moment_replying_to(
                             _replyTarget!['authorName']),

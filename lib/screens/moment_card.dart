@@ -22,6 +22,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../utils/image_utils.dart';
 import '../utils/character_navigator.dart';
+import '../widgets/creator_verified_badge.dart';
 
 class MomentCard extends StatefulWidget {
   final Moment moment;
@@ -1006,8 +1007,6 @@ class _MomentCardState extends State<MomentCard> {
       ToastUtils.showCenterToast(
         context,
         l10n.momentReportSubmitted,
-        customIcon:
-        Icons.flag_outlined,
       );
     }
   }
@@ -1326,10 +1325,6 @@ class _MomentCardState extends State<MomentCard> {
                           ? getAvatarImageProvider(_resolvedAuthorAvatar)
                           : null,
                       backgroundColor: primary.withValues(alpha: 0.08),
-                      child: _resolvedAuthorAvatar.isEmpty
-                          ? Icon(Icons.person_outline_rounded,
-                          color: primary.withValues(alpha: 0.45))
-                          : null,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -1337,17 +1332,33 @@ class _MomentCardState extends State<MomentCard> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          widget.moment.authorName,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.notoSerifTc(
-                            color: onSurface,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            height: 1.35,
-                            letterSpacing: 0.4,
-                          ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                widget.moment.authorName,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.notoSerifTc(
+                                  color: onSurface,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.35,
+                                  letterSpacing: 0.4,
+                                ),
+                              ),
+                            ),
+                            // 只有創作者本人發文才可顯示認證，角色發文不顯示。
+                            if (widget.moment.isCreatorPost &&
+                                widget.moment.createdBy.trim().isNotEmpty) ...[
+                              const SizedBox(width: 5),
+                              CreatorVerifiedBadge(
+                                userId: widget.moment.createdBy,
+                                size: 18,
+                              ),
+                            ],
+                          ],
                         ),
                         const SizedBox(height: 2),
                         Text(

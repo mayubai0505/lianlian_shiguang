@@ -603,24 +603,6 @@ class _UserProfilePageState extends State<_UserProfilePage> {
                             ),
                           ),
                         ),
-                        if (isSelected) ...[
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 9,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: primary.withValues(alpha: 0.09),
-                              borderRadius: BorderRadius.circular(999),
-                            ),
-                            child: Icon(
-                              Icons.check_rounded,
-                              size: 13,
-                              color: primary,
-                            ),
-                          ),
-                        ],
                       ],
                     ),
                     if (name.isNotEmpty || occupation.isNotEmpty) ...[

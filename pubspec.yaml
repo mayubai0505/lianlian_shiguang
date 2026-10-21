@@ -97,6 +97,7 @@ flutter:
     - assets/images/character_create/
     - assets/images/affection/
     - assets/images/chat/
+    - assets/images/creator/
     - assets/images/google_logo.png
     - assets/images/flower_gift.png
     - assets/images/flower_gift_dark.png

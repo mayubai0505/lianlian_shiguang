@@ -273,11 +273,7 @@ class LanguageSelectionPage extends StatelessWidget {
                                               'assets/images/language/language_item_leaf.png',
                                               fit: BoxFit.contain,
                                               errorBuilder: (_, __, ___) =>
-                                                  Icon(
-                                                    Icons.eco_outlined,
-                                                    color: primary,
-                                                    size: 25,
-                                                  ),
+                                              const SizedBox.shrink(),
                                             ),
                                           ),
                                         ),

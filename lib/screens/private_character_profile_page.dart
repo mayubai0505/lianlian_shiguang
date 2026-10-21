@@ -109,11 +109,6 @@ class _PrivateCharacterProfilePageState
                           ) {
                         return Container(
                           color: Colors.grey[800],
-                          child: const Icon(
-                            Icons.person,
-                            color: Colors.white,
-                            size: 100,
-                          ),
                         );
                       },
                     ),
@@ -134,16 +129,10 @@ class _PrivateCharacterProfilePageState
                       indicatorWeight: 3,
                       tabs: [
                         Tab(
-                          icon: const Icon(
-                            Icons.person_outline,
-                          ),
                           text:
                           l10n.tab_private_profile,
                         ),
                         Tab(
-                          icon: const Icon(
-                            Icons.mail_outline,
-                          ),
                           text:
                           l10n.tab_memory_fragments,
                         ),
@@ -425,17 +414,7 @@ class _PrivateCharacterProfilePageState
                         ),
                       );
                     },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.book_outlined,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(l10n.start_story_btn),
-                      ],
-                    ),
+                    child: Text(l10n.start_story_btn),
                   ),
                 ),
               ],
@@ -545,13 +524,6 @@ class _PrivateCharacterProfilePageState
                 ),
                 child: Column(
                   children: [
-                    Icon(
-                      Icons.auto_stories_outlined,
-                      size: 48,
-                      color: theme.colorScheme.primary
-                          .withValues(alpha: 0.42),
-                    ),
-                    const SizedBox(height: 12),
                     Text(
                       l10n.privateProfileNoLore,
                       style: const TextStyle(
@@ -616,18 +588,6 @@ class _PrivateCharacterProfilePageState
                       children: [
                         Row(
                           children: [
-                            Icon(
-                              isHidden
-                                  ? Icons.lock_outline
-                                  : Icons
-                                  .auto_stories_outlined,
-                              size: 18,
-                              color: theme
-                                  .colorScheme.primary,
-                            ),
-
-                            const SizedBox(width: 8),
-
                             Expanded(
                               child: Text(
                                 title,
@@ -639,6 +599,17 @@ class _PrivateCharacterProfilePageState
                                 ),
                               ),
                             ),
+                            if (isHidden) ...[
+                              const SizedBox(width: 8),
+                              Text(
+                                '私密',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: theme.colorScheme.primary,
+                                ),
+                              ),
+                            ],
 
                             PopupMenuButton<String>(
                               onSelected: (value) {
@@ -864,8 +835,6 @@ class _PrivateCharacterProfilePageState
                       ToastUtils.showCenterToast(
                         context,
                         l10n.privateProfileLoreAdded,
-                        customIcon: Icons
-                            .library_add_check_rounded,
                       );
                     } catch (e) {
                       if (!mounted) return;
@@ -947,8 +916,6 @@ class _PrivateCharacterProfilePageState
       ToastUtils.showCenterToast(
         context,
         l10n.privateProfileLoreDeleted,
-        customIcon:
-        Icons.auto_delete_outlined,
       );
     } catch (e) {
       if (!mounted) return;

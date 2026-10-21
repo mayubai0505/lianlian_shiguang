@@ -4688,6 +4688,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                                 widget.character.creatorName;
                             String? photoUrl;
                             String? avatarPath;
+                            bool isVerifiedCreator = false;
 
                             if (userSnapshot.hasData &&
                                 userSnapshot.data!.exists) {
@@ -4697,6 +4698,11 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                                   userData['nickname'] ?? displayCreatorName;
                               photoUrl = userData['photoURL'] as String?;
                               avatarPath = userData['avatarPath'] as String?;
+                              // Only verify the creator account itself, never a character.
+                              isVerifiedCreator =
+                                  userData['creatorStatus'] == 'approved' &&
+                                      userData['creatorVerified'] == true &&
+                                      userData['creatorDashboardEnabled'] == true;
                             }
 
                             ImageProvider? imageProvider;
@@ -4746,15 +4752,31 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                                         ),
                                       ),
                                       const SizedBox(height: 2),
-                                      Text(
-                                        displayCreatorName,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: GoogleFonts.notoSerifTc(
-                                          fontSize: 14.5,
-                                          fontWeight: FontWeight.w600,
-                                          color: theme.colorScheme.onSurface,
-                                        ),
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Flexible(
+                                            child: Text(
+                                              displayCreatorName,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: GoogleFonts.notoSerifTc(
+                                                fontSize: 14.5,
+                                                fontWeight: FontWeight.w600,
+                                                color: theme.colorScheme.onSurface,
+                                              ),
+                                            ),
+                                          ),
+                                          if (isVerifiedCreator) ...[
+                                            const SizedBox(width: 5),
+                                            Image.asset(
+                                              'assets/images/creator/creator_verified_badge.png',
+                                              width: 18,
+                                              height: 18,
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ],
+                                        ],
                                       ),
                                     ],
                                   ),

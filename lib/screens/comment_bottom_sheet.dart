@@ -62,6 +62,52 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
   String _currentAuthorId = '';
   String _currentAuthorName = ''; // ✨ 改成空字串，稍後由 l10n 動態處理
   String _currentAuthorAvatar = '';
+  // 只查詢實際以玩家本人身分留言的 UID；快取 Future 避免重複讀取。
+  final Map<String, Future<bool>> _creatorBadgeChecks = <String, Future<bool>>{};
+  final Map<String, bool> _commentIsPersonalAuthor = <String, bool>{};
+
+  Future<bool> _isVerifiedCreator(String uid) async {
+    if (uid.isEmpty) return false;
+    try {
+      final doc = await _db.collection('users').doc(uid).get();
+      final data = doc.data();
+      return data != null &&
+          data['creatorStatus'] == 'approved' &&
+          data['creatorVerified'] == true &&
+          data['creatorDashboardEnabled'] == true;
+    } catch (error) {
+      debugPrint('讀取創作者認證失敗: $error');
+      return false;
+    }
+  }
+
+  Widget _creatorBadgeForComment(Comment comment) {
+    // 角色留言的 authorId 是角色 ID，而 createdBy 是擁有者 UID；
+    // 即使該擁有者是認證創作者，角色也不能繼承徽章。
+    if (_commentIsPersonalAuthor[comment.id] != true) {
+      return const SizedBox.shrink();
+    }
+    final check = _creatorBadgeChecks.putIfAbsent(
+      comment.authorId,
+          () => _isVerifiedCreator(comment.authorId),
+    );
+    return FutureBuilder<bool>(
+      future: check,
+      builder: (context, snapshot) {
+        if (snapshot.data != true) return const SizedBox.shrink();
+        return Padding(
+          padding: const EdgeInsets.only(left: 4),
+          child: Image.asset(
+            'assets/images/creator/creator_verified_badge.png',
+            width: 18,
+            height: 18,
+            fit: BoxFit.contain,
+          ),
+        );
+      },
+    );
+  }
+
   List<Comment> _comments = [];
   bool _isLoadingComments = true;
   bool _isPostingComment = false;
@@ -132,6 +178,21 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
       if (mounted) {
         setState(() {
           _comments = snapshot.docs.map((doc) => Comment.fromFirestore(doc)).toList();
+          _commentIsPersonalAuthor
+            ..clear()
+            ..addEntries(snapshot.docs.map((doc) {
+              final data = doc.data();
+              final authorId = data['authorId'];
+              final createdBy = data['createdBy'];
+              // 必須是明確標示本人發言且作者 UID 與擁有者 UID 相同。
+              return MapEntry(
+                doc.id,
+                data['isPlayer'] == true &&
+                    authorId is String &&
+                    authorId.isNotEmpty &&
+                    authorId == createdBy,
+              );
+            }));
           _isLoadingComments = false;
         });
       }
@@ -373,6 +434,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
     );
 
     setState(() {
+      _commentIsPersonalAuthor[commentId] = safeAuthorId == currentUser.uid;
       _isPostingComment = true;
       _replyTarget = null;
       _comments.add(tempComment);
@@ -397,7 +459,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
         'createdAt': FieldValue.serverTimestamp(),
         'parentCommentId': parentId,
         'replyToName': replyName,
-        'isPlayer': true,
+        'isPlayer': safeAuthorId == currentUser.uid,
         'createdBy': currentUser.uid,
       });
 
@@ -429,6 +491,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
     } catch (e) {
       setState(() {
         _comments.removeWhere((c) => c.id == tempComment.id);
+        _commentIsPersonalAuthor.remove(commentId);
       });
 
       if (mounted) {
@@ -722,6 +785,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                   ),
                 ),
               ),
+              _creatorBadgeForComment(comment),
               if (isReply) ...[
                 const Icon(Icons.arrow_right, size: 16, color: Colors.grey),
                 Flexible(

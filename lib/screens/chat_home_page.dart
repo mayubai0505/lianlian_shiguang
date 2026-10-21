@@ -28,6 +28,8 @@ class ChatHomePage extends StatefulWidget {
 class _ChatHomePageState extends State<ChatHomePage> {
   final User? _currentUser = FirebaseAuth.instance.currentUser;
   Stream<QuerySnapshot>? _sessionsStream;
+  Stream<QuerySnapshot>? _worldSessionsStream;
+  int _selectedChatCategory = 0; // 0：角色聊天，1：開放世界
   bool _isNavigatingToChat = false;
   bool _isOpeningTopAction = false;
   final String _appId = AppConfig.appId;
@@ -64,6 +66,15 @@ class _ChatHomePageState extends State<ChatHomePage> {
         'lastActivity',
         descending: true,
       )
+          .snapshots();
+
+      // 世界觀聊天室使用獨立資料集合，不混入既有角色聊天紀錄。
+      // 待 world_chat_page.dart / 後端正式建立房間後，這裡即會顯示紀錄。
+      _worldSessionsStream = FirebaseFirestore.instance
+          .collection('artifacts')
+          .doc(_appId)
+          .collection('world_chat_sessions')
+          .where('userId', isEqualTo: _currentUser.uid)
           .snapshots();
     }
 
@@ -814,6 +825,158 @@ class _ChatHomePageState extends State<ChatHomePage> {
   }
 
 
+  // ── 開放世界聊天：獨立列表 ──
+  // 不直接呼叫 ChatPage：ChatPage 必須接收 Character，無法正確承載多 NPC 世界。
+  Widget _buildWorldSessionsSliver(ThemeData theme) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: _worldSessionsStream,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SliverFillRemaining(
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+        if (snapshot.hasError) {
+          return SliverFillRemaining(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text('開放世界聊天列表讀取失敗：${snapshot.error}',
+                    textAlign: TextAlign.center),
+              ),
+            ),
+          );
+        }
+
+        final docs = List<QueryDocumentSnapshot>.from(
+          snapshot.data?.docs ?? <QueryDocumentSnapshot>[],
+        );
+        docs.sort((a, b) {
+          final aData = a.data() as Map<String, dynamic>;
+          final bData = b.data() as Map<String, dynamic>;
+          final aTime = aData['lastActivity'] as Timestamp?;
+          final bTime = bData['lastActivity'] as Timestamp?;
+          if (aTime == null && bTime == null) return 0;
+          if (aTime == null) return 1;
+          if (bTime == null) return -1;
+          return bTime.compareTo(aTime);
+        });
+
+        if (docs.isEmpty) {
+          return SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.public_rounded, size: 58,
+                        color: theme.colorScheme.primary.withValues(alpha: 0.38)),
+                    const SizedBox(height: 14),
+                    Text('還沒有開放世界聊天紀錄',
+                        style: GoogleFonts.notoSerifTc(fontSize: 17,
+                            color: theme.colorScheme.onSurface)),
+                    const SizedBox(height: 8),
+                    Text('等私人試玩聊天室串接完成後，進度就會顯示在這裡。',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 12,
+                            color: theme.colorScheme.onSurfaceVariant)),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+
+        return SliverPadding(
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
+          sliver: SliverList(
+            delegate: SliverChildBuilderDelegate((context, index) {
+              final data = docs[index].data() as Map<String, dynamic>;
+              final name = (data['customRoomName'] ?? data['worldName'] ?? '未命名世界')
+                  .toString();
+              final cover = (data['coverImage'] ?? data['worldCoverImage'] ?? '')
+                  .toString().trim();
+              final preview = (data['lastMessage'] ?? '').toString();
+              final isTest = data['isTestMode'] == true || data['isPrivateTest'] == true;
+              return Card(
+                margin: const EdgeInsets.only(bottom: 12),
+                color: theme.cardColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  side: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.13)),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: () => showDialog<void>(
+                    context: context,
+                    builder: (dialogContext) => AlertDialog(
+                      title: const Text('開放世界聊天室'),
+                      content: const Text('世界觀專屬 AI 聊天室尚未串接完成，目前先提供聊天列表介面，還無法續玩。'),
+                      actions: [
+                        TextButton(onPressed: () => Navigator.pop(dialogContext),
+                            child: const Text('知道了')),
+                      ],
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(14),
+                          child: SizedBox(
+                            width: 60,
+                            height: 60,
+                            child: cover.startsWith('https://') || cover.startsWith('http://')
+                                ? CachedNetworkImage(
+                              imageUrl: cover,
+                              fit: BoxFit.cover,
+                              errorWidget: (_, __, ___) => Icon(Icons.public_rounded,
+                                  color: theme.colorScheme.primary),
+                            )
+                                : ColoredBox(
+                              color: theme.colorScheme.primary.withValues(alpha: 0.09),
+                              child: Icon(Icons.public_rounded,
+                                  color: theme.colorScheme.primary),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(name, maxLines: 1, overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.notoSerifTc(fontSize: 16,
+                                      fontWeight: FontWeight.w600)),
+                              const SizedBox(height: 4),
+                              Text(isTest ? '私人試玩' : '開放世界',
+                                  style: TextStyle(fontSize: 11,
+                                      color: theme.colorScheme.primary)),
+                              const SizedBox(height: 5),
+                              Text(preview.isEmpty ? '尚無訊息' : preview,
+                                  maxLines: 1, overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(fontSize: 12,
+                                      color: theme.colorScheme.onSurfaceVariant)),
+                            ],
+                          ),
+                        ),
+                        Icon(Icons.chevron_right_rounded,
+                            color: theme.colorScheme.onSurfaceVariant),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }, childCount: docs.length),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -923,12 +1086,38 @@ class _ChatHomePageState extends State<ChatHomePage> {
                       ],
                     ),
 
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: SegmentedButton<int>(
+                                showSelectedIcon: false,
+                                segments: const [
+                                  ButtonSegment(value: 0, label: Text('角色聊天')),
+                                  ButtonSegment(value: 1, label: Text('開放世界')),
+                                ],
+                                selected: <int>{_selectedChatCategory},
+                                onSelectionChanged: (selection) {
+                                  if (selection.isNotEmpty) {
+                                    setState(() => _selectedChatCategory = selection.first);
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                     // ✨ 4. 處理聊天列表與各種狀態
                     _currentUser == null
                     // 在 Sliver 裡面，要置中畫面必須用 SliverFillRemaining 包起來
                         ? SliverFillRemaining(
                       child: Center(child: Text(l10n.login_to_view_chat)),
                     )
+                        : _selectedChatCategory == 1
+                        ? _buildWorldSessionsSliver(theme)
                         : StreamBuilder<QuerySnapshot>(
                       stream: _sessionsStream,
                       builder: (context, snapshot) {

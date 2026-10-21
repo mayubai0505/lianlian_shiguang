@@ -18,13 +18,43 @@ import 'creator_support_center_page.dart';
 
 /// 官方合作創作者專區第一版。
 /// 注意：畫面上的權限檢查不能取代 Cloud Functions 的後端驗證。
-class OfficialCreatorStudioPage extends StatelessWidget {
+class OfficialCreatorStudioPage extends StatefulWidget {
   const OfficialCreatorStudioPage({super.key, this.onOpenShop});
 
   /// 由現有商店入口提供實際導頁方法；未提供時不會猜測路由。
   final VoidCallback? onOpenShop;
 
+  @override
+  State<OfficialCreatorStudioPage> createState() => _OfficialCreatorStudioPageState();
+}
+
+class _OfficialCreatorStudioPageState extends State<OfficialCreatorStudioPage> {
+  bool _introScheduled = false;
+
   bool _isVerified(Map<String, dynamic> data) => _officialCreatorVerified(data);
+
+  Future<void> _showCreatorIntro({bool manuallyOpened = false}) async {
+    if (!mounted) return;
+    final bool? seen = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const _CreatorStudioIntroDialog(),
+    );
+    if (!mounted || seen != true) return;
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set(
+        {'creatorStudioTutorialVersion': 1},
+        SetOptions(merge: true),
+      );
+    } catch (error) {
+      debugPrint('創作者導覽跨裝置進度儲存失敗：$error');
+      if (mounted) {
+        ToastUtils.showCenterToast(context, '導覽已結束，但同步觀看紀錄失敗，之後可能再次顯示', isError: true);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +65,16 @@ class OfficialCreatorStudioPage extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text('合作創作者專區',
-          style: GoogleFonts.notoSerifTc(fontWeight: FontWeight.w600))),
+      appBar: AppBar(
+        title: Text('合作創作者專區',
+            style: GoogleFonts.notoSerifTc(fontWeight: FontWeight.w600)),
+        actions: [
+          TextButton(
+            onPressed: () => _showCreatorIntro(manuallyOpened: true),
+            child: const Text('說明'),
+          ),
+        ],
+      ),
       body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
         stream: FirebaseFirestore.instance
             .collection('users').doc(user.uid).snapshots(),
@@ -56,6 +94,18 @@ class OfficialCreatorStudioPage extends StatelessWidget {
             ));
           }
 
+          if (!_introScheduled) {
+            _introScheduled = true;
+            final data = snapshot.data!.data() ?? <String, dynamic>{};
+            final rawVersion = data['creatorStudioTutorialVersion'];
+            final version = rawVersion is num ? rawVersion.toInt() :
+            int.tryParse(rawVersion?.toString() ?? '') ?? 0;
+            if (version < 1) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) _showCreatorIntro();
+              });
+            }
+          }
           final primary = theme.colorScheme.primary;
           return ListView(
             padding: const EdgeInsets.fromLTRB(18, 18, 18, 48),
@@ -71,7 +121,12 @@ class OfficialCreatorStudioPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(children: [
-                      Icon(Icons.verified_rounded, color: primary),
+                      Image.asset(
+                        'assets/images/creator/creator_verified_badge.png',
+                        width: 28,
+                        height: 28,
+                        fit: BoxFit.contain,
+                      ),
                       const SizedBox(width: 8),
                       Text('已認證合作創作者',
                           style: GoogleFonts.notoSerifTc(
@@ -91,7 +146,7 @@ class OfficialCreatorStudioPage extends StatelessWidget {
               _tool(context, '粉絲管理', '查看追蹤者、移除粉絲', onTap: () => _openPage(context, const _OfficialFollowersPage())),
               _tool(context, '創作數據', '角色人氣與累計遊玩次數', onTap: () => _openPage(context, const _OfficialCreatorStatsPage())),
               _tool(context, '粉絲信件', '寄送訊息給追蹤者', onTap: () => _openPage(context, const _CreatorFanMailPage())),
-              _tool(context, '粉絲福利', '贈送自己的花花給追蹤者', onTap: () => _openPage(context, _CreatorFlowerGiftPage(onOpenShop: onOpenShop))),
+              _tool(context, '粉絲福利', '贈送自己的花花給追蹤者', onTap: () => _openPage(context, _CreatorFlowerGiftPage(onOpenShop: widget.onOpenShop))),
               _tool(context, '每月創作獎勵', '新建並公開 3 位角色，可領取 300 花花', onTap: () => _openPage(context, const _CreatorMonthlyRewardPage())),
               _tool(context, '專屬橫幅', '設定創作者公開頁面的橫幅圖片', onTap: () => _openPage(context, const _CreatorBannerPage())),
               _tool(context, '合作資訊', '合作狀態、權益與公告', onTap: () => _openPage(context, const _CreatorCooperationPage())),
@@ -197,14 +252,14 @@ class _OfficialCreatorStatsPage extends StatelessWidget {
             Text('創作總覽', style: GoogleFonts.notoSerifTc(
                 fontSize: 21, fontWeight: FontWeight.w600)),
             const SizedBox(height: 12),
-            _metricCard(context, '公開角色', '${characters.length}', Icons.menu_book_outlined),
-            _metricCard(context, '累計遊玩次數', '$totalPlayCount', Icons.play_circle_outline_rounded),
+            _metricCard(context, '公開角色', '${characters.length}'),
+            _metricCard(context, '累計遊玩次數', '$totalPlayCount'),
             FutureBuilder<AggregateQuerySnapshot>(
               future: followersRef.count().get(),
               builder: (context, countSnap) => _metricCard(
                 context, '目前追蹤者', countSnap.hasError ? '暫無法取得' :
               countSnap.hasData ? '${countSnap.data!.count ?? 0}' : '讀取中…',
-                Icons.people_outline_rounded,
+
               ),
             ),
             const SizedBox(height: 14),
@@ -230,7 +285,7 @@ class _OfficialCreatorStatsPage extends StatelessWidget {
     );
   }
 
-  Widget _metricCard(BuildContext context, String title, String value, IconData icon) {
+  Widget _metricCard(BuildContext context, String title, String value) {
     final theme = Theme.of(context);
     return Card(child: Padding(padding: const EdgeInsets.all(15), child: Row(children: [
 
@@ -337,7 +392,7 @@ class _StudioAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final path = url.trim();
-    final fallback = Center(child: Icon(Icons.person_outline_rounded, color: Theme.of(context).colorScheme.primary));
+    final fallback = Container(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08));
     return ClipRRect(borderRadius: BorderRadius.circular(size / 2), child: SizedBox(
       width: size, height: size,
       child: path.startsWith('http')
@@ -864,7 +919,7 @@ class _CreatorFanMailPageState extends State<_CreatorFanMailPage> {
           final j=Map<String,dynamic>.from(raw);
           final status=(j['status'] ?? '').toString();
           final statusLabel={'queued':'排隊中','processing':'投遞中','completed':'已完成','cancelled':'已取消','failed':'寄送失敗'}[status]??status;
-          return Card(child:ListTile(leading:Icon(Icons.mark_email_read_outlined,color:primary),
+          return Card(child:ListTile(
               title:Text((j['title'] ?? '未命名信件').toString()),
               subtitle:Text('${j['mode']=='broadcast'?'全體粉絲':'單一粉絲'} · $statusLabel · 已投遞 ${j['delivered']??0} 人'),
               trailing:status=='failed'?const Icon(Icons.error_outline):null));
@@ -1242,5 +1297,129 @@ class _CreatorMonthlyRewardPageState extends State<_CreatorMonthlyRewardPage> {
         Text('如有重複、空白或違反創作規範的角色，官方得依合作條款暫停審查或合作資格。',
             style:TextStyle(fontSize:12,height:1.6,color:Theme.of(context).colorScheme.onSurfaceVariant)),
       ]))),);
+  }
+}
+
+/// 官方合作創作者四步驟導覽：純文字，不使用 Material Icon。
+class _CreatorStudioIntroDialog extends StatefulWidget {
+  const _CreatorStudioIntroDialog();
+
+  @override
+  State<_CreatorStudioIntroDialog> createState() => _CreatorStudioIntroDialogState();
+}
+
+class _CreatorStudioIntroDialogState extends State<_CreatorStudioIntroDialog> {
+  int _step = 0;
+
+  static const _titles = <String>[
+    '歡迎加入官方合作創作者',
+    '掌握作品表現，與粉絲保持聯繫',
+    '分享花花，領取專屬創作獎勵',
+    '打造專屬頁面，隨時取得協助',
+  ];
+
+  static const _subtitles = <String>[
+    '妳的專屬創作空間',
+    '粉絲管理・創作數據・粉絲信件',
+    '粉絲福利・每月創作獎勵',
+    '專屬橫幅・合作資訊・問題回報',
+  ];
+
+  static const _descriptions = <String>[
+    '歡迎來到《戀戀拾光》官方合作創作者專區。這裡整合了創作管理、粉絲互動、專屬福利及合作資訊，讓妳能更方便地經營自己的角色與創作。',
+    '妳可以查看追蹤者、管理粉絲名單，並了解公開角色的遊玩次數與作品表現。也可以透過粉絲信件，向一位粉絲或所有追蹤者傳達訊息。',
+    '可以將自己帳戶中的花花贈送給粉絲，傳遞一份小小心意。另外，每月新建並首次公開符合資格的角色，還有機會領取專屬創作獎勵。',
+    '上傳專屬橫幅，打造屬於自己的創作者頁面。合作相關規範與權益可以在「合作資訊」查看；遇到問題，也可以透過「問題回報中心」聯繫官方。',
+  ];
+
+  static const _notes = <String>[
+    '只有符合官方合作資格的創作者，才能使用這裡的專屬功能。',
+    '粉絲信件設有每日寄送額度，使用前請留意頁面中的額度說明。',
+    '贈送花花會扣除自己的餘額；每月創作獎勵依現行活動規則與系統審核結果發放。',
+    '未來新增的創作者專屬功能，也會陸續在這裡開放。',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+      titlePadding: const EdgeInsets.fromLTRB(22, 22, 22, 0),
+      contentPadding: const EdgeInsets.fromLTRB(22, 18, 22, 10),
+      actionsPadding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+      title: Row(
+        children: [
+          Expanded(child: Text('創作者專區導覽', style: GoogleFonts.notoSerifTc(
+              fontSize: 18, fontWeight: FontWeight.w600))),
+          Text('${_step + 1} / 4', style: TextStyle(
+              fontSize: 12, color: theme.colorScheme.onSurfaceVariant)),
+        ],
+      ),
+      content: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 390),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(children: List.generate(4, (index) => Expanded(
+                child: Container(
+                  height: 4,
+                  margin: const EdgeInsets.only(right: 4),
+                  decoration: BoxDecoration(
+                    color: index <= _step ? primary : primary.withValues(alpha: 0.14),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ))),
+              const SizedBox(height: 24),
+              Text(_subtitles[_step], style: TextStyle(
+                  fontSize: 12, color: primary, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 10),
+              Text(_titles[_step], style: GoogleFonts.notoSerifTc(
+                  fontSize: 19, height: 1.45, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 14),
+              Text(_descriptions[_step], style: TextStyle(
+                  fontSize: 14, height: 1.75,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.82))),
+              const SizedBox(height: 18),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(13),
+                decoration: BoxDecoration(
+                  color: primary.withValues(alpha: 0.07),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(_notes[_step], style: TextStyle(
+                    fontSize: 12.5, height: 1.6,
+                    color: theme.colorScheme.onSurfaceVariant)),
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(true),
+          child: const Text('略過'),
+        ),
+        if (_step > 0)
+          TextButton(
+            onPressed: () => setState(() => _step--),
+            child: const Text('上一步'),
+          ),
+        FilledButton(
+          onPressed: () {
+            if (_step == 3) {
+              Navigator.of(context).pop(true);
+            } else {
+              setState(() => _step++);
+            }
+          },
+          child: Text(_step == 3 ? '完成' : '下一步'),
+        ),
+      ],
+    );
   }
 }

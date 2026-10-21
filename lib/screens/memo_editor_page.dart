@@ -237,12 +237,6 @@ class _MemoEditorPageState extends State<MemoEditorPage> {
                           ),
                           child: Row(
                             children: [
-                              Icon(
-                                Icons.calendar_today_outlined,
-                                size: 18,
-                                color: primary,
-                              ),
-                              const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
                                   DateFormat('yyyy/MM/dd HH:mm')

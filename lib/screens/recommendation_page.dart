@@ -655,12 +655,6 @@ class RecommendationPageState extends State<RecommendationPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.auto_awesome_outlined,
-                size: 52,
-                color: colors.primary.withValues(alpha: 0.55),
-              ),
-              const SizedBox(height: 16),
               Text(
                 _errorMessage!,
                 textAlign: TextAlign.center,
@@ -692,12 +686,6 @@ class RecommendationPageState extends State<RecommendationPage> {
           physics: const AlwaysScrollableScrollPhysics(),
           padding: EdgeInsets.fromLTRB(24, topInset + 48, 24, 40),
           children: [
-            Icon(
-              Icons.spa_outlined,
-              size: 48,
-              color: colors.primary.withValues(alpha: 0.30),
-            ),
-            const SizedBox(height: 16),
             Text(
               l10n.recommendation_empty,
               textAlign: TextAlign.center,
@@ -1077,7 +1065,7 @@ class _ActiveEventEntry extends StatelessWidget {
                                     spacing: 8,
                                     runSpacing: 4,
                                     children: [
-                                      _EventMiniPill(icon: Icons.schedule_rounded, label: _remaining(endAt)),
+                                      _EventMiniPill(label: _remaining(endAt)),
                                       _EventMiniPill(textIcon: currencyIcon, label: currencyName),
                                     ],
                                   ),
@@ -1112,11 +1100,10 @@ class _ActiveEventEntry extends StatelessWidget {
 }
 
 class _EventMiniPill extends StatelessWidget {
-  final IconData? icon;
   final String? textIcon;
   final String label;
 
-  const _EventMiniPill({this.icon, this.textIcon, required this.label});
+  const _EventMiniPill({this.textIcon, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -1130,10 +1117,7 @@ class _EventMiniPill extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (icon != null) ...[
-            Icon(icon, size: 13, color: colors.primary),
-            const SizedBox(width: 4),
-          ] else if ((textIcon ?? '').isNotEmpty) ...[
+          if ((textIcon ?? '').isNotEmpty) ...[
             Text(textIcon!, style: const TextStyle(fontSize: 12)),
             const SizedBox(width: 4),
           ],
@@ -1744,12 +1728,6 @@ class _ImageFallback {
     final colors = Theme.of(context).colorScheme;
     return Container(
       color: colors.primary.withValues(alpha: 0.05),
-      alignment: Alignment.center,
-      child: Icon(
-        Icons.person_outline_rounded,
-        size: 48,
-        color: colors.primary.withValues(alpha: 0.26),
-      ),
     );
   }
 
@@ -1757,12 +1735,6 @@ class _ImageFallback {
     final colors = Theme.of(context).colorScheme;
     return Container(
       color: colors.primary.withValues(alpha: 0.05),
-      alignment: Alignment.center,
-      child: Icon(
-        Icons.person_outline_rounded,
-        size: 38,
-        color: colors.primary.withValues(alpha: 0.26),
-      ),
     );
   }
 }

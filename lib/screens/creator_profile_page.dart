@@ -18,6 +18,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 import '../widgets/user_avatar_with_frame.dart';
+import '../widgets/creator_verified_badge.dart';
 
 //創作者公開頁面
 class CreatorProfilePage extends StatelessWidget {
@@ -71,7 +72,6 @@ class CreatorProfilePage extends StatelessWidget {
         String? avatarPath;
         String creatorBio = '';
         String creatorBannerUrl = '';
-        bool creatorVerified = false;
         List<String> creatorPortfolioOrder = [];
         List<Map<String, String>> profileLinks = <Map<String, String>>[];
 
@@ -117,8 +117,6 @@ class CreatorProfilePage extends StatelessWidget {
           userData['avatarPath'] as String?;
 
           creatorBannerUrl = (userData['creatorBannerUrl'] ?? '').toString().trim();
-          creatorVerified = userData['creatorStatus'] == 'approved' &&
-              userData['creatorVerified'] == true && userData['creatorDashboardEnabled'] == true;
           creatorPortfolioOrder = (userData['creatorPortfolioOrder'] as List?)
               ?.map((e) => e.toString()).toList() ?? <String>[];
 
@@ -405,7 +403,6 @@ class CreatorProfilePage extends StatelessWidget {
                               displayPlayerID: displayPlayerID,
                               creatorBio: creatorBio,
                               bannerUrl: creatorBannerUrl,
-                              isVerifiedCreator: creatorVerified,
                               imageProvider: imageProvider,
                               isOwner: isOwner,
                               workCount: characters.length,
@@ -1526,7 +1523,6 @@ class CreatorProfilePage extends StatelessWidget {
         required String displayPlayerID,
         required String creatorBio,
         required String bannerUrl,
-        required bool isVerifiedCreator,
         required ImageProvider? imageProvider,
         required bool isOwner,
         required int workCount,
@@ -1615,10 +1611,8 @@ class CreatorProfilePage extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: GoogleFonts.notoSerifTc(fontSize: 23,
                               fontWeight: FontWeight.w700, color: textColor, letterSpacing: 0.2))),
-                      if (isVerifiedCreator) ...[
-                        const SizedBox(width: 5),
-                        const Icon(Icons.verified_rounded, color: Color(0xFF3989CC), size: 19),
-                      ],
+                      const SizedBox(width: 5),
+                      CreatorVerifiedBadge(userId: creatorId, size: 19),
                     ]),
                     const SizedBox(height: 5),
                     Text(

@@ -533,12 +533,6 @@ class _StorePageState extends State<StorePage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.local_florist_outlined,
-              size: 48,
-              color: primary.withValues(alpha: 0.35),
-            ),
-            const SizedBox(height: 12),
             Text(
               l10n.shop_restocking,
               textAlign: TextAlign.center,
@@ -660,7 +654,7 @@ class _StorePageState extends State<StorePage> {
             child: Image.asset(
               treeImage,
               fit: BoxFit.contain,
-              errorBuilder: (context, error, stackTrace) => const Icon(Icons.local_florist, size: 40, color: Colors.white),
+              errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
             ),
           ),
           const SizedBox(width: 16),
@@ -1724,11 +1718,6 @@ void _showMonthlyPassManual(BuildContext context) {
               ),
               Row(
                 children: [
-                  Icon(
-                    Icons.auto_awesome,
-                    color: primary,
-                  ),
-                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       l10n.passGuideTitle,
@@ -1744,14 +1733,12 @@ void _showMonthlyPassManual(BuildContext context) {
               const SizedBox(height: 20),
               _buildManualItem(
                 context: context,
-                icon: Icons.refresh,
                 title: l10n.passGuideRegenerateTitle,
                 content: l10n.passGuideRegenerateContent,
               ),
               const SizedBox(height: 16),
               _buildManualItem(
                 context: context,
-                icon: Icons.favorite,
                 title: l10n.passGuideAffectionTitle,
                 content: l10n.passGuideAffectionContent,
               ),
@@ -1794,7 +1781,6 @@ void _showMonthlyPassManual(BuildContext context) {
 
 Widget _buildManualItem({
   required BuildContext context,
-  required IconData icon,
   required String title,
   required String content,
 }) {
@@ -1818,21 +1804,6 @@ Widget _buildManualItem({
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          width: 34,
-          height: 34,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: primary.withValues(alpha: 0.08),
-          ),
-          child: Icon(
-            icon,
-            size: 19,
-            color: primary,
-          ),
-        ),
-        const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

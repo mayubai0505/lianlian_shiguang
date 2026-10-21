@@ -48,16 +48,7 @@ class CharacterBlockService {
                 borderRadius:
                 BorderRadius.circular(20),
               ),
-              title: Row(
-                children: [
-                  const Icon(
-                    Icons.block_rounded,
-                    color: Colors.redAccent,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(l10n.character_block_title),
-                ],
-              ),
+              title: Text(l10n.character_block_title),
               content: Text(
                 l10n.character_block_confirm_message(character.name),
               ),
@@ -151,8 +142,6 @@ class CharacterBlockService {
       ToastUtils.showCenterToast(
         context,
         l10n.character_block_success(character.name),
-        customIcon:
-        Icons.person_off_outlined,
       );
 
       return true;
@@ -202,8 +191,6 @@ class CharacterBlockService {
         ToastUtils.showCenterToast(
           context,
           l10n.character_unblock_success,
-          customIcon:
-          Icons.person_outline_rounded,
         );
       }
 
