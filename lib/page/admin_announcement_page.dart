@@ -209,6 +209,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   Timer? _playerSearchDebounce;
   late Future<List<DocumentSnapshot<Map<String, dynamic>>>> _playersFuture;
   int _dashboardRequestSerial = 0;
+  bool _playersInitiallyLoaded = false;
+  bool _creatorsInitiallyLoaded = false;
 
   // 🩺 AI 記憶健檢
   final TextEditingController _memoryUserIdController = TextEditingController();
@@ -244,23 +246,36 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     debugAdminAuth();
     _dashboardFuture = _loadDashboardData();
     _operationsAnalyticsFuture = _loadOperationsAnalyticsDirect();
-    _playersFuture = _queryAdminPlayers('');
+    // 玩家頁初次開啟時才查詢，避免總覽同時啟動額外讀取。
+    _playersFuture = Future.value(<DocumentSnapshot<Map<String, dynamic>>>[]);
 
     _tabController = TabController(
       length: 9,
       vsync: this,
     );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _loadCreatorApplications();
-      }
-    });
+    // 玩家與創作者分頁採首次進入才讀取，含左右滑動切換。
+    _tabController.addListener(_onAdminTabChanged);
 
+  }
+
+  void _onAdminTabChanged() {
+    if (!mounted) return;
+    final index = _tabController.index;
+    if (index == 1 && !_playersInitiallyLoaded) {
+      _playersInitiallyLoaded = true;
+      setState(() {
+        _playersFuture = _queryAdminPlayers(_playerSearch.trim());
+      });
+    } else if (index == 3 && !_creatorsInitiallyLoaded) {
+      _creatorsInitiallyLoaded = true;
+      unawaited(_loadCreatorApplications());
+    }
   }
 
   @override
   void dispose() {
+    _tabController.removeListener(_onAdminTabChanged);
     _playerSearchDebounce?.cancel();
     _manualCreatorSearchController.dispose();
     _tabController.dispose();

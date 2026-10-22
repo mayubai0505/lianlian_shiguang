@@ -3035,7 +3035,7 @@ abstract class AppLocalizations {
   /// No description provided for @chat_free_btn.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'閒聊(免費)'**
+  /// **'閒聊'**
   String get chat_free_btn;
 
   /// No description provided for @start_story_btn.

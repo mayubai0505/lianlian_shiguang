@@ -5630,11 +5630,17 @@ class _ChatPageState extends State<ChatPage> {
           try {
             final response = await http.get(Uri.parse(audioPath));
             final audioBytes = response.bodyBytes;
-            final storageRef = FirebaseStorage.instance
-                .ref()
-                .child('artifacts/lianlianshiguang/chat_audios')
-                .child(
-                'web_audio_${DateTime.now().millisecondsSinceEpoch}.webm');
+            // 網頁錄音依玩家 UID 與聊天室分開，與其他聊天附件一致。
+            final currentUid = FirebaseAuth.instance.currentUser?.uid;
+            final currentSessionId = _sessionId;
+            if (currentUid == null || currentSessionId == null ||
+                currentSessionId.isEmpty) {
+              throw StateError('錄音上傳失敗：尚未登入或聊天室未建立');
+            }
+            final storageRef = FirebaseStorage.instance.ref().child(
+              'user_uploads/$currentUid/$currentSessionId/'
+                  'audio-${DateTime.now().millisecondsSinceEpoch}.webm',
+            );
             final uploadTask = await storageRef.putData(
                 audioBytes, SettableMetadata(contentType: 'audio/webm'));
             storagePath = await uploadTask.ref.getDownloadURL();

@@ -20073,7 +20073,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get tab_time_echoes => '時空迴音';
 
   @override
-  String get chat_free_btn => '閒聊(免費)';
+  String get chat_free_btn => '閒聊';
 
   @override
   String get start_story_btn => '開始劇情';
