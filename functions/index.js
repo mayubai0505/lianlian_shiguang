@@ -25563,3 +25563,161 @@ exports.manageCreatorSupportMessage = onCall({region:REGION,timeoutSeconds:30},a
  });
  return {success:true};
 });
+
+// ============================================================
+// 開放世界私人遊玩 (獨立於 getAiResponse)
+// ============================================================
+exports.worldPrivateTest = onCall({
+  region: REGION,
+  memory: '512MiB',
+  timeoutSeconds: 180,
+  secrets: [openRouterApiKey, geminiApiKey, xaiApiKey, anthropicApiKey],
+}, async (request) => {
+  const uid = request.auth?.uid;
+  if (!uid) throw new HttpsError('unauthenticated', '請先登入');
+  const payload = request.data || {};
+  const worldId = String(payload.worldId || '').trim();
+  const action = String(payload.action || 'load');
+  const rawMessage = String(payload.message || '').trim();
+  if (!/^[\w-]{1,160}$/.test(worldId)) {
+    throw new HttpsError('invalid-argument', '世界觀 ID 不正確');
+  }
+  if (!['load','send'].includes(action)) {
+    throw new HttpsError('invalid-argument', '不支援的操作');
+  }
+  if (action === 'send' && (!rawMessage || rawMessage.length > 2500)) {
+    throw new HttpsError('invalid-argument', '訊息長度需為 1 至 2500 字');
+  }
+  const worldSnap = await db.collection('artifacts').doc(APP_ID)
+    .collection('worlds').doc(worldId).get();
+  if (!worldSnap.exists) throw new HttpsError('not-found','世界觀不存在或尚未正式儲存');
+  const world = worldSnap.data() || {};
+  if (world.createdBy !== uid) {
+    throw new HttpsError('permission-denied','只有創作者能私人試玩自己的世界');
+  }
+  const sessionId = crypto.createHash('sha256')
+    .update(`world_private_v1:${uid}:${worldId}`).digest('hex');
+  const sessions = db.collection('artifacts').doc(APP_ID)
+    .collection('world_chat_sessions');
+  const room = sessions.doc(sessionId);
+  const msgs = room.collection('messages');
+  const now = FieldValue.serverTimestamp();
+  // Safe, idempotent startup; opening is saved once per world/owner.
+  await db.runTransaction(async tx => {
+    const snap = await tx.get(room);
+    if (snap.exists) return;
+    const intro = [];
+    const opening = String(world.storyOpening || '').trim();
+    const first = String(world.firstLine || '').trim();
+    if (opening) intro.push({kind:'narrator', text:opening});
+    if (first) intro.push({kind:'narrator', text:first});
+    tx.set(room, {
+      userId:uid, worldId, worldName:String(world.name || '未命名世界'),
+      coverImage:String(world.coverImage || ''), isPrivateTest:true,
+      lastMessage: first || opening, lastActivity:now, createdAt:now,
+      messageCount:0, processing:false,
+    });
+    tx.set(msgs.doc('opening'), {sender:'ai',segments:intro,
+      timestamp:now, sequence:0});
+  });
+  if (action === 'send') {
+    // Lock the room to prevent simultaneous AI calls and duplicate charges.
+    const requestId = String(payload.requestId || '').slice(0,90);
+    if (!/^[a-zA-Z0-9_-]{8,90}$/.test(requestId)) {
+      throw new HttpsError('invalid-argument','缺少有效的請求識別碼');
+    }
+    let reserved = false;
+    await db.runTransaction(async tx => {
+      const snap = await tx.get(room);
+      const d = snap.data() || {};
+      if (d.processing === true) {
+        const lockedAt = d.lockedAt?.toMillis?.() || 0;
+        if (Date.now() - lockedAt < 180000) {
+          throw new HttpsError('failed-precondition','上一則回覆仍在生成中');
+        }
+      }
+      const old = await tx.get(msgs.doc(requestId));
+      if (old.exists) throw new HttpsError('already-exists','這則訊息已送出');
+      tx.update(room,{processing:true,lockedAt:now});
+      reserved = true;
+    });
+    try {
+      const recent = await msgs.orderBy('timestamp','desc').limit(24).get();
+      const history = recent.docs.reverse().map(d => {
+        const m = d.data() || {};
+        if (m.sender === 'user') return `玩家：${String(m.text || '').slice(0,2500)}`;
+        return (Array.isArray(m.segments)? m.segments : []).map(s =>
+          `${s.kind === 'npc' ? (s.name || 'NPC') : '世界旁白'}：${String(s.text||'')}`
+        ).join('\n');
+      }).filter(Boolean).join('\n');
+      const allowed = (Array.isArray(world.npcCharacters) ? world.npcCharacters : [])
+        .slice(0,35).map(n => ({
+          id:String(n.id || ''),kind:String(n.kind||'npc'),
+          name:String(n.name||''),role:String(n.role||''),
+          gender:String(n.gender||''),age:String(n.age||''),
+          birthday:String(n.birthday||''),appearance:String(n.appearance||''),
+          personality:String(n.personality||''),background:String(n.background||''),
+          relationships:String(n.relationships||''),speechStyle:String(n.speechStyle||''),
+        }));
+      const system = [
+        '你是互動敘事引擎。玩家是故事唯一自主控制的主角。',
+        '嚴禁代替玩家寫行為、對白、情緒、內心、決定或身份；只回應玩家實際提供的內容。',
+        '遵守世界觀與 NPC 設定。主要角色不等於固定男主角；依場景選擇需要出場的人物。',
+        '一次回覆可有多段世界旁白與多名 NPC 發言，但避免無關 NPC 集體插話。',
+        '已設定 NPC 使用其原本 id；臨時 NPC 可使用 npcId="" 並提供 name，但不可假冒既有 id。',
+        '只輸出一個合法 JSON 物件，不要 Markdown。格式：',
+        '{"segments":[{"kind":"narrator","text":"..."},{"kind":"npc","npcId":"人物ID","name":"人物名","text":"..."}]}',
+        'segments 需 1 至 12 項，各 text 必須非空；文字使用台灣繁體中文。',
+        `世界名稱：${String(world.name||'')}`,
+        `世界背景：${String(world.worldSetting||'').slice(0,5000)}`,
+        `人物：${JSON.stringify(allowed).slice(0,18000)}`,
+      ].join('\n');
+      const result = await callAiWithRetry({
+        modelId:'google/gemini-3-flash-preview',
+        fallbackModelId:'deepseek/deepseek-v3.2',
+        requestBody:{messages:[
+          {role:'system',content:system},
+          {role:'user',content:`既有劇情：\n${history.slice(-18000)}\n\n玩家本次輸入：${rawMessage}`},
+        ],temperature:0.85,max_tokens:2200},retryPrimary:false,timeoutMs:95000,
+      });
+      let content = result?.choices?.[0]?.message?.content || '';
+      if (Array.isArray(content)) content = content.map(p=>p.text||'').join('');
+      content = String(content).trim().replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'');
+      let parsed;
+      try { parsed = JSON.parse(content); }
+      catch (_) { throw new HttpsError('internal','AI 回傳格式異常，請重試（不會儲存失敗回覆）'); }
+      if (!Array.isArray(parsed.segments)) throw new HttpsError('internal','AI 回覆缺少段落');
+      const validIds = new Map(allowed.filter(n=>n.id).map(n=>[n.id,n.name]));
+      const segments = parsed.segments.slice(0,12).map(item => {
+        const kind = item?.kind === 'npc'?'npc':'narrator';
+        const text = normalizeAiResponseScript(String(item?.text||'').slice(0,4500),'台灣繁體中文').trim();
+        const npcId = kind === 'npc' && validIds.has(String(item?.npcId||'')) ? String(item.npcId) : '';
+        const name = kind === 'npc' ? (npcId ? validIds.get(npcId) : String(item?.name||'路人').slice(0,80)) : '';
+        return {kind,npcId,name,text};
+      }).filter(s=>s.text);
+      if (!segments.length) throw new HttpsError('internal','AI 回覆為空');
+      const batch=db.batch();
+      batch.set(msgs.doc(requestId),{sender:'user',text:rawMessage,timestamp:now});
+      batch.set(msgs.doc(`ai_${requestId}`),{sender:'ai',segments,timestamp:now});
+      batch.update(room,{lastMessage:segments[segments.length-1].text.slice(0,180),
+        lastActivity:now, processing:false,lockedAt:FieldValue.delete(),
+        messageCount:FieldValue.increment(2)});
+      await batch.commit();
+    } catch(err) {
+      if(reserved) await room.update({processing:false,lockedAt:FieldValue.delete()})
+        .catch(e=>logger.warn('world test lock release failed',e));
+      if(err instanceof HttpsError) throw err;
+      logger.error('worldPrivateTest send failed',err);
+      throw new HttpsError('internal','私人試玩暫時無法回覆');
+    }
+  }
+  const historySnap=await msgs.orderBy('timestamp','asc').limit(100).get();
+  return {
+    sessionId,worldId,worldName:String(world.name||'未命名世界'),
+    coverImage:String(world.coverImage||''),
+    npcs:(Array.isArray(world.npcCharacters)?world.npcCharacters:[]).map(n=>({
+      id:String(n.id||''),name:String(n.name||''),avatarUrl:String(n.avatarUrl||''),
+    })),
+    messages:historySnap.docs.map(d=>({id:d.id,...d.data(),timestamp:undefined})),
+  };
+});

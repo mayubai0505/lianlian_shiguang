@@ -1,3 +1,4 @@
+import '../services/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -5,6 +6,7 @@ import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import '../services/toast_utils.dart';
 import 'character_edit_page.dart';
 import 'world_edit_page.dart';
+import 'world_chat_page.dart';
 import 'official_creator_studio_page.dart';
 import 'package:rxdart/rxdart.dart'; // 🌟 記得這個一定要有！
 import 'dart:io'; // 🌟 讀取手機本機檔案必備！
@@ -553,7 +555,7 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
     // 依照 WorldEditPage 實際使用的兩個資料位置，避免與角色資料混用。
     final worldStream = FirebaseFirestore.instance
         .collection('artifacts')
-        .doc(const String.fromEnvironment('APP_ID', defaultValue: 'lianlianshiguang'))
+        .doc(AppConfig.appId)
         .collection('worlds')
         .where('createdBy', isEqualTo: uid)
         .snapshots();
@@ -672,17 +674,20 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
           icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
           onPressed: () => _deleteWorldDraft(context, doc.id),
         )
+            : status == 'private'
+            ? IconButton(
+          tooltip: '私人試玩',
+          icon: Icon(Icons.play_circle_outline_rounded,
+              color: theme.colorScheme.primary, size: 29),
+          onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => WorldChatPage(worldId: doc.id))),
+        )
             : const Icon(Icons.chevron_right_rounded),
         onTap: () => Navigator.of(context).push(MaterialPageRoute(
           builder: (_) => status == 'draft'
               ? WorldEditPage(draftId: doc.id)
               : WorldEditPage(worldId: doc.id),
         )),
-        onLongPress: status == 'private'
-            ? () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('私人試玩功能將於世界觀聊天室串接後開放'),
-        ))
-            : null,
       ),
     );
   }

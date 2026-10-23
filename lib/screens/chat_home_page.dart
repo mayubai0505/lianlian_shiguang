@@ -8,6 +8,7 @@ import 'package:provider/provider.dart'; // ✨ 引入 Provider
 import '../services/theme_notifier.dart'; // ✨ 引入主題背景
 import '../services/toast_utils.dart';
 import 'chat_page.dart';
+import 'world_chat_page.dart';
 import 'character_model.dart';
 import 'dart:async';
 import 'notification_list_page.dart'; // 記得根據妳的資料夾路徑調整
@@ -909,17 +910,13 @@ class _ChatHomePageState extends State<ChatHomePage> {
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(
-                  onTap: () => showDialog<void>(
-                    context: context,
-                    builder: (dialogContext) => AlertDialog(
-                      title: const Text('開放世界聊天室'),
-                      content: const Text('世界觀專屬 AI 聊天室尚未串接完成，目前先提供聊天列表介面，還無法續玩。'),
-                      actions: [
-                        TextButton(onPressed: () => Navigator.pop(dialogContext),
-                            child: const Text('知道了')),
-                      ],
-                    ),
-                  ),
+                  onTap: () {
+                    final worldId = (data['worldId'] ?? '').toString();
+                    if (worldId.isEmpty) return;
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (_) => WorldChatPage(worldId: worldId),
+                    ));
+                  },
                   child: Padding(
                     padding: const EdgeInsets.all(14),
                     child: Row(
