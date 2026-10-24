@@ -419,32 +419,26 @@ class AuthService {
     }
   }
 
-  Future<bool> hasPendingDeleteRequest(String uid) async {
-
-    final doc = await _firestore
-        .collection('users')
-        .doc(uid)
-        .get();
-
-
-    if (!doc.exists) {
-      return false;
-    }
-
-
-    final data = doc.data() ?? {};
-
-
-    return data['accountDeleteRequested'] == true;
+  // 登入時由伺服器決定刪除期限；不可用手機時間做安全判斷。
+  Future<String> getAccountDeletionStatus() async {
+    final callable = FirebaseFunctions.instanceFor(region: 'us-central1')
+        .httpsCallable('getAccountDeletionStatus');
+    final result = await callable.call();
+    final data = Map<String, dynamic>.from(result.data as Map);
+    return (data['status'] ?? 'unknown').toString();
   }
 
 // 📡 監聽登入狀態變化 (讓 App 知道現在是誰在線)
-Stream<User?> get authStateChanges => _auth.authStateChanges();
+  Stream<User?> get authStateChanges => _auth.authStateChanges();
 
 // 📝 建立新使用者資料 (當玩家第一次登入《戀戀拾光》時執行)
   Future<bool> createNewUser(User user) async {
     final userDocRef = _firestore.collection('users').doc(user.uid);
     final userDoc = await userDocRef.get();
+    // 刪除中的帳號不可因登入而被更新、修補或重建。
+    if (userDoc.exists && userDoc.data()?['accountDeleteRequested'] == true) {
+      return false;
+    }
 
     if (!userDoc.exists) {
 
@@ -620,37 +614,23 @@ Stream<User?> get authStateChanges => _auth.authStateChanges();
   }
 
   Future<bool> checkDeleteStatus(User user) async {
-
     final doc = await FirebaseFirestore.instance
         .collection('users')
         .doc(user.uid)
         .get();
-
-
     if (!doc.exists) {
       return false;
     }
-
-
     final data = doc.data()!;
-
-
     if (data['accountDeleteRequested'] == true) {
-
       final deleteDate =
       (data['deleteScheduledAt'] as Timestamp)
           .toDate();
-
-
       if (DateTime.now().isBefore(deleteDate)) {
-
         // 還在冷靜期
         return true;
       }
     }
-
-
     return false;
   }
-
 }

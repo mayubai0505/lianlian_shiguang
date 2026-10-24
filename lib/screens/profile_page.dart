@@ -25,6 +25,7 @@ import 'character_model.dart';
 import 'settings_page.dart';
 import 'character_edit_page.dart';
 import 'world_edit_page.dart';
+import 'world_chat_page.dart';
 import 'store_page.dart';
 import '../page/announcement_page.dart';
 import '../services/app_constants.dart';
@@ -124,7 +125,7 @@ class _ProfilePageState extends State<ProfilePage>
   void initState() {
     super.initState();
     _profileTabController = TabController(
-      length: 3,
+      length: 4,
       vsync: this,
     );
 
@@ -2291,6 +2292,7 @@ class _ProfilePageState extends State<ProfilePage>
 
                       tabs: [
                         Tab(height: 48, text: l10n.profilePageTabCharacters),
+                        Tab(height: 48, text: Localizations.localeOf(context).languageCode == 'zh' ? '開放世界' : 'Worlds'),
                         Tab(height: 48, text: l10n.profilePageTabMoments),
                         Tab(
                           height: 48,
@@ -2312,6 +2314,7 @@ class _ProfilePageState extends State<ProfilePage>
               _profileTabController,
               children: [
                 _buildCharactersTab(),
+                _buildWorldsTab(),
                 _buildMomentsTab(),
                 _buildAboutMeTab(),
               ],
@@ -2924,7 +2927,7 @@ class _ProfilePageState extends State<ProfilePage>
                     child: _buildProfileStatItem(
                       value: _cachedProfileMoments.length,
                       label: l10n.profilePageTabMoments,
-                      onTap: () => _profileTabController.animateTo(1),
+                      onTap: () => _profileTabController.animateTo(2),
                     ),
                   ),
                   Expanded(
@@ -3479,6 +3482,122 @@ class _ProfilePageState extends State<ProfilePage>
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // 個人主頁「開放世界」：只查詢目前登入者建立的作品，避免私人世界曝光。
+  Widget _buildWorldsTab() {
+    final theme = Theme.of(context);
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return const Center(child: Text('請先登入'));
+    final worlds = _db.collection('artifacts').doc(_appId).collection('worlds');
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: worlds.where('createdBy', isEqualTo: uid).snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text('讀取世界觀失敗：${snapshot.error}'),
+          ));
+        }
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final docs = snapshot.data!.docs.toList()
+          ..sort((a, b) {
+            final at = a.data()['updatedAt'];
+            final bt = b.data()['updatedAt'];
+            final ad = at is Timestamp ? at.millisecondsSinceEpoch : 0;
+            final bd = bt is Timestamp ? bt.millisecondsSinceEpoch : 0;
+            return bd.compareTo(ad);
+          });
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(18, 14, 18, 60),
+          children: [
+            Row(children: [
+              Expanded(child: Text('我的開放世界',
+                  style: GoogleFonts.notoSerifTc(fontSize: 18,
+                      fontWeight: FontWeight.w600))),
+              TextButton.icon(
+                onPressed: _createWorld,
+                icon: const Icon(Icons.add_rounded, size: 18),
+                label: const Text('建立世界觀'),
+              ),
+            ]),
+            const SizedBox(height: 12),
+            if (docs.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 90),
+                child: Column(children: [
+                  Icon(Icons.auto_stories_outlined, size: 48,
+                      color: theme.colorScheme.primary.withValues(alpha: .55)),
+                  const SizedBox(height: 14),
+                  const Text('還沒有建立開放世界'),
+                  const SizedBox(height: 5),
+                  const Text('建立妳的第一個世界觀吧'),
+                ]),
+              ),
+            for (final doc in docs) _buildMyWorldCard(doc, theme),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildMyWorldCard(
+      QueryDocumentSnapshot<Map<String, dynamic>> doc, ThemeData theme) {
+    final data = doc.data();
+    final name = (data['name'] ?? '未命名世界觀').toString();
+    final cover = (data['coverImage'] ?? '').toString();
+    final isPublic = data['status'] == 'public' || data['isPublic'] == true;
+    final count = data['npcCharacters'] is List
+        ? (data['npcCharacters'] as List).length : 0;
+    return Card(
+      elevation: 0,
+      margin: const EdgeInsets.only(bottom: 12),
+      shape: RoundedRectangleBorder(
+          side: BorderSide(color: theme.colorScheme.primary.withValues(alpha: .16)),
+          borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Row(children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: SizedBox(width: 72, height: 82,
+                child: cover.startsWith('https://')
+                    ? Image.network(cover, fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) =>
+                    const Icon(Icons.auto_stories_outlined))
+                    : const Icon(Icons.auto_stories_outlined, size: 32)),
+          ),
+          const SizedBox(width: 12),
+          Expanded(child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(name, maxLines: 2, overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.notoSerifTc(fontSize: 15,
+                      fontWeight: FontWeight.w600)),
+              const SizedBox(height: 5),
+              Text('${isPublic ? '公開' : '私人'} · $count 位人物',
+                  style: TextStyle(fontSize: 12,
+                      color: theme.colorScheme.onSurfaceVariant)),
+              const SizedBox(height: 4),
+              Wrap(spacing: 4, children: [
+                TextButton(
+                    onPressed: () => Navigator.push(context,
+                        MaterialPageRoute(builder: (_) =>
+                            WorldChatPage(worldId: doc.id))),
+                    child: const Text('進入聊天')),
+                TextButton(
+                    onPressed: () => Navigator.push(context,
+                        MaterialPageRoute(builder: (_) =>
+                            WorldEditPage(worldId: doc.id))),
+                    child: const Text('編輯')),
+              ]),
+            ],
+          )),
+        ]),
       ),
     );
   }

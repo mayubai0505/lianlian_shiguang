@@ -6,6 +6,7 @@ import 'dart:ui';
 import 'dart:math';
 import 'character_model.dart';
 import 'character_profile_page.dart';
+import 'world_discovery_page.dart';
 import 'search_character_page.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import '../services/app_constants.dart';
@@ -89,6 +90,28 @@ Widget _buildEncounterCachedImage(
     },
     errorBuilder: (context, error, stackTrace) => fallback,
   );
+}
+
+class _DiscoveryWorld {
+  const _DiscoveryWorld(this.id, this.data);
+  final String id;
+  final Map<String, dynamic> data;
+  String get name => (data['name'] ?? '').toString();
+  String get createdBy => (data['createdBy'] ?? '').toString();
+  String get cover => (data['coverImage'] ?? '').toString();
+  List<String> get tags => (data['tags'] is List)
+      ? (data['tags'] as List).map((v) => v.toString()).toList()
+      : <String>[];
+}
+
+class _DiscoveryCategory {
+  const _DiscoveryCategory(this.id, this.label, {this.isEvent = false,
+    this.characterIds = const [], this.worldIds = const [], this.scope = 'both',
+    this.order = 100});
+  final String id, label, scope;
+  final bool isEvent;
+  final List<String> characterIds, worldIds;
+  final int order;
 }
 
 // 邂逅頁面
@@ -390,18 +413,6 @@ class SelectChatPageState extends State<SelectChatPage> {
 
           final characters = snapshot.data ?? const <Character>[];
 
-          if (characters.isEmpty) {
-            return Center(
-              child: Text(
-                l10n.encounter_no_available_characters,
-                style: GoogleFonts.notoSerifTc(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
-                  fontSize: 14,
-                ),
-              ),
-            );
-          }
-
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!mounted) return;
             _precacheCharacterImages(context, characters);
@@ -410,6 +421,7 @@ class SelectChatPageState extends State<SelectChatPage> {
           return _DiscoveryHallView(
             allCharacters: characters,
             blockedCharacterIds: _blockedCharacterIds,
+            blockedCreatorIds: _blockedCreatorIds,
             onRefresh: _refreshAllData,
           );
         },
@@ -477,14 +489,14 @@ class _DiscoveryHallView extends StatelessWidget {
   final Future<void> Function() onRefresh;
   // ⭐ 新增
   final Set<String> blockedCharacterIds;
-
+  final Set<String> blockedCreatorIds;
 
   const _DiscoveryHallView({
     required this.allCharacters,
     required this.onRefresh,
     // ⭐ 新增
     required this.blockedCharacterIds,
-
+    required this.blockedCreatorIds,
   });
 
   @override
@@ -492,6 +504,7 @@ class _DiscoveryHallView extends StatelessWidget {
     return _LatestTab(
       allCharacters: allCharacters,
       blockedCharacterIds: blockedCharacterIds,
+      blockedCreatorIds: blockedCreatorIds,
       onRefresh: onRefresh,
     );
   }
@@ -503,6 +516,7 @@ class _LatestTab extends StatefulWidget {
   final Future<void> Function() onRefresh;
   // ⭐ 新增
   final Set<String> blockedCharacterIds;
+  final Set<String> blockedCreatorIds;
 
 
   const _LatestTab({
@@ -510,6 +524,7 @@ class _LatestTab extends StatefulWidget {
     required this.onRefresh,
     // ⭐ 新增
     required this.blockedCharacterIds,
+    required this.blockedCreatorIds,
 
   });
 
@@ -520,6 +535,68 @@ class _LatestTab extends StatefulWidget {
 
 class _LatestTabState extends State<_LatestTab> {
   String _selectedCategory = '全部';
+  List<_DiscoveryWorld> _worlds = [];
+  List<_DiscoveryCategory> _dynamicCategories = [];
+  bool _worldsLoading = true;
+
+  Future<void> _loadWorldsAndCategories() async {
+    try {
+      final root = FirebaseFirestore.instance.collection('artifacts')
+          .doc(AppConfig.appId);
+      final results = await Future.wait([
+        root.collection('worlds').where('isPublic', isEqualTo: true)
+            .get(),
+        root.collection('discovery_categories').get(),
+      ]);
+      final worldsSnapshot = results[0];
+      final categoriesSnapshot = results[1];
+      final worlds = worldsSnapshot.docs.where((doc) {
+        final d = doc.data();
+        return d['status'] == 'public' && d['publicPlayable'] == true && d['isDraft'] != true &&
+            !widget.blockedCreatorIds.contains((d['createdBy'] ?? '').toString());
+      }).map((doc) => _DiscoveryWorld(doc.id, doc.data())).toList()..shuffle();
+      final now = DateTime.now();
+      final cats = <_DiscoveryCategory>[];
+      for (final doc in categoriesSnapshot.docs) {
+        final d = doc.data();
+        if (d['enabled'] != true) continue;
+        final begin = d['startAt'];
+        final end = d['endAt'];
+        if (begin is Timestamp && now.isBefore(begin.toDate())) continue;
+        if (end is Timestamp && !now.isBefore(end.toDate())) continue;
+        final label = (d['label'] ?? '').toString().trim();
+        if (label.isEmpty || doc.id == '全部') continue;
+        cats.add(_DiscoveryCategory(doc.id, label,
+          isEvent: d['type'] == 'event',
+          scope: (d['scope'] ?? 'both').toString(),
+          order: (d['order'] as num?)?.toInt() ?? 100,
+          characterIds: (d['characterIds'] is List)
+              ? (d['characterIds'] as List).map((x) => x.toString()).toList() : [],
+          worldIds: (d['worldIds'] is List)
+              ? (d['worldIds'] as List).map((x) => x.toString()).toList() : [],
+        ));
+      }
+      if (!mounted) return;
+      setState(() { _worlds = worlds; _dynamicCategories = cats; _worldsLoading = false; });
+    } catch (e) {
+      debugPrint('⚠️ 世界觀／遠端分類讀取失敗（使用原有分類）：$e');
+      if (mounted) setState(() => _worldsLoading = false);
+    }
+  }
+
+  List<_DiscoveryCategory> get _availableCategories {
+    final events = _dynamicCategories.where((x) => x.isEvent).toList()
+      ..sort((a,b) => a.order.compareTo(b.order));
+    final ordinary = _dynamicCategories.where((x) => !x.isEvent).toList()
+      ..sort((a,b) => a.order.compareTo(b.order));
+    final base = ordinary.isNotEmpty ? ordinary : _discoveryCategories
+        .where((x) => x != '全部' && x != '開放世界')
+        .map((x) => _DiscoveryCategory(x, x)).toList();
+    return [const _DiscoveryCategory('全部','全部'), ...events,
+      const _DiscoveryCategory('開放世界','開放世界'),
+      ...base.where((x) => x.id != '開放世界' && x.id != '全部')];
+  }
+
 
   // 邂逅首頁固定使用的大分類。
   // 「其他」一定放最後；首頁為單排橫向滑動。
@@ -691,6 +768,7 @@ class _LatestTabState extends State<_LatestTab> {
     super.initState();
     _rebuildGridCharacters();
     _rebuildBannerCharacters();
+    _loadWorldsAndCategories();
   }
 
   @override
@@ -707,6 +785,7 @@ class _LatestTabState extends State<_LatestTab> {
     if (!listEquals(oldIds, newIds)) {
       _rebuildGridCharacters();
       _rebuildBannerCharacters();
+      _loadWorldsAndCategories();
     }
   }
 
@@ -723,6 +802,14 @@ class _LatestTabState extends State<_LatestTab> {
     // UI 顯示才交給 _categoryLabel() 翻譯，避免切換語言後「全部」失效，
     // 導致所有角色都被篩掉。
     if (category == '全部') return true;
+    if (category == '開放世界') return false;
+    for (final custom in _dynamicCategories) {
+      if (custom.id != category) continue;
+      if (custom.scope == 'world') return false;
+      if (custom.isEvent) return custom.characterIds.contains(character.id);
+      if (custom.characterIds.isNotEmpty) return custom.characterIds.contains(character.id);
+      return _matchesKeywords(character, custom.label);
+    }
 
     if (category == '其他') {
       return !_discoveryCategories
@@ -730,6 +817,10 @@ class _LatestTabState extends State<_LatestTab> {
           .any((item) => _matchesCategory(character, item));
     }
 
+    return _matchesKeywords(character, category);
+  }
+
+  bool _matchesKeywords(Character character, String category) {
     final keywords = _categoryKeywords[category] ?? <String>[category];
 
     final searchableValues = <String>[
@@ -762,6 +853,64 @@ class _LatestTabState extends State<_LatestTab> {
         .toList();
   }
 
+  List<Object> get _filteredEntries {
+    final characterItems = _filteredCharacters;
+    final worlds = _worlds.where((world) {
+      if (_selectedCategory == '全部' || _selectedCategory == '開放世界') return true;
+      for (final cat in _dynamicCategories) {
+        if (cat.id != _selectedCategory) continue;
+        if (cat.scope == 'character') return false;
+        if (cat.isEvent) return cat.worldIds.contains(world.id);
+        if (cat.worldIds.isNotEmpty) return cat.worldIds.contains(world.id);
+        return world.tags.contains(cat.label);
+      }
+      return world.tags.contains(_selectedCategory);
+    }).toList();
+    if (_selectedCategory == '開放世界') return worlds;
+    if (_selectedCategory != '全部') return [...characterItems, ...worlds];
+    final result = <Object>[...characterItems, ...worlds];
+    // 隨機混排，避免開放世界永遠擠在列表最後。
+    result.shuffle(Random(42));
+    return result;
+  }
+
+  Widget _buildEntryCard(BuildContext context, Object entry, {required bool isDesktop}) {
+    if (entry is Character) return _buildCharacterCard(context, entry, isDesktop:isDesktop);
+    final world = entry as _DiscoveryWorld;
+    final theme = Theme.of(context);
+    return GestureDetector(
+      onTap: () => Navigator.push(context, MaterialPageRoute(
+          builder: (_) => WorldDiscoveryPage(worldId:world.id))),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(isDesktop ? 18 : 16),
+        child: AspectRatio(aspectRatio: isDesktop ? 0.78 : 0.85, child: Stack(
+          fit: StackFit.expand, children: [
+          _buildEncounterCachedImage(context, imageUrl:world.cover,
+              fit:BoxFit.cover, alignment:Alignment.topCenter,
+              cacheWidth:isDesktop ? 900 : 720),
+          const DecoratedBox(decoration:BoxDecoration(gradient:LinearGradient(
+              begin:Alignment.topCenter,end:Alignment.bottomCenter,
+              colors:[Colors.transparent,Colors.black87], stops:[0.4,1]))),
+          Positioned(left:10,top:10,child:Container(
+            padding:const EdgeInsets.symmetric(horizontal:9,vertical:5),
+            decoration:BoxDecoration(color:theme.colorScheme.primary,
+                borderRadius:BorderRadius.circular(9)),
+            child:Text('開放世界',style:TextStyle(color:theme.colorScheme.onPrimary,
+                fontSize:11,fontWeight:FontWeight.w600)),)),
+          Positioned(left:12,right:12,bottom:12,child:Column(
+              crossAxisAlignment:CrossAxisAlignment.start,mainAxisSize:MainAxisSize.min,
+              children:[Text(world.name,maxLines:2,overflow:TextOverflow.ellipsis,
+                  style:TextStyle(color:Colors.white,fontWeight:FontWeight.bold,
+                      fontSize:isDesktop?18:15)),
+                if (world.tags.isNotEmpty) Text(world.tags.take(3).join(' · '),
+                    maxLines:1,overflow:TextOverflow.ellipsis,
+                    style:const TextStyle(color:Colors.white70,fontSize:11))])),
+        ],
+        )),
+      ),
+    );
+  }
+
   Widget _buildCategoryStrip(
       BuildContext context,
       bool useDesktopLayout,
@@ -773,22 +922,22 @@ class _LatestTabState extends State<_LatestTab> {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
-        itemCount: _discoveryCategories.length,
+        itemCount: _availableCategories.length,
         separatorBuilder: (_, __) => SizedBox(
           width: useDesktopLayout ? 10 : 8,
         ),
         itemBuilder: (context, index) {
-          final category = _discoveryCategories[index];
-          final isSelected = category == _selectedCategory;
+          final category = _availableCategories[index];
+          final isSelected = category.id == _selectedCategory;
 
           return Material(
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(22),
               onTap: () {
-                if (category == _selectedCategory) return;
+                if (category.id == _selectedCategory) return;
                 setState(() {
-                  _selectedCategory = category;
+                  _selectedCategory = category.id;
                 });
               },
               child: AnimatedContainer(
@@ -820,7 +969,7 @@ class _LatestTabState extends State<_LatestTab> {
                 ),
                 child: Center(
                   child: Text(
-                    _categoryLabel(category, l10n),
+                    category.isEvent ? category.label : _categoryLabel(category.id, l10n),
                     style: GoogleFonts.notoSerifTc(
                       color: isSelected
                           ? theme.colorScheme.onPrimary
@@ -868,7 +1017,7 @@ class _LatestTabState extends State<_LatestTab> {
     final double maxContentWidth = useDesktopLayout ? 1280 : double.infinity;
 
     final List<Character> bannerList = _shuffledBannerCharacters;
-    final List<Character> filteredCharacters = _filteredCharacters;
+    final List<Object> filteredEntries = _filteredEntries;
 
     return Align(
       alignment: Alignment.topCenter,
@@ -910,17 +1059,17 @@ class _LatestTabState extends State<_LatestTab> {
             ),
             SizedBox(height: useDesktopLayout ? 26 : 20),
 
-            if (filteredCharacters.isEmpty)
+            if (filteredEntries.isEmpty)
               _buildEmptyCategory(context)
             else if (useDesktopLayout)
               _buildDesktopCharacterGrid(
                 context,
-                filteredCharacters,
+                filteredEntries,
               )
             else
               _buildMobileStaggeredGrid(
                 context,
-                filteredCharacters,
+                filteredEntries,
               ),
 
             SizedBox(height: useDesktopLayout ? 40 : 28),
@@ -1554,10 +1703,10 @@ class _LatestTabState extends State<_LatestTab> {
   // =========================================================
   Widget _buildMobileStaggeredGrid(
       BuildContext context,
-      List<Character> sortedList,
+      List<Object> sortedList,
       ) {
-    final List<Character> leftCol = [];
-    final List<Character> rightCol = [];
+    final List<Object> leftCol = [];
+    final List<Object> rightCol = [];
 
     for (int i = 0; i < sortedList.length; i++) {
       if (i.isEven) {
@@ -1576,7 +1725,7 @@ class _LatestTabState extends State<_LatestTab> {
               return Padding(
                 padding:
                 const EdgeInsets.only(bottom: 12),
-                child: _buildCharacterCard(
+                child: _buildEntryCard(
                   context,
                   char,
                   isDesktop: false,
@@ -1595,7 +1744,7 @@ class _LatestTabState extends State<_LatestTab> {
                 return Padding(
                   padding:
                   const EdgeInsets.only(bottom: 12),
-                  child: _buildCharacterCard(
+                  child: _buildEntryCard(
                     context,
                     char,
                     isDesktop: false,
@@ -1614,7 +1763,7 @@ class _LatestTabState extends State<_LatestTab> {
   // =========================================================
   Widget _buildDesktopCharacterGrid(
       BuildContext context,
-      List<Character> sortedList,
+      List<Object> sortedList,
       ) {
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -1641,7 +1790,7 @@ class _LatestTabState extends State<_LatestTab> {
           children: sortedList.map((char) {
             return SizedBox(
               width: cardWidth,
-              child: _buildCharacterCard(
+              child: _buildEntryCard(
                 context,
                 char,
                 isDesktop: true,

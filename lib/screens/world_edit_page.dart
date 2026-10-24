@@ -35,11 +35,20 @@ class _WorldEditPageState extends State<WorldEditPage>
   late final TabController _tabs;
   final TextEditingController _name = TextEditingController();
   final TextEditingController _setting = TextEditingController();
+  final TextEditingController _summary = TextEditingController();
+  final TextEditingController _era = TextEditingController();
+  final TextEditingController _tags = TextEditingController();
+  final TextEditingController _lore = TextEditingController();
+  static const _suggestedTags = <String>[
+    '懸疑', '恐怖', '戀愛', '現代奇幻', '校園', '群像', '冒險', '日常', '推理', '異世界',
+  ];
   final TextEditingController _opening = TextEditingController();
   final TextEditingController _firstLine = TextEditingController();
 
   final List<_WorldImage> _images = [];
   final List<_WorldNpc> _npcs = [];
+  final List<Map<String, String>> _secretChapters = [];
+  bool _secretReadFailed = false;
   bool _isPublic = false; // 預設私人試玩
   bool _busy = false;
   bool _loading = true;
@@ -75,9 +84,38 @@ class _WorldEditPageState extends State<WorldEditPage>
         if (data['createdBy'] != user.uid) throw StateError('無權編輯此世界觀');
         _name.text = data['name']?.toString() ?? '';
         _setting.text = data['worldSetting']?.toString() ?? '';
+        _summary.text = data['summary']?.toString() ?? '';
+        _era.text = data['era']?.toString() ?? '';
+        final savedTags = data['tags'];
+        _tags.text = savedTags is List ? savedTags.map((e) => e.toString()).join('、') : '';
+        _lore.text = data['worldLore']?.toString() ?? '';
         _opening.text = data['storyOpening']?.toString() ?? '';
         _firstLine.text = data['firstLine']?.toString() ?? '';
         _isPublic = data['isPublic'] == true;
+        final secretId = _worldId ?? _draftId;
+        if (secretId != null) {
+          try {
+            final secretDoc = await _db.collection('world_secrets').doc(secretId).get();
+            if (secretDoc.exists) {
+              final entries = secretDoc.data()?['chapters'];
+              if (entries is List) {
+                for (final item in entries) {
+                  if (item is Map) {
+                    _secretChapters.add({
+                      'id': (item['id'] ?? '').toString(),
+                      'title': (item['title'] ?? '').toString(),
+                      'condition': (item['condition'] ?? '').toString(),
+                      'content': (item['content'] ?? '').toString(),
+                    });
+                  }
+                }
+              }
+            }
+          } catch (e) {
+            _secretReadFailed = true;
+            _notice('秘密篇章讀取失敗：請確認 Rules 已部署。為防止覆蓋，暫停儲存。');
+          }
+        }
         final rawImages = data['images'];
         if (rawImages is List) {
           for (final item in rawImages) {
@@ -184,9 +222,44 @@ class _WorldEditPageState extends State<WorldEditPage>
     );
   }
 
+  List<String> get _selectedTags => _tags.text
+      .split(RegExp(r'[,，、\n]'))
+      .map((tag) => tag.trim())
+      .where((tag) => tag.isNotEmpty)
+      .toSet()
+      .toList();
+
+  Widget _tagPicker() {
+    final chosen = _selectedTags;
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      const Text('主題標籤（最多 5 個）'),
+      const SizedBox(height: 8),
+      Wrap(spacing: 8, runSpacing: 4, children: [
+        for (final tag in _suggestedTags)
+          FilterChip(
+            label: Text(tag), selected: chosen.contains(tag),
+            onSelected: _busy ? null : (selected) {
+              final next = List<String>.from(_selectedTags);
+              if (selected && next.length >= 5) {
+                _notice('最多選擇 5 個標籤');
+                return;
+              }
+              if (selected) { next.add(tag); } else { next.remove(tag); }
+              setState(() => _tags.text = next.join('、'));
+            },
+          ),
+      ]),
+      const SizedBox(height: 8),
+      _field(_tags, '標籤（可自訂，以頓號分隔）', max: 120),
+    ]);
+  }
+
   /// 一次儲存世界觀與圖像；正式發布需要檢查必填，草稿不需要。
   Future<bool> _save({required bool asDraft}) async {
-    if (_busy) return false;
+    if (_busy || _secretReadFailed) {
+      if (_secretReadFailed) _notice('秘密篇章讀取失敗，請勿覆蓋儲存。');
+      return false;
+    }
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       _notice('請先登入');
@@ -199,6 +272,17 @@ class _WorldEditPageState extends State<WorldEditPage>
         _notice('請完成世界名稱、至少一張圖片、世界背景、故事開場與第一句話');
         return false;
       }
+    }
+    if (_selectedTags.length > 5) {
+      _notice('主題標籤最多 5 個，請刪減後再儲存');
+      return false;
+    }
+    if (_secretChapters.length > 12 || _secretChapters.any((c) =>
+    (c['title'] ?? '').trim().isEmpty ||
+        (c['condition'] ?? '').trim().isEmpty ||
+        (c['content'] ?? '').trim().isEmpty)) {
+      _notice('每章請填寫標題、解鎖條件與秘密內容，最多 12 章');
+      return false;
     }
     setState(() => _busy = true);
     try {
@@ -238,6 +322,10 @@ class _WorldEditPageState extends State<WorldEditPage>
       final data = <String, dynamic>{
         'name': _name.text.trim(),
         'worldSetting': _setting.text.trim(),
+        'summary': _summary.text.trim(),
+        'era': _era.text.trim(),
+        'tags': _selectedTags,
+        'worldLore': _lore.text.trim(),
         'storyOpening': _opening.text.trim(),
         'firstLine': _firstLine.text.trim(),
         'images': urls,
@@ -249,18 +337,28 @@ class _WorldEditPageState extends State<WorldEditPage>
         'createdBy': user.uid,
         'updatedAt': FieldValue.serverTimestamp(),
       };
+      // 秘密另存 root/world_secrets，絕不放進可公開查詢的 worlds / public_worlds。
+      final batch = _db.batch();
+      final secretsRef = _db.collection('world_secrets').doc(worldId);
+      batch.set(secretsRef, {
+        'createdBy': user.uid,
+        'chapters': _secretChapters.map((c) => Map<String, String>.from(c)).toList(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
       if (asDraft) {
         _draftId ??= worldId;
-        await _drafts.doc(_draftId).set({
+        batch.set(_drafts.doc(_draftId), {
           ...data,
           'createdAt': FieldValue.serverTimestamp(),
         }, SetOptions(merge: true));
-        _notice('世界觀草稿已儲存');
+        await batch.commit();
+        _notice('世界觀草稿與秘密篇章已儲存');
       } else {
-        await _worlds.doc(worldId).set({
+        batch.set(_worlds.doc(worldId), {
           ...data,
           'createdAt': FieldValue.serverTimestamp(),
         }, SetOptions(merge: true));
+        await batch.commit();
         _worldId = worldId;
         if (_draftId != null) {
           try {
@@ -377,7 +475,11 @@ class _WorldEditPageState extends State<WorldEditPage>
         },
       ),
       const SizedBox(height: 18),
+      _field(_summary, '世界觀公開簡介（不含劇透）', lines: 3, max: 1200),
+      _field(_era, '時空背景（例：架空現代、民國時期）', max: 120),
+      _tagPicker(),
       _field(_setting, '世界觀背景與規則 *', lines: 6, max: 10000),
+      _field(_lore, '完整世界背景／事件與地點（給 AI 的設定）', lines: 6, max: 6000),
     ],
   );
 
@@ -432,11 +534,54 @@ class _WorldEditPageState extends State<WorldEditPage>
     );
   }
 
+  Future<void> _editSecret({int? index}) async {
+    final original = index == null ? <String, String>{} : _secretChapters[index];
+    final title = TextEditingController(text: original['title'] ?? '');
+    final condition = TextEditingController(text: original['condition'] ?? '');
+    final content = TextEditingController(text: original['content'] ?? '');
+    try {
+      final result = await showDialog<Map<String, String>>(context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text(index == null ? '新增秘密篇章' : '編輯秘密篇章'),
+            content: SizedBox(width: 520, child: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
+              TextField(controller: title, maxLength: 80, decoration: const InputDecoration(labelText: '篇章標題 *')),
+              TextField(controller: condition, maxLength: 500, maxLines: 3, decoration: const InputDecoration(labelText: '解鎖條件（給後端判定的描述）*')),
+              TextField(controller: content, maxLength: 5000, minLines: 5, maxLines: null, decoration: const InputDecoration(labelText: '秘密內容 *')),
+            ]))),
+            actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('取消')),
+              FilledButton(onPressed: () {
+                if (title.text.trim().isEmpty || condition.text.trim().isEmpty || content.text.trim().isEmpty) return;
+                Navigator.pop(ctx, {
+                  'id': original['id']?.isNotEmpty == true ? original['id']! : DateTime.now().microsecondsSinceEpoch.toString(),
+                  'title': title.text.trim(), 'condition': condition.text.trim(), 'content': content.text.trim(),
+                });
+              }, child: const Text('確認'))],
+          ));
+      if (!mounted || result == null) return;
+      setState(() {if (index == null) {_secretChapters.add(result);} else {_secretChapters[index] = result;}});
+    } finally { title.dispose(); condition.dispose(); content.dispose(); }
+  }
+
   Widget _storyTab() => ListView(
     padding: const EdgeInsets.all(16),
     children: [
       _field(_opening, '故事開場 *', lines: 5, max: 1500),
       _field(_firstLine, '故事第一句話 *', lines: 5, max: 3000),
+      const SizedBox(height: 12),
+      Text('秘密篇章', style: Theme.of(context).textTheme.titleMedium),
+      const SizedBox(height: 6),
+      const Text('只有創作者和可信任後端能讀取。這裡可安全儲存秘密，劇情自動解鎖尚需後端判定，請勿將秘密放在公開背景或第一句話。'),
+      const SizedBox(height: 10),
+      for (var i = 0; i < _secretChapters.length; i++)
+        Card(child: ListTile(
+          title: Text(_secretChapters[i]['title'] ?? ''),
+          subtitle: Text(_secretChapters[i]['condition'] ?? ''),
+          onTap: _busy ? null : () => _editSecret(index: i),
+          trailing: IconButton(icon: const Icon(Icons.delete_outline),
+              onPressed: _busy ? null : () => setState(() => _secretChapters.removeAt(i))),
+        )),
+      OutlinedButton.icon(onPressed: _busy || _secretChapters.length >= 12 ? null : () => _editSecret(),
+          icon: const Icon(Icons.add), label: const Text('新增秘密篇章（最多 12 章）')),
       const Divider(height: 30),
       const Text('發布設定', style: TextStyle(fontWeight: FontWeight.bold)),
       RadioListTile<bool>(
@@ -520,6 +665,10 @@ class _WorldEditPageState extends State<WorldEditPage>
     _tabs.dispose();
     _name.dispose();
     _setting.dispose();
+    _summary.dispose();
+    _era.dispose();
+    _tags.dispose();
+    _lore.dispose();
     _opening.dispose();
     _firstLine.dispose();
     super.dispose();
@@ -537,12 +686,14 @@ class _WorldNpc {
     String id = '', this.kind = 'npc', this.name = '', this.role = '',
     this.gender = '', this.birthday = '', this.age = '', this.appearance = '',
     this.personality = '', this.background = '', this.speechStyle = '',
-    this.relationships = '', this.avatarUrl = '', this.avatarFile,
+    this.relationships = '', this.dialogueExamples = '', this.avatarUrl = '', this.avatarFile,
+    this.allowPhotoGeneration = false,
   }) : id = id.isNotEmpty ? id : DateTime.now().microsecondsSinceEpoch.toString();
 
   String id, kind, name, role, gender, birthday, age, appearance;
-  String personality, background, speechStyle, relationships, avatarUrl;
+  String personality, background, speechStyle, relationships, dialogueExamples, avatarUrl;
   XFile? avatarFile;
+  bool allowPhotoGeneration;
 
   factory _WorldNpc.fromMap(Map data) => _WorldNpc(
     id: data['id']?.toString() ?? '',
@@ -557,14 +708,18 @@ class _WorldNpc {
     background: data['background']?.toString() ?? '',
     speechStyle: data['speechStyle']?.toString() ?? '',
     relationships: data['relationships']?.toString() ?? '',
+    dialogueExamples: data['dialogueExamples']?.toString() ?? '',
     avatarUrl: data['avatarUrl']?.toString() ?? '',
+    allowPhotoGeneration: data['allowPhotoGeneration'] == true,
   );
 
   _WorldNpc copy() => _WorldNpc(
     id: id, kind: kind, name: name, role: role, gender: gender,
     birthday: birthday, age: age, appearance: appearance,
     personality: personality, background: background, speechStyle: speechStyle,
-    relationships: relationships, avatarUrl: avatarUrl, avatarFile: avatarFile,
+    relationships: relationships, dialogueExamples: dialogueExamples,
+    avatarUrl: avatarUrl, avatarFile: avatarFile,
+    allowPhotoGeneration: allowPhotoGeneration,
   );
 
   Map<String, dynamic> toMap() => {
@@ -572,7 +727,9 @@ class _WorldNpc {
     'gender': gender, 'birthday': birthday, 'age': age, 'appearance': appearance,
     'personality': personality, 'background': background,
     'speechStyle': speechStyle, 'relationships': relationships,
+    'dialogueExamples': dialogueExamples,
     'avatarUrl': avatarUrl,
+    'allowPhotoGeneration': allowPhotoGeneration,
   };
 }
 
@@ -605,6 +762,7 @@ class _WorldPersonEditorState extends State<_WorldPersonEditor> {
       'background': TextEditingController(text: person.background),
       'speechStyle': TextEditingController(text: person.speechStyle),
       'relationships': TextEditingController(text: person.relationships),
+      'dialogueExamples': TextEditingController(text: person.dialogueExamples),
     };
   }
 
@@ -660,6 +818,7 @@ class _WorldPersonEditorState extends State<_WorldPersonEditor> {
     person.background = fields['background']!.text.trim();
     person.speechStyle = fields['speechStyle']!.text.trim();
     person.relationships = fields['relationships']!.text.trim();
+    person.dialogueExamples = fields['dialogueExamples']!.text.trim();
     Navigator.pop(context, person);
   }
 
@@ -682,6 +841,19 @@ class _WorldPersonEditorState extends State<_WorldPersonEditor> {
             icon: const Icon(Icons.add_photo_alternate_outlined),
             label: const Text('上傳人物照片（選填）'),
           )),
+          const SizedBox(height: 12),
+          SwitchListTile.adaptive(
+            contentPadding: EdgeInsets.zero,
+            title: const Text('允許使用此人物照片生成其他照片'),
+            subtitle: const Text(
+              '僅在劇情適合時可將此人物的圖片作為生成參考。'
+                  '不勾選仍可正常聊天及贈送一般禮物；每位人物獨立設定。',
+            ),
+            value: person.allowPhotoGeneration,
+            onChanged: (allowed) => setState(() {
+              person.allowPhotoGeneration = allowed;
+            }),
+          ),
           const SizedBox(height: 16),
           field('name', '姓名 *', max: 60),
           field('gender', '性別／性別設定', max: 80),
@@ -693,6 +865,7 @@ class _WorldPersonEditorState extends State<_WorldPersonEditor> {
           field('background', '過去經歷', lines: 4, max: 3000),
           field('relationships', '與其他人物的關係', lines: 3, max: 2000),
           field('speechStyle', '說話方式／口吻', lines: 3, max: 1000),
+          field('dialogueExamples', '對話範例（幫助 AI 理解語氣）', lines: 4, max: 1500),
         ])),
         Padding(padding: const EdgeInsets.all(16), child: SizedBox(
           width: double.infinity,

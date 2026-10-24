@@ -509,22 +509,37 @@ class _LoginPageState extends State<LoginPage> {
       }
       await Future.delayed(const Duration(milliseconds: 300));
       if (result != null && mounted) {
-        // ⭐ 檢查是否有刪除申請
-        final user = result['user'];
-        if (user != null) {
-          final bool hasDeleteRequest =
-          await _authService.hasPendingDeleteRequest(
-            user.uid,
+        // 使用後端時間判斷，已逾期帳號不得恢復或進入遊戲。
+        final String deletionStatus;
+        try {
+          deletionStatus = await _authService.getAccountDeletionStatus();
+        } catch (e) {
+          debugPrint('❌ 無法確認帳號刪除狀態: $e');
+          await _authService.signOut(context);
+          return; // 查詢失敗時不直接放行
+        }
+        if (!mounted) return;
+        if (deletionStatus == 'expired' || deletionStatus == 'processing') {
+          await showDialog<void>(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: const Text('帳號已進入刪除程序'),
+              content: const Text('此帳號已超過三天取消期限，無法再恢復使用。如需協助，請聯絡客服。'),
+              actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('確定'))],
+            ),
           );
-
-          if (hasDeleteRequest) {
-            final bool restored =
-            await _showRestoreAccountDialog(context);
-            if (!restored) {
-              await _authService.signOut(context);
-              return;
-            }
+          if (mounted) await _authService.signOut(context);
+          return;
+        }
+        if (deletionStatus == 'pending') {
+          final bool restored = await _showRestoreAccountDialog(context);
+          if (!restored) {
+            if (mounted) await _authService.signOut(context);
+            return;
           }
+        } else if (deletionStatus != 'active') {
+          if (mounted) await _authService.signOut(context);
+          return;
         }
         print("✅ [3. 成功] 拿到資料了，準備穿越時光隧道 (跳轉中)！");
         await _handleLoginSuccess(result);
@@ -783,11 +798,13 @@ class _LoginPageState extends State<LoginPage> {
                 l10n.restoreAccountButton,
               ),
               onPressed: () async {
-                await _authService.cancelDeleteAccount();
-                Navigator.pop(
-                  context,
-                  true,
-                );
+                final errorMessage = await _authService.cancelDeleteAccount();
+                if (!context.mounted) return;
+                if (errorMessage == null) {
+                  Navigator.pop(context, true);
+                } else {
+                  ToastUtils.showCenterToast(context, errorMessage);
+                }
               },
             ),
           ],
