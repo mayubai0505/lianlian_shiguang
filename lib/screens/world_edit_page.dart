@@ -1,12 +1,14 @@
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../services/app_constants.dart';
+import '../services/toast_utils.dart';
 
 /// 獨立世界觀編輯器。與 CharacterEditPage / public_characters 完全分開。
 ///
@@ -36,6 +38,7 @@ class _WorldEditPageState extends State<WorldEditPage>
   final TextEditingController _name = TextEditingController();
   final TextEditingController _setting = TextEditingController();
   final TextEditingController _summary = TextEditingController();
+  final TextEditingController _shortPitch = TextEditingController();
   final TextEditingController _era = TextEditingController();
   final TextEditingController _tags = TextEditingController();
   final TextEditingController _lore = TextEditingController();
@@ -85,6 +88,7 @@ class _WorldEditPageState extends State<WorldEditPage>
         _name.text = data['name']?.toString() ?? '';
         _setting.text = data['worldSetting']?.toString() ?? '';
         _summary.text = data['summary']?.toString() ?? '';
+        _shortPitch.text = (data['shortPitch'] ?? '').toString();
         _era.text = data['era']?.toString() ?? '';
         final savedTags = data['tags'];
         _tags.text = savedTags is List ? savedTags.map((e) => e.toString()).join('、') : '';
@@ -111,9 +115,16 @@ class _WorldEditPageState extends State<WorldEditPage>
                 }
               }
             }
+          } on FirebaseException catch (e) {
+            _secretReadFailed = true;
+            debugPrint('世界觀秘密篇章讀取失敗：code=${e.code}, message=${e.message}, worldId=$secretId, uid=${user.uid}');
+            _notice(e.code == 'permission-denied'
+                ? '秘密篇章讀取權限不足，請確認 Firestore Rules 已部署。已暫停儲存以保護原資料。'
+                : '秘密篇章讀取失敗（${e.code}），已暫停儲存以保護原資料。', isError: true);
           } catch (e) {
             _secretReadFailed = true;
-            _notice('秘密篇章讀取失敗：請確認 Rules 已部署。為防止覆蓋，暫停儲存。');
+            debugPrint('世界觀秘密篇章讀取失敗：$e');
+            _notice('秘密篇章讀取失敗，已暫停儲存以保護原資料。', isError: true);
           }
         }
         final rawImages = data['images'];
@@ -138,9 +149,9 @@ class _WorldEditPageState extends State<WorldEditPage>
     }
   }
 
-  void _notice(String value) {
+  void _notice(String value, {bool isError = false}) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value)));
+    ToastUtils.showCenterToast(context, value, isError: isError);
   }
 
   Future<void> _pickImages() async {
@@ -257,7 +268,7 @@ class _WorldEditPageState extends State<WorldEditPage>
   /// 一次儲存世界觀與圖像；正式發布需要檢查必填，草稿不需要。
   Future<bool> _save({required bool asDraft}) async {
     if (_busy || _secretReadFailed) {
-      if (_secretReadFailed) _notice('秘密篇章讀取失敗，請勿覆蓋儲存。');
+      if (_secretReadFailed) _notice('秘密篇章尚未成功讀取，為保護既有內容暫時無法發布。請確認權限並重新開啟頁面。');
       return false;
     }
     final user = FirebaseAuth.instance.currentUser;
@@ -323,6 +334,7 @@ class _WorldEditPageState extends State<WorldEditPage>
         'name': _name.text.trim(),
         'worldSetting': _setting.text.trim(),
         'summary': _summary.text.trim(),
+        'shortPitch': _shortPitch.text.trim(),
         'era': _era.text.trim(),
         'tags': _selectedTags,
         'worldLore': _lore.text.trim(),
@@ -352,14 +364,29 @@ class _WorldEditPageState extends State<WorldEditPage>
           'createdAt': FieldValue.serverTimestamp(),
         }, SetOptions(merge: true));
         await batch.commit();
-        _notice('世界觀草稿與秘密篇章已儲存');
+        _notice('開放世界草稿與秘密篇章已儲存');
       } else {
         batch.set(_worlds.doc(worldId), {
           ...data,
-          'createdAt': FieldValue.serverTimestamp(),
+          if (_worldId == null) 'createdAt': FieldValue.serverTimestamp(),
         }, SetOptions(merge: true));
         await batch.commit();
         _worldId = worldId;
+        // 公開資格與公開清單由可信任後端核准與投影，不能讓客戶端直接寫 publicPlayable。
+        try {
+          final publishResult = await FirebaseFunctions.instanceFor(region: 'asia-east1')
+              .httpsCallable('worldPublish')
+              .call({'worldId': worldId});
+          final published = (publishResult.data is Map)
+              ? (publishResult.data as Map)['publicPlayable'] == true
+              : false;
+          if (_isPublic && !published) {
+            throw StateError('後端尚未確認公開資格，請稍後再次發布。');
+          }
+        } on FirebaseFunctionsException catch (e) {
+          debugPrint('開放世界發布後端失敗：code=${e.code}, message=${e.message}, worldId=$worldId');
+          throw StateError('開放世界資料已儲存，但公開啟用失敗（${e.code}）：${e.message ?? '請確認 worldPublish 已部署'}。修正後可再次按「發布開放世界」。');
+        }
         if (_draftId != null) {
           try {
             await _drafts.doc(_draftId).delete();
@@ -368,11 +395,12 @@ class _WorldEditPageState extends State<WorldEditPage>
             debugPrint('草稿清理失敗（世界觀已發布）：$e');
           }
         }
-        _notice(_isPublic ? '世界觀已公開' : '私人世界觀已建立');
+        _notice(_isPublic ? '公開開放世界已發布' : '私人開放世界已儲存');
       }
       return true;
     } catch (e) {
-      _notice('儲存失敗：$e');
+      debugPrint('開放世界儲存／發布失敗：$e');
+      _notice('儲存／發布失敗：$e', isError: true);
       return false;
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -418,7 +446,7 @@ class _WorldEditPageState extends State<WorldEditPage>
   Widget _basicTab() => ListView(
     padding: const EdgeInsets.all(16),
     children: [
-      _field(_name, '世界觀名稱 *', max: 60),
+      _field(_name, '開放世界名稱 *', max: 60),
       const Text('世界觀圖片（最多 6 張，第一張為主要封面）'),
       const SizedBox(height: 10),
       GridView.builder(
@@ -475,6 +503,7 @@ class _WorldEditPageState extends State<WorldEditPage>
         },
       ),
       const SizedBox(height: 18),
+      _field(_shortPitch, '卡片一句話介紹（選填，最多 60 字）', max: 60),
       _field(_summary, '世界觀公開簡介（不含劇透）', lines: 3, max: 1200),
       _field(_era, '時空背景（例：架空現代、民國時期）', max: 120),
       _tagPicker(),
@@ -570,7 +599,7 @@ class _WorldEditPageState extends State<WorldEditPage>
       const SizedBox(height: 12),
       Text('秘密篇章', style: Theme.of(context).textTheme.titleMedium),
       const SizedBox(height: 6),
-      const Text('只有創作者和可信任後端能讀取。這裡可安全儲存秘密，劇情自動解鎖尚需後端判定，請勿將秘密放在公開背景或第一句話。'),
+      const Text('秘密篇章只儲存在私密資料區。正式公開不會直接公開內容；玩家需在遊玩中達成劇情條件才可解鎖。'),
       const SizedBox(height: 10),
       for (var i = 0; i < _secretChapters.length; i++)
         Card(child: ListTile(
@@ -585,15 +614,15 @@ class _WorldEditPageState extends State<WorldEditPage>
       const Divider(height: 30),
       const Text('發布設定', style: TextStyle(fontWeight: FontWeight.bold)),
       RadioListTile<bool>(
-        title: const Text('私人世界觀'),
-        subtitle: const Text('只有創作者本人可進入測試'),
+        title: const Text('私人開放世界'),
+        subtitle: const Text('僅自己可以遊玩及測試，其他玩家無法進入'),
         value: false,
         groupValue: _isPublic,
         onChanged: _busy ? null : (value) => setState(() => _isPublic = value!),
       ),
       RadioListTile<bool>(
-        title: const Text('公開世界觀'),
-        subtitle: const Text('其他玩家可以遊玩自己的獨立故事'),
+        title: const Text('公開開放世界'),
+        subtitle: const Text('其他玩家可進入遊玩，每位玩家有獨立劇情進度'),
         value: true,
         groupValue: _isPublic,
         onChanged: _busy ? null : (value) => setState(() => _isPublic = value!),
@@ -611,7 +640,7 @@ class _WorldEditPageState extends State<WorldEditPage>
             icon: const Icon(Icons.arrow_back),
             onPressed: _busy ? null : _exit,
           ),
-          title: const Text('創立世界觀'),
+          title: const Text('創立開放世界'),
           bottom: TabBar(
             controller: _tabs,
             tabs: const [
@@ -650,7 +679,7 @@ class _WorldEditPageState extends State<WorldEditPage>
                     height: 20, width: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                      : Text(_isPublic ? '發布世界觀' : '建立私人世界觀'),
+                      : const Text('發布開放世界'),
                 ),
               ),
             ),
@@ -666,6 +695,7 @@ class _WorldEditPageState extends State<WorldEditPage>
     _name.dispose();
     _setting.dispose();
     _summary.dispose();
+    _shortPitch.dispose();
     _era.dispose();
     _tags.dispose();
     _lore.dispose();
@@ -803,9 +833,7 @@ class _WorldPersonEditorState extends State<_WorldPersonEditor> {
   void save() {
     final name = fields['name']!.text.trim();
     if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('請先填寫人物姓名')),
-      );
+      ToastUtils.showCenterToast(context, '請先填寫人物姓名', isError: true);
       return;
     }
     person.name = name;

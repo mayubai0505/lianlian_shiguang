@@ -924,6 +924,9 @@ class _ChatPageState extends State<ChatPage> {
 
       // 2 = 聊天分頁
       await prefs.setInt(mainTabKey, 2);
+      // 最後進入一般角色聊天室時，覆蓋世界觀的「最後聊天室類型」。
+      // 保留原本角色／房間的記錄格式，讓舊玩家資料繼續相容。
+      await prefs.setString('last_chat_type_${FirebaseAuth.instance.currentUser!.uid}', 'character');
       await prefs.setString(characterKey, safeCharacterId);
       await prefs.setString(sessionKey, safeSessionId);
 
@@ -955,9 +958,11 @@ class _ChatPageState extends State<ChatPage> {
       // 避免其他導頁流程誤刪新紀錄。
       if (currentSessionId.isNotEmpty &&
           savedSessionId.isNotEmpty &&
-          savedSessionId == currentSessionId) {
+          savedSessionId == currentSessionId &&
+          prefs.getString('last_chat_type_${FirebaseAuth.instance.currentUser!.uid}') != 'world') {
         await prefs.remove(characterKey);
         await prefs.remove(sessionKey);
+        await prefs.remove('last_chat_type_${FirebaseAuth.instance.currentUser!.uid}');
 
         // 離開聊天室後，玩家仍停在「聊天」主分頁。
         await prefs.setInt(mainTabKey, 2);
@@ -1224,24 +1229,8 @@ class _ChatPageState extends State<ChatPage> {
       final lastDate = data['lastRegenerateDate'] as String?;
       int currentCount = data['regenerateCount'] as int? ?? maxCount;
 
-      // 🌟🌟🌟 總裁霸氣補發：如果今天是同一天，且妳有月卡，但次數竟然可憐到 <= 3，代表妳是今天剛買的！
-      if (hasPass && lastDate == todayStr && currentCount <= 3) {
-        currentCount = maxCount; // 霸氣直接幫妳把次數灌滿到 20！
-
-        // 順便把滿血的次數寫回雲端，以免下次進來又被扣
-        await docRef.set({
-          'regenerateCount': maxCount,
-        }, SetOptions(merge: true));
-      }
-
-      if (currentCount > maxCount) {
-        currentCount = maxCount;
-
-        // 順便把校正後的次數寫回雲端，確保資料庫乾淨
-        await docRef.set({
-          'regenerateCount': maxCount,
-        }, SetOptions(merge: true));
-      }
+      // 額度只能由後端成功交易扣減／跨日判定，前端不可補發或覆寫。
+      currentCount = currentCount.clamp(0, maxCount).toInt();
 
       // 3. 判斷是否需要重置
       if (lastDate != todayStr) {
@@ -1254,11 +1243,7 @@ class _ChatPageState extends State<ChatPage> {
           });
         }
 
-        // 這時候才執行寫入
-        await docRef.set({
-          'regenerateCount': maxCount,
-          'lastRegenerateDate': todayStr,
-        }, SetOptions(merge: true));
+        // 不寫入 Firestore；後端才是免費額度的唯一權威來源。
       } else {
         // 🕰️ 同一天：讀取雲端現有的次數 (已經經過上面的 VIP 霸氣補發了！)
         if (mounted) {
@@ -3866,8 +3851,9 @@ class _ChatPageState extends State<ChatPage> {
         'chatMode': _currentMode?.name ?? 'daily',
         'statusBarFields': statusBarFields,
         'persistentInstructions': _persistentInstructions,
-// 明確告訴後端這是免費重新生成，不能扣聊天花花。
+// 告訴後端這是重新生成；免費或按模式扣點由後端判斷。
         'isRegenerate': true,
+        'regeneratePaidConfirmed': _freeRegenerateCount <= 0,
         'isBirthdayFreebie': false,
         'overrideSystemPrompt': '',
         'sessionId': _sessionId,
@@ -9616,11 +9602,7 @@ class _ChatPageState extends State<ChatPage> {
       final data = doc.data();
 
       if (data == null || data['lastRegenerateDate'] != todayStr) {
-        // 新的一天，重置回滿
-        await docRef.set({
-          'regenerateCount': _maxRegenerateCount,
-          'lastRegenerateDate': todayStr,
-        }, SetOptions(merge: true));
+        // 僅更新顯示：後端會在成功交易時依日期處理當天額度。
 
         if (!mounted) return;
 
@@ -9637,8 +9619,7 @@ class _ChatPageState extends State<ChatPage> {
       // 🔥 核心修正：如果資料庫存的次數「大於」現在的上限（代表月卡剛過期），強制壓回上限
       if (currentCount > _maxRegenerateCount) {
         currentCount = _maxRegenerateCount;
-        // 可選：順便把正確的數字寫回 Firebase，保持資料庫乾淨
-        docRef.set({'regenerateCount': currentCount}, SetOptions(merge: true));
+        // 不寫回；避免月卡狀態／跨裝置競態造成額度錯誤。
       }
 
       if (!mounted) return;
@@ -11562,8 +11543,29 @@ class _ChatPageState extends State<ChatPage> {
 
     try {
       if (_freeRegenerateCount <= 0) {
-        _showSubscriptionDialog();
-        return;
+        final cost = switch (_currentMode?.name ?? 'story') {
+          'story' => 5,
+          'immersive' => 7,
+          'resonance' => 10,
+          'gemini' || 'daily' => 1,
+          _ => 5,
+        };
+        if (_flowerPoints < cost) {
+          _showCenterToast('花花不足，重新生成需要 $cost 朵', isError: true);
+          return;
+        }
+        final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (c) => AlertDialog(
+            title: const Text('付費重新生成'),
+            content: Text('今日免費次數已用完，本次依目前模式收取 $cost 朵花花。是否繼續？'),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('取消')),
+              TextButton(onPressed: () => Navigator.pop(c, true), child: const Text('確認')),
+            ],
+          ),
+        );
+        if (confirmed != true || !mounted) return;
       }
 
       if (_messagesCollection == null) {
@@ -11577,7 +11579,7 @@ class _ChatPageState extends State<ChatPage> {
       final prefs = await SharedPreferences.getInstance();
       final skipWarning = prefs.getBool('hide_regenerate_warning') ?? false;
 
-      if (!skipWarning) {
+      if (!skipWarning && _freeRegenerateCount > 0) {
         bool dontShowAgain = false;
         final confirmed = await showDialog<bool>(
           context: context,
@@ -11692,13 +11694,8 @@ class _ChatPageState extends State<ChatPage> {
 
       if (!regenerateSucceeded) return;
 
-      final consumed = await _consumeRegenerateCount();
-      if (!consumed) {
-        await _loadRegenerateCount();
-        debugPrint(
-          '⚠️ 重新生成成功，但扣除重新生成次數失敗',
-        );
-      }
+      // 免費次數已由後端 AI 成功交易扣除，避免前端重複扣次數。
+      await _loadRegenerateCount();
     } catch (e, stackTrace) {
       debugPrint('❌ 重新生成按鈕流程失敗：$e');
       debugPrint('$stackTrace');

@@ -18,6 +18,7 @@ import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:showcaseview/showcaseview.dart'; // 🌟 記得加這行
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 //聊天室的名稱更改
 class ChatHomePage extends StatefulWidget {
   const ChatHomePage({super.key});
@@ -826,6 +827,132 @@ class _ChatHomePageState extends State<ChatHomePage> {
   }
 
 
+  // ── 世界觀聊天室卡片長按操作（由後端驗證房間所屬玩家） ──
+  Future<void> _manageWorldRoom(String worldId, String action, {
+    String? name,
+    bool? pinned,
+  }) async {
+    try {
+      if (worldId.trim().isEmpty) throw StateError('世界觀 ID 不正確');
+      await FirebaseFunctions.instanceFor(region: 'asia-east1')
+          .httpsCallable('worldPrivateTest',
+          options: HttpsCallableOptions(timeout: const Duration(seconds: 90)))
+          .call(<String, dynamic>{
+        'worldId': worldId,
+        'action': action,
+        if (name != null) 'roomName': name,
+        if (pinned != null) 'pinned': pinned,
+      });
+      if (!mounted) return;
+      final message = switch (action) {
+        'renameRoom' => '聊天室名稱已更新',
+        'pinRoom' => pinned == true ? '已置頂世界觀聊天室' : '已取消置頂',
+        'deleteRoom' => '世界觀聊天室與對話紀錄已刪除',
+        _ => '操作完成',
+      };
+      ToastUtils.showCenterToast(context, message);
+    } on FirebaseFunctionsException catch (e) {
+      if (mounted) ToastUtils.showCenterToast(context,
+          e.message ?? '操作失敗，請稍後再試', isError: true);
+    } catch (e) {
+      if (mounted) ToastUtils.showCenterToast(context,
+          '操作失敗：$e', isError: true);
+    }
+  }
+
+  Future<void> _renameWorldRoom(String worldId, String currentName) async {
+    final controller = TextEditingController(text: currentName);
+    try {
+      final name = await showDialog<String>(context: context, builder: (ctx) =>
+          AlertDialog(
+            title: const Text('為這段記憶命名'),
+            content: TextField(controller: controller, autofocus: true,
+                maxLength: 20,
+                decoration: const InputDecoration(hintText: '輸入聊天室名稱')),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(ctx),
+                  child: const Text('取消')),
+              FilledButton(onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+                  child: const Text('儲存')),
+            ],
+          ));
+      if (name == null || name.isEmpty || name == currentName) return;
+      await _manageWorldRoom(worldId, 'renameRoom', name: name);
+    } finally {
+      controller.dispose();
+    }
+  }
+
+  Future<void> _deleteWorldRoom(String worldId, String displayName) async {
+    final confirmed = await showDialog<bool>(context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('刪除聊天室'),
+          content: Text('確定刪除「$displayName」的世界觀聊天紀錄？\n\n'
+              '此操作會永久刪除該世界的對話、劇情摘要、人物關係及備忘錄，無法復原。'
+              '創作者公開的世界觀設定不會刪除。'),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx, false),
+                child: const Text('取消')),
+            TextButton(onPressed: () => Navigator.pop(ctx, true),
+                child: const Text('刪除', style: TextStyle(color: Colors.red))),
+          ],
+        ));
+    if (confirmed == true) await _manageWorldRoom(worldId, 'deleteRoom');
+  }
+
+  Future<void> _showWorldRoomOptions({
+    required String worldId,
+    required String displayRoomName,
+    required bool isPinned,
+  }) async {
+    if (worldId.isEmpty) return;
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: theme.scaffoldBackgroundColor,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(26))),
+      builder: (sheetContext) => SafeArea(child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 12, 10, 18),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Container(width: 42, height: 4,
+              margin: const EdgeInsets.only(bottom: 12),
+              decoration: BoxDecoration(
+                  color: theme.colorScheme.onSurface.withValues(alpha: .14),
+                  borderRadius: BorderRadius.circular(99))),
+          ListTile(
+            minLeadingWidth: 34,
+            leading: Image.asset('assets/images/chat/chat_pin_bookmark.png',
+                width: 32, height: 32, color: primary),
+            title: Text(isPinned ? '取消置頂' : '置頂',
+                style: GoogleFonts.notoSerifTc(fontSize: 16, color: primary)),
+            onTap: () { Navigator.pop(sheetContext);
+            _manageWorldRoom(worldId, 'pinRoom', pinned: !isPinned); },
+          ),
+          ListTile(
+            minLeadingWidth: 34,
+            leading: Image.asset('assets/images/profile/profile_quill.png',
+                width: 32, height: 32, color: primary),
+            title: Text('為這段記憶命名',
+                style: GoogleFonts.notoSerifTc(fontSize: 16)),
+            onTap: () { Navigator.pop(sheetContext);
+            _renameWorldRoom(worldId, displayRoomName); },
+          ),
+          ListTile(
+            minLeadingWidth: 34,
+            leading: Image.asset('assets/images/chat/chat_msg_delete_mask.png',
+                width: 32, height: 32, color: Colors.redAccent),
+            title: Text('刪除', style: GoogleFonts.notoSerifTc(
+                fontSize: 16, color: Colors.redAccent)),
+            onTap: () { Navigator.pop(sheetContext);
+            _deleteWorldRoom(worldId, displayRoomName); },
+          ),
+        ]),
+      )),
+    );
+  }
+
   // ── 開放世界聊天：獨立列表 ──
   // 不直接呼叫 ChatPage：ChatPage 必須接收 Character，無法正確承載多 NPC 世界。
   Widget _buildWorldSessionsSliver(ThemeData theme) {
@@ -855,6 +982,9 @@ class _ChatHomePageState extends State<ChatHomePage> {
         docs.sort((a, b) {
           final aData = a.data() as Map<String, dynamic>;
           final bData = b.data() as Map<String, dynamic>;
+          final ap = aData['isPinned'] == true;
+          final bp = bData['isPinned'] == true;
+          if (ap != bp) return ap ? -1 : 1;
           final aTime = aData['lastActivity'] as Timestamp?;
           final bTime = bData['lastActivity'] as Timestamp?;
           if (aTime == null && bTime == null) return 0;
@@ -901,6 +1031,8 @@ class _ChatHomePageState extends State<ChatHomePage> {
                   .toString().trim();
               final preview = (data['lastMessage'] ?? '').toString();
               final isTest = data['isTestMode'] == true || data['isPrivateTest'] == true;
+              final worldId = (data['worldId'] ?? '').toString();
+              final worldPinned = data['isPinned'] == true;
               return Card(
                 margin: const EdgeInsets.only(bottom: 12),
                 color: theme.cardColor,
@@ -910,6 +1042,8 @@ class _ChatHomePageState extends State<ChatHomePage> {
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(
+                  onLongPress: () => _showWorldRoomOptions(
+                      worldId: worldId, displayRoomName: name, isPinned: worldPinned),
                   onTap: () {
                     final worldId = (data['worldId'] ?? '').toString();
                     if (worldId.isEmpty) return;
@@ -945,6 +1079,8 @@ class _ChatHomePageState extends State<ChatHomePage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              if (worldPinned) Icon(Icons.push_pin_rounded, size: 17,
+                                  color: theme.colorScheme.primary),
                               Text(name, maxLines: 1, overflow: TextOverflow.ellipsis,
                                   style: GoogleFonts.notoSerifTc(fontSize: 16,
                                       fontWeight: FontWeight.w600)),

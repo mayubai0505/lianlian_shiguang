@@ -7,6 +7,7 @@ import 'dart:math';
 import 'character_model.dart';
 import 'character_profile_page.dart';
 import 'world_discovery_page.dart';
+import 'public_worlds_page.dart';
 import 'search_character_page.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import '../services/app_constants.dart';
@@ -92,6 +93,47 @@ Widget _buildEncounterCachedImage(
   );
 }
 
+
+/// 世界遊玩次數：僅顯示後端確實提供的數值，不自行推估。
+String _worldPlayCountLabel(Object? raw) {
+  if (raw is! num) return '0';
+  final n = raw.toInt();
+  if (n < 0) return '0';
+  if (n < 1000) return '$n';
+  if (n < 1000000) {
+    final v = n / 1000;
+    return '${v >= 100 ? v.toStringAsFixed(0) : v.toStringAsFixed(1)}K';
+  }
+  final v = n / 1000000;
+  return '${v >= 100 ? v.toStringAsFixed(0) : v.toStringAsFixed(1)}M';
+}
+
+Widget _worldPlayBadge(Object? playCount) {
+  return Positioned(
+    top: 10,
+    right: 10,
+    child: IgnorePointer(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+        decoration: BoxDecoration(
+          color: Colors.black.withValues(alpha: 0.65),
+          borderRadius: BorderRadius.circular(999),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.chat_bubble_outline_rounded, color: Colors.white, size: 13),
+            const SizedBox(width: 5),
+            Text(_worldPlayCountLabel(playCount),
+                style: const TextStyle(color: Colors.white, fontSize: 12,
+                    fontWeight: FontWeight.w600)),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
 class _DiscoveryWorld {
   const _DiscoveryWorld(this.id, this.data);
   final String id;
@@ -99,6 +141,7 @@ class _DiscoveryWorld {
   String get name => (data['name'] ?? '').toString();
   String get createdBy => (data['createdBy'] ?? '').toString();
   String get cover => (data['coverImage'] ?? '').toString();
+  String get shortPitch => (data['shortPitch'] ?? '').toString().trim();
   List<String> get tags => (data['tags'] is List)
       ? (data['tags'] as List).map((v) => v.toString()).toList()
       : <String>[];
@@ -539,53 +582,103 @@ class _LatestTabState extends State<_LatestTab> {
   List<_DiscoveryCategory> _dynamicCategories = [];
   bool _worldsLoading = true;
 
+  // 世界與分類是兩個獨立的讀取來源：其中一個沒有權限，不應清掉另一個的結果。
+  // 此處不變更 Firestore Rules，也不嘗試繞過權限。
   Future<void> _loadWorldsAndCategories() async {
-    try {
-      final root = FirebaseFirestore.instance.collection('artifacts')
-          .doc(AppConfig.appId);
-      final results = await Future.wait([
-        root.collection('worlds').where('isPublic', isEqualTo: true)
-            .get(),
-        root.collection('discovery_categories').get(),
-      ]);
-      final worldsSnapshot = results[0];
-      final categoriesSnapshot = results[1];
-      final worlds = worldsSnapshot.docs.where((doc) {
-        final d = doc.data();
-        return d['status'] == 'public' && d['publicPlayable'] == true && d['isDraft'] != true &&
-            !widget.blockedCreatorIds.contains((d['createdBy'] ?? '').toString());
-      }).map((doc) => _DiscoveryWorld(doc.id, doc.data())).toList()..shuffle();
-      final now = DateTime.now();
-      final cats = <_DiscoveryCategory>[];
-      for (final doc in categoriesSnapshot.docs) {
-        final d = doc.data();
-        if (d['enabled'] != true) continue;
-        final begin = d['startAt'];
-        final end = d['endAt'];
-        if (begin is Timestamp && now.isBefore(begin.toDate())) continue;
-        if (end is Timestamp && !now.isBefore(end.toDate())) continue;
-        final label = (d['label'] ?? '').toString().trim();
-        if (label.isEmpty || doc.id == '全部') continue;
-        cats.add(_DiscoveryCategory(doc.id, label,
-          isEvent: d['type'] == 'event',
-          scope: (d['scope'] ?? 'both').toString(),
-          order: (d['order'] as num?)?.toInt() ?? 100,
-          characterIds: (d['characterIds'] is List)
-              ? (d['characterIds'] as List).map((x) => x.toString()).toList() : [],
-          worldIds: (d['worldIds'] is List)
-              ? (d['worldIds'] as List).map((x) => x.toString()).toList() : [],
-        ));
+    final root = FirebaseFirestore.instance.collection('artifacts')
+        .doc(AppConfig.appId);
+
+    // 獨立查詢，分類被拒絕時公開世界仍能正常顯示。
+    Future<List<_DiscoveryWorld>> loadWorlds() async {
+      // 公開目錄由可信任後端投影，只提供展示必要欄位；
+      // 不直接列舉含內部 NPC / 完整劇情設定的 worlds 集合。
+      try {
+        final callable = FirebaseFunctions.instanceFor(region: 'asia-east1')
+            .httpsCallable('worldPublicCatalog',
+            options: HttpsCallableOptions(timeout: const Duration(seconds: 30)));
+        final response = await callable.call(<String, dynamic>{});
+        final payload = response.data;
+        final rawWorlds = payload is Map ? payload['worlds'] : null;
+        if (rawWorlds is! List) return <_DiscoveryWorld>[];
+
+        final worlds = <_DiscoveryWorld>[];
+        for (final item in rawWorlds) {
+          if (item is! Map) continue;
+          final data = Map<String, dynamic>.from(item);
+          final worldId = (data['id'] ?? '').toString();
+          if (worldId.isEmpty) continue;
+          final creatorId = (data['creatorId'] ?? '').toString();
+          if (widget.blockedCreatorIds.contains(creatorId)) continue;
+          worlds.add(_DiscoveryWorld(worldId, {
+            ...data,
+            'createdBy': creatorId,
+          }));
+        }
+        worlds.shuffle();
+        return worlds;
+      } on FirebaseFunctionsException catch (e) {
+        debugPrint('⚠️ 公開世界目錄 API 讀取失敗：${e.code} / ${e.message}');
+        return <_DiscoveryWorld>[];
+      } catch (e) {
+        debugPrint('⚠️ 公開世界目錄 API 讀取失敗：$e');
+        return <_DiscoveryWorld>[];
       }
-      if (!mounted) return;
-      setState(() { _worlds = worlds; _dynamicCategories = cats; _worldsLoading = false; });
-    } catch (e) {
-      debugPrint('⚠️ 世界觀／遠端分類讀取失敗（使用原有分類）：$e');
-      if (mounted) setState(() => _worldsLoading = false);
     }
+
+    Future<List<_DiscoveryCategory>> loadCategories() async {
+      try {
+        final snapshot = await root.collection('discovery_categories').get();
+        final now = DateTime.now();
+        final cats = <_DiscoveryCategory>[];
+        for (final doc in snapshot.docs) {
+          final d = doc.data();
+          if (d['enabled'] != true) continue;
+          final begin = d['startAt'];
+          final end = d['endAt'];
+          if (begin is Timestamp && now.isBefore(begin.toDate())) continue;
+          if (end is Timestamp && !now.isBefore(end.toDate())) continue;
+          final label = (d['label'] ?? '').toString().trim();
+          if (label.isEmpty || doc.id == '全部' ||
+              doc.id == '開放世界' || label == '開放世界') continue;
+          cats.add(_DiscoveryCategory(doc.id, label,
+            isEvent: d['type'] == 'event',
+            scope: (d['scope'] ?? 'both').toString(),
+            order: (d['order'] as num?)?.toInt() ?? 100,
+            characterIds: (d['characterIds'] is List)
+                ? (d['characterIds'] as List)
+                .map((x) => x.toString()).toList() : [],
+            worldIds: (d['worldIds'] is List)
+                ? (d['worldIds'] as List)
+                .map((x) => x.toString()).toList() : [],
+          ));
+        }
+        return cats;
+      } on FirebaseException catch (e) {
+        // 舊分類已在本地提供；權限不足時繼續正常使用，不影響公開世界。
+        if (e.code != 'permission-denied') {
+          debugPrint('⚠️ 遠端分類讀取失敗：${e.code}，改用原有分類');
+        }
+        return <_DiscoveryCategory>[];
+      } catch (e) {
+        debugPrint('⚠️ 遠端分類讀取失敗：$e，改用原有分類');
+        return <_DiscoveryCategory>[];
+      }
+    }
+
+    final worldsFuture = loadWorlds();
+    final categoriesFuture = loadCategories();
+    final worlds = await worldsFuture;
+    final categories = await categoriesFuture;
+    if (!mounted) return;
+    setState(() {
+      _worlds = worlds;
+      _dynamicCategories = categories;
+      _worldsLoading = false;
+    });
   }
 
   List<_DiscoveryCategory> get _availableCategories {
-    final events = _dynamicCategories.where((x) => x.isEvent).toList()
+    final events = _dynamicCategories.where((x) => x.isEvent && x.id != '開放世界').toList()
       ..sort((a,b) => a.order.compareTo(b.order));
     final ordinary = _dynamicCategories.where((x) => !x.isEvent).toList()
       ..sort((a,b) => a.order.compareTo(b.order));
@@ -593,7 +686,6 @@ class _LatestTabState extends State<_LatestTab> {
         .where((x) => x != '全部' && x != '開放世界')
         .map((x) => _DiscoveryCategory(x, x)).toList();
     return [const _DiscoveryCategory('全部','全部'), ...events,
-      const _DiscoveryCategory('開放世界','開放世界'),
       ...base.where((x) => x.id != '開放世界' && x.id != '全部')];
   }
 
@@ -891,17 +983,17 @@ class _LatestTabState extends State<_LatestTab> {
           const DecoratedBox(decoration:BoxDecoration(gradient:LinearGradient(
               begin:Alignment.topCenter,end:Alignment.bottomCenter,
               colors:[Colors.transparent,Colors.black87], stops:[0.4,1]))),
-          Positioned(left:10,top:10,child:Container(
-            padding:const EdgeInsets.symmetric(horizontal:9,vertical:5),
-            decoration:BoxDecoration(color:theme.colorScheme.primary,
-                borderRadius:BorderRadius.circular(9)),
-            child:Text('開放世界',style:TextStyle(color:theme.colorScheme.onPrimary,
-                fontSize:11,fontWeight:FontWeight.w600)),)),
+          _worldPlayBadge(world.data['playCount']),
           Positioned(left:12,right:12,bottom:12,child:Column(
               crossAxisAlignment:CrossAxisAlignment.start,mainAxisSize:MainAxisSize.min,
               children:[Text(world.name,maxLines:2,overflow:TextOverflow.ellipsis,
                   style:TextStyle(color:Colors.white,fontWeight:FontWeight.bold,
                       fontSize:isDesktop?18:15)),
+                if (world.shortPitch.isNotEmpty) ...[
+                  const SizedBox(height:4),
+                  Text(world.shortPitch, maxLines:2,overflow:TextOverflow.ellipsis,
+                      style:const TextStyle(color:Colors.white, fontSize:12, height:1.25)),
+                ],
                 if (world.tags.isNotEmpty) Text(world.tags.take(3).join(' · '),
                     maxLines:1,overflow:TextOverflow.ellipsis,
                     style:const TextStyle(color:Colors.white70,fontSize:11))])),
@@ -1052,7 +1144,96 @@ class _LatestTabState extends State<_LatestTab> {
               SizedBox(height: useDesktopLayout ? 18 : 14),
             ],
 
-            // 16 個大分類：單排、左右滑、點擊後直接更新下方角色。
+            // 「探索公開世界」是獨立的大型入口，不屬於下方主題分類。
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(20),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const PublicWorldsPage()),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: AspectRatio(
+                    aspectRatio: useDesktopLayout ? 4.5 : 2.6,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Image.asset(
+                          'assets/images/banners/open_world_banner.png',
+                          fit: BoxFit.cover,
+                          alignment: Alignment.center,
+                        ),
+                        // 僅加淡淡左側遮罩，讓不同尺寸下的文字保持可讀。
+                        const DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                              colors: [
+                                Color(0x9CFFF5E9),
+                                Color(0x5CFFF5E9),
+                                Color(0x00FFF5E9),
+                              ],
+                              stops: [0.0, 0.53, 1.0],
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: useDesktopLayout ? 28 : 16,
+                            vertical: 12,
+                          ),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '探索公開世界',
+                                  style: GoogleFonts.notoSerifTc(
+                                    fontSize: useDesktopLayout ? 27 : 19,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFF6B4539),
+                                    shadows: const [
+                                      Shadow(color: Color(0x99FFF7EC), blurRadius: 6),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xDDFBF1E7),
+                                    borderRadius: BorderRadius.circular(7),
+                                  ),
+                                  child: Text(
+                                    '走進不同的世界，探索不一樣的旅程',
+                                    style: GoogleFonts.notoSerifTc(
+                                      fontSize: useDesktopLayout ? 16 : 12.5,
+                                      fontWeight: FontWeight.w600,
+                                      color: const Color(0xFF533629),
+                                      height: 1.3,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: useDesktopLayout ? 24 : 20),
+
+            // 邂逅主題列只保留角色／題材標籤，不包含「開放世界」。
             _buildCategoryStrip(
               context,
               useDesktopLayout,
@@ -1802,6 +1983,48 @@ class _LatestTabState extends State<_LatestTab> {
     );
   }
 
+  // 邂逅角色卡右上角遊玩次數：沿用角色既有 playCount，不新增查詢。
+  String _formatCharacterPlayCount(int value) {
+    if (value >= 1000000) {
+      final scaled = value / 1000000;
+      return '${scaled.toStringAsFixed(scaled >= 100 ? 0 : 1)}M';
+    }
+    if (value >= 1000) {
+      final scaled = value / 1000;
+      return '${scaled.toStringAsFixed(scaled >= 100 ? 0 : 1)}K';
+    }
+    return value.toString();
+  }
+
+  Widget _characterPlayBadge(int count, {required bool isDesktop}) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: isDesktop ? 11 : 9,
+        vertical: isDesktop ? 7 : 6,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.60),
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.chat_bubble_outline_rounded,
+              color: Colors.white, size: isDesktop ? 15 : 13),
+          const SizedBox(width: 5),
+          Text(
+            _formatCharacterPlayCount(count),
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: isDesktop ? 12 : 11,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   // =========================================================
   // 共用角色卡片
   // =========================================================
@@ -1872,6 +2095,18 @@ class _LatestTabState extends State<_LatestTab> {
                         0.48,
                         1,
                       ],
+                    ),
+                  ),
+                ),
+
+                // 封面右上角遊玩數，保持原卡片點擊範圍不變。
+                Positioned(
+                  top: isDesktop ? 14 : 10,
+                  right: isDesktop ? 14 : 10,
+                  child: IgnorePointer(
+                    child: _characterPlayBadge(
+                      char.playCount,
+                      isDesktop: isDesktop,
                     ),
                   ),
                 ),

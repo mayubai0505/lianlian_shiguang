@@ -321,25 +321,24 @@ class _ProfilePageState extends State<ProfilePage>
   Future<void> _loadUserPIDData() async {
     if (_userId == null) return;
 
-    // ✨ 1. 統一產生保底 ID (抽到最上面，不用重複寫)
-    final fallbackID = _userId!.length >= 8 ? _userId!.substring(0, 8) : _userId!;
+    final uid = _userId!;
 
     try {
       final doc = await FirebaseFirestore.instance.collection('users').doc(_userId).get();
 
       // ✨ 2. 預設給予保底值
-      String finalID = fallbackID;
+      String finalID = '';
       bool isChanged = false;
 
       // ✨ 3. 如果雲端有資料，再進行覆蓋
       if (doc.exists) {
         final data = doc.data() ?? {};
         final cloudID = (data['playerID']?.toString() ?? "").trim();
-        finalID = cloudID.isNotEmpty ? cloudID : fallbackID;
+        finalID = cloudID;
         isChanged = data['hasChangedID'] ?? false;
       }
 
-      if (!mounted) return;
+      if (!mounted || FirebaseAuth.instance.currentUser?.uid != uid) return;
 
       // ✨ 4. 統一更新畫面狀態
       setState(() {
@@ -350,7 +349,7 @@ class _ProfilePageState extends State<ProfilePage>
 
       // ✨ 5. 統一寫入本地暫存
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('playerID', finalID);
+      await prefs.setString(_profileCacheKey(uid, 'playerID'), finalID);
       await prefs.setBool('hasChangedID', isChanged);
 
       print("✅ 玩家 ID 載入同步成功：$finalID, 鎖定狀態：$isChanged");
@@ -361,8 +360,8 @@ class _ProfilePageState extends State<ProfilePage>
       // 🛡️ 斷網或報錯時的保底機制
       if (mounted) {
         setState(() {
-          _oldIDFromDB = fallbackID;
-          _playerIDController.text = fallbackID;
+          // 讀取失敗時不將 UID 片段偽裝成公開 ID。
+          // 保留上一個成功取得的值，避免誤導玩家。
         });
       }
     }
@@ -3647,30 +3646,24 @@ class _ProfilePageState extends State<ProfilePage>
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                     ),
                   ),
-                  PopupMenuButton<String>(
-                    tooltip: '新增創作',
+                  TextButton.icon(
+                    onPressed: _createCharacter,
                     icon: Icon(
                       Icons.add_rounded,
-                      size: 24,
+                      size: 22,
                       color: theme.colorScheme.primary,
                     ),
-                    onSelected: (selection) async {
-                      if (selection == 'character') {
-                        await _createCharacter();
-                      } else if (selection == 'world') {
-                        await _createWorld();
-                      }
-                    },
-                    itemBuilder: (menuContext) => const [
-                      PopupMenuItem<String>(
-                        value: 'character',
-                        child: Text('創建角色'),
+                    label: Text(
+                      '創建角色',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: theme.colorScheme.primary,
                       ),
-                      PopupMenuItem<String>(
-                        value: 'world',
-                        child: Text('創建開放世界'),
-                      ),
-                    ],
+                    ),
+                    style: TextButton.styleFrom(
+                      visualDensity: VisualDensity.compact,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                    ),
                   ),
                 ],
               ),
@@ -4861,27 +4854,28 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
+  // 個人主頁僅讀取既有 Player ID，絕不在登入或畫面初始化時產生並覆蓋 ID。
+  // 新帳號的 ID 配發必須由建立帳號流程負責，並同步維護 playerIDs 對照表。
   Future<void> _initializePlayerID() async {
-    if (_userId == null) return;
-    final prefs = await SharedPreferences.getInstance();
+    final uid = _userId;
+    if (uid == null) return;
 
-    final userDoc = await _db.collection('users').doc(_userId).get();
-    String? cloudID = userDoc.data()?['playerID'];
-
-    if (cloudID != null && cloudID.isNotEmpty) {
-      setState(() => _playerID = cloudID);
-      await prefs.setString('playerID', cloudID);
-    } else {
-      String newID = _generateRandomID(8);
-      try {
-        await _db.collection('users').doc(_userId).update({
-          'playerID': newID,
-        });
-        setState(() => _playerID = newID);
-        await prefs.setString('playerID', newID);
-      } catch (e) {
-        print("產生 PlayerID 失敗: $e");
+    try {
+      final userDoc = await _db.collection('users').doc(uid).get();
+      if (!userDoc.exists) return;
+      final cloudID = (userDoc.data()?['playerID'] ?? '').toString().trim();
+      if (cloudID.isEmpty) {
+        debugPrint('⚠️ 玩家 ID 尚未建立，個人主頁不會自動覆蓋：$uid');
+        return;
       }
+      if (!mounted || FirebaseAuth.instance.currentUser?.uid != uid) return;
+      setState(() => _playerID = cloudID);
+      final prefs = await SharedPreferences.getInstance();
+      if (FirebaseAuth.instance.currentUser?.uid == uid) {
+        await prefs.setString(_profileCacheKey(uid, 'playerID'), cloudID);
+      }
+    } catch (e) {
+      debugPrint('⚠️ 玩家 ID 讀取失敗，保留現有顯示且不寫入雲端：$e');
     }
   }
 

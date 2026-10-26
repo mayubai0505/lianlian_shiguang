@@ -25,7 +25,7 @@ import '../utils/image_utils.dart';
 import 'welcome_guide_page.dart';
 import 'avatar_frame_picker_page.dart';
 import 'package:lianlian_shiguang/l10n/app_l10n.dart';
-//個人檔案
+//編輯個人檔案
 
 class EditProfilePage extends StatefulWidget {
   // 這個 isCreating 參數非常重要，用來區分是「首次創建」還是「從個人主頁編輯」
@@ -233,7 +233,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     if (user != null) {
       try {
-        final doc = await _db.collection('users').doc(user.uid).get();
+        final doc = await _db.collection('users').doc(user.uid).get(const GetOptions(source: Source.server));
 
         if (doc.exists) {
           final data = doc.data()!;
@@ -280,7 +280,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
           return; // 雲端有資料就結束
         }
       } catch (e) {
-        print("讀取雲端資料失敗: $e");
+        // 已登入玩家不可因 Web 雲端讀取失敗，退回另一裝置的本機暫存 ID。
+        debugPrint('讀取雲端資料失敗（已停止個人檔案編輯）：$e');
+        rethrow;
+      }
+      // 有登入但 users 文件尚不存在時，保留新用戶建立流程；
+      // 一般編輯模式不使用舊 SharedPreferences ID 假裝是雲端資料。
+      if (!widget.isCreating) {
+        throw StateError('雲端找不到個人資料，已停止編輯以保護玩家 ID');
       }
     }
 
@@ -742,6 +749,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     final bool idChanged = newID.isNotEmpty && newID != _originalID;
 
+    // ID 已鎖定時不能「表面儲存成功」卻悄悄忽略玩家改的 ID。
+    if (idChanged && _hasChangedID) {
+      ToastUtils.showCenterToast(context, l10n.msg_id_locked, isError: true);
+      return;
+    }
+
     // ID 有改，而且玩家還有改 ID 的權限，才走完整 ID 檢查流程
     if (idChanged && !_hasChangedID) {
       await _performFullSave();
@@ -1100,83 +1113,78 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
   }
 
-  // --- 修正後的完整儲存函式 (加入舊 ID 徹底移除機制) ---
+  // 修改玩家 ID：以 Firestore transaction 原子更新對照表與 users.playerID。
+  // 無論 Web/手機，都以伺服器目前的 playerID 和 hasChangedID 作最終判斷。
   Future<void> _performFullSave() async {
     final l10n = AppLocalizations.of(context)!;
     final newID = _playerIDController.text.trim();
-
+    if (newID.isEmpty || newID.length > 20) {
+      ToastUtils.showCenterToast(context, l10n.error_id_too_long, isError: true);
+      return;
+    }
     try {
-      // ✨ 修改 1：拿掉 newID.isEmpty 的報錯。如果有填寫，才檢查長度
-      if (newID.isNotEmpty && newID.length > 20) throw Exception(l10n.error_id_too_long);
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) throw Exception(l10n.editProfileUserNotFound);
+      final userRef = _db.collection('users').doc(currentUser.uid);
+      final newRef = _db.collection('playerIDs').doc(newID);
 
-      final prefs = await SharedPreferences.getInstance();
-
-      // ✨ 修改 2：只有當「有填寫新 ID」且「跟原本不同」且「還沒被鎖定」時，才執行 Firebase 搬家檢查
-      if (newID.isNotEmpty && newID != _originalID && !_hasChangedID) {
-        final User? currentUser = FirebaseAuth.instance.currentUser;
-        if (currentUser == null) throw Exception(l10n.editProfileUserNotFound);
-
-        // A. 檢查新 ID 是否被別人搶走了
-        final idDoc = await _db.collection('playerIDs').doc(newID).get();
-        if (idDoc.exists) {
+      await _db.runTransaction((transaction) async {
+        final userSnapshot = await transaction.get(userRef);
+        if (!userSnapshot.exists) {
+          throw StateError('找不到雲端個人資料，請重新登入');
+        }
+        final userData = userSnapshot.data()!;
+        final serverID = (userData['playerID'] ?? '').toString().trim();
+        final locked = userData['hasChangedID'] == true;
+        // 防止網頁、手機同時編輯：不能使用舊畫面狀態覆蓋新 ID。
+        if (serverID != _originalID || locked) {
+          throw StateError('玩家 ID 已在其他裝置變更或已鎖定，請重新開啟編輯頁');
+        }
+        final newSnapshot = await transaction.get(newRef);
+        if (newSnapshot.exists && newSnapshot.data()?['uid'] != currentUser.uid) {
           throw Exception(l10n.error_id_already_used);
         }
-
-        // B. 使用 Transaction 確保搬家過程一氣呵成
-        await _db.runTransaction((transaction) async {
-          final newIdRef = _db.collection('playerIDs').doc(newID);
-
-          // 先在 transaction 裡再次確認新 ID
-          final newIdSnapshot = await transaction.get(newIdRef);
-
-          if (newIdSnapshot.exists) {
-            throw Exception(l10n.error_id_already_used);
-          }
-
-          DocumentReference<Map<String, dynamic>>? oldIdRef;
-          DocumentSnapshot<Map<String, dynamic>>? oldIdSnapshot;
-
-          if (_originalID.isNotEmpty && _originalID != newID) {
-            oldIdRef = _db.collection('playerIDs').doc(_originalID);
-            oldIdSnapshot = await transaction.get(oldIdRef);
-          }
-
-          // 建立新的玩家 ID 對照
-          transaction.set(
-            newIdRef,
-            {'uid': currentUser.uid},
-          );
-
-          // 舊 ID 文件真的存在，而且確定是自己的，才刪
-          if (oldIdRef != null &&
-              oldIdSnapshot != null &&
-              oldIdSnapshot.exists &&
-              oldIdSnapshot.data()?['uid'] == currentUser.uid) {
-            transaction.delete(oldIdRef);
-          }
+        DocumentReference<Map<String, dynamic>>? oldRef;
+        DocumentSnapshot<Map<String, dynamic>>? oldSnapshot;
+        if (serverID.isNotEmpty && serverID != newID) {
+          oldRef = _db.collection('playerIDs').doc(serverID);
+          oldSnapshot = await transaction.get(oldRef);
+        }
+        if (!newSnapshot.exists) {
+          transaction.set(newRef, {
+            'uid': currentUser.uid,
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+        }
+        if (oldRef != null && oldSnapshot != null && oldSnapshot.exists &&
+            oldSnapshot.data()?['uid'] == currentUser.uid) {
+          transaction.delete(oldRef);
+        }
+        transaction.update(userRef, {
+          'playerID': newID,
+          'hasChangedID': true,
+          'updatedAt': FieldValue.serverTimestamp(),
         });
-        await prefs.setString('playerID', newID);
-        await prefs.setBool('hasChangedID', true);
-      }
+      });
 
-      // ✨ 修改 3：最後存檔時，判斷一下 ID 是不是空的
+      // 交易已提交成功，後面的個人資料儲存不可把 ID 改回。
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('playerID', newID);
+      await prefs.setBool('hasChangedID', true);
+      _originalID = newID;
+      _hasChangedID = true;
       await _saveProfileDataOnly(
         popOnSuccess: true,
-        newID: newID.isNotEmpty ? newID : null, // 沒填就不更新 ID
-        hasChangedID: (newID.isNotEmpty && newID != _originalID) ? true : null,
+        newID: null,
+        hasChangedID: null,
       );
     } catch (e) {
-      if (mounted) {
-        // ✨ 總裁級防護：個人檔案儲存失敗的優雅迫降，搭配你完美的字串修剪！
-        ToastUtils.showCenterToast(
-          context,
-          l10n.profile_save_failed(
-              e.toString().replaceFirst("Exception: ", "")),
-          isError: true, // 💡 全域統一的紅色驚嘆號，清楚告知錯誤，但不引發焦慮
-        );
-      }
-    }finally {
-      if (mounted) setState(() => _isSaving = false);
+      if (!mounted) return;
+      ToastUtils.showCenterToast(
+        context,
+        l10n.profile_save_failed(e.toString().replaceFirst('Exception: ', '')),
+        isError: true,
+      );
     }
   }
 

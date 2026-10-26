@@ -29,44 +29,44 @@ class WorldChatRecordsPage extends StatelessWidget {
             Text(worldName, style: GoogleFonts.notoSerifTc(fontSize: 20, fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
             Text('已載入 $loadedMessageCount 筆聊天訊息；依劇情發生順序整理。',
-              style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 12)),
+                style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 12)),
             const SizedBox(height: 4),
             Text('目前提供已載入對話的劇情回顧；AI 自動濃縮摘要尚未接入。',
-              style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 12)),
+                style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 12)),
           ]),
         ),
         const Divider(height: 20),
         Expanded(child: entries.isEmpty
-          ? const Center(child: Text('目前沒有可以回顧的劇情'))
-          : ListView.separated(
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 22),
-              itemCount: entries.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 7),
-              itemBuilder: (context, index) {
-                final entry = entries[index];
-                final speaker = entry['speaker'] ?? '世界旁白';
-                final description = entry['text'] ?? '';
-                return Card(
-                  elevation: 0,
-                  color: theme.colorScheme.surfaceContainerLow,
-                  child: Padding(padding: const EdgeInsets.all(12), child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _SpeakerAvatar(path: entry['avatar'] ?? '', isNarrator: entry['kind'] == 'narrator'),
-                      const SizedBox(width: 11),
-                      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Row(children: [
-                          Expanded(child: Text(speaker, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600))),
-                          Text('${index + 1}', style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 11)),
-                        ]),
-                        const SizedBox(height: 5),
-                        SelectableText(description, style: const TextStyle(height: 1.6, fontSize: 13)),
-                      ])),
-                    ],
-                  )),
-                );
-              },
-            )),
+            ? const Center(child: Text('目前沒有可以回顧的劇情'))
+            : ListView.separated(
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 22),
+          itemCount: entries.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 7),
+          itemBuilder: (context, index) {
+            final entry = entries[index];
+            final speaker = entry['speaker'] ?? '世界旁白';
+            final description = entry['text'] ?? '';
+            return Card(
+              elevation: 0,
+              color: theme.colorScheme.surfaceContainerLow,
+              child: Padding(padding: const EdgeInsets.all(12), child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _SpeakerAvatar(path: entry['avatar'] ?? '', isNarrator: entry['kind'] == 'narrator'),
+                  const SizedBox(width: 11),
+                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Row(children: [
+                      Expanded(child: Text(speaker, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600))),
+                      Text('${index + 1}', style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 11)),
+                    ]),
+                    const SizedBox(height: 5),
+                    SelectableText(description, style: const TextStyle(height: 1.6, fontSize: 13)),
+                  ])),
+                ],
+              )),
+            );
+          },
+        )),
       ])),
     );
   }
@@ -106,34 +106,34 @@ class WorldChatRelationshipsPage extends StatelessWidget {
             Text(worldName, style: GoogleFonts.notoSerifTc(fontSize: 20, fontWeight: FontWeight.w600)),
             const SizedBox(height: 7),
             Text('每位正式角色的好感度獨立計算；臨時 NPC 不計分。',
-              style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 12)),
+                style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 12)),
           ]),
         )),
         Expanded(child: characters.isEmpty ? const Center(child: Text('目前沒有正式人物資料'))
-          : ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              itemCount: characters.length,
-              itemBuilder: (context, index) {
-                final person = characters[index];
-                final stage = _stage(person.score);
-                final next = [60, 150, 550, 1720, 2430][(stage - 1).clamp(0, 4)];
-                return Card(elevation: 0, color: theme.colorScheme.surfaceContainerLow, child:
-                  Padding(padding: const EdgeInsets.all(14), child: Row(children: [
-                    _SpeakerAvatar(path: person.avatar, size: 54),
-                    const SizedBox(width: 13),
-                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(person.name, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
-                      const SizedBox(height: 5),
-                      Text('好感度 ${person.score}${stage < 6 ? ' / $next' : ''}', style: const TextStyle(fontSize: 12)),
-                      const SizedBox(height: 5),
-                      Text('關係階段 $stage', style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurfaceVariant)),
-                    ])),
-                    Image.asset('assets/images/affection/affection_stage_$stage.png', width: 28, height: 28,
-                      errorBuilder: (_, __, ___) => const SizedBox.shrink()),
-                  ])),
-                );
-              },
-            )),
+            : ListView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          itemCount: characters.length,
+          itemBuilder: (context, index) {
+            final person = characters[index];
+            final stage = _stage(person.score);
+            final next = [60, 150, 550, 1720, 2430][(stage - 1).clamp(0, 4)];
+            return Card(elevation: 0, color: theme.colorScheme.surfaceContainerLow, child:
+            Padding(padding: const EdgeInsets.all(14), child: Row(children: [
+              _SpeakerAvatar(path: person.avatar, size: 54),
+              const SizedBox(width: 13),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(person.name, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+                const SizedBox(height: 5),
+                Text('好感度 ${person.score}${stage < 6 ? ' / $next' : ''}', style: const TextStyle(fontSize: 12)),
+                const SizedBox(height: 5),
+                Text('關係階段 $stage', style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurfaceVariant)),
+              ])),
+              Image.asset('assets/images/affection/affection_stage_$stage.png', width: 28, height: 28,
+                  errorBuilder: (_, __, ___) => const SizedBox.shrink()),
+            ])),
+            );
+          },
+        )),
       ])),
     );
   }
@@ -219,14 +219,14 @@ class _WorldChatMemoPageState extends State<WorldChatMemoPage> {
       },
       child: Scaffold(
         appBar: AppBar(title: Text('給世界的備忘錄', style: GoogleFonts.notoSerifTc(fontSize: 17)), centerTitle: true,
-          actions: [TextButton(onPressed: (_loading || _saving) ? null : _save, child: const Text('儲存'))]),
+            actions: [TextButton(onPressed: (_loading || _saving) ? null : _save, child: const Text('儲存'))]),
         body: _loading ? const Center(child: CircularProgressIndicator()) : SafeArea(child: Padding(
           padding: const EdgeInsets.all(18),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(widget.worldName, style: GoogleFonts.notoSerifTc(fontSize: 20, fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
             Text('私人備忘錄｜此版本僅儲存於目前裝置，不會傳給 AI，也不會跨裝置同步。',
-              style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurfaceVariant)),
+                style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurfaceVariant)),
             const SizedBox(height: 14),
             Expanded(child: TextField(
               controller: _controller,
@@ -257,12 +257,12 @@ class _SpeakerAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isNarrator) return SizedBox(width: size, height: size, child: Center(child: Text('旁白',
-      style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant))));
+        style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant))));
     return ClipOval(child: SizedBox(width: size, height: size,
       child: path.trim().isEmpty
-        ? ColoredBox(color: Theme.of(context).colorScheme.surfaceContainerHighest)
-        : Image(image: getAvatarImageProvider(path), fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => ColoredBox(color: Theme.of(context).colorScheme.surfaceContainerHighest)),
+          ? ColoredBox(color: Theme.of(context).colorScheme.surfaceContainerHighest)
+          : Image(image: getAvatarImageProvider(path), fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => ColoredBox(color: Theme.of(context).colorScheme.surfaceContainerHighest)),
     ));
   }
 }
@@ -279,12 +279,10 @@ class WorldStorySummaryPage extends StatefulWidget {
 
 class _WorldStorySummaryPageState extends State<WorldStorySummaryPage> {
   bool _loading = true;
-  bool _generating = false;
   String _summary = '';
   String? _error;
-  int _newMessageCount = 0;
   late final HttpsCallable _api = FirebaseFunctions.instanceFor(region: 'asia-east1')
-    .httpsCallable('worldStoryMemory', options: HttpsCallableOptions(timeout: const Duration(seconds: 120)));
+      .httpsCallable('worldStoryMemory', options: HttpsCallableOptions(timeout: const Duration(seconds: 120)));
 
   @override
   void initState() {
@@ -299,33 +297,12 @@ class _WorldStorySummaryPageState extends State<WorldStorySummaryPage> {
       final data = Map<String, dynamic>.from(result.data as Map);
       setState(() {
         _summary = (data['summary'] ?? '').toString();
-        _newMessageCount = (data['newMessageCount'] as num?)?.toInt() ?? 0;
         _error = null;
         _loading = false;
       });
     } catch (e) {
       if (!mounted) return;
-      setState(() { _loading = false; _error = '讀取摘要失敗：$e'; });
-    }
-  }
-
-  Future<void> _generate() async {
-    if (_generating) return;
-    setState(() { _generating = true; _error = null; });
-    try {
-      final result = await _api.call(<String, dynamic>{'worldId': widget.worldId, 'action': 'generate'});
-      if (!mounted) return;
-      final data = Map<String, dynamic>.from(result.data as Map);
-      setState(() {
-        _summary = (data['summary'] ?? '').toString();
-        _newMessageCount = (data['newMessageCount'] as num?)?.toInt() ?? 0;
-        _error = data['skipped'] == true ? (data['reason'] ?? '').toString() : null;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() { _error = '生成摘要失敗：$e'; });
-    } finally {
-      if (mounted) setState(() => _generating = false);
+      setState(() { _loading = false; _error = e is FirebaseFunctionsException && e.code == 'not-found' ? '劇情摘要服務尚未部署（worldStoryMemory）。請部署後重新進入。' : '暫時無法讀取劇情摘要，請稍後重試。'; });
     }
   }
 
@@ -335,29 +312,21 @@ class _WorldStorySummaryPageState extends State<WorldStorySummaryPage> {
     return Scaffold(
       appBar: AppBar(title: Text('劇情摘要', style: GoogleFonts.notoSerifTc(fontSize: 17)), centerTitle: true),
       body: SafeArea(child: _loading
-        ? const Center(child: CircularProgressIndicator())
-        : ListView(padding: const EdgeInsets.all(20), children: [
-          Text(widget.worldName, style: GoogleFonts.notoSerifTc(fontSize: 21, fontWeight: FontWeight.w600)),
-          const SizedBox(height: 12),
-          Text('AI 整理已發生的重要事件與人物關係，並作為後續世界對話的長期劇情背景。',
+          ? const Center(child: CircularProgressIndicator())
+          : ListView(padding: const EdgeInsets.all(20), children: [
+        Text(widget.worldName, style: GoogleFonts.notoSerifTc(fontSize: 21, fontWeight: FontWeight.w600)),
+        const SizedBox(height: 12),
+        Text('每段相遇與抉擇，都將成為故事的一部分。重要經歷與人物關係會在此留下紀錄，陪伴故事繼續向前。',
             style: TextStyle(color: theme.colorScheme.onSurfaceVariant, height: 1.5)),
-          const SizedBox(height: 18),
-          Card(elevation: 0, color: theme.colorScheme.surfaceContainerLow,
+        const SizedBox(height: 18),
+        Card(elevation: 0, color: theme.colorScheme.surfaceContainerLow,
             child: Padding(padding: const EdgeInsets.all(18), child: SelectableText(
-              _summary.isEmpty ? '尚未產生劇情摘要。累積至少兩輪對話後，可點選下方「整理劇情摘要」。' : _summary,
-              style: GoogleFonts.notoSerifTc(fontSize: 14, height: 1.9)))),
-          const SizedBox(height: 18),
-          if (_error != null) Padding(padding: const EdgeInsets.only(bottom: 12),
+                _summary.isEmpty ? '故事仍在持續，精彩篇章即將收錄於此。' : _summary,
+                style: GoogleFonts.notoSerifTc(fontSize: 14, height: 1.9)))),
+        const SizedBox(height: 18),
+        if (_error != null) Padding(padding: const EdgeInsets.only(bottom: 12),
             child: Text(_error!, style: TextStyle(color: theme.colorScheme.error))),
-          FilledButton(
-            onPressed: _generating || (_summary.isNotEmpty && _newMessageCount < 12) ? null : _generate,
-            child: Text(_generating ? '正在整理劇情…' : _summary.isEmpty ? '整理劇情摘要' : '更新劇情摘要'),
-          ),
-          const SizedBox(height: 10),
-          Text(_summary.isEmpty ? '首次摘要至少需要 4 則訊息' : '距上次摘要已有 $_newMessageCount 則新訊息；累積至少 12 則才可再次整理。',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 12)),
-        ])),
+      ])),
     );
   }
 }

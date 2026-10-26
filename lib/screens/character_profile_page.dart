@@ -3664,6 +3664,64 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                 letterSpacing: 0.2,
               ),
             ),
+            const SizedBox(height: 22),
+
+            // 角色第一句話：沿用現有 Character.firstLine，不額外查詢資料。
+            if (widget.character.firstLine.trim().isNotEmpty)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: SizedBox(
+                      width: 62,
+                      height: 62,
+                      child: widget.character.avatarPath.trim().isEmpty
+                          ? ColoredBox(
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        child: Icon(
+                          Icons.person_outline,
+                          color: textColor.withValues(alpha: 0.55),
+                        ),
+                      )
+                          : widget.character.avatarPath.startsWith('http')
+                          ? CachedNetworkImage(
+                        imageUrl: widget.character.avatarPath,
+                        fit: BoxFit.cover,
+                        errorWidget: (_, __, ___) =>
+                        const Icon(Icons.person_outline),
+                      )
+                          : Image.asset(
+                        widget.character.avatarPath,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) =>
+                        const Icon(Icons.person_outline),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary.withValues(alpha: 0.07),
+                        border: Border.all(
+                          color: theme.colorScheme.primary.withValues(alpha: 0.15),
+                        ),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: SelectableText(
+                        _translatedText('firstLine', widget.character.firstLine).trim(),
+                        style: GoogleFonts.notoSerifTc(
+                          color: textColor.withValues(alpha: 0.9),
+                          fontSize: 14,
+                          height: 1.7,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             const SizedBox(height: 32),
 
             // 原本相簿 / 好感度功能保留。

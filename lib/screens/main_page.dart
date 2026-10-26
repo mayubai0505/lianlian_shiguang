@@ -1,3 +1,4 @@
+import 'world_chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
@@ -148,6 +149,20 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
 
       // 只有「上次主分頁 = 聊天」時才嘗試回到最後聊天室。
       if (savedIndex != 2) return;
+
+      // 世界觀房間是獨立類型，不能誤當成角色聊天室路由。
+      final lastType = prefs.getString('last_chat_type_$uid') ?? '';
+      if (lastType == 'world') {
+        final worldId = prefs.getString('last_chat_world_$uid')?.trim() ?? '';
+        if (worldId.isEmpty) return;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          Navigator.of(context).push(MaterialPageRoute<void>(
+            builder: (_) => WorldChatPage(worldId: worldId),
+          ));
+        });
+        return;
+      }
 
       final characterId =
           prefs.getString('last_chat_character_$uid')?.trim() ?? '';

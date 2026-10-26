@@ -17,8 +17,9 @@ import '../services/toast_utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'world_discovery_page.dart';
 import '../widgets/user_avatar_with_frame.dart';
-import '../widgets/creator_verified_badge.dart';
 
 //創作者公開頁面
 class CreatorProfilePage extends StatelessWidget {
@@ -71,8 +72,6 @@ class CreatorProfilePage extends StatelessWidget {
         String? photoUrl;
         String? avatarPath;
         String creatorBio = '';
-        String creatorBannerUrl = '';
-        List<String> creatorPortfolioOrder = [];
         List<Map<String, String>> profileLinks = <Map<String, String>>[];
 
         if (userSnapshot.hasData &&
@@ -115,10 +114,6 @@ class CreatorProfilePage extends StatelessWidget {
 
           avatarPath =
           userData['avatarPath'] as String?;
-
-          creatorBannerUrl = (userData['creatorBannerUrl'] ?? '').toString().trim();
-          creatorPortfolioOrder = (userData['creatorPortfolioOrder'] as List?)
-              ?.map((e) => e.toString()).toList() ?? <String>[];
 
           creatorBio =
               (userData['bio'] ?? '')
@@ -239,14 +234,6 @@ class CreatorProfilePage extends StatelessWidget {
                   ),
                 )
                     .toList();
-
-                if (creatorPortfolioOrder.isNotEmpty) {
-                  characters.sort((a, b) {
-                    final ai = creatorPortfolioOrder.indexOf(a.id);
-                    final bi = creatorPortfolioOrder.indexOf(b.id);
-                    return (ai < 0 ? 99999 : ai).compareTo(bi < 0 ? 99999 : bi);
-                  });
-                }
 
                 final int totalLikes =
                 characters.fold<int>(
@@ -392,7 +379,7 @@ class CreatorProfilePage extends StatelessWidget {
                         ),
                       ),
                       DefaultTabController(
-                        length: 3,
+                        length: 4,
                         child: Column(
                           children: [
                             _buildCreatorHeader(
@@ -402,7 +389,6 @@ class CreatorProfilePage extends StatelessWidget {
                               displayNickname: displayNickname,
                               displayPlayerID: displayPlayerID,
                               creatorBio: creatorBio,
-                              bannerUrl: creatorBannerUrl,
                               imageProvider: imageProvider,
                               isOwner: isOwner,
                               workCount: characters.length,
@@ -436,6 +422,7 @@ class CreatorProfilePage extends StatelessWidget {
                                     creatorId,
                                     characters,
                                   ),
+                                  _CreatorOpenWorldsTab(creatorId: creatorId),
                                 ],
                               ),
                             ),
@@ -566,6 +553,7 @@ class CreatorProfilePage extends StatelessWidget {
       ToastUtils.showCenterToast(
         context,
         l10n.creator_profile_report_success,
+        customIcon: Icons.flag_outlined,
       );
     } catch (e) {
       debugPrint('❌ 檢舉創作者失敗：$e');
@@ -616,6 +604,12 @@ class CreatorProfilePage extends StatelessWidget {
           ),
           title: Row(
             children: [
+              const Icon(
+                Icons.block_rounded,
+                color: Colors.redAccent,
+                size: 22,
+              ),
+              const SizedBox(width: 8),
               Text(
                 '封鎖創作者',
                 style: GoogleFonts.notoSerifTc(
@@ -727,6 +721,7 @@ class CreatorProfilePage extends StatelessWidget {
       ToastUtils.showCenterToast(
         context,
         l10n.creator_profile_block_success(creatorName),
+        customIcon: Icons.block_rounded,
       );
 
       return true;
@@ -772,6 +767,7 @@ class CreatorProfilePage extends StatelessWidget {
             Tab(text: l10n.profilePageTabBio),
             Tab(text: l10n.profilePageTabCharacters),
             Tab(text: l10n.profilePageTabMoments),
+            const Tab(text: '開放世界'),
           ],
         ),
         Positioned(
@@ -1155,8 +1151,10 @@ class CreatorProfilePage extends StatelessWidget {
 
                     return _buildCreatorMomentEmptyState(
                       theme: theme,
+                      icon: Icons.error_outline_rounded,
                       title: l10n.profilePageMomentsLoadFailed,
                       description: l10n.profilePageTryAgainLater,
+                      isError: true,
                     );
                   }
 
@@ -1235,6 +1233,8 @@ class CreatorProfilePage extends StatelessWidget {
 
                     return _buildCreatorMomentEmptyState(
                       theme: theme,
+                      icon:
+                      Icons.dynamic_feed_outlined,
                       title: title,
                       description: description,
                     );
@@ -1278,6 +1278,7 @@ class CreatorProfilePage extends StatelessWidget {
                               context,
                               AppLocalizations.of(context)!
                                   .task_social_tour_complete,
+                              customIcon: Icons.tour_rounded,
                             );
                           }
                         },
@@ -1365,15 +1366,27 @@ class CreatorProfilePage extends StatelessWidget {
   }
   Widget _buildCreatorMomentEmptyState({
     required ThemeData theme,
+    required IconData icon,
     required String title,
     required String description,
+    bool isError = false,
   }) {
     return ListView(
       physics:
       const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(24),
       children: [
-        const SizedBox(height: 26),
+        const SizedBox(height: 50),
+        Icon(
+          icon,
+          size: 58,
+          color: isError
+              ? theme.colorScheme.error
+              .withValues(alpha: 0.55)
+              : theme.colorScheme.primary
+              .withValues(alpha: 0.40),
+        ),
+        const SizedBox(height: 16),
         Text(
           title,
           textAlign: TextAlign.center,
@@ -1502,6 +1515,8 @@ class CreatorProfilePage extends StatelessWidget {
       ToastUtils.showCenterToast(
         context,
         l10n.profilePageMomentDeleted,
+        customIcon:
+        Icons.delete_outline_rounded,
       );
     } catch (e) {
       debugPrint('❌ 刪除工作坊動態失敗：$e');
@@ -1522,7 +1537,6 @@ class CreatorProfilePage extends StatelessWidget {
         required String displayNickname,
         required String displayPlayerID,
         required String creatorBio,
-        required String bannerUrl,
         required ImageProvider? imageProvider,
         required bool isOwner,
         required int workCount,
@@ -1537,12 +1551,6 @@ class CreatorProfilePage extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
       child: Column(
         children: [
-          if (bannerUrl.startsWith('http')) ...[
-            ClipRRect(borderRadius: BorderRadius.circular(18), child: AspectRatio(
-                aspectRatio: 2.6, child: CachedNetworkImage(imageUrl: bannerUrl, fit: BoxFit.cover,
-                errorWidget: (_, __, ___) => const SizedBox.shrink()))),
-            const SizedBox(height: 16),
-          ],
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -1606,14 +1614,17 @@ class CreatorProfilePage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(children: [
-                      Flexible(child: Text(displayNickname, maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.notoSerifTc(fontSize: 23,
-                              fontWeight: FontWeight.w700, color: textColor, letterSpacing: 0.2))),
-                      const SizedBox(width: 5),
-                      CreatorVerifiedBadge(userId: creatorId, size: 19),
-                    ]),
+                    Text(
+                      displayNickname,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 23,
+                        fontWeight: FontWeight.w700,
+                        color: textColor,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
                     const SizedBox(height: 5),
                     Text(
                       'ID: $displayPlayerID',
@@ -1921,6 +1932,9 @@ class CreatorProfilePage extends StatelessWidget {
         currentlyFollowing
             ? l10n.creatorProfileUnfollowed
             : l10n.creatorProfileFollowedCreator(creatorName),
+        customIcon: currentlyFollowing
+            ? Icons.person_remove_outlined
+            : Icons.person_add_alt_1_rounded,
       );
     } catch (e) {
       debugPrint(
@@ -2219,6 +2233,119 @@ class CreatorProfilePage extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// 創作者已公開的開放世界：重用公開白名單目錄，不讀取世界內部設定與秘密。
+class _CreatorOpenWorldsTab extends StatefulWidget {
+  const _CreatorOpenWorldsTab({required this.creatorId});
+  final String creatorId;
+
+  @override
+  State<_CreatorOpenWorldsTab> createState() => _CreatorOpenWorldsTabState();
+}
+
+class _CreatorOpenWorldsTabState extends State<_CreatorOpenWorldsTab> {
+  late Future<List<Map<String, dynamic>>> _worldsFuture = _fetch();
+
+  Future<List<Map<String, dynamic>>> _fetch() async {
+    final result = await FirebaseFunctions.instanceFor(region: 'asia-east1')
+        .httpsCallable('worldPublicCatalog').call();
+    final raw = result.data;
+    if (raw is! Map) return <Map<String, dynamic>>[];
+    final entries = raw['worlds'];
+    if (entries is! List) return <Map<String, dynamic>>[];
+    return entries.whereType<Map>().map((e) => Map<String, dynamic>.from(e))
+        .where((world) => (world['creatorId'] ?? '').toString() == widget.creatorId)
+        .toList();
+  }
+
+  Future<void> _refresh() async {
+    final updated = _fetch();
+    setState(() => _worldsFuture = updated);
+    try { await updated; } catch (_) { /* 顯示於 FutureBuilder */ }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: _worldsFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Text('公開世界暫時無法載入', style: TextStyle(color: theme.colorScheme.onSurface)),
+            TextButton(onPressed: _refresh, child: const Text('重新整理')),
+          ]));
+        }
+        final worlds = snapshot.data ?? <Map<String, dynamic>>[];
+        if (worlds.isEmpty) {
+          return Center(child: Text('這位創作者尚未發布開放世界',
+              style: TextStyle(color: theme.colorScheme.onSurfaceVariant)));
+        }
+        return RefreshIndicator(
+          onRefresh: _refresh,
+          child: ListView.builder(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+            itemCount: worlds.length,
+            itemBuilder: (context, i) {
+              final world = worlds[i];
+              final worldId = (world['id'] ?? '').toString();
+              final name = (world['name'] ?? '未命名世界').toString();
+              final cover = (world['coverImage'] ?? '').toString();
+              final pitch = (world['shortPitch'] ?? '').toString().trim();
+              final tags = (world['tags'] is List)
+                  ? (world['tags'] as List).map((tag) => tag.toString()).join(' · ') : '';
+              return Card(
+                margin: const EdgeInsets.only(bottom: 14),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: worldId.isEmpty ? null : () => Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => WorldDiscoveryPage(worldId: worldId))),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: cover.isEmpty
+                          ? ColoredBox(color: theme.colorScheme.surfaceContainerHighest,
+                          child: const Center(child: Icon(Icons.image_outlined)))
+                          : CachedNetworkImage(
+                        imageUrl: cover,
+                        fit: BoxFit.cover,
+                        memCacheWidth: 960,
+                        placeholder: (_, __) => ColoredBox(
+                            color: theme.colorScheme.surfaceContainerHighest,
+                            child: const Center(child: CircularProgressIndicator(strokeWidth: 2))),
+                        errorWidget: (_, __, ___) => const Center(child: Icon(Icons.broken_image_outlined)),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(14),
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text(name, maxLines: 2, overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.notoSerifTc(fontSize: 17, fontWeight: FontWeight.w600)),
+                        if (pitch.isNotEmpty) ...[
+                          const SizedBox(height: 7),
+                          Text(pitch, maxLines: 2, overflow: TextOverflow.ellipsis,
+                              style: TextStyle(color: theme.colorScheme.onSurfaceVariant, height: 1.5)),
+                        ],
+                        if (tags.isNotEmpty) ...[
+                          const SizedBox(height: 9),
+                          Text(tags, maxLines: 1, overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: 12, color: theme.colorScheme.primary)),
+                        ],
+                      ]),
+                    ),
+                  ]),
+                ),
+              );
+            },
           ),
         );
       },

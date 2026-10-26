@@ -84,6 +84,7 @@ flutter:
     - assets/images/theme/
     - assets/images/contact/
     - assets/images/language/
+    - assets/images/banners/
     - assets/images/blocked/
     - assets/images/brand/
     - assets/images/guide/

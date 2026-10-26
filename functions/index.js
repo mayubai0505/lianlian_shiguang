@@ -3563,6 +3563,7 @@ exports.getAiResponse = onRequest({
                 chatMode = "daily",
                 isContinue = false,
                 isRegenerate = false,
+                regeneratePaidConfirmed = false,
                 isBirthdayFreebie = false,
                 isQixiOpening = false,
                 isTestMode = false,
@@ -4642,13 +4643,38 @@ const cancellationRef =
                 }
             }
 
-            // 免費情況優先於所有計價
-            if (
-                isBirthdayFreebie ||
-                isRegenerateRequest ||
-                isQixiOpeningRequest
-            ) {
-                cost = 0;
+            // 正式聊天室重新生成：每房每天免費 3 次；有效月卡維持 20 次。
+            // 免費額度以後端交易為準，不信任 Flutter 傳回的剩餘次數。
+            const regenToday = getAiHealthTaipeiDateKey();
+            const regenUsageRef = userDocRef.collection("aiRequests").doc(String(sessionId || "non_regenerate"));
+            let regenFreeRemaining = 0;
+            let regenFreeLimit = 3;
+            if (isRegenerateRequest && !isTestChat) {
+                const [regenUserSnapshot, regenSnapshot] = await Promise.all([
+                    userDocRef.get(), regenUsageRef.get(),
+                ]);
+                const regenUser = regenUserSnapshot.data() || {};
+                const expiry = new Date(regenUser.monthlySubEndDate || 0);
+                const activeMonthlyPass = (regenUser.isMonthlySubscribed === true ||
+                    regenUser.monthlyCardStatus === "active") &&
+                    Number.isFinite(expiry.getTime()) && expiry.getTime() > Date.now();
+                regenFreeLimit = activeMonthlyPass ? 20 : 3;
+                const current = regenSnapshot.data() || {};
+                const remaining = current.lastRegenerateDate === regenToday
+                    ? Math.max(0, Math.min(regenFreeLimit, Number(current.regenerateCount ?? regenFreeLimit)))
+                    : regenFreeLimit;
+                regenFreeRemaining = remaining;
+            }
+            if (isBirthdayFreebie || isQixiOpeningRequest) cost = 0;
+            if (isRegenerateRequest) {
+                cost = isTestChat || regenFreeRemaining > 0 ? 0 : (chatMode === "gemini" ? 1 : config.cost);
+                if (cost > 0 && regeneratePaidConfirmed !== true) {
+                    return res.status(409).json({
+                        error:"REGENERATE_PAYMENT_CONFIRMATION_REQUIRED",
+                        message:`本次重新生成需支付 ${cost} 朵花花`,
+                        cost, charged:false,
+                    });
+                }
             }
 
             const userDoc = await userDocRef.get();
@@ -9493,6 +9519,18 @@ const sessionSnapshot =
 const sessionData =
     sessionSnapshot?.data() || {};
 
+    const regenTransactionSnap = isRegenerateRequest && !isTestChat
+        ? await transaction.get(regenUsageRef) : null;
+    if (regenTransactionSnap) {
+        const r = regenTransactionSnap.data() || {};
+        const remaining = r.lastRegenerateDate === regenToday
+            ? Math.max(0, Math.min(regenFreeLimit, Number(r.regenerateCount ?? regenFreeLimit)))
+            : regenFreeLimit;
+        // 若另一個請求先消耗最後免費次數，不可靜默把本來免費的請求變成付費。
+        if (cost === 0 && remaining <= 0) throw new Error("REGENERATE_FREE_QUOTA_CHANGED");
+        if (cost > 0 && remaining > 0) throw new Error("REGENERATE_QUOTA_CHANGED");
+    }
+
     const latestUserSnapshot =
         cost > 0
             ? await transaction.get(userDocRef)
@@ -9782,6 +9820,19 @@ const sessionData =
                             },
                             { merge: true }
                         );
+                    }
+
+                    // 同一筆交易扣除重新生成免費次數；AI 失敗不扣額度。
+                    if (isRegenerateRequest && !isTestChat && cost === 0) {
+                        const r = regenTransactionSnap?.data() || {};
+                        const remaining = r.lastRegenerateDate === regenToday
+                            ? Math.max(0, Math.min(regenFreeLimit, Number(r.regenerateCount ?? regenFreeLimit)))
+                            : regenFreeLimit;
+                        transaction.set(regenUsageRef, {
+                            regenerateCount: remaining - 1,
+                            lastRegenerateDate: regenToday,
+                            updatedAt: FieldValue.serverTimestamp(),
+                        }, {merge:true});
                     }
 
                     // D. 付費模式才扣點並寫入明細

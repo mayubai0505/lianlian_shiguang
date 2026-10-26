@@ -27,9 +27,63 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'services/reminder_notification_service.dart';
 import 'package:home_widget/home_widget.dart';
 import 'screens/notification_list_page.dart';
+import 'screens/world_chat_memos_page.dart';
 
 String? globalActiveCharacterId;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+// Pending world memo navigation is held until auth and Navigator are ready.
+Map<String, String>? _pendingWorldMemo;
+String? _lastWorldMemoTapKey;
+bool _worldMemoOpening = false;
+
+void _queueWorldMemoNotification(RemoteMessage message) {
+  final worldId = (message.data['worldId'] ?? '').toString().trim();
+  final memoId = (message.data['memoId'] ?? '').toString().trim();
+  if (!RegExp(r'^[A-Za-z0-9_-]{1,160}$').hasMatch(worldId) ||
+      !RegExp(r'^[A-Za-z0-9]{1,100}$').hasMatch(memoId)) {
+    debugPrint('⚠️ 世界備忘錄通知參數不正確');
+    return;
+  }
+  final key = message.messageId ?? '${worldId}_${memoId}_${message.sentTime?.millisecondsSinceEpoch ?? 0}';
+  if (_lastWorldMemoTapKey == key) return;
+  _lastWorldMemoTapKey = key;
+  _pendingWorldMemo = {'worldId': worldId, 'memoId': memoId};
+  _tryOpenPendingWorldMemo();
+}
+
+void _tryOpenPendingWorldMemo() {
+  if (_worldMemoOpening || _pendingWorldMemo == null) return;
+  if (FirebaseAuth.instance.currentUser == null) return;
+  if (navigatorKey.currentState == null) return;
+  _worldMemoOpening = true;
+  WidgetsBinding.instance.addPostFrameCallback((_) async {
+    final nav = navigatorKey.currentState;
+    final target = _pendingWorldMemo;
+    _pendingWorldMemo = null;
+    if (nav == null || target == null || FirebaseAuth.instance.currentUser == null) {
+      _pendingWorldMemo ??= target;
+      _worldMemoOpening = false;
+      return;
+    }
+    try {
+      // The callable on this page checks the current player's world access.
+      // Open the memo list only; keep the app's root page for Back navigation.
+      // Remove intermediate chat/world routes if notification was tapped in-app.
+      await nav.pushAndRemoveUntil(
+        MaterialPageRoute<void>(builder: (_) => WorldChatMemosPage(
+          worldId: target['worldId']!, worldName: '世界觀',
+        )),
+            (route) => route.isFirst,
+      );
+    } catch (error) {
+      debugPrint('⚠️ 世界備忘錄跳轉失敗：$error');
+    } finally {
+      _worldMemoOpening = false;
+      if (_pendingWorldMemo != null) _tryOpenPendingWorldMemo();
+    }
+  });
+}
+
 
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
   'high_importance_channel',
@@ -336,7 +390,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         context.read<LocaleNotifier>(),
       );
       _accountAuthSubscription = FirebaseAuth.instance.authStateChanges().listen(
-            (user) => _accountSync?.bindAccount(user?.uid),
+            (user) {
+          _accountSync?.bindAccount(user?.uid);
+          if (user != null) _tryOpenPendingWorldMemo();
+        },
       );
     });
   }
@@ -777,6 +834,11 @@ void _handleNotificationClick(RemoteMessage message) {
   ].map((value) => value?.toString().trim() ?? '')
       .firstWhere((value) => value.isNotEmpty, orElse: () => '');
   debugPrint('🚨 收到推播點擊：type=$type, postId=$postId');
+
+  if (type == 'world_memo_reminder') {
+    _queueWorldMemoNotification(message);
+    return;
+  }
 
   // 聊天推播保留原本聊天室跳轉。
   if (type == 'chat') {
