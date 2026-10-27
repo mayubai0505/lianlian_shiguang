@@ -49,7 +49,7 @@ class _WorldSecretChaptersPageState extends State<WorldSecretChaptersPage> {
     try {
       final res = await api.call({
         'worldId': widget.worldId,
-      if (widget.sessionId != null) 'sessionId': widget.sessionId,
+        if (widget.sessionId != null) 'sessionId': widget.sessionId,
         'action': 'read',
         'chapterId': entry['id'],
       });
@@ -65,20 +65,12 @@ class _WorldSecretChaptersPageState extends State<WorldSecretChaptersPage> {
       final title = (chapter['title'] ?? fallbackTitle).toString();
       final content = (chapter['content'] ?? '').toString();
 
-      await showDialog<void>(
-        context: context,
-        builder: (dialogContext) => AlertDialog(
-          title: Text(title),
-          content: SingleChildScrollView(child: SelectableText(content)),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(
-                AppLocalizations.of(dialogContext)!
-                    .world_secret_chapters_close1,
-              ),
-            ),
-          ],
+      await Navigator.of(context).push<void>(
+        MaterialPageRoute<void>(
+          builder: (_) => _WorldSecretChapterReaderPage(
+            title: title,
+            content: content,
+          ),
         ),
       );
     } catch (error) {
@@ -126,8 +118,8 @@ class _WorldSecretChaptersPageState extends State<WorldSecretChaptersPage> {
               title: Text(opened
                   ? (chapter['title'] ?? '秘密篇章').toString()
                   : l10n.world_secret_chapters_locked_chapter1(
-                      (chapter['order'] ?? '?').toString(),
-                    )),
+                (chapter['order'] ?? '?').toString(),
+              )),
               subtitle: Text(opened
                   ? l10n.world_secret_chapters_unlocked1
                   : l10n.world_secret_chapters_locked1),
@@ -155,6 +147,54 @@ class _WorldSecretChaptersPageState extends State<WorldSecretChaptersPage> {
             ],
           );
         },
+      ),
+    );
+  }
+}
+
+
+/// 已解鎖秘密篇章的獨立閱讀頁。內容僅能由後端 read 驗證後傳入。
+class _WorldSecretChapterReaderPage extends StatelessWidget {
+  const _WorldSecretChapterReaderPage({
+    required this.title,
+    required this.content,
+  });
+
+  final String title;
+  final String content;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
+      ),
+      body: SafeArea(
+        child: SelectionArea(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(22, 22, 22, 36),
+            children: [
+              Text(
+                title,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: colors.onSurface,
+                ),
+              ),
+              const SizedBox(height: 14),
+              Divider(color: colors.outlineVariant),
+              const SizedBox(height: 18),
+              Text(
+                content,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  height: 1.8,
+                  color: colors.onSurface,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

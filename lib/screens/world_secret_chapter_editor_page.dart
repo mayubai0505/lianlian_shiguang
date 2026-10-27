@@ -1,199 +1,142 @@
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
-import '../services/toast_utils.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
-/// 世界觀秘密篇章：由後端檢查劇情並返回解鎖狀態；未解鎖無標題、內容或條件。
-class WorldSecretChaptersPage extends StatefulWidget {
-  const WorldSecretChaptersPage({super.key, required this.worldId, this.sessionId});
+/// 建立／編輯秘密篇章的獨立頁面。
+/// 此頁只回傳編輯結果；資料會由 WorldEditPage 的「儲存草稿／發布」
+/// 流程寫入 root/world_secrets/{worldId}，避免覆蓋其他世界資料。
+class WorldSecretChapterEditorPage extends StatefulWidget {
+  const WorldSecretChapterEditorPage({super.key, this.original = const {}});
 
-  final String worldId;
-  final String? sessionId;
+  final Map<String, String> original;
 
   @override
-  State<WorldSecretChaptersPage> createState() =>
-      _WorldSecretChaptersPageState();
+  State<WorldSecretChapterEditorPage> createState() =>
+      _WorldSecretChapterEditorPageState();
 }
 
-class _WorldSecretChaptersPageState extends State<WorldSecretChaptersPage> {
-  late final HttpsCallable api = FirebaseFunctions.instanceFor(
-    region: 'asia-east1',
-  ).httpsCallable(
-    'worldSecretChapters',
-    options: HttpsCallableOptions(timeout: const Duration(seconds: 115)),
-  );
+class _WorldSecretChapterEditorPageState
+    extends State<WorldSecretChapterEditorPage> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _title;
+  late final TextEditingController _condition;
+  late final TextEditingController _content;
 
-  late Future<List<Map<String, dynamic>>> chapters = _load(check: true);
-  bool _openingChapter = false;
+  bool get _isEditing => (widget.original['id'] ?? '').isNotEmpty;
 
-  Future<List<Map<String, dynamic>>> _load({bool check = false}) async {
-    final res = await api.call({
-      'worldId': widget.worldId,
-      if (widget.sessionId != null) 'sessionId': widget.sessionId,
-      'action': check ? 'check' : 'list',
-    });
-    final data = Map<String, dynamic>.from(res.data as Map);
-    return (data['chapters'] as List? ?? [])
-        .whereType<Map>()
-        .map((v) => Map<String, dynamic>.from(v))
-        .toList();
+  @override
+  void initState() {
+    super.initState();
+    _title = TextEditingController(text: widget.original['title'] ?? '');
+    _condition = TextEditingController(text: widget.original['condition'] ?? '');
+    _content = TextEditingController(text: widget.original['content'] ?? '');
   }
 
-  Future<void> _read(Map<String, dynamic> entry) async {
-    if (_openingChapter || !mounted) return;
-    if (entry['unlocked'] != true) {
-      ToastUtils.showCenterToast(context, '劇情還未解鎖喔~');
-      return;
-    }
-    setState(() => _openingChapter = true);
-    try {
-      final res = await api.call({
-        'worldId': widget.worldId,
-        if (widget.sessionId != null) 'sessionId': widget.sessionId,
-        'action': 'read',
-        'chapterId': entry['id'],
-      });
-      if (!mounted) return;
+  void _save() {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    final id = (widget.original['id'] ?? '').trim();
+    Navigator.of(context).pop(<String, String>{
+      'id': id.isNotEmpty
+          ? id
+          : DateTime.now().microsecondsSinceEpoch.toString(),
+      'title': _title.text.trim(),
+      'condition': _condition.text.trim(),
+      'content': _content.text.trim(),
+    });
+  }
 
-      final response = Map<String, dynamic>.from(res.data as Map);
-      final rawChapter = response['chapter'];
-      if (rawChapter is! Map) {
-        throw const FormatException('Missing secret chapter content');
-      }
-      final chapter = Map<String, dynamic>.from(rawChapter);
-      final fallbackTitle = AppLocalizations.of(context)!.world_secret_chapters_title1;
-      final title = (chapter['title'] ?? fallbackTitle).toString();
-      final content = (chapter['content'] ?? '').toString();
-
-      await Navigator.of(context).push<void>(
-        MaterialPageRoute<void>(
-          builder: (_) => _WorldSecretChapterReaderPage(
-            title: title,
-            content: content,
-          ),
-        ),
-      );
-    } catch (error) {
-      debugPrint('讀取秘密篇章失敗：$error');
-      if (!mounted) return;
-      final message = AppLocalizations.of(context)!
-          .world_secret_chapters_read_failed1;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
-    } finally {
-      if (mounted) setState(() => _openingChapter = false);
-    }
+  @override
+  void dispose() {
+    _title.dispose();
+    _condition.dispose();
+    _content.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.world_secret_chapters_title1)),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: chapters,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(
-              child: TextButton(
-                onPressed: () => setState(() => chapters = _load(check: true)),
-                child: Text(l10n.world_secret_chapters_retry1),
-              ),
-            );
-          }
-          final items = snapshot.data ?? [];
-          if (items.isEmpty) {
-            return Center(child: Text(l10n.world_secret_chapters_empty1));
-          }
-          final openedItems = items.where((c) => c['unlocked'] == true).toList();
-          final lockedItems = items.where((c) => c['unlocked'] != true).toList();
-          Widget chapterTile(Map<String, dynamic> chapter) {
-            final opened = chapter['unlocked'] == true;
-            return ListTile(
-              leading: Icon(opened ? Icons.lock_open : Icons.lock_outline),
-              title: Text(opened
-                  ? (chapter['title'] ?? '秘密篇章').toString()
-                  : l10n.world_secret_chapters_locked_chapter1(
-                (chapter['order'] ?? '?').toString(),
-              )),
-              subtitle: Text(opened
-                  ? l10n.world_secret_chapters_unlocked1
-                  : l10n.world_secret_chapters_locked1),
-              trailing: opened ? const Icon(Icons.chevron_right) : null,
-              onTap: _openingChapter ? null : () => _read(chapter),
-            );
-          }
-          return ListView(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            children: [
-              if (openedItems.isNotEmpty) ...[
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(16, 10, 16, 8),
-                  child: Text('已解鎖', style: TextStyle(fontWeight: FontWeight.w600)),
-                ),
-                for (final chapter in openedItems) chapterTile(chapter),
-              ],
-              if (lockedItems.isNotEmpty) ...[
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(16, 18, 16, 8),
-                  child: Text('未解鎖', style: TextStyle(fontWeight: FontWeight.w600)),
-                ),
-                for (final chapter in lockedItems) chapterTile(chapter),
-              ],
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
+    final theme = Theme.of(context);
 
+    String? requiredText(String? value) =>
+        value == null || value.trim().isEmpty ? '此欄位不可留白' : null;
 
-/// 已解鎖秘密篇章的獨立閱讀頁。內容僅能由後端 read 驗證後傳入。
-class _WorldSecretChapterReaderPage extends StatelessWidget {
-  const _WorldSecretChapterReaderPage({
-    required this.title,
-    required this.content,
-  });
-
-  final String title;
-  final String content;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
-        title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
+        title: Text(_isEditing
+            ? l10n.world_edit_edit_secret1
+            : l10n.world_edit_add_secret1),
       ),
       body: SafeArea(
-        child: SelectionArea(
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(22, 22, 22, 36),
-            children: [
-              Text(
-                title,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: colors.onSurface,
+        child: Column(
+          children: [
+            Expanded(
+              child: Form(
+                key: _formKey,
+                child: ListView(
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  padding: const EdgeInsets.fromLTRB(18, 20, 18, 26),
+                  children: [
+                    Text(
+                      l10n.world_edit_secret_explain1,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: _title,
+                      maxLength: 80,
+                      textInputAction: TextInputAction.next,
+                      validator: requiredText,
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: l10n.world_edit_chapter_title1,
+                        alignLabelWithHint: true,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    TextFormField(
+                      controller: _condition,
+                      maxLength: 500,
+                      minLines: 3,
+                      maxLines: 6,
+                      textInputAction: TextInputAction.newline,
+                      validator: requiredText,
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: l10n.world_edit_unlock_condition1,
+                        alignLabelWithHint: true,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    TextFormField(
+                      controller: _content,
+                      maxLength: 5000,
+                      minLines: 8,
+                      maxLines: null,
+                      keyboardType: TextInputType.multiline,
+                      validator: requiredText,
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: l10n.world_edit_secret_content1,
+                        alignLabelWithHint: true,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 14),
-              Divider(color: colors.outlineVariant),
-              const SizedBox(height: 18),
-              Text(
-                content,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  height: 1.8,
-                  color: colors.onSurface,
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(18, 8, 18, 12),
+              child: SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: _save,
+                  icon: const Icon(Icons.check_rounded),
+                  label: Text(l10n.world_edit_confirm1),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
