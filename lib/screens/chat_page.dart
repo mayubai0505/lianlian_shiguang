@@ -2478,7 +2478,7 @@ class _ChatPageState extends State<ChatPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('取消'),
+            child: Text(AppLocalizations.of(dialogContext)!.cancelButton),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -3442,7 +3442,7 @@ class _ChatPageState extends State<ChatPage> {
                           ),
 
                           buildTab(
-                            '全部',
+                            AppLocalizations.of(context)!.chat_sticker_all,
                             2,
                           ),
                         ],
@@ -4590,7 +4590,7 @@ class _ChatPageState extends State<ChatPage> {
               } catch (error) {
                 debugPrint('❌ 聲音邀請寄送失敗：$error');
                 if (mounted) {
-                  ToastUtils.error(context, '聲音邀請暫時無法送出，請稍後再試');
+                  ToastUtils.error(context, AppLocalizations.of(context)!.chat_generic_error);
                 }
               }
             },
@@ -7512,7 +7512,7 @@ class _ChatPageState extends State<ChatPage> {
     } catch (e) {
       if (mounted) {
         // ✨ 總裁級：重置失敗的輕量錯誤提示，帶上小紅驚嘆號！
-        _showCenterToast(l10n.common_reset_failed(e.toString()), isError: true);
+        _showCenterToast(l10n.chat_generic_error, isError: true);
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -7593,7 +7593,7 @@ class _ChatPageState extends State<ChatPage> {
       } catch (e) {
         if (mounted) {
           // ✨ 總裁級：編輯失敗的輕量錯誤提示，為聊天室淨化行動完美收尾！
-          _showCenterToast(l10n.common_edit_failed(e.toString()),
+          _showCenterToast(l10n.chat_generic_error,
               isError: true);
         }
       }
@@ -7698,7 +7698,7 @@ class _ChatPageState extends State<ChatPage> {
 
       ToastUtils.showCenterToast(
         context,
-        l10n.chatPageAudioPlaybackFailed(e.toString()),
+        l10n.chat_generic_error,
         isError: true,
       );
     }
@@ -7740,7 +7740,7 @@ class _ChatPageState extends State<ChatPage> {
 
       ToastUtils.showCenterToast(
         context,
-        l10n.chatPageSelectPhotoFailed(e.toString()),
+        l10n.chat_generic_error,
         isError: true,
       );
     }
@@ -7982,15 +7982,15 @@ class _ChatPageState extends State<ChatPage> {
     // 下拉選單仍可維持原本完整翻譯名稱。
     switch (mode) {
       case ChatMode.daily:
-        return '日常';
+        return AppLocalizations.of(context)!.chat_mode_short_daily;
       case ChatMode.story:
-        return '劇情';
+        return AppLocalizations.of(context)!.chat_mode_short_story;
       case ChatMode.immersive:
-        return '沉浸';
+        return AppLocalizations.of(context)!.chat_mode_short_immersive;
       case ChatMode.resonance:
-        return '共鳴';
+        return AppLocalizations.of(context)!.chat_mode_short_resonance;
       case ChatMode.gemini:
-        return '閒聊';
+        return AppLocalizations.of(context)!.chat_mode_short_gemini;
     }
   }
 
@@ -8176,7 +8176,7 @@ class _ChatPageState extends State<ChatPage> {
 
                 ToastUtils.showCenterToast(
                   context,
-                  l10n.chatPageRecordingFailed(e.toString()),
+                  l10n.chat_generic_error,
                   isError: true,
                 );
               }
@@ -8747,7 +8747,7 @@ class _ChatPageState extends State<ChatPage> {
                               // 7. 劇場
                               _buildToolItem(
                                 'assets/images/chat/chat_tool_scene_mask.png',
-                                '劇場',
+                                l10n.chat_theater_tool,
                                     () async {
                                   final String? currentSessionId =
                                   _sessionId != null &&
@@ -11551,17 +11551,17 @@ class _ChatPageState extends State<ChatPage> {
           _ => 5,
         };
         if (_flowerPoints < cost) {
-          _showCenterToast('花花不足，重新生成需要 $cost 朵', isError: true);
+          _showCenterToast(l10n.chat_regenerate_insufficient_flowers(cost), isError: true);
           return;
         }
         final confirmed = await showDialog<bool>(
           context: context,
           builder: (c) => AlertDialog(
-            title: const Text('付費重新生成'),
-            content: Text('今日免費次數已用完，本次依目前模式收取 $cost 朵花花。是否繼續？'),
+            title: Text(l10n.chat_regenerate_paid_title),
+            content: Text(l10n.chat_regenerate_paid_confirm(cost)),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('取消')),
-              TextButton(onPressed: () => Navigator.pop(c, true), child: const Text('確認')),
+              TextButton(onPressed: () => Navigator.pop(c, false), child: Text(l10n.cancelButton)),
+              TextButton(onPressed: () => Navigator.pop(c, true), child: Text(l10n.chat_regenerate_confirm)),
             ],
           ),
         );

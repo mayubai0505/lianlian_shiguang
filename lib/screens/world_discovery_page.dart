@@ -1,3 +1,4 @@
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -48,14 +49,14 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
       final value = _s(world, key).trim();
       if (value.isNotEmpty) return value;
     }
-    return '走進創作者的開放世界，展開屬於你的故事。';
+    return AppLocalizations.of(context)!.world_discovery_share_desc1;
   }
 
   String _shareText(Map<String, dynamic> world) {
     final title = _s(world, 'name').trim();
     final description = _shareDescription(world);
     // 目前下載頁是已存在的公開連結；不捏造尚未支援的世界觀深層連結。
-    return '戀戀拾光・開放世界邀請\n\n「$title」\n\n$description\n\n立即探索：$_downloadLink';
+    return AppLocalizations.of(context)!.world_discovery_share_text1(title, description, _downloadLink);
   }
 
   Widget _shareInvitationCard(Map<String, dynamic> world) {
@@ -75,10 +76,10 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
             stops: [0.0, 0.40, 1.0],
           ))),
           Positioned(top: 22, left: 20, right: 20, child: Row(children: [
-            const Text('戀戀拾光', style: TextStyle(color: Colors.white, fontSize: 17,
+            Text(AppLocalizations.of(context)!.world_discovery_brand1, style: TextStyle(color: Colors.white, fontSize: 17,
                 fontWeight: FontWeight.w600, letterSpacing: 2)),
             const Spacer(),
-            Text('開放世界邀請', style: TextStyle(color: Colors.white.withValues(alpha: 0.85), fontSize: 10)),
+            Text(AppLocalizations.of(context)!.world_discovery_invite1, style: TextStyle(color: Colors.white.withValues(alpha: 0.85), fontSize: 10)),
           ])),
           Positioned(bottom: 22, left: 20, right: 20, child: Row(
             crossAxisAlignment: CrossAxisAlignment.end, children: [
@@ -99,7 +100,7 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
                   child: QrImageView(data: _downloadLink, size: 65, padding: EdgeInsets.zero,
                       backgroundColor: Colors.white)),
               const SizedBox(height: 5),
-              const Text('掃描下載', style: TextStyle(color: Colors.white, fontSize: 9)),
+              Text(AppLocalizations.of(context)!.world_discovery_scan1, style: TextStyle(color: Colors.white, fontSize: 9)),
             ]),
           ],
           )),
@@ -121,11 +122,11 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
           SizedBox(width: screenWidth > 380 ? 340 : screenWidth - 32,
               child: Row(children: [
                 Expanded(child: OutlinedButton(onPressed: () => Navigator.pop(dialogContext),
-                    child: const Text('取消'))),
+                    child: Text(AppLocalizations.of(context)!.world_discovery_cancel1))),
                 const SizedBox(width: 12),
                 Expanded(flex: 2, child: FilledButton.icon(
                     onPressed: _sharing ? null : () => _shareWorldCard(world),
-                    icon: const Icon(Icons.ios_share_rounded), label: const Text('分享邀請卡'))),
+                    icon: const Icon(Icons.ios_share_rounded), label: Text(AppLocalizations.of(context)!.world_discovery_share_button1))),
               ])),
         ],
         ))),
@@ -140,20 +141,20 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
       // 先完成 QR / 封面繪製，再截取邀請卡。
       await WidgetsBinding.instance.endOfFrame;
       final boundary = _shareCardKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
-      if (boundary == null) throw StateError('找不到開放世界邀請卡');
+      if (boundary == null) throw StateError(AppLocalizations.of(context)!.world_discovery_share_missing_card1);
       final img = await boundary.toImage(pixelRatio: 2.5);
       final bytes = await img.toByteData(format: ui.ImageByteFormat.png);
       img.dispose();
-      if (bytes == null) throw StateError('無法產生分享圖片');
+      if (bytes == null) throw StateError(AppLocalizations.of(context)!.world_discovery_share_image_failed1);
       await Clipboard.setData(ClipboardData(text: _downloadLink));
       await SharePlus.instance.share(ShareParams(
         files: [XFile.fromData(bytes.buffer.asUint8List(), mimeType: 'image/png')],
         fileNameOverrides: ['open_world_invitation.png'],
-        title: '戀戀拾光・開放世界邀請', text: _shareText(world),
+        title: AppLocalizations.of(context)!.world_discovery_invite1, text: _shareText(world),
       ));
     } catch (e) {
       debugPrint('開放世界分享失敗：$e');
-      if (mounted) ToastUtils.showCenterToast(context, '分享邀請卡失敗，請再試一次', isError: true);
+      if (mounted) ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.world_discovery_share_failed1, isError: true);
     } finally {
       _sharing = false;
     }
@@ -178,9 +179,9 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
           style:GoogleFonts.notoSerifTc(fontSize:name.runes.length>22 ? 16 :
           name.runes.length>14 ? 20 : 26,fontWeight:FontWeight.w700)),
       const SizedBox(height:18),
-      Text('故事開場',style:GoogleFonts.notoSerifTc(fontSize:17,fontWeight:FontWeight.w600)),
+      Text(AppLocalizations.of(context)!.world_discovery_story_open1,style:GoogleFonts.notoSerifTc(fontSize:17,fontWeight:FontWeight.w600)),
       const SizedBox(height:12),
-      SelectableText(story.isEmpty?'尚未設定故事開場':story,
+      SelectableText(story.isEmpty?AppLocalizations.of(context)!.world_discovery_story_unset1:story,
           style:const TextStyle(fontSize:14,height:1.8)),
       const SizedBox(height:22),
       Row(crossAxisAlignment:CrossAxisAlignment.start,children:[
@@ -193,7 +194,7 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
                 color:Theme.of(context).colorScheme.primary.withValues(alpha:0.07),
                 border:Border.all(color:Theme.of(context).colorScheme.primary.withValues(alpha:0.15)),
                 borderRadius:BorderRadius.circular(14)),
-            child:SelectableText(first.isEmpty?'尚未設定第一句話':first,
+            child:SelectableText(first.isEmpty?AppLocalizations.of(context)!.world_discovery_first_unset1:first,
                 style:const TextStyle(fontSize:14,height:1.7)))),
       ]),
     ]);
@@ -204,15 +205,15 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
     final lore=_s(d,'worldLore');
     final era=_s(d,'era');
     return ListView(padding:const EdgeInsets.all(18),children:[
-      Text('世界觀背景與說明',style:GoogleFonts.notoSerifTc(
+      Text(AppLocalizations.of(context)!.world_discovery_background_title1,style:GoogleFonts.notoSerifTc(
           fontSize:21,fontWeight:FontWeight.w600)),
-      if(era.isNotEmpty) ...[const SizedBox(height:12),Text('時空背景：$era')],
+      if(era.isNotEmpty) ...[const SizedBox(height:12),Text(AppLocalizations.of(context)!.world_discovery_era1(era))],
       const SizedBox(height:14),
-      SelectableText(setting.isEmpty?'尚未設定世界觀背景':setting,
+      SelectableText(setting.isEmpty?AppLocalizations.of(context)!.world_discovery_background_unset1:setting,
           style:const TextStyle(fontSize:14,height:1.8)),
       if(lore.isNotEmpty) ...[
         const SizedBox(height:22),
-        Text('完整世界背景',style:GoogleFonts.notoSerifTc(
+        Text(AppLocalizations.of(context)!.world_discovery_background_full1,style:GoogleFonts.notoSerifTc(
             fontSize:17,fontWeight:FontWeight.w600)),
         const SizedBox(height:8),
         SelectableText(lore,style:const TextStyle(fontSize:14,height:1.8)),
@@ -224,10 +225,10 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
     final raw = d['npcCharacters'];
     final people = raw is List ? raw.whereType<Map>().map((x)=>
     Map<String,dynamic>.from(x)).toList() : <Map<String,dynamic>>[];
-    if(people.isEmpty) return const Center(child:Text('尚未設定人物'));
+    if(people.isEmpty) return Center(child:Text(AppLocalizations.of(context)!.world_discovery_people_unset1));
     people.sort((a,b) => (a['kind']=='main'?0:1).compareTo(b['kind']=='main'?0:1));
     return ListView(padding:const EdgeInsets.all(16),children:[
-      Text('人物介紹',style:GoogleFonts.notoSerifTc(
+      Text(AppLocalizations.of(context)!.world_discovery_people_intro1,style:GoogleFonts.notoSerifTc(
           fontSize:21,fontWeight:FontWeight.w600)),
       const SizedBox(height:14),
       for(final person in people)
@@ -245,7 +246,7 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
                 const SizedBox(height:4),Text(_s(person,'role'),
                     style:TextStyle(color:Theme.of(context).colorScheme.primary,fontSize:12))],
               const SizedBox(height:8),
-              Text(_s(person,'appearance').isEmpty?'未提供外貌特徵':
+              Text(_s(person,'appearance').isEmpty?AppLocalizations.of(context)!.world_discovery_appearance_unset1:
               _s(person,'appearance'),style:const TextStyle(fontSize:13,height:1.6)),
             ])),
           ],
@@ -256,19 +257,19 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
 
   Widget _creatorTab(Map<String,dynamic> d) {
     final uid = _s(d, 'createdBy');
-    if (uid.isEmpty) return const Center(child: Text('尚無創作者資料'));
+    if (uid.isEmpty) return Center(child: Text(AppLocalizations.of(context)!.world_discovery_creator_unset1));
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 30),
       children: [
-        Text('創作者', style: GoogleFonts.notoSerifTc(fontSize: 21, fontWeight: FontWeight.w600)),
+        Text(AppLocalizations.of(context)!.world_discovery_creator1, style: GoogleFonts.notoSerifTc(fontSize: 21, fontWeight: FontWeight.w600)),
         const SizedBox(height: 14),
         FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
           future: FirebaseFirestore.instance.collection('users').doc(uid).get(),
           builder: (context, snap) {
-            if (snap.hasError) return const Text('暫時無法讀取創作者資料');
+            if (snap.hasError) return Text(AppLocalizations.of(context)!.world_discovery_creator_load_failed1);
             if (!snap.hasData) return const Center(child: CircularProgressIndicator());
             final creator = snap.data?.data() ?? <String, dynamic>{};
-            final name = _s(creator, 'nickname').isEmpty ? '創作者' : _s(creator, 'nickname');
+            final name = _s(creator, 'nickname').isEmpty ? AppLocalizations.of(context)!.world_discovery_creator1 : _s(creator, 'nickname');
             final avatar = _s(creator, 'avatarPath');
             void openCreator() => Navigator.of(context).push(MaterialPageRoute(
               builder: (_) => CreatorProfilePage(
@@ -285,7 +286,7 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
                         child: avatar.startsWith('http') ? null : const Icon(Icons.person_outline)),
                     const SizedBox(width: 14),
                     Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      const Text('創作者', style: TextStyle(fontSize: 12)),
+                      Text(AppLocalizations.of(context)!.world_discovery_creator1, style: TextStyle(fontSize: 12)),
                       Text(name, style: GoogleFonts.notoSerifTc(fontSize: 17, fontWeight: FontWeight.w600)),
                     ])),
                     const Icon(Icons.chevron_right_rounded),
@@ -307,11 +308,11 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
   @override
   Widget build(BuildContext context) => FutureBuilder<DocumentSnapshot<Map<String,dynamic>>>(
     future:_worldFuture,builder:(context,snapshot){
-    if(snapshot.hasError)return Scaffold(appBar:AppBar(),body:Center(child:Text('開放世界讀取失敗：${snapshot.error}')));
+    if(snapshot.hasError)return Scaffold(appBar:AppBar(),body:Center(child:Text(AppLocalizations.of(context)!.world_discovery_world_load_failed1(snapshot.error.toString()))));
     if(!snapshot.hasData)return const Scaffold(body:Center(child:CircularProgressIndicator()));
     final d=snapshot.data?.data();
     if(d==null || d['isPublic']!=true || d['status']!='public') {
-      return Scaffold(appBar:AppBar(),body:const Center(child:Text('此世界觀未公開')));
+      return Scaffold(appBar:AppBar(),body:Center(child:Text(AppLocalizations.of(context)!.world_discovery_unpublished1)));
     }
     final theme=Theme.of(context);
     final images=(d['images'] is List)
@@ -323,9 +324,9 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
     final canEnter=isOwner || d['publicPlayable']==true;
     return Scaffold(
       appBar:AppBar(
-        title:const Text('開放世界'),
+        title:Text(AppLocalizations.of(context)!.world_discovery_open_world1),
         actions: [IconButton(
-          tooltip: '分享開放世界',
+          tooltip: AppLocalizations.of(context)!.world_discovery_share_tooltip1,
           onPressed: () => _showSharePreview(d),
           icon: const Icon(Icons.ios_share_rounded),
         )],
@@ -346,8 +347,8 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
             isScrollable:false,labelPadding:EdgeInsets.zero,
             labelStyle:const TextStyle(fontSize:12,fontWeight:FontWeight.w600),
             unselectedLabelStyle:const TextStyle(fontSize:12),
-            tabs:const [Tab(text:'故事開場'),Tab(text:'世界背景'),
-              Tab(text:'人物介紹'),Tab(text:'創作者')]),
+            tabs:[Tab(text:AppLocalizations.of(context)!.world_discovery_story_open1),Tab(text:AppLocalizations.of(context)!.world_discovery_world_background1),
+              Tab(text:AppLocalizations.of(context)!.world_discovery_people_intro1),Tab(text:AppLocalizations.of(context)!.world_discovery_creator1)]),
         Expanded(child:TabBarView(controller:_tabs,children:[
           _storyTab(d),_backgroundTab(d),_peopleTab(d),_creatorTab(d),
         ])),
@@ -356,13 +357,13 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
           child:SizedBox(width:double.infinity,child:FilledButton(
             onPressed: () {
               if(!canEnter) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content:Text('這個開放世界尚未開放遊玩。')));
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content:Text(AppLocalizations.of(context)!.world_discovery_not_playable1)));
                 return;
               }
               Navigator.push(context,MaterialPageRoute(
                   builder:(_)=>WorldChatPage(worldId:widget.worldId)));
-            },child:const Text('進入世界'),
+            },child:Text(AppLocalizations.of(context)!.world_discovery_enter1),
           )),
         )),
       ]),
@@ -370,3 +371,4 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
   },
   );
 }
+

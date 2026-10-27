@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../utils/image_utils.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 /// 世界觀專用的完整搜尋頁；僅搜尋呼叫者已讀取的訊息。
 /// 不連接普通聊天室、不另行讀取私密世界資料。
@@ -32,6 +33,7 @@ class _WorldChatSearchPageState extends State<WorldChatSearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
     final textColor = theme.colorScheme.onSurface;
@@ -48,7 +50,7 @@ class _WorldChatSearchPageState extends State<WorldChatSearchPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('搜尋對話', style: GoogleFonts.notoSerifTc(fontSize: 17)),
+        title: Text(l10n.world_search_title1, style: GoogleFonts.notoSerifTc(fontSize: 17)),
         centerTitle: true,
       ),
       body: SafeArea(
@@ -74,11 +76,11 @@ class _WorldChatSearchPageState extends State<WorldChatSearchPage> {
                     onChanged: (_) => setState(() => _expandedIndex = null),
                     style: GoogleFonts.notoSerifTc(fontSize: 14),
                     decoration: InputDecoration(
-                      hintText: '搜尋人物、對白或世界旁白',
+                      hintText: l10n.world_search_hint1,
                       hintStyle: GoogleFonts.notoSerifTc(fontSize: 13),
                       prefixIcon: const Icon(Icons.search_rounded),
                       suffixIcon: term.isEmpty ? null : IconButton(
-                        tooltip: '清除搜尋',
+                        tooltip: l10n.world_search_clear1,
                         onPressed: () {
                           _query.clear();
                           setState(() => _expandedIndex = null);
@@ -97,7 +99,7 @@ class _WorldChatSearchPageState extends State<WorldChatSearchPage> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    term.isEmpty ? '輸入關鍵字開始搜尋' : '找到 ${matches.length} 筆結果',
+                    term.isEmpty ? l10n.world_search_start1 : l10n.world_search_results1(matches.length),
                     style: GoogleFonts.notoSerifTc(fontSize: 12,
                         color: textColor.withValues(alpha: .55)),
                   ),
@@ -106,9 +108,9 @@ class _WorldChatSearchPageState extends State<WorldChatSearchPage> {
             ),
             Expanded(
               child: term.isEmpty
-                  ? const Center(child: Text('搜尋玩家、人物及世界旁白'))
+                  ? Center(child: Text(l10n.world_search_empty_prompt1))
                   : matches.isEmpty
-                  ? const Center(child: Text('沒有符合的對話'))
+                  ? Center(child: Text(l10n.world_search_no_results1))
                   : ListView.separated(
                 padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
                 keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -118,7 +120,7 @@ class _WorldChatSearchPageState extends State<WorldChatSearchPage> {
                   final index = matches[resultIndex];
                   final entry = widget.messages[index];
                   final expanded = _expandedIndex == index;
-                  final speaker = entry['speaker'] ?? '未知人物';
+                  final speaker = entry['speaker'] ?? l10n.world_search_unknown_speaker1;
                   final body = entry['text'] ?? '';
                   return InkWell(
                     onTap: () {
@@ -153,7 +155,7 @@ class _WorldChatSearchPageState extends State<WorldChatSearchPage> {
                                 style: GoogleFonts.notoSerifTc(
                                   fontSize: 13, fontWeight: FontWeight.w600,
                                 ))),
-                            Text(expanded ? '收合' : '展開',
+                            Text(expanded ? l10n.world_search_collapse1 : l10n.world_search_expand1,
                                 style: GoogleFonts.notoSerifTc(fontSize: 11,
                                     color: textColor.withValues(alpha: .48))),
                           ]),
@@ -172,7 +174,7 @@ class _WorldChatSearchPageState extends State<WorldChatSearchPage> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 5, 16, 9),
-              child: Text('目前搜尋範圍：聊天室已載入的最近 200 筆訊息',
+              child: Text(l10n.world_search_scope1,
                 style: GoogleFonts.notoSerifTc(fontSize: 10.5,
                     color: textColor.withValues(alpha: .46)),
               ),

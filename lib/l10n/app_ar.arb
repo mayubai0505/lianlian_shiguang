@@ -3789,7 +3789,7 @@
   "creator_profile_block_creator": "حظر المنشئ",
   "creator_profile_report_login_required": "يرجى تسجيل الدخول قبل الإبلاغ عن المنشئ",
   "creator_profile_report_self_not_allowed": "لا يمكنك الإبلاغ عن صفحة المنشئ الخاصة بك",
-  "creator_profile_report_reason_prompt": "حدد سبب الإبلاغ عن «{creatorName}»:",
+  "creator_profile_report_reason_prompt1": "حدد سبب الإبلاغ عن «{creatorName}»:",
   "@creator_profile_report_reason_prompt": {
     "placeholders": {
       "creatorName": {
@@ -4724,7 +4724,12 @@
   "notification_channel_chat_description": "يُستخدم لاستلام أحدث ردود الشخصيات وتذكيرات اللعبة.",
   "subscription_star_contract_name": "Lianlian Shiguang · عهد النجوم",
   "moment_notification_comment_on_your_post": "علّق {senderNickname} على منشورك: “{commentText}”",
-  "@moment_notification_comment_on_your_post": {"placeholders": {"commentText": {}, "senderNickname": {}}},
+  "@moment_notification_comment_on_your_post": {
+    "placeholders": {
+      "commentText": {},
+      "senderNickname": {}
+    }
+  },
   "moment_notification_new_reply_title": "رد جديد على منشورك! 💬",
   "moment_notification_character_popularity_title": "شعبية الشخصية ترتفع بسرعة! 🔥",
   "font_size_small": "صغير",
@@ -4737,18 +4742,30 @@
   "font_size_title": "حجم الخط",
   "font_selection_tagline": "اكتب قصتك من جديد مع من تحب.",
   "font_selection_applied_message": "تم تطبيق “{value1}”",
-  "@font_selection_applied_message": {"placeholders": {"value1": {}}},
+  "@font_selection_applied_message": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "font_selection_local_storage_note": "يتم تطبيق الخط والحجم فورًا وحفظهما على هذا الجهاز. عند استعادة المظهر الافتراضي ستعود الإعدادات إلى “Shiguang Serif + قياسي”.",
   "inbox_customer_service_report": "بلاغ إلى خدمة العملاء",
   "inbox_content_text_message_player_title_send": "العنوان المرسل من اللاعب",
   "inbox_content_text_message_player_content_send": "المحتوى المرسل من اللاعب",
   "avatar_frame_equipped_message": "تم تجهيز “{value1}”",
-  "@avatar_frame_equipped_message": {"placeholders": {"value1": {}}},
+  "@avatar_frame_equipped_message": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "avatar_frame_unequip_frame_snackbar": "تمت إزالة إطار الصورة الرمزية",
   "avatar_frame_unequip_frame_message_event": "إطار صورة رمزية للفعالية",
   "avatar_frame_message": "إطار الصورة الرمزية",
   "avatar_frame_load_failed": "فشل تحميل إطارات الصور الرمزية: {value1}",
-  "@avatar_frame_load_failed": {"placeholders": {"value1": {}}},
+  "@avatar_frame_load_failed": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "avatar_frame_parse_frames_message_select": "اختر إطار الصورة الرمزية الذي تريد استخدامه",
   "avatar_frame_parse_frames_message_event": "تُحفظ إطارات الصور الرمزية التي تحصل عليها من الفعاليات بشكل دائم ويمكن تغييرها أو إزالتها في أي وقت.",
   "avatar_frame_parse_frames_title": "عدم استخدام إطار للصورة الرمزية",
@@ -4764,9 +4781,17 @@
   "background_subtitle_event_shop_redeem_chat": "ستظهر هنا خلفيات الدردشة التي تستبدلها من متجر الفعالية.",
   "background_is_limited_background_type_message_chat_event": "خلفية دردشة محدودة للفعالية",
   "background_is_limited_background_type_message_current_chat": "هل تريد تعيين “{value1}” كخلفية للدردشة الحالية؟",
-  "@background_is_limited_background_type_message_current_chat": {"placeholders": {"value1": {}}},
+  "@background_is_limited_background_type_message_current_chat": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "character_edit_save_to_draft_message_current_character": "الشخصية الرئيسية الحالية: 【{value1}】\n",
-  "@character_edit_save_to_draft_message_current_character": {"placeholders": {"value1": {}}},
+  "@character_edit_save_to_draft_message_current_character": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "character_to_map_message_creator": "منشئ غامض",
   "character_get_character_by_id_message_load_background_story": "جارٍ تحميل القصة الخلفية...",
   "character_get_character_by_id_message_sync": "جارٍ مزامنة القصة الافتتاحية...",
@@ -4796,24 +4821,49 @@
   "chat_empty_message_variant_b": "المفضلة",
   "chat_send_sticker_message_current_unavailable_sticker": "هذا الملصق غير متاح حاليًا",
   "chat_message_theater": "—— المسرح・{sceneTitle} ——",
-  "@chat_message_theater": {"placeholders": {"sceneTitle": {}}},
+  "@chat_message_theater": {
+    "placeholders": {
+      "sceneTitle": {}
+    }
+  },
   "chat_handle_regenerate_button_message_character_reply_again": "سيتم إنشاء رد الشخصية السابق من جديد.",
   "creator_profile_reason_tile_message_report_select_reason": "اختر سبب الإبلاغ عن “{creatorName}”:",
-  "@creator_profile_reason_tile_message_report_select_reason": {"placeholders": {"creatorName": {}}},
+  "@creator_profile_reason_tile_message_report_select_reason": {
+    "placeholders": {
+      "creatorName": {}
+    }
+  },
   "widget_key_message": "الحالة",
   "widget_key_message_variant_b": "الموقع",
   "widget_label_character": "لا توجد حالة للشخصية بعد",
   "widget_format_post_time_label_moment_latest": "أحدث منشور",
   "widget_format_post_time_label_update_moment": "تم تحديث منشور للتو",
   "widget_format_post_time_label_minutes_ago_update_moment": "تم تحديث منشور قبل {value1} دقيقة",
-  "@widget_format_post_time_label_minutes_ago_update_moment": {"placeholders": {"value1": {}}},
+  "@widget_format_post_time_label_minutes_ago_update_moment": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_format_post_time_label_hours_ago_update_moment": "تم تحديث منشور قبل {value1} ساعة",
-  "@widget_format_post_time_label_hours_ago_update_moment": {"placeholders": {"value1": {}}},
+  "@widget_format_post_time_label_hours_ago_update_moment": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_format_post_time_label_update_moment_days": "تم تحديث منشور أمس",
   "widget_format_post_time_label_update_moment_days_ago": "تم تحديث منشور قبل {value1} يوم",
-  "@widget_format_post_time_label_update_moment_days_ago": {"placeholders": {"value1": {}}},
+  "@widget_format_post_time_label_update_moment_days_ago": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_format_post_time_label_update_moment_variant_b": "تم تحديث منشور في {value1}/{value2}",
-  "@widget_format_post_time_label_update_moment_variant_b": {"placeholders": {"value1": {}, "value2": {}}},
+  "@widget_format_post_time_label_update_moment_variant_b": {
+    "placeholders": {
+      "value1": {},
+      "value2": {}
+    }
+  },
   "widget_format_post_time_message_share_photo": "شارك صورة",
   "widget_format_post_time_message_update_moment": "نشر تحديثًا",
   "widget_format_post_time_message_current_character_moment": "لا توجد منشورات للشخصية بعد",
@@ -4821,11 +4871,19 @@
   "widget_format_daily_quote_time_message_today": "لا توجد عبارة لليوم بعد",
   "widget_load_period_care_state_message_today": "“لا ترهق نفسك اليوم. سأبقى معك ونأخذ الأمور على مهل.”",
   "widget_load_period_care_state_message_period_days": "اليوم {dayCount} من الدورة",
-  "@widget_load_period_care_state_message_period_days": {"placeholders": {"dayCount": {}}},
+  "@widget_load_period_care_state_message_period_days": {
+    "placeholders": {
+      "dayCount": {}
+    }
+  },
   "widget_load_period_care_state_message_days": "“حاولي الراحة أبكر قليلًا هذه الأيام. لا ترهقي نفسك.”",
   "widget_load_period_care_state_message_today_start": "من المتوقع أن تبدأ اليوم",
   "widget_load_period_care_state_message_days_variant_b": "متبقي تقريبًا {daysUntil} يوم",
-  "@widget_load_period_care_state_message_days_variant_b": {"placeholders": {"daysUntil": {}}},
+  "@widget_load_period_care_state_message_days_variant_b": {
+    "placeholders": {
+      "daysUntil": {}
+    }
+  },
   "widget_load_period_care_state_message_today_variant_b": "“لقد بذلت جهدًا كبيرًا. اعتني بنفسك جيدًا اليوم.”",
   "widget_load_period_care_state_message_period_end": "انتهت الدورة للتو",
   "widget_load_period_care_state_message_today_variant_c": "“تذكّري أن تعتني بنفسك جيدًا اليوم أيضًا.”",
@@ -4836,18 +4894,34 @@
   "widget_build_birthday_countdown_lines_message_character_birthday": "عيد ميلاد الشخصية",
   "widget_build_birthday_countdown_lines_message_birthday_settings": "لم يتم تعيين عيد الميلاد",
   "widget_build_birthday_countdown_lines_message_birthday_countdown": "حتى عيد ميلاده・{birthdayLabel}",
-  "@widget_build_birthday_countdown_lines_message_birthday_countdown": {"placeholders": {"birthdayLabel": {}}},
+  "@widget_build_birthday_countdown_lines_message_birthday_countdown": {
+    "placeholders": {
+      "birthdayLabel": {}
+    }
+  },
   "widget_build_birthday_countdown_lines_message_today": "إنه اليوم",
   "widget_build_birthday_countdown_lines_message_days": "متبقي {days} يوم",
-  "@widget_build_birthday_countdown_lines_message_days": {"placeholders": {"days": {}}},
+  "@widget_build_birthday_countdown_lines_message_days": {
+    "placeholders": {
+      "days": {}
+    }
+  },
   "widget_build_birthday_countdown_lines_message": "منذ لقائه",
   "widget_build_birthday_countdown_lines_message_variant_b": "لا يوجد سجل للقاء بعد",
   "widget_build_birthday_countdown_lines_message_days_variant_b": "{value1} يوم",
-  "@widget_build_birthday_countdown_lines_message_days_variant_b": {"placeholders": {"value1": {}}},
+  "@widget_build_birthday_countdown_lines_message_days_variant_b": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_build_birthday_countdown_lines_message_variant_c": "يوم مهم",
   "widget_build_birthday_countdown_lines_message_date_select": "لم يتم اختيار تاريخ",
   "widget_build_birthday_countdown_lines_message_elapsed_days": "مرّ {value1} يوم",
-  "@widget_build_birthday_countdown_lines_message_elapsed_days": {"placeholders": {"value1": {}}},
+  "@widget_build_birthday_countdown_lines_message_elapsed_days": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_settings_remove_title_character_latest": "أحدث منشور للشخصية",
   "widget_settings_remove_subtitle_moment_latest": "شاهد آخر تحديث له دون فتح التطبيق.",
   "widget_settings_remove_title_period": "مرافقة خلال الدورة",
@@ -4864,7 +4938,12 @@
   "widget_settings_edit_saved_widget_message_character_reminder_again": "تم دمج “تذكير مهام الشخصية” القديم في “المناسبات / التذكيرات”. يُرجى إنشاؤه من جديد.",
   "widget_settings_delete_saved_widget_title_delete_small": "حذف الأداة؟",
   "widget_settings_delete_saved_widget_message_stop_display_long_press_home_after_delete": "هل تريد حذف “{value1}・{value2}”؟\n\nبعد الحذف، ستتوقف هذه الأداة عن عرض محتوى الشخصية وسيُطلب من اللاعب الضغط مطولًا على الشاشة الرئيسية لإزالتها.",
-  "@widget_settings_delete_saved_widget_message_stop_display_long_press_home_after_delete": {"placeholders": {"value1": {}, "value2": {}}},
+  "@widget_settings_delete_saved_widget_message_stop_display_long_press_home_after_delete": {
+    "placeholders": {
+      "value1": {},
+      "value2": {}
+    }
+  },
   "widget_settings_delete_saved_widget_message_delete_settings_small": "تم حذف إعدادات الأداة؛ وتم تعطيل الأداة المقابلة على الشاشة الرئيسية.",
   "widget_settings_message_desktop_widget": "أدوات الشاشة الرئيسية",
   "widget_settings_message_character_days": "دع شخصيتك المفضلة ترافقك كل يوم.",
@@ -4872,7 +4951,11 @@
   "widget_settings_message_desktop_widget_variant_b": "لا توجد أدوات على الشاشة الرئيسية بعد",
   "widget_settings_message_character_reminder": "اختر شخصية مفضلة واعرض تذكيراتها أو منشوراتها أو حالتها على الشاشة الرئيسية.",
   "widget_settings_message_size": "حجم {value1}",
-  "@widget_settings_message_size": {"placeholders": {"value1": {}}},
+  "@widget_settings_message_size": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_settings_tooltip": "إضافة إلى الشاشة الرئيسية",
   "widget_settings_tooltip_small": "تعديل الأداة",
   "widget_settings_tooltip_delete_small": "حذف الأداة",
@@ -4889,15 +4972,31 @@
   "widget_settings_message_character_photo_select": "التالي・اختر صورة الشخصية",
   "widget_settings_desktop_photo_selection_message_character_photo_select": "اختر صورة الشخصية",
   "widget_settings_desktop_photo_selection_message_current_affection_unlocked_photo": "الألفة الحالية {value1}・يمكن استخدام الصور المفتوحة مباشرة.",
-  "@widget_settings_desktop_photo_selection_message_current_affection_unlocked_photo": {"placeholders": {"value1": {}}},
+  "@widget_settings_desktop_photo_selection_message_current_affection_unlocked_photo": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_settings_desktop_photo_selection_message_current_character_photo": "لا توجد صور متاحة لهذه الشخصية حاليًا.",
   "widget_settings_desktop_photo_selection_message_required_affection_unlock_photo": "يلزم مستوى ألفة {value1} لفتح هذه الصورة.",
-  "@widget_settings_desktop_photo_selection_message_required_affection_unlock_photo": {"placeholders": {"value1": {}}},
+  "@widget_settings_desktop_photo_selection_message_required_affection_unlock_photo": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_settings_message_photo_public": "صورة عامة",
   "widget_settings_message_unlock": "تُفتح عند ألفة {value1}",
-  "@widget_settings_message_unlock": {"placeholders": {"value1": {}}},
+  "@widget_settings_message_unlock": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_settings_message_unlocked": "مفتوحة・ألفة {value1}",
-  "@widget_settings_message_unlocked": {"placeholders": {"value1": {}}},
+  "@widget_settings_message_unlocked": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_settings_message_content_settings": "التالي・ضبط المحتوى المعروض",
   "widget_settings_open_preview_message_player_select": "اختر أولًا فعالية / مهمة أنشأها لاعب.",
   "widget_settings_pick_custom_memo_event_message_login_account": "سجّل الدخول أولًا.",
@@ -4929,7 +5028,11 @@
   "widget_settings_title_player": "فعالية / مهمة أنشأها لاعب",
   "widget_settings_message_memo_character_select_reminder": "اختر فعالية أو مهمة من مذكرات / تذكيرات هذه الشخصية.",
   "widget_settings_message_selected": "المحدد: {_selectedMemoContent}",
-  "@widget_settings_message_selected": {"placeholders": {"_selectedMemoContent": {}}},
+  "@widget_settings_message_selected": {
+    "placeholders": {
+      "_selectedMemoContent": {}
+    }
+  },
   "widget_settings_message_select": "اختر ما يصل إلى 3 عناصر",
   "widget_settings_message_character": "يمكن لحالة الشخصية عرض ما يصل إلى 3 عناصر.",
   "widget_settings_message_small_variant_c": "معاينة الأداة",
@@ -4967,7 +5070,11 @@
   "event_memory_character_center_message_public_character_character_friend_add": "أنشئ شخصيتك الخاصة أو أضف شخصية عامة تعجبك كصديق أولًا.",
   "event_memory_character_message_character_select": "اختر شخصية أولًا",
   "event_memory_character_message_continue": "المتابعة مع {value1}",
-  "@event_memory_character_message_continue": {"placeholders": {"value1": {}}},
+  "@event_memory_character_message_continue": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_memory_character_card_message_private": "خاصتي・خاص",
   "event_memory_character_error_label_load_again": "إعادة التحميل",
   "event_memory_collection_show_collection_intro_if_needed_message_collection": "مجموعة Shiguang",
@@ -4987,11 +5094,19 @@
   "event_memory_collection_item_card_label": "عنصر محدود",
   "event_memory_collection_confirm_delete_owned_item_message_delete": "حذف العنصر المحدود؟",
   "event_memory_collection_confirm_delete_owned_item_message_after_delete_unavailable": "بعد الحذف، لن تتمكن من استخدام {_itemTypeLabel} هذا بعد الآن،",
-  "@event_memory_collection_confirm_delete_owned_item_message_after_delete_unavailable": {"placeholders": {"_itemTypeLabel": {}}},
+  "@event_memory_collection_confirm_delete_owned_item_message_after_delete_unavailable": {
+    "placeholders": {
+      "_itemTypeLabel": {}
+    }
+  },
   "event_memory_collection_confirm_delete_owned_item_message_collection": "ولن يظهر أيضًا في “مجموعة Shiguang”.\n\n",
   "event_memory_collection_confirm_delete_owned_item_message_unavailable": "هذا يعني أنك ستتخلى عن العنصر المحدود الذي حصلت عليه هذه المرة، ولا يمكن التراجع عن هذا الإجراء.\n\n",
   "event_memory_collection_confirm_delete_owned_item_message_delete_variant_b": "هل أنت متأكد أنك تريد حذف “{value1}”؟",
-  "@event_memory_collection_confirm_delete_owned_item_message_delete_variant_b": {"placeholders": {"value1": {}}},
+  "@event_memory_collection_confirm_delete_owned_item_message_delete_variant_b": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_memory_collection_confirm_delete_owned_item_message_delete_variant_c": "تم حذف العنصر المحدود",
   "event_memory_collection_confirm_delete_owned_item_message_not_found_delete": "تعذر العثور على هذا العنصر المحدود وربما تم حذفه بالفعل",
   "event_memory_collection_confirm_delete_owned_item_message_collection_current_delete": "لا يمكن حذف هذه المجموعة حاليًا",
@@ -5020,18 +5135,36 @@
   "event_memory_collection_collected_label_collection": "تمت إضافتها للتو",
   "event_memory_collection_collected_item_label_collection_date": "تاريخ الإضافة غير مسجل",
   "event_memory_collection_collected_item_label_collection": "تمت الإضافة في {value1}/{month}/{day}",
-  "@event_memory_collection_collected_item_label_collection": {"placeholders": {"day": {}, "month": {}, "value1": {}}},
+  "@event_memory_collection_collected_item_label_collection": {
+    "placeholders": {
+      "day": {},
+      "month": {},
+      "value1": {}
+    }
+  },
   "event_memory_text_not_found_event": "لم يتم العثور على بيانات الفعالية",
   "event_memory_message_limited_memory_failed_load": "فشل تحميل الذكريات المحدودة",
   "event_memory_as_map_label_unlocked": "مفتوح",
   "event_memory_as_map_label_unlock": "اجمع {currencyIcon} {requiredValue} {currencyName} للفتح ({currentValue} / {requiredValue})",
-  "@event_memory_as_map_label_unlock": {"placeholders": {"currencyIcon": {}, "currencyName": {}, "currentValue": {}, "requiredValue": {}}},
+  "@event_memory_as_map_label_unlock": {
+    "placeholders": {
+      "currencyIcon": {},
+      "currencyName": {},
+      "currentValue": {},
+      "requiredValue": {}
+    }
+  },
   "event_memory_as_map_label_unlock_task_event_complete": "يُفتح بعد إكمال مهمة الفعالية المحددة",
   "event_memory_as_map_label_redeem_unlock_event": "يُفتح بعد استبدال عنصر الفعالية المحدد",
   "event_memory_as_map_label_unlock_variant_b": "غير مفتوح بعد",
   "event_memory_hero_message": "احتفظ في هذا الموسم بلحظة لا تخص سوى كليكما.",
   "event_memory_hero_message_limited_memory": "الذكريات المحدودة  {unlockedCount} / {totalCount}",
-  "@event_memory_hero_message_limited_memory": {"placeholders": {"totalCount": {}, "unlockedCount": {}}},
+  "@event_memory_hero_message_limited_memory": {
+    "placeholders": {
+      "totalCount": {},
+      "unlockedCount": {}
+    }
+  },
   "event_memory_status_label_unlocked": "مفتوح・لم تتم المشاهدة",
   "event_memory_status_label": "تمت المشاهدة",
   "event_memory_status_label_collection": "تمت الإضافة",
@@ -5057,21 +5190,44 @@
   "event_memory_profile_center_message_memory": "بأي هوية ستبقى في هذه الذكرى؟",
   "event_memory_profile_center_message_profile_character_start": "تم اختيار ملف Shiguang الذي استخدمته مؤخرًا مع هذه الشخصية أولًا. يمكنك تغييره قبل البدء.",
   "event_memory_profile_center_message": "بصفة “{value1}” مع",
-  "@event_memory_profile_center_message": {"placeholders": {"value1": {}}},
+  "@event_memory_profile_center_message": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_memory_profile_center_message_memory_variant_b": "“{value1}” في هذه الذكرى",
-  "@event_memory_profile_center_message_memory_variant_b": {"placeholders": {"value1": {}}},
+  "@event_memory_profile_center_message_memory_variant_b": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_memory_profile_center_label_memory_start": "بدء الذكرى",
   "event_message_failed_load": "فشل تحميل بيانات الفعالية",
   "event_message_not_found": "الفعالية غير موجودة",
   "event_remaining_label": "الفعالية جارية",
   "event_remaining_label_days": "متبقي {value1} يوم",
-  "@event_remaining_label_days": {"placeholders": {"value1": {}}},
+  "@event_remaining_label_days": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_remaining_label_hours": "متبقي {value1} ساعة",
-  "@event_remaining_label_hours": {"placeholders": {"value1": {}}},
+  "@event_remaining_label_hours": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_remaining_label_end": "ستنتهي قريبًا",
   "event_balance_pill_tooltip_back": "رجوع",
   "event_claim_task_message_claim_current": "تم استلام {value1} {reward} {value2}. لديك الآن {currency}",
-  "@event_claim_task_message_claim_current": {"placeholders": {"currency": {}, "reward": {}, "value1": {}, "value2": {}}},
+  "@event_claim_task_message_claim_current": {
+    "placeholders": {
+      "currency": {},
+      "reward": {},
+      "value1": {},
+      "value2": {}
+    }
+  },
   "event_claim_task_message_reward_claim": "تم استلام المكافأة",
   "event_claim_task_message_claim_failed": "فشل الاستلام",
   "event_claim_task_message_task_claim": "تم استلام مكافأة هذه المهمة بالفعل",
@@ -5082,42 +5238,101 @@
   "event_milestone_progress_label_reward_load": "جارٍ تحميل المكافآت التراكمية…",
   "event_milestone_progress_label_reward_current": "لا توجد مكافآت تراكمية حاليًا",
   "event_build_with_total_message_current": "الحالي  {totalEarned}",
-  "@event_build_with_total_message_current": {"placeholders": {"totalEarned": {}}},
+  "@event_build_with_total_message_current": {
+    "placeholders": {
+      "totalEarned": {}
+    }
+  },
   "event_progress_ref_message_redeem_confirm": "تأكيد الاستبدال",
   "event_progress_ref_message_redeem_flowers": "هل تريد استخدام {value1} {price} لاستبدال “{itemName}”؟\n\nبعد الاستبدال ستحصل على {rewardAmount} زهرة.",
-  "@event_progress_ref_message_redeem_flowers": {"placeholders": {"itemName": {}, "price": {}, "rewardAmount": {}, "value1": {}}},
+  "@event_progress_ref_message_redeem_flowers": {
+    "placeholders": {
+      "itemName": {},
+      "price": {},
+      "rewardAmount": {},
+      "value1": {}
+    }
+  },
   "event_progress_ref_message_redeem": "هل تريد استخدام {value1} {price} لاستبدال “{itemName}”؟",
-  "@event_progress_ref_message_redeem": {"placeholders": {"itemName": {}, "price": {}, "value1": {}}},
+  "@event_progress_ref_message_redeem": {
+    "placeholders": {
+      "itemName": {},
+      "price": {},
+      "value1": {}
+    }
+  },
   "event_progress_ref_message_redeem_success_flowers": "تم الاستبدال بنجاح! حصلت على {returnedReward} زهرة",
-  "@event_progress_ref_message_redeem_success_flowers": {"placeholders": {"returnedReward": {}}},
+  "@event_progress_ref_message_redeem_success_flowers": {
+    "placeholders": {
+      "returnedReward": {}
+    }
+  },
   "event_progress_ref_message_event_collection_redeem_success_add": "تم الاستبدال بنجاح! تمت إضافة “{itemName}” إلى مجموعة الفعالية",
-  "@event_progress_ref_message_event_collection_redeem_success_add": {"placeholders": {"itemName": {}}},
+  "@event_progress_ref_message_event_collection_redeem_success_add": {
+    "placeholders": {
+      "itemName": {}
+    }
+  },
   "event_progress_ref_message_redeem_failed": "فشل الاستبدال",
   "event_progress_ref_message_redeem_variant_b": "تم استبدال هذا العنصر بالفعل",
   "event_progress_ref_message_insufficient": "العملة غير كافية",
   "event_progress_ref_message_insufficient_variant_b": "{value1} غير كافٍ",
-  "@event_progress_ref_message_insufficient_variant_b": {"placeholders": {"value1": {}}},
+  "@event_progress_ref_message_insufficient_variant_b": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_progress_ref_message_redeem_variant_c": "استبدال",
   "event_progress_ref_message_redeem_variant_d": "تم الاستبدال",
   "event_message_redeem_flowers": "بعد الاستبدال ستحصل على {rewardAmount} زهرة",
-  "@event_message_redeem_flowers": {"placeholders": {"rewardAmount": {}}},
+  "@event_message_redeem_flowers": {
+    "placeholders": {
+      "rewardAmount": {}
+    }
+  },
   "event_message_redeem": "تم الاستبدال {redeemedCount} مرة",
-  "@event_message_redeem": {"placeholders": {"redeemedCount": {}}},
+  "@event_message_redeem": {
+    "placeholders": {
+      "redeemedCount": {}
+    }
+  },
   "event_message_event_shop_login": "سجّل الدخول لاستخدام متجر الفعالية",
   "event_message_redeem_current": "لا توجد عناصر متاحة للاستبدال حاليًا",
   "event_shop_item_card_message_flowers": "احصل على {rewardAmount} زهرة",
-  "@event_shop_item_card_message_flowers": {"placeholders": {"rewardAmount": {}}},
+  "@event_shop_item_card_message_flowers": {
+    "placeholders": {
+      "rewardAmount": {}
+    }
+  },
   "event_message_insufficient": "غير كافٍ",
   "notification_message_player": "صورة مرفقة من اللاعب",
   "notification_message_qixi_letter": "رسالة Qixi من {value1}",
-  "@notification_message_qixi_letter": {"placeholders": {"value1": {}}},
+  "@notification_message_qixi_letter": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "recommendation_remaining_label_days": "متبقي {value1} يوم",
-  "@recommendation_remaining_label_days": {"placeholders": {"value1": {}}},
+  "@recommendation_remaining_label_days": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "recommendation_remaining_label_hours": "متبقي {value1} ساعة",
-  "@recommendation_remaining_label_hours": {"placeholders": {"value1": {}}},
+  "@recommendation_remaining_label_hours": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "settings_subtitle_character_days": "دع شخصيتك المفضلة ترافقك كل يوم",
   "moment_notification_comment_on_character_post": "ترك {senderNickname} تعليقًا لـ {authorName}: “{commentText}”",
-  "@moment_notification_comment_on_character_post": {"placeholders": {"authorName": {}, "commentText": {}, "senderNickname": {}}},
+  "@moment_notification_comment_on_character_post": {
+    "placeholders": {
+      "authorName": {},
+      "commentText": {},
+      "senderNickname": {}
+    }
+  },
   "inbox_content_text_message_customer_service_message_send": "رسائل خدمة العملاء المرسلة",
   "character_edit_relationship_none_label": "لا شيء",
   "auth_cancel_account_deletion_failed": "فشل إلغاء حذف الحساب. حاول مرة أخرى لاحقًا.",
@@ -5128,6 +5343,1691 @@
   "theme_font_system": "خط النظام",
   "theme_font_shiguang_serif_description": "ناعم وأدبي، مناسب للقراءة الغامرة",
   "theme_font_clean_sans_description": "واضح ونظيف، مريح للقراءة لفترات طويلة",
-  "theme_font_system_description": "استخدم خط النظام الافتراضي للجهاز"
-
+  "theme_font_system_description": "استخدم خط النظام الافتراضي للجهاز",
+  "font_selection_serif_name": "خط نوتو سيريف الصيني التقليدي",
+  "font_selection_sans_name": "خط نوتو سانس الصيني التقليدي",
+  "font_selection_system_name": "خط النظام",
+  "font_selection_serif_description": "خط أنيق بزوائد، مناسب للقراءة الغامرة.",
+  "font_selection_sans_description": "خط واضح وناعم بلا زوائد.",
+  "font_selection_system_description": "استخدام الخط الافتراضي للجهاز.",
+  "font_selection_preview_sentence": "اكتب فصلًا جديدًا من قصتك مع من تحب.",
+  "avatar_frame_error_generic": "خطأ",
+  "avatar_frame_sign_in_required": "يُرجى تسجيل الدخول أولاً",
+  "avatar_frame_default_name": "إطار صورة الملف الشخصي للحدث",
+  "background_exclusive_photos_tab": "صور حصرية",
+  "background_world_sign_in_chat": "يُرجى تسجيل الدخول والدخول إلى دردشة العالم",
+  "background_world_photo_load_error": "خطأ",
+  "background_world_no_photos": "لا توجد صور متاحة للعالم",
+  "background_world_cover": "غلاف العالم",
+  "background_world_cover_confirm": "هل تريد تعيين غلاف العالم خلفيةً لهذه الدردشة؟",
+  "background_world_default_limited": "خلفية محدودة",
+  "background_world_default_character": "شخصية",
+  "background_world_no_character_photos": "لا تتوفر صور للشخصيات",
+  "background_world_unlock_required": "يتطلب فتحها {count} نقطة مودة",
+  "background_world_character_confirm": "هل تريد تعيين صورة «{name}» خلفيةً لدردشة العالم؟",
+  "background_world_affection_count": "{count} نقطة مودة",
+  "@background_world_unlock_required": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@background_world_affection_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@background_world_character_confirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reply_selection": "خيارات الرد",
+  "chat_home_character_tab": "محادثات الشخصيات",
+  "chat_home_world_tab": "عوالم مفتوحة",
+  "chat_home_world_error_generic": "خطأ",
+  "chat_home_world_pinned": "تم تثبيت دردشة العالم",
+  "chat_home_world_deleted": "تم حذف دردشة العالم وسجل المحادثة",
+  "chat_home_world_action_done": "تم",
+  "chat_home_world_rename_title": "سمِّ هذه الذكرى",
+  "chat_home_world_delete_confirm": "هل تريد حذف سجل محادثة «{name}»؟\n\nسيؤدي هذا إلى حذف المحادثات وملخصات القصة والعلاقات والملاحظات نهائيًا، ولا يمكن التراجع عنه. سيظل العالم المنشور متاحًا.",
+  "chat_home_world_empty_title": "لا توجد محادثات في العوالم المفتوحة بعد",
+  "chat_home_world_empty_desc": "ابدأ اللعب في عالم مفتوح لتظهر محادثاتك هنا.",
+  "chat_home_world_unnamed": "عالم بلا اسم",
+  "chat_home_world_private_test": "تجربة خاصة",
+  "chat_home_world_no_messages": "لا توجد رسائل بعد",
+  "expand_features": "توسيع الخيارات",
+  "chat_sticker_all": "الكل",
+  "chat_mode_short_daily": "يومي",
+  "chat_mode_short_story": "قصة",
+  "chat_mode_short_immersive": "اندماج",
+  "chat_mode_short_resonance": "تناغم",
+  "chat_mode_short_gemini": "دردشة",
+  "chat_theater_tool": "المسرح",
+  "chat_regenerate_insufficient_flowers": "لا توجد زهور كافية. تتطلب إعادة الإنشاء {cost} زهرة.",
+  "chat_regenerate_paid_title": "إعادة الإنشاء المدفوعة",
+  "chat_regenerate_paid_confirm": "لقد استنفدت محاولات إعادة الإنشاء المجانية اليوم. ستكلف هذه المحاولة {cost} زهرة في الوضع الحالي. هل تريد المتابعة؟",
+  "chat_generic_error": "خطأ",
+  "chat_regenerate_confirm": "تأكيد",
+  "@chat_regenerate_insufficient_flowers": {
+    "placeholders": {
+      "cost": {
+        "type": "int"
+      }
+    }
+  },
+  "@chat_regenerate_paid_confirm": {
+    "placeholders": {
+      "cost": {
+        "type": "int"
+      }
+    }
+  },
+  "comment_add_photo": "إضافة صورة",
+  "comment_error_generic": "خطأ",
+  "creator_profile_report_reason_prompt": "اختر سبب الإبلاغ عن «{creatorName}»:",
+  "creator_profile_open_worlds": "العوالم المفتوحة",
+  "creator_profile_generic_error": "خطأ",
+  "creator_profile_refresh": "تحديث",
+  "creator_profile_no_open_worlds": "لم ينشر هذا المبدع أي عوالم مفتوحة بعد.",
+  "creator_profile_unnamed_world": "عالم بلا اسم",
+  "creator_program_required_fields": "يرجى إدخال مجال الإبداع وسبب التقديم.",
+  "creator_program_submitted": "تم إرسال الطلب. تستغرق المراجعة نحو 1–3 أيام.",
+  "creator_program_error": "خطأ",
+  "creator_program_login_required": "يرجى تسجيل الدخول قبل التقدم لبرنامج المبدعين.",
+  "creator_program_title": "برنامج المبدعين",
+  "creator_program_headline": "دع إبداعك يصل إلى المزيد من الناس",
+  "creator_program_intro": "إذا كانت لديك أعمال منشورة للعامة، فنرحب بطلبك للانضمام إلى برنامج مبدعي «戀戀拾光». يراجع الفريق الطلبات خلال 1–3 أيام.",
+  "creator_program_benefits_title": "مزايا البرنامج",
+  "creator_program_benefit_dashboard": "لوحة المبدع: عرض عدد المعجبين والشخصيات العامة وإجمالي الإعجابات والمعجبين الجدد هذا الشهر.",
+  "creator_program_benefit_fans": "إدارة المعجبين: أرسل رسائل، وأدر المعجبين، وقدّم لهم مكافآت باستخدام زهورك.",
+  "creator_program_benefit_exposure": "الظهور الرسمي: قد تحظى الشخصيات الجديدة بالأولوية على إنستغرام وفي توصيات المبدعين داخل اللعبة.",
+  "creator_program_benefit_monthly": "مكافأة إبداع شهرية: انشر 3 شخصيات جديدة على الأقل خلال الشهر لتحصل على 520 زهرة في الشهر التالي.",
+  "creator_program_benefit_merch": "تعاون على منتجات ملموسة: قد تحصل على مكافأة نقدية للإبداع إذا شاركت شخصياتك في منتجات أو صناديق هدايا رسمية، وفقًا لشروط المشروع.",
+  "creator_program_last_review_note": "ملاحظات المراجعة السابقة: {reason}",
+  "creator_program_apply_heading": "التقديم للانضمام",
+  "creator_program_direction_label": "التوجه الإبداعي",
+  "creator_program_direction_hint": "مثال: رومانسية معاصرة، تاريخي، فانتازيا، BL، GL…",
+  "creator_program_reason_label": "سبب رغبتك في الانضمام",
+  "creator_program_reason_hint": "أخبرنا كيف ترغب في تطوير شخصياتك والتفاعل مع المعجبين.",
+  "creator_program_social_label": "رابط اجتماعي (اختياري)",
+  "creator_program_social_hint": "إنستغرام، Threads، موقع شخصي، إلخ.",
+  "creator_program_submit": "إرسال الطلب",
+  "creator_program_public_character_note": "سيتحقق النظام من أن حسابك يملك شخصية عامة واحدة على الأقل قبل إرسال الطلب.",
+  "creator_program_status_pending": "الطلب قيد المراجعة",
+  "creator_program_status_pending_desc": "تم استلام طلبك. تستغرق المراجعة نحو 1–3 أيام. سنبلغك عبر صندوق بريد اللعبة.",
+  "creator_program_status_approved": "تم اعتماد صفة المبدع 🎉",
+  "creator_program_status_approved_desc": "تهانينا على الانضمام إلى برنامج مبدعي «戀戀拾光»! سترتبط لوحة المبدع وإدارة المعجبين ولافتات التوصية بهذه الصفة في الميزات القادمة.",
+  "creator_program_status_suspended": "تم تعليق صفة المبدع",
+  "creator_program_status_suspended_desc": "لا يمكنك حاليًا استخدام ميزات المبدعين الحصرية. يرجى مراجعة الإشعار الرسمي في بريد اللعبة.",
+  "creator_program_status_revoked": "تم إلغاء صفة المبدع",
+  "creator_program_status_revoked_desc": "لم تعد ميزات المبدعين الحصرية متاحة. إذا كانت لديك أسئلة، يرجى التواصل مع الدعم.",
+  "creator_program_status_title": "حالة المبدع",
+  "creator_program_current_status": "الحالة الحالية: {status}",
+  "creator_program_official_note": "ملاحظات رسمية: {reason}",
+  "@creator_program_last_review_note": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "@creator_program_current_status": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "@creator_program_official_note": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "creator_dashboard_error": "خطأ",
+  "creator_dashboard_access_title": "لوحة تحكم المبدعين",
+  "creator_dashboard_status_notice_title": "Creator Dashboard Access Notice",
+  "creator_dashboard_apply_title": "طلب الوصول إلى لوحة تحكم المبدعين",
+  "creator_dashboard_access_subtitle": "إحصاءات لعب الشخصيات · المتابعون الجدد والمغادرون · إدارة المتابعين",
+  "creator_dashboard_pending": "Application submitted · Under review",
+  "creator_dashboard_legacy_pending": "Application pending confirmation",
+  "creator_dashboard_syncing": "Syncing dashboard access. Please try again later.",
+  "creator_dashboard_suspended": "Dashboard access suspended. Contact support.",
+  "creator_dashboard_apply_subtitle": "Apply for access to character analytics and follower management",
+  "creator_dashboard_rejected": "Application declined · You may apply again",
+  "creator_dashboard_submitted": "Application submitted. Please wait for review.",
+  "creator_dashboard_benefits_title": "Creator Dashboard features",
+  "creator_dashboard_benefit_monthly": "🌸 Monthly creation reward: Publish 3 distinct new characters this month to claim 300 Flowers once.",
+  "creator_dashboard_benefit_analytics": "• View public-character play metrics, follower totals, and follow/unfollow activity",
+  "creator_dashboard_benefit_mail": "• Fan messages: private messages and announcements (daily limits apply)",
+  "creator_dashboard_benefit_gifts": "• Fan rewards: gift your own Flowers to followers",
+  "creator_dashboard_reward_note": "Approval required. Private characters, drafts, and republished older characters do not count toward the monthly reward.",
+  "creator_dashboard_apply_cta": "Learn more and request dashboard access",
+  "creator_dashboard_my_characters": "شخصياتي",
+  "creator_dashboard_my_worlds": "عوالمِي المفتوحة",
+  "creator_dashboard_create_world": "إنشاء عالم مفتوح",
+  "creator_dashboard_public_worlds": "العوالم المنشورة",
+  "creator_dashboard_public_worlds_hint": "Other players can explore",
+  "creator_dashboard_private_worlds": "عوالم خاصة",
+  "creator_dashboard_private_worlds_hint": "Only you can view and edit",
+  "creator_dashboard_world_drafts": "مسودات العوالم",
+  "creator_dashboard_world_drafts_hint": "Worlds not yet finished",
+  "creator_dashboard_no_drafts": "No drafts yet",
+  "creator_dashboard_no_worlds": "No worlds yet",
+  "creator_dashboard_unnamed_world": "عالم بلا عنوان",
+  "creator_dashboard_delete_world_draft": "Delete world draft",
+  "creator_dashboard_private_test": "تجربة خاصة",
+  "creator_dashboard_delete_world_confirm_title": "Delete world draft?",
+  "creator_dashboard_delete_world_confirm_body": "This cannot be undone. Uploaded images will not be deleted.",
+  "creator_dashboard_draft_deleted": "World draft deleted",
+  "creator_dashboard_validation": "Creative direction must be 2–100 characters and application reason 10–500 characters.",
+  "creator_dashboard_confirm_application_title": "Confirm dashboard application",
+  "creator_dashboard_confirm_application_body": "Your request will be reviewed. Approval grants dashboard access and does not constitute a partnership agreement.",
+  "creator_dashboard_confirm_send": "تأكيد الإرسال",
+  "creator_dashboard_form_heading": "Apply for the Lianlian Shiguang Creator Dashboard",
+  "creator_dashboard_form_description": "Tell us about your creative direction and how you plan to use character analytics and follower management. This is not a partnership contract.",
+  "creator_dashboard_direction_label": "اتجاه الإبداع",
+  "creator_dashboard_direction_hint": "مثال: رومانسية معاصرة، تاريخي، فانتازيا، BL، GL…",
+  "creator_dashboard_reason_label": "سبب طلب لوحة التحكم",
+  "creator_dashboard_reason_hint": "Share your experience and which dashboard features you need",
+  "creator_dashboard_sending": "جارٍ الإرسال…",
+  "creator_dashboard_submit": "إرسال طلب الوصول",
+  "creator_dashboard_privacy_note": "Approval is not guaranteed. Do not enter identity numbers, banking details, or other sensitive information.",
+  "creator_dashboard_revoked_limit": "Dashboard application limit reached. Please contact support.",
+  "creator_dashboard_revoked_notice": "Your dashboard access was revoked. Check the page for available reapplication options.",
+  "creator_dashboard_error1": "خطأ",
+  "creator_dashboard_access_title1": "لوحة تحكم المبدعين",
+  "creator_dashboard_status_notice_title1": "Creator Dashboard Access Notice",
+  "creator_dashboard_apply_title1": "طلب الوصول إلى لوحة تحكم المبدعين",
+  "creator_dashboard_access_subtitle1": "إحصاءات لعب الشخصيات · المتابعون الجدد والمغادرون · إدارة المتابعين",
+  "creator_dashboard_pending1": "Application submitted · Under review",
+  "creator_dashboard_legacy_pending1": "Application pending confirmation",
+  "creator_dashboard_syncing1": "Syncing dashboard access. Please try again later.",
+  "creator_dashboard_suspended1": "Dashboard access suspended. Contact support.",
+  "creator_dashboard_apply_subtitle1": "Apply for access to character analytics and follower management",
+  "creator_dashboard_rejected1": "Application declined · You may apply again",
+  "creator_dashboard_submitted1": "Application submitted. Please wait for review.",
+  "creator_dashboard_benefits_title1": "Creator Dashboard features",
+  "creator_dashboard_benefit_monthly1": "🌸 Monthly creation reward: Publish 3 distinct new characters this month to claim 300 Flowers once.",
+  "creator_dashboard_benefit_analytics1": "• View public-character play metrics, follower totals, and follow/unfollow activity",
+  "creator_dashboard_benefit_mail1": "• Fan messages: private messages and announcements (daily limits apply)",
+  "creator_dashboard_benefit_gifts1": "• Fan rewards: gift your own Flowers to followers",
+  "creator_dashboard_reward_note1": "Approval required. Private characters, drafts, and republished older characters do not count toward the monthly reward.",
+  "creator_dashboard_apply_cta1": "Learn more and request dashboard access",
+  "creator_dashboard_my_characters1": "شخصياتي",
+  "creator_dashboard_my_worlds1": "عوالمِي المفتوحة",
+  "creator_dashboard_create_world1": "إنشاء عالم مفتوح",
+  "creator_dashboard_public_worlds1": "العوالم المنشورة",
+  "creator_dashboard_public_worlds_hint1": "Other players can explore",
+  "creator_dashboard_private_worlds1": "عوالم خاصة",
+  "creator_dashboard_private_worlds_hint1": "Only you can view and edit",
+  "creator_dashboard_world_drafts1": "مسودات العوالم",
+  "creator_dashboard_world_drafts_hint1": "Worlds not yet finished",
+  "creator_dashboard_no_drafts1": "No drafts yet",
+  "creator_dashboard_no_worlds1": "No worlds yet",
+  "creator_dashboard_unnamed_world1": "عالم بلا عنوان",
+  "creator_dashboard_delete_world_draft1": "Delete world draft",
+  "creator_dashboard_private_test1": "تجربة خاصة",
+  "creator_dashboard_delete_world_confirm_title1": "Delete world draft?",
+  "creator_dashboard_delete_world_confirm_body1": "This cannot be undone. Uploaded images will not be deleted.",
+  "creator_dashboard_draft_deleted1": "World draft deleted",
+  "creator_dashboard_validation1": "Creative direction must be 2–100 characters and application reason 10–500 characters.",
+  "creator_dashboard_confirm_application_title1": "Confirm dashboard application",
+  "creator_dashboard_confirm_application_body1": "Your request will be reviewed. Approval grants dashboard access and does not constitute a partnership agreement.",
+  "creator_dashboard_confirm_send1": "تأكيد الإرسال",
+  "creator_dashboard_form_heading1": "Apply for the Lianlian Shiguang Creator Dashboard",
+  "creator_dashboard_form_description1": "Tell us about your creative direction and how you plan to use character analytics and follower management. This is not a partnership contract.",
+  "creator_dashboard_direction_label1": "اتجاه الإبداع",
+  "creator_dashboard_direction_hint1": "مثال: رومانسية معاصرة، تاريخي، فانتازيا، BL، GL…",
+  "creator_dashboard_reason_label1": "سبب طلب لوحة التحكم",
+  "creator_dashboard_reason_hint1": "Share your experience and which dashboard features you need",
+  "creator_dashboard_sending1": "جارٍ الإرسال…",
+  "creator_dashboard_submit1": "إرسال طلب الوصول",
+  "creator_dashboard_privacy_note1": "Approval is not guaranteed. Do not enter identity numbers, banking details, or other sensitive information.",
+  "creator_dashboard_revoked_limit1": "Dashboard application limit reached. Please contact support.",
+  "creator_dashboard_revoked_notice1": "Your dashboard access was revoked. Check the page for available reapplication options.",
+  "creator_support_page_title1": "مركز الدعم",
+  "creator_support_new_report1": "بلاغ جديد",
+  "creator_support_error1": "خطأ",
+  "creator_support_no_cases1": "لا توجد بلاغات حاليًا",
+  "creator_support_unread1": "غير مقروء",
+  "creator_support_load_more1": "تحميل المزيد",
+  "creator_support_category_label1": "فئة المشكلة",
+  "creator_support_character_optional1": "الشخصية ذات الصلة (اختياري)",
+  "creator_support_no_character1": "دون شخصية محددة",
+  "creator_support_report_title1": "عنوان المشكلة",
+  "creator_support_report_description1": "وصف المشكلة",
+  "creator_support_select_images1": "اختر لقطات الشاشة ({count}/3، أقل من 2 ميغابايت لكل صورة)",
+  "@creator_support_select_images1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "creator_support_images_private1": "لا يمكن عرض اللقطات إلا لمنشئ البلاغ والفريق الرسمي.",
+  "creator_support_submitting1": "جارٍ الإرسال…",
+  "creator_support_submit1": "تأكيد الإرسال",
+  "creator_support_image_too_large1": "الصورة أكبر من 2 ميغابايت. اختر أخرى.",
+  "creator_support_fill_title_description1": "يرجى إدخال العنوان والوصف.",
+  "creator_support_case_sent1": "تم إرسال البلاغ",
+  "creator_support_case_sent_partial1": "تم إرسال البلاغ، لكن تعذر رفع {count} لقطات شاشة",
+  "@creator_support_case_sent_partial1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "creator_support_detail_title1": "تفاصيل البلاغ",
+  "creator_support_image_max1": "يجب أن تقل كل لقطة عن 2 ميغابايت",
+  "creator_support_jpg_png_only1": "يدعم JPG / PNG فقط",
+  "creator_support_reply_sent1": "تم إرسال الرد",
+  "creator_support_reply_sent_partial1": "تم إرسال النص، لكن تعذر رفع {count} صور",
+  "@creator_support_reply_sent_partial1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "creator_support_empty_content1": "لا يمكن ترك المحتوى فارغًا",
+  "creator_support_recall_message1": "استرجاع الرسالة",
+  "creator_support_delete_message1": "حذف الرسالة",
+  "creator_support_recall_warning1": "سيظهر للطرفين «تم استرجاع هذه الرسالة»، ولن تكون المرفقات متاحة.",
+  "creator_support_delete_warning1": "إخفاء الرسالة من جهتك فقط؛ ستبقى لدى الطرف الآخر.",
+  "creator_support_cancel1": "إلغاء",
+  "creator_support_confirm1": "تأكيد",
+  "creator_support_operation_success1": "تمت العملية بنجاح",
+  "creator_support_edit_message1": "تعديل الرسالة",
+  "creator_support_recall_remaining1": "استرجاع الرسالة (باقي {seconds} ثانية)",
+  "@creator_support_recall_remaining1": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "creator_support_recall_expired1": "استرجاع الرسالة (مرّ أكثر من 60 ثانية)",
+  "creator_support_case_updated1": "تم تحديث البلاغ",
+  "creator_support_loading1": "جارٍ التحميل…",
+  "creator_support_creator_uid1": "معرّف المنشئ: {uid}",
+  "@creator_support_creator_uid1": {
+    "placeholders": {
+      "uid": {
+        "type": "String"
+      }
+    }
+  },
+  "creator_support_internal_note1": "ملاحظات داخلية (مخفية عن المنشئ)",
+  "creator_support_save_internal_note1": "حفظ الملاحظات الداخلية",
+  "creator_support_case_images1": "لقطات البلاغ",
+  "creator_support_official1": "فريق ليانليان شيغوانغ الرسمي",
+  "creator_support_creator1": "منشئ",
+  "creator_support_recalled1": "تم استرجاع هذه الرسالة",
+  "creator_support_edited1": "تم التعديل",
+  "creator_support_reply_hint1": "اكتب ردًا…",
+  "creator_support_attach_image1": "إرفاق لقطات شاشة (حتى 3)",
+  "creator_support_send1": "إرسال",
+  "creator_support_admin_title1": "إدارة بلاغات المنشئين",
+  "creator_support_new_reply1": "رد جديد",
+  "creator_support_load_more_cases1": "تحميل المزيد من البلاغات",
+  "creator_support_image_load_error1": "تعذر تحميل لقطة الشاشة",
+  "creator_support_edit_hint1": "تعديل محتوى الرسالة",
+  "creator_support_save1": "حفظ",
+  "creator_support_status_pending1": "قيد الانتظار",
+  "creator_support_status_progress1": "قيد المعالجة",
+  "creator_support_status_waiting1": "بانتظار معلومات إضافية",
+  "creator_support_status_resolved1": "تم الحل",
+  "creator_support_cat_character1": "إدارة الشخصيات",
+  "creator_support_cat_ai1": "مشكلة التفاعل مع شخصية الذكاء الاصطناعي",
+  "creator_support_cat_dashboard1": "لوحة تحكم المنشئ",
+  "creator_support_cat_cooperation1": "التعاون والمزايا",
+  "creator_support_cat_other1": "مشكلة أخرى",
+  "desktop_widget_size_small1": "صغير",
+  "desktop_widget_size_medium1": "متوسط",
+  "desktop_widget_size_large1": "كبير",
+  "desktop_widget_cancel1": "إلغاء",
+  "desktop_widget_delete1": "حذف",
+  "desktop_widget_days_remaining1": "متبقٍ {days} أيام",
+  "@desktop_widget_days_remaining1": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "desktop_widget_days_today1": "اليوم هو الموعد",
+  "desktop_widget_days_elapsed1": "منذ {days} أيام",
+  "@desktop_widget_days_elapsed1": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "desktop_widget_daily_quote1": "اقتباس اليوم",
+  "desktop_widget_update_daily1": "التحديث مرة يوميًا",
+  "desktop_widget_character_birthday1": "عيد ميلاد الشخصية",
+  "desktop_widget_change1": "تغيير",
+  "desktop_widget_mood1": "المزاج",
+  "desktop_widget_current_state1": "الحالة الحالية",
+  "desktop_widget_location1": "الموقع",
+  "desktop_widget_relationship1": "العلاقة",
+  "desktop_widget_outfit1": "الملابس",
+  "desktop_widget_weather1": "الطقس",
+  "desktop_widget_thought1": "الأفكار",
+  "desktop_widget_action1": "الأفعال",
+  "desktop_widget_affinity1": "مستوى المودة",
+  "desktop_widget_character_status1": "حالة الشخصية",
+  "desktop_widget_no_posts1": "لا توجد منشورات للشخصية بعد",
+  "desktop_widget_crop_position1": "ضبط موضع الشخصية",
+  "desktop_widget_crop_action1": "كبّر / اسحب لضبط الإطار",
+  "desktop_widget_crop_hint1": "استخدم إصبعين للتكبير وإصبعًا واحدًا للسحب دون تحريك الصفحة.",
+  "desktop_widget_crop_title1": "ضبط إطار الشخصية",
+  "desktop_widget_reset1": "إعادة ضبط",
+  "desktop_widget_crop_instructions1": "اسحب بإصبع واحد لتغيير الموضع وبإصبعين للتكبير. ما داخل الإطار سيظهر في الأداة.",
+  "desktop_widget_crop_position_scale1": "الموضع: {x}% / {y}% · التكبير: {scale}×",
+  "@desktop_widget_crop_position_scale1": {
+    "placeholders": {
+      "x": {
+        "type": "int"
+      },
+      "y": {
+        "type": "int"
+      },
+      "scale": {
+        "type": "String"
+      }
+    }
+  },
+  "desktop_widget_apply1": "تطبيق",
+  "desktop_widget_just_posted1": "نشر تحديثًا للتو",
+  "desktop_widget_important_day1": "يوم مميز",
+  "desktop_widget_no_date1": "لم يتم اختيار تاريخ",
+  "desktop_widget_first_met1": "يوم لقائنا",
+  "desktop_widget_error1": "خطأ",
+  "event_memory_select_character_title1": "اختيار شخصية",
+  "event_memory_my_characters1": "شخصياتي",
+  "event_memory_friend_characters1": "شخصيات الأصدقاء",
+  "event_memory_friend_badge1": "صديق",
+  "event_memory_unnamed_character1": "شخصية بلا اسم",
+  "event_memory_generic_error1": "خطأ",
+  "memory_collection_title1": "مجموعة الذكريات",
+  "memory_collection_avatar_frames1": "إطارات الصور الشخصية",
+  "memory_collection_stickers1": "ملصقات",
+  "memory_collection_memories1": "ذكريات",
+  "memory_collection_try_again1": "يرجى المحاولة مرة أخرى لاحقًا.",
+  "memory_collection_error1": "خطأ",
+  "memory_collection_chat_background1": "خلفيات الدردشة",
+  "memory_collection_got_it1": "فهمت",
+  "memory_collection_not_now1": "ليس الآن",
+  "memory_collection_confirm_delete1": "تأكيد الحذف",
+  "memory_collection_close1": "إغلاق",
+  "memory_collection_delete1": "حذف",
+  "memory_collection_image_preparing1": "جارٍ تجهيز الصورة",
+  "memory_collection_remove_favorite1": "إزالة من المجموعة",
+  "memory_collection_removed1": "تمت الإزالة من المجموعة",
+  "event_memory_performance_opening1": "تبقى بعض اللحظات،\nحتى بعد انتهاء القصة.",
+  "event_memory_performance_generic_error1": "خطأ",
+  "event_memory_performance_collected1": "تم الحفظ",
+  "event_memory_performance_saving1": "جارٍ الحفظ…",
+  "event_memory_performance_save_gallery1": "حفظ في معرض الصور",
+  "event_memory_performance_done1": "تم",
+  "event_memory_performance_uncollect_title1": "إزالة من المجموعة؟",
+  "event_memory_performance_not_now1": "ليس الآن",
+  "event_memory_performance_uncollect1": "إزالة من المجموعة",
+  "event_memory_performance_uncollected1": "تمت الإزالة من المجموعة",
+  "event_memory_performance_login_to_collect1": "سجّل الدخول لحفظ هذه الذكرى",
+  "event_memory_performance_web_gallery_unsupported1": "لا يدعم إصدار الويب الحفظ المباشر في معرض الهاتف",
+  "event_memory_performance_gallery_permission1": "يلزم إذن الوصول إلى الصور لحفظ هذه الذكرى",
+  "event_memory_performance_image_not_ready1": "صورة الذكرى غير جاهزة بعد. حاول مرة أخرى",
+  "event_memory_performance_gallery_saved1": "تم الحفظ في معرض الصور",
+  "event_memory_performance_skip1": "تخطٍّ",
+  "event_memory_performance_memory_label1": "ذكرى",
+  "event_memory_performance_tap_continue1": "اضغط للمتابعة",
+  "event_memory_performance_tap_show_full1": "اضغط لإظهار النص كاملًا",
+  "event_memory_performance_brand_limited_memory1": "ليانليان شيغوانغ · ذكرى محدودة",
+  "event_ended1": "انتهى الحدث",
+  "event_default_name1": "حدث لفترة محدودة",
+  "event_default_subtitle1": "اصنعي ذكريات مميزة معه هذا الموسم.",
+  "event_currency_default1": "عملة الحدث",
+  "event_tasks_today1": "مهام اليوم",
+  "event_tasks_subtitle1": "أكملي المهام واجمعي {currency} لفتح المزيد من المحتوى الحصري.",
+  "@event_tasks_subtitle1": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "event_milestones_title1": "التقدم التراكمي",
+  "event_milestones_subtitle1": "اجمعي {currency} لتحصلي على مكافآت الحدث الحصرية.",
+  "@event_milestones_subtitle1": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "event_memory_title1": "ذكريات حصرية",
+  "event_memory_subtitle1": "احتفظي بذكرى خاصة من هذا الحدث.",
+  "event_shop_title1": "متجر الحدث",
+  "event_shop_subtitle1": "استبدلي {currency} بمكافآت حصرية.",
+  "@event_shop_subtitle1": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "event_info_title1": "تفاصيل الحدث",
+  "event_info_default1": "أكملي المهام المحددة لكسب عملة الحدث.\nستُضاف المكافآت المستبدلة إلى حسابك وفق القواعد.\nستُعالج العملة غير المستخدمة وفق القواعد بعد انتهاء الحدث.",
+  "event_generic_error1": "خطأ",
+  "event_task_default1": "مهمة الحدث",
+  "event_claimed1": "تم الاستلام",
+  "event_claim1": "استلام",
+  "event_in_progress1": "جارٍ",
+  "event_reward_default1": "مكافأة حصرية",
+  "event_product_default1": "عنصر الحدث",
+  "event_cancel1": "إلغاء",
+  "event_confirm_exchange1": "تأكيد الاستبدال",
+  "event_limited_product1": "عنصر حصري",
+  "event_insufficient_currency1": "لا توجد {currency} كافية",
+  "@event_insufficient_currency1": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "event_close1": "إغلاق",
+  "event_redeemed_count_limit1": "تم الاستبدال {count} / {max} مرة",
+  "@event_redeemed_count_limit1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "event_redeemed_count1": "تم الاستبدال {count} مرة",
+  "@event_redeemed_count1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "event_redeemed1": "تم الاستبدال",
+  "event_exchange1": "استبدال",
+  "login_account_deletion_started1": "جارٍ حذف الحساب",
+  "login_account_deletion_expired_description1": "انتهت مهلة الأيام الثلاثة لإلغاء الحذف، ولم يعد بالإمكان استعادة هذا الحساب. يُرجى التواصل مع الدعم إذا كنت بحاجة إلى مساعدة.",
+  "login_account_deletion_confirm1": "حسنًا",
+  "event_memory_limited_title1": "ذكرى حصرية",
+  "moment_detail_add_photo1": "إضافة صورة",
+  "moment_detail_error1": "خطأ",
+  "notification_claim_before_delete1": "استلم الزهور قبل حذف رسالة الهدية",
+  "notification_error1": "خطأ",
+  "notification_creator_gift_already_claimed1": "لقد استلمت هذه الزهور بالفعل",
+  "notification_creator_gift_claim_success1": "تم استلام {amount} زهرة بنجاح!",
+  "notification_creator_gift_title1": "هدية من المبدع",
+  "notification_creator_gift_amount1": "{amount} زهرة",
+  "notification_creator_gift_claimed1": "تم الاستلام",
+  "notification_creator_gift_claiming1": "جارٍ الاستلام…",
+  "notification_creator_gift_claim_button1": "استلام الزهور",
+  "notification_support_subject1": "العنوان الذي أرسله اللاعب",
+  "notification_support_content1": "المحتوى الذي أرسله اللاعب",
+  "notification_support_reported1": "المحتوى المبلّغ عنه",
+  "notification_support_reply1": "رد الدعم",
+  "notification_share_mail1": "مشاركة الرسالة",
+  "notification_original_question1": "سؤالك الأصلي",
+  "@notification_creator_gift_claim_success1": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      }
+    }
+  },
+  "@notification_creator_gift_amount1": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      }
+    }
+  },
+  "notification_preferences_chat_title1": "محادثات الشخصيات",
+  "notification_preferences_chat_subtitle1": "إشعارات فورية بردود الشخصيات",
+  "notification_preferences_moments_title1": "منشورات جديدة",
+  "notification_preferences_moments_subtitle1": "منشورات جديدة من المبدعين والشخصيات التي تتابعها",
+  "notification_preferences_social_title1": "إشعارات اجتماعية",
+  "notification_preferences_social_subtitle1": "الإعجابات والتعليقات والمتابعات والتفاعل مع الشخصيات",
+  "notification_preferences_announcements_title1": "الإعلانات الرسمية",
+  "notification_preferences_announcements_subtitle1": "إشعارات الإعلانات الرسمية العامة",
+  "notification_preferences_events_title1": "تذكيرات الفعاليات",
+  "notification_preferences_events_subtitle1": "إشعارات باقتراب انتهاء الفعاليات",
+  "notification_preferences_save_failed1": "تعذّر حفظ إعدادات الإشعارات. يُرجى المحاولة لاحقًا.",
+  "notification_preferences_page_title1": "تفضيلات الإشعارات",
+  "notification_preferences_login_required1": "يُرجى تسجيل الدخول إلى حسابك أولًا",
+  "notification_preferences_load_failed1": "تعذّر تحميل تفضيلات الإشعارات. يُرجى المحاولة لاحقًا.",
+  "notification_preferences_footer1": "تتم مزامنة هذه الإعدادات على جميع الأجهزة المسجّل دخولها إلى حساب اللاعب نفسه. يجب ضبط أذونات إشعارات النظام على كل جهاز على حدة. لن يؤدي إيقاف الإشعارات الفورية إلى حذف صندوق بريد اللعبة أو الإشعارات المستلمة مسبقًا.",
+  "private_label1": "خاص",
+  "official_studio_text_0011": "Guide completed, but the viewed status could not sync and may appear again.",
+  "official_studio_text_0021": "يرجى تسجيل الدخول",
+  "official_studio_text_0031": "Creator Partnership Studio",
+  "official_studio_text_0041": "Guide",
+  "official_studio_text_0051": "Unable to verify creator eligibility. Try again later.",
+  "official_studio_text_0061": "You do not currently have official creator access.\\nIf approved, contact support to verify activation.",
+  "official_studio_text_0071": "Verified Partner Creator",
+  "official_studio_text_0081": "Welcome back to the creator studio. More features are coming soon.",
+  "official_studio_text_0091": "Creator Tools",
+  "official_studio_text_0101": "إدارة المتابعين",
+  "official_studio_text_0111": "View and remove followers",
+  "official_studio_text_0121": "إحصاءات المبدعين",
+  "official_studio_text_0131": "Character popularity and total play count",
+  "official_studio_text_0141": "رسائل المعجبين",
+  "official_studio_text_0151": "Send messages to your followers",
+  "official_studio_text_0161": "Fan Benefits",
+  "official_studio_text_0171": "Gift your own flowers to followers",
+  "official_studio_text_0181": "مكافأة المبدع الشهرية",
+  "official_studio_text_0191": "Publish 3 new characters to claim 300 flowers",
+  "official_studio_text_0201": "لافتة المبدع",
+  "official_studio_text_0211": "Set your public creator-page banner",
+  "official_studio_text_0221": "معلومات الشراكة",
+  "official_studio_text_0231": "Partnership status, benefits and notices",
+  "official_studio_text_0241": "Support Center",
+  "official_studio_text_0251": "Report issues and track support replies",
+  "official_studio_text_0261": "Eligibility verification failed. Try again later.",
+  "official_studio_text_0271": "Official creator access is not available",
+  "official_studio_text_0281": "Unable to load public characters",
+  "official_studio_text_0291": "Creator Overview",
+  "official_studio_text_0301": "Total Plays",
+  "official_studio_text_0311": "Current Followers",
+  "official_studio_text_0321": "Unavailable",
+  "official_studio_text_0331": "Public Character Breakdown",
+  "official_studio_text_0341": "No public characters yet. They will appear here after publishing.",
+  "official_studio_text_0351": "Unnamed Character",
+  "official_studio_text_0361": "Total plays (playCount)",
+  "official_studio_text_0371": "Statistics reflect available database fields. Plays are not messages, unique players, or revenue.",
+  "official_studio_text_0381": "Unable to load followers",
+  "official_studio_text_0391": "No followers yet",
+  "official_studio_text_0401": "Follower List",
+  "official_studio_text_0411": "Up to 100 followers shown; only public nicknames and avatars are displayed.",
+  "official_studio_text_0421": "Remove Follower",
+  "official_studio_text_0431": "إلغاء",
+  "official_studio_text_0441": "Confirm Removal",
+  "official_studio_text_0451": "Follower removed",
+  "official_studio_text_0461": "Removal failed. Please try again later.",
+  "official_studio_text_0471": "Player",
+  "official_studio_text_0481": "Unable to load public data",
+  "official_studio_text_0491": "This player",
+  "official_studio_text_0501": "Cropped image is still too large. Choose another.",
+  "official_studio_text_0511": "Banner updated",
+  "official_studio_text_0521": "Image processing failed. Choose another image.",
+  "official_studio_text_0531": "Banner removed",
+  "official_studio_text_0541": "Removal failed",
+  "official_studio_text_0551": "Please sign in",
+  "official_studio_text_0561": "Public Profile Banner",
+  "official_studio_text_0571": "Image failed to load",
+  "official_studio_text_0581": "No banner set",
+  "official_studio_text_0591": "Select a photo, position it within the white frame and confirm to upload.",
+  "official_studio_text_0601": "Processing…",
+  "official_studio_text_0611": "Select and Crop Image",
+  "official_studio_text_0621": "Remove Current Banner",
+  "official_studio_text_0631": "Cannot open this image",
+  "official_studio_text_0641": "Cropped file is too large. Choose another image.",
+  "official_studio_text_0651": "Cropping failed. Try again.",
+  "official_studio_text_0661": "Adjust Banner Crop",
+  "official_studio_text_0671": "Move the image to select the banner area",
+  "official_studio_text_0681": "Drag to move · Pinch or use slider to zoom",
+  "official_studio_text_0691": "The white frame shows the final banner (2.5:1)",
+  "official_studio_text_0701": "Zoom",
+  "official_studio_text_0711": "Reset Position",
+  "official_studio_text_0721": "Cropping…",
+  "official_studio_text_0731": "Crop and Upload",
+  "official_studio_text_0741": "Partnership Eligibility",
+  "official_studio_text_0751": "Verifying Eligibility",
+  "official_studio_text_0761": "Available Creator Tools",
+  "official_studio_text_0771": "Follower management, analytics, fan mail, flower gifts, monthly rewards and banners.",
+  "official_studio_text_0781": "Under current rules, create and first publish three eligible characters this month to claim 300 flowers. Final eligibility is verified by the server.",
+  "official_studio_text_0791": "Official Notices and Agreement",
+  "official_studio_text_0801": "Signed agreement terms and official notices take precedence. This page does not replace an agreement. Contact support for questions.",
+  "official_studio_text_0811": "Mail subject must contain 1–100 characters",
+  "official_studio_text_0821": "Mail body must contain 1–5000 characters",
+  "official_studio_text_0831": "Please select a follower",
+  "official_studio_text_0841": "Confirm Fan Mail",
+  "official_studio_text_0851": "Send to all current followers? This uses one broadcast credit.",
+  "official_studio_text_0861": "Send to this follower? This uses one private-message credit.",
+  "official_studio_text_0871": "Confirm Send",
+  "official_studio_text_0881": "Mail job created. Messages will be delivered gradually.",
+  "official_studio_text_0891": "Today’s Sending Quota",
+  "official_studio_text_0901": "Resets daily at 00:00 Taiwan time. A broadcast reaches all followers.",
+  "official_studio_text_0911": "All Followers",
+  "official_studio_text_0921": "One Follower",
+  "official_studio_text_0931": "Unable to get follower list",
+  "official_studio_text_0941": "No followers available for messaging",
+  "official_studio_text_0951": "Select a follower (first 100)",
+  "official_studio_text_0961": "Mail Subject",
+  "official_studio_text_0971": "Message",
+  "official_studio_text_0981": "Write a letter to your fans…",
+  "official_studio_text_0991": "Submitting…",
+  "official_studio_text_1001": "Confirm and Send",
+  "official_studio_text_1011": "Sending History",
+  "official_studio_text_1021": "No sending history yet",
+  "official_studio_text_1031": "Queued",
+  "official_studio_text_1041": "Delivering",
+  "official_studio_text_1051": "Completed",
+  "official_studio_text_1061": "Cancelled",
+  "official_studio_text_1071": "Delivery Failed",
+  "official_studio_text_1081": "Untitled Message",
+  "official_studio_text_1091": "Shows the latest 20 sending jobs. New and pending jobs stop when creator access is revoked.",
+  "official_studio_text_1101": "Player without a nickname",
+  "official_studio_text_1111": "Unable to load followers. Try again later.",
+  "official_studio_text_1121": "Insufficient Flowers",
+  "official_studio_text_1131": "Maybe Later",
+  "official_studio_text_1141": "اذهب إلى المتجر",
+  "official_studio_text_1151": "You may gift 1–1000 flowers per follower",
+  "official_studio_text_1161": "Select 1–20 followers",
+  "official_studio_text_1171": "Maximum 5000 flowers per gift",
+  "official_studio_text_1181": "Gift message is limited to 300 characters",
+  "official_studio_text_1191": "Confirm Flower Gift",
+  "official_studio_text_1201": "Confirm Gift",
+  "official_studio_text_1211": "Gift already submitted; flowers were not deducted twice",
+  "official_studio_text_1221": "Fan Benefits · Flower Gifts",
+  "official_studio_text_1231": "Unable to load flower balance",
+  "official_studio_text_1241": "My Flower Balance",
+  "official_studio_text_1251": "Flowers are deducted from your own balance, not paid by the platform.",
+  "official_studio_text_1261": "Select followers (up to 20)",
+  "official_studio_text_1271": "Search by public nickname or UID; eligibility is verified by the server at submission.",
+  "official_studio_text_1281": "ابحث عن متابعين",
+  "official_studio_text_1291": "Enter nickname or player UID",
+  "official_studio_text_1301": "Clear Search",
+  "official_studio_text_1311": "No eligible followers available",
+  "official_studio_text_1321": "No matching followers on this page. Continue searching.",
+  "official_studio_text_1331": "No matching followers found",
+  "official_studio_text_1341": "Select up to 20 followers",
+  "official_studio_text_1351": "Searching…",
+  "official_studio_text_1361": "Load More Followers",
+  "official_studio_text_1371": "Search More Followers",
+  "official_studio_text_1381": "Flowers per Follower",
+  "official_studio_text_1391": "e.g. 10",
+  "official_studio_text_1401": "Gift Message (Optional)",
+  "official_studio_text_1411": "Estimated Deduction",
+  "official_studio_text_1421": "Up to 20 followers and 5000 flowers per gift. Flowers are deducted on submission; recipients must claim them in their mailbox.",
+  "official_studio_text_1431": "Unable to load monthly tasks",
+  "official_studio_text_1441": "Unable to load progress. Try again later.",
+  "official_studio_text_1451": "Confirm Creator Reward",
+  "official_studio_text_1461": "Claim 300 flowers for this month? Each month can only be claimed once.",
+  "official_studio_text_1471": "Confirm Claim",
+  "official_studio_text_1481": "Monthly reward already claimed",
+  "official_studio_text_1491": "Successfully claimed 300 flowers!",
+  "official_studio_text_1501": "Claim failed. Try again later.",
+  "official_studio_text_1511": "Unable to verify claim. Refresh your history.",
+  "official_studio_text_1521": "This month",
+  "official_studio_text_1531": "Create and first publish three different characters each month, then claim 300 flowers.",
+  "official_studio_text_1541": "Rules: Only signed and verified partner creators are eligible. Counted characters must be created and first published this month and remain public. Private, draft and republished older characters do not count. Resets monthly in Taiwan time, once per month.",
+  "official_studio_text_1551": "Duplicate, empty or rule-violating characters may lead to review or partnership suspension under the agreement.",
+  "official_studio_text_1561": "Welcome to the Partner Creator Program",
+  "official_studio_text_1571": "Track your work and stay connected",
+  "official_studio_text_1581": "Share flowers and earn creator rewards",
+  "official_studio_text_1591": "Build your page and get support",
+  "official_studio_text_1601": "Your own creative space",
+  "official_studio_text_1611": "Followers · Analytics · Fan Mail",
+  "official_studio_text_1621": "Fan Benefits · Monthly Rewards",
+  "official_studio_text_1631": "Banners · Partnership Info · Support",
+  "official_studio_text_1641": "Welcome to the official creator studio of Lianlian Shiguang, combining creator tools, fan engagement, benefits and partnership information.",
+  "official_studio_text_1651": "View and manage followers, track plays and character performance, and send messages to one follower or your entire audience.",
+  "official_studio_text_1661": "Gift flowers from your balance to fans. You may also earn monthly rewards for newly created and first-published eligible characters.",
+  "official_studio_text_1671": "Upload your personal creator banner. Review partnership rules and benefits in Partnership Info, or contact the Support Center.",
+  "official_studio_text_1681": "Only officially eligible partner creators can use these features.",
+  "official_studio_text_1691": "Fan mail has daily sending limits. Check your quota before sending.",
+  "official_studio_text_1701": "Flower gifts deduct your balance. Monthly rewards follow current rules and server verification.",
+  "official_studio_text_1711": "New creator-exclusive features will be added here over time.",
+  "official_studio_text_1721": "Creator Studio Guide",
+  "official_studio_text_1731": "تخطي",
+  "official_studio_text_1741": "السابق",
+  "official_studio_text_1751": "تم",
+  "official_studio_text_1761": "التالي",
+  "official_studio_text_1771": "Confirm removal of {name}? They will unfollow you but can follow again.",
+  "official_studio_text_1781": "Private messages: {count} / 30",
+  "official_studio_text_1791": "Broadcasts: {count} / 5",
+  "official_studio_text_1801": "Gift sent! {count} flowers are waiting in your followers’ mailboxes.",
+  "official_studio_text_1811": "{count} flowers 🌸",
+  "official_studio_text_1821": "{count} followers",
+  "official_studio_text_1831": "{count} flowers",
+  "official_studio_text_1841": "{month} creator reward",
+  "official_studio_text_1851": "This month: {count} / 3",
+  "official_studio_text_1861": "{count} public characters remaining",
+  "official_studio_text_1871": "Insufficient flowers: need {count} more",
+  "official_studio_text_1881": "Unable to load sending quota",
+  "official_studio_text_1891": "Sending is not confirmed. Check your history before retrying.",
+  "official_studio_text_1901": "Connection failed. Check your history before trying again.",
+  "official_studio_text_1911": "Gift status unconfirmed. Check history before retrying.",
+  "official_studio_text_1921": "Balance: {balance}\\nRequired: {total}\\nMissing: {missing}\\n\\nVisit the shop to get more flowers.",
+  "official_studio_text_1931": "Send {followers} flowers gifts of {amount} each, deducting {total} flowers.\\nGifts cannot be revoked.",
+  "official_studio_text_1941": "{mode} · {status} · Delivered to {count}",
+  "official_studio_text_1951": "Public characters",
+  "official_studio_text_1961": "Loading…",
+  "official_studio_text_1971": "Select followers",
+  "official_studio_text_1981": "Claimed this month",
+  "official_studio_text_188": "Unable to load message quota. Please try again later.",
+  "official_studio_text_189": "Delivery not confirmed. Check your records before retrying.",
+  "official_studio_text_190": "Connection failed. Check the records and try again.",
+  "official_studio_text_191": "Gift not confirmed. Check your records before retrying.",
+  "@official_studio_text_1771": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@official_studio_text_1781": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1791": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1801": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1811": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1821": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1831": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1841": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "@official_studio_text_1851": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1861": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1871": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1921": {
+    "placeholders": {
+      "balance": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "missing": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1931": {
+    "placeholders": {
+      "followers": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1941": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "preference_selection_title1": "اختر أنواع الشخصيات المفضلة لديك",
+  "preference_selection_description1": "اختر من 3 إلى 5 وسوم تعجبك لنقترح عليك شخصيات تناسب ذوقك.",
+  "preference_selection_recommendation_note1": "تُستخدم هذه التفضيلات لتحسين الاقتراحات فقط، ويمكنك استكشاف بقية أنواع الشخصيات أيضًا.",
+  "preference_selection_selected1": "تم الاختيار",
+  "preference_selection_start1": "ابدأ الاستكشاف",
+  "preference_selection_max_error1": "يمكنك اختيار {count} وسوم كحد أقصى.",
+  "preference_selection_save_failed1": "تعذّر حفظ تفضيلاتك. يُرجى المحاولة لاحقًا.",
+  "preference_group_personality1": "الشخصية والطباع",
+  "preference_group_relationship_age1": "العلاقة والفارق العمري",
+  "preference_group_story1": "أجواء القصة",
+  "preference_tag_gentle1": "لطيف",
+  "preference_tag_cold1": "بارد ومتحفظ",
+  "preference_tag_scheming1": "ماكر",
+  "preference_tag_tsundere1": "تسونْديري",
+  "preference_tag_loyal1": "وفيّ",
+  "preference_tag_yandere1": "يانديري",
+  "preference_tag_mysterious1": "غامض",
+  "preference_tag_healing1": "مريح للنفس",
+  "preference_tag_gap_moe1": "شخصية ذات جانب مفاجئ",
+  "preference_tag_older1": "أكبر سنًا",
+  "preference_tag_younger1": "أصغر سنًا",
+  "preference_tag_ceo1": "مدير تنفيذي متسلط",
+  "preference_tag_school1": "مدرسي",
+  "preference_tag_workplace1": "بيئة العمل",
+  "preference_tag_ancient1": "تاريخي",
+  "preference_tag_nonhuman1": "غير بشري",
+  "@preference_selection_max_error1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profile_page_world_tab1": "عوالم مفتوحة",
+  "profile_page_login_required1": "يرجى تسجيل الدخول أولاً",
+  "profile_page_world_load_failed1": "تعذّر تحميل العوالم. يُرجى المحاولة لاحقًا.",
+  "profile_page_my_worlds1": "عوالمِي المفتوحة",
+  "profile_page_create_world1": "إنشاء عالم",
+  "profile_page_worlds_empty1": "لم تُنشئ أي عالم بعد",
+  "profile_page_worlds_empty_hint1": "أنشئ عالمك الأول",
+  "profile_page_world_untitled1": "عالم بلا اسم",
+  "profile_page_world_public1": "عام",
+  "profile_page_world_private1": "خاص",
+  "profile_page_world_character_count1": "{count} شخصيات",
+  "@profile_page_world_character_count1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profile_page_world_enter_chat1": "الدخول إلى المحادثة",
+  "profile_page_world_edit1": "تعديل",
+  "profile_page_create_character1": "إنشاء شخصية",
+  "profile_page_event_frame_default1": "إطار صورة رمزية للفعالية",
+  "public_worlds_explore_title1": "استكشاف العوالم العامة",
+  "public_worlds_search_tooltip1": "البحث عن العوالم المفتوحة",
+  "public_worlds_load_failed1": "يتعذر تحميل العوالم العامة مؤقتًا",
+  "public_worlds_refresh1": "تحديث",
+  "public_worlds_empty1": "العوالم العامة قيد الإعداد. ترقّبوا الجديد!",
+  "public_worlds_unnamed1": "عالم بلا اسم",
+  "world_explore_subtitle1": "ادخل عوالم مختلفة واكتشف رحلات فريدة",
+  "settings_notification_preferences_title1": "تفضيلات الإشعارات",
+  "settings_notification_preferences_subtitle1": "اختر أنواع الإشعارات التي ترغب في تلقيها، مع مزامنة الإعدادات بين الأجهزة",
+  "settings_admin_section1": "الإدارة",
+  "settings_admin_dashboard1": "لوحة تحكم المشرف",
+  "settings_admin_tools_subtitle1": "أدوات الإدارة الداخلية",
+  "world_chat_back1": "رجوع",
+  "world_chat_mode_tooltip1": "وضع الرد (لم يتم ربط الذكاء الاصطناعي وخصم الزهور بعد)",
+  "world_chat_menu1": "قائمة العالم",
+  "world_chat_mode_story1": "القصة",
+  "world_chat_mode_immersive1": "الانغماس",
+  "world_chat_mode_resonance1": "التناغم",
+  "world_chat_mode_interaction1": "التفاعل",
+  "world_chat_mode_cost1": "{mode} · {cost} زهور",
+  "@world_chat_mode_cost1": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
+      "cost": {
+        "type": "int"
+      }
+    }
+  },
+  "world_memo_read_failed1": "تعذّر تحميل الملاحظات: {error}",
+  "@world_memo_read_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_memo_sync_failed1": "فشلت المزامنة مؤقتًا. يتم عرض الملاحظات المحمّلة سابقًا.",
+  "world_memo_server_no_id1": "لم يُرجع الخادم معرّف الملاحظة",
+  "world_memo_save_failed1": "فشل الحفظ: {error}",
+  "@world_memo_save_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_memo_delete_title1": "هل تريد حذف الملاحظة؟",
+  "world_memo_delete_warning1": "لا يمكن التراجع عن الحذف.",
+  "world_memo_cancel1": "إلغاء",
+  "world_memo_delete1": "حذف",
+  "world_memo_cancel_reminder_failed1": "حُذفت الملاحظة، لكن تعذّر إلغاء التذكير على الجهاز القديم: {error}",
+  "@world_memo_cancel_reminder_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_memo_delete_failed1": "فشل الحذف: {error}",
+  "@world_memo_delete_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_memo_title1": "الملاحظات",
+  "world_memo_world_personal1": "{worldName} | ملاحظات شخصية",
+  "@world_memo_world_personal1": {
+    "placeholders": {
+      "worldName": {
+        "type": "String"
+      }
+    }
+  },
+  "world_memo_sync_notice1": "تتم مزامنة أوقات التذكير بين الأجهزة، وتُرسل إشعارات فورية إلى الأجهزة المسجّلة التي تسمح بالإشعارات.",
+  "world_memo_loading1": "جارٍ التحميل…",
+  "world_memo_empty1": "لا توجد ملاحظات بعد. اضغط + لإضافة ملاحظة.",
+  "world_memo_reminder_date1": "التذكير: {date}",
+  "@world_memo_reminder_date1": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "world_memo_reminder_future1": "يجب أن يكون وقت التذكير في المستقبل",
+  "world_memo_content_required1": "أدخل محتوى الملاحظة أولًا",
+  "world_memo_edit_title1": "تعديل الملاحظة",
+  "world_memo_add_title1": "ملاحظة جديدة",
+  "world_memo_content_label1": "محتوى الملاحظة",
+  "world_memo_content_hint1": "اكتب شيئًا تريد تذكّره…",
+  "world_memo_reminder_settings1": "إعدادات التذكير",
+  "world_memo_no_reminder1": "لم يتم تعيين تذكير",
+  "world_memo_reminder_choose1": "اختر التاريخ والوقت لتذكير تتم مزامنته عبر السحابة",
+  "world_memo_clear_reminder1": "مسح تاريخ التذكير",
+  "world_memo_save1": "حفظ الملاحظة",
+  "world_chat_open_world1": "عالم مفتوح",
+  "world_chat_flower_sync1": "تعذرت مزامنة رصيد الزهور حاليًا",
+  "world_chat_web_store_unavailable1": "شراء الزهور غير متاح على الويب حاليًا",
+  "world_chat_sync_unavailable1": "المزامنة الفورية غير متاحة. أعد فتح المحادثة لتحميل السجل.",
+  "world_chat_stopped1": "توقف الإنشاء. لن تُخصم زهور.",
+  "world_chat_cannot_stop1": "ربما اكتمل الرد بالفعل. تحقق من المحادثة ورصيد الزهور.",
+  "world_chat_stop_retry1": "تعذر الإيقاف حاليًا. حاول مرة أخرى.",
+  "world_chat_connection_failed1": "فشل الاتصال",
+  "world_chat_network_failed1": "الشبكة غير متاحة مؤقتًا",
+  "world_chat_no_regenerate1": "لا يوجد رد لإعادة إنشائه",
+  "world_chat_paid_regenerate1": "إعادة إنشاء مدفوعة",
+  "world_chat_cancel1": "إلغاء",
+  "world_chat_confirm1": "تأكيد",
+  "world_chat_no_continue1": "لا توجد قصة للمتابعة",
+  "world_chat_no_save1": "لا توجد محادثات لحفظها بعد",
+  "world_chat_loading1": "جارٍ تحميل المحادثة",
+  "world_chat_unnamed_character1": "شخصية بلا اسم",
+  "world_chat_bg_wait1": "يمكن تغيير الخلفية بعد تحميل المحادثة",
+  "world_chat_sign_in1": "يرجى تسجيل الدخول أولاً",
+  "world_chat_choose_mode1": "اختر نمط العالم",
+  "world_chat_mode_charge_expl1": "تُخصم الزهور لكل رد ناجح حسب النمط؛ الفشل مجاني.",
+  "world_chat_photo_selected1": "تم اختيار الصورة",
+  "world_chat_got_it1": "فهمت",
+  "world_chat_status_settings1": "إعدادات عرض حالة العالم",
+  "world_chat_save_settings1": "حفظ الإعدادات",
+  "world_chat_status_saved1": "تم حفظ تفضيلات عرض الحالة لهذا العالم",
+  "world_chat_not_ready1": "محادثة العالم ليست جاهزة بعد",
+  "world_chat_enter_first1": "ادخل محادثة العالم أولاً",
+  "world_chat_photo1": "صورة",
+  "world_chat_profile1": "الملف الشخصي",
+  "world_chat_interaction1": "التفاعلات",
+  "world_chat_theater1": "مسرح",
+  "world_chat_status1": "الحالة",
+  "world_chat_secret1": "فصول سرية",
+  "world_chat_mood1": "المزاج",
+  "world_chat_outfit1": "الملابس",
+  "world_chat_relationship1": "العلاقة",
+  "world_chat_thought1": "الأفكار",
+  "world_chat_weather1": "الطقس",
+  "world_chat_current_state1": "الحالة الحالية",
+  "world_chat_action1": "الحركة",
+  "world_chat_affinity1": "الألفة",
+  "world_chat_generating1": "العالم يمضي بهدوء…",
+  "world_chat_screenshot1": "مشاركة لقطة شاشة",
+  "world_chat_copy1": "نسخ المحتوى",
+  "world_chat_copied1": "تم النسخ",
+  "world_chat_edit1": "تعديل",
+  "world_chat_delete1": "حذف",
+  "world_chat_report1": "الإبلاغ عن المحادثة",
+  "world_chat_feedback1": "إرسال ملاحظات",
+  "world_chat_edit_segment1": "تعديل مقطع الشخصية",
+  "world_chat_save1": "حفظ",
+  "world_chat_updated1": "تم تحديث الرسالة",
+  "world_chat_delete_segment1": "حذف المقطع",
+  "world_chat_deleted_segment1": "تم حذف المقطع",
+  "world_chat_edit_message1": "تعديل الرسالة",
+  "world_chat_edit_hint1": "عدّل نصك",
+  "world_chat_delete_conversation1": "حذف المحادثة",
+  "world_chat_no_chat1": "لا توجد محادثات بعد",
+  "world_chat_cancel_select1": "إلغاء التحديد",
+  "world_chat_input_hint1": "اكتبوا قصتكم…",
+  "world_chat_screenshot_done1": "لحظتك الخاصة جاهزة",
+  "world_chat_screenshot_style1": "تغيير ألوان لقطة الشاشة",
+  "world_chat_reselect1": "اختيار مجددًا",
+  "world_chat_download_share1": "تنزيل ومشاركة",
+  "world_records_summary_title1": "ملخص القصة",
+  "world_records_loaded_count1": "تم تحميل {count} رسالة دردشة وترتيبها حسب تسلسل القصة.",
+  "@world_records_loaded_count1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "world_records_auto_summary_pending1": "تُعرض مراجعة للمحادثات المحمّلة فقط؛ الملخص التلقائي بالذكاء الاصطناعي غير متاح بعد.",
+  "world_records_empty_story1": "لا توجد أحداث لمراجعتها بعد",
+  "world_records_narrator_name1": "راوي العالم",
+  "world_records_relationships_title1": "علاقات الشخصيات",
+  "world_records_affinity_note1": "تُحسب المودة لكل شخصية رسمية على حدة؛ ولا تُحتسب نقاط للشخصيات المؤقتة.",
+  "world_records_empty_characters1": "لا توجد بيانات لشخصيات رسمية بعد",
+  "world_records_affinity_score_with_next1": "المودة {score} / {next}",
+  "@world_records_affinity_score_with_next1": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "next": {
+        "type": "int"
+      }
+    }
+  },
+  "world_records_affinity_score_only1": "المودة {score}",
+  "@world_records_affinity_score_only1": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "world_records_relationship_stage1": "مرحلة العلاقة {stage}",
+  "@world_records_relationship_stage1": {
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      }
+    }
+  },
+  "world_records_local_memo_read_failed1": "تعذّر تحميل المذكرة المحلية",
+  "world_records_memo_saved_local1": "تم حفظ المذكرة على هذا الجهاز",
+  "world_records_memo_save_failed1": "تعذّر حفظ المذكرة",
+  "world_records_memo_unsaved1": "مذكرة غير محفوظة",
+  "world_records_memo_save_before_exit1": "هل تريد الحفظ قبل المغادرة؟",
+  "world_records_continue_editing1": "متابعة التحرير",
+  "world_records_save_and_exit1": "حفظ ومغادرة",
+  "world_records_world_memo_title1": "مذكرة لهذا العالم",
+  "world_records_save1": "حفظ",
+  "world_records_memo_local_disclaimer1": "مذكرة خاصة | تُحفظ هذه النسخة على هذا الجهاز فقط، ولا تُرسل إلى الذكاء الاصطناعي أو تُزامن مع الأجهزة الأخرى.",
+  "world_records_memo_hint1": "دوّن الأدلة التي اكتشفتها أو خططك أو ما تود قوله للشخصيات…",
+  "world_records_narrator_short1": "الراوي",
+  "world_records_summary_service_missing1": "لم تُنشر خدمة ملخص القصة (worldStoryMemory) بعد. انشرها ثم افتح الصفحة مجددًا.",
+  "world_records_summary_load_failed1": "تعذّر تحميل ملخص القصة. حاول لاحقًا.",
+  "world_records_summary_intro1": "كل لقاء واختيار يصبح جزءًا من القصة. تُسجَّل هنا التجارب والعلاقات المهمة مع استمرار رحلتك.",
+  "world_records_summary_empty1": "تستمر قصتك، وستظهر فصولها المميزة هنا قريبًا.",
+  "world_search_title1": "البحث في المحادثات",
+  "world_search_hint1": "ابحث عن الشخصيات أو الحوارات أو السرد",
+  "world_search_clear1": "مسح البحث",
+  "world_search_start1": "أدخل كلمة مفتاحية لبدء البحث",
+  "world_search_results1": "تم العثور على {count} نتيجة",
+  "world_search_empty_prompt1": "ابحث عن اللاعبين والشخصيات والسرد",
+  "world_search_no_results1": "لا توجد محادثات مطابقة",
+  "world_search_unknown_speaker1": "شخصية غير معروفة",
+  "world_search_collapse1": "طي",
+  "world_search_expand1": "توسيع",
+  "world_search_scope1": "نطاق البحث: آخر 200 رسالة تم تحميلها في المحادثة",
+  "@world_search_results1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "world_menu_subtitle1": "عالم مفتوح · ستتوفر الميزات تدريجيًا",
+  "world_menu_chat_section1": "الدردشة",
+  "world_menu_search1": "البحث في المحادثات",
+  "world_menu_save_transcript1": "حفظ سجل المحادثات",
+  "world_menu_memories_background1": "الذكريات والخلفيات",
+  "world_menu_relations_section1": "علاقات العالم",
+  "world_menu_story_summary1": "ملخص القصة",
+  "world_menu_relationships1": "علاقات الشخصيات",
+  "world_menu_memos1": "ملاحظات",
+  "world_menu_memory_section1": "إدارة الذكريات",
+  "world_menu_reset_progress1": "إعادة ضبط تقدم العالم",
+  "world_chat_book_confirm1": "تأكيد",
+  "world_custom_scene_title_required1": "يرجى إدخال عنوان للمشهد.",
+  "world_custom_scene_description_required1": "يرجى إدخال وصف للمشهد.",
+  "world_custom_scene_save_failed1": "تعذّر الحفظ. يُرجى المحاولة مجددًا لاحقًا.",
+  "world_custom_scene_edit_title1": "تعديل المشهد",
+  "world_custom_scene_add_title1": "إضافة مشهد",
+  "world_discovery_share_desc1": "ادخل عالمًا مفتوحًا من إبداع أحد المبدعين وابدأ قصتك الخاصة.",
+  "world_discovery_share_text1": "Lianlian Shiguang · دعوة إلى العالم المفتوح\n\n«{title}»\n\n{description}\n\nاستكشف الآن: {link}",
+  "@world_discovery_share_text1": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "description": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "world_discovery_brand1": "Lianlian Shiguang",
+  "world_discovery_invite1": "دعوة إلى العالم المفتوح",
+  "world_discovery_scan1": "امسح للتنزيل",
+  "world_discovery_cancel1": "إلغاء",
+  "world_discovery_share_button1": "مشاركة بطاقة الدعوة",
+  "world_discovery_share_missing_card1": "لم يتم العثور على بطاقة الدعوة",
+  "world_discovery_share_image_failed1": "تعذر إنشاء صورة للمشاركة",
+  "world_discovery_share_failed1": "تعذرت مشاركة بطاقة الدعوة. حاول مرة أخرى.",
+  "world_discovery_story_open1": "بداية القصة",
+  "world_discovery_story_unset1": "لم تُحدد بداية القصة بعد",
+  "world_discovery_first_unset1": "لم تُحدد الجملة الأولى بعد",
+  "world_discovery_background_title1": "خلفية العالم ووصفه",
+  "world_discovery_era1": "الإطار الزمني: {era}",
+  "@world_discovery_era1": {
+    "placeholders": {
+      "era": {
+        "type": "String"
+      }
+    }
+  },
+  "world_discovery_background_unset1": "لم تُحدد خلفية العالم بعد",
+  "world_discovery_background_full1": "التفاصيل الكاملة للعالم",
+  "world_discovery_people_unset1": "لا توجد شخصيات بعد",
+  "world_discovery_people_intro1": "التعريف بالشخصيات",
+  "world_discovery_appearance_unset1": "لم يُذكر المظهر",
+  "world_discovery_creator_unset1": "لا تتوفر معلومات عن المبدع",
+  "world_discovery_creator1": "المبدع",
+  "world_discovery_creator_load_failed1": "تعذر تحميل معلومات المبدع",
+  "world_discovery_world_load_failed1": "فشل تحميل العالم المفتوح: {error}",
+  "@world_discovery_world_load_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_discovery_unpublished1": "هذا العالم غير منشور",
+  "world_discovery_open_world1": "العالم المفتوح",
+  "world_discovery_share_tooltip1": "مشاركة العالم المفتوح",
+  "world_discovery_world_background1": "خلفية العالم",
+  "world_discovery_not_playable1": "هذا العالم المفتوح غير متاح للعب بعد.",
+  "world_discovery_enter1": "دخول العالم",
+  "world_edit_login_required1": "يرجى تسجيل الدخول أولاً",
+  "world_edit_no_edit_permission1": "You do not have permission to edit this world",
+  "world_edit_secret_permission_error1": "Unable to access secret chapters. Check the deployed Firestore rules. Saving is paused to protect existing data.",
+  "world_edit_secret_read_error_code1": "Could not load secret chapters ({code}). Saving is paused to protect existing data.",
+  "@world_edit_secret_read_error_code1": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_secret_read_error1": "Could not load secret chapters. Saving is paused to protect existing data.",
+  "world_edit_world_read_error1": "Could not load world: {error}",
+  "@world_edit_world_read_error1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_image_max1": "A world can have up to {count} images",
+  "@world_edit_image_max1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "world_edit_image_read_error1": "Could not load images: {error}",
+  "@world_edit_image_read_error1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_tag_heading1": "Theme tags (up to 5)",
+  "world_edit_tag_max1": "Select up to 5 tags",
+  "world_edit_tag_custom1": "Tags (customizable; separate with commas)",
+  "world_edit_secret_not_ready1": "Secret chapters have not loaded. Publishing is paused to protect your content. Check permissions and reopen this page.",
+  "world_edit_required_publish1": "Enter a world name, at least one image, world background, story opening, and first line",
+  "world_edit_max_tags_save1": "Only 5 theme tags are allowed. Remove extras before saving",
+  "world_edit_secret_validation1": "Each chapter needs a title, unlock condition, and secret content (up to 12 chapters)",
+  "world_edit_draft_saved1": "World draft and secret chapters saved",
+  "world_edit_publish_unconfirmed1": "The server has not confirmed public eligibility. Please try publishing again later.",
+  "world_edit_publish_backend_error1": "World data was saved, but public activation failed ({code}): {message}. Fix the issue and select “Publish open world” again.",
+  "@world_edit_publish_backend_error1": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      },
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_publish_service_missing1": "Verify that worldPublish is deployed",
+  "world_edit_public_published1": "Public open world published",
+  "world_edit_private_saved1": "Private open world saved",
+  "world_edit_save_publish_failed1": "Save or publish failed: {error}",
+  "@world_edit_save_publish_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_save_draft_question1": "حفظ المسودة؟",
+  "world_edit_save_draft_explain1": "هل تريد حفظ هذا العالم قبل المغادرة؟ ستُفقد التغييرات غير المحفوظة.",
+  "world_edit_discard1": "عدم الحفظ",
+  "world_edit_cancel1": "إلغاء",
+  "world_edit_save_draft1": "حفظ المسودة",
+  "world_edit_world_name1": "اسم العالم المفتوح *",
+  "world_edit_world_images1": "World images (up to 6; first image is the cover)",
+  "world_edit_cover1": "الغلاف",
+  "world_edit_set_cover1": "تعيين كغلاف",
+  "world_edit_short_pitch1": "One-line card description (optional, up to 60 characters)",
+  "world_edit_public_summary1": "Public world description (no spoilers)",
+  "world_edit_era1": "Time period (e.g. fictional present day, Republican era)",
+  "world_edit_world_rules1": "World background and rules *",
+  "world_edit_full_lore1": "Full world lore, events and locations (for AI)",
+  "world_edit_npc_intro1": "Set names, appearances, birthdays, relationships, and photos for main characters and NPCs. Each player remains the protagonist of their own story.",
+  "world_edit_main_characters1": "الشخصيات الرئيسية",
+  "world_edit_main_subtitle1": "Important characters who appear frequently in this world",
+  "world_edit_npc_subtitle1": "Other characters who may become interaction partners as the story unfolds",
+  "world_edit_people_count1": "{count} شخصية",
+  "@world_edit_people_count1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "world_edit_role_unset1": "Role / occupation not set",
+  "world_edit_remove_person1": "Remove character",
+  "world_edit_add_person1": "إضافة {type}",
+  "@world_edit_add_person1": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_add_secret1": "إضافة فصل سري",
+  "world_edit_edit_secret1": "تعديل الفصل السري",
+  "world_edit_chapter_title1": "عنوان الفصل *",
+  "world_edit_unlock_condition1": "Unlock condition (description for server evaluation) *",
+  "world_edit_secret_content1": "المحتوى السري *",
+  "world_edit_confirm1": "تأكيد",
+  "world_edit_story_opening1": "بداية القصة *",
+  "world_edit_first_line1": "أول جملة في القصة *",
+  "world_edit_secret_chapters1": "الفصول السرية",
+  "world_edit_secret_explain1": "Secret chapters are stored privately. Publishing the world does not reveal them; players must meet story conditions to unlock them.",
+  "world_edit_add_secret_max1": "Add secret chapter (up to 12)",
+  "world_edit_publish_settings1": "إعدادات النشر",
+  "world_edit_private_world1": "عالم خاص",
+  "world_edit_private_world_desc1": "يمكنك وحدك اللعب والاختبار، ولا يمكن للاعبين الآخرين الدخول",
+  "world_edit_public_world1": "عالم عام",
+  "world_edit_public_world_desc1": "يمكن للاعبين الآخرين الدخول ولكل منهم تقدم مستقل في القصة",
+  "world_edit_create_world1": "إنشاء عالم مفتوح",
+  "world_edit_basic_tab1": "الإعدادات الأساسية",
+  "world_edit_characters_tab1": "شخصيات العالم",
+  "world_edit_story_tab1": "إعدادات القصة",
+  "world_edit_publish_world1": "نشر العالم المفتوح",
+  "world_edit_name_required1": "أدخل اسم الشخصية أولاً",
+  "world_edit_edit_person1": "تعديل {type}",
+  "@world_edit_edit_person1": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_upload_photo1": "تحميل صورة الشخصية (اختياري)",
+  "world_edit_allow_photo1": "Allow generating other images from this character's photo",
+  "world_edit_allow_photo_explain1": "Use this character's photo as a reference only when appropriate for the story. Chatting and ordinary gifts still work if disabled. Set separately for each character.",
+  "world_edit_name1": "الاسم *",
+  "world_edit_gender1": "الجنس / الهوية الجندرية",
+  "world_edit_birthday1": "تاريخ الميلاد (مثال: 16 مايو)",
+  "world_edit_age1": "العمر",
+  "world_edit_role1": "الدور / المهنة",
+  "world_edit_appearance1": "المظهر",
+  "world_edit_personality1": "الشخصية والسمات",
+  "world_edit_background1": "الماضي",
+  "world_edit_relationships1": "العلاقات مع الشخصيات الأخرى",
+  "world_edit_speech_style1": "أسلوب الكلام / النبرة",
+  "world_edit_dialogue_examples1": "أمثلة حوار (لمساعدة الذكاء الاصطناعي)",
+  "world_edit_save_person1": "حفظ إعدادات الشخصية",
+  "world_edit_tag_mystery1": "تشويق",
+  "world_edit_tag_horror1": "رعب",
+  "world_edit_tag_romance1": "رومانسية",
+  "world_edit_tag_modern_fantasy1": "فانتازيا حضرية",
+  "world_edit_tag_school1": "مدرسة",
+  "world_edit_tag_ensemble1": "شخصيات متعددة",
+  "world_edit_tag_adventure1": "مغامرة",
+  "world_edit_tag_daily1": "حياة يومية",
+  "world_edit_tag_detective1": "غموض",
+  "world_edit_tag_otherworld1": "عالم آخر",
+  "chooseNpc1": "اختر شخصية NPC",
+  "chooseInteractionTarget1": "اختر شخصية للتفاعل",
+  "unnamedCharacter1": "شخصية بلا اسم",
+  "chooseTargetFirst1": "اختر شخصية للتفاعل أولاً",
+  "confirmGift1": "تأكيد الهدية",
+  "giftConfirmDetail1": "إرسال {gift} إلى {target} يكلف {cost} زهور. لا تُخصم النقاط إلا بعد نجاح رد الذكاء الاصطناعي.",
+  "@giftConfirmDetail1": {
+    "placeholders": {
+      "target": {
+        "type": "String"
+      },
+      "gift": {
+        "type": "String"
+      },
+      "cost": {
+        "type": "int"
+      }
+    }
+  },
+  "cancel1": "إلغاء",
+  "send1": "إرسال",
+  "sendLocationTitle1": "إرسال موقع (3 زهور)",
+  "customLocation1": "موقع مخصص",
+  "confirm1": "تأكيد",
+  "cafe1": "مقهى",
+  "park1": "حديقة",
+  "restaurant1": "مطعم",
+  "street1": "شارع",
+  "giftHeart1": "قلب",
+  "giftFlower1": "زهرة",
+  "giftSun1": "شمس",
+  "giftConfetti1": "قصاصات ملونة",
+  "giftCoffee1": "قهوة",
+  "giftCake1": "كعكة",
+  "interactionPlayTitle1": "التفاعلات",
+  "interactionTargetLabel1": "الشخصية: {target}",
+  "@interactionTargetLabel1": {
+    "placeholders": {
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "intimateInteraction1": "تفاعلات ودية",
+  "poke1": "نقرة لطيفة",
+  "hug1": "عناق",
+  "holdHands1": "إمساك اليدين",
+  "gifts1": "هدايا",
+  "funActivities1": "أنشطة ممتعة",
+  "sendLocation1": "إرسال موقع",
+  "diceDuel1": "تحدي النرد",
+  "world_profile_name_too_long1": "يجب ألا يتجاوز اسم الشخصية في العالم 40 حرفًا. اختصره قبل الحفظ.",
+  "world_profile_identity_too_long1": "تتجاوز بيانات الشخصية في العالم 2000 حرف. اختصرها قبل الحفظ.",
+  "world_relationship_live_title1": "علاقات الشخصيات",
+  "world_relationship_live_load_failed1": "تعذّر تحميل بيانات العلاقات. تحقّق من أذونات Firestore.",
+  "world_relationship_live_no_people1": "لم تُنشأ أي شخصيات في هذا العالم بعد.",
+  "world_relationship_live_not_met1": "العلاقة الحالية: لم يلتقيا بعد",
+  "world_relationship_live_first_meeting1": "اللقاء الأول",
+  "world_relationship_live_current_relation1": "العلاقة الحالية: {relation}",
+  "@world_relationship_live_current_relation1": {
+    "placeholders": {
+      "relation": {
+        "type": "String"
+      }
+    }
+  },
+  "world_relationship_live_thought_title1": "أفكاره الحالية تجاه اللاعب",
+  "world_relationship_live_thought_pending1": "ستتكوّن انطباعاته تدريجيًا من خلال التفاعلات القادمة.",
+  "world_scene_full_load_error1": "تعذر تحميل المشاهد: {error}",
+  "@world_scene_full_load_error1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_full_delete_title1": "حذف المشهد",
+  "world_scene_full_delete_confirm1": "هل تريد حذف «{title}»؟",
+  "@world_scene_full_delete_confirm1": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_full_cancel1": "إلغاء",
+  "world_scene_full_delete1": "حذف",
+  "world_scene_full_delete_error1": "تعذر حذف المشهد: {error}",
+  "@world_scene_full_delete_error1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_full_missing_fields1": "يرجى إدخال عنوان المشهد ووصفه أولاً.",
+  "world_scene_full_activate_error1": "تعذر بدء المشهد: {error}",
+  "@world_scene_full_activate_error1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_full_end_title1": "إنهاء المشهد",
+  "world_scene_full_end_confirm1": "هل تريد إنهاء المشهد الحالي؟",
+  "world_scene_full_end_error1": "تعذر إنهاء المشهد: {error}",
+  "@world_scene_full_end_error1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_full_unnamed1": "مشهد بلا عنوان",
+  "world_scene_full_opening1": "البداية: {opening}",
+  "@world_scene_full_opening1": {
+    "placeholders": {
+      "opening": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_full_edit1": "تعديل",
+  "world_scene_full_start1": "بدء المشهد",
+  "world_scene_full_creator_empty1": "لا توجد مشاهد للمنشئ بعد",
+  "world_scene_full_custom_empty1": "لم تنشئ أي مشاهد بعد",
+  "world_scene_full_add1": "مشهد جديد",
+  "world_scene_full_page_title1": "المشاهد",
+  "world_scene_full_creator_tab1": "مشاهد المنشئ",
+  "world_scene_full_custom_tab1": "مشاهدي",
+  "world_scene_full_active1": "المشهد الجاري: {title}",
+  "@world_scene_full_active1": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_required1": "يرجى إدخال عنوان المشهد ووصفه",
+  "world_scene_title1": "المشاهد",
+  "world_scene_beta_notice1": "نسخة تجريبية من مشاهد العالم: تبدأ المشاهد باستخدام ذكاء محادثة العالم. الحفظ الخاص بالمشاهد وواجهة البدء الرسمية غير متاحين بعد.",
+  "world_scene_creator_scenes1": "مشاهد المبدع",
+  "world_scene_no_creator_scenes1": "لا تتوفر حاليًا مشاهد أنشأها المبدع لهذا العالم",
+  "world_scene_custom_scenes1": "إنشاء مشهد خاص",
+  "world_scene_name1": "عنوان المشهد",
+  "world_scene_setup1": "الخلفية والموقع والشخصيات والموقف الافتتاحي",
+  "world_scene_start1": "بدء المشهد",
+  "worldSearchTitle1": "البحث عن العوالم المفتوحة",
+  "worldSearchHint1": "ابحث عن عالم أو منشئ أو وسم",
+  "worldSearchClear1": "مسح البحث",
+  "worldSearchEmpty1": "لم يتم العثور على عوالم مفتوحة مطابقة",
+  "worldSearchTrending1": "عوالم شائعة",
+  "worldSearchResults1": "نتائج البحث",
+  "worldSearchUnnamed1": "عالم بلا اسم",
+  "worldSearchCreator1": "المنشئ: {creator}",
+  "@worldSearchCreator1": {
+    "placeholders": {
+      "creator": {
+        "type": "String"
+      }
+    }
+  },
+  "world_secret_chapters_title1": "الفصول السرية",
+  "world_secret_chapters_close1": "إغلاق",
+  "world_secret_chapters_read_failed1": "تعذّرت قراءة الفصل السري حاليًا",
+  "world_secret_chapters_retry1": "فشل التحميل. اضغط لإعادة المحاولة",
+  "world_secret_chapters_empty1": "لم يضف المنشئ أي فصول سرية بعد",
+  "world_secret_chapters_locked_chapter1": "الفصل {number} · ؟؟؟",
+  "@world_secret_chapters_locked_chapter1": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "world_secret_chapters_unlocked1": "تم فتحه · اضغط للقراءة",
+  "world_secret_chapters_locked1": "مغلق · واصل استكشاف القصة",
+  "world_timeline_load_failed1": "تعذّر تحميل ملخص القصة: {error}",
+  "@world_timeline_load_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_timeline_edit_summary1": "تعديل ملخص القصة",
+  "world_timeline_cancel1": "إلغاء",
+  "world_timeline_save1": "حفظ",
+  "world_timeline_save_failed1": "فشل الحفظ: {error}",
+  "@world_timeline_save_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_timeline_delete_summary1": "حذف الملخص",
+  "world_timeline_delete_confirm1": "هل تريد حذف هذا السجل من القصة؟",
+  "world_timeline_delete1": "حذف",
+  "world_timeline_delete_failed1": "فشل الحذف: {error}",
+  "@world_timeline_delete_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_timeline_our_story1": "قصتنا",
+  "world_timeline_retry1": "إعادة المحاولة",
+  "world_timeline_empty1": "ما زالت القصة تتكشف. ستظهر سجلات جديدة مع تقدّم الأحداث.",
+  "world_timeline_recent1": "سجل حديث",
+  "world_timeline_edit1": "تعديل",
+  "echo_login_to_post1": "سجّل الدخول لترك صدى زمني",
+  "echo_limit1": "يمكن لكل لاعب ترك 3 أصداء كحد أقصى في العالم المفتوح نفسه",
+  "echo_count_fail1": "تعذّر التحقق من عدد الأصداء. حاول مجددًا لاحقًا.",
+  "echo_compose_title1": "اترك صدى زمنيًا",
+  "echo_compose_desc1": "اختر البطاقة التي تعجبك واكتب ما تريد تركه.",
+  "echo_compose_hint1": "ماذا تريد أن تقول في هذا العالم؟",
+  "echo_send1": "نشر الصدى",
+  "echo_player1": "لاعب",
+  "echo_sent1": "تم نشر الصدى الزمني",
+  "echo_post_fail1": "تعذّر النشر. تحقق من الأذونات والاتصال.",
+  "echo_login1": "يرجى تسجيل الدخول",
+  "echo_like_fail1": "تعذّر تسجيل الإعجاب",
+  "echo_delete_title1": "هل تريد حذف هذا الصدى؟",
+  "echo_delete_warning1": "لا يمكن التراجع عن الحذف.",
+  "echo_cancel1": "إلغاء",
+  "echo_delete1": "حذف",
+  "echo_deleted1": "تم حذف الصدى",
+  "echo_delete_fail1": "فشل الحذف",
+  "echo_reason_inappropriate1": "محتوى غير لائق",
+  "echo_reason_harassment1": "مضايقة أو إساءة",
+  "echo_reason_spam1": "رسائل مزعجة",
+  "echo_reason_other1": "أخرى",
+  "echo_report_title1": "الإبلاغ عن صدى زمني",
+  "echo_already_reported1": "لقد أبلغت عن هذا الصدى مسبقًا",
+  "echo_report_received1": "تم استلام البلاغ",
+  "echo_report_fail1": "فشل الإبلاغ",
+  "echo_options1": "خيارات الصدى",
+  "echo_delete_option1": "حذف الصدى",
+  "echo_report_option1": "الإبلاغ عن الصدى",
+  "echo_wall_title1": "أصداء الزمن",
+  "echo_add1": "اترك صدى",
+  "echo_load_fail1": "تعذّر تحميل الأصداء. تحقق من أذونات Firestore.",
+  "echo_empty1": "لا توجد أصداء بعد. اترك أول قصة.",
+  "store_pack_30_name1": "حزمة اللقاء الأول",
+  "store_pack_70_name1": "حزمة بداية الإعجاب",
+  "store_pack_120_name1": "حزمة خفقان القلب",
+  "store_pack_190_name1": "حزمة الحب العاطفي",
+  "store_pack_250_name1": "حزمة توأم الروح",
+  "store_pack_330_name1": "حزمة الإخلاص",
+  "store_pack_450_name1": "حزمة الثقة",
+  "store_pack_520_name1": "حزمة أحبك",
+  "store_pack_690_name1": "حزمة شهر العسل",
+  "store_pack_720_name1": "حزمة الوعد",
+  "store_pack_750_name1": "حزمة معًا",
+  "store_pack_830_name1": "حزمة الحب العميق",
+  "store_pack_990_name1": "حزمة الحب الدائم",
+  "store_pack_1050_name1": "حزمة الحبيب الوحيد",
+  "store_pack_1290_name1": "حزمة الحب الحقيقي",
+  "store_pack_1314_name1": "حزمة مدى الحياة",
+  "store_pack_1930_name1": "حزمة العهد",
+  "store_pack_2990_name1": "حزمة العشاق الأبديين"
 }

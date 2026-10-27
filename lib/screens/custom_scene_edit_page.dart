@@ -159,7 +159,7 @@ class _CustomSceneEditPageState extends State<CustomSceneEditPage> {
         backgroundColor: Colors.transparent,
         foregroundColor: theme.colorScheme.onSurface,
         title: Text(
-          widget.isEditing ? '編輯劇場' : '新增劇場',
+          widget.isEditing ? l10n.creator_scene_edit_title_edit : l10n.creator_scene_edit_title_add,
           style: GoogleFonts.notoSerifTc(
             fontWeight: FontWeight.w700,
           ),

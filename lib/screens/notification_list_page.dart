@@ -194,7 +194,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
           db.collection('users').doc(userId).collection('mailbox').doc(mailId).get()));
       if (pendingChecks.any((mail) => mail.data()?['type'] == 'creator_flower_gift' &&
           mail.data()?['claimStatus'] == 'pending')) {
-        if (mounted) ToastUtils.showCenterToast(context, '請先領取花花，再刪除禮物信件', isError: true);
+        if (mounted) ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.notification_claim_before_delete1, isError: true);
         return;
       }
       final batch = db.batch();
@@ -1211,12 +1211,12 @@ class _CreatorGiftClaimDetailPageState extends State<_CreatorGiftClaimDetailPage
       final data = result.data is Map ? Map<String, dynamic>.from(result.data as Map) : <String, dynamic>{};
       if (!mounted) return;
       ToastUtils.showCenterToast(context,
-        data['alreadyClaimed'] == true ? '這份花花已領取過' : '成功領取 ${data['amount'] ?? widget.amount} 朵花花！',
+        data['alreadyClaimed'] == true ? AppLocalizations.of(context)!.notification_creator_gift_already_claimed1 : AppLocalizations.of(context)!.notification_creator_gift_claim_success1(data['amount'] ?? widget.amount),
       );
     } on FirebaseFunctionsException catch (e) {
-      if (mounted) ToastUtils.showCenterToast(context, e.message ?? '領取失敗，請稍後再試', isError: true);
+      if (mounted) ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.notification_error1, isError: true);
     } catch (e) {
-      if (mounted) ToastUtils.showCenterToast(context, '領取失敗，請檢查網路後再試', isError: true);
+      if (mounted) ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.notification_error1, isError: true);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -1225,7 +1225,7 @@ class _CreatorGiftClaimDetailPageState extends State<_CreatorGiftClaimDetailPage
   Widget build(BuildContext context) {
     final primary = Theme.of(context).colorScheme.primary;
     return Scaffold(
-      appBar: AppBar(title: const Text('創作者贈禮')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.notification_creator_gift_title1)),
       body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
         stream: FirebaseFirestore.instance.collection('users').doc(widget.userId)
             .collection('mailbox').doc(widget.mailId).snapshots(),
@@ -1236,10 +1236,10 @@ class _CreatorGiftClaimDetailPageState extends State<_CreatorGiftClaimDetailPage
             const SizedBox(height: 18),
             Text(widget.body, style: GoogleFonts.notoSerifTc(fontSize: 15, height: 1.7)),
             const SizedBox(height: 24),
-            Text('${widget.amount} 朵花花', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: primary)),
+            Text(AppLocalizations.of(context)!.notification_creator_gift_amount1(widget.amount), style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: primary)),
             const SizedBox(height: 20),
             FilledButton(onPressed: claimed || _busy ? null : _claim,
-                child: Text(claimed ? '已領取' : _busy ? '領取中…' : '領取花花')),
+                child: Text(claimed ? AppLocalizations.of(context)!.notification_creator_gift_claimed1 : _busy ? AppLocalizations.of(context)!.notification_creator_gift_claiming1 : AppLocalizations.of(context)!.notification_creator_gift_claim_button1)),
           ]);
         },
       ),
@@ -1355,7 +1355,7 @@ class _RewardCampaignDetailPageState
 
       ToastUtils.showCenterToast(
         context,
-        error.message ?? l10n.rewardCampaignClaimFailed,
+        l10n.rewardCampaignClaimFailed,
         isError: true,
       );
     } catch (error, stackTrace) {
@@ -2188,7 +2188,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
 
               _buildSupportSection(
                 theme: theme,
-                label: '玩家送出的標題',
+                label: AppLocalizations.of(context)!.notification_support_subject1,
                 content: widget.supportSubject,
               ),
 
@@ -2196,7 +2196,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
                 const SizedBox(height: 14),
                 _buildSupportSection(
                   theme: theme,
-                  label: '玩家送出的內容',
+                  label: AppLocalizations.of(context)!.notification_support_content1,
                   content: widget.supportContent,
                 ),
               ],
@@ -2205,7 +2205,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
                 const SizedBox(height: 14),
                 _buildSupportSection(
                   theme: theme,
-                  label: '被回報的內容',
+                  label: AppLocalizations.of(context)!.notification_support_reported1,
                   content: widget.supportReportedContent,
                 ),
               ],
@@ -2253,7 +2253,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
                 const SizedBox(height: 18),
                 _buildSupportSection(
                   theme: theme,
-                  label: '客服回覆',
+                  label: AppLocalizations.of(context)!.notification_support_reply1,
                   content: widget.supportReply,
                 ),
               ],
@@ -2280,7 +2280,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
         elevation: 0,
         actions: [
           IconButton(
-            tooltip: '分享信件',
+            tooltip: AppLocalizations.of(context)!.notification_share_mail1,
             onPressed: _shareMailAsImage,
             icon: Transform.flip(
               flipX: true,
@@ -2355,7 +2355,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '你原本詢問',
+                        AppLocalizations.of(context)!.notification_original_question1,
                         style: GoogleFonts.notoSerifTc(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,

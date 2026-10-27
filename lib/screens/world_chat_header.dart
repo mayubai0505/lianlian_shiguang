@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 // 世界觀專用的頂部，不影響一般聊天室。
 const worldModeCosts = <String, int>{
@@ -12,6 +13,17 @@ String worldModeLabel(String id) {
     case 'resonance': return '共鳴';
     case 'interaction': return '互動';
     default: return '劇情';
+  }
+}
+
+// 專供介面顯示使用；保留原 worldModeLabel(String) 供其他頁面呼叫。
+String _localizedWorldModeLabel(AppLocalizations l10n, String id) {
+  switch (id) {
+    case 'story': return l10n.world_chat_mode_story1;
+    case 'immersive': return l10n.world_chat_mode_immersive1;
+    case 'resonance': return l10n.world_chat_mode_resonance1;
+    case 'interaction': return l10n.world_chat_mode_interaction1;
+    default: return l10n.world_chat_mode_story1;
   }
 }
 
@@ -39,6 +51,7 @@ class WorldChatHeader extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
     final onSurface = theme.colorScheme.onSurface;
@@ -55,7 +68,7 @@ class WorldChatHeader extends StatelessWidget implements PreferredSizeWidget {
           decoration: BoxDecoration(border: Border(bottom: BorderSide(color: primary.withValues(alpha: .08)))),
           child: Row(children: [
             IconButton(
-              onPressed: onBack, tooltip: '返回',
+              onPressed: onBack, tooltip: l10n.world_chat_back1,
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(minWidth: 36, minHeight: 38),
               icon: Icon(Icons.arrow_back_ios_new_rounded, color: onSurface, size: 20),
@@ -84,7 +97,7 @@ class WorldChatHeader extends StatelessWidget implements PreferredSizeWidget {
             ),
             const SizedBox(width: 3),
             PopupMenuButton<String>(
-              tooltip: '回覆模式（AI 與扣花尚未串接）',
+              tooltip: l10n.world_chat_mode_tooltip1,
               initialValue: modeId,
               onSelected: onModeSelected,
               position: PopupMenuPosition.under,
@@ -93,19 +106,19 @@ class WorldChatHeader extends StatelessWidget implements PreferredSizeWidget {
               itemBuilder: (context) => worldModeCosts.entries.map((entry) => PopupMenuItem<String>(
                 value: entry.key,
                 child: Row(children: [
-                  Expanded(child: Text('${worldModeLabel(entry.key)} · ${entry.value} 花',
+                  Expanded(child: Text(l10n.world_chat_mode_cost1(_localizedWorldModeLabel(l10n, entry.key), entry.value),
                       style: GoogleFonts.notoSerifTc(fontSize: 13))),
                   if (modeId == entry.key) Icon(Icons.check_rounded, color: primary, size: 17),
                 ]),
               )).toList(),
               child: Padding(padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 12),
                   child: Row(mainAxisSize: MainAxisSize.min, children: [
-                    Text(worldModeLabel(modeId), style: GoogleFonts.notoSerifTc(fontSize: 10.5, color: onSurface)),
+                    Text(_localizedWorldModeLabel(l10n, modeId), style: GoogleFonts.notoSerifTc(fontSize: 10.5, color: onSurface)),
                     Icon(Icons.keyboard_arrow_down_rounded, size: 16, color: primary),
                   ])),
             ),
             IconButton(
-              onPressed: onMenuTap, tooltip: '世界觀選單',
+              onPressed: onMenuTap, tooltip: l10n.world_chat_menu1,
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
               icon: Icon(Icons.menu_rounded, color: onSurface, size: 26),

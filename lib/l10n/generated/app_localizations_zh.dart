@@ -6253,7 +6253,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get creator_profile_report_self_not_allowed => '無法檢舉自己的創作者頁面';
 
   @override
-  String creator_profile_report_reason_prompt(String creatorName) {
+  String creator_profile_report_reason_prompt1(String creatorName) {
     return '請選擇檢舉「$creatorName」的原因：';
   }
 
@@ -9312,6 +9312,3307 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get theme_font_system_description => '跟隨手機系統預設字體';
+
+  @override
+  String get font_selection_serif_name => '思源宋體';
+
+  @override
+  String get font_selection_sans_name => '思源黑體';
+
+  @override
+  String get font_selection_system_name => '系統字體';
+
+  @override
+  String get font_selection_serif_description => '典雅的襯線字體，適合沉浸閱讀。';
+
+  @override
+  String get font_selection_sans_description => '清晰柔和的無襯線字體。';
+
+  @override
+  String get font_selection_system_description => '使用裝置預設字體。';
+
+  @override
+  String get font_selection_preview_sentence => '與你喜歡的他，再次寫下屬於你們的故事。';
+
+  @override
+  String get avatar_frame_error_generic => '錯誤';
+
+  @override
+  String get avatar_frame_sign_in_required => '請先登入';
+
+  @override
+  String get avatar_frame_default_name => '活動頭像框';
+
+  @override
+  String get background_exclusive_photos_tab => '專屬照片';
+
+  @override
+  String get background_world_sign_in_chat => '請先登入並進入世界聊天室';
+
+  @override
+  String get background_world_photo_load_error => '錯誤';
+
+  @override
+  String get background_world_no_photos => '目前尚無可選擇的世界照片';
+
+  @override
+  String get background_world_cover => '世界觀封面';
+
+  @override
+  String get background_world_cover_confirm => '要將世界觀封面設為這個聊天室的背景嗎？';
+
+  @override
+  String get background_world_default_limited => '限定背景';
+
+  @override
+  String get background_world_default_character => '角色';
+
+  @override
+  String get background_world_no_character_photos => '尚無可使用的角色照片';
+
+  @override
+  String background_world_unlock_required(int count) {
+    return '需要 $count 好感度才能解鎖';
+  }
+
+  @override
+  String background_world_character_confirm(String name) {
+    return '要把「$name」的照片設為世界聊天室背景嗎？';
+  }
+
+  @override
+  String background_world_affection_count(int count) {
+    return '$count 好感度';
+  }
+
+  @override
+  String get reply_selection => '回覆選擇';
+
+  @override
+  String get chat_home_character_tab => '角色聊天';
+
+  @override
+  String get chat_home_world_tab => '開放世界';
+
+  @override
+  String get chat_home_world_error_generic => '錯誤';
+
+  @override
+  String get chat_home_world_pinned => '已置頂世界觀聊天室';
+
+  @override
+  String get chat_home_world_deleted => '開放世界聊天室與對話紀錄已刪除';
+
+  @override
+  String get chat_home_world_action_done => '操作完成';
+
+  @override
+  String get chat_home_world_rename_title => '為這段記憶命名';
+
+  @override
+  String chat_home_world_delete_confirm(String name) {
+    return '確定刪除「$name」的開放世界聊天紀錄？\n\n這將永久刪除對話、劇情摘要、人物關係和備忘錄，無法復原。創作者公開的世界設定不會受到影響。';
+  }
+
+  @override
+  String get chat_home_world_empty_title => '還沒有開放世界聊天紀錄';
+
+  @override
+  String get chat_home_world_empty_desc => '進入開放世界並開始遊玩後，聊天紀錄就會顯示在這裡。';
+
+  @override
+  String get chat_home_world_unnamed => '未命名世界';
+
+  @override
+  String get chat_home_world_private_test => '私人試玩';
+
+  @override
+  String get chat_home_world_no_messages => '尚無訊息';
+
+  @override
+  String get expand_features => '展開功能';
+
+  @override
+  String get chat_sticker_all => '全部';
+
+  @override
+  String get chat_mode_short_daily => '日常';
+
+  @override
+  String get chat_mode_short_story => '劇情';
+
+  @override
+  String get chat_mode_short_immersive => '沉浸';
+
+  @override
+  String get chat_mode_short_resonance => '共鳴';
+
+  @override
+  String get chat_mode_short_gemini => '閒聊';
+
+  @override
+  String get chat_theater_tool => '劇場';
+
+  @override
+  String chat_regenerate_insufficient_flowers(int cost) {
+    return '花花不足，重新生成需要 $cost 朵';
+  }
+
+  @override
+  String get chat_regenerate_paid_title => '付費重新生成';
+
+  @override
+  String chat_regenerate_paid_confirm(int cost) {
+    return '今日免費次數已用完，本次依目前模式收取 $cost 朵花花。是否繼續？';
+  }
+
+  @override
+  String get chat_generic_error => '錯誤';
+
+  @override
+  String get chat_regenerate_confirm => '確認';
+
+  @override
+  String get comment_add_photo => '加入照片';
+
+  @override
+  String get comment_error_generic => '錯誤';
+
+  @override
+  String creator_profile_report_reason_prompt(String creatorName) {
+    return '請選擇檢舉「$creatorName」的原因：';
+  }
+
+  @override
+  String get creator_profile_open_worlds => '開放世界';
+
+  @override
+  String get creator_profile_generic_error => '錯誤';
+
+  @override
+  String get creator_profile_refresh => '重新整理';
+
+  @override
+  String get creator_profile_no_open_worlds => '這位創作者尚未發布開放世界';
+
+  @override
+  String get creator_profile_unnamed_world => '未命名世界';
+
+  @override
+  String get creator_program_required_fields => '請填寫創作方向與申請原因。';
+
+  @override
+  String get creator_program_submitted => '申請已送出，審核約需 1～3 天。';
+
+  @override
+  String get creator_program_error => '錯誤';
+
+  @override
+  String get creator_program_login_required => '請先登入後再申請創作者計畫。';
+
+  @override
+  String get creator_program_title => '創作者計畫';
+
+  @override
+  String get creator_program_headline => '讓創作被更多人看見';
+
+  @override
+  String get creator_program_intro =>
+      '只要你有公開創作，就歡迎申請加入《戀戀拾光》創作者計畫。申請送出後，官方會在 1～3 天內完成審核。';
+
+  @override
+  String get creator_program_benefits_title => '計畫福利';
+
+  @override
+  String get creator_program_benefit_dashboard =>
+      '創作者後台：查看粉絲數、公開角色數、總愛心與本月新增粉絲。';
+
+  @override
+  String get creator_program_benefit_fans => '粉絲經營：可寄信、管理粉絲，並用自己的花花贈送粉絲福利。';
+
+  @override
+  String get creator_program_benefit_exposure =>
+      '官方曝光：新角色有機會優先登上 IG 與遊戲內創作者推薦。';
+
+  @override
+  String get creator_program_benefit_monthly =>
+      '每月創作獎勵：當月新增並公開至少 3 隻全新角色，次月可獲 520 朵花花。';
+
+  @override
+  String get creator_program_benefit_merch =>
+      '實體合作：旗下角色若進入官方實體商品／禮盒合作，可依合作企劃獲得現金創作獎勵。';
+
+  @override
+  String creator_program_last_review_note(String reason) {
+    return '上次審核說明：$reason';
+  }
+
+  @override
+  String get creator_program_apply_heading => '申請加入';
+
+  @override
+  String get creator_program_direction_label => '創作方向';
+
+  @override
+  String get creator_program_direction_hint => '例如：現代戀愛、古風、奇幻、BL、GL…';
+
+  @override
+  String get creator_program_reason_label => '想加入創作者計畫的原因';
+
+  @override
+  String get creator_program_reason_hint => '和我們說說你想怎麼經營自己的角色與粉絲。';
+
+  @override
+  String get creator_program_social_label => '社群連結（選填）';
+
+  @override
+  String get creator_program_social_hint => 'IG、Threads、個人網站等';
+
+  @override
+  String get creator_program_submit => '送出申請';
+
+  @override
+  String get creator_program_public_character_note =>
+      '送出前系統會確認帳號目前至少有 1 隻公開角色。';
+
+  @override
+  String get creator_program_status_pending => '申請審核中';
+
+  @override
+  String get creator_program_status_pending_desc =>
+      '申請已送達，審核約需 1～3 天。完成後會透過戀戀信箱通知你。';
+
+  @override
+  String get creator_program_status_approved => '創作者資格已通過 🎉';
+
+  @override
+  String get creator_program_status_approved_desc =>
+      '恭喜加入《戀戀拾光》創作者計畫！創作者後台、粉絲管理與推薦橫幅會在接下來的功能中與這個資格連動。';
+
+  @override
+  String get creator_program_status_suspended => '創作者資格暫停';
+
+  @override
+  String get creator_program_status_suspended_desc =>
+      '目前暫時無法使用創作者專屬功能。請查看戀戀信箱中的官方通知。';
+
+  @override
+  String get creator_program_status_revoked => '創作者資格已取消';
+
+  @override
+  String get creator_program_status_revoked_desc =>
+      '目前無法使用創作者專屬功能。若有疑問，可透過客服聯繫官方。';
+
+  @override
+  String get creator_program_status_title => '創作者資格狀態';
+
+  @override
+  String creator_program_current_status(String status) {
+    return '目前狀態：$status';
+  }
+
+  @override
+  String creator_program_official_note(String reason) {
+    return '官方說明：$reason';
+  }
+
+  @override
+  String get creator_dashboard_error1 => '錯誤';
+
+  @override
+  String get creator_dashboard_access_title1 => '創作者後台';
+
+  @override
+  String get creator_dashboard_status_notice_title1 => '創作者後台資格通知';
+
+  @override
+  String get creator_dashboard_apply_title1 => '申請創作者後台';
+
+  @override
+  String get creator_dashboard_access_subtitle1 => '角色遊玩數據・粉絲新增與移除・粉絲管理';
+
+  @override
+  String get creator_dashboard_pending1 => '申請已送出・官方審核中';
+
+  @override
+  String get creator_dashboard_legacy_pending1 => '申請資料待官方確認';
+
+  @override
+  String get creator_dashboard_syncing1 => '後台權限同步中，請稍後再試';
+
+  @override
+  String get creator_dashboard_suspended1 => '後台使用權限已暫停，請聯繫官方';
+
+  @override
+  String get creator_dashboard_apply_subtitle1 => '申請開通角色數據與粉絲管理工具';
+
+  @override
+  String get creator_dashboard_rejected1 => '申請未通過・可重新申請';
+
+  @override
+  String get creator_dashboard_submitted1 => '申請已送出，請等待官方審核';
+
+  @override
+  String get creator_dashboard_benefits_title1 => '創作者後台提供的功能';
+
+  @override
+  String get creator_dashboard_benefit_monthly1 =>
+      '🌸 每月創作獎勵：當月新建並公開 3 位不同角色，可手動領取 300 朵花花（每月限一次）。';
+
+  @override
+  String get creator_dashboard_benefit_analytics1 =>
+      '• 查看公開角色遊玩數據、粉絲總數及粉絲新增／移除紀錄';
+
+  @override
+  String get creator_dashboard_benefit_mail1 => '• 粉絲信件：單人私信與全體公告（依每日額度）';
+
+  @override
+  String get creator_dashboard_benefit_gifts1 => '• 粉絲福利：使用自己的花花贈送追蹤者';
+
+  @override
+  String get creator_dashboard_reward_note1 =>
+      '須經官方審核通過；私人角色、草稿、舊角色重新公開皆不列入每月獎勵。';
+
+  @override
+  String get creator_dashboard_apply_cta1 => '點此了解並申請後台權限';
+
+  @override
+  String get creator_dashboard_my_characters1 => '我的角色';
+
+  @override
+  String get creator_dashboard_my_worlds1 => '我的開放世界';
+
+  @override
+  String get creator_dashboard_create_world1 => '創建開放世界';
+
+  @override
+  String get creator_dashboard_public_worlds1 => '已公開世界';
+
+  @override
+  String get creator_dashboard_public_worlds_hint1 => '其他玩家可以探索';
+
+  @override
+  String get creator_dashboard_private_worlds1 => '私人世界';
+
+  @override
+  String get creator_dashboard_private_worlds_hint1 => '只有自己可以查看與編輯';
+
+  @override
+  String get creator_dashboard_world_drafts1 => '世界觀草稿';
+
+  @override
+  String get creator_dashboard_world_drafts_hint1 => '尚未建立完成的世界';
+
+  @override
+  String get creator_dashboard_no_drafts1 => '目前沒有草稿';
+
+  @override
+  String get creator_dashboard_no_worlds1 => '目前沒有世界觀';
+
+  @override
+  String get creator_dashboard_unnamed_world1 => '未命名世界觀';
+
+  @override
+  String get creator_dashboard_delete_world_draft1 => '刪除世界觀草稿';
+
+  @override
+  String get creator_dashboard_private_test1 => '私人試玩';
+
+  @override
+  String get creator_dashboard_delete_world_confirm_title1 => '刪除世界觀草稿？';
+
+  @override
+  String get creator_dashboard_delete_world_confirm_body1 =>
+      '刪除後無法恢復。已上傳的圖片不會一併刪除。';
+
+  @override
+  String get creator_dashboard_draft_deleted1 => '世界觀草稿已刪除';
+
+  @override
+  String get creator_dashboard_validation1 => '創作方向須為 2～100 字，申請原因須為 10～500 字';
+
+  @override
+  String get creator_dashboard_confirm_application_title1 => '確認申請創作者後台';
+
+  @override
+  String get creator_dashboard_confirm_application_body1 =>
+      '申請送出後將由官方審核；通過後即可使用創作者後台。申請後台不代表簽訂合作契約。';
+
+  @override
+  String get creator_dashboard_confirm_send1 => '確認送出';
+
+  @override
+  String get creator_dashboard_form_heading1 => '申請開通戀戀拾光創作者後台';
+
+  @override
+  String get creator_dashboard_form_description1 =>
+      '請簡單介紹你的創作方向，以及希望如何使用角色數據與粉絲管理功能。審核通過後即可使用創作者後台；此申請不是合作簽約。';
+
+  @override
+  String get creator_dashboard_direction_label1 => '創作方向';
+
+  @override
+  String get creator_dashboard_direction_hint1 => '例如：現代戀愛、古風、奇幻、BL、GL…';
+
+  @override
+  String get creator_dashboard_reason_label1 => '申請後台的原因';
+
+  @override
+  String get creator_dashboard_reason_hint1 => '請介紹創作經驗，以及希望使用哪些後台功能';
+
+  @override
+  String get creator_dashboard_sending1 => '送出中…';
+
+  @override
+  String get creator_dashboard_submit1 => '提交後台申請';
+
+  @override
+  String get creator_dashboard_privacy_note1 =>
+      '提醒：申請不保證通過，請勿在欄位內填寫身分證字號、銀行帳號或其他敏感個資。';
+
+  @override
+  String get creator_dashboard_revoked_limit1 => '後台申請資格已達上限。如有疑問，請聯繫官方。';
+
+  @override
+  String get creator_dashboard_revoked_notice1 =>
+      '創作者後台使用資格已取消。若需重新申請，請依頁面目前的開放狀態操作。';
+
+  @override
+  String get creator_support_page_title1 => '問題回報中心';
+
+  @override
+  String get creator_support_new_report1 => '新增問題回報';
+
+  @override
+  String get creator_support_error1 => '錯誤';
+
+  @override
+  String get creator_support_no_cases1 => '目前沒有回報案件';
+
+  @override
+  String get creator_support_unread1 => '未讀';
+
+  @override
+  String get creator_support_load_more1 => '載入更多';
+
+  @override
+  String get creator_support_category_label1 => '問題分類';
+
+  @override
+  String get creator_support_character_optional1 => '相關角色（選填）';
+
+  @override
+  String get creator_support_no_character1 => '無指定角色';
+
+  @override
+  String get creator_support_report_title1 => '問題標題';
+
+  @override
+  String get creator_support_report_description1 => '問題描述';
+
+  @override
+  String creator_support_select_images1(int count) {
+    return '選擇截圖（$count/3，單張 2MB 以下）';
+  }
+
+  @override
+  String get creator_support_images_private1 => '截圖僅限案件創作者及官方查看。';
+
+  @override
+  String get creator_support_submitting1 => '送出中…';
+
+  @override
+  String get creator_support_submit1 => '確認提交';
+
+  @override
+  String get creator_support_image_too_large1 => '圖片超過 2MB，請換一張';
+
+  @override
+  String get creator_support_fill_title_description1 => '請填寫標題及內容';
+
+  @override
+  String get creator_support_case_sent1 => '案件已送出';
+
+  @override
+  String creator_support_case_sent_partial1(int count) {
+    return '案件已送出，但 $count 張截圖上傳失敗';
+  }
+
+  @override
+  String get creator_support_detail_title1 => '案件詳情';
+
+  @override
+  String get creator_support_image_max1 => '單張截圖不得超過 2MB';
+
+  @override
+  String get creator_support_jpg_png_only1 => '僅支援 JPG / PNG';
+
+  @override
+  String get creator_support_reply_sent1 => '回覆已送出';
+
+  @override
+  String creator_support_reply_sent_partial1(int count) {
+    return '文字已送出，但 $count 張圖片上傳失敗';
+  }
+
+  @override
+  String get creator_support_empty_content1 => '內容不能為空';
+
+  @override
+  String get creator_support_recall_message1 => '收回訊息';
+
+  @override
+  String get creator_support_delete_message1 => '刪除訊息';
+
+  @override
+  String get creator_support_recall_warning1 => '雙方都會看到「此訊息已收回」，附件將無法查看。';
+
+  @override
+  String get creator_support_delete_warning1 => '只從自己的畫面隱藏，對方仍保留訊息。';
+
+  @override
+  String get creator_support_cancel1 => '取消';
+
+  @override
+  String get creator_support_confirm1 => '確定';
+
+  @override
+  String get creator_support_operation_success1 => '操作成功';
+
+  @override
+  String get creator_support_edit_message1 => '編輯訊息';
+
+  @override
+  String creator_support_recall_remaining1(int seconds) {
+    return '收回訊息（剩餘 $seconds 秒）';
+  }
+
+  @override
+  String get creator_support_recall_expired1 => '收回訊息（已超過 60 秒）';
+
+  @override
+  String get creator_support_case_updated1 => '案件已更新';
+
+  @override
+  String get creator_support_loading1 => '載入中…';
+
+  @override
+  String creator_support_creator_uid1(String uid) {
+    return '創作者 UID：$uid';
+  }
+
+  @override
+  String get creator_support_internal_note1 => '官方內部備註（創作者看不到）';
+
+  @override
+  String get creator_support_save_internal_note1 => '儲存內部備註';
+
+  @override
+  String get creator_support_case_images1 => '案件截圖';
+
+  @override
+  String get creator_support_official1 => '戀戀拾光官方';
+
+  @override
+  String get creator_support_creator1 => '創作者';
+
+  @override
+  String get creator_support_recalled1 => '此訊息已收回';
+
+  @override
+  String get creator_support_edited1 => '已編輯';
+
+  @override
+  String get creator_support_reply_hint1 => '輸入回覆……';
+
+  @override
+  String get creator_support_attach_image1 => '附加截圖（最多 3 張）';
+
+  @override
+  String get creator_support_send1 => '送出';
+
+  @override
+  String get creator_support_admin_title1 => '創作者案件管理';
+
+  @override
+  String get creator_support_new_reply1 => '新回覆';
+
+  @override
+  String get creator_support_load_more_cases1 => '載入更多案件';
+
+  @override
+  String get creator_support_image_load_error1 => '截圖讀取失敗';
+
+  @override
+  String get creator_support_edit_hint1 => '修改訊息內容';
+
+  @override
+  String get creator_support_save1 => '儲存';
+
+  @override
+  String get creator_support_status_pending1 => '待處理';
+
+  @override
+  String get creator_support_status_progress1 => '處理中';
+
+  @override
+  String get creator_support_status_waiting1 => '等待補充';
+
+  @override
+  String get creator_support_status_resolved1 => '已結案';
+
+  @override
+  String get creator_support_cat_character1 => '角色管理問題';
+
+  @override
+  String get creator_support_cat_ai1 => 'AI 角色互動異常';
+
+  @override
+  String get creator_support_cat_dashboard1 => '創作者後台問題';
+
+  @override
+  String get creator_support_cat_cooperation1 => '合作與權益問題';
+
+  @override
+  String get creator_support_cat_other1 => '其他問題';
+
+  @override
+  String get desktop_widget_size_small1 => '小';
+
+  @override
+  String get desktop_widget_size_medium1 => '中';
+
+  @override
+  String get desktop_widget_size_large1 => '大';
+
+  @override
+  String get desktop_widget_cancel1 => '取消';
+
+  @override
+  String get desktop_widget_delete1 => '刪除';
+
+  @override
+  String desktop_widget_days_remaining1(int days) {
+    return '還有 $days 天';
+  }
+
+  @override
+  String get desktop_widget_days_today1 => '就是今天';
+
+  @override
+  String desktop_widget_days_elapsed1(int days) {
+    return '已過 $days 天';
+  }
+
+  @override
+  String get desktop_widget_daily_quote1 => '今日一句';
+
+  @override
+  String get desktop_widget_update_daily1 => '每天更新一次';
+
+  @override
+  String get desktop_widget_character_birthday1 => '角色生日';
+
+  @override
+  String get desktop_widget_change1 => '更換';
+
+  @override
+  String get desktop_widget_mood1 => '心情';
+
+  @override
+  String get desktop_widget_current_state1 => '當前狀態';
+
+  @override
+  String get desktop_widget_location1 => '地點';
+
+  @override
+  String get desktop_widget_relationship1 => '關係';
+
+  @override
+  String get desktop_widget_outfit1 => '衣著';
+
+  @override
+  String get desktop_widget_weather1 => '天氣';
+
+  @override
+  String get desktop_widget_thought1 => '想法';
+
+  @override
+  String get desktop_widget_action1 => '動作';
+
+  @override
+  String get desktop_widget_affinity1 => '好感度';
+
+  @override
+  String get desktop_widget_character_status1 => '角色狀態';
+
+  @override
+  String get desktop_widget_no_posts1 => '目前還沒有角色動態';
+
+  @override
+  String get desktop_widget_crop_position1 => '調整角色位置';
+
+  @override
+  String get desktop_widget_crop_action1 => '放大／拖曳調整取景';
+
+  @override
+  String get desktop_widget_crop_hint1 => '進入調整畫面後可雙指縮放、單指拖曳，不會再帶著整個頁面一起上下跑。';
+
+  @override
+  String get desktop_widget_crop_title1 => '調整角色取景';
+
+  @override
+  String get desktop_widget_reset1 => '重設';
+
+  @override
+  String get desktop_widget_crop_instructions1 =>
+      '單指拖曳調整上下左右位置；雙指縮放調整大小。框內看到的，就是桌面小工具會顯示的範圍。';
+
+  @override
+  String desktop_widget_crop_position_scale1(int x, int y, String scale) {
+    return '位置：$x% / $y%　縮放：$scale×';
+  }
+
+  @override
+  String get desktop_widget_apply1 => '套用';
+
+  @override
+  String get desktop_widget_just_posted1 => '剛剛更新了動態';
+
+  @override
+  String get desktop_widget_important_day1 => '重要的日子';
+
+  @override
+  String get desktop_widget_no_date1 => '尚未選擇日期';
+
+  @override
+  String get desktop_widget_first_met1 => '和他相遇';
+
+  @override
+  String get desktop_widget_error1 => '錯誤';
+
+  @override
+  String get event_memory_select_character_title1 => '選擇角色';
+
+  @override
+  String get event_memory_my_characters1 => '我的角色';
+
+  @override
+  String get event_memory_friend_characters1 => '好友角色';
+
+  @override
+  String get event_memory_friend_badge1 => '好友';
+
+  @override
+  String get event_memory_unnamed_character1 => '未命名角色';
+
+  @override
+  String get event_memory_generic_error1 => '錯誤';
+
+  @override
+  String get memory_collection_title1 => '拾光收藏';
+
+  @override
+  String get memory_collection_avatar_frames1 => '頭像框';
+
+  @override
+  String get memory_collection_stickers1 => '貼紙';
+
+  @override
+  String get memory_collection_memories1 => '回憶';
+
+  @override
+  String get memory_collection_try_again1 => '請稍後再試一次。';
+
+  @override
+  String get memory_collection_error1 => '錯誤';
+
+  @override
+  String get memory_collection_chat_background1 => '聊天室背景';
+
+  @override
+  String get memory_collection_got_it1 => '知道了';
+
+  @override
+  String get memory_collection_not_now1 => '先不要';
+
+  @override
+  String get memory_collection_confirm_delete1 => '確定刪除';
+
+  @override
+  String get memory_collection_close1 => '關閉';
+
+  @override
+  String get memory_collection_delete1 => '刪除';
+
+  @override
+  String get memory_collection_image_preparing1 => '圖片準備中';
+
+  @override
+  String get memory_collection_remove_favorite1 => '取消收藏';
+
+  @override
+  String get memory_collection_removed1 => '已取消收藏';
+
+  @override
+  String get event_memory_performance_opening1 => '有些瞬間，\n並不會因為故事結束而消失。';
+
+  @override
+  String get event_memory_performance_generic_error1 => '錯誤';
+
+  @override
+  String get event_memory_performance_collected1 => '已收藏';
+
+  @override
+  String get event_memory_performance_saving1 => '正在儲存…';
+
+  @override
+  String get event_memory_performance_save_gallery1 => '儲存到手機相簿';
+
+  @override
+  String get event_memory_performance_done1 => '完成';
+
+  @override
+  String get event_memory_performance_uncollect_title1 => '取消收藏？';
+
+  @override
+  String get event_memory_performance_not_now1 => '先不要';
+
+  @override
+  String get event_memory_performance_uncollect1 => '取消收藏';
+
+  @override
+  String get event_memory_performance_uncollected1 => '已取消收藏';
+
+  @override
+  String get event_memory_performance_login_to_collect1 => '請先登入後再收藏這段回憶';
+
+  @override
+  String get event_memory_performance_web_gallery_unsupported1 =>
+      '網頁版目前不支援直接儲存到手機相簿';
+
+  @override
+  String get event_memory_performance_gallery_permission1 => '需要相簿權限才能儲存這段回憶';
+
+  @override
+  String get event_memory_performance_image_not_ready1 => '回憶圖片還沒準備好，請再試一次';
+
+  @override
+  String get event_memory_performance_gallery_saved1 => '已儲存到手機相簿';
+
+  @override
+  String get event_memory_performance_skip1 => '略過';
+
+  @override
+  String get event_memory_performance_memory_label1 => '回憶';
+
+  @override
+  String get event_memory_performance_tap_continue1 => '點擊繼續';
+
+  @override
+  String get event_memory_performance_tap_show_full1 => '點擊顯示全文';
+
+  @override
+  String get event_memory_performance_brand_limited_memory1 => '戀戀拾光・限定回憶';
+
+  @override
+  String get event_ended1 => '活動已結束';
+
+  @override
+  String get event_default_name1 => '期間限定活動';
+
+  @override
+  String get event_default_subtitle1 => '和他一起留下這個季節的特別回憶。';
+
+  @override
+  String get event_currency_default1 => '活動貨幣';
+
+  @override
+  String get event_tasks_today1 => '今日任務';
+
+  @override
+  String event_tasks_subtitle1(String currency) {
+    return '完成任務，收集$currency，解鎖更多限定內容。';
+  }
+
+  @override
+  String get event_milestones_title1 => '累積進度';
+
+  @override
+  String event_milestones_subtitle1(String currency) {
+    return '累積$currency，領取活動限定獎勵。';
+  }
+
+  @override
+  String get event_memory_title1 => '限定回憶';
+
+  @override
+  String get event_memory_subtitle1 => '留下這次活動的專屬回憶。';
+
+  @override
+  String get event_shop_title1 => '活動商店';
+
+  @override
+  String event_shop_subtitle1(String currency) {
+    return '使用$currency兌換限定獎勵。';
+  }
+
+  @override
+  String get event_info_title1 => '活動說明';
+
+  @override
+  String get event_info_default1 =>
+      '活動期間完成指定任務即可取得活動貨幣。\n兌換的獎勵會依活動規則發放至帳號。\n活動結束後，未使用的活動貨幣將依活動規則處理。';
+
+  @override
+  String get event_generic_error1 => '錯誤';
+
+  @override
+  String get event_task_default1 => '活動任務';
+
+  @override
+  String get event_claimed1 => '已領取';
+
+  @override
+  String get event_claim1 => '領取';
+
+  @override
+  String get event_in_progress1 => '進行中';
+
+  @override
+  String get event_reward_default1 => '限定獎勵';
+
+  @override
+  String get event_product_default1 => '活動商品';
+
+  @override
+  String get event_cancel1 => '取消';
+
+  @override
+  String get event_confirm_exchange1 => '確認兌換';
+
+  @override
+  String get event_limited_product1 => '限定商品';
+
+  @override
+  String event_insufficient_currency1(String currency) {
+    return '$currency不足';
+  }
+
+  @override
+  String get event_close1 => '關閉';
+
+  @override
+  String event_redeemed_count_limit1(int count, int max) {
+    return '已兌換 $count / $max 次';
+  }
+
+  @override
+  String event_redeemed_count1(int count) {
+    return '已兌換 $count 次';
+  }
+
+  @override
+  String get event_redeemed1 => '已兌換';
+
+  @override
+  String get event_exchange1 => '兌換';
+
+  @override
+  String get login_account_deletion_started1 => '帳號已進入刪除程序';
+
+  @override
+  String get login_account_deletion_expired_description1 =>
+      '此帳號已超過三天取消期限，無法再恢復使用。如需協助，請聯絡客服。';
+
+  @override
+  String get login_account_deletion_confirm1 => '確定';
+
+  @override
+  String get event_memory_limited_title1 => '限定回憶';
+
+  @override
+  String get moment_detail_add_photo1 => '加入照片';
+
+  @override
+  String get moment_detail_error1 => '錯誤';
+
+  @override
+  String get notification_claim_before_delete1 => '請先領取花花，再刪除禮物信件';
+
+  @override
+  String get notification_error1 => '錯誤';
+
+  @override
+  String get notification_creator_gift_already_claimed1 => '這份花花已領取過';
+
+  @override
+  String notification_creator_gift_claim_success1(Object amount) {
+    return '成功領取 $amount 朵花花！';
+  }
+
+  @override
+  String get notification_creator_gift_title1 => '創作者贈禮';
+
+  @override
+  String notification_creator_gift_amount1(Object amount) {
+    return '$amount 朵花花';
+  }
+
+  @override
+  String get notification_creator_gift_claimed1 => '已領取';
+
+  @override
+  String get notification_creator_gift_claiming1 => '領取中…';
+
+  @override
+  String get notification_creator_gift_claim_button1 => '領取花花';
+
+  @override
+  String get notification_support_subject1 => '玩家送出的標題';
+
+  @override
+  String get notification_support_content1 => '玩家送出的內容';
+
+  @override
+  String get notification_support_reported1 => '被回報的內容';
+
+  @override
+  String get notification_support_reply1 => '客服回覆';
+
+  @override
+  String get notification_share_mail1 => '分享信件';
+
+  @override
+  String get notification_original_question1 => '你原本詢問';
+
+  @override
+  String get notification_preferences_chat_title1 => '角色聊天';
+
+  @override
+  String get notification_preferences_chat_subtitle1 => '角色回覆訊息的推播';
+
+  @override
+  String get notification_preferences_moments_title1 => '新瞬間';
+
+  @override
+  String get notification_preferences_moments_subtitle1 => '關注的創作者及角色發布新貼文';
+
+  @override
+  String get notification_preferences_social_title1 => '社交通知';
+
+  @override
+  String get notification_preferences_social_subtitle1 => '按讚、留言、追蹤與角色互動';
+
+  @override
+  String get notification_preferences_announcements_title1 => '官方公告';
+
+  @override
+  String get notification_preferences_announcements_subtitle1 => '一般官方公告推播';
+
+  @override
+  String get notification_preferences_events_title1 => '活動提醒';
+
+  @override
+  String get notification_preferences_events_subtitle1 => '活動即將結束的推播';
+
+  @override
+  String get notification_preferences_save_failed1 => '通知設定儲存失敗，請稍後重試';
+
+  @override
+  String get notification_preferences_page_title1 => '通知偏好';
+
+  @override
+  String get notification_preferences_login_required1 => '請先登入帳號';
+
+  @override
+  String get notification_preferences_load_failed1 => '無法讀取通知偏好，請稍後再試';
+
+  @override
+  String get notification_preferences_footer1 =>
+      '此處設定同步至同一玩家帳號的所有裝置。手機系統通知權限需在各裝置分別設定。關閉推播不會刪除遊戲內信箱或已收到的通知。';
+
+  @override
+  String get official_studio_text_0011 => '導覽已結束，但同步觀看紀錄失敗，之後可能再次顯示';
+
+  @override
+  String get official_studio_text_0021 => '請先登入帳號';
+
+  @override
+  String get official_studio_text_0031 => '合作創作者專區';
+
+  @override
+  String get official_studio_text_0041 => '說明';
+
+  @override
+  String get official_studio_text_0051 => '無法驗證合作創作者資格，請稍後再試';
+
+  @override
+  String get official_studio_text_0061 => '目前沒有官方合作創作者權限。\n如已審核通過，請聯繫官方確認開通狀態。';
+
+  @override
+  String get official_studio_text_0071 => '已認證合作創作者';
+
+  @override
+  String get official_studio_text_0081 => '歡迎回到戀戀拾光創作者專區。專屬功能將陸續開放。';
+
+  @override
+  String get official_studio_text_0091 => '專屬工具';
+
+  @override
+  String get official_studio_text_0101 => '粉絲管理';
+
+  @override
+  String get official_studio_text_0111 => '查看追蹤者、移除粉絲';
+
+  @override
+  String get official_studio_text_0121 => '創作數據';
+
+  @override
+  String get official_studio_text_0131 => '角色人氣與累計遊玩次數';
+
+  @override
+  String get official_studio_text_0141 => '粉絲信件';
+
+  @override
+  String get official_studio_text_0151 => '寄送訊息給追蹤者';
+
+  @override
+  String get official_studio_text_0161 => '粉絲福利';
+
+  @override
+  String get official_studio_text_0171 => '贈送自己的花花給追蹤者';
+
+  @override
+  String get official_studio_text_0181 => '每月創作獎勵';
+
+  @override
+  String get official_studio_text_0191 => '新建並公開 3 位角色，可領取 300 花花';
+
+  @override
+  String get official_studio_text_0201 => '專屬橫幅';
+
+  @override
+  String get official_studio_text_0211 => '設定創作者公開頁面的橫幅圖片';
+
+  @override
+  String get official_studio_text_0221 => '合作資訊';
+
+  @override
+  String get official_studio_text_0231 => '合作狀態、權益與公告';
+
+  @override
+  String get official_studio_text_0241 => '問題回報中心';
+
+  @override
+  String get official_studio_text_0251 => '提出問題、查看官方回覆與處理進度';
+
+  @override
+  String get official_studio_text_0261 => '資格驗證失敗，請稍後重試';
+
+  @override
+  String get official_studio_text_0271 => '目前沒有官方合作創作者權限';
+
+  @override
+  String get official_studio_text_0281 => '公開角色資料載入失敗';
+
+  @override
+  String get official_studio_text_0291 => '創作總覽';
+
+  @override
+  String get official_studio_text_0301 => '累計遊玩次數';
+
+  @override
+  String get official_studio_text_0311 => '目前追蹤者';
+
+  @override
+  String get official_studio_text_0321 => '暫無法取得';
+
+  @override
+  String get official_studio_text_0331 => '各公開角色';
+
+  @override
+  String get official_studio_text_0341 => '還沒有公開角色，發布後就會顯示在這裡。';
+
+  @override
+  String get official_studio_text_0351 => '未命名角色';
+
+  @override
+  String get official_studio_text_0361 => '累計遊玩次數（playCount）';
+
+  @override
+  String get official_studio_text_0371 =>
+      '數據以資料庫現有欄位為準；累計遊玩次數不等於聊天訊息數、獨立玩家數或收入。';
+
+  @override
+  String get official_studio_text_0381 => '追蹤者資料載入失敗';
+
+  @override
+  String get official_studio_text_0391 => '目前還沒有追蹤者';
+
+  @override
+  String get official_studio_text_0401 => '追蹤者名單';
+
+  @override
+  String get official_studio_text_0411 => '目前顯示最多 100 位追蹤者；僅顯示公開暱稱與頭像。';
+
+  @override
+  String get official_studio_text_0421 => '移除粉絲';
+
+  @override
+  String get official_studio_text_0431 => '取消';
+
+  @override
+  String get official_studio_text_0441 => '確認移除';
+
+  @override
+  String get official_studio_text_0451 => '已移除粉絲';
+
+  @override
+  String get official_studio_text_0461 => '移除失敗，請稍後重試';
+
+  @override
+  String get official_studio_text_0471 => '玩家';
+
+  @override
+  String get official_studio_text_0481 => '無法載入公開資料';
+
+  @override
+  String get official_studio_text_0491 => '這位玩家';
+
+  @override
+  String get official_studio_text_0501 => '裁切後圖片仍過大，請使用其他圖片';
+
+  @override
+  String get official_studio_text_0511 => '橫幅已更新';
+
+  @override
+  String get official_studio_text_0521 => '圖片處理失敗，請重新選擇圖片';
+
+  @override
+  String get official_studio_text_0531 => '已移除橫幅';
+
+  @override
+  String get official_studio_text_0541 => '移除失敗';
+
+  @override
+  String get official_studio_text_0551 => '請先登入';
+
+  @override
+  String get official_studio_text_0561 => '公開頁橫幅';
+
+  @override
+  String get official_studio_text_0571 => '圖片讀取失敗';
+
+  @override
+  String get official_studio_text_0581 => '尚未設定橫幅';
+
+  @override
+  String get official_studio_text_0591 => '選擇照片後可在白色取景框內調整位置、縮放，確認後才上傳。';
+
+  @override
+  String get official_studio_text_0601 => '處理中…';
+
+  @override
+  String get official_studio_text_0611 => '選擇圖片並裁切';
+
+  @override
+  String get official_studio_text_0621 => '移除目前橫幅';
+
+  @override
+  String get official_studio_text_0631 => '無法開啟這張圖片';
+
+  @override
+  String get official_studio_text_0641 => '裁切後檔案過大，請更換照片';
+
+  @override
+  String get official_studio_text_0651 => '裁切失敗，請再試一次';
+
+  @override
+  String get official_studio_text_0661 => '調整橫幅取景';
+
+  @override
+  String get official_studio_text_0671 => '移動照片，選擇橫幅要顯示的範圍';
+
+  @override
+  String get official_studio_text_0681 => '單指拖曳位置・雙指縮放・也可以用下方滑桿';
+
+  @override
+  String get official_studio_text_0691 => '白框內的畫面，就是上傳後的橫幅（2.5：1）';
+
+  @override
+  String get official_studio_text_0701 => '縮放';
+
+  @override
+  String get official_studio_text_0711 => '重設位置';
+
+  @override
+  String get official_studio_text_0721 => '裁切中…';
+
+  @override
+  String get official_studio_text_0731 => '確認裁切並上傳';
+
+  @override
+  String get official_studio_text_0741 => '合作資格';
+
+  @override
+  String get official_studio_text_0751 => '資格確認中';
+
+  @override
+  String get official_studio_text_0761 => '目前可使用的專屬工具';
+
+  @override
+  String get official_studio_text_0771 => '粉絲管理、創作數據、粉絲信件、花花福利、每月創作獎勵及專屬橫幅。';
+
+  @override
+  String get official_studio_text_0781 =>
+      '依目前系統規則，當月新建且首次公開 3 位符合資格的角色，可申請領取 300 朵花花。實際資格與核發以後端審核結果為準。';
+
+  @override
+  String get official_studio_text_0791 => '官方公告與合約';
+
+  @override
+  String get official_studio_text_0801 =>
+      '合作條款以雙方實際簽署的版本與官方正式通知為準；此頁不取代合作契約。若有資格或權益相關疑問，請聯繫官方。';
+
+  @override
+  String get official_studio_text_0811 => '信件標題須在 1～100 字之間';
+
+  @override
+  String get official_studio_text_0821 => '信件內容須在 1～5000 字之間';
+
+  @override
+  String get official_studio_text_0831 => '請選擇一位追蹤者';
+
+  @override
+  String get official_studio_text_0841 => '確認寄送粉絲信件';
+
+  @override
+  String get official_studio_text_0851 => '確定寄送給目前的全部追蹤者嗎？這次將使用 1 次群發額度。';
+
+  @override
+  String get official_studio_text_0861 => '確定寄送給這位粉絲嗎？這次將使用 1 次單人私信額度。';
+
+  @override
+  String get official_studio_text_0871 => '確認寄出';
+
+  @override
+  String get official_studio_text_0881 => '已建立寄送工作；信件將由系統陸續投遞。';
+
+  @override
+  String get official_studio_text_0891 => '今日寄送額度';
+
+  @override
+  String get official_studio_text_0901 => '台灣時間每天 00:00 重置；群發一次可寄送給所有追蹤者。';
+
+  @override
+  String get official_studio_text_0911 => '全體粉絲';
+
+  @override
+  String get official_studio_text_0921 => '單一粉絲';
+
+  @override
+  String get official_studio_text_0931 => '無法取得粉絲名單';
+
+  @override
+  String get official_studio_text_0941 => '目前沒有可以寄信的粉絲';
+
+  @override
+  String get official_studio_text_0951 => '選擇追蹤者（前 100 位）';
+
+  @override
+  String get official_studio_text_0961 => '信件標題';
+
+  @override
+  String get official_studio_text_0971 => '信件內容';
+
+  @override
+  String get official_studio_text_0981 => '寫一封給粉絲的信……';
+
+  @override
+  String get official_studio_text_0991 => '提交中…';
+
+  @override
+  String get official_studio_text_1001 => '確認並寄送';
+
+  @override
+  String get official_studio_text_1011 => '寄送紀錄';
+
+  @override
+  String get official_studio_text_1021 => '還沒有寄送紀錄';
+
+  @override
+  String get official_studio_text_1031 => '排隊中';
+
+  @override
+  String get official_studio_text_1041 => '投遞中';
+
+  @override
+  String get official_studio_text_1051 => '已完成';
+
+  @override
+  String get official_studio_text_1061 => '已取消';
+
+  @override
+  String get official_studio_text_1071 => '寄送失敗';
+
+  @override
+  String get official_studio_text_1081 => '未命名信件';
+
+  @override
+  String get official_studio_text_1091 =>
+      '寄送紀錄顯示近 20 筆；取消合作資格後，新的寄送與未投遞的工作都會停止。';
+
+  @override
+  String get official_studio_text_1101 => '未設定暱稱的玩家';
+
+  @override
+  String get official_studio_text_1111 => '讀取粉絲失敗，請稍後重試';
+
+  @override
+  String get official_studio_text_1121 => '花花餘額不足';
+
+  @override
+  String get official_studio_text_1131 => '稍後再說';
+
+  @override
+  String get official_studio_text_1141 => '前往商店';
+
+  @override
+  String get official_studio_text_1151 => '每位粉絲可贈送 1～1000 朵花花';
+
+  @override
+  String get official_studio_text_1161 => '每次請選擇 1～20 位粉絲';
+
+  @override
+  String get official_studio_text_1171 => '單次贈送最多 5000 朵花花';
+
+  @override
+  String get official_studio_text_1181 => '祝福文字最多 300 字';
+
+  @override
+  String get official_studio_text_1191 => '確認贈送花花';
+
+  @override
+  String get official_studio_text_1201 => '確認贈送';
+
+  @override
+  String get official_studio_text_1211 => '這筆贈送已建立，沒有重複扣點';
+
+  @override
+  String get official_studio_text_1221 => '粉絲福利・花花贈送';
+
+  @override
+  String get official_studio_text_1231 => '無法讀取花花餘額';
+
+  @override
+  String get official_studio_text_1241 => '我的花花餘額';
+
+  @override
+  String get official_studio_text_1251 => '花花從妳自己的帳戶扣除，不會由平台額外發放。';
+
+  @override
+  String get official_studio_text_1261 => '選擇粉絲（單次最多 20 位）';
+
+  @override
+  String get official_studio_text_1271 => '依玩家目前公開暱稱或 UID 搜尋；實際送出時由伺服器再次驗證。';
+
+  @override
+  String get official_studio_text_1281 => '搜尋粉絲';
+
+  @override
+  String get official_studio_text_1291 => '輸入暱稱或玩家 UID';
+
+  @override
+  String get official_studio_text_1301 => '清除搜尋';
+
+  @override
+  String get official_studio_text_1311 => '目前沒有可以贈送的粉絲';
+
+  @override
+  String get official_studio_text_1321 => '這批沒有符合的粉絲，可以繼續搜尋';
+
+  @override
+  String get official_studio_text_1331 => '找不到符合的粉絲';
+
+  @override
+  String get official_studio_text_1341 => '單次最多選擇 20 位粉絲';
+
+  @override
+  String get official_studio_text_1351 => '搜尋中…';
+
+  @override
+  String get official_studio_text_1361 => '載入更多粉絲';
+
+  @override
+  String get official_studio_text_1371 => '繼續搜尋更多粉絲';
+
+  @override
+  String get official_studio_text_1381 => '每位粉絲贈送花花';
+
+  @override
+  String get official_studio_text_1391 => '例如：10';
+
+  @override
+  String get official_studio_text_1401 => '祝福文字（選填）';
+
+  @override
+  String get official_studio_text_1411 => '預計扣除';
+
+  @override
+  String get official_studio_text_1421 =>
+      '每次最多 20 位粉絲，單次最多 5000 朵。送出時先扣除創作者花花，玩家須至信箱手動領取後才會入帳。';
+
+  @override
+  String get official_studio_text_1431 => '無法讀取每月任務';
+
+  @override
+  String get official_studio_text_1441 => '讀取進度失敗，請稍後重試';
+
+  @override
+  String get official_studio_text_1451 => '確認領取創作獎勵';
+
+  @override
+  String get official_studio_text_1461 => '確定要領取本月 300 朵花花嗎？同一月份僅能領取一次。';
+
+  @override
+  String get official_studio_text_1471 => '確認領取';
+
+  @override
+  String get official_studio_text_1481 => '本月獎勵已領取';
+
+  @override
+  String get official_studio_text_1491 => '成功領取 300 朵花花！';
+
+  @override
+  String get official_studio_text_1501 => '領取失敗，請稍後重試';
+
+  @override
+  String get official_studio_text_1511 => '無法確認領取結果，請重新整理紀錄';
+
+  @override
+  String get official_studio_text_1521 => '本月';
+
+  @override
+  String get official_studio_text_1531 => '每月新建立並首次公開 3 位不同角色，手動領取 300 朵花花。';
+
+  @override
+  String get official_studio_text_1541 =>
+      '規則：僅限已簽約並認證的合作創作者；當月新建、當月首次公開、目前仍公開的不同角色才計入。私人角色、草稿、舊角色重新公開均不計入。台灣時間每月重置，每月限領一次。';
+
+  @override
+  String get official_studio_text_1551 =>
+      '如有重複、空白或違反創作規範的角色，官方得依合作條款暫停審查或合作資格。';
+
+  @override
+  String get official_studio_text_1561 => '歡迎加入官方合作創作者';
+
+  @override
+  String get official_studio_text_1571 => '掌握作品表現，與粉絲保持聯繫';
+
+  @override
+  String get official_studio_text_1581 => '分享花花，領取專屬創作獎勵';
+
+  @override
+  String get official_studio_text_1591 => '打造專屬頁面，隨時取得協助';
+
+  @override
+  String get official_studio_text_1601 => '妳的專屬創作空間';
+
+  @override
+  String get official_studio_text_1611 => '粉絲管理・創作數據・粉絲信件';
+
+  @override
+  String get official_studio_text_1621 => '粉絲福利・每月創作獎勵';
+
+  @override
+  String get official_studio_text_1631 => '專屬橫幅・合作資訊・問題回報';
+
+  @override
+  String get official_studio_text_1641 =>
+      '歡迎來到《戀戀拾光》官方合作創作者專區。這裡整合了創作管理、粉絲互動、專屬福利及合作資訊，讓妳能更方便地經營自己的角色與創作。';
+
+  @override
+  String get official_studio_text_1651 =>
+      '妳可以查看追蹤者、管理粉絲名單，並了解公開角色的遊玩次數與作品表現。也可以透過粉絲信件，向一位粉絲或所有追蹤者傳達訊息。';
+
+  @override
+  String get official_studio_text_1661 =>
+      '可以將自己帳戶中的花花贈送給粉絲，傳遞一份小小心意。另外，每月新建並首次公開符合資格的角色，還有機會領取專屬創作獎勵。';
+
+  @override
+  String get official_studio_text_1671 =>
+      '上傳專屬橫幅，打造屬於自己的創作者頁面。合作相關規範與權益可以在「合作資訊」查看；遇到問題，也可以透過「問題回報中心」聯繫官方。';
+
+  @override
+  String get official_studio_text_1681 => '只有符合官方合作資格的創作者，才能使用這裡的專屬功能。';
+
+  @override
+  String get official_studio_text_1691 => '粉絲信件設有每日寄送額度，使用前請留意頁面中的額度說明。';
+
+  @override
+  String get official_studio_text_1701 =>
+      '贈送花花會扣除自己的餘額；每月創作獎勵依現行活動規則與系統審核結果發放。';
+
+  @override
+  String get official_studio_text_1711 => '未來新增的創作者專屬功能，也會陸續在這裡開放。';
+
+  @override
+  String get official_studio_text_1721 => '創作者專區導覽';
+
+  @override
+  String get official_studio_text_1731 => '略過';
+
+  @override
+  String get official_studio_text_1741 => '上一步';
+
+  @override
+  String get official_studio_text_1751 => '完成';
+
+  @override
+  String get official_studio_text_1761 => '下一步';
+
+  @override
+  String official_studio_text_1771(String name) {
+    return '确定将「$name」移出追蹤者名单吗？对方将不再追蹤你，但未来仍可再次追蹤。';
+  }
+
+  @override
+  String official_studio_text_1781(int count) {
+    return '单人私信：$count / 30 封';
+  }
+
+  @override
+  String official_studio_text_1791(int count) {
+    return '全体粉丝群发：$count / 5 次';
+  }
+
+  @override
+  String official_studio_text_1801(int count) {
+    return '赠送成功！$count 朵花花已寄到粉丝信箱，等待领取。';
+  }
+
+  @override
+  String official_studio_text_1811(int count) {
+    return '$count 朵 🌸';
+  }
+
+  @override
+  String official_studio_text_1821(int count) {
+    return '$count 位';
+  }
+
+  @override
+  String official_studio_text_1831(int count) {
+    return '$count 朵';
+  }
+
+  @override
+  String official_studio_text_1841(String month) {
+    return '$month 创作奖励';
+  }
+
+  @override
+  String official_studio_text_1851(int count) {
+    return '本月进度：$count / 3 位';
+  }
+
+  @override
+  String official_studio_text_1861(int count) {
+    return '尚差 $count 位公开角色';
+  }
+
+  @override
+  String official_studio_text_1871(int count) {
+    return '花花余额不足，尚缺 $count 朵';
+  }
+
+  @override
+  String get official_studio_text_1881 => '读取信件额度失败，请稍后重試';
+
+  @override
+  String get official_studio_text_1891 => '寄送未确认成功，请检查紀录后重試';
+
+  @override
+  String get official_studio_text_1901 => '連线失败，请确认紀录后再重試';
+
+  @override
+  String get official_studio_text_1911 => '赠送未确认成功，请先查询紀录再重試。';
+
+  @override
+  String official_studio_text_1921(int balance, int total, int missing) {
+    return '目前余额：$balance 朵\n本次需要：$total 朵\n尚缺少：$missing 朵\n\n可以前往商店補充花花。';
+  }
+
+  @override
+  String official_studio_text_1931(int followers, int amount, int total) {
+    return '即将赠送给 $followers 位粉丝，每人 $amount 朵，共扣除 $total 朵花花。\n赠送完成后无法自行撤回。';
+  }
+
+  @override
+  String official_studio_text_1941(String mode, String status, int count) {
+    return '$mode · $status · 已投递 $count 人';
+  }
+
+  @override
+  String get official_studio_text_1951 => '公開角色';
+
+  @override
+  String get official_studio_text_1961 => '讀取中…';
+
+  @override
+  String get official_studio_text_1971 => '選擇粉絲';
+
+  @override
+  String get official_studio_text_1981 => '本月已領取';
+
+  @override
+  String get preference_selection_title1 => '選擇你喜歡的角色類型';
+
+  @override
+  String get preference_selection_description1 =>
+      '挑選 3～5 個你感興趣的標籤，讓我們推薦更合你心意的角色。';
+
+  @override
+  String get preference_selection_recommendation_note1 =>
+      '這些偏好只用於改善推薦，你之後仍可以探索其他類型的角色。';
+
+  @override
+  String get preference_selection_selected1 => '已選擇';
+
+  @override
+  String get preference_selection_start1 => '開始探索';
+
+  @override
+  String preference_selection_max_error1(int count) {
+    return '最多只能選擇 $count 個標籤';
+  }
+
+  @override
+  String get preference_selection_save_failed1 => '儲存偏好失敗，請稍後再試';
+
+  @override
+  String get preference_group_personality1 => '性格氣質';
+
+  @override
+  String get preference_group_relationship_age1 => '關係・年齡感';
+
+  @override
+  String get preference_group_story1 => '故事氛圍';
+
+  @override
+  String get preference_tag_gentle1 => '溫柔';
+
+  @override
+  String get preference_tag_cold1 => '高冷';
+
+  @override
+  String get preference_tag_scheming1 => '腹黑';
+
+  @override
+  String get preference_tag_tsundere1 => '傲嬌';
+
+  @override
+  String get preference_tag_loyal1 => '忠犬';
+
+  @override
+  String get preference_tag_yandere1 => '病嬌';
+
+  @override
+  String get preference_tag_mysterious1 => '神秘';
+
+  @override
+  String get preference_tag_healing1 => '治癒';
+
+  @override
+  String get preference_tag_gap_moe1 => '反差感';
+
+  @override
+  String get preference_tag_older1 => '年上';
+
+  @override
+  String get preference_tag_younger1 => '年下';
+
+  @override
+  String get preference_tag_ceo1 => '霸總';
+
+  @override
+  String get preference_tag_school1 => '校園';
+
+  @override
+  String get preference_tag_workplace1 => '職場';
+
+  @override
+  String get preference_tag_ancient1 => '古風';
+
+  @override
+  String get preference_tag_nonhuman1 => '非人';
+
+  @override
+  String get private_label1 => '私密';
+
+  @override
+  String get profile_page_world_tab1 => '開放世界';
+
+  @override
+  String get profile_page_login_required1 => '請先登入';
+
+  @override
+  String get profile_page_world_load_failed1 => '讀取世界觀失敗，請稍後再試';
+
+  @override
+  String get profile_page_my_worlds1 => '我的開放世界';
+
+  @override
+  String get profile_page_create_world1 => '建立世界觀';
+
+  @override
+  String get profile_page_worlds_empty1 => '還沒有建立開放世界';
+
+  @override
+  String get profile_page_worlds_empty_hint1 => '建立妳的第一個世界觀吧';
+
+  @override
+  String get profile_page_world_untitled1 => '未命名世界觀';
+
+  @override
+  String get profile_page_world_public1 => '公開';
+
+  @override
+  String get profile_page_world_private1 => '私人';
+
+  @override
+  String profile_page_world_character_count1(int count) {
+    return '$count 位人物';
+  }
+
+  @override
+  String get profile_page_world_enter_chat1 => '進入聊天';
+
+  @override
+  String get profile_page_world_edit1 => '編輯';
+
+  @override
+  String get profile_page_create_character1 => '創建角色';
+
+  @override
+  String get profile_page_event_frame_default1 => '活動頭像框';
+
+  @override
+  String get public_worlds_explore_title1 => '探索公開世界';
+
+  @override
+  String get public_worlds_search_tooltip1 => '搜尋開放世界';
+
+  @override
+  String get public_worlds_load_failed1 => '公開世界暫時無法載入';
+
+  @override
+  String get public_worlds_refresh1 => '重新整理';
+
+  @override
+  String get public_worlds_empty1 => '公開世界正在準備中，敬請期待';
+
+  @override
+  String get public_worlds_unnamed1 => '未命名世界';
+
+  @override
+  String get world_explore_subtitle1 => '走進不同的世界，探索不一樣的旅程';
+
+  @override
+  String get settings_notification_preferences_title1 => '通知偏好';
+
+  @override
+  String get settings_notification_preferences_subtitle1 => '設定想收到的通知類型，跨裝置同步';
+
+  @override
+  String get settings_admin_section1 => '管理';
+
+  @override
+  String get settings_admin_dashboard1 => '管理後台';
+
+  @override
+  String get settings_admin_tools_subtitle1 => '拾光內部管理工具';
+
+  @override
+  String get world_chat_back1 => '返回';
+
+  @override
+  String get world_chat_mode_tooltip1 => '回覆模式（AI 與扣花尚未串接）';
+
+  @override
+  String get world_chat_menu1 => '世界觀選單';
+
+  @override
+  String get world_chat_mode_story1 => '劇情';
+
+  @override
+  String get world_chat_mode_immersive1 => '沉浸';
+
+  @override
+  String get world_chat_mode_resonance1 => '共鳴';
+
+  @override
+  String get world_chat_mode_interaction1 => '互動';
+
+  @override
+  String world_chat_mode_cost1(String mode, int cost) {
+    return '$mode · $cost 花';
+  }
+
+  @override
+  String world_memo_read_failed1(String error) {
+    return '備忘錄讀取失敗：$error';
+  }
+
+  @override
+  String get world_memo_sync_failed1 => '同步暫時失敗，目前顯示上次讀取的備忘錄。';
+
+  @override
+  String get world_memo_server_no_id1 => '伺服器未回傳備忘錄 ID';
+
+  @override
+  String world_memo_save_failed1(String error) {
+    return '儲存失敗：$error';
+  }
+
+  @override
+  String get world_memo_delete_title1 => '刪除備忘錄？';
+
+  @override
+  String get world_memo_delete_warning1 => '刪除後無法復原。';
+
+  @override
+  String get world_memo_cancel1 => '取消';
+
+  @override
+  String get world_memo_delete1 => '刪除';
+
+  @override
+  String world_memo_cancel_reminder_failed1(String error) {
+    return '備忘錄已刪除，但舊裝置提醒取消失敗：$error';
+  }
+
+  @override
+  String world_memo_delete_failed1(String error) {
+    return '刪除失敗：$error';
+  }
+
+  @override
+  String get world_memo_title1 => '備忘錄';
+
+  @override
+  String world_memo_world_personal1(String worldName) {
+    return '$worldName｜個人備忘錄';
+  }
+
+  @override
+  String get world_memo_sync_notice1 => '提醒時間會跨裝置同步，並透過推播通知已登入且允許通知的裝置。';
+
+  @override
+  String get world_memo_loading1 => '正在讀取…';
+
+  @override
+  String get world_memo_empty1 => '尚無備忘錄，點擊右下角＋新增';
+
+  @override
+  String world_memo_reminder_date1(String date) {
+    return '提醒日期：$date';
+  }
+
+  @override
+  String get world_memo_reminder_future1 => '提醒時間必須晚於現在';
+
+  @override
+  String get world_memo_content_required1 => '請先輸入備忘錄內容';
+
+  @override
+  String get world_memo_edit_title1 => '編輯備忘錄';
+
+  @override
+  String get world_memo_add_title1 => '新增備忘錄';
+
+  @override
+  String get world_memo_content_label1 => '備忘錄內容';
+
+  @override
+  String get world_memo_content_hint1 => '寫下想記住的事情…';
+
+  @override
+  String get world_memo_reminder_settings1 => '提醒設定';
+
+  @override
+  String get world_memo_no_reminder1 => '未設定提醒';
+
+  @override
+  String get world_memo_reminder_choose1 => '選擇日期和時間，使用雲端跨裝置提醒';
+
+  @override
+  String get world_memo_clear_reminder1 => '清除提醒日期';
+
+  @override
+  String get world_memo_save1 => '儲存備忘錄';
+
+  @override
+  String get world_chat_open_world1 => '開放世界';
+
+  @override
+  String get world_chat_flower_sync1 => '花花餘額暫時無法同步';
+
+  @override
+  String get world_chat_web_store_unavailable1 => '網頁版暫不支援購買花花';
+
+  @override
+  String get world_chat_sync_unavailable1 => '即時同步暫時不可用，仍可重新進入讀取紀錄';
+
+  @override
+  String get world_chat_stopped1 => '已停止生成，本次不扣花花';
+
+  @override
+  String get world_chat_cannot_stop1 => '回覆可能已完成，無法再停止；請確認聊天紀錄與花花';
+
+  @override
+  String get world_chat_stop_retry1 => '停止請求暫時失敗，請再試一次';
+
+  @override
+  String get world_chat_connection_failed1 => '連線失敗';
+
+  @override
+  String get world_chat_network_failed1 => '網路暫時無法連線';
+
+  @override
+  String get world_chat_no_regenerate1 => '尚無可重新生成的回覆';
+
+  @override
+  String get world_chat_paid_regenerate1 => '付費重新生成';
+
+  @override
+  String get world_chat_cancel1 => '取消';
+
+  @override
+  String get world_chat_confirm1 => '確認';
+
+  @override
+  String get world_chat_no_continue1 => '尚無可接續的劇情';
+
+  @override
+  String get world_chat_no_save1 => '目前還沒有可以保存的對話';
+
+  @override
+  String get world_chat_loading1 => '聊天室仍在載入中';
+
+  @override
+  String get world_chat_unnamed_character1 => '未命名角色';
+
+  @override
+  String get world_chat_bg_wait1 => '聊天室載入完成後即可更換背景';
+
+  @override
+  String get world_chat_sign_in1 => '請先登入帳號';
+
+  @override
+  String get world_chat_choose_mode1 => '選擇世界觀模式';
+
+  @override
+  String get world_chat_mode_charge_expl1 => '每則成功回覆依模式扣花花；失敗不收費';
+
+  @override
+  String get world_chat_photo_selected1 => '已選取照片';
+
+  @override
+  String get world_chat_got_it1 => '知道了';
+
+  @override
+  String get world_chat_status_settings1 => '世界觀狀態欄設定';
+
+  @override
+  String get world_chat_save_settings1 => '儲存設定';
+
+  @override
+  String get world_chat_status_saved1 => '已儲存此世界的狀態欄顯示偏好';
+
+  @override
+  String get world_chat_not_ready1 => '世界觀聊天室尚未就緒';
+
+  @override
+  String get world_chat_enter_first1 => '請先進入世界觀聊天室';
+
+  @override
+  String get world_chat_photo1 => '照片';
+
+  @override
+  String get world_chat_profile1 => '拾光檔案';
+
+  @override
+  String get world_chat_interaction1 => '互動玩法';
+
+  @override
+  String get world_chat_theater1 => '劇場';
+
+  @override
+  String get world_chat_status1 => '狀態欄';
+
+  @override
+  String get world_chat_secret1 => '秘密篇章';
+
+  @override
+  String get world_chat_mood1 => '心情';
+
+  @override
+  String get world_chat_outfit1 => '服裝';
+
+  @override
+  String get world_chat_relationship1 => '關係';
+
+  @override
+  String get world_chat_thought1 => '想法';
+
+  @override
+  String get world_chat_weather1 => '天氣';
+
+  @override
+  String get world_chat_current_state1 => '目前狀態';
+
+  @override
+  String get world_chat_action1 => '動作';
+
+  @override
+  String get world_chat_affinity1 => '好感度';
+
+  @override
+  String get world_chat_generating1 => '世界正在悄悄運轉…';
+
+  @override
+  String get world_chat_screenshot1 => '截圖分享';
+
+  @override
+  String get world_chat_copy1 => '複製內容';
+
+  @override
+  String get world_chat_copied1 => '已複製';
+
+  @override
+  String get world_chat_edit1 => '編輯';
+
+  @override
+  String get world_chat_delete1 => '刪除';
+
+  @override
+  String get world_chat_report1 => '舉報此對話';
+
+  @override
+  String get world_chat_feedback1 => '給建議';
+
+  @override
+  String get world_chat_edit_segment1 => '編輯角色段落';
+
+  @override
+  String get world_chat_save1 => '儲存';
+
+  @override
+  String get world_chat_updated1 => '訊息已更新';
+
+  @override
+  String get world_chat_delete_segment1 => '刪除單一段落';
+
+  @override
+  String get world_chat_deleted_segment1 => '已刪除這一段';
+
+  @override
+  String get world_chat_edit_message1 => '編輯訊息';
+
+  @override
+  String get world_chat_edit_hint1 => '修改你的文字';
+
+  @override
+  String get world_chat_delete_conversation1 => '刪除對話';
+
+  @override
+  String get world_chat_no_chat1 => '尚無對話';
+
+  @override
+  String get world_chat_cancel_select1 => '取消選取';
+
+  @override
+  String get world_chat_input_hint1 => '書寫你們的故事…';
+
+  @override
+  String get world_chat_screenshot_done1 => '專屬時光已生成';
+
+  @override
+  String get world_chat_screenshot_style1 => '切換截圖配色';
+
+  @override
+  String get world_chat_reselect1 => '重新選取';
+
+  @override
+  String get world_chat_download_share1 => '下載並分享';
+
+  @override
+  String get world_records_summary_title1 => '剧情摘要';
+
+  @override
+  String world_records_loaded_count1(int count) {
+    return '已加载 $count 条聊天消息；按剧情发生顺序整理。';
+  }
+
+  @override
+  String get world_records_auto_summary_pending1 =>
+      '目前提供已加载对话的剧情回顾；AI 自动浓缩摘要尚未接入。';
+
+  @override
+  String get world_records_empty_story1 => '目前没有可以回顾的剧情';
+
+  @override
+  String get world_records_narrator_name1 => '世界旁白';
+
+  @override
+  String get world_records_relationships_title1 => '人物关系';
+
+  @override
+  String get world_records_affinity_note1 => '每位正式角色的好感度独立计算；临时 NPC 不计分。';
+
+  @override
+  String get world_records_empty_characters1 => '目前没有正式人物资料';
+
+  @override
+  String world_records_affinity_score_with_next1(int score, int next) {
+    return '好感度 $score / $next';
+  }
+
+  @override
+  String world_records_affinity_score_only1(int score) {
+    return '好感度 $score';
+  }
+
+  @override
+  String world_records_relationship_stage1(int stage) {
+    return '關係階段 $stage';
+  }
+
+  @override
+  String get world_records_local_memo_read_failed1 => '本機備忘錄讀取失敗';
+
+  @override
+  String get world_records_memo_saved_local1 => '備忘錄已保存在此裝置';
+
+  @override
+  String get world_records_memo_save_failed1 => '備忘錄保存失敗';
+
+  @override
+  String get world_records_memo_unsaved1 => '備忘錄尚未儲存';
+
+  @override
+  String get world_records_memo_save_before_exit1 => '要先儲存再離開嗎？';
+
+  @override
+  String get world_records_continue_editing1 => '繼續編輯';
+
+  @override
+  String get world_records_save_and_exit1 => '儲存並離開';
+
+  @override
+  String get world_records_world_memo_title1 => '給世界的備忘錄';
+
+  @override
+  String get world_records_save1 => '儲存';
+
+  @override
+  String get world_records_memo_local_disclaimer1 =>
+      '私人備忘錄｜此版本僅儲存於目前裝置，不會傳給 AI，也不會跨裝置同步。';
+
+  @override
+  String get world_records_memo_hint1 => '記下世界裡發現的線索、想完成的事，或想對角色說的話…';
+
+  @override
+  String get world_records_narrator_short1 => '旁白';
+
+  @override
+  String get world_records_summary_service_missing1 =>
+      '劇情摘要服務尚未部署（worldStoryMemory）。請部署後重新進入。';
+
+  @override
+  String get world_records_summary_load_failed1 => '暫時無法讀取劇情摘要，請稍後重試。';
+
+  @override
+  String get world_records_summary_intro1 =>
+      '每段相遇與抉擇，都將成為故事的一部分。重要經歷與人物關係會在此留下紀錄，陪伴故事繼續向前。';
+
+  @override
+  String get world_records_summary_empty1 => '故事仍在持續，精彩篇章即將收錄於此。';
+
+  @override
+  String get world_search_title1 => '搜尋對話';
+
+  @override
+  String get world_search_hint1 => '搜尋人物、對白或世界旁白';
+
+  @override
+  String get world_search_clear1 => '清除搜尋';
+
+  @override
+  String get world_search_start1 => '輸入關鍵字開始搜尋';
+
+  @override
+  String world_search_results1(int count) {
+    return '找到 $count 筆結果';
+  }
+
+  @override
+  String get world_search_empty_prompt1 => '搜尋玩家、人物及世界旁白';
+
+  @override
+  String get world_search_no_results1 => '沒有符合的對話';
+
+  @override
+  String get world_search_unknown_speaker1 => '未知人物';
+
+  @override
+  String get world_search_collapse1 => '收合';
+
+  @override
+  String get world_search_expand1 => '展開';
+
+  @override
+  String get world_search_scope1 => '目前搜尋範圍：聊天室已載入的最近 200 筆訊息';
+
+  @override
+  String get world_menu_subtitle1 => '開放世界 · 功能逐步開放';
+
+  @override
+  String get world_menu_chat_section1 => '聊天';
+
+  @override
+  String get world_menu_search1 => '搜尋對話';
+
+  @override
+  String get world_menu_save_transcript1 => '保存對話紀錄';
+
+  @override
+  String get world_menu_memories_background1 => '專屬回憶與背景';
+
+  @override
+  String get world_menu_relations_section1 => '世界關係';
+
+  @override
+  String get world_menu_story_summary1 => '劇情摘要';
+
+  @override
+  String get world_menu_relationships1 => '人物關係';
+
+  @override
+  String get world_menu_memos1 => '備忘錄';
+
+  @override
+  String get world_menu_memory_section1 => '記憶管理';
+
+  @override
+  String get world_menu_reset_progress1 => '重置世界進度';
+
+  @override
+  String get world_chat_book_confirm1 => '確定';
+
+  @override
+  String get world_custom_scene_title_required1 => '請先填寫劇場標題。';
+
+  @override
+  String get world_custom_scene_description_required1 => '請先填寫場景說明。';
+
+  @override
+  String get world_custom_scene_save_failed1 => '儲存失敗，請稍後再試。';
+
+  @override
+  String get world_custom_scene_edit_title1 => '編輯劇場';
+
+  @override
+  String get world_custom_scene_add_title1 => '新增劇場';
+
+  @override
+  String get world_discovery_share_desc1 => '走進創作者的開放世界，展開屬於你的故事。';
+
+  @override
+  String world_discovery_share_text1(
+      String title, String description, String link) {
+    return '戀戀拾光・開放世界邀請\n\n「$title」\n\n$description\n\n立即探索：$link';
+  }
+
+  @override
+  String get world_discovery_brand1 => '戀戀拾光';
+
+  @override
+  String get world_discovery_invite1 => '開放世界邀請';
+
+  @override
+  String get world_discovery_scan1 => '掃描下載';
+
+  @override
+  String get world_discovery_cancel1 => '取消';
+
+  @override
+  String get world_discovery_share_button1 => '分享邀請卡';
+
+  @override
+  String get world_discovery_share_missing_card1 => '找不到開放世界邀請卡';
+
+  @override
+  String get world_discovery_share_image_failed1 => '無法產生分享圖片';
+
+  @override
+  String get world_discovery_share_failed1 => '分享邀請卡失敗，請再試一次';
+
+  @override
+  String get world_discovery_story_open1 => '故事開場';
+
+  @override
+  String get world_discovery_story_unset1 => '尚未設定故事開場';
+
+  @override
+  String get world_discovery_first_unset1 => '尚未設定第一句話';
+
+  @override
+  String get world_discovery_background_title1 => '世界觀背景與說明';
+
+  @override
+  String world_discovery_era1(String era) {
+    return '時空背景：$era';
+  }
+
+  @override
+  String get world_discovery_background_unset1 => '尚未設定世界觀背景';
+
+  @override
+  String get world_discovery_background_full1 => '完整世界背景';
+
+  @override
+  String get world_discovery_people_unset1 => '尚未設定人物';
+
+  @override
+  String get world_discovery_people_intro1 => '人物介紹';
+
+  @override
+  String get world_discovery_appearance_unset1 => '未提供外貌特徵';
+
+  @override
+  String get world_discovery_creator_unset1 => '尚無創作者資料';
+
+  @override
+  String get world_discovery_creator1 => '創作者';
+
+  @override
+  String get world_discovery_creator_load_failed1 => '暫時無法讀取創作者資料';
+
+  @override
+  String world_discovery_world_load_failed1(String error) {
+    return '開放世界讀取失敗：$error';
+  }
+
+  @override
+  String get world_discovery_unpublished1 => '此世界觀未公開';
+
+  @override
+  String get world_discovery_open_world1 => '開放世界';
+
+  @override
+  String get world_discovery_share_tooltip1 => '分享開放世界';
+
+  @override
+  String get world_discovery_world_background1 => '世界背景';
+
+  @override
+  String get world_discovery_not_playable1 => '這個開放世界尚未開放遊玩。';
+
+  @override
+  String get world_discovery_enter1 => '進入世界';
+
+  @override
+  String get world_edit_login_required1 => '請先登入';
+
+  @override
+  String get world_edit_no_edit_permission1 => '無權編輯此世界觀';
+
+  @override
+  String get world_edit_secret_permission_error1 =>
+      '秘密篇章讀取權限不足，請確認 Firestore Rules 已部署。已暫停儲存以保護原資料。';
+
+  @override
+  String world_edit_secret_read_error_code1(String code) {
+    return '秘密篇章讀取失敗（$code），已暫停儲存以保護原資料。';
+  }
+
+  @override
+  String get world_edit_secret_read_error1 => '秘密篇章讀取失敗，已暫停儲存以保護原資料。';
+
+  @override
+  String world_edit_world_read_error1(String error) {
+    return '讀取世界觀失敗：$error';
+  }
+
+  @override
+  String world_edit_image_max1(int count) {
+    return '世界觀最多只能放 $count 張圖片';
+  }
+
+  @override
+  String world_edit_image_read_error1(String error) {
+    return '讀取圖片失敗：$error';
+  }
+
+  @override
+  String get world_edit_tag_heading1 => '主題標籤（最多 5 個）';
+
+  @override
+  String get world_edit_tag_max1 => '最多選擇 5 個標籤';
+
+  @override
+  String get world_edit_tag_custom1 => '標籤（可自訂，以頓號分隔）';
+
+  @override
+  String get world_edit_secret_not_ready1 =>
+      '秘密篇章尚未成功讀取，為保護既有內容暫時無法發布。請確認權限並重新開啟頁面。';
+
+  @override
+  String get world_edit_required_publish1 => '請完成世界名稱、至少一張圖片、世界背景、故事開場與第一句話';
+
+  @override
+  String get world_edit_max_tags_save1 => '主題標籤最多 5 個，請刪減後再儲存';
+
+  @override
+  String get world_edit_secret_validation1 => '每章請填寫標題、解鎖條件與秘密內容，最多 12 章';
+
+  @override
+  String get world_edit_draft_saved1 => '開放世界草稿與秘密篇章已儲存';
+
+  @override
+  String get world_edit_publish_unconfirmed1 => '後端尚未確認公開資格，請稍後再次發布。';
+
+  @override
+  String world_edit_publish_backend_error1(String code, String message) {
+    return '開放世界資料已儲存，但公開啟用失敗（$code）：$message。修正後可再次按「發布開放世界」。';
+  }
+
+  @override
+  String get world_edit_publish_service_missing1 => '請確認 worldPublish 已部署';
+
+  @override
+  String get world_edit_public_published1 => '公開開放世界已發布';
+
+  @override
+  String get world_edit_private_saved1 => '私人開放世界已儲存';
+
+  @override
+  String world_edit_save_publish_failed1(String error) {
+    return '儲存／發布失敗：$error';
+  }
+
+  @override
+  String get world_edit_save_draft_question1 => '是否儲存草稿？';
+
+  @override
+  String get world_edit_save_draft_explain1 => '離開前要儲存目前的世界觀嗎？未儲存的內容將會遺失。';
+
+  @override
+  String get world_edit_discard1 => '不儲存';
+
+  @override
+  String get world_edit_cancel1 => '取消';
+
+  @override
+  String get world_edit_save_draft1 => '儲存草稿';
+
+  @override
+  String get world_edit_world_name1 => '開放世界名稱 *';
+
+  @override
+  String get world_edit_world_images1 => '世界觀圖片（最多 6 張，第一張為主要封面）';
+
+  @override
+  String get world_edit_cover1 => '封面';
+
+  @override
+  String get world_edit_set_cover1 => '設為封面';
+
+  @override
+  String get world_edit_short_pitch1 => '卡片一句話介紹（選填，最多 60 字）';
+
+  @override
+  String get world_edit_public_summary1 => '世界觀公開簡介（不含劇透）';
+
+  @override
+  String get world_edit_era1 => '時空背景（例：架空現代、民國時期）';
+
+  @override
+  String get world_edit_world_rules1 => '世界觀背景與規則 *';
+
+  @override
+  String get world_edit_full_lore1 => '完整世界背景／事件與地點（給 AI 的設定）';
+
+  @override
+  String get world_edit_npc_intro1 =>
+      '主要角色與 NPC 都能設定姓名、外貌、生日、人物關係與照片。玩家仍是自己故事的主角。';
+
+  @override
+  String get world_edit_main_characters1 => '主要角色';
+
+  @override
+  String get world_edit_main_subtitle1 => '在世界觀中較常登場的重要人物';
+
+  @override
+  String get world_edit_npc_subtitle1 => '其他登場人物，也能隨劇情成為互動焦點';
+
+  @override
+  String world_edit_people_count1(int count) {
+    return '$count 位';
+  }
+
+  @override
+  String get world_edit_role_unset1 => '尚未設定身分／職業';
+
+  @override
+  String get world_edit_remove_person1 => '移除人物';
+
+  @override
+  String world_edit_add_person1(String type) {
+    return '新增$type';
+  }
+
+  @override
+  String get world_edit_add_secret1 => '新增秘密篇章';
+
+  @override
+  String get world_edit_edit_secret1 => '編輯秘密篇章';
+
+  @override
+  String get world_edit_chapter_title1 => '篇章標題 *';
+
+  @override
+  String get world_edit_unlock_condition1 => '解鎖條件（給後端判定的描述）*';
+
+  @override
+  String get world_edit_secret_content1 => '秘密內容 *';
+
+  @override
+  String get world_edit_confirm1 => '確認';
+
+  @override
+  String get world_edit_story_opening1 => '故事開場 *';
+
+  @override
+  String get world_edit_first_line1 => '故事第一句話 *';
+
+  @override
+  String get world_edit_secret_chapters1 => '秘密篇章';
+
+  @override
+  String get world_edit_secret_explain1 =>
+      '秘密篇章只儲存在私密資料區。正式公開不會直接公開內容；玩家需在遊玩中達成劇情條件才可解鎖。';
+
+  @override
+  String get world_edit_add_secret_max1 => '新增秘密篇章（最多 12 章）';
+
+  @override
+  String get world_edit_publish_settings1 => '發布設定';
+
+  @override
+  String get world_edit_private_world1 => '私人開放世界';
+
+  @override
+  String get world_edit_private_world_desc1 => '僅自己可以遊玩及測試，其他玩家無法進入';
+
+  @override
+  String get world_edit_public_world1 => '公開開放世界';
+
+  @override
+  String get world_edit_public_world_desc1 => '其他玩家可進入遊玩，每位玩家有獨立劇情進度';
+
+  @override
+  String get world_edit_create_world1 => '創立開放世界';
+
+  @override
+  String get world_edit_basic_tab1 => '基本設定';
+
+  @override
+  String get world_edit_characters_tab1 => '世界觀人物';
+
+  @override
+  String get world_edit_story_tab1 => '故事設定';
+
+  @override
+  String get world_edit_publish_world1 => '發布開放世界';
+
+  @override
+  String get world_edit_name_required1 => '請先填寫人物姓名';
+
+  @override
+  String world_edit_edit_person1(String type) {
+    return '編輯$type';
+  }
+
+  @override
+  String get world_edit_upload_photo1 => '上傳人物照片（選填）';
+
+  @override
+  String get world_edit_allow_photo1 => '允許使用此人物照片生成其他照片';
+
+  @override
+  String get world_edit_allow_photo_explain1 =>
+      '僅在劇情適合時可將此人物的圖片作為生成參考。不勾選仍可正常聊天及贈送一般禮物；每位人物獨立設定。';
+
+  @override
+  String get world_edit_name1 => '姓名 *';
+
+  @override
+  String get world_edit_gender1 => '性別／性別設定';
+
+  @override
+  String get world_edit_birthday1 => '生日（例：5月16日）';
+
+  @override
+  String get world_edit_age1 => '年齡';
+
+  @override
+  String get world_edit_role1 => '身分／職業';
+
+  @override
+  String get world_edit_appearance1 => '外貌特徵';
+
+  @override
+  String get world_edit_personality1 => '個性與人物設定';
+
+  @override
+  String get world_edit_background1 => '過去經歷';
+
+  @override
+  String get world_edit_relationships1 => '與其他人物的關係';
+
+  @override
+  String get world_edit_speech_style1 => '說話方式／口吻';
+
+  @override
+  String get world_edit_dialogue_examples1 => '對話範例（幫助 AI 理解語氣）';
+
+  @override
+  String get world_edit_save_person1 => '儲存人物設定';
+
+  @override
+  String get world_edit_tag_mystery1 => '懸疑';
+
+  @override
+  String get world_edit_tag_horror1 => '恐怖';
+
+  @override
+  String get world_edit_tag_romance1 => '戀愛';
+
+  @override
+  String get world_edit_tag_modern_fantasy1 => '現代奇幻';
+
+  @override
+  String get world_edit_tag_school1 => '校園';
+
+  @override
+  String get world_edit_tag_ensemble1 => '群像';
+
+  @override
+  String get world_edit_tag_adventure1 => '冒險';
+
+  @override
+  String get world_edit_tag_daily1 => '日常';
+
+  @override
+  String get world_edit_tag_detective1 => '推理';
+
+  @override
+  String get world_edit_tag_otherworld1 => '異世界';
+
+  @override
+  String get chooseNpc1 => '請選擇 NPC';
+
+  @override
+  String get chooseInteractionTarget1 => '選擇互動對象';
+
+  @override
+  String get unnamedCharacter1 => '未命名角色';
+
+  @override
+  String get chooseTargetFirst1 => '請先選擇互動對象';
+
+  @override
+  String get confirmGift1 => '確認送禮';
+
+  @override
+  String giftConfirmDetail1(String target, String gift, int cost) {
+    return '送給 $target：$gift，消耗 $cost 朵花花。只有 AI 成功回覆後才正式扣點。';
+  }
+
+  @override
+  String get cancel1 => '取消';
+
+  @override
+  String get send1 => '送出';
+
+  @override
+  String get sendLocationTitle1 => '傳送地點（3 朵）';
+
+  @override
+  String get customLocation1 => '自訂地點';
+
+  @override
+  String get confirm1 => '確認';
+
+  @override
+  String get cafe1 => '咖啡廳';
+
+  @override
+  String get park1 => '公園';
+
+  @override
+  String get restaurant1 => '餐廳';
+
+  @override
+  String get street1 => '街道';
+
+  @override
+  String get giftHeart1 => '愛心';
+
+  @override
+  String get giftFlower1 => '花朵';
+
+  @override
+  String get giftSun1 => '太陽';
+
+  @override
+  String get giftConfetti1 => '彩帶';
+
+  @override
+  String get giftCoffee1 => '咖啡';
+
+  @override
+  String get giftCake1 => '蛋糕';
+
+  @override
+  String get interactionPlayTitle1 => '互動玩法';
+
+  @override
+  String interactionTargetLabel1(String target) {
+    return '互動對象：$target';
+  }
+
+  @override
+  String get intimateInteraction1 => '親密互動';
+
+  @override
+  String get poke1 => '戳一戳';
+
+  @override
+  String get hug1 => '擁抱';
+
+  @override
+  String get holdHands1 => '牽手';
+
+  @override
+  String get gifts1 => '送禮';
+
+  @override
+  String get funActivities1 => '趣味玩法';
+
+  @override
+  String get sendLocation1 => '傳送地點';
+
+  @override
+  String get diceDuel1 => '骰子對決';
+
+  @override
+  String get world_profile_name_too_long1 => '世界觀角色稱呼最多 40 字，請縮短後再儲存';
+
+  @override
+  String get world_profile_identity_too_long1 => '世界觀人物資料超過 2000 字，請縮短後再儲存';
+
+  @override
+  String get world_relationship_live_title1 => '人物關係';
+
+  @override
+  String get world_relationship_live_load_failed1 =>
+      '關係資料讀取失敗，請檢查 Firestore 權限';
+
+  @override
+  String get world_relationship_live_no_people1 => '這個世界尚未建立人物';
+
+  @override
+  String get world_relationship_live_not_met1 => '目前關係：尚未相遇';
+
+  @override
+  String get world_relationship_live_first_meeting1 => '初次相遇';
+
+  @override
+  String world_relationship_live_current_relation1(String relation) {
+    return '目前關係：$relation';
+  }
+
+  @override
+  String get world_relationship_live_thought_title1 => '對玩家目前的想法';
+
+  @override
+  String get world_relationship_live_thought_pending1 => '尚待後續互動逐漸形成印象';
+
+  @override
+  String world_scene_full_load_error1(String error) {
+    return '讀取劇場失敗：$error';
+  }
+
+  @override
+  String get world_scene_full_delete_title1 => '刪除劇場';
+
+  @override
+  String world_scene_full_delete_confirm1(String title) {
+    return '確定刪除「$title」嗎？';
+  }
+
+  @override
+  String get world_scene_full_cancel1 => '取消';
+
+  @override
+  String get world_scene_full_delete1 => '刪除';
+
+  @override
+  String world_scene_full_delete_error1(String error) {
+    return '刪除劇場失敗：$error';
+  }
+
+  @override
+  String get world_scene_full_missing_fields1 => '劇場內容不足，請先補齊標題與場景說明';
+
+  @override
+  String world_scene_full_activate_error1(String error) {
+    return '啟用劇場失敗：$error';
+  }
+
+  @override
+  String get world_scene_full_end_title1 => '結束劇場';
+
+  @override
+  String get world_scene_full_end_confirm1 => '確定結束目前進行中的劇場嗎？';
+
+  @override
+  String world_scene_full_end_error1(String error) {
+    return '結束劇場失敗：$error';
+  }
+
+  @override
+  String get world_scene_full_unnamed1 => '未命名劇場';
+
+  @override
+  String world_scene_full_opening1(String opening) {
+    return '開場：$opening';
+  }
+
+  @override
+  String get world_scene_full_edit1 => '編輯';
+
+  @override
+  String get world_scene_full_start1 => '開始劇場';
+
+  @override
+  String get world_scene_full_creator_empty1 => '目前尚無創作者劇場';
+
+  @override
+  String get world_scene_full_custom_empty1 => '還沒有自行建立的劇場';
+
+  @override
+  String get world_scene_full_add1 => '新增劇場';
+
+  @override
+  String get world_scene_full_page_title1 => '劇場';
+
+  @override
+  String get world_scene_full_creator_tab1 => '創作者劇場';
+
+  @override
+  String get world_scene_full_custom_tab1 => '自行創建劇場';
+
+  @override
+  String world_scene_full_active1(String title) {
+    return '進行中的劇場：$title';
+  }
+
+  @override
+  String get world_scene_required1 => '請填寫場景標題與內容';
+
+  @override
+  String get world_scene_title1 => '劇場';
+
+  @override
+  String get world_scene_beta_notice1 =>
+      '世界觀劇場測試版：沿用世界觀聊天 AI 開啟場景；劇場專屬存檔及正式開場 API 尚未串接。';
+
+  @override
+  String get world_scene_creator_scenes1 => '創作者劇場';
+
+  @override
+  String get world_scene_no_creator_scenes1 => '這個世界目前沒有可讀取的創作者劇場設定';
+
+  @override
+  String get world_scene_custom_scenes1 => '自行創建劇場';
+
+  @override
+  String get world_scene_name1 => '場景名稱';
+
+  @override
+  String get world_scene_setup1 => '背景、地點、角色及開場情境';
+
+  @override
+  String get world_scene_start1 => '開始劇場';
+
+  @override
+  String get worldSearchTitle1 => '搜尋開放世界';
+
+  @override
+  String get worldSearchHint1 => '搜尋世界名稱、創作者、標籤';
+
+  @override
+  String get worldSearchClear1 => '清除搜尋';
+
+  @override
+  String get worldSearchEmpty1 => '找不到符合的開放世界';
+
+  @override
+  String get worldSearchTrending1 => '熱門探索';
+
+  @override
+  String get worldSearchResults1 => '搜尋結果';
+
+  @override
+  String get worldSearchUnnamed1 => '未命名世界';
+
+  @override
+  String worldSearchCreator1(String creator) {
+    return '創作者：$creator';
+  }
+
+  @override
+  String get world_secret_chapters_title1 => '秘密篇章';
+
+  @override
+  String get world_secret_chapters_close1 => '關閉';
+
+  @override
+  String get world_secret_chapters_read_failed1 => '秘密篇章暫時無法讀取';
+
+  @override
+  String get world_secret_chapters_retry1 => '讀取失敗，點此重試';
+
+  @override
+  String get world_secret_chapters_empty1 => '創作者尚未設定秘密篇章';
+
+  @override
+  String world_secret_chapters_locked_chapter1(String number) {
+    return '第 $number 章 · ？？？';
+  }
+
+  @override
+  String get world_secret_chapters_unlocked1 => '已解鎖，點擊閱讀';
+
+  @override
+  String get world_secret_chapters_locked1 => '尚未解鎖 · 繼續探索劇情';
+
+  @override
+  String world_timeline_load_failed1(String error) {
+    return '劇情摘要讀取失敗：$error';
+  }
+
+  @override
+  String get world_timeline_edit_summary1 => '編輯劇情摘要';
+
+  @override
+  String get world_timeline_cancel1 => '取消';
+
+  @override
+  String get world_timeline_save1 => '儲存';
+
+  @override
+  String world_timeline_save_failed1(String error) {
+    return '儲存失敗：$error';
+  }
+
+  @override
+  String get world_timeline_delete_summary1 => '刪除摘要';
+
+  @override
+  String get world_timeline_delete_confirm1 => '確定刪除這段故事紀錄嗎？';
+
+  @override
+  String get world_timeline_delete1 => '刪除';
+
+  @override
+  String world_timeline_delete_failed1(String error) {
+    return '刪除失敗：$error';
+  }
+
+  @override
+  String get world_timeline_our_story1 => '我們的故事';
+
+  @override
+  String get world_timeline_retry1 => '重試';
+
+  @override
+  String get world_timeline_empty1 => '故事還在展開中，累積一些劇情後就會有新的紀錄。';
+
+  @override
+  String get world_timeline_recent1 => '近期紀錄';
+
+  @override
+  String get world_timeline_edit1 => '編輯';
+
+  @override
+  String get echo_login_to_post1 => '請先登入後再留下時空迴音';
+
+  @override
+  String get echo_limit1 => '每位玩家在同一個開放世界最多留下 3 則時空迴音';
+
+  @override
+  String get echo_count_fail1 => '無法確認迴音數量，請稍後再試';
+
+  @override
+  String get echo_compose_title1 => '留下時空迴音';
+
+  @override
+  String get echo_compose_desc1 => '選擇喜歡的卡面，再寫下一段想留下的話。';
+
+  @override
+  String get echo_compose_hint1 => '在這個世界裡，你想留下什麼話？';
+
+  @override
+  String get echo_send1 => '送出迴音';
+
+  @override
+  String get echo_player1 => '玩家';
+
+  @override
+  String get echo_sent1 => '時空迴音已留下';
+
+  @override
+  String get echo_post_fail1 => '留言失敗，請確認權限與網路';
+
+  @override
+  String get echo_login1 => '請先登入';
+
+  @override
+  String get echo_like_fail1 => '按讚失敗';
+
+  @override
+  String get echo_delete_title1 => '刪除時空迴音？';
+
+  @override
+  String get echo_delete_warning1 => '刪除後將無法復原。';
+
+  @override
+  String get echo_cancel1 => '取消';
+
+  @override
+  String get echo_delete1 => '刪除';
+
+  @override
+  String get echo_deleted1 => '時空迴音已刪除';
+
+  @override
+  String get echo_delete_fail1 => '刪除失敗';
+
+  @override
+  String get echo_reason_inappropriate1 => '不當內容';
+
+  @override
+  String get echo_reason_harassment1 => '騷擾或攻擊';
+
+  @override
+  String get echo_reason_spam1 => '垃圾訊息';
+
+  @override
+  String get echo_reason_other1 => '其他';
+
+  @override
+  String get echo_report_title1 => '檢舉時空迴音';
+
+  @override
+  String get echo_already_reported1 => '這則迴音已檢舉過';
+
+  @override
+  String get echo_report_received1 => '已收到檢舉';
+
+  @override
+  String get echo_report_fail1 => '檢舉失敗';
+
+  @override
+  String get echo_options1 => '迴音選項';
+
+  @override
+  String get echo_delete_option1 => '刪除迴音';
+
+  @override
+  String get echo_report_option1 => '檢舉迴音';
+
+  @override
+  String get echo_wall_title1 => '時空迴音';
+
+  @override
+  String get echo_add1 => '留下迴音';
+
+  @override
+  String get echo_load_fail1 => '時空迴音讀取失敗，請檢查 Firestore 權限設定';
+
+  @override
+  String get echo_empty1 => '還沒有時空迴音，留下第一段故事吧。';
+
+  @override
+  String get store_pack_30_name1 => '初見禮包';
+
+  @override
+  String get store_pack_70_name1 => '曖昧禮包';
+
+  @override
+  String get store_pack_120_name1 => '心動禮包';
+
+  @override
+  String get store_pack_190_name1 => '熱戀禮包';
+
+  @override
+  String get store_pack_250_name1 => '知己禮包';
+
+  @override
+  String get store_pack_330_name1 => '守候禮包';
+
+  @override
+  String get store_pack_450_name1 => '信賴禮包';
+
+  @override
+  String get store_pack_520_name1 => '我愛你禮包';
+
+  @override
+  String get store_pack_690_name1 => '蜜月禮包';
+
+  @override
+  String get store_pack_720_name1 => '承諾禮包';
+
+  @override
+  String get store_pack_750_name1 => '相伴禮包';
+
+  @override
+  String get store_pack_830_name1 => '深愛禮包';
+
+  @override
+  String get store_pack_990_name1 => '長久禮包';
+
+  @override
+  String get store_pack_1050_name1 => '唯一禮包';
+
+  @override
+  String get store_pack_1290_name1 => '摯愛禮包';
+
+  @override
+  String get store_pack_1314_name1 => '一生一世包';
+
+  @override
+  String get store_pack_1930_name1 => '誓約禮包';
+
+  @override
+  String get store_pack_2990_name1 => '永恆戀人包';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -15562,7 +18863,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get creator_profile_report_self_not_allowed => '无法举报自己的创作者页面';
 
   @override
-  String creator_profile_report_reason_prompt(String creatorName) {
+  String creator_profile_report_reason_prompt1(String creatorName) {
     return '请选择举报“$creatorName”的原因：';
   }
 
@@ -18514,6 +21815,2951 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get theme_font_system_description => '跟随手机系统预设字体';
+
+  @override
+  String get font_selection_serif_name => '思源宋体';
+
+  @override
+  String get font_selection_sans_name => '思源黑体';
+
+  @override
+  String get font_selection_system_name => '系统字体';
+
+  @override
+  String get font_selection_serif_description => '典雅的衬线字体，适合沉浸阅读。';
+
+  @override
+  String get font_selection_sans_description => '清晰柔和的无衬线字体。';
+
+  @override
+  String get font_selection_system_description => '使用设备默认字体。';
+
+  @override
+  String get font_selection_preview_sentence => '与你喜欢的他，再次写下属于你们的故事。';
+
+  @override
+  String get avatar_frame_error_generic => '错误';
+
+  @override
+  String get avatar_frame_sign_in_required => '请先登录';
+
+  @override
+  String get avatar_frame_default_name => '活动头像框';
+
+  @override
+  String get background_exclusive_photos_tab => '专属照片';
+
+  @override
+  String get background_world_sign_in_chat => '请先登录并进入世界聊天室';
+
+  @override
+  String get background_world_photo_load_error => '错误';
+
+  @override
+  String get background_world_no_photos => '目前没有可选择的世界照片';
+
+  @override
+  String get background_world_cover => '世界观封面';
+
+  @override
+  String get background_world_cover_confirm => '要将世界观封面设为这个聊天室的背景吗？';
+
+  @override
+  String get background_world_default_limited => '限定背景';
+
+  @override
+  String get background_world_default_character => '角色';
+
+  @override
+  String get background_world_no_character_photos => '暂无可使用的角色照片';
+
+  @override
+  String background_world_unlock_required(int count) {
+    return '需要 $count 好感度才能解锁';
+  }
+
+  @override
+  String background_world_character_confirm(String name) {
+    return '要将“$name”的照片设为世界聊天室背景吗？';
+  }
+
+  @override
+  String background_world_affection_count(int count) {
+    return '$count 好感度';
+  }
+
+  @override
+  String get reply_selection => '回复选项';
+
+  @override
+  String get chat_home_character_tab => '角色聊天';
+
+  @override
+  String get chat_home_world_tab => '开放世界';
+
+  @override
+  String get chat_home_world_error_generic => '错误';
+
+  @override
+  String get chat_home_world_pinned => '已置顶世界聊天';
+
+  @override
+  String get chat_home_world_deleted => '开放世界聊天室及聊天记录已删除';
+
+  @override
+  String get chat_home_world_action_done => '操作完成';
+
+  @override
+  String get chat_home_world_rename_title => '为这段回忆命名';
+
+  @override
+  String chat_home_world_delete_confirm(String name) {
+    return '确定删除“$name”的开放世界聊天记录？\n\n这将永久删除对话、剧情摘要、人物关系和备忘录，无法恢复。创作者发布的世界设定不受影响。';
+  }
+
+  @override
+  String get chat_home_world_empty_title => '还没有开放世界聊天记录';
+
+  @override
+  String get chat_home_world_empty_desc => '进入开放世界并开始游玩后，聊天记录就会显示在这里。';
+
+  @override
+  String get chat_home_world_unnamed => '未命名世界';
+
+  @override
+  String get chat_home_world_private_test => '私人试玩';
+
+  @override
+  String get chat_home_world_no_messages => '暂无消息';
+
+  @override
+  String get expand_features => '展开功能';
+
+  @override
+  String get chat_sticker_all => '全部';
+
+  @override
+  String get chat_mode_short_daily => '日常';
+
+  @override
+  String get chat_mode_short_story => '剧情';
+
+  @override
+  String get chat_mode_short_immersive => '沉浸';
+
+  @override
+  String get chat_mode_short_resonance => '共鸣';
+
+  @override
+  String get chat_mode_short_gemini => '闲聊';
+
+  @override
+  String get chat_theater_tool => '剧场';
+
+  @override
+  String chat_regenerate_insufficient_flowers(int cost) {
+    return '花花不足，重新生成需要 $cost 朵';
+  }
+
+  @override
+  String get chat_regenerate_paid_title => '付费重新生成';
+
+  @override
+  String chat_regenerate_paid_confirm(int cost) {
+    return '今日免费次数已用完，本次依当前模式收取 $cost 朵花花。是否继续？';
+  }
+
+  @override
+  String get chat_generic_error => '错误';
+
+  @override
+  String get chat_regenerate_confirm => '确认';
+
+  @override
+  String get comment_add_photo => '添加照片';
+
+  @override
+  String get comment_error_generic => '错误';
+
+  @override
+  String creator_profile_report_reason_prompt(String creatorName) {
+    return '请选择举报“$creatorName”的原因：';
+  }
+
+  @override
+  String get creator_profile_open_worlds => '开放世界';
+
+  @override
+  String get creator_profile_generic_error => '错误';
+
+  @override
+  String get creator_profile_refresh => '重新加载';
+
+  @override
+  String get creator_profile_no_open_worlds => '这位创作者尚未发布开放世界';
+
+  @override
+  String get creator_profile_unnamed_world => '未命名世界';
+
+  @override
+  String get creator_program_required_fields => '请填写创作方向与申请原因。';
+
+  @override
+  String get creator_program_submitted => '申请已送出，审核约需 1～3 天。';
+
+  @override
+  String get creator_program_error => '错误';
+
+  @override
+  String get creator_program_login_required => '请先登录后再申请创作者计划。';
+
+  @override
+  String get creator_program_title => '创作者计划';
+
+  @override
+  String get creator_program_headline => '让更多人看见你的创作';
+
+  @override
+  String get creator_program_intro =>
+      '只要你有公开创作，就欢迎申请加入《恋恋拾光》创作者计划。申请送出后，官方会在 1～3 天内完成审核。';
+
+  @override
+  String get creator_program_benefits_title => '计划福利';
+
+  @override
+  String get creator_program_benefit_dashboard =>
+      '创作者后台：查看粉丝数、公开角色数、总爱心与本月新增粉丝。';
+
+  @override
+  String get creator_program_benefit_fans => '粉丝经营：可寄信、管理粉丝，并用自己的花花赠送粉丝福利。';
+
+  @override
+  String get creator_program_benefit_exposure =>
+      '官方曝光：新角色有机会优先登上 IG 与游戏内创作者推荐。';
+
+  @override
+  String get creator_program_benefit_monthly =>
+      '每月创作奖励：当月新增并公开至少 3 个全新角色，次月可获 520 朵花花。';
+
+  @override
+  String get creator_program_benefit_merch =>
+      '实体合作：旗下角色若进入官方实体商品／礼盒合作，可依合作企划获得现金创作奖励。';
+
+  @override
+  String creator_program_last_review_note(String reason) {
+    return '上次审核说明：$reason';
+  }
+
+  @override
+  String get creator_program_apply_heading => '申请加入';
+
+  @override
+  String get creator_program_direction_label => '创作方向';
+
+  @override
+  String get creator_program_direction_hint => '例如：现代恋爱、古风、奇幻、BL、GL…';
+
+  @override
+  String get creator_program_reason_label => '想加入创作者计划的原因';
+
+  @override
+  String get creator_program_reason_hint => '和我们说说你想怎么经营自己的角色与粉丝。';
+
+  @override
+  String get creator_program_social_label => '社群链接（选填）';
+
+  @override
+  String get creator_program_social_hint => 'IG、Threads、个人网站等';
+
+  @override
+  String get creator_program_submit => '送出申请';
+
+  @override
+  String get creator_program_public_character_note =>
+      '送出前系统会确认账号目前至少有 1 个公开角色。';
+
+  @override
+  String get creator_program_status_pending => '申请审核中';
+
+  @override
+  String get creator_program_status_pending_desc =>
+      '申请已送达，审核约需 1～3 天。完成后会通过恋恋信箱通知你。';
+
+  @override
+  String get creator_program_status_approved => '创作者资格已通过 🎉';
+
+  @override
+  String get creator_program_status_approved_desc =>
+      '恭喜加入《恋恋拾光》创作者计划！创作者后台、粉丝管理与推荐横幅会在接下来的功能中与这个资格连动。';
+
+  @override
+  String get creator_program_status_suspended => '创作者资格暂停';
+
+  @override
+  String get creator_program_status_suspended_desc =>
+      '目前暂时无法使用创作者专属功能。请查看恋恋信箱中的官方通知。';
+
+  @override
+  String get creator_program_status_revoked => '创作者资格已取消';
+
+  @override
+  String get creator_program_status_revoked_desc =>
+      '目前无法使用创作者专属功能。若有疑问，可通过客服联系官方。';
+
+  @override
+  String get creator_program_status_title => '创作者资格状态';
+
+  @override
+  String creator_program_current_status(String status) {
+    return '目前状态：$status';
+  }
+
+  @override
+  String creator_program_official_note(String reason) {
+    return '官方说明：$reason';
+  }
+
+  @override
+  String get creator_dashboard_error1 => '错误';
+
+  @override
+  String get creator_dashboard_access_title1 => '创作者后台';
+
+  @override
+  String get creator_dashboard_status_notice_title1 => '创作者后台资格通知';
+
+  @override
+  String get creator_dashboard_apply_title1 => '申请创作者后台';
+
+  @override
+  String get creator_dashboard_access_subtitle1 => '角色游玩数据・粉丝新增与移除・粉丝管理';
+
+  @override
+  String get creator_dashboard_pending1 => '申请已送出・官方审核中';
+
+  @override
+  String get creator_dashboard_legacy_pending1 => '申请资料待官方确认';
+
+  @override
+  String get creator_dashboard_syncing1 => '后台权限同步中，请稍后再試';
+
+  @override
+  String get creator_dashboard_suspended1 => '后台使用权限已暂停，请联繫官方';
+
+  @override
+  String get creator_dashboard_apply_subtitle1 => '申请开通角色数据与粉丝管理工具';
+
+  @override
+  String get creator_dashboard_rejected1 => '申请未通过・可重新申请';
+
+  @override
+  String get creator_dashboard_submitted1 => '申请已送出，请等待官方审核';
+
+  @override
+  String get creator_dashboard_benefits_title1 => '创作者后台提供的功能';
+
+  @override
+  String get creator_dashboard_benefit_monthly1 =>
+      '🌸 每月创作奖励：當月新建並公开 3 位不同角色，可手动領取 300 朵花花（每月限一次）。';
+
+  @override
+  String get creator_dashboard_benefit_analytics1 =>
+      '• 查看公开角色游玩数据、粉丝總数及粉丝新增／移除紀录';
+
+  @override
+  String get creator_dashboard_benefit_mail1 => '• 粉丝信件：单人私信与全体公告（依每日額度）';
+
+  @override
+  String get creator_dashboard_benefit_gifts1 => '• 粉丝福利：使用自己的花花贈送追蹤者';
+
+  @override
+  String get creator_dashboard_reward_note1 =>
+      '須经官方审核通过；私人角色、草稿、舊角色重新公开皆不列入每月奖励。';
+
+  @override
+  String get creator_dashboard_apply_cta1 => '點此了解並申请后台权限';
+
+  @override
+  String get creator_dashboard_my_characters1 => '我的角色';
+
+  @override
+  String get creator_dashboard_my_worlds1 => '我的开放世界';
+
+  @override
+  String get creator_dashboard_create_world1 => '创建开放世界';
+
+  @override
+  String get creator_dashboard_public_worlds1 => '已公开世界';
+
+  @override
+  String get creator_dashboard_public_worlds_hint1 => '其他玩家可以探索';
+
+  @override
+  String get creator_dashboard_private_worlds1 => '私人世界';
+
+  @override
+  String get creator_dashboard_private_worlds_hint1 => '只有自己可以查看与編輯';
+
+  @override
+  String get creator_dashboard_world_drafts1 => '世界观草稿';
+
+  @override
+  String get creator_dashboard_world_drafts_hint1 => '尚未建立完成的世界';
+
+  @override
+  String get creator_dashboard_no_drafts1 => '目前沒有草稿';
+
+  @override
+  String get creator_dashboard_no_worlds1 => '目前沒有世界观';
+
+  @override
+  String get creator_dashboard_unnamed_world1 => '未命名世界观';
+
+  @override
+  String get creator_dashboard_delete_world_draft1 => '删除世界观草稿';
+
+  @override
+  String get creator_dashboard_private_test1 => '私人试玩';
+
+  @override
+  String get creator_dashboard_delete_world_confirm_title1 => '删除世界观草稿？';
+
+  @override
+  String get creator_dashboard_delete_world_confirm_body1 =>
+      '删除后无法恢复。已上傳的图片不会一併删除。';
+
+  @override
+  String get creator_dashboard_draft_deleted1 => '世界观草稿已删除';
+
+  @override
+  String get creator_dashboard_validation1 => '创作方向須为 2～100 字，申请原因須为 10～500 字';
+
+  @override
+  String get creator_dashboard_confirm_application_title1 => '确认申请创作者后台';
+
+  @override
+  String get creator_dashboard_confirm_application_body1 =>
+      '申请送出后将由官方审核；通过后即可使用创作者后台。申请后台不代表簽訂合作契約。';
+
+  @override
+  String get creator_dashboard_confirm_send1 => '确认提交';
+
+  @override
+  String get creator_dashboard_form_heading1 => '申请开通戀戀拾光创作者后台';
+
+  @override
+  String get creator_dashboard_form_description1 =>
+      '请简单介紹你的创作方向，以及希望如何使用角色数据与粉丝管理功能。审核通过后即可使用创作者后台；此申请不是合作簽約。';
+
+  @override
+  String get creator_dashboard_direction_label1 => '创作方向';
+
+  @override
+  String get creator_dashboard_direction_hint1 => '例如：现代恋爱、古风、奇幻、BL、GL…';
+
+  @override
+  String get creator_dashboard_reason_label1 => '申请后台的原因';
+
+  @override
+  String get creator_dashboard_reason_hint1 => '请介紹创作经驗，以及希望使用哪些后台功能';
+
+  @override
+  String get creator_dashboard_sending1 => '提交中…';
+
+  @override
+  String get creator_dashboard_submit1 => '提交后台申请';
+
+  @override
+  String get creator_dashboard_privacy_note1 =>
+      '提醒：申请不保证通过，请勿在欄位内填写身分证字号、银行账号或其他敏感个资。';
+
+  @override
+  String get creator_dashboard_revoked_limit1 => '后台申请资格已達上限。如有疑問，请联繫官方。';
+
+  @override
+  String get creator_dashboard_revoked_notice1 =>
+      '创作者后台使用资格已取消。若需重新申请，请依頁面目前的开放状态操作。';
+
+  @override
+  String get creator_support_page_title1 => '问题反馈中心';
+
+  @override
+  String get creator_support_new_report1 => '新增问题反馈';
+
+  @override
+  String get creator_support_error1 => '错误';
+
+  @override
+  String get creator_support_no_cases1 => '目前没有反馈记录';
+
+  @override
+  String get creator_support_unread1 => '未读';
+
+  @override
+  String get creator_support_load_more1 => '加载更多';
+
+  @override
+  String get creator_support_category_label1 => '问题分类';
+
+  @override
+  String get creator_support_character_optional1 => '相关角色（选填）';
+
+  @override
+  String get creator_support_no_character1 => '未指定角色';
+
+  @override
+  String get creator_support_report_title1 => '问题标题';
+
+  @override
+  String get creator_support_report_description1 => '问题描述';
+
+  @override
+  String creator_support_select_images1(int count) {
+    return '选择截图（$count/3，单张小于 2MB）';
+  }
+
+  @override
+  String get creator_support_images_private1 => '截图仅限案件创作者及官方查看。';
+
+  @override
+  String get creator_support_submitting1 => '提交中…';
+
+  @override
+  String get creator_support_submit1 => '确认提交';
+
+  @override
+  String get creator_support_image_too_large1 => '图片超过 2MB，请更换。';
+
+  @override
+  String get creator_support_fill_title_description1 => '请填写标题和内容';
+
+  @override
+  String get creator_support_case_sent1 => '案件已提交';
+
+  @override
+  String creator_support_case_sent_partial1(int count) {
+    return '案件已提交，但 $count 张截图上传失败';
+  }
+
+  @override
+  String get creator_support_detail_title1 => '案件详情';
+
+  @override
+  String get creator_support_image_max1 => '单张截图不得超过 2MB';
+
+  @override
+  String get creator_support_jpg_png_only1 => '仅支持 JPG / PNG';
+
+  @override
+  String get creator_support_reply_sent1 => '回复已发送';
+
+  @override
+  String creator_support_reply_sent_partial1(int count) {
+    return '文字已发送，但 $count 张图片上传失败';
+  }
+
+  @override
+  String get creator_support_empty_content1 => '内容不能为空';
+
+  @override
+  String get creator_support_recall_message1 => '撤回消息';
+
+  @override
+  String get creator_support_delete_message1 => '删除消息';
+
+  @override
+  String get creator_support_recall_warning1 => '双方都会看到“此消息已撤回”，附件将无法查看。';
+
+  @override
+  String get creator_support_delete_warning1 => '仅从自己的界面隐藏，对方仍保留消息。';
+
+  @override
+  String get creator_support_cancel1 => '取消';
+
+  @override
+  String get creator_support_confirm1 => '确定';
+
+  @override
+  String get creator_support_operation_success1 => '操作成功';
+
+  @override
+  String get creator_support_edit_message1 => '编辑消息';
+
+  @override
+  String creator_support_recall_remaining1(int seconds) {
+    return '撤回消息（剩余 $seconds 秒）';
+  }
+
+  @override
+  String get creator_support_recall_expired1 => '撤回消息（已超过 60 秒）';
+
+  @override
+  String get creator_support_case_updated1 => '案件已更新';
+
+  @override
+  String get creator_support_loading1 => '加载中…';
+
+  @override
+  String creator_support_creator_uid1(String uid) {
+    return '创作者 UID：$uid';
+  }
+
+  @override
+  String get creator_support_internal_note1 => '官方内部备注（创作者不可见）';
+
+  @override
+  String get creator_support_save_internal_note1 => '保存内部备注';
+
+  @override
+  String get creator_support_case_images1 => '案件截图';
+
+  @override
+  String get creator_support_official1 => '恋恋拾光官方';
+
+  @override
+  String get creator_support_creator1 => '创作者';
+
+  @override
+  String get creator_support_recalled1 => '此消息已撤回';
+
+  @override
+  String get creator_support_edited1 => '已编辑';
+
+  @override
+  String get creator_support_reply_hint1 => '输入回复……';
+
+  @override
+  String get creator_support_attach_image1 => '添加截图（最多 3 张）';
+
+  @override
+  String get creator_support_send1 => '发送';
+
+  @override
+  String get creator_support_admin_title1 => '创作者案件管理';
+
+  @override
+  String get creator_support_new_reply1 => '新回复';
+
+  @override
+  String get creator_support_load_more_cases1 => '加载更多案件';
+
+  @override
+  String get creator_support_image_load_error1 => '截图加载失败';
+
+  @override
+  String get creator_support_edit_hint1 => '修改消息内容';
+
+  @override
+  String get creator_support_save1 => '保存';
+
+  @override
+  String get creator_support_status_pending1 => '待处理';
+
+  @override
+  String get creator_support_status_progress1 => '处理中';
+
+  @override
+  String get creator_support_status_waiting1 => '等待补充';
+
+  @override
+  String get creator_support_status_resolved1 => '已结案';
+
+  @override
+  String get creator_support_cat_character1 => '角色管理问题';
+
+  @override
+  String get creator_support_cat_ai1 => 'AI 角色互动异常';
+
+  @override
+  String get creator_support_cat_dashboard1 => '创作者后台问题';
+
+  @override
+  String get creator_support_cat_cooperation1 => '合作与权益问题';
+
+  @override
+  String get creator_support_cat_other1 => '其他问题';
+
+  @override
+  String get desktop_widget_size_small1 => '小';
+
+  @override
+  String get desktop_widget_size_medium1 => '中';
+
+  @override
+  String get desktop_widget_size_large1 => '大';
+
+  @override
+  String get desktop_widget_cancel1 => '取消';
+
+  @override
+  String get desktop_widget_delete1 => '删除';
+
+  @override
+  String desktop_widget_days_remaining1(int days) {
+    return '还有 $days 天';
+  }
+
+  @override
+  String get desktop_widget_days_today1 => '就是今天';
+
+  @override
+  String desktop_widget_days_elapsed1(int days) {
+    return '已过 $days 天';
+  }
+
+  @override
+  String get desktop_widget_daily_quote1 => '今日一句';
+
+  @override
+  String get desktop_widget_update_daily1 => '每天更新一次';
+
+  @override
+  String get desktop_widget_character_birthday1 => '角色生日';
+
+  @override
+  String get desktop_widget_change1 => '更换';
+
+  @override
+  String get desktop_widget_mood1 => '心情';
+
+  @override
+  String get desktop_widget_current_state1 => '当前状态';
+
+  @override
+  String get desktop_widget_location1 => '地点';
+
+  @override
+  String get desktop_widget_relationship1 => '关系';
+
+  @override
+  String get desktop_widget_outfit1 => '衣着';
+
+  @override
+  String get desktop_widget_weather1 => '天气';
+
+  @override
+  String get desktop_widget_thought1 => '想法';
+
+  @override
+  String get desktop_widget_action1 => '动作';
+
+  @override
+  String get desktop_widget_affinity1 => '好感度';
+
+  @override
+  String get desktop_widget_character_status1 => '角色状态';
+
+  @override
+  String get desktop_widget_no_posts1 => '目前还没有角色动态';
+
+  @override
+  String get desktop_widget_crop_position1 => '调整角色位置';
+
+  @override
+  String get desktop_widget_crop_action1 => '放大／拖动调整取景';
+
+  @override
+  String get desktop_widget_crop_hint1 => '进入调整画面后可双指缩放、单指拖动，不会再带着整个页面一起上下移动。';
+
+  @override
+  String get desktop_widget_crop_title1 => '调整角色取景';
+
+  @override
+  String get desktop_widget_reset1 => '重置';
+
+  @override
+  String get desktop_widget_crop_instructions1 =>
+      '单指拖动调整上下左右位置；双指缩放调整大小。框内看到的，就是桌面小工具会显示的范围。';
+
+  @override
+  String desktop_widget_crop_position_scale1(int x, int y, String scale) {
+    return '位置：$x% / $y%　缩放：$scale×';
+  }
+
+  @override
+  String get desktop_widget_apply1 => '应用';
+
+  @override
+  String get desktop_widget_just_posted1 => '刚刚更新了动态';
+
+  @override
+  String get desktop_widget_important_day1 => '重要的日子';
+
+  @override
+  String get desktop_widget_no_date1 => '尚未选择日期';
+
+  @override
+  String get desktop_widget_first_met1 => '和他相遇';
+
+  @override
+  String get desktop_widget_error1 => '错误';
+
+  @override
+  String get event_memory_select_character_title1 => '选择角色';
+
+  @override
+  String get event_memory_my_characters1 => '我的角色';
+
+  @override
+  String get event_memory_friend_characters1 => '好友角色';
+
+  @override
+  String get event_memory_friend_badge1 => '好友';
+
+  @override
+  String get event_memory_unnamed_character1 => '未命名角色';
+
+  @override
+  String get event_memory_generic_error1 => '错误';
+
+  @override
+  String get memory_collection_title1 => '拾光收藏';
+
+  @override
+  String get memory_collection_avatar_frames1 => '头像框';
+
+  @override
+  String get memory_collection_stickers1 => '贴纸';
+
+  @override
+  String get memory_collection_memories1 => '回忆';
+
+  @override
+  String get memory_collection_try_again1 => '请稍后再试一次。';
+
+  @override
+  String get memory_collection_error1 => '错误';
+
+  @override
+  String get memory_collection_chat_background1 => '聊天背景';
+
+  @override
+  String get memory_collection_got_it1 => '知道了';
+
+  @override
+  String get memory_collection_not_now1 => '先不要';
+
+  @override
+  String get memory_collection_confirm_delete1 => '确认删除';
+
+  @override
+  String get memory_collection_close1 => '关闭';
+
+  @override
+  String get memory_collection_delete1 => '删除';
+
+  @override
+  String get memory_collection_image_preparing1 => '图片准备中';
+
+  @override
+  String get memory_collection_remove_favorite1 => '取消收藏';
+
+  @override
+  String get memory_collection_removed1 => '已取消收藏';
+
+  @override
+  String get event_memory_performance_opening1 => '有些瞬间，\n并不会因为故事结束而消失。';
+
+  @override
+  String get event_memory_performance_generic_error1 => '错误';
+
+  @override
+  String get event_memory_performance_collected1 => '已收藏';
+
+  @override
+  String get event_memory_performance_saving1 => '正在保存…';
+
+  @override
+  String get event_memory_performance_save_gallery1 => '保存到手机相册';
+
+  @override
+  String get event_memory_performance_done1 => '完成';
+
+  @override
+  String get event_memory_performance_uncollect_title1 => '取消收藏？';
+
+  @override
+  String get event_memory_performance_not_now1 => '先不要';
+
+  @override
+  String get event_memory_performance_uncollect1 => '取消收藏';
+
+  @override
+  String get event_memory_performance_uncollected1 => '已取消收藏';
+
+  @override
+  String get event_memory_performance_login_to_collect1 => '请先登录后再收藏这段回忆';
+
+  @override
+  String get event_memory_performance_web_gallery_unsupported1 =>
+      '网页版目前不支持直接保存到手机相册';
+
+  @override
+  String get event_memory_performance_gallery_permission1 => '需要相册权限才能保存这段回忆';
+
+  @override
+  String get event_memory_performance_image_not_ready1 => '回忆图片尚未准备好，请重试';
+
+  @override
+  String get event_memory_performance_gallery_saved1 => '已保存到手机相册';
+
+  @override
+  String get event_memory_performance_skip1 => '跳过';
+
+  @override
+  String get event_memory_performance_memory_label1 => '回忆';
+
+  @override
+  String get event_memory_performance_tap_continue1 => '点击继续';
+
+  @override
+  String get event_memory_performance_tap_show_full1 => '点击显示全文';
+
+  @override
+  String get event_memory_performance_brand_limited_memory1 => '恋恋拾光・限定回忆';
+
+  @override
+  String get event_ended1 => '活动已结束';
+
+  @override
+  String get event_default_name1 => '限时活动';
+
+  @override
+  String get event_default_subtitle1 => '与他一起留下这个季节的特别回忆。';
+
+  @override
+  String get event_currency_default1 => '活动货币';
+
+  @override
+  String get event_tasks_today1 => '今日任务';
+
+  @override
+  String event_tasks_subtitle1(String currency) {
+    return '完成任务，收集$currency，解锁更多限定内容。';
+  }
+
+  @override
+  String get event_milestones_title1 => '累计进度';
+
+  @override
+  String event_milestones_subtitle1(String currency) {
+    return '累计$currency，领取活动限定奖励。';
+  }
+
+  @override
+  String get event_memory_title1 => '限定回忆';
+
+  @override
+  String get event_memory_subtitle1 => '留下这次活动的专属回忆。';
+
+  @override
+  String get event_shop_title1 => '活动商店';
+
+  @override
+  String event_shop_subtitle1(String currency) {
+    return '使用$currency兑换限定奖励。';
+  }
+
+  @override
+  String get event_info_title1 => '活动说明';
+
+  @override
+  String get event_info_default1 =>
+      '活动期间完成指定任务即可获得活动货币。\n兑换的奖励将按照活动规则发放至账号。\n活动结束后，未使用的活动货币将按活动规则处理。';
+
+  @override
+  String get event_generic_error1 => '错误';
+
+  @override
+  String get event_task_default1 => '活动任务';
+
+  @override
+  String get event_claimed1 => '已领取';
+
+  @override
+  String get event_claim1 => '领取';
+
+  @override
+  String get event_in_progress1 => '进行中';
+
+  @override
+  String get event_reward_default1 => '限定奖励';
+
+  @override
+  String get event_product_default1 => '活动商品';
+
+  @override
+  String get event_cancel1 => '取消';
+
+  @override
+  String get event_confirm_exchange1 => '确认兑换';
+
+  @override
+  String get event_limited_product1 => '限定商品';
+
+  @override
+  String event_insufficient_currency1(String currency) {
+    return '$currency不足';
+  }
+
+  @override
+  String get event_close1 => '关闭';
+
+  @override
+  String event_redeemed_count_limit1(int count, int max) {
+    return '已兑换 $count / $max 次';
+  }
+
+  @override
+  String event_redeemed_count1(int count) {
+    return '已兑换 $count 次';
+  }
+
+  @override
+  String get event_redeemed1 => '已兑换';
+
+  @override
+  String get event_exchange1 => '兑换';
+
+  @override
+  String get login_account_deletion_started1 => '账号已进入删除程序';
+
+  @override
+  String get login_account_deletion_expired_description1 =>
+      '此账号已超过三天取消期限，无法再恢复使用。如需协助，请联系客服。';
+
+  @override
+  String get login_account_deletion_confirm1 => '确定';
+
+  @override
+  String get event_memory_limited_title1 => '限定回忆';
+
+  @override
+  String get moment_detail_add_photo1 => '添加照片';
+
+  @override
+  String get moment_detail_error1 => '错误';
+
+  @override
+  String get notification_claim_before_delete1 => '请先领取花花，再删除礼物信件';
+
+  @override
+  String get notification_error1 => '错误';
+
+  @override
+  String get notification_creator_gift_already_claimed1 => '这份花花已经领取过';
+
+  @override
+  String notification_creator_gift_claim_success1(Object amount) {
+    return '成功领取 $amount 朵花花！';
+  }
+
+  @override
+  String get notification_creator_gift_title1 => '创作者赠礼';
+
+  @override
+  String notification_creator_gift_amount1(Object amount) {
+    return '$amount 朵花花';
+  }
+
+  @override
+  String get notification_creator_gift_claimed1 => '已领取';
+
+  @override
+  String get notification_creator_gift_claiming1 => '领取中…';
+
+  @override
+  String get notification_creator_gift_claim_button1 => '领取花花';
+
+  @override
+  String get notification_support_subject1 => '玩家提交的标题';
+
+  @override
+  String get notification_support_content1 => '玩家提交的内容';
+
+  @override
+  String get notification_support_reported1 => '被举报的内容';
+
+  @override
+  String get notification_support_reply1 => '客服回复';
+
+  @override
+  String get notification_share_mail1 => '分享信件';
+
+  @override
+  String get notification_original_question1 => '你之前询问';
+
+  @override
+  String get notification_preferences_chat_title1 => '角色聊天';
+
+  @override
+  String get notification_preferences_chat_subtitle1 => '角色回复消息的推送通知';
+
+  @override
+  String get notification_preferences_moments_title1 => '新动态';
+
+  @override
+  String get notification_preferences_moments_subtitle1 => '关注的创作者及角色发布新帖子';
+
+  @override
+  String get notification_preferences_social_title1 => '社交通知';
+
+  @override
+  String get notification_preferences_social_subtitle1 => '点赞、评论、关注与角色互动';
+
+  @override
+  String get notification_preferences_announcements_title1 => '官方公告';
+
+  @override
+  String get notification_preferences_announcements_subtitle1 => '一般官方公告推送';
+
+  @override
+  String get notification_preferences_events_title1 => '活动提醒';
+
+  @override
+  String get notification_preferences_events_subtitle1 => '活动即将结束的推送通知';
+
+  @override
+  String get notification_preferences_save_failed1 => '通知设置保存失败，请稍后重试';
+
+  @override
+  String get notification_preferences_page_title1 => '通知偏好';
+
+  @override
+  String get notification_preferences_login_required1 => '请先登录账号';
+
+  @override
+  String get notification_preferences_load_failed1 => '无法读取通知偏好，请稍后再试';
+
+  @override
+  String get notification_preferences_footer1 =>
+      '此处的设置会同步至同一玩家账号的所有设备。手机系统通知权限须在每台设备上分别设置。关闭推送不会删除游戏内邮箱或已收到的通知。';
+
+  @override
+  String get official_studio_text_0011 => '导览已结束，但同步观看纪录失败，之后可能再次显示';
+
+  @override
+  String get official_studio_text_0021 => '请先登入帐号';
+
+  @override
+  String get official_studio_text_0031 => '合作创作者专区';
+
+  @override
+  String get official_studio_text_0041 => '说明';
+
+  @override
+  String get official_studio_text_0051 => '无法验证合作创作者资格，请稍后再试';
+
+  @override
+  String get official_studio_text_0061 => '目前没有官方合作创作者权限。\n如已审核通过，请联系官方确认开通状态。';
+
+  @override
+  String get official_studio_text_0071 => '已认证合作创作者';
+
+  @override
+  String get official_studio_text_0081 => '欢迎回到恋恋拾光创作者专区。专属功能将陆续开放。';
+
+  @override
+  String get official_studio_text_0091 => '专属工具';
+
+  @override
+  String get official_studio_text_0101 => '粉丝管理';
+
+  @override
+  String get official_studio_text_0111 => '查看追踪者、移除粉丝';
+
+  @override
+  String get official_studio_text_0121 => '创作数据';
+
+  @override
+  String get official_studio_text_0131 => '角色人气与累计游玩次数';
+
+  @override
+  String get official_studio_text_0141 => '粉丝信件';
+
+  @override
+  String get official_studio_text_0151 => '寄送讯息给追踪者';
+
+  @override
+  String get official_studio_text_0161 => '粉丝福利';
+
+  @override
+  String get official_studio_text_0171 => '赠送自己的花花给追踪者';
+
+  @override
+  String get official_studio_text_0181 => '每月创作奖励';
+
+  @override
+  String get official_studio_text_0191 => '新建并公开 3 位角色，可领取 300 花花';
+
+  @override
+  String get official_studio_text_0201 => '专属横幅';
+
+  @override
+  String get official_studio_text_0211 => '设定创作者公开页面的横幅图片';
+
+  @override
+  String get official_studio_text_0221 => '合作资讯';
+
+  @override
+  String get official_studio_text_0231 => '合作状态、权益与公告';
+
+  @override
+  String get official_studio_text_0241 => '问题回报中心';
+
+  @override
+  String get official_studio_text_0251 => '提出问题、查看官方回覆与处理进度';
+
+  @override
+  String get official_studio_text_0261 => '资格验证失败，请稍后重试';
+
+  @override
+  String get official_studio_text_0271 => '目前没有官方合作创作者权限';
+
+  @override
+  String get official_studio_text_0281 => '公开角色资料载入失败';
+
+  @override
+  String get official_studio_text_0291 => '创作总览';
+
+  @override
+  String get official_studio_text_0301 => '累计游玩次数';
+
+  @override
+  String get official_studio_text_0311 => '目前追踪者';
+
+  @override
+  String get official_studio_text_0321 => '暂无法取得';
+
+  @override
+  String get official_studio_text_0331 => '各公开角色';
+
+  @override
+  String get official_studio_text_0341 => '还没有公开角色，发布后就会显示在这里。';
+
+  @override
+  String get official_studio_text_0351 => '未命名角色';
+
+  @override
+  String get official_studio_text_0361 => '累计游玩次数（playCount）';
+
+  @override
+  String get official_studio_text_0371 =>
+      '数据以资料库现有栏位为准；累计游玩次数不等于聊天讯息数、独立玩家数或收入。';
+
+  @override
+  String get official_studio_text_0381 => '追踪者资料载入失败';
+
+  @override
+  String get official_studio_text_0391 => '目前还没有追踪者';
+
+  @override
+  String get official_studio_text_0401 => '追踪者名单';
+
+  @override
+  String get official_studio_text_0411 => '目前显示最多 100 位追踪者；仅显示公开昵称与头像。';
+
+  @override
+  String get official_studio_text_0421 => '移除粉丝';
+
+  @override
+  String get official_studio_text_0431 => '取消';
+
+  @override
+  String get official_studio_text_0441 => '确认移除';
+
+  @override
+  String get official_studio_text_0451 => '已移除粉丝';
+
+  @override
+  String get official_studio_text_0461 => '移除失败，请稍后重试';
+
+  @override
+  String get official_studio_text_0471 => '玩家';
+
+  @override
+  String get official_studio_text_0481 => '无法载入公开资料';
+
+  @override
+  String get official_studio_text_0491 => '这位玩家';
+
+  @override
+  String get official_studio_text_0501 => '裁切后图片仍过大，请使用其他图片';
+
+  @override
+  String get official_studio_text_0511 => '横幅已更新';
+
+  @override
+  String get official_studio_text_0521 => '图片处理失败，请重新选择图片';
+
+  @override
+  String get official_studio_text_0531 => '已移除横幅';
+
+  @override
+  String get official_studio_text_0541 => '移除失败';
+
+  @override
+  String get official_studio_text_0551 => '请先登入';
+
+  @override
+  String get official_studio_text_0561 => '公开页横幅';
+
+  @override
+  String get official_studio_text_0571 => '图片读取失败';
+
+  @override
+  String get official_studio_text_0581 => '尚未设定横幅';
+
+  @override
+  String get official_studio_text_0591 => '选择照片后可在白色取景框内调整位置、缩放，确认后才上传。';
+
+  @override
+  String get official_studio_text_0601 => '处理中…';
+
+  @override
+  String get official_studio_text_0611 => '选择图片并裁切';
+
+  @override
+  String get official_studio_text_0621 => '移除目前横幅';
+
+  @override
+  String get official_studio_text_0631 => '无法开启这张图片';
+
+  @override
+  String get official_studio_text_0641 => '裁切后档案过大，请更换照片';
+
+  @override
+  String get official_studio_text_0651 => '裁切失败，请再试一次';
+
+  @override
+  String get official_studio_text_0661 => '调整横幅取景';
+
+  @override
+  String get official_studio_text_0671 => '移动照片，选择横幅要显示的范围';
+
+  @override
+  String get official_studio_text_0681 => '单指拖曳位置・双指缩放・也可以用下方滑杆';
+
+  @override
+  String get official_studio_text_0691 => '白框内的画面，就是上传后的横幅（2.5：1）';
+
+  @override
+  String get official_studio_text_0701 => '缩放';
+
+  @override
+  String get official_studio_text_0711 => '重设位置';
+
+  @override
+  String get official_studio_text_0721 => '裁切中…';
+
+  @override
+  String get official_studio_text_0731 => '确认裁切并上传';
+
+  @override
+  String get official_studio_text_0741 => '合作资格';
+
+  @override
+  String get official_studio_text_0751 => '资格确认中';
+
+  @override
+  String get official_studio_text_0761 => '目前可使用的专属工具';
+
+  @override
+  String get official_studio_text_0771 => '粉丝管理、创作数据、粉丝信件、花花福利、每月创作奖励及专属横幅。';
+
+  @override
+  String get official_studio_text_0781 =>
+      '依目前系统规则，当月新建且首次公开 3 位符合资格的角色，可申请领取 300 朵花花。实际资格与核发以后端审核结果为准。';
+
+  @override
+  String get official_studio_text_0791 => '官方公告与合约';
+
+  @override
+  String get official_studio_text_0801 =>
+      '合作条款以双方实际签署的版本与官方正式通知为准；此页不取代合作契约。若有资格或权益相关疑问，请联系官方。';
+
+  @override
+  String get official_studio_text_0811 => '信件标题须在 1～100 字之间';
+
+  @override
+  String get official_studio_text_0821 => '信件内容须在 1～5000 字之间';
+
+  @override
+  String get official_studio_text_0831 => '请选择一位追踪者';
+
+  @override
+  String get official_studio_text_0841 => '确认寄送粉丝信件';
+
+  @override
+  String get official_studio_text_0851 => '确定寄送给目前的全部追踪者吗？这次将使用 1 次群发额度。';
+
+  @override
+  String get official_studio_text_0861 => '确定寄送给这位粉丝吗？这次将使用 1 次单人私信额度。';
+
+  @override
+  String get official_studio_text_0871 => '确认寄出';
+
+  @override
+  String get official_studio_text_0881 => '已建立寄送工作；信件将由系统陆续投递。';
+
+  @override
+  String get official_studio_text_0891 => '今日寄送额度';
+
+  @override
+  String get official_studio_text_0901 => '台湾时间每天 00:00 重置；群发一次可寄送给所有追踪者。';
+
+  @override
+  String get official_studio_text_0911 => '全体粉丝';
+
+  @override
+  String get official_studio_text_0921 => '单一粉丝';
+
+  @override
+  String get official_studio_text_0931 => '无法取得粉丝名单';
+
+  @override
+  String get official_studio_text_0941 => '目前没有可以寄信的粉丝';
+
+  @override
+  String get official_studio_text_0951 => '选择追踪者（前 100 位）';
+
+  @override
+  String official_studio_text_1921(int balance, int total, int missing) {
+    return '目前余额：$balance 朵\n本次需要：$total 朵\n尚缺少：$missing 朵\n\n可以前往商店补充花花。';
+  }
+
+  @override
+  String official_studio_text_1931(int followers, int amount, int total) {
+    return '即将赠送给 $followers 位粉丝，每人 $amount 朵，共扣除 $total 朵花花。\n赠送完成后无法自行撤回。';
+  }
+
+  @override
+  String official_studio_text_1941(String mode, String status, int count) {
+    return '$mode · $status · 已投递 $count 人';
+  }
+
+  @override
+  String get official_studio_text_1951 => '公开角色';
+
+  @override
+  String get official_studio_text_1961 => '读取中…';
+
+  @override
+  String get official_studio_text_1971 => '选择粉丝';
+
+  @override
+  String get official_studio_text_1981 => '本月已领取';
+
+  @override
+  String get preference_selection_title1 => '选择你喜欢的角色类型';
+
+  @override
+  String get preference_selection_description1 =>
+      '挑选 3～5 个你感兴趣的标签，让我们推荐更合你心意的角色。';
+
+  @override
+  String get preference_selection_recommendation_note1 =>
+      '这些偏好仅用于改善推荐，你之后仍可以探索其他类型的角色。';
+
+  @override
+  String get preference_selection_selected1 => '已选择';
+
+  @override
+  String get preference_selection_start1 => '开始探索';
+
+  @override
+  String preference_selection_max_error1(int count) {
+    return '最多只能选择 $count 个标签';
+  }
+
+  @override
+  String get preference_selection_save_failed1 => '保存偏好失败，请稍后再试';
+
+  @override
+  String get preference_group_personality1 => '性格气质';
+
+  @override
+  String get preference_group_relationship_age1 => '关系・年龄感';
+
+  @override
+  String get preference_group_story1 => '故事氛围';
+
+  @override
+  String get preference_tag_gentle1 => '温柔';
+
+  @override
+  String get preference_tag_cold1 => '高冷';
+
+  @override
+  String get preference_tag_scheming1 => '腹黑';
+
+  @override
+  String get preference_tag_tsundere1 => '傲娇';
+
+  @override
+  String get preference_tag_loyal1 => '忠犬';
+
+  @override
+  String get preference_tag_yandere1 => '病娇';
+
+  @override
+  String get preference_tag_mysterious1 => '神秘';
+
+  @override
+  String get preference_tag_healing1 => '治愈';
+
+  @override
+  String get preference_tag_gap_moe1 => '反差感';
+
+  @override
+  String get preference_tag_older1 => '年上';
+
+  @override
+  String get preference_tag_younger1 => '年下';
+
+  @override
+  String get preference_tag_ceo1 => '霸总';
+
+  @override
+  String get preference_tag_school1 => '校园';
+
+  @override
+  String get preference_tag_workplace1 => '职场';
+
+  @override
+  String get preference_tag_ancient1 => '古风';
+
+  @override
+  String get preference_tag_nonhuman1 => '非人';
+
+  @override
+  String get private_label1 => '私密';
+
+  @override
+  String get profile_page_world_tab1 => '开放世界';
+
+  @override
+  String get profile_page_login_required1 => '请先登录';
+
+  @override
+  String get profile_page_world_load_failed1 => '读取世界观失败，请稍后再试';
+
+  @override
+  String get profile_page_my_worlds1 => '我的开放世界';
+
+  @override
+  String get profile_page_create_world1 => '创建世界观';
+
+  @override
+  String get profile_page_worlds_empty1 => '还没有创建开放世界';
+
+  @override
+  String get profile_page_worlds_empty_hint1 => '创建你的第一个世界观吧';
+
+  @override
+  String get profile_page_world_untitled1 => '未命名世界观';
+
+  @override
+  String get profile_page_world_public1 => '公开';
+
+  @override
+  String get profile_page_world_private1 => '私人';
+
+  @override
+  String profile_page_world_character_count1(int count) {
+    return '$count 位人物';
+  }
+
+  @override
+  String get profile_page_world_enter_chat1 => '进入聊天';
+
+  @override
+  String get profile_page_world_edit1 => '编辑';
+
+  @override
+  String get profile_page_create_character1 => '创建角色';
+
+  @override
+  String get profile_page_event_frame_default1 => '活动头像框';
+
+  @override
+  String get public_worlds_explore_title1 => '探索公开世界';
+
+  @override
+  String get public_worlds_search_tooltip1 => '搜索开放世界';
+
+  @override
+  String get public_worlds_load_failed1 => '公开世界暂时无法加载';
+
+  @override
+  String get public_worlds_refresh1 => '重新加载';
+
+  @override
+  String get public_worlds_empty1 => '公开世界正在准备中，敬请期待';
+
+  @override
+  String get public_worlds_unnamed1 => '未命名世界';
+
+  @override
+  String get world_explore_subtitle1 => '走进不同的世界，探索不一样的旅程';
+
+  @override
+  String get settings_notification_preferences_title1 => '通知偏好';
+
+  @override
+  String get settings_notification_preferences_subtitle1 => '设置想收到的通知类型，跨设备同步';
+
+  @override
+  String get settings_admin_section1 => '管理';
+
+  @override
+  String get settings_admin_dashboard1 => '管理后台';
+
+  @override
+  String get settings_admin_tools_subtitle1 => '拾光内部管理工具';
+
+  @override
+  String get world_chat_back1 => '返回';
+
+  @override
+  String get world_chat_mode_tooltip1 => '回复模式（AI 与扣花尚未连接）';
+
+  @override
+  String get world_chat_menu1 => '世界观菜单';
+
+  @override
+  String get world_chat_mode_story1 => '剧情';
+
+  @override
+  String get world_chat_mode_immersive1 => '沉浸';
+
+  @override
+  String get world_chat_mode_resonance1 => '共鸣';
+
+  @override
+  String get world_chat_mode_interaction1 => '互动';
+
+  @override
+  String world_chat_mode_cost1(String mode, int cost) {
+    return '$mode · $cost 朵花花';
+  }
+
+  @override
+  String world_memo_read_failed1(String error) {
+    return '备忘录读取失败：$error';
+  }
+
+  @override
+  String get world_memo_sync_failed1 => '同步暂时失败，目前显示上次读取的备忘录。';
+
+  @override
+  String get world_memo_server_no_id1 => '服务器未返回备忘录 ID';
+
+  @override
+  String world_memo_save_failed1(String error) {
+    return '保存失败：$error';
+  }
+
+  @override
+  String get world_memo_delete_title1 => '删除备忘录？';
+
+  @override
+  String get world_memo_delete_warning1 => '删除后无法恢复。';
+
+  @override
+  String get world_memo_cancel1 => '取消';
+
+  @override
+  String get world_memo_delete1 => '删除';
+
+  @override
+  String world_memo_cancel_reminder_failed1(String error) {
+    return '备忘录已删除，但取消旧设备提醒失败：$error';
+  }
+
+  @override
+  String world_memo_delete_failed1(String error) {
+    return '删除失败：$error';
+  }
+
+  @override
+  String get world_memo_title1 => '备忘录';
+
+  @override
+  String world_memo_world_personal1(String worldName) {
+    return '$worldName｜个人备忘录';
+  }
+
+  @override
+  String get world_memo_sync_notice1 => '提醒时间会跨设备同步，并通过推送通知已登录且允许通知的设备。';
+
+  @override
+  String get world_memo_loading1 => '正在读取…';
+
+  @override
+  String get world_memo_empty1 => '暂无备忘录，点击右下角＋新增';
+
+  @override
+  String world_memo_reminder_date1(String date) {
+    return '提醒日期：$date';
+  }
+
+  @override
+  String get world_memo_reminder_future1 => '提醒时间必须晚于现在';
+
+  @override
+  String get world_memo_content_required1 => '请先输入备忘录内容';
+
+  @override
+  String get world_memo_edit_title1 => '编辑备忘录';
+
+  @override
+  String get world_memo_add_title1 => '新增备忘录';
+
+  @override
+  String get world_memo_content_label1 => '备忘录内容';
+
+  @override
+  String get world_memo_content_hint1 => '写下想记住的事情…';
+
+  @override
+  String get world_memo_reminder_settings1 => '提醒设置';
+
+  @override
+  String get world_memo_no_reminder1 => '未设置提醒';
+
+  @override
+  String get world_memo_reminder_choose1 => '选择日期和时间，使用云端跨设备提醒';
+
+  @override
+  String get world_memo_clear_reminder1 => '清除提醒日期';
+
+  @override
+  String get world_memo_save1 => '保存备忘录';
+
+  @override
+  String get world_chat_open_world1 => '开放世界';
+
+  @override
+  String get world_chat_flower_sync1 => '花花余额暂时无法同步';
+
+  @override
+  String get world_chat_web_store_unavailable1 => '网页版暂不支持购买花花';
+
+  @override
+  String get world_chat_sync_unavailable1 => '即时同步暂时不可用，仍可重新进入读取记录';
+
+  @override
+  String get world_chat_stopped1 => '已停止生成，本次不扣花花';
+
+  @override
+  String get world_chat_cannot_stop1 => '回复可能已完成，无法再停止；请确认聊天记录与花花';
+
+  @override
+  String get world_chat_stop_retry1 => '停止请求暂时失败，请再试一次';
+
+  @override
+  String get world_chat_connection_failed1 => '连接失败';
+
+  @override
+  String get world_chat_network_failed1 => '网络暂时无法连接';
+
+  @override
+  String get world_chat_no_regenerate1 => '尚无可重新生成的回复';
+
+  @override
+  String get world_chat_paid_regenerate1 => '付费重新生成';
+
+  @override
+  String get world_chat_cancel1 => '取消';
+
+  @override
+  String get world_chat_confirm1 => '确认';
+
+  @override
+  String get world_chat_no_continue1 => '尚无可接续的剧情';
+
+  @override
+  String get world_chat_no_save1 => '目前还没有可以保存的对话';
+
+  @override
+  String get world_chat_loading1 => '聊天室仍在加载中';
+
+  @override
+  String get world_chat_unnamed_character1 => '未命名角色';
+
+  @override
+  String get world_chat_bg_wait1 => '聊天室加载完成后即可更换背景';
+
+  @override
+  String get world_chat_sign_in1 => '请先登录账号';
+
+  @override
+  String get world_chat_choose_mode1 => '选择世界观模式';
+
+  @override
+  String get world_chat_mode_charge_expl1 => '每条成功回复按模式扣花花；失败不收费';
+
+  @override
+  String get world_chat_photo_selected1 => '已选取照片';
+
+  @override
+  String get world_chat_got_it1 => '知道了';
+
+  @override
+  String get world_chat_status_settings1 => '世界观状态栏设置';
+
+  @override
+  String get world_chat_save_settings1 => '保存设置';
+
+  @override
+  String get world_chat_status_saved1 => '已保存此世界的状态栏显示偏好';
+
+  @override
+  String get world_chat_not_ready1 => '世界观聊天室尚未就绪';
+
+  @override
+  String get world_chat_enter_first1 => '请先进入世界观聊天室';
+
+  @override
+  String get world_chat_photo1 => '照片';
+
+  @override
+  String get world_chat_profile1 => '拾光档案';
+
+  @override
+  String get world_chat_interaction1 => '互动玩法';
+
+  @override
+  String get world_chat_theater1 => '剧场';
+
+  @override
+  String get world_chat_status1 => '状态栏';
+
+  @override
+  String get world_chat_secret1 => '秘密篇章';
+
+  @override
+  String get world_chat_mood1 => '心情';
+
+  @override
+  String get world_chat_outfit1 => '服装';
+
+  @override
+  String get world_chat_relationship1 => '关系';
+
+  @override
+  String get world_chat_thought1 => '想法';
+
+  @override
+  String get world_chat_weather1 => '天气';
+
+  @override
+  String get world_chat_current_state1 => '目前状态';
+
+  @override
+  String get world_chat_action1 => '动作';
+
+  @override
+  String get world_chat_affinity1 => '好感度';
+
+  @override
+  String get world_chat_generating1 => '世界正在悄悄运转…';
+
+  @override
+  String get world_chat_screenshot1 => '截图分享';
+
+  @override
+  String get world_chat_copy1 => '复制内容';
+
+  @override
+  String get world_chat_copied1 => '已复制';
+
+  @override
+  String get world_chat_edit1 => '编辑';
+
+  @override
+  String get world_chat_delete1 => '删除';
+
+  @override
+  String get world_chat_report1 => '举报此对话';
+
+  @override
+  String get world_chat_feedback1 => '提建议';
+
+  @override
+  String get world_chat_edit_segment1 => '编辑角色段落';
+
+  @override
+  String get world_chat_save1 => '保存';
+
+  @override
+  String get world_chat_updated1 => '消息已更新';
+
+  @override
+  String get world_chat_delete_segment1 => '删除单个段落';
+
+  @override
+  String get world_chat_deleted_segment1 => '已删除这一段';
+
+  @override
+  String get world_chat_edit_message1 => '编辑消息';
+
+  @override
+  String get world_chat_edit_hint1 => '修改你的文字';
+
+  @override
+  String get world_chat_delete_conversation1 => '删除对话';
+
+  @override
+  String get world_chat_no_chat1 => '尚无对话';
+
+  @override
+  String get world_chat_cancel_select1 => '取消选择';
+
+  @override
+  String get world_chat_input_hint1 => '书写你们的故事…';
+
+  @override
+  String get world_chat_screenshot_done1 => '专属时光已生成';
+
+  @override
+  String get world_chat_screenshot_style1 => '切换截图配色';
+
+  @override
+  String get world_chat_reselect1 => '重新选择';
+
+  @override
+  String get world_chat_download_share1 => '下载并分享';
+
+  @override
+  String world_records_relationship_stage1(int stage) {
+    return '关系阶段 $stage';
+  }
+
+  @override
+  String get world_records_local_memo_read_failed1 => '本地备忘录读取失败';
+
+  @override
+  String get world_records_memo_saved_local1 => '备忘录已保存在此设备';
+
+  @override
+  String get world_records_memo_save_failed1 => '备忘录保存失败';
+
+  @override
+  String get world_records_memo_unsaved1 => '备忘录尚未保存';
+
+  @override
+  String get world_records_memo_save_before_exit1 => '要先保存再离开吗？';
+
+  @override
+  String get world_records_continue_editing1 => '继续编辑';
+
+  @override
+  String get world_records_save_and_exit1 => '保存并离开';
+
+  @override
+  String get world_records_world_memo_title1 => '给世界的备忘录';
+
+  @override
+  String get world_records_save1 => '保存';
+
+  @override
+  String get world_records_memo_local_disclaimer1 =>
+      '私人备忘录｜此版本仅保存在当前设备，不会发送给 AI，也不会跨设备同步。';
+
+  @override
+  String get world_records_memo_hint1 => '记下世界里发现的线索、想完成的事，或想对角色说的话…';
+
+  @override
+  String get world_records_narrator_short1 => '旁白';
+
+  @override
+  String get world_records_summary_service_missing1 =>
+      '剧情摘要服务尚未部署（worldStoryMemory）。请部署后重新进入。';
+
+  @override
+  String get world_records_summary_load_failed1 => '暂时无法读取剧情摘要，请稍后重试。';
+
+  @override
+  String get world_records_summary_intro1 =>
+      '每段相遇与抉择，都将成为故事的一部分。重要经历与人物关系会在此留下记录，陪伴故事继续向前。';
+
+  @override
+  String get world_records_summary_empty1 => '故事仍在继续，精彩篇章即将收录于此。';
+
+  @override
+  String get world_search_title1 => '搜索对话';
+
+  @override
+  String get world_search_hint1 => '搜索人物、对白或世界旁白';
+
+  @override
+  String get world_search_clear1 => '清除搜索';
+
+  @override
+  String get world_search_start1 => '输入关键词开始搜索';
+
+  @override
+  String world_search_results1(int count) {
+    return '找到 $count 条结果';
+  }
+
+  @override
+  String get world_search_empty_prompt1 => '搜索玩家、人物及世界旁白';
+
+  @override
+  String get world_search_no_results1 => '没有符合的对话';
+
+  @override
+  String get world_search_unknown_speaker1 => '未知人物';
+
+  @override
+  String get world_search_collapse1 => '收起';
+
+  @override
+  String get world_search_expand1 => '展开';
+
+  @override
+  String get world_search_scope1 => '当前搜索范围：聊天室已加载的最近 200 条消息';
+
+  @override
+  String get world_menu_subtitle1 => '开放世界 · 功能逐步开放';
+
+  @override
+  String get world_menu_chat_section1 => '聊天';
+
+  @override
+  String get world_menu_search1 => '搜索对话';
+
+  @override
+  String get world_menu_save_transcript1 => '保存对话记录';
+
+  @override
+  String get world_menu_memories_background1 => '专属回忆与背景';
+
+  @override
+  String get world_menu_relations_section1 => '世界关系';
+
+  @override
+  String get world_menu_story_summary1 => '剧情摘要';
+
+  @override
+  String get world_menu_relationships1 => '人物关系';
+
+  @override
+  String get world_menu_memos1 => '备忘录';
+
+  @override
+  String get world_menu_memory_section1 => '记忆管理';
+
+  @override
+  String get world_menu_reset_progress1 => '重置世界进度';
+
+  @override
+  String get world_chat_book_confirm1 => '确定';
+
+  @override
+  String get world_custom_scene_title_required1 => '请先填写剧场标题。';
+
+  @override
+  String get world_custom_scene_description_required1 => '请先填写场景说明。';
+
+  @override
+  String get world_custom_scene_save_failed1 => '保存失败，请稍后重试。';
+
+  @override
+  String get world_custom_scene_edit_title1 => '编辑剧场';
+
+  @override
+  String get world_custom_scene_add_title1 => '新增剧场';
+
+  @override
+  String get world_discovery_share_desc1 => '走进创作者的开放世界，展开属于你的故事。';
+
+  @override
+  String world_discovery_share_text1(
+      String title, String description, String link) {
+    return '恋恋拾光・开放世界邀请\n\n「$title」\n\n$description\n\n立即探索：$link';
+  }
+
+  @override
+  String get world_discovery_brand1 => '恋恋拾光';
+
+  @override
+  String get world_discovery_invite1 => '开放世界邀请';
+
+  @override
+  String get world_discovery_scan1 => '扫码下载';
+
+  @override
+  String get world_discovery_cancel1 => '取消';
+
+  @override
+  String get world_discovery_share_button1 => '分享邀请卡';
+
+  @override
+  String get world_discovery_share_missing_card1 => '找不到开放世界邀请卡';
+
+  @override
+  String get world_discovery_share_image_failed1 => '无法生成分享图片';
+
+  @override
+  String get world_discovery_share_failed1 => '分享邀请卡失败，请再试一次';
+
+  @override
+  String get world_discovery_story_open1 => '故事开场';
+
+  @override
+  String get world_discovery_story_unset1 => '尚未设置故事开场';
+
+  @override
+  String get world_discovery_first_unset1 => '尚未设置第一句话';
+
+  @override
+  String get world_discovery_background_title1 => '世界观背景与说明';
+
+  @override
+  String world_discovery_era1(String era) {
+    return '时空背景：$era';
+  }
+
+  @override
+  String get world_discovery_background_unset1 => '尚未设置世界观背景';
+
+  @override
+  String get world_discovery_background_full1 => '完整世界背景';
+
+  @override
+  String get world_discovery_people_unset1 => '尚未设置人物';
+
+  @override
+  String get world_discovery_people_intro1 => '人物介绍';
+
+  @override
+  String get world_discovery_appearance_unset1 => '未提供外貌特征';
+
+  @override
+  String get world_discovery_creator_unset1 => '暂无创作者资料';
+
+  @override
+  String get world_discovery_creator1 => '创作者';
+
+  @override
+  String get world_discovery_creator_load_failed1 => '暂时无法读取创作者资料';
+
+  @override
+  String world_discovery_world_load_failed1(String error) {
+    return '开放世界读取失败：$error';
+  }
+
+  @override
+  String get world_discovery_unpublished1 => '此世界观未公开';
+
+  @override
+  String get world_discovery_open_world1 => '开放世界';
+
+  @override
+  String get world_discovery_share_tooltip1 => '分享开放世界';
+
+  @override
+  String get world_discovery_world_background1 => '世界背景';
+
+  @override
+  String get world_discovery_not_playable1 => '这个开放世界尚未开放游玩。';
+
+  @override
+  String get world_discovery_enter1 => '进入世界';
+
+  @override
+  String get world_edit_login_required1 => '请先登入';
+
+  @override
+  String get world_edit_no_edit_permission1 => '无权编辑此世界观';
+
+  @override
+  String get world_edit_secret_permission_error1 =>
+      '秘密篇章读取权限不足，请确认 Firestore Rules 已部署。已暂停储存以保护原资料。';
+
+  @override
+  String world_edit_secret_read_error_code1(String code) {
+    return '秘密篇章读取失败（$code），已暂停储存以保护原资料。';
+  }
+
+  @override
+  String get world_edit_secret_read_error1 => '秘密篇章读取失败，已暂停储存以保护原资料。';
+
+  @override
+  String world_edit_world_read_error1(String error) {
+    return '读取世界观失败：$error';
+  }
+
+  @override
+  String world_edit_image_max1(int count) {
+    return '世界观最多只能放 $count 张图片';
+  }
+
+  @override
+  String world_edit_image_read_error1(String error) {
+    return '读取图片失败：$error';
+  }
+
+  @override
+  String get world_edit_tag_heading1 => '主题标签（最多 5 个）';
+
+  @override
+  String get world_edit_tag_max1 => '最多选择 5 个标签';
+
+  @override
+  String get world_edit_tag_custom1 => '标签（可自订，以顿号分隔）';
+
+  @override
+  String get world_edit_secret_not_ready1 =>
+      '秘密篇章尚未成功读取，为保护既有内容暂时无法发布。请确认权限并重新开启页面。';
+
+  @override
+  String get world_edit_required_publish1 => '请完成世界名称、至少一张图片、世界背景、故事开场与第一句话';
+
+  @override
+  String get world_edit_max_tags_save1 => '主题标签最多 5 个，请删减后再储存';
+
+  @override
+  String get world_edit_secret_validation1 => '每章请填写标题、解锁条件与秘密内容，最多 12 章';
+
+  @override
+  String get world_edit_draft_saved1 => '开放世界草稿与秘密篇章已储存';
+
+  @override
+  String get world_edit_publish_unconfirmed1 => '后端尚未确认公开资格，请稍后再次发布。';
+
+  @override
+  String world_edit_publish_backend_error1(String code, String message) {
+    return '开放世界资料已储存，但公开启用失败（$code）：$message。修正后可再次按「发布开放世界」。';
+  }
+
+  @override
+  String get world_edit_publish_service_missing1 => '请确认 worldPublish 已部署';
+
+  @override
+  String get world_edit_public_published1 => '公开开放世界已发布';
+
+  @override
+  String get world_edit_private_saved1 => '私人开放世界已储存';
+
+  @override
+  String world_edit_save_publish_failed1(String error) {
+    return '储存／发布失败：$error';
+  }
+
+  @override
+  String get world_edit_save_draft_question1 => '是否储存草稿？';
+
+  @override
+  String get world_edit_save_draft_explain1 => '离开前要储存目前的世界观吗？未储存的内容将会遗失。';
+
+  @override
+  String get world_edit_discard1 => '不储存';
+
+  @override
+  String get world_edit_cancel1 => '取消';
+
+  @override
+  String get world_edit_save_draft1 => '储存草稿';
+
+  @override
+  String get world_edit_world_name1 => '开放世界名称 *';
+
+  @override
+  String get world_edit_world_images1 => '世界观图片（最多 6 张，第一张为主要封面）';
+
+  @override
+  String get world_edit_cover1 => '封面';
+
+  @override
+  String get world_edit_set_cover1 => '设为封面';
+
+  @override
+  String get world_edit_short_pitch1 => '卡片一句话介绍（选填，最多 60 字）';
+
+  @override
+  String get world_edit_public_summary1 => '世界观公开简介（不含剧透）';
+
+  @override
+  String get world_edit_era1 => '时空背景（例：架空现代、民国时期）';
+
+  @override
+  String get world_edit_world_rules1 => '世界观背景与规则 *';
+
+  @override
+  String get world_edit_full_lore1 => '完整世界背景／事件与地点（给 AI 的设定）';
+
+  @override
+  String get world_edit_npc_intro1 =>
+      '主要角色与 NPC 都能设定姓名、外貌、生日、人物关系与照片。玩家仍是自己故事的主角。';
+
+  @override
+  String get world_edit_main_characters1 => '主要角色';
+
+  @override
+  String get world_edit_main_subtitle1 => '在世界观中较常登场的重要人物';
+
+  @override
+  String get world_edit_npc_subtitle1 => '其他登场人物，也能随剧情成为互动焦点';
+
+  @override
+  String world_edit_people_count1(int count) {
+    return '$count 位';
+  }
+
+  @override
+  String get world_edit_role_unset1 => '尚未设定身分／职业';
+
+  @override
+  String get world_edit_remove_person1 => '移除人物';
+
+  @override
+  String world_edit_add_person1(String type) {
+    return '新增$type';
+  }
+
+  @override
+  String get world_edit_add_secret1 => '新增秘密篇章';
+
+  @override
+  String get world_edit_edit_secret1 => '编辑秘密篇章';
+
+  @override
+  String get world_edit_chapter_title1 => '篇章标题 *';
+
+  @override
+  String get world_edit_unlock_condition1 => '解锁条件（给后端判定的描述）*';
+
+  @override
+  String get world_edit_secret_content1 => '秘密内容 *';
+
+  @override
+  String get world_edit_confirm1 => '确认';
+
+  @override
+  String get world_edit_story_opening1 => '故事开场 *';
+
+  @override
+  String get world_edit_first_line1 => '故事第一句话 *';
+
+  @override
+  String get world_edit_secret_chapters1 => '秘密篇章';
+
+  @override
+  String get world_edit_secret_explain1 =>
+      '秘密篇章只储存在私密资料区。正式公开不会直接公开内容；玩家需在游玩中达成剧情条件才可解锁。';
+
+  @override
+  String get world_edit_add_secret_max1 => '新增秘密篇章（最多 12 章）';
+
+  @override
+  String get world_edit_publish_settings1 => '发布设定';
+
+  @override
+  String get world_edit_private_world1 => '私人开放世界';
+
+  @override
+  String get world_edit_private_world_desc1 => '仅自己可以游玩及测试，其他玩家无法进入';
+
+  @override
+  String get world_edit_public_world1 => '公开开放世界';
+
+  @override
+  String get world_edit_public_world_desc1 => '其他玩家可进入游玩，每位玩家有独立剧情进度';
+
+  @override
+  String get world_edit_create_world1 => '创立开放世界';
+
+  @override
+  String get world_edit_basic_tab1 => '基本设定';
+
+  @override
+  String get world_edit_characters_tab1 => '世界观人物';
+
+  @override
+  String get world_edit_story_tab1 => '故事设定';
+
+  @override
+  String get world_edit_publish_world1 => '发布开放世界';
+
+  @override
+  String get world_edit_name_required1 => '请先填写人物姓名';
+
+  @override
+  String world_edit_edit_person1(String type) {
+    return '编辑$type';
+  }
+
+  @override
+  String get world_edit_upload_photo1 => '上传人物照片（选填）';
+
+  @override
+  String get world_edit_allow_photo1 => '允许使用此人物照片生成其他照片';
+
+  @override
+  String get world_edit_allow_photo_explain1 =>
+      '仅在剧情适合时可将此人物的图片作为生成参考。不勾选仍可正常聊天及赠送一般礼物；每位人物独立设定。';
+
+  @override
+  String get world_edit_name1 => '姓名 *';
+
+  @override
+  String get world_edit_gender1 => '性别／性别设定';
+
+  @override
+  String get world_edit_birthday1 => '生日（例：5月16日）';
+
+  @override
+  String get world_edit_age1 => '年龄';
+
+  @override
+  String get world_edit_role1 => '身分／职业';
+
+  @override
+  String get world_edit_appearance1 => '外貌特征';
+
+  @override
+  String get world_edit_personality1 => '个性与人物设定';
+
+  @override
+  String get world_edit_background1 => '过去经历';
+
+  @override
+  String get world_edit_relationships1 => '与其他人物的关系';
+
+  @override
+  String get world_edit_speech_style1 => '说话方式／口吻';
+
+  @override
+  String get world_edit_dialogue_examples1 => '对话范例（帮助 AI 理解语气）';
+
+  @override
+  String get world_edit_save_person1 => '储存人物设定';
+
+  @override
+  String get world_edit_tag_mystery1 => '悬疑';
+
+  @override
+  String get world_edit_tag_horror1 => '恐怖';
+
+  @override
+  String get world_edit_tag_romance1 => '恋爱';
+
+  @override
+  String get world_edit_tag_modern_fantasy1 => '现代奇幻';
+
+  @override
+  String get world_edit_tag_school1 => '校园';
+
+  @override
+  String get world_edit_tag_ensemble1 => '群像';
+
+  @override
+  String get world_edit_tag_adventure1 => '冒险';
+
+  @override
+  String get world_edit_tag_daily1 => '日常';
+
+  @override
+  String get world_edit_tag_detective1 => '推理';
+
+  @override
+  String get world_edit_tag_otherworld1 => '异世界';
+
+  @override
+  String get chooseNpc1 => '请选择 NPC';
+
+  @override
+  String get chooseInteractionTarget1 => '选择互动对象';
+
+  @override
+  String get unnamedCharacter1 => '未命名角色';
+
+  @override
+  String get chooseTargetFirst1 => '请先选择互动对象';
+
+  @override
+  String get confirmGift1 => '确认送礼';
+
+  @override
+  String giftConfirmDetail1(String target, String gift, int cost) {
+    return '送给 $target：$gift，消耗 $cost 朵花花。只有 AI 成功回复后才正式扣点。';
+  }
+
+  @override
+  String get cancel1 => '取消';
+
+  @override
+  String get send1 => '送出';
+
+  @override
+  String get sendLocationTitle1 => '发送地点（3 朵）';
+
+  @override
+  String get customLocation1 => '自定义地点';
+
+  @override
+  String get confirm1 => '确认';
+
+  @override
+  String get cafe1 => '咖啡厅';
+
+  @override
+  String get park1 => '公园';
+
+  @override
+  String get restaurant1 => '餐厅';
+
+  @override
+  String get street1 => '街道';
+
+  @override
+  String get giftHeart1 => '爱心';
+
+  @override
+  String get giftFlower1 => '花朵';
+
+  @override
+  String get giftSun1 => '太阳';
+
+  @override
+  String get giftConfetti1 => '彩带';
+
+  @override
+  String get giftCoffee1 => '咖啡';
+
+  @override
+  String get giftCake1 => '蛋糕';
+
+  @override
+  String get interactionPlayTitle1 => '互动玩法';
+
+  @override
+  String interactionTargetLabel1(String target) {
+    return '互动对象：$target';
+  }
+
+  @override
+  String get intimateInteraction1 => '亲密互动';
+
+  @override
+  String get poke1 => '戳一戳';
+
+  @override
+  String get hug1 => '拥抱';
+
+  @override
+  String get holdHands1 => '牵手';
+
+  @override
+  String get gifts1 => '送礼';
+
+  @override
+  String get funActivities1 => '趣味玩法';
+
+  @override
+  String get sendLocation1 => '发送地点';
+
+  @override
+  String get diceDuel1 => '骰子对决';
+
+  @override
+  String get world_profile_name_too_long1 => '世界观角色称呼最多 40 字，请缩短后再保存';
+
+  @override
+  String get world_profile_identity_too_long1 => '世界观人物资料超过 2000 字，请缩短后再保存';
+
+  @override
+  String get world_relationship_live_title1 => '人物关系';
+
+  @override
+  String get world_relationship_live_load_failed1 =>
+      '关系数据读取失败，请检查 Firestore 权限';
+
+  @override
+  String get world_relationship_live_no_people1 => '这个世界尚未建立人物';
+
+  @override
+  String get world_relationship_live_not_met1 => '当前关系：尚未相遇';
+
+  @override
+  String get world_relationship_live_first_meeting1 => '初次相遇';
+
+  @override
+  String world_relationship_live_current_relation1(String relation) {
+    return '当前关系：$relation';
+  }
+
+  @override
+  String get world_relationship_live_thought_title1 => '目前对玩家的想法';
+
+  @override
+  String get world_relationship_live_thought_pending1 => '仍需通过后续互动逐渐形成印象';
+
+  @override
+  String world_scene_full_load_error1(String error) {
+    return '读取剧场失败：$error';
+  }
+
+  @override
+  String get world_scene_full_delete_title1 => '删除剧场';
+
+  @override
+  String world_scene_full_delete_confirm1(String title) {
+    return '确定删除「$title」吗？';
+  }
+
+  @override
+  String get world_scene_full_cancel1 => '取消';
+
+  @override
+  String get world_scene_full_delete1 => '删除';
+
+  @override
+  String world_scene_full_delete_error1(String error) {
+    return '删除剧场失败：$error';
+  }
+
+  @override
+  String get world_scene_full_missing_fields1 => '剧场内容不足，请先补齐标题与场景说明';
+
+  @override
+  String world_scene_full_activate_error1(String error) {
+    return '启用剧场失败：$error';
+  }
+
+  @override
+  String get world_scene_full_end_title1 => '结束剧场';
+
+  @override
+  String get world_scene_full_end_confirm1 => '确定结束目前进行中的剧场吗？';
+
+  @override
+  String world_scene_full_end_error1(String error) {
+    return '结束剧场失败：$error';
+  }
+
+  @override
+  String get world_scene_full_unnamed1 => '未命名剧场';
+
+  @override
+  String world_scene_full_opening1(String opening) {
+    return '开场：$opening';
+  }
+
+  @override
+  String get world_scene_full_edit1 => '编辑';
+
+  @override
+  String get world_scene_full_start1 => '开始剧场';
+
+  @override
+  String get world_scene_full_creator_empty1 => '目前尚无创作者剧场';
+
+  @override
+  String get world_scene_full_custom_empty1 => '还没有自行创建的剧场';
+
+  @override
+  String get world_scene_full_add1 => '新增剧场';
+
+  @override
+  String get world_scene_full_page_title1 => '剧场';
+
+  @override
+  String get world_scene_full_creator_tab1 => '创作者剧场';
+
+  @override
+  String get world_scene_full_custom_tab1 => '自行创建剧场';
+
+  @override
+  String world_scene_full_active1(String title) {
+    return '进行中的剧场：$title';
+  }
+
+  @override
+  String get world_scene_required1 => '请填写场景标题与内容';
+
+  @override
+  String get world_scene_title1 => '剧场';
+
+  @override
+  String get world_scene_beta_notice1 =>
+      '世界观剧场测试版：沿用世界观聊天 AI 开启场景；剧场专属存档及正式开场 API 尚未接入。';
+
+  @override
+  String get world_scene_creator_scenes1 => '创作者剧场';
+
+  @override
+  String get world_scene_no_creator_scenes1 => '这个世界目前没有可读取的创作者剧场设置';
+
+  @override
+  String get world_scene_custom_scenes1 => '自行创建剧场';
+
+  @override
+  String get world_scene_name1 => '场景名称';
+
+  @override
+  String get world_scene_setup1 => '背景、地点、角色及开场情境';
+
+  @override
+  String get world_scene_start1 => '开始剧场';
+
+  @override
+  String get worldSearchTitle1 => '搜索开放世界';
+
+  @override
+  String get worldSearchHint1 => '搜索世界名称、创作者、标签';
+
+  @override
+  String get worldSearchClear1 => '清除搜索';
+
+  @override
+  String get worldSearchEmpty1 => '找不到符合的开放世界';
+
+  @override
+  String get worldSearchTrending1 => '热门探索';
+
+  @override
+  String get worldSearchResults1 => '搜索结果';
+
+  @override
+  String get worldSearchUnnamed1 => '未命名世界';
+
+  @override
+  String worldSearchCreator1(String creator) {
+    return '创作者：$creator';
+  }
+
+  @override
+  String get world_secret_chapters_title1 => '秘密篇章';
+
+  @override
+  String get world_secret_chapters_close1 => '关闭';
+
+  @override
+  String get world_secret_chapters_read_failed1 => '秘密篇章暂时无法读取';
+
+  @override
+  String get world_secret_chapters_retry1 => '读取失败，点击重试';
+
+  @override
+  String get world_secret_chapters_empty1 => '创作者尚未设置秘密篇章';
+
+  @override
+  String world_secret_chapters_locked_chapter1(String number) {
+    return '第 $number 章 · ？？？';
+  }
+
+  @override
+  String get world_secret_chapters_unlocked1 => '已解锁，点击阅读';
+
+  @override
+  String get world_secret_chapters_locked1 => '尚未解锁 · 继续探索剧情';
+
+  @override
+  String world_timeline_load_failed1(String error) {
+    return '剧情摘要读取失败：$error';
+  }
+
+  @override
+  String get world_timeline_edit_summary1 => '编辑剧情摘要';
+
+  @override
+  String get world_timeline_cancel1 => '取消';
+
+  @override
+  String get world_timeline_save1 => '保存';
+
+  @override
+  String world_timeline_save_failed1(String error) {
+    return '保存失败：$error';
+  }
+
+  @override
+  String get world_timeline_delete_summary1 => '删除摘要';
+
+  @override
+  String get world_timeline_delete_confirm1 => '确定删除这段故事记录吗？';
+
+  @override
+  String get world_timeline_delete1 => '删除';
+
+  @override
+  String world_timeline_delete_failed1(String error) {
+    return '删除失败：$error';
+  }
+
+  @override
+  String get world_timeline_our_story1 => '我们的故事';
+
+  @override
+  String get world_timeline_retry1 => '重试';
+
+  @override
+  String get world_timeline_empty1 => '故事仍在展开，积累一些剧情后就会有新的记录。';
+
+  @override
+  String get world_timeline_recent1 => '近期记录';
+
+  @override
+  String get world_timeline_edit1 => '编辑';
+
+  @override
+  String get echo_login_to_post1 => '请先登录后再留下时空回音';
+
+  @override
+  String get echo_limit1 => '每位玩家在同一个开放世界最多留下 3 则时空回音';
+
+  @override
+  String get echo_count_fail1 => '无法确认回音数量，请稍后再试';
+
+  @override
+  String get echo_compose_title1 => '留下时空回音';
+
+  @override
+  String get echo_compose_desc1 => '选择喜欢的卡面，再写下一段想留下的话。';
+
+  @override
+  String get echo_compose_hint1 => '在这个世界里，你想留下什么话？';
+
+  @override
+  String get echo_send1 => '发送回音';
+
+  @override
+  String get echo_player1 => '玩家';
+
+  @override
+  String get echo_sent1 => '时空回音已留下';
+
+  @override
+  String get echo_post_fail1 => '留言失败，请检查权限与网络';
+
+  @override
+  String get echo_login1 => '请先登录';
+
+  @override
+  String get echo_like_fail1 => '点赞失败';
+
+  @override
+  String get echo_delete_title1 => '删除时空回音？';
+
+  @override
+  String get echo_delete_warning1 => '删除后将无法恢复。';
+
+  @override
+  String get echo_cancel1 => '取消';
+
+  @override
+  String get echo_delete1 => '删除';
+
+  @override
+  String get echo_deleted1 => '时空回音已删除';
+
+  @override
+  String get echo_delete_fail1 => '删除失败';
+
+  @override
+  String get echo_reason_inappropriate1 => '不当内容';
+
+  @override
+  String get echo_reason_harassment1 => '骚扰或攻击';
+
+  @override
+  String get echo_reason_spam1 => '垃圾信息';
+
+  @override
+  String get echo_reason_other1 => '其他';
+
+  @override
+  String get echo_report_title1 => '举报时空回音';
+
+  @override
+  String get echo_already_reported1 => '这则回音已举报过';
+
+  @override
+  String get echo_report_received1 => '已收到举报';
+
+  @override
+  String get echo_report_fail1 => '举报失败';
+
+  @override
+  String get echo_options1 => '回音选项';
+
+  @override
+  String get echo_delete_option1 => '删除回音';
+
+  @override
+  String get echo_report_option1 => '举报回音';
+
+  @override
+  String get echo_wall_title1 => '时空回音';
+
+  @override
+  String get echo_add1 => '留下回音';
+
+  @override
+  String get echo_load_fail1 => '时空回音读取失败，请检查 Firestore 权限设置';
+
+  @override
+  String get echo_empty1 => '还没有时空回音，留下第一段故事吧。';
+
+  @override
+  String get store_pack_30_name1 => '初见礼包';
+
+  @override
+  String get store_pack_70_name1 => '暧昧礼包';
+
+  @override
+  String get store_pack_120_name1 => '心动礼包';
+
+  @override
+  String get store_pack_190_name1 => '热恋礼包';
+
+  @override
+  String get store_pack_250_name1 => '知己礼包';
+
+  @override
+  String get store_pack_330_name1 => '守候礼包';
+
+  @override
+  String get store_pack_450_name1 => '信赖礼包';
+
+  @override
+  String get store_pack_520_name1 => '我爱你礼包';
+
+  @override
+  String get store_pack_690_name1 => '蜜月礼包';
+
+  @override
+  String get store_pack_720_name1 => '承诺礼包';
+
+  @override
+  String get store_pack_750_name1 => '相伴礼包';
+
+  @override
+  String get store_pack_830_name1 => '深爱礼包';
+
+  @override
+  String get store_pack_990_name1 => '长久礼包';
+
+  @override
+  String get store_pack_1050_name1 => '唯一礼包';
+
+  @override
+  String get store_pack_1290_name1 => '挚爱礼包';
+
+  @override
+  String get store_pack_1314_name1 => '一生一世礼包';
+
+  @override
+  String get store_pack_1930_name1 => '誓约礼包';
+
+  @override
+  String get store_pack_2990_name1 => '永恒恋人礼包';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -24765,7 +31011,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get creator_profile_report_self_not_allowed => '無法檢舉自己的創作者頁面';
 
   @override
-  String creator_profile_report_reason_prompt(String creatorName) {
+  String creator_profile_report_reason_prompt1(String creatorName) {
     return '請選擇檢舉「$creatorName」的原因：';
   }
 
@@ -27824,4 +34070,3305 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get theme_font_system_description => '跟隨手機系統預設字體';
+
+  @override
+  String get font_selection_serif_name => '思源宋體';
+
+  @override
+  String get font_selection_sans_name => '思源黑體';
+
+  @override
+  String get font_selection_system_name => '系統字體';
+
+  @override
+  String get font_selection_serif_description => '典雅的襯線字體，適合沉浸閱讀。';
+
+  @override
+  String get font_selection_sans_description => '清晰柔和的無襯線字體。';
+
+  @override
+  String get font_selection_system_description => '使用裝置預設字體。';
+
+  @override
+  String get font_selection_preview_sentence => '與你喜歡的他，再次寫下屬於你們的故事。';
+
+  @override
+  String get avatar_frame_error_generic => '錯誤';
+
+  @override
+  String get avatar_frame_sign_in_required => '請先登入';
+
+  @override
+  String get avatar_frame_default_name => '活動頭像框';
+
+  @override
+  String get background_exclusive_photos_tab => '專屬照片';
+
+  @override
+  String get background_world_sign_in_chat => '請先登入並進入世界聊天室';
+
+  @override
+  String get background_world_photo_load_error => '錯誤';
+
+  @override
+  String get background_world_no_photos => '目前尚無可選擇的世界照片';
+
+  @override
+  String get background_world_cover => '世界觀封面';
+
+  @override
+  String get background_world_cover_confirm => '要將世界觀封面設為這個聊天室的背景嗎？';
+
+  @override
+  String get background_world_default_limited => '限定背景';
+
+  @override
+  String get background_world_default_character => '角色';
+
+  @override
+  String get background_world_no_character_photos => '尚無可使用的角色照片';
+
+  @override
+  String background_world_unlock_required(int count) {
+    return '需要 $count 好感度才能解鎖';
+  }
+
+  @override
+  String background_world_character_confirm(String name) {
+    return '要把「$name」的照片設為世界聊天室背景嗎？';
+  }
+
+  @override
+  String background_world_affection_count(int count) {
+    return '$count 好感度';
+  }
+
+  @override
+  String get reply_selection => '回覆選擇';
+
+  @override
+  String get chat_home_character_tab => '角色聊天';
+
+  @override
+  String get chat_home_world_tab => '開放世界';
+
+  @override
+  String get chat_home_world_error_generic => '錯誤';
+
+  @override
+  String get chat_home_world_pinned => '已置頂世界觀聊天室';
+
+  @override
+  String get chat_home_world_deleted => '開放世界聊天室與對話紀錄已刪除';
+
+  @override
+  String get chat_home_world_action_done => '操作完成';
+
+  @override
+  String get chat_home_world_rename_title => '為這段記憶命名';
+
+  @override
+  String chat_home_world_delete_confirm(String name) {
+    return '確定刪除「$name」的開放世界聊天紀錄？\n\n這將永久刪除對話、劇情摘要、人物關係和備忘錄，無法復原。創作者公開的世界設定不會受到影響。';
+  }
+
+  @override
+  String get chat_home_world_empty_title => '還沒有開放世界聊天紀錄';
+
+  @override
+  String get chat_home_world_empty_desc => '進入開放世界並開始遊玩後，聊天紀錄就會顯示在這裡。';
+
+  @override
+  String get chat_home_world_unnamed => '未命名世界';
+
+  @override
+  String get chat_home_world_private_test => '私人試玩';
+
+  @override
+  String get chat_home_world_no_messages => '尚無訊息';
+
+  @override
+  String get expand_features => '展開功能';
+
+  @override
+  String get chat_sticker_all => '全部';
+
+  @override
+  String get chat_mode_short_daily => '日常';
+
+  @override
+  String get chat_mode_short_story => '劇情';
+
+  @override
+  String get chat_mode_short_immersive => '沉浸';
+
+  @override
+  String get chat_mode_short_resonance => '共鳴';
+
+  @override
+  String get chat_mode_short_gemini => '閒聊';
+
+  @override
+  String get chat_theater_tool => '劇場';
+
+  @override
+  String chat_regenerate_insufficient_flowers(int cost) {
+    return '花花不足，重新生成需要 $cost 朵';
+  }
+
+  @override
+  String get chat_regenerate_paid_title => '付費重新生成';
+
+  @override
+  String chat_regenerate_paid_confirm(int cost) {
+    return '今日免費次數已用完，本次依目前模式收取 $cost 朵花花。是否繼續？';
+  }
+
+  @override
+  String get chat_generic_error => '錯誤';
+
+  @override
+  String get chat_regenerate_confirm => '確認';
+
+  @override
+  String get comment_add_photo => '加入照片';
+
+  @override
+  String get comment_error_generic => '錯誤';
+
+  @override
+  String creator_profile_report_reason_prompt(String creatorName) {
+    return '請選擇檢舉「$creatorName」的原因：';
+  }
+
+  @override
+  String get creator_profile_open_worlds => '開放世界';
+
+  @override
+  String get creator_profile_generic_error => '錯誤';
+
+  @override
+  String get creator_profile_refresh => '重新整理';
+
+  @override
+  String get creator_profile_no_open_worlds => '這位創作者尚未發布開放世界';
+
+  @override
+  String get creator_profile_unnamed_world => '未命名世界';
+
+  @override
+  String get creator_program_required_fields => '請填寫創作方向與申請原因。';
+
+  @override
+  String get creator_program_submitted => '申請已送出，審核約需 1～3 天。';
+
+  @override
+  String get creator_program_error => '錯誤';
+
+  @override
+  String get creator_program_login_required => '請先登入後再申請創作者計畫。';
+
+  @override
+  String get creator_program_title => '創作者計畫';
+
+  @override
+  String get creator_program_headline => '讓創作被更多人看見';
+
+  @override
+  String get creator_program_intro =>
+      '只要你有公開創作，就歡迎申請加入《戀戀拾光》創作者計畫。申請送出後，官方會在 1～3 天內完成審核。';
+
+  @override
+  String get creator_program_benefits_title => '計畫福利';
+
+  @override
+  String get creator_program_benefit_dashboard =>
+      '創作者後台：查看粉絲數、公開角色數、總愛心與本月新增粉絲。';
+
+  @override
+  String get creator_program_benefit_fans => '粉絲經營：可寄信、管理粉絲，並用自己的花花贈送粉絲福利。';
+
+  @override
+  String get creator_program_benefit_exposure =>
+      '官方曝光：新角色有機會優先登上 IG 與遊戲內創作者推薦。';
+
+  @override
+  String get creator_program_benefit_monthly =>
+      '每月創作獎勵：當月新增並公開至少 3 隻全新角色，次月可獲 520 朵花花。';
+
+  @override
+  String get creator_program_benefit_merch =>
+      '實體合作：旗下角色若進入官方實體商品／禮盒合作，可依合作企劃獲得現金創作獎勵。';
+
+  @override
+  String creator_program_last_review_note(String reason) {
+    return '上次審核說明：$reason';
+  }
+
+  @override
+  String get creator_program_apply_heading => '申請加入';
+
+  @override
+  String get creator_program_direction_label => '創作方向';
+
+  @override
+  String get creator_program_direction_hint => '例如：現代戀愛、古風、奇幻、BL、GL…';
+
+  @override
+  String get creator_program_reason_label => '想加入創作者計畫的原因';
+
+  @override
+  String get creator_program_reason_hint => '和我們說說你想怎麼經營自己的角色與粉絲。';
+
+  @override
+  String get creator_program_social_label => '社群連結（選填）';
+
+  @override
+  String get creator_program_social_hint => 'IG、Threads、個人網站等';
+
+  @override
+  String get creator_program_submit => '送出申請';
+
+  @override
+  String get creator_program_public_character_note =>
+      '送出前系統會確認帳號目前至少有 1 隻公開角色。';
+
+  @override
+  String get creator_program_status_pending => '申請審核中';
+
+  @override
+  String get creator_program_status_pending_desc =>
+      '申請已送達，審核約需 1～3 天。完成後會透過戀戀信箱通知你。';
+
+  @override
+  String get creator_program_status_approved => '創作者資格已通過 🎉';
+
+  @override
+  String get creator_program_status_approved_desc =>
+      '恭喜加入《戀戀拾光》創作者計畫！創作者後台、粉絲管理與推薦橫幅會在接下來的功能中與這個資格連動。';
+
+  @override
+  String get creator_program_status_suspended => '創作者資格暫停';
+
+  @override
+  String get creator_program_status_suspended_desc =>
+      '目前暫時無法使用創作者專屬功能。請查看戀戀信箱中的官方通知。';
+
+  @override
+  String get creator_program_status_revoked => '創作者資格已取消';
+
+  @override
+  String get creator_program_status_revoked_desc =>
+      '目前無法使用創作者專屬功能。若有疑問，可透過客服聯繫官方。';
+
+  @override
+  String get creator_program_status_title => '創作者資格狀態';
+
+  @override
+  String creator_program_current_status(String status) {
+    return '目前狀態：$status';
+  }
+
+  @override
+  String creator_program_official_note(String reason) {
+    return '官方說明：$reason';
+  }
+
+  @override
+  String get creator_dashboard_error1 => '錯誤';
+
+  @override
+  String get creator_dashboard_access_title1 => '創作者後台';
+
+  @override
+  String get creator_dashboard_status_notice_title1 => '創作者後台資格通知';
+
+  @override
+  String get creator_dashboard_apply_title1 => '申請創作者後台';
+
+  @override
+  String get creator_dashboard_access_subtitle1 => '角色遊玩數據・粉絲新增與移除・粉絲管理';
+
+  @override
+  String get creator_dashboard_pending1 => '申請已送出・官方審核中';
+
+  @override
+  String get creator_dashboard_legacy_pending1 => '申請資料待官方確認';
+
+  @override
+  String get creator_dashboard_syncing1 => '後台權限同步中，請稍後再試';
+
+  @override
+  String get creator_dashboard_suspended1 => '後台使用權限已暫停，請聯繫官方';
+
+  @override
+  String get creator_dashboard_apply_subtitle1 => '申請開通角色數據與粉絲管理工具';
+
+  @override
+  String get creator_dashboard_rejected1 => '申請未通過・可重新申請';
+
+  @override
+  String get creator_dashboard_submitted1 => '申請已送出，請等待官方審核';
+
+  @override
+  String get creator_dashboard_benefits_title1 => '創作者後台提供的功能';
+
+  @override
+  String get creator_dashboard_benefit_monthly1 =>
+      '🌸 每月創作獎勵：當月新建並公開 3 位不同角色，可手動領取 300 朵花花（每月限一次）。';
+
+  @override
+  String get creator_dashboard_benefit_analytics1 =>
+      '• 查看公開角色遊玩數據、粉絲總數及粉絲新增／移除紀錄';
+
+  @override
+  String get creator_dashboard_benefit_mail1 => '• 粉絲信件：單人私信與全體公告（依每日額度）';
+
+  @override
+  String get creator_dashboard_benefit_gifts1 => '• 粉絲福利：使用自己的花花贈送追蹤者';
+
+  @override
+  String get creator_dashboard_reward_note1 =>
+      '須經官方審核通過；私人角色、草稿、舊角色重新公開皆不列入每月獎勵。';
+
+  @override
+  String get creator_dashboard_apply_cta1 => '點此了解並申請後台權限';
+
+  @override
+  String get creator_dashboard_my_characters1 => '我的角色';
+
+  @override
+  String get creator_dashboard_my_worlds1 => '我的開放世界';
+
+  @override
+  String get creator_dashboard_create_world1 => '創建開放世界';
+
+  @override
+  String get creator_dashboard_public_worlds1 => '已公開世界';
+
+  @override
+  String get creator_dashboard_public_worlds_hint1 => '其他玩家可以探索';
+
+  @override
+  String get creator_dashboard_private_worlds1 => '私人世界';
+
+  @override
+  String get creator_dashboard_private_worlds_hint1 => '只有自己可以查看與編輯';
+
+  @override
+  String get creator_dashboard_world_drafts1 => '世界觀草稿';
+
+  @override
+  String get creator_dashboard_world_drafts_hint1 => '尚未建立完成的世界';
+
+  @override
+  String get creator_dashboard_no_drafts1 => '目前沒有草稿';
+
+  @override
+  String get creator_dashboard_no_worlds1 => '目前沒有世界觀';
+
+  @override
+  String get creator_dashboard_unnamed_world1 => '未命名世界觀';
+
+  @override
+  String get creator_dashboard_delete_world_draft1 => '刪除世界觀草稿';
+
+  @override
+  String get creator_dashboard_private_test1 => '私人試玩';
+
+  @override
+  String get creator_dashboard_delete_world_confirm_title1 => '刪除世界觀草稿？';
+
+  @override
+  String get creator_dashboard_delete_world_confirm_body1 =>
+      '刪除後無法恢復。已上傳的圖片不會一併刪除。';
+
+  @override
+  String get creator_dashboard_draft_deleted1 => '世界觀草稿已刪除';
+
+  @override
+  String get creator_dashboard_validation1 => '創作方向須為 2～100 字，申請原因須為 10～500 字';
+
+  @override
+  String get creator_dashboard_confirm_application_title1 => '確認申請創作者後台';
+
+  @override
+  String get creator_dashboard_confirm_application_body1 =>
+      '申請送出後將由官方審核；通過後即可使用創作者後台。申請後台不代表簽訂合作契約。';
+
+  @override
+  String get creator_dashboard_confirm_send1 => '確認送出';
+
+  @override
+  String get creator_dashboard_form_heading1 => '申請開通戀戀拾光創作者後台';
+
+  @override
+  String get creator_dashboard_form_description1 =>
+      '請簡單介紹你的創作方向，以及希望如何使用角色數據與粉絲管理功能。審核通過後即可使用創作者後台；此申請不是合作簽約。';
+
+  @override
+  String get creator_dashboard_direction_label1 => '創作方向';
+
+  @override
+  String get creator_dashboard_direction_hint1 => '例如：現代戀愛、古風、奇幻、BL、GL…';
+
+  @override
+  String get creator_dashboard_reason_label1 => '申請後台的原因';
+
+  @override
+  String get creator_dashboard_reason_hint1 => '請介紹創作經驗，以及希望使用哪些後台功能';
+
+  @override
+  String get creator_dashboard_sending1 => '送出中…';
+
+  @override
+  String get creator_dashboard_submit1 => '提交後台申請';
+
+  @override
+  String get creator_dashboard_privacy_note1 =>
+      '提醒：申請不保證通過，請勿在欄位內填寫身分證字號、銀行帳號或其他敏感個資。';
+
+  @override
+  String get creator_dashboard_revoked_limit1 => '後台申請資格已達上限。如有疑問，請聯繫官方。';
+
+  @override
+  String get creator_dashboard_revoked_notice1 =>
+      '創作者後台使用資格已取消。若需重新申請，請依頁面目前的開放狀態操作。';
+
+  @override
+  String get creator_support_page_title1 => '問題回報中心';
+
+  @override
+  String get creator_support_new_report1 => '新增問題回報';
+
+  @override
+  String get creator_support_error1 => '錯誤';
+
+  @override
+  String get creator_support_no_cases1 => '目前沒有回報案件';
+
+  @override
+  String get creator_support_unread1 => '未讀';
+
+  @override
+  String get creator_support_load_more1 => '載入更多';
+
+  @override
+  String get creator_support_category_label1 => '問題分類';
+
+  @override
+  String get creator_support_character_optional1 => '相關角色（選填）';
+
+  @override
+  String get creator_support_no_character1 => '無指定角色';
+
+  @override
+  String get creator_support_report_title1 => '問題標題';
+
+  @override
+  String get creator_support_report_description1 => '問題描述';
+
+  @override
+  String creator_support_select_images1(int count) {
+    return '選擇截圖（$count/3，單張 2MB 以下）';
+  }
+
+  @override
+  String get creator_support_images_private1 => '截圖僅限案件創作者及官方查看。';
+
+  @override
+  String get creator_support_submitting1 => '送出中…';
+
+  @override
+  String get creator_support_submit1 => '確認提交';
+
+  @override
+  String get creator_support_image_too_large1 => '圖片超過 2MB，請換一張';
+
+  @override
+  String get creator_support_fill_title_description1 => '請填寫標題及內容';
+
+  @override
+  String get creator_support_case_sent1 => '案件已送出';
+
+  @override
+  String creator_support_case_sent_partial1(int count) {
+    return '案件已送出，但 $count 張截圖上傳失敗';
+  }
+
+  @override
+  String get creator_support_detail_title1 => '案件詳情';
+
+  @override
+  String get creator_support_image_max1 => '單張截圖不得超過 2MB';
+
+  @override
+  String get creator_support_jpg_png_only1 => '僅支援 JPG / PNG';
+
+  @override
+  String get creator_support_reply_sent1 => '回覆已送出';
+
+  @override
+  String creator_support_reply_sent_partial1(int count) {
+    return '文字已送出，但 $count 張圖片上傳失敗';
+  }
+
+  @override
+  String get creator_support_empty_content1 => '內容不能為空';
+
+  @override
+  String get creator_support_recall_message1 => '收回訊息';
+
+  @override
+  String get creator_support_delete_message1 => '刪除訊息';
+
+  @override
+  String get creator_support_recall_warning1 => '雙方都會看到「此訊息已收回」，附件將無法查看。';
+
+  @override
+  String get creator_support_delete_warning1 => '只從自己的畫面隱藏，對方仍保留訊息。';
+
+  @override
+  String get creator_support_cancel1 => '取消';
+
+  @override
+  String get creator_support_confirm1 => '確定';
+
+  @override
+  String get creator_support_operation_success1 => '操作成功';
+
+  @override
+  String get creator_support_edit_message1 => '編輯訊息';
+
+  @override
+  String creator_support_recall_remaining1(int seconds) {
+    return '收回訊息（剩餘 $seconds 秒）';
+  }
+
+  @override
+  String get creator_support_recall_expired1 => '收回訊息（已超過 60 秒）';
+
+  @override
+  String get creator_support_case_updated1 => '案件已更新';
+
+  @override
+  String get creator_support_loading1 => '載入中…';
+
+  @override
+  String creator_support_creator_uid1(String uid) {
+    return '創作者 UID：$uid';
+  }
+
+  @override
+  String get creator_support_internal_note1 => '官方內部備註（創作者看不到）';
+
+  @override
+  String get creator_support_save_internal_note1 => '儲存內部備註';
+
+  @override
+  String get creator_support_case_images1 => '案件截圖';
+
+  @override
+  String get creator_support_official1 => '戀戀拾光官方';
+
+  @override
+  String get creator_support_creator1 => '創作者';
+
+  @override
+  String get creator_support_recalled1 => '此訊息已收回';
+
+  @override
+  String get creator_support_edited1 => '已編輯';
+
+  @override
+  String get creator_support_reply_hint1 => '輸入回覆……';
+
+  @override
+  String get creator_support_attach_image1 => '附加截圖（最多 3 張）';
+
+  @override
+  String get creator_support_send1 => '送出';
+
+  @override
+  String get creator_support_admin_title1 => '創作者案件管理';
+
+  @override
+  String get creator_support_new_reply1 => '新回覆';
+
+  @override
+  String get creator_support_load_more_cases1 => '載入更多案件';
+
+  @override
+  String get creator_support_image_load_error1 => '截圖讀取失敗';
+
+  @override
+  String get creator_support_edit_hint1 => '修改訊息內容';
+
+  @override
+  String get creator_support_save1 => '儲存';
+
+  @override
+  String get creator_support_status_pending1 => '待處理';
+
+  @override
+  String get creator_support_status_progress1 => '處理中';
+
+  @override
+  String get creator_support_status_waiting1 => '等待補充';
+
+  @override
+  String get creator_support_status_resolved1 => '已結案';
+
+  @override
+  String get creator_support_cat_character1 => '角色管理問題';
+
+  @override
+  String get creator_support_cat_ai1 => 'AI 角色互動異常';
+
+  @override
+  String get creator_support_cat_dashboard1 => '創作者後台問題';
+
+  @override
+  String get creator_support_cat_cooperation1 => '合作與權益問題';
+
+  @override
+  String get creator_support_cat_other1 => '其他問題';
+
+  @override
+  String get desktop_widget_size_small1 => '小';
+
+  @override
+  String get desktop_widget_size_medium1 => '中';
+
+  @override
+  String get desktop_widget_size_large1 => '大';
+
+  @override
+  String get desktop_widget_cancel1 => '取消';
+
+  @override
+  String get desktop_widget_delete1 => '刪除';
+
+  @override
+  String desktop_widget_days_remaining1(int days) {
+    return '還有 $days 天';
+  }
+
+  @override
+  String get desktop_widget_days_today1 => '就是今天';
+
+  @override
+  String desktop_widget_days_elapsed1(int days) {
+    return '已過 $days 天';
+  }
+
+  @override
+  String get desktop_widget_daily_quote1 => '今日一句';
+
+  @override
+  String get desktop_widget_update_daily1 => '每天更新一次';
+
+  @override
+  String get desktop_widget_character_birthday1 => '角色生日';
+
+  @override
+  String get desktop_widget_change1 => '更換';
+
+  @override
+  String get desktop_widget_mood1 => '心情';
+
+  @override
+  String get desktop_widget_current_state1 => '當前狀態';
+
+  @override
+  String get desktop_widget_location1 => '地點';
+
+  @override
+  String get desktop_widget_relationship1 => '關係';
+
+  @override
+  String get desktop_widget_outfit1 => '衣著';
+
+  @override
+  String get desktop_widget_weather1 => '天氣';
+
+  @override
+  String get desktop_widget_thought1 => '想法';
+
+  @override
+  String get desktop_widget_action1 => '動作';
+
+  @override
+  String get desktop_widget_affinity1 => '好感度';
+
+  @override
+  String get desktop_widget_character_status1 => '角色狀態';
+
+  @override
+  String get desktop_widget_no_posts1 => '目前還沒有角色動態';
+
+  @override
+  String get desktop_widget_crop_position1 => '調整角色位置';
+
+  @override
+  String get desktop_widget_crop_action1 => '放大／拖曳調整取景';
+
+  @override
+  String get desktop_widget_crop_hint1 => '進入調整畫面後可雙指縮放、單指拖曳，不會再帶著整個頁面一起上下跑。';
+
+  @override
+  String get desktop_widget_crop_title1 => '調整角色取景';
+
+  @override
+  String get desktop_widget_reset1 => '重設';
+
+  @override
+  String get desktop_widget_crop_instructions1 =>
+      '單指拖曳調整上下左右位置；雙指縮放調整大小。框內看到的，就是桌面小工具會顯示的範圍。';
+
+  @override
+  String desktop_widget_crop_position_scale1(int x, int y, String scale) {
+    return '位置：$x% / $y%　縮放：$scale×';
+  }
+
+  @override
+  String get desktop_widget_apply1 => '套用';
+
+  @override
+  String get desktop_widget_just_posted1 => '剛剛更新了動態';
+
+  @override
+  String get desktop_widget_important_day1 => '重要的日子';
+
+  @override
+  String get desktop_widget_no_date1 => '尚未選擇日期';
+
+  @override
+  String get desktop_widget_first_met1 => '和他相遇';
+
+  @override
+  String get desktop_widget_error1 => '錯誤';
+
+  @override
+  String get event_memory_select_character_title1 => '選擇角色';
+
+  @override
+  String get event_memory_my_characters1 => '我的角色';
+
+  @override
+  String get event_memory_friend_characters1 => '好友角色';
+
+  @override
+  String get event_memory_friend_badge1 => '好友';
+
+  @override
+  String get event_memory_unnamed_character1 => '未命名角色';
+
+  @override
+  String get event_memory_generic_error1 => '錯誤';
+
+  @override
+  String get memory_collection_title1 => '拾光收藏';
+
+  @override
+  String get memory_collection_avatar_frames1 => '頭像框';
+
+  @override
+  String get memory_collection_stickers1 => '貼紙';
+
+  @override
+  String get memory_collection_memories1 => '回憶';
+
+  @override
+  String get memory_collection_try_again1 => '請稍後再試一次。';
+
+  @override
+  String get memory_collection_error1 => '錯誤';
+
+  @override
+  String get memory_collection_chat_background1 => '聊天室背景';
+
+  @override
+  String get memory_collection_got_it1 => '知道了';
+
+  @override
+  String get memory_collection_not_now1 => '先不要';
+
+  @override
+  String get memory_collection_confirm_delete1 => '確定刪除';
+
+  @override
+  String get memory_collection_close1 => '關閉';
+
+  @override
+  String get memory_collection_delete1 => '刪除';
+
+  @override
+  String get memory_collection_image_preparing1 => '圖片準備中';
+
+  @override
+  String get memory_collection_remove_favorite1 => '取消收藏';
+
+  @override
+  String get memory_collection_removed1 => '已取消收藏';
+
+  @override
+  String get event_memory_performance_opening1 => '有些瞬間，\n並不會因為故事結束而消失。';
+
+  @override
+  String get event_memory_performance_generic_error1 => '錯誤';
+
+  @override
+  String get event_memory_performance_collected1 => '已收藏';
+
+  @override
+  String get event_memory_performance_saving1 => '正在儲存…';
+
+  @override
+  String get event_memory_performance_save_gallery1 => '儲存到手機相簿';
+
+  @override
+  String get event_memory_performance_done1 => '完成';
+
+  @override
+  String get event_memory_performance_uncollect_title1 => '取消收藏？';
+
+  @override
+  String get event_memory_performance_not_now1 => '先不要';
+
+  @override
+  String get event_memory_performance_uncollect1 => '取消收藏';
+
+  @override
+  String get event_memory_performance_uncollected1 => '已取消收藏';
+
+  @override
+  String get event_memory_performance_login_to_collect1 => '請先登入後再收藏這段回憶';
+
+  @override
+  String get event_memory_performance_web_gallery_unsupported1 =>
+      '網頁版目前不支援直接儲存到手機相簿';
+
+  @override
+  String get event_memory_performance_gallery_permission1 => '需要相簿權限才能儲存這段回憶';
+
+  @override
+  String get event_memory_performance_image_not_ready1 => '回憶圖片還沒準備好，請再試一次';
+
+  @override
+  String get event_memory_performance_gallery_saved1 => '已儲存到手機相簿';
+
+  @override
+  String get event_memory_performance_skip1 => '略過';
+
+  @override
+  String get event_memory_performance_memory_label1 => '回憶';
+
+  @override
+  String get event_memory_performance_tap_continue1 => '點擊繼續';
+
+  @override
+  String get event_memory_performance_tap_show_full1 => '點擊顯示全文';
+
+  @override
+  String get event_memory_performance_brand_limited_memory1 => '戀戀拾光・限定回憶';
+
+  @override
+  String get event_ended1 => '活動已結束';
+
+  @override
+  String get event_default_name1 => '期間限定活動';
+
+  @override
+  String get event_default_subtitle1 => '和他一起留下這個季節的特別回憶。';
+
+  @override
+  String get event_currency_default1 => '活動貨幣';
+
+  @override
+  String get event_tasks_today1 => '今日任務';
+
+  @override
+  String event_tasks_subtitle1(String currency) {
+    return '完成任務，收集$currency，解鎖更多限定內容。';
+  }
+
+  @override
+  String get event_milestones_title1 => '累積進度';
+
+  @override
+  String event_milestones_subtitle1(String currency) {
+    return '累積$currency，領取活動限定獎勵。';
+  }
+
+  @override
+  String get event_memory_title1 => '限定回憶';
+
+  @override
+  String get event_memory_subtitle1 => '留下這次活動的專屬回憶。';
+
+  @override
+  String get event_shop_title1 => '活動商店';
+
+  @override
+  String event_shop_subtitle1(String currency) {
+    return '使用$currency兌換限定獎勵。';
+  }
+
+  @override
+  String get event_info_title1 => '活動說明';
+
+  @override
+  String get event_info_default1 =>
+      '活動期間完成指定任務即可取得活動貨幣。\n兌換的獎勵會依活動規則發放至帳號。\n活動結束後，未使用的活動貨幣將依活動規則處理。';
+
+  @override
+  String get event_generic_error1 => '錯誤';
+
+  @override
+  String get event_task_default1 => '活動任務';
+
+  @override
+  String get event_claimed1 => '已領取';
+
+  @override
+  String get event_claim1 => '領取';
+
+  @override
+  String get event_in_progress1 => '進行中';
+
+  @override
+  String get event_reward_default1 => '限定獎勵';
+
+  @override
+  String get event_product_default1 => '活動商品';
+
+  @override
+  String get event_cancel1 => '取消';
+
+  @override
+  String get event_confirm_exchange1 => '確認兌換';
+
+  @override
+  String get event_limited_product1 => '限定商品';
+
+  @override
+  String event_insufficient_currency1(String currency) {
+    return '$currency不足';
+  }
+
+  @override
+  String get event_close1 => '關閉';
+
+  @override
+  String event_redeemed_count_limit1(int count, int max) {
+    return '已兌換 $count / $max 次';
+  }
+
+  @override
+  String event_redeemed_count1(int count) {
+    return '已兌換 $count 次';
+  }
+
+  @override
+  String get event_redeemed1 => '已兌換';
+
+  @override
+  String get event_exchange1 => '兌換';
+
+  @override
+  String get login_account_deletion_started1 => '帳號已進入刪除程序';
+
+  @override
+  String get login_account_deletion_expired_description1 =>
+      '此帳號已超過三天取消期限，無法再恢復使用。如需協助，請聯絡客服。';
+
+  @override
+  String get login_account_deletion_confirm1 => '確定';
+
+  @override
+  String get event_memory_limited_title1 => '限定回憶';
+
+  @override
+  String get moment_detail_add_photo1 => '加入照片';
+
+  @override
+  String get moment_detail_error1 => '錯誤';
+
+  @override
+  String get notification_claim_before_delete1 => '請先領取花花，再刪除禮物信件';
+
+  @override
+  String get notification_error1 => '錯誤';
+
+  @override
+  String get notification_creator_gift_already_claimed1 => '這份花花已領取過';
+
+  @override
+  String notification_creator_gift_claim_success1(Object amount) {
+    return '成功領取 $amount 朵花花！';
+  }
+
+  @override
+  String get notification_creator_gift_title1 => '創作者贈禮';
+
+  @override
+  String notification_creator_gift_amount1(Object amount) {
+    return '$amount 朵花花';
+  }
+
+  @override
+  String get notification_creator_gift_claimed1 => '已領取';
+
+  @override
+  String get notification_creator_gift_claiming1 => '領取中…';
+
+  @override
+  String get notification_creator_gift_claim_button1 => '領取花花';
+
+  @override
+  String get notification_support_subject1 => '玩家送出的標題';
+
+  @override
+  String get notification_support_content1 => '玩家送出的內容';
+
+  @override
+  String get notification_support_reported1 => '被回報的內容';
+
+  @override
+  String get notification_support_reply1 => '客服回覆';
+
+  @override
+  String get notification_share_mail1 => '分享信件';
+
+  @override
+  String get notification_original_question1 => '你原本詢問';
+
+  @override
+  String get notification_preferences_chat_title1 => '角色聊天';
+
+  @override
+  String get notification_preferences_chat_subtitle1 => '角色回覆訊息的推播';
+
+  @override
+  String get notification_preferences_moments_title1 => '新瞬間';
+
+  @override
+  String get notification_preferences_moments_subtitle1 => '關注的創作者及角色發布新貼文';
+
+  @override
+  String get notification_preferences_social_title1 => '社交通知';
+
+  @override
+  String get notification_preferences_social_subtitle1 => '按讚、留言、追蹤與角色互動';
+
+  @override
+  String get notification_preferences_announcements_title1 => '官方公告';
+
+  @override
+  String get notification_preferences_announcements_subtitle1 => '一般官方公告推播';
+
+  @override
+  String get notification_preferences_events_title1 => '活動提醒';
+
+  @override
+  String get notification_preferences_events_subtitle1 => '活動即將結束的推播';
+
+  @override
+  String get notification_preferences_save_failed1 => '通知設定儲存失敗，請稍後重試';
+
+  @override
+  String get notification_preferences_page_title1 => '通知偏好';
+
+  @override
+  String get notification_preferences_login_required1 => '請先登入帳號';
+
+  @override
+  String get notification_preferences_load_failed1 => '無法讀取通知偏好，請稍後再試';
+
+  @override
+  String get notification_preferences_footer1 =>
+      '此處設定同步至同一玩家帳號的所有裝置。手機系統通知權限需在各裝置分別設定。關閉推播不會刪除遊戲內信箱或已收到的通知。';
+
+  @override
+  String get official_studio_text_0011 => '導覽已結束，但同步觀看紀錄失敗，之後可能再次顯示';
+
+  @override
+  String get official_studio_text_0021 => '請先登入帳號';
+
+  @override
+  String get official_studio_text_0031 => '合作創作者專區';
+
+  @override
+  String get official_studio_text_0041 => '說明';
+
+  @override
+  String get official_studio_text_0051 => '無法驗證合作創作者資格，請稍後再試';
+
+  @override
+  String get official_studio_text_0061 => '目前沒有官方合作創作者權限。\n如已審核通過，請聯繫官方確認開通狀態。';
+
+  @override
+  String get official_studio_text_0071 => '已認證合作創作者';
+
+  @override
+  String get official_studio_text_0081 => '歡迎回到戀戀拾光創作者專區。專屬功能將陸續開放。';
+
+  @override
+  String get official_studio_text_0091 => '專屬工具';
+
+  @override
+  String get official_studio_text_0101 => '粉絲管理';
+
+  @override
+  String get official_studio_text_0111 => '查看追蹤者、移除粉絲';
+
+  @override
+  String get official_studio_text_0121 => '創作數據';
+
+  @override
+  String get official_studio_text_0131 => '角色人氣與累計遊玩次數';
+
+  @override
+  String get official_studio_text_0141 => '粉絲信件';
+
+  @override
+  String get official_studio_text_0151 => '寄送訊息給追蹤者';
+
+  @override
+  String get official_studio_text_0161 => '粉絲福利';
+
+  @override
+  String get official_studio_text_0171 => '贈送自己的花花給追蹤者';
+
+  @override
+  String get official_studio_text_0181 => '每月創作獎勵';
+
+  @override
+  String get official_studio_text_0191 => '新建並公開 3 位角色，可領取 300 花花';
+
+  @override
+  String get official_studio_text_0201 => '專屬橫幅';
+
+  @override
+  String get official_studio_text_0211 => '設定創作者公開頁面的橫幅圖片';
+
+  @override
+  String get official_studio_text_0221 => '合作資訊';
+
+  @override
+  String get official_studio_text_0231 => '合作狀態、權益與公告';
+
+  @override
+  String get official_studio_text_0241 => '問題回報中心';
+
+  @override
+  String get official_studio_text_0251 => '提出問題、查看官方回覆與處理進度';
+
+  @override
+  String get official_studio_text_0261 => '資格驗證失敗，請稍後重試';
+
+  @override
+  String get official_studio_text_0271 => '目前沒有官方合作創作者權限';
+
+  @override
+  String get official_studio_text_0281 => '公開角色資料載入失敗';
+
+  @override
+  String get official_studio_text_0291 => '創作總覽';
+
+  @override
+  String get official_studio_text_0301 => '累計遊玩次數';
+
+  @override
+  String get official_studio_text_0311 => '目前追蹤者';
+
+  @override
+  String get official_studio_text_0321 => '暫無法取得';
+
+  @override
+  String get official_studio_text_0331 => '各公開角色';
+
+  @override
+  String get official_studio_text_0341 => '還沒有公開角色，發布後就會顯示在這裡。';
+
+  @override
+  String get official_studio_text_0351 => '未命名角色';
+
+  @override
+  String get official_studio_text_0361 => '累計遊玩次數（playCount）';
+
+  @override
+  String get official_studio_text_0371 =>
+      '數據以資料庫現有欄位為準；累計遊玩次數不等於聊天訊息數、獨立玩家數或收入。';
+
+  @override
+  String get official_studio_text_0381 => '追蹤者資料載入失敗';
+
+  @override
+  String get official_studio_text_0391 => '目前還沒有追蹤者';
+
+  @override
+  String get official_studio_text_0401 => '追蹤者名單';
+
+  @override
+  String get official_studio_text_0411 => '目前顯示最多 100 位追蹤者；僅顯示公開暱稱與頭像。';
+
+  @override
+  String get official_studio_text_0421 => '移除粉絲';
+
+  @override
+  String get official_studio_text_0431 => '取消';
+
+  @override
+  String get official_studio_text_0441 => '確認移除';
+
+  @override
+  String get official_studio_text_0451 => '已移除粉絲';
+
+  @override
+  String get official_studio_text_0461 => '移除失敗，請稍後重試';
+
+  @override
+  String get official_studio_text_0471 => '玩家';
+
+  @override
+  String get official_studio_text_0481 => '無法載入公開資料';
+
+  @override
+  String get official_studio_text_0491 => '這位玩家';
+
+  @override
+  String get official_studio_text_0501 => '裁切後圖片仍過大，請使用其他圖片';
+
+  @override
+  String get official_studio_text_0511 => '橫幅已更新';
+
+  @override
+  String get official_studio_text_0521 => '圖片處理失敗，請重新選擇圖片';
+
+  @override
+  String get official_studio_text_0531 => '已移除橫幅';
+
+  @override
+  String get official_studio_text_0541 => '移除失敗';
+
+  @override
+  String get official_studio_text_0551 => '請先登入';
+
+  @override
+  String get official_studio_text_0561 => '公開頁橫幅';
+
+  @override
+  String get official_studio_text_0571 => '圖片讀取失敗';
+
+  @override
+  String get official_studio_text_0581 => '尚未設定橫幅';
+
+  @override
+  String get official_studio_text_0591 => '選擇照片後可在白色取景框內調整位置、縮放，確認後才上傳。';
+
+  @override
+  String get official_studio_text_0601 => '處理中…';
+
+  @override
+  String get official_studio_text_0611 => '選擇圖片並裁切';
+
+  @override
+  String get official_studio_text_0621 => '移除目前橫幅';
+
+  @override
+  String get official_studio_text_0631 => '無法開啟這張圖片';
+
+  @override
+  String get official_studio_text_0641 => '裁切後檔案過大，請更換照片';
+
+  @override
+  String get official_studio_text_0651 => '裁切失敗，請再試一次';
+
+  @override
+  String get official_studio_text_0661 => '調整橫幅取景';
+
+  @override
+  String get official_studio_text_0671 => '移動照片，選擇橫幅要顯示的範圍';
+
+  @override
+  String get official_studio_text_0681 => '單指拖曳位置・雙指縮放・也可以用下方滑桿';
+
+  @override
+  String get official_studio_text_0691 => '白框內的畫面，就是上傳後的橫幅（2.5：1）';
+
+  @override
+  String get official_studio_text_0701 => '縮放';
+
+  @override
+  String get official_studio_text_0711 => '重設位置';
+
+  @override
+  String get official_studio_text_0721 => '裁切中…';
+
+  @override
+  String get official_studio_text_0731 => '確認裁切並上傳';
+
+  @override
+  String get official_studio_text_0741 => '合作資格';
+
+  @override
+  String get official_studio_text_0751 => '資格確認中';
+
+  @override
+  String get official_studio_text_0761 => '目前可使用的專屬工具';
+
+  @override
+  String get official_studio_text_0771 => '粉絲管理、創作數據、粉絲信件、花花福利、每月創作獎勵及專屬橫幅。';
+
+  @override
+  String get official_studio_text_0781 =>
+      '依目前系統規則，當月新建且首次公開 3 位符合資格的角色，可申請領取 300 朵花花。實際資格與核發以後端審核結果為準。';
+
+  @override
+  String get official_studio_text_0791 => '官方公告與合約';
+
+  @override
+  String get official_studio_text_0801 =>
+      '合作條款以雙方實際簽署的版本與官方正式通知為準；此頁不取代合作契約。若有資格或權益相關疑問，請聯繫官方。';
+
+  @override
+  String get official_studio_text_0811 => '信件標題須在 1～100 字之間';
+
+  @override
+  String get official_studio_text_0821 => '信件內容須在 1～5000 字之間';
+
+  @override
+  String get official_studio_text_0831 => '請選擇一位追蹤者';
+
+  @override
+  String get official_studio_text_0841 => '確認寄送粉絲信件';
+
+  @override
+  String get official_studio_text_0851 => '確定寄送給目前的全部追蹤者嗎？這次將使用 1 次群發額度。';
+
+  @override
+  String get official_studio_text_0861 => '確定寄送給這位粉絲嗎？這次將使用 1 次單人私信額度。';
+
+  @override
+  String get official_studio_text_0871 => '確認寄出';
+
+  @override
+  String get official_studio_text_0881 => '已建立寄送工作；信件將由系統陸續投遞。';
+
+  @override
+  String get official_studio_text_0891 => '今日寄送額度';
+
+  @override
+  String get official_studio_text_0901 => '台灣時間每天 00:00 重置；群發一次可寄送給所有追蹤者。';
+
+  @override
+  String get official_studio_text_0911 => '全體粉絲';
+
+  @override
+  String get official_studio_text_0921 => '單一粉絲';
+
+  @override
+  String get official_studio_text_0931 => '無法取得粉絲名單';
+
+  @override
+  String get official_studio_text_0941 => '目前沒有可以寄信的粉絲';
+
+  @override
+  String get official_studio_text_0951 => '選擇追蹤者（前 100 位）';
+
+  @override
+  String get official_studio_text_0961 => '信件標題';
+
+  @override
+  String get official_studio_text_0971 => '信件內容';
+
+  @override
+  String get official_studio_text_0981 => '寫一封給粉絲的信……';
+
+  @override
+  String get official_studio_text_0991 => '提交中…';
+
+  @override
+  String get official_studio_text_1001 => '確認並寄送';
+
+  @override
+  String get official_studio_text_1011 => '寄送紀錄';
+
+  @override
+  String get official_studio_text_1021 => '還沒有寄送紀錄';
+
+  @override
+  String get official_studio_text_1031 => '排隊中';
+
+  @override
+  String get official_studio_text_1041 => '投遞中';
+
+  @override
+  String get official_studio_text_1051 => '已完成';
+
+  @override
+  String get official_studio_text_1061 => '已取消';
+
+  @override
+  String get official_studio_text_1071 => '寄送失敗';
+
+  @override
+  String get official_studio_text_1081 => '未命名信件';
+
+  @override
+  String get official_studio_text_1091 =>
+      '寄送紀錄顯示近 20 筆；取消合作資格後，新的寄送與未投遞的工作都會停止。';
+
+  @override
+  String get official_studio_text_1101 => '未設定暱稱的玩家';
+
+  @override
+  String get official_studio_text_1111 => '讀取粉絲失敗，請稍後重試';
+
+  @override
+  String get official_studio_text_1121 => '花花餘額不足';
+
+  @override
+  String get official_studio_text_1131 => '稍後再說';
+
+  @override
+  String get official_studio_text_1141 => '前往商店';
+
+  @override
+  String get official_studio_text_1151 => '每位粉絲可贈送 1～1000 朵花花';
+
+  @override
+  String get official_studio_text_1161 => '每次請選擇 1～20 位粉絲';
+
+  @override
+  String get official_studio_text_1171 => '單次贈送最多 5000 朵花花';
+
+  @override
+  String get official_studio_text_1181 => '祝福文字最多 300 字';
+
+  @override
+  String get official_studio_text_1191 => '確認贈送花花';
+
+  @override
+  String get official_studio_text_1201 => '確認贈送';
+
+  @override
+  String get official_studio_text_1211 => '這筆贈送已建立，沒有重複扣點';
+
+  @override
+  String get official_studio_text_1221 => '粉絲福利・花花贈送';
+
+  @override
+  String get official_studio_text_1231 => '無法讀取花花餘額';
+
+  @override
+  String get official_studio_text_1241 => '我的花花餘額';
+
+  @override
+  String get official_studio_text_1251 => '花花從妳自己的帳戶扣除，不會由平台額外發放。';
+
+  @override
+  String get official_studio_text_1261 => '選擇粉絲（單次最多 20 位）';
+
+  @override
+  String get official_studio_text_1271 => '依玩家目前公開暱稱或 UID 搜尋；實際送出時由伺服器再次驗證。';
+
+  @override
+  String get official_studio_text_1281 => '搜尋粉絲';
+
+  @override
+  String get official_studio_text_1291 => '輸入暱稱或玩家 UID';
+
+  @override
+  String get official_studio_text_1301 => '清除搜尋';
+
+  @override
+  String get official_studio_text_1311 => '目前沒有可以贈送的粉絲';
+
+  @override
+  String get official_studio_text_1321 => '這批沒有符合的粉絲，可以繼續搜尋';
+
+  @override
+  String get official_studio_text_1331 => '找不到符合的粉絲';
+
+  @override
+  String get official_studio_text_1341 => '單次最多選擇 20 位粉絲';
+
+  @override
+  String get official_studio_text_1351 => '搜尋中…';
+
+  @override
+  String get official_studio_text_1361 => '載入更多粉絲';
+
+  @override
+  String get official_studio_text_1371 => '繼續搜尋更多粉絲';
+
+  @override
+  String get official_studio_text_1381 => '每位粉絲贈送花花';
+
+  @override
+  String get official_studio_text_1391 => '例如：10';
+
+  @override
+  String get official_studio_text_1401 => '祝福文字（選填）';
+
+  @override
+  String get official_studio_text_1411 => '預計扣除';
+
+  @override
+  String get official_studio_text_1421 =>
+      '每次最多 20 位粉絲，單次最多 5000 朵。送出時先扣除創作者花花，玩家須至信箱手動領取後才會入帳。';
+
+  @override
+  String get official_studio_text_1431 => '無法讀取每月任務';
+
+  @override
+  String get official_studio_text_1441 => '讀取進度失敗，請稍後重試';
+
+  @override
+  String get official_studio_text_1451 => '確認領取創作獎勵';
+
+  @override
+  String get official_studio_text_1461 => '確定要領取本月 300 朵花花嗎？同一月份僅能領取一次。';
+
+  @override
+  String get official_studio_text_1471 => '確認領取';
+
+  @override
+  String get official_studio_text_1481 => '本月獎勵已領取';
+
+  @override
+  String get official_studio_text_1491 => '成功領取 300 朵花花！';
+
+  @override
+  String get official_studio_text_1501 => '領取失敗，請稍後重試';
+
+  @override
+  String get official_studio_text_1511 => '無法確認領取結果，請重新整理紀錄';
+
+  @override
+  String get official_studio_text_1521 => '本月';
+
+  @override
+  String get official_studio_text_1531 => '每月新建立並首次公開 3 位不同角色，手動領取 300 朵花花。';
+
+  @override
+  String get official_studio_text_1541 =>
+      '規則：僅限已簽約並認證的合作創作者；當月新建、當月首次公開、目前仍公開的不同角色才計入。私人角色、草稿、舊角色重新公開均不計入。台灣時間每月重置，每月限領一次。';
+
+  @override
+  String get official_studio_text_1551 =>
+      '如有重複、空白或違反創作規範的角色，官方得依合作條款暫停審查或合作資格。';
+
+  @override
+  String get official_studio_text_1561 => '歡迎加入官方合作創作者';
+
+  @override
+  String get official_studio_text_1571 => '掌握作品表現，與粉絲保持聯繫';
+
+  @override
+  String get official_studio_text_1581 => '分享花花，領取專屬創作獎勵';
+
+  @override
+  String get official_studio_text_1591 => '打造專屬頁面，隨時取得協助';
+
+  @override
+  String get official_studio_text_1601 => '妳的專屬創作空間';
+
+  @override
+  String get official_studio_text_1611 => '粉絲管理・創作數據・粉絲信件';
+
+  @override
+  String get official_studio_text_1621 => '粉絲福利・每月創作獎勵';
+
+  @override
+  String get official_studio_text_1631 => '專屬橫幅・合作資訊・問題回報';
+
+  @override
+  String get official_studio_text_1641 =>
+      '歡迎來到《戀戀拾光》官方合作創作者專區。這裡整合了創作管理、粉絲互動、專屬福利及合作資訊，讓妳能更方便地經營自己的角色與創作。';
+
+  @override
+  String get official_studio_text_1651 =>
+      '妳可以查看追蹤者、管理粉絲名單，並了解公開角色的遊玩次數與作品表現。也可以透過粉絲信件，向一位粉絲或所有追蹤者傳達訊息。';
+
+  @override
+  String get official_studio_text_1661 =>
+      '可以將自己帳戶中的花花贈送給粉絲，傳遞一份小小心意。另外，每月新建並首次公開符合資格的角色，還有機會領取專屬創作獎勵。';
+
+  @override
+  String get official_studio_text_1671 =>
+      '上傳專屬橫幅，打造屬於自己的創作者頁面。合作相關規範與權益可以在「合作資訊」查看；遇到問題，也可以透過「問題回報中心」聯繫官方。';
+
+  @override
+  String get official_studio_text_1681 => '只有符合官方合作資格的創作者，才能使用這裡的專屬功能。';
+
+  @override
+  String get official_studio_text_1691 => '粉絲信件設有每日寄送額度，使用前請留意頁面中的額度說明。';
+
+  @override
+  String get official_studio_text_1701 =>
+      '贈送花花會扣除自己的餘額；每月創作獎勵依現行活動規則與系統審核結果發放。';
+
+  @override
+  String get official_studio_text_1711 => '未來新增的創作者專屬功能，也會陸續在這裡開放。';
+
+  @override
+  String get official_studio_text_1721 => '創作者專區導覽';
+
+  @override
+  String get official_studio_text_1731 => '略過';
+
+  @override
+  String get official_studio_text_1741 => '上一步';
+
+  @override
+  String get official_studio_text_1751 => '完成';
+
+  @override
+  String get official_studio_text_1761 => '下一步';
+
+  @override
+  String official_studio_text_1771(String name) {
+    return '确定将「$name」移出追蹤者名单吗？对方将不再追蹤你，但未来仍可再次追蹤。';
+  }
+
+  @override
+  String official_studio_text_1781(int count) {
+    return '单人私信：$count / 30 封';
+  }
+
+  @override
+  String official_studio_text_1791(int count) {
+    return '全体粉丝群发：$count / 5 次';
+  }
+
+  @override
+  String official_studio_text_1801(int count) {
+    return '赠送成功！$count 朵花花已寄到粉丝信箱，等待领取。';
+  }
+
+  @override
+  String official_studio_text_1811(int count) {
+    return '$count 朵 🌸';
+  }
+
+  @override
+  String official_studio_text_1821(int count) {
+    return '$count 位';
+  }
+
+  @override
+  String official_studio_text_1831(int count) {
+    return '$count 朵';
+  }
+
+  @override
+  String official_studio_text_1841(String month) {
+    return '$month 创作奖励';
+  }
+
+  @override
+  String official_studio_text_1851(int count) {
+    return '本月进度：$count / 3 位';
+  }
+
+  @override
+  String official_studio_text_1861(int count) {
+    return '尚差 $count 位公开角色';
+  }
+
+  @override
+  String official_studio_text_1871(int count) {
+    return '花花余额不足，尚缺 $count 朵';
+  }
+
+  @override
+  String get official_studio_text_1881 => '读取信件额度失败，请稍后重試';
+
+  @override
+  String get official_studio_text_1891 => '寄送未确认成功，请检查紀录后重試';
+
+  @override
+  String get official_studio_text_1901 => '連线失败，请确认紀录后再重試';
+
+  @override
+  String get official_studio_text_1911 => '赠送未确认成功，请先查询紀录再重試。';
+
+  @override
+  String official_studio_text_1921(int balance, int total, int missing) {
+    return '目前余额：$balance 朵\n本次需要：$total 朵\n尚缺少：$missing 朵\n\n可以前往商店補充花花。';
+  }
+
+  @override
+  String official_studio_text_1931(int followers, int amount, int total) {
+    return '即将赠送给 $followers 位粉丝，每人 $amount 朵，共扣除 $total 朵花花。\n赠送完成后无法自行撤回。';
+  }
+
+  @override
+  String official_studio_text_1941(String mode, String status, int count) {
+    return '$mode · $status · 已投递 $count 人';
+  }
+
+  @override
+  String get official_studio_text_1951 => '公開角色';
+
+  @override
+  String get official_studio_text_1961 => '讀取中…';
+
+  @override
+  String get official_studio_text_1971 => '選擇粉絲';
+
+  @override
+  String get official_studio_text_1981 => '本月已領取';
+
+  @override
+  String get preference_selection_title1 => '選擇你喜歡的角色類型';
+
+  @override
+  String get preference_selection_description1 =>
+      '挑選 3～5 個你感興趣的標籤，讓我們推薦更合你心意的角色。';
+
+  @override
+  String get preference_selection_recommendation_note1 =>
+      '這些偏好只用於改善推薦，你之後仍可以探索其他類型的角色。';
+
+  @override
+  String get preference_selection_selected1 => '已選擇';
+
+  @override
+  String get preference_selection_start1 => '開始探索';
+
+  @override
+  String preference_selection_max_error1(int count) {
+    return '最多只能選擇 $count 個標籤';
+  }
+
+  @override
+  String get preference_selection_save_failed1 => '儲存偏好失敗，請稍後再試';
+
+  @override
+  String get preference_group_personality1 => '性格氣質';
+
+  @override
+  String get preference_group_relationship_age1 => '關係・年齡感';
+
+  @override
+  String get preference_group_story1 => '故事氛圍';
+
+  @override
+  String get preference_tag_gentle1 => '溫柔';
+
+  @override
+  String get preference_tag_cold1 => '高冷';
+
+  @override
+  String get preference_tag_scheming1 => '腹黑';
+
+  @override
+  String get preference_tag_tsundere1 => '傲嬌';
+
+  @override
+  String get preference_tag_loyal1 => '忠犬';
+
+  @override
+  String get preference_tag_yandere1 => '病嬌';
+
+  @override
+  String get preference_tag_mysterious1 => '神秘';
+
+  @override
+  String get preference_tag_healing1 => '治癒';
+
+  @override
+  String get preference_tag_gap_moe1 => '反差感';
+
+  @override
+  String get preference_tag_older1 => '年上';
+
+  @override
+  String get preference_tag_younger1 => '年下';
+
+  @override
+  String get preference_tag_ceo1 => '霸總';
+
+  @override
+  String get preference_tag_school1 => '校園';
+
+  @override
+  String get preference_tag_workplace1 => '職場';
+
+  @override
+  String get preference_tag_ancient1 => '古風';
+
+  @override
+  String get preference_tag_nonhuman1 => '非人';
+
+  @override
+  String get private_label1 => '私密';
+
+  @override
+  String get profile_page_world_tab1 => '開放世界';
+
+  @override
+  String get profile_page_login_required1 => '請先登入';
+
+  @override
+  String get profile_page_world_load_failed1 => '讀取世界觀失敗，請稍後再試';
+
+  @override
+  String get profile_page_my_worlds1 => '我的開放世界';
+
+  @override
+  String get profile_page_create_world1 => '建立世界觀';
+
+  @override
+  String get profile_page_worlds_empty1 => '還沒有建立開放世界';
+
+  @override
+  String get profile_page_worlds_empty_hint1 => '建立妳的第一個世界觀吧';
+
+  @override
+  String get profile_page_world_untitled1 => '未命名世界觀';
+
+  @override
+  String get profile_page_world_public1 => '公開';
+
+  @override
+  String get profile_page_world_private1 => '私人';
+
+  @override
+  String profile_page_world_character_count1(int count) {
+    return '$count 位人物';
+  }
+
+  @override
+  String get profile_page_world_enter_chat1 => '進入聊天';
+
+  @override
+  String get profile_page_world_edit1 => '編輯';
+
+  @override
+  String get profile_page_create_character1 => '創建角色';
+
+  @override
+  String get profile_page_event_frame_default1 => '活動頭像框';
+
+  @override
+  String get public_worlds_explore_title1 => '探索公開世界';
+
+  @override
+  String get public_worlds_search_tooltip1 => '搜尋開放世界';
+
+  @override
+  String get public_worlds_load_failed1 => '公開世界暫時無法載入';
+
+  @override
+  String get public_worlds_refresh1 => '重新整理';
+
+  @override
+  String get public_worlds_empty1 => '公開世界正在準備中，敬請期待';
+
+  @override
+  String get public_worlds_unnamed1 => '未命名世界';
+
+  @override
+  String get world_explore_subtitle1 => '走進不同的世界，探索不一樣的旅程';
+
+  @override
+  String get settings_notification_preferences_title1 => '通知偏好';
+
+  @override
+  String get settings_notification_preferences_subtitle1 => '設定想收到的通知類型，跨裝置同步';
+
+  @override
+  String get settings_admin_section1 => '管理';
+
+  @override
+  String get settings_admin_dashboard1 => '管理後台';
+
+  @override
+  String get settings_admin_tools_subtitle1 => '拾光內部管理工具';
+
+  @override
+  String get world_chat_back1 => '返回';
+
+  @override
+  String get world_chat_mode_tooltip1 => '回覆模式（AI 與扣花尚未串接）';
+
+  @override
+  String get world_chat_menu1 => '世界觀選單';
+
+  @override
+  String get world_chat_mode_story1 => '劇情';
+
+  @override
+  String get world_chat_mode_immersive1 => '沉浸';
+
+  @override
+  String get world_chat_mode_resonance1 => '共鳴';
+
+  @override
+  String get world_chat_mode_interaction1 => '互動';
+
+  @override
+  String world_chat_mode_cost1(String mode, int cost) {
+    return '$mode · $cost 花';
+  }
+
+  @override
+  String world_memo_read_failed1(String error) {
+    return '備忘錄讀取失敗：$error';
+  }
+
+  @override
+  String get world_memo_sync_failed1 => '同步暫時失敗，目前顯示上次讀取的備忘錄。';
+
+  @override
+  String get world_memo_server_no_id1 => '伺服器未回傳備忘錄 ID';
+
+  @override
+  String world_memo_save_failed1(String error) {
+    return '儲存失敗：$error';
+  }
+
+  @override
+  String get world_memo_delete_title1 => '刪除備忘錄？';
+
+  @override
+  String get world_memo_delete_warning1 => '刪除後無法復原。';
+
+  @override
+  String get world_memo_cancel1 => '取消';
+
+  @override
+  String get world_memo_delete1 => '刪除';
+
+  @override
+  String world_memo_cancel_reminder_failed1(String error) {
+    return '備忘錄已刪除，但舊裝置提醒取消失敗：$error';
+  }
+
+  @override
+  String world_memo_delete_failed1(String error) {
+    return '刪除失敗：$error';
+  }
+
+  @override
+  String get world_memo_title1 => '備忘錄';
+
+  @override
+  String world_memo_world_personal1(String worldName) {
+    return '$worldName｜個人備忘錄';
+  }
+
+  @override
+  String get world_memo_sync_notice1 => '提醒時間會跨裝置同步，並透過推播通知已登入且允許通知的裝置。';
+
+  @override
+  String get world_memo_loading1 => '正在讀取…';
+
+  @override
+  String get world_memo_empty1 => '尚無備忘錄，點擊右下角＋新增';
+
+  @override
+  String world_memo_reminder_date1(String date) {
+    return '提醒日期：$date';
+  }
+
+  @override
+  String get world_memo_reminder_future1 => '提醒時間必須晚於現在';
+
+  @override
+  String get world_memo_content_required1 => '請先輸入備忘錄內容';
+
+  @override
+  String get world_memo_edit_title1 => '編輯備忘錄';
+
+  @override
+  String get world_memo_add_title1 => '新增備忘錄';
+
+  @override
+  String get world_memo_content_label1 => '備忘錄內容';
+
+  @override
+  String get world_memo_content_hint1 => '寫下想記住的事情…';
+
+  @override
+  String get world_memo_reminder_settings1 => '提醒設定';
+
+  @override
+  String get world_memo_no_reminder1 => '未設定提醒';
+
+  @override
+  String get world_memo_reminder_choose1 => '選擇日期和時間，使用雲端跨裝置提醒';
+
+  @override
+  String get world_memo_clear_reminder1 => '清除提醒日期';
+
+  @override
+  String get world_memo_save1 => '儲存備忘錄';
+
+  @override
+  String get world_chat_open_world1 => '開放世界';
+
+  @override
+  String get world_chat_flower_sync1 => '花花餘額暫時無法同步';
+
+  @override
+  String get world_chat_web_store_unavailable1 => '網頁版暫不支援購買花花';
+
+  @override
+  String get world_chat_sync_unavailable1 => '即時同步暫時不可用，仍可重新進入讀取紀錄';
+
+  @override
+  String get world_chat_stopped1 => '已停止生成，本次不扣花花';
+
+  @override
+  String get world_chat_cannot_stop1 => '回覆可能已完成，無法再停止；請確認聊天紀錄與花花';
+
+  @override
+  String get world_chat_stop_retry1 => '停止請求暫時失敗，請再試一次';
+
+  @override
+  String get world_chat_connection_failed1 => '連線失敗';
+
+  @override
+  String get world_chat_network_failed1 => '網路暫時無法連線';
+
+  @override
+  String get world_chat_no_regenerate1 => '尚無可重新生成的回覆';
+
+  @override
+  String get world_chat_paid_regenerate1 => '付費重新生成';
+
+  @override
+  String get world_chat_cancel1 => '取消';
+
+  @override
+  String get world_chat_confirm1 => '確認';
+
+  @override
+  String get world_chat_no_continue1 => '尚無可接續的劇情';
+
+  @override
+  String get world_chat_no_save1 => '目前還沒有可以保存的對話';
+
+  @override
+  String get world_chat_loading1 => '聊天室仍在載入中';
+
+  @override
+  String get world_chat_unnamed_character1 => '未命名角色';
+
+  @override
+  String get world_chat_bg_wait1 => '聊天室載入完成後即可更換背景';
+
+  @override
+  String get world_chat_sign_in1 => '請先登入帳號';
+
+  @override
+  String get world_chat_choose_mode1 => '選擇世界觀模式';
+
+  @override
+  String get world_chat_mode_charge_expl1 => '每則成功回覆依模式扣花花；失敗不收費';
+
+  @override
+  String get world_chat_photo_selected1 => '已選取照片';
+
+  @override
+  String get world_chat_got_it1 => '知道了';
+
+  @override
+  String get world_chat_status_settings1 => '世界觀狀態欄設定';
+
+  @override
+  String get world_chat_save_settings1 => '儲存設定';
+
+  @override
+  String get world_chat_status_saved1 => '已儲存此世界的狀態欄顯示偏好';
+
+  @override
+  String get world_chat_not_ready1 => '世界觀聊天室尚未就緒';
+
+  @override
+  String get world_chat_enter_first1 => '請先進入世界觀聊天室';
+
+  @override
+  String get world_chat_photo1 => '照片';
+
+  @override
+  String get world_chat_profile1 => '拾光檔案';
+
+  @override
+  String get world_chat_interaction1 => '互動玩法';
+
+  @override
+  String get world_chat_theater1 => '劇場';
+
+  @override
+  String get world_chat_status1 => '狀態欄';
+
+  @override
+  String get world_chat_secret1 => '秘密篇章';
+
+  @override
+  String get world_chat_mood1 => '心情';
+
+  @override
+  String get world_chat_outfit1 => '服裝';
+
+  @override
+  String get world_chat_relationship1 => '關係';
+
+  @override
+  String get world_chat_thought1 => '想法';
+
+  @override
+  String get world_chat_weather1 => '天氣';
+
+  @override
+  String get world_chat_current_state1 => '目前狀態';
+
+  @override
+  String get world_chat_action1 => '動作';
+
+  @override
+  String get world_chat_affinity1 => '好感度';
+
+  @override
+  String get world_chat_generating1 => '世界正在悄悄運轉…';
+
+  @override
+  String get world_chat_screenshot1 => '截圖分享';
+
+  @override
+  String get world_chat_copy1 => '複製內容';
+
+  @override
+  String get world_chat_copied1 => '已複製';
+
+  @override
+  String get world_chat_edit1 => '編輯';
+
+  @override
+  String get world_chat_delete1 => '刪除';
+
+  @override
+  String get world_chat_report1 => '舉報此對話';
+
+  @override
+  String get world_chat_feedback1 => '給建議';
+
+  @override
+  String get world_chat_edit_segment1 => '編輯角色段落';
+
+  @override
+  String get world_chat_save1 => '儲存';
+
+  @override
+  String get world_chat_updated1 => '訊息已更新';
+
+  @override
+  String get world_chat_delete_segment1 => '刪除單一段落';
+
+  @override
+  String get world_chat_deleted_segment1 => '已刪除這一段';
+
+  @override
+  String get world_chat_edit_message1 => '編輯訊息';
+
+  @override
+  String get world_chat_edit_hint1 => '修改你的文字';
+
+  @override
+  String get world_chat_delete_conversation1 => '刪除對話';
+
+  @override
+  String get world_chat_no_chat1 => '尚無對話';
+
+  @override
+  String get world_chat_cancel_select1 => '取消選取';
+
+  @override
+  String get world_chat_input_hint1 => '書寫你們的故事…';
+
+  @override
+  String get world_chat_screenshot_done1 => '專屬時光已生成';
+
+  @override
+  String get world_chat_screenshot_style1 => '切換截圖配色';
+
+  @override
+  String get world_chat_reselect1 => '重新選取';
+
+  @override
+  String get world_chat_download_share1 => '下載並分享';
+
+  @override
+  String get world_records_summary_title1 => '劇情摘要';
+
+  @override
+  String world_records_loaded_count1(int count) {
+    return '已載入 $count 筆聊天訊息；依劇情發生順序整理。';
+  }
+
+  @override
+  String get world_records_auto_summary_pending1 =>
+      '目前提供已載入對話的劇情回顧；AI 自動濃縮摘要尚未接入。';
+
+  @override
+  String get world_records_empty_story1 => '目前沒有可以回顧的劇情';
+
+  @override
+  String get world_records_narrator_name1 => '世界旁白';
+
+  @override
+  String get world_records_relationships_title1 => '人物關係';
+
+  @override
+  String get world_records_affinity_note1 => '每位正式角色的好感度獨立計算；臨時 NPC 不計分。';
+
+  @override
+  String get world_records_empty_characters1 => '目前沒有正式人物資料';
+
+  @override
+  String world_records_affinity_score_with_next1(int score, int next) {
+    return '好感度 $score / $next';
+  }
+
+  @override
+  String world_records_affinity_score_only1(int score) {
+    return '好感度 $score';
+  }
+
+  @override
+  String world_records_relationship_stage1(int stage) {
+    return '關係階段 $stage';
+  }
+
+  @override
+  String get world_records_local_memo_read_failed1 => '本機備忘錄讀取失敗';
+
+  @override
+  String get world_records_memo_saved_local1 => '備忘錄已保存在此裝置';
+
+  @override
+  String get world_records_memo_save_failed1 => '備忘錄保存失敗';
+
+  @override
+  String get world_records_memo_unsaved1 => '備忘錄尚未儲存';
+
+  @override
+  String get world_records_memo_save_before_exit1 => '要先儲存再離開嗎？';
+
+  @override
+  String get world_records_continue_editing1 => '繼續編輯';
+
+  @override
+  String get world_records_save_and_exit1 => '儲存並離開';
+
+  @override
+  String get world_records_world_memo_title1 => '給世界的備忘錄';
+
+  @override
+  String get world_records_save1 => '儲存';
+
+  @override
+  String get world_records_memo_local_disclaimer1 =>
+      '私人備忘錄｜此版本僅儲存於目前裝置，不會傳給 AI，也不會跨裝置同步。';
+
+  @override
+  String get world_records_memo_hint1 => '記下世界裡發現的線索、想完成的事，或想對角色說的話…';
+
+  @override
+  String get world_records_narrator_short1 => '旁白';
+
+  @override
+  String get world_records_summary_service_missing1 =>
+      '劇情摘要服務尚未部署（worldStoryMemory）。請部署後重新進入。';
+
+  @override
+  String get world_records_summary_load_failed1 => '暫時無法讀取劇情摘要，請稍後重試。';
+
+  @override
+  String get world_records_summary_intro1 =>
+      '每段相遇與抉擇，都將成為故事的一部分。重要經歷與人物關係會在此留下紀錄，陪伴故事繼續向前。';
+
+  @override
+  String get world_records_summary_empty1 => '故事仍在持續，精彩篇章即將收錄於此。';
+
+  @override
+  String get world_search_title1 => '搜尋對話';
+
+  @override
+  String get world_search_hint1 => '搜尋人物、對白或世界旁白';
+
+  @override
+  String get world_search_clear1 => '清除搜尋';
+
+  @override
+  String get world_search_start1 => '輸入關鍵字開始搜尋';
+
+  @override
+  String world_search_results1(int count) {
+    return '找到 $count 筆結果';
+  }
+
+  @override
+  String get world_search_empty_prompt1 => '搜尋玩家、人物及世界旁白';
+
+  @override
+  String get world_search_no_results1 => '沒有符合的對話';
+
+  @override
+  String get world_search_unknown_speaker1 => '未知人物';
+
+  @override
+  String get world_search_collapse1 => '收合';
+
+  @override
+  String get world_search_expand1 => '展開';
+
+  @override
+  String get world_search_scope1 => '目前搜尋範圍：聊天室已載入的最近 200 筆訊息';
+
+  @override
+  String get world_menu_subtitle1 => '開放世界 · 功能逐步開放';
+
+  @override
+  String get world_menu_chat_section1 => '聊天';
+
+  @override
+  String get world_menu_search1 => '搜尋對話';
+
+  @override
+  String get world_menu_save_transcript1 => '保存對話紀錄';
+
+  @override
+  String get world_menu_memories_background1 => '專屬回憶與背景';
+
+  @override
+  String get world_menu_relations_section1 => '世界關係';
+
+  @override
+  String get world_menu_story_summary1 => '劇情摘要';
+
+  @override
+  String get world_menu_relationships1 => '人物關係';
+
+  @override
+  String get world_menu_memos1 => '備忘錄';
+
+  @override
+  String get world_menu_memory_section1 => '記憶管理';
+
+  @override
+  String get world_menu_reset_progress1 => '重置世界進度';
+
+  @override
+  String get world_chat_book_confirm1 => '確定';
+
+  @override
+  String get world_custom_scene_title_required1 => '請先填寫劇場標題。';
+
+  @override
+  String get world_custom_scene_description_required1 => '請先填寫場景說明。';
+
+  @override
+  String get world_custom_scene_save_failed1 => '儲存失敗，請稍後再試。';
+
+  @override
+  String get world_custom_scene_edit_title1 => '編輯劇場';
+
+  @override
+  String get world_custom_scene_add_title1 => '新增劇場';
+
+  @override
+  String get world_discovery_share_desc1 => '走進創作者的開放世界，展開屬於你的故事。';
+
+  @override
+  String world_discovery_share_text1(
+      String title, String description, String link) {
+    return '戀戀拾光・開放世界邀請\n\n「$title」\n\n$description\n\n立即探索：$link';
+  }
+
+  @override
+  String get world_discovery_brand1 => '戀戀拾光';
+
+  @override
+  String get world_discovery_invite1 => '開放世界邀請';
+
+  @override
+  String get world_discovery_scan1 => '掃描下載';
+
+  @override
+  String get world_discovery_cancel1 => '取消';
+
+  @override
+  String get world_discovery_share_button1 => '分享邀請卡';
+
+  @override
+  String get world_discovery_share_missing_card1 => '找不到開放世界邀請卡';
+
+  @override
+  String get world_discovery_share_image_failed1 => '無法產生分享圖片';
+
+  @override
+  String get world_discovery_share_failed1 => '分享邀請卡失敗，請再試一次';
+
+  @override
+  String get world_discovery_story_open1 => '故事開場';
+
+  @override
+  String get world_discovery_story_unset1 => '尚未設定故事開場';
+
+  @override
+  String get world_discovery_first_unset1 => '尚未設定第一句話';
+
+  @override
+  String get world_discovery_background_title1 => '世界觀背景與說明';
+
+  @override
+  String world_discovery_era1(String era) {
+    return '時空背景：$era';
+  }
+
+  @override
+  String get world_discovery_background_unset1 => '尚未設定世界觀背景';
+
+  @override
+  String get world_discovery_background_full1 => '完整世界背景';
+
+  @override
+  String get world_discovery_people_unset1 => '尚未設定人物';
+
+  @override
+  String get world_discovery_people_intro1 => '人物介紹';
+
+  @override
+  String get world_discovery_appearance_unset1 => '未提供外貌特徵';
+
+  @override
+  String get world_discovery_creator_unset1 => '尚無創作者資料';
+
+  @override
+  String get world_discovery_creator1 => '創作者';
+
+  @override
+  String get world_discovery_creator_load_failed1 => '暫時無法讀取創作者資料';
+
+  @override
+  String world_discovery_world_load_failed1(String error) {
+    return '開放世界讀取失敗：$error';
+  }
+
+  @override
+  String get world_discovery_unpublished1 => '此世界觀未公開';
+
+  @override
+  String get world_discovery_open_world1 => '開放世界';
+
+  @override
+  String get world_discovery_share_tooltip1 => '分享開放世界';
+
+  @override
+  String get world_discovery_world_background1 => '世界背景';
+
+  @override
+  String get world_discovery_not_playable1 => '這個開放世界尚未開放遊玩。';
+
+  @override
+  String get world_discovery_enter1 => '進入世界';
+
+  @override
+  String get world_edit_login_required1 => '請先登入';
+
+  @override
+  String get world_edit_no_edit_permission1 => '無權編輯此世界觀';
+
+  @override
+  String get world_edit_secret_permission_error1 =>
+      '秘密篇章讀取權限不足，請確認 Firestore Rules 已部署。已暫停儲存以保護原資料。';
+
+  @override
+  String world_edit_secret_read_error_code1(String code) {
+    return '秘密篇章讀取失敗（$code），已暫停儲存以保護原資料。';
+  }
+
+  @override
+  String get world_edit_secret_read_error1 => '秘密篇章讀取失敗，已暫停儲存以保護原資料。';
+
+  @override
+  String world_edit_world_read_error1(String error) {
+    return '讀取世界觀失敗：$error';
+  }
+
+  @override
+  String world_edit_image_max1(int count) {
+    return '世界觀最多只能放 $count 張圖片';
+  }
+
+  @override
+  String world_edit_image_read_error1(String error) {
+    return '讀取圖片失敗：$error';
+  }
+
+  @override
+  String get world_edit_tag_heading1 => '主題標籤（最多 5 個）';
+
+  @override
+  String get world_edit_tag_max1 => '最多選擇 5 個標籤';
+
+  @override
+  String get world_edit_tag_custom1 => '標籤（可自訂，以頓號分隔）';
+
+  @override
+  String get world_edit_secret_not_ready1 =>
+      '秘密篇章尚未成功讀取，為保護既有內容暫時無法發布。請確認權限並重新開啟頁面。';
+
+  @override
+  String get world_edit_required_publish1 => '請完成世界名稱、至少一張圖片、世界背景、故事開場與第一句話';
+
+  @override
+  String get world_edit_max_tags_save1 => '主題標籤最多 5 個，請刪減後再儲存';
+
+  @override
+  String get world_edit_secret_validation1 => '每章請填寫標題、解鎖條件與秘密內容，最多 12 章';
+
+  @override
+  String get world_edit_draft_saved1 => '開放世界草稿與秘密篇章已儲存';
+
+  @override
+  String get world_edit_publish_unconfirmed1 => '後端尚未確認公開資格，請稍後再次發布。';
+
+  @override
+  String world_edit_publish_backend_error1(String code, String message) {
+    return '開放世界資料已儲存，但公開啟用失敗（$code）：$message。修正後可再次按「發布開放世界」。';
+  }
+
+  @override
+  String get world_edit_publish_service_missing1 => '請確認 worldPublish 已部署';
+
+  @override
+  String get world_edit_public_published1 => '公開開放世界已發布';
+
+  @override
+  String get world_edit_private_saved1 => '私人開放世界已儲存';
+
+  @override
+  String world_edit_save_publish_failed1(String error) {
+    return '儲存／發布失敗：$error';
+  }
+
+  @override
+  String get world_edit_save_draft_question1 => '是否儲存草稿？';
+
+  @override
+  String get world_edit_save_draft_explain1 => '離開前要儲存目前的世界觀嗎？未儲存的內容將會遺失。';
+
+  @override
+  String get world_edit_discard1 => '不儲存';
+
+  @override
+  String get world_edit_cancel1 => '取消';
+
+  @override
+  String get world_edit_save_draft1 => '儲存草稿';
+
+  @override
+  String get world_edit_world_name1 => '開放世界名稱 *';
+
+  @override
+  String get world_edit_world_images1 => '世界觀圖片（最多 6 張，第一張為主要封面）';
+
+  @override
+  String get world_edit_cover1 => '封面';
+
+  @override
+  String get world_edit_set_cover1 => '設為封面';
+
+  @override
+  String get world_edit_short_pitch1 => '卡片一句話介紹（選填，最多 60 字）';
+
+  @override
+  String get world_edit_public_summary1 => '世界觀公開簡介（不含劇透）';
+
+  @override
+  String get world_edit_era1 => '時空背景（例：架空現代、民國時期）';
+
+  @override
+  String get world_edit_world_rules1 => '世界觀背景與規則 *';
+
+  @override
+  String get world_edit_full_lore1 => '完整世界背景／事件與地點（給 AI 的設定）';
+
+  @override
+  String get world_edit_npc_intro1 =>
+      '主要角色與 NPC 都能設定姓名、外貌、生日、人物關係與照片。玩家仍是自己故事的主角。';
+
+  @override
+  String get world_edit_main_characters1 => '主要角色';
+
+  @override
+  String get world_edit_main_subtitle1 => '在世界觀中較常登場的重要人物';
+
+  @override
+  String get world_edit_npc_subtitle1 => '其他登場人物，也能隨劇情成為互動焦點';
+
+  @override
+  String world_edit_people_count1(int count) {
+    return '$count 位';
+  }
+
+  @override
+  String get world_edit_role_unset1 => '尚未設定身分／職業';
+
+  @override
+  String get world_edit_remove_person1 => '移除人物';
+
+  @override
+  String world_edit_add_person1(String type) {
+    return '新增$type';
+  }
+
+  @override
+  String get world_edit_add_secret1 => '新增秘密篇章';
+
+  @override
+  String get world_edit_edit_secret1 => '編輯秘密篇章';
+
+  @override
+  String get world_edit_chapter_title1 => '篇章標題 *';
+
+  @override
+  String get world_edit_unlock_condition1 => '解鎖條件（給後端判定的描述）*';
+
+  @override
+  String get world_edit_secret_content1 => '秘密內容 *';
+
+  @override
+  String get world_edit_confirm1 => '確認';
+
+  @override
+  String get world_edit_story_opening1 => '故事開場 *';
+
+  @override
+  String get world_edit_first_line1 => '故事第一句話 *';
+
+  @override
+  String get world_edit_secret_chapters1 => '秘密篇章';
+
+  @override
+  String get world_edit_secret_explain1 =>
+      '秘密篇章只儲存在私密資料區。正式公開不會直接公開內容；玩家需在遊玩中達成劇情條件才可解鎖。';
+
+  @override
+  String get world_edit_add_secret_max1 => '新增秘密篇章（最多 12 章）';
+
+  @override
+  String get world_edit_publish_settings1 => '發布設定';
+
+  @override
+  String get world_edit_private_world1 => '私人開放世界';
+
+  @override
+  String get world_edit_private_world_desc1 => '僅自己可以遊玩及測試，其他玩家無法進入';
+
+  @override
+  String get world_edit_public_world1 => '公開開放世界';
+
+  @override
+  String get world_edit_public_world_desc1 => '其他玩家可進入遊玩，每位玩家有獨立劇情進度';
+
+  @override
+  String get world_edit_create_world1 => '創立開放世界';
+
+  @override
+  String get world_edit_basic_tab1 => '基本設定';
+
+  @override
+  String get world_edit_characters_tab1 => '世界觀人物';
+
+  @override
+  String get world_edit_story_tab1 => '故事設定';
+
+  @override
+  String get world_edit_publish_world1 => '發布開放世界';
+
+  @override
+  String get world_edit_name_required1 => '請先填寫人物姓名';
+
+  @override
+  String world_edit_edit_person1(String type) {
+    return '編輯$type';
+  }
+
+  @override
+  String get world_edit_upload_photo1 => '上傳人物照片（選填）';
+
+  @override
+  String get world_edit_allow_photo1 => '允許使用此人物照片生成其他照片';
+
+  @override
+  String get world_edit_allow_photo_explain1 =>
+      '僅在劇情適合時可將此人物的圖片作為生成參考。不勾選仍可正常聊天及贈送一般禮物；每位人物獨立設定。';
+
+  @override
+  String get world_edit_name1 => '姓名 *';
+
+  @override
+  String get world_edit_gender1 => '性別／性別設定';
+
+  @override
+  String get world_edit_birthday1 => '生日（例：5月16日）';
+
+  @override
+  String get world_edit_age1 => '年齡';
+
+  @override
+  String get world_edit_role1 => '身分／職業';
+
+  @override
+  String get world_edit_appearance1 => '外貌特徵';
+
+  @override
+  String get world_edit_personality1 => '個性與人物設定';
+
+  @override
+  String get world_edit_background1 => '過去經歷';
+
+  @override
+  String get world_edit_relationships1 => '與其他人物的關係';
+
+  @override
+  String get world_edit_speech_style1 => '說話方式／口吻';
+
+  @override
+  String get world_edit_dialogue_examples1 => '對話範例（幫助 AI 理解語氣）';
+
+  @override
+  String get world_edit_save_person1 => '儲存人物設定';
+
+  @override
+  String get world_edit_tag_mystery1 => '懸疑';
+
+  @override
+  String get world_edit_tag_horror1 => '恐怖';
+
+  @override
+  String get world_edit_tag_romance1 => '戀愛';
+
+  @override
+  String get world_edit_tag_modern_fantasy1 => '現代奇幻';
+
+  @override
+  String get world_edit_tag_school1 => '校園';
+
+  @override
+  String get world_edit_tag_ensemble1 => '群像';
+
+  @override
+  String get world_edit_tag_adventure1 => '冒險';
+
+  @override
+  String get world_edit_tag_daily1 => '日常';
+
+  @override
+  String get world_edit_tag_detective1 => '推理';
+
+  @override
+  String get world_edit_tag_otherworld1 => '異世界';
+
+  @override
+  String get chooseNpc1 => '請選擇 NPC';
+
+  @override
+  String get chooseInteractionTarget1 => '選擇互動對象';
+
+  @override
+  String get unnamedCharacter1 => '未命名角色';
+
+  @override
+  String get chooseTargetFirst1 => '請先選擇互動對象';
+
+  @override
+  String get confirmGift1 => '確認送禮';
+
+  @override
+  String giftConfirmDetail1(String target, String gift, int cost) {
+    return '送給 $target：$gift，消耗 $cost 朵花花。只有 AI 成功回覆後才正式扣點。';
+  }
+
+  @override
+  String get cancel1 => '取消';
+
+  @override
+  String get send1 => '送出';
+
+  @override
+  String get sendLocationTitle1 => '傳送地點（3 朵）';
+
+  @override
+  String get customLocation1 => '自訂地點';
+
+  @override
+  String get confirm1 => '確認';
+
+  @override
+  String get cafe1 => '咖啡廳';
+
+  @override
+  String get park1 => '公園';
+
+  @override
+  String get restaurant1 => '餐廳';
+
+  @override
+  String get street1 => '街道';
+
+  @override
+  String get giftHeart1 => '愛心';
+
+  @override
+  String get giftFlower1 => '花朵';
+
+  @override
+  String get giftSun1 => '太陽';
+
+  @override
+  String get giftConfetti1 => '彩帶';
+
+  @override
+  String get giftCoffee1 => '咖啡';
+
+  @override
+  String get giftCake1 => '蛋糕';
+
+  @override
+  String get interactionPlayTitle1 => '互動玩法';
+
+  @override
+  String interactionTargetLabel1(String target) {
+    return '互動對象：$target';
+  }
+
+  @override
+  String get intimateInteraction1 => '親密互動';
+
+  @override
+  String get poke1 => '戳一戳';
+
+  @override
+  String get hug1 => '擁抱';
+
+  @override
+  String get holdHands1 => '牽手';
+
+  @override
+  String get gifts1 => '送禮';
+
+  @override
+  String get funActivities1 => '趣味玩法';
+
+  @override
+  String get sendLocation1 => '傳送地點';
+
+  @override
+  String get diceDuel1 => '骰子對決';
+
+  @override
+  String get world_profile_name_too_long1 => '世界觀角色稱呼最多 40 字，請縮短後再儲存';
+
+  @override
+  String get world_profile_identity_too_long1 => '世界觀人物資料超過 2000 字，請縮短後再儲存';
+
+  @override
+  String get world_relationship_live_title1 => '人物關係';
+
+  @override
+  String get world_relationship_live_load_failed1 =>
+      '關係資料讀取失敗，請檢查 Firestore 權限';
+
+  @override
+  String get world_relationship_live_no_people1 => '這個世界尚未建立人物';
+
+  @override
+  String get world_relationship_live_not_met1 => '目前關係：尚未相遇';
+
+  @override
+  String get world_relationship_live_first_meeting1 => '初次相遇';
+
+  @override
+  String world_relationship_live_current_relation1(String relation) {
+    return '目前關係：$relation';
+  }
+
+  @override
+  String get world_relationship_live_thought_title1 => '對玩家目前的想法';
+
+  @override
+  String get world_relationship_live_thought_pending1 => '尚待後續互動逐漸形成印象';
+
+  @override
+  String world_scene_full_load_error1(String error) {
+    return '讀取劇場失敗：$error';
+  }
+
+  @override
+  String get world_scene_full_delete_title1 => '刪除劇場';
+
+  @override
+  String world_scene_full_delete_confirm1(String title) {
+    return '確定刪除「$title」嗎？';
+  }
+
+  @override
+  String get world_scene_full_cancel1 => '取消';
+
+  @override
+  String get world_scene_full_delete1 => '刪除';
+
+  @override
+  String world_scene_full_delete_error1(String error) {
+    return '刪除劇場失敗：$error';
+  }
+
+  @override
+  String get world_scene_full_missing_fields1 => '劇場內容不足，請先補齊標題與場景說明';
+
+  @override
+  String world_scene_full_activate_error1(String error) {
+    return '啟用劇場失敗：$error';
+  }
+
+  @override
+  String get world_scene_full_end_title1 => '結束劇場';
+
+  @override
+  String get world_scene_full_end_confirm1 => '確定結束目前進行中的劇場嗎？';
+
+  @override
+  String world_scene_full_end_error1(String error) {
+    return '結束劇場失敗：$error';
+  }
+
+  @override
+  String get world_scene_full_unnamed1 => '未命名劇場';
+
+  @override
+  String world_scene_full_opening1(String opening) {
+    return '開場：$opening';
+  }
+
+  @override
+  String get world_scene_full_edit1 => '編輯';
+
+  @override
+  String get world_scene_full_start1 => '開始劇場';
+
+  @override
+  String get world_scene_full_creator_empty1 => '目前尚無創作者劇場';
+
+  @override
+  String get world_scene_full_custom_empty1 => '還沒有自行建立的劇場';
+
+  @override
+  String get world_scene_full_add1 => '新增劇場';
+
+  @override
+  String get world_scene_full_page_title1 => '劇場';
+
+  @override
+  String get world_scene_full_creator_tab1 => '創作者劇場';
+
+  @override
+  String get world_scene_full_custom_tab1 => '自行創建劇場';
+
+  @override
+  String world_scene_full_active1(String title) {
+    return '進行中的劇場：$title';
+  }
+
+  @override
+  String get world_scene_required1 => '請填寫場景標題與內容';
+
+  @override
+  String get world_scene_title1 => '劇場';
+
+  @override
+  String get world_scene_beta_notice1 =>
+      '世界觀劇場測試版：沿用世界觀聊天 AI 開啟場景；劇場專屬存檔及正式開場 API 尚未串接。';
+
+  @override
+  String get world_scene_creator_scenes1 => '創作者劇場';
+
+  @override
+  String get world_scene_no_creator_scenes1 => '這個世界目前沒有可讀取的創作者劇場設定';
+
+  @override
+  String get world_scene_custom_scenes1 => '自行創建劇場';
+
+  @override
+  String get world_scene_name1 => '場景名稱';
+
+  @override
+  String get world_scene_setup1 => '背景、地點、角色及開場情境';
+
+  @override
+  String get world_scene_start1 => '開始劇場';
+
+  @override
+  String get worldSearchTitle1 => '搜尋開放世界';
+
+  @override
+  String get worldSearchHint1 => '搜尋世界名稱、創作者、標籤';
+
+  @override
+  String get worldSearchClear1 => '清除搜尋';
+
+  @override
+  String get worldSearchEmpty1 => '找不到符合的開放世界';
+
+  @override
+  String get worldSearchTrending1 => '熱門探索';
+
+  @override
+  String get worldSearchResults1 => '搜尋結果';
+
+  @override
+  String get worldSearchUnnamed1 => '未命名世界';
+
+  @override
+  String worldSearchCreator1(String creator) {
+    return '創作者：$creator';
+  }
+
+  @override
+  String get world_secret_chapters_title1 => '秘密篇章';
+
+  @override
+  String get world_secret_chapters_close1 => '關閉';
+
+  @override
+  String get world_secret_chapters_read_failed1 => '秘密篇章暫時無法讀取';
+
+  @override
+  String get world_secret_chapters_retry1 => '讀取失敗，點此重試';
+
+  @override
+  String get world_secret_chapters_empty1 => '創作者尚未設定秘密篇章';
+
+  @override
+  String world_secret_chapters_locked_chapter1(String number) {
+    return '第 $number 章 · ？？？';
+  }
+
+  @override
+  String get world_secret_chapters_unlocked1 => '已解鎖，點擊閱讀';
+
+  @override
+  String get world_secret_chapters_locked1 => '尚未解鎖 · 繼續探索劇情';
+
+  @override
+  String world_timeline_load_failed1(String error) {
+    return '劇情摘要讀取失敗：$error';
+  }
+
+  @override
+  String get world_timeline_edit_summary1 => '編輯劇情摘要';
+
+  @override
+  String get world_timeline_cancel1 => '取消';
+
+  @override
+  String get world_timeline_save1 => '儲存';
+
+  @override
+  String world_timeline_save_failed1(String error) {
+    return '儲存失敗：$error';
+  }
+
+  @override
+  String get world_timeline_delete_summary1 => '刪除摘要';
+
+  @override
+  String get world_timeline_delete_confirm1 => '確定刪除這段故事紀錄嗎？';
+
+  @override
+  String get world_timeline_delete1 => '刪除';
+
+  @override
+  String world_timeline_delete_failed1(String error) {
+    return '刪除失敗：$error';
+  }
+
+  @override
+  String get world_timeline_our_story1 => '我們的故事';
+
+  @override
+  String get world_timeline_retry1 => '重試';
+
+  @override
+  String get world_timeline_empty1 => '故事還在展開中，累積一些劇情後就會有新的紀錄。';
+
+  @override
+  String get world_timeline_recent1 => '近期紀錄';
+
+  @override
+  String get world_timeline_edit1 => '編輯';
+
+  @override
+  String get echo_login_to_post1 => '請先登入後再留下時空迴音';
+
+  @override
+  String get echo_limit1 => '每位玩家在同一個開放世界最多留下 3 則時空迴音';
+
+  @override
+  String get echo_count_fail1 => '無法確認迴音數量，請稍後再試';
+
+  @override
+  String get echo_compose_title1 => '留下時空迴音';
+
+  @override
+  String get echo_compose_desc1 => '選擇喜歡的卡面，再寫下一段想留下的話。';
+
+  @override
+  String get echo_compose_hint1 => '在這個世界裡，你想留下什麼話？';
+
+  @override
+  String get echo_send1 => '送出迴音';
+
+  @override
+  String get echo_player1 => '玩家';
+
+  @override
+  String get echo_sent1 => '時空迴音已留下';
+
+  @override
+  String get echo_post_fail1 => '留言失敗，請確認權限與網路';
+
+  @override
+  String get echo_login1 => '請先登入';
+
+  @override
+  String get echo_like_fail1 => '按讚失敗';
+
+  @override
+  String get echo_delete_title1 => '刪除時空迴音？';
+
+  @override
+  String get echo_delete_warning1 => '刪除後將無法復原。';
+
+  @override
+  String get echo_cancel1 => '取消';
+
+  @override
+  String get echo_delete1 => '刪除';
+
+  @override
+  String get echo_deleted1 => '時空迴音已刪除';
+
+  @override
+  String get echo_delete_fail1 => '刪除失敗';
+
+  @override
+  String get echo_reason_inappropriate1 => '不當內容';
+
+  @override
+  String get echo_reason_harassment1 => '騷擾或攻擊';
+
+  @override
+  String get echo_reason_spam1 => '垃圾訊息';
+
+  @override
+  String get echo_reason_other1 => '其他';
+
+  @override
+  String get echo_report_title1 => '檢舉時空迴音';
+
+  @override
+  String get echo_already_reported1 => '這則迴音已檢舉過';
+
+  @override
+  String get echo_report_received1 => '已收到檢舉';
+
+  @override
+  String get echo_report_fail1 => '檢舉失敗';
+
+  @override
+  String get echo_options1 => '迴音選項';
+
+  @override
+  String get echo_delete_option1 => '刪除迴音';
+
+  @override
+  String get echo_report_option1 => '檢舉迴音';
+
+  @override
+  String get echo_wall_title1 => '時空迴音';
+
+  @override
+  String get echo_add1 => '留下迴音';
+
+  @override
+  String get echo_load_fail1 => '時空迴音讀取失敗，請檢查 Firestore 權限設定';
+
+  @override
+  String get echo_empty1 => '還沒有時空迴音，留下第一段故事吧。';
+
+  @override
+  String get store_pack_30_name1 => '初見禮包';
+
+  @override
+  String get store_pack_70_name1 => '曖昧禮包';
+
+  @override
+  String get store_pack_120_name1 => '心動禮包';
+
+  @override
+  String get store_pack_190_name1 => '熱戀禮包';
+
+  @override
+  String get store_pack_250_name1 => '知己禮包';
+
+  @override
+  String get store_pack_330_name1 => '守候禮包';
+
+  @override
+  String get store_pack_450_name1 => '信賴禮包';
+
+  @override
+  String get store_pack_520_name1 => '我愛你禮包';
+
+  @override
+  String get store_pack_690_name1 => '蜜月禮包';
+
+  @override
+  String get store_pack_720_name1 => '承諾禮包';
+
+  @override
+  String get store_pack_750_name1 => '相伴禮包';
+
+  @override
+  String get store_pack_830_name1 => '深愛禮包';
+
+  @override
+  String get store_pack_990_name1 => '長久禮包';
+
+  @override
+  String get store_pack_1050_name1 => '唯一禮包';
+
+  @override
+  String get store_pack_1290_name1 => '摯愛禮包';
+
+  @override
+  String get store_pack_1314_name1 => '一生一世包';
+
+  @override
+  String get store_pack_1930_name1 => '誓約禮包';
+
+  @override
+  String get store_pack_2990_name1 => '永恆戀人包';
 }

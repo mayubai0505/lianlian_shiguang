@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../services/app_constants.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+
 
 class WorldLiveRelationshipPerson {
   const WorldLiveRelationshipPerson({
@@ -92,6 +94,7 @@ class WorldRelationshipLivePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final roomRef = FirebaseFirestore.instance
         .collection('artifacts')
         .doc(AppConfig.appId)
@@ -99,12 +102,12 @@ class WorldRelationshipLivePage extends StatelessWidget {
         .doc(sessionId);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('人物關係')),
+      appBar: AppBar(title: Text(l10n.world_relationship_live_title1)),
       body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: roomRef.collection('character_affinities').snapshots(),
         builder: (context, affinitySnapshot) {
           if (affinitySnapshot.hasError) {
-            return const Center(child: Text('關係資料讀取失敗，請檢查 Firestore 權限'));
+            return Center(child: Text(l10n.world_relationship_live_load_failed1));
           }
           if (!affinitySnapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
@@ -124,7 +127,7 @@ class WorldRelationshipLivePage extends StatelessWidget {
                   ? _encounteredNpcIds(messageSnapshot.data!.docs)
                   : <String>{};
               if (characters.isEmpty) {
-                return const Center(child: Text('這個世界尚未建立人物'));
+                return Center(child: Text(l10n.world_relationship_live_no_people1));
               }
               return ListView.builder(
                 padding: const EdgeInsets.all(16),
@@ -154,13 +157,13 @@ class WorldRelationshipLivePage extends StatelessWidget {
                                 Text(person.name, style: theme.textTheme.titleMedium),
                                 const SizedBox(height: 8),
                                 if (!hasMet)
-                                  const Text('目前關係：尚未相遇')
+                                  Text(l10n.world_relationship_live_not_met1)
                                 else ...[
-                                  Text('目前關係：${relation.isEmpty ? '初次相遇' : relation}'),
+                                  Text(l10n.world_relationship_live_current_relation1(relation.isEmpty ? l10n.world_relationship_live_first_meeting1 : relation)),
                                   const SizedBox(height: 9),
-                                  Text('對玩家目前的想法', style: theme.textTheme.labelLarge),
+                                  Text(l10n.world_relationship_live_thought_title1, style: theme.textTheme.labelLarge),
                                   const SizedBox(height: 4),
-                                  Text(thought.isEmpty ? '尚待後續互動逐漸形成印象' : thought),
+                                  Text(thought.isEmpty ? l10n.world_relationship_live_thought_pending1 : thought),
                                 ],
                               ],
                             ),

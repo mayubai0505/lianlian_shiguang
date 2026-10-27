@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'world_search_page.dart';
 import 'world_discovery_page.dart';
@@ -86,12 +87,13 @@ class _PublicWorldsPageState extends State<PublicWorldsPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('探索公開世界'),
+        title: Text(l10n.public_worlds_explore_title1),
         actions: [IconButton(
-          tooltip: '搜尋開放世界',
+          tooltip: l10n.public_worlds_search_tooltip1,
           icon: const Icon(Icons.search_rounded),
           onPressed: _openSearchPage,
         )],
@@ -104,9 +106,9 @@ class _PublicWorldsPageState extends State<PublicWorldsPage> {
           future:_future, builder:(context,snapshot) {
         if(snapshot.connectionState!=ConnectionState.done) return const Center(child:CircularProgressIndicator());
         if(snapshot.hasError) return Center(child:Column(mainAxisSize:MainAxisSize.min,children:[
-          const Text('公開世界暫時無法載入'),TextButton(onPressed:() { _refresh(); },child:const Text('重新整理'))]));
+          Text(l10n.public_worlds_load_failed1),TextButton(onPressed:() { _refresh(); },child:Text(l10n.public_worlds_refresh1))]));
         final worlds=snapshot.data??[];
-        if(worlds.isEmpty) return const Center(child:Text('公開世界正在準備中，敬請期待'));
+        if(worlds.isEmpty) return Center(child:Text(l10n.public_worlds_empty1));
         return RefreshIndicator(onRefresh:_refresh,child:ListView.builder(
             padding:const EdgeInsets.all(12),itemCount:worlds.length,itemBuilder:(context,index){
           final w=worlds[index], id=(w['id']??'').toString();
@@ -123,7 +125,7 @@ class _PublicWorldsPageState extends State<PublicWorldsPage> {
                   _worldPlayBadge(w['playCount']),
                 ])),
                 Padding(padding:const EdgeInsets.all(12),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-                  Text((w['name'] ?? '未命名世界').toString(),
+                  Text((w['name'] ?? l10n.public_worlds_unnamed1).toString(),
                       maxLines: 2, overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.titleMedium),
                   const SizedBox(height:6),

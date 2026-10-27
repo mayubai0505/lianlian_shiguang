@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'world_discovery_page.dart';
 /// 世界遊玩次數：僅顯示後端確實提供的數值，不自行推估。
@@ -84,7 +85,7 @@ class _WorldSearchPageState extends State<WorldSearchPage> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('搜尋開放世界'),
+        title: Text(AppLocalizations.of(context)!.worldSearchTitle1),
         backgroundColor: theme.scaffoldBackgroundColor,
         surfaceTintColor: Colors.transparent,
       ),
@@ -95,23 +96,24 @@ class _WorldSearchPageState extends State<WorldSearchPage> {
           onChanged: (v) => setState(() => _query = _norm(v)),
           decoration: InputDecoration(
             prefixIcon: const Icon(Icons.search_rounded),
-            hintText: '搜尋世界名稱、創作者、標籤',
+            hintText: AppLocalizations.of(context)!.worldSearchHint1,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
             suffixIcon: _query.isEmpty ? null : IconButton(
               icon: const Icon(Icons.close),
+              tooltip: AppLocalizations.of(context)!.worldSearchClear1,
               onPressed: () { _controller.clear(); setState(() => _query=''); },
             ),
           ),
         )),
         Expanded(child: recommendations.isEmpty
-            ? Center(child: Text('找不到符合的開放世界'))
+            ? Center(child: Text(AppLocalizations.of(context)!.worldSearchEmpty1))
             : ListView.builder(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 30),
           itemCount: recommendations.length + 1,
           itemBuilder: (context, i) {
             if (i == 0) return Padding(
               padding: const EdgeInsets.only(bottom: 12),
-              child: Text(_query.isEmpty ? '熱門探索' : '搜尋結果',
+              child: Text(_query.isEmpty ? AppLocalizations.of(context)!.worldSearchTrending1 : AppLocalizations.of(context)!.worldSearchResults1,
                   style: theme.textTheme.titleMedium),
             );
             final w = recommendations[i-1];
@@ -139,13 +141,13 @@ class _WorldSearchPageState extends State<WorldSearchPage> {
                   const SizedBox(width: 12),
                   Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     Row(children: [
-                      Expanded(child: Text((w['name'] ?? '未命名世界').toString(),
+                      Expanded(child: Text((w['name'] ?? AppLocalizations.of(context)!.worldSearchUnnamed1).toString(),
                           maxLines: 2, overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.titleSmall)),
                     ]),
                     if (author.isNotEmpty) ...[
                       const SizedBox(height: 5),
-                      Text('創作者：$author', style: theme.textTheme.bodySmall),
+                      Text(AppLocalizations.of(context)!.worldSearchCreator1(author), style: theme.textTheme.bodySmall),
                     ],
                     if (tags.isNotEmpty) ...[
                       const SizedBox(height: 5),

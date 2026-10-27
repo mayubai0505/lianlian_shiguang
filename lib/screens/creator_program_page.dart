@@ -3,6 +3,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 class CreatorProgramPage extends StatefulWidget {
   const CreatorProgramPage({super.key});
@@ -30,13 +31,14 @@ class _CreatorProgramPageState extends State<CreatorProgramPage> {
 
   Future<void> _submitApplication() async {
     if (_submitting) return;
+    final l10n = AppLocalizations.of(context)!;
 
     final reason = _reasonController.text.trim();
     final direction = _directionController.text.trim();
     final socialLink = _socialController.text.trim();
 
     if (reason.isEmpty || direction.isEmpty) {
-      _showMessage('請填寫創作方向與申請原因。', isError: true);
+      _showMessage(l10n.creator_program_required_fields, isError: true);
       return;
     }
 
@@ -51,14 +53,16 @@ class _CreatorProgramPageState extends State<CreatorProgramPage> {
       });
 
       if (!mounted) return;
-      _showMessage('申請已送出，審核約需 1～3 天。');
+      _showMessage(l10n.creator_program_submitted);
       setState(() {});
     } on FirebaseFunctionsException catch (e) {
+      debugPrint('創作者申請失敗：${e.code} ${e.message}');
       if (!mounted) return;
-      _showMessage(e.message ?? '申請送出失敗，請稍後再試。', isError: true);
-    } catch (_) {
+      _showMessage(l10n.creator_program_error, isError: true);
+    } catch (e) {
+      debugPrint('創作者申請失敗：$e');
       if (!mounted) return;
-      _showMessage('申請送出失敗，請稍後再試。', isError: true);
+      _showMessage(l10n.creator_program_error, isError: true);
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -75,14 +79,15 @@ class _CreatorProgramPageState extends State<CreatorProgramPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
     final onSurface = theme.colorScheme.onSurface;
 
     if (user == null) {
-      return const Scaffold(
-        body: Center(child: Text('請先登入後再申請創作者計畫。')),
+      return Scaffold(
+        body: Center(child: Text(l10n.creator_program_login_required)),
       );
     }
 
@@ -90,7 +95,7 @@ class _CreatorProgramPageState extends State<CreatorProgramPage> {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
-          '創作者計畫',
+          l10n.creator_program_title,
           style: GoogleFonts.notoSerifTc(
             fontWeight: FontWeight.w600,
             letterSpacing: 1.4,
@@ -131,7 +136,7 @@ class _CreatorProgramPageState extends State<CreatorProgramPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '讓創作被更多人看見',
+                      l10n.creator_program_headline,
                       style: GoogleFonts.notoSerifTc(
                         fontSize: 21,
                         fontWeight: FontWeight.w700,
@@ -140,7 +145,7 @@ class _CreatorProgramPageState extends State<CreatorProgramPage> {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      '只要你有公開創作，就歡迎申請加入《戀戀拾光》創作者計畫。申請送出後，官方會在 1～3 天內完成審核。',
+                      l10n.creator_program_intro,
                       style: GoogleFonts.notoSerifTc(
                         fontSize: 13.5,
                         height: 1.7,
@@ -168,12 +173,13 @@ class _CreatorProgramPageState extends State<CreatorProgramPage> {
     final primary = theme.colorScheme.primary;
     final onSurface = theme.colorScheme.onSurface;
 
+    final l10n = AppLocalizations.of(context)!;
     final benefits = <String>[
-      '創作者後台：查看粉絲數、公開角色數、總愛心與本月新增粉絲。',
-      '粉絲經營：可寄信、管理粉絲，並用自己的花花贈送粉絲福利。',
-      '官方曝光：新角色有機會優先登上 IG 與遊戲內創作者推薦。',
-      '每月創作獎勵：當月新增並公開至少 3 隻全新角色，次月可獲 520 朵花花。',
-      '實體合作：旗下角色若進入官方實體商品／禮盒合作，可依合作企劃獲得現金創作獎勵。',
+      l10n.creator_program_benefit_dashboard,
+      l10n.creator_program_benefit_fans,
+      l10n.creator_program_benefit_exposure,
+      l10n.creator_program_benefit_monthly,
+      l10n.creator_program_benefit_merch,
     ];
 
     return Container(
@@ -187,7 +193,7 @@ class _CreatorProgramPageState extends State<CreatorProgramPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '計畫福利',
+            l10n.creator_program_benefits_title,
             style: GoogleFonts.notoSerifTc(
               fontSize: 17,
               fontWeight: FontWeight.w700,
@@ -215,6 +221,7 @@ class _CreatorProgramPageState extends State<CreatorProgramPage> {
 
   Widget _buildApplicationForm(ThemeData theme, String lastReason) {
     final onSurface = theme.colorScheme.onSurface;
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       padding: const EdgeInsets.all(18),
@@ -237,7 +244,7 @@ class _CreatorProgramPageState extends State<CreatorProgramPage> {
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Text(
-                '上次審核說明：$lastReason',
+                l10n.creator_program_last_review_note(lastReason),
                 style: GoogleFonts.notoSerifTc(
                   fontSize: 12.5,
                   height: 1.5,
@@ -248,7 +255,7 @@ class _CreatorProgramPageState extends State<CreatorProgramPage> {
             const SizedBox(height: 14),
           ],
           Text(
-            '申請加入',
+            l10n.creator_program_apply_heading,
             style: GoogleFonts.notoSerifTc(
               fontSize: 17,
               fontWeight: FontWeight.w700,
@@ -258,9 +265,9 @@ class _CreatorProgramPageState extends State<CreatorProgramPage> {
           TextField(
             controller: _directionController,
             maxLength: 120,
-            decoration: const InputDecoration(
-              labelText: '創作方向',
-              hintText: '例如：現代戀愛、古風、奇幻、BL、GL…',
+            decoration: InputDecoration(
+              labelText: l10n.creator_program_direction_label,
+              hintText: l10n.creator_program_direction_hint,
               border: OutlineInputBorder(),
             ),
           ),
@@ -270,9 +277,9 @@ class _CreatorProgramPageState extends State<CreatorProgramPage> {
             minLines: 3,
             maxLines: 5,
             maxLength: 300,
-            decoration: const InputDecoration(
-              labelText: '想加入創作者計畫的原因',
-              hintText: '和我們說說你想怎麼經營自己的角色與粉絲。',
+            decoration: InputDecoration(
+              labelText: l10n.creator_program_reason_label,
+              hintText: l10n.creator_program_reason_hint,
               alignLabelWithHint: true,
               border: OutlineInputBorder(),
             ),
@@ -280,9 +287,9 @@ class _CreatorProgramPageState extends State<CreatorProgramPage> {
           const SizedBox(height: 12),
           TextField(
             controller: _socialController,
-            decoration: const InputDecoration(
-              labelText: '社群連結（選填）',
-              hintText: 'IG、Threads、個人網站等',
+            decoration: InputDecoration(
+              labelText: l10n.creator_program_social_label,
+              hintText: l10n.creator_program_social_hint,
               border: OutlineInputBorder(),
             ),
           ),
@@ -296,12 +303,12 @@ class _CreatorProgramPageState extends State<CreatorProgramPage> {
                 dimension: 18,
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
-                  : const Text('送出申請'),
+                  : Text(l10n.creator_program_submit),
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            '送出前系統會確認帳號目前至少有 1 隻公開角色。',
+            l10n.creator_program_public_character_note,
             style: GoogleFonts.notoSerifTc(
               fontSize: 11.5,
               color: onSurface.withValues(alpha: 0.46),
@@ -317,29 +324,30 @@ class _CreatorProgramPageState extends State<CreatorProgramPage> {
       String status,
       String statusReason,
       ) {
+    final l10n = AppLocalizations.of(context)!;
     String title;
     String description;
 
     switch (status) {
       case 'pending':
-        title = '申請審核中';
-        description = '申請已送達，審核約需 1～3 天。完成後會透過戀戀信箱通知你。';
+        title = l10n.creator_program_status_pending;
+        description = l10n.creator_program_status_pending_desc;
         break;
       case 'approved':
-        title = '創作者資格已通過 🎉';
-        description = '恭喜加入《戀戀拾光》創作者計畫！創作者後台、粉絲管理與推薦橫幅會在接下來的功能中與這個資格連動。';
+        title = l10n.creator_program_status_approved;
+        description = l10n.creator_program_status_approved_desc;
         break;
       case 'suspended':
-        title = '創作者資格暫停';
-        description = '目前暫時無法使用創作者專屬功能。請查看戀戀信箱中的官方通知。';
+        title = l10n.creator_program_status_suspended;
+        description = l10n.creator_program_status_suspended_desc;
         break;
       case 'revoked':
-        title = '創作者資格已取消';
-        description = '目前無法使用創作者專屬功能。若有疑問，可透過客服聯繫官方。';
+        title = l10n.creator_program_status_revoked;
+        description = l10n.creator_program_status_revoked_desc;
         break;
       default:
-        title = '創作者資格狀態';
-        description = '目前狀態：$status';
+        title = l10n.creator_program_status_title;
+        description = l10n.creator_program_current_status(status);
     }
 
     return Container(
@@ -382,7 +390,7 @@ class _CreatorProgramPageState extends State<CreatorProgramPage> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                '官方說明：$statusReason',
+                l10n.creator_program_official_note(statusReason),
                 style: GoogleFonts.notoSerifTc(fontSize: 12.5, height: 1.5),
               ),
             ),

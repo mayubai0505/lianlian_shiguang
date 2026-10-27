@@ -1912,7 +1912,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      '頭像框',
+                                      l10n.avatar_frame_message,
                                       style: GoogleFonts.notoSerifTc(
                                         fontSize: 13.5,
                                         fontWeight: FontWeight.w600,
@@ -1983,7 +1983,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           style: GoogleFonts.notoSerifTc(fontSize: 13),
                         ),
                         Radio<String>(
-                          value: '女',
+                          value: l10n.genderFemale,
                           groupValue: _gender,
                           activeColor: primaryColor,
                           onChanged: (value) {
@@ -1997,7 +1997,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           style: GoogleFonts.notoSerifTc(fontSize: 13),
                         ),
                         Radio<String>(
-                          value: '未選擇',
+                          value: l10n.genderNotSelected,
                           groupValue: _gender,
                           activeColor: primaryColor,
                           onChanged: (value) {

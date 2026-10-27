@@ -542,8 +542,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
                   _buildSettingsTile(
                     maskAsset: 'assets/images/setting/settings_notification_bell.png',
-                    title: '通知偏好',
-                    subtitle: '設定想收到的通知類型，跨裝置同步',
+                    title: l10n.settings_notification_preferences_title1,
+                    subtitle: l10n.settings_notification_preferences_subtitle1,
                     theme: theme,
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute(
@@ -637,13 +637,13 @@ class _SettingsPageState extends State<SettingsPage> {
 
                   // 只有管理員帳號看得到。
                   if (isAdmin) ...[
-                    _buildSectionTitle(context, '管理'),
+                    _buildSectionTitle(context, l10n.settings_admin_section1),
 
                     _buildSettingsTile(
                       maskAsset:
                       'assets/images/setting/settings_account_mask.png',
-                      title: '管理後台',
-                      subtitle: '拾光內部管理工具',
+                      title: l10n.settings_admin_dashboard1,
+                      subtitle: l10n.settings_admin_tools_subtitle1,
                       onTap: () {
                         Navigator.push(
                           context,

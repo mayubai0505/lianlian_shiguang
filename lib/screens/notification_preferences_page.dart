@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 import '../services/toast_utils.dart';
 
@@ -16,13 +17,6 @@ class NotificationPreferencesPage extends StatefulWidget {
 
 class _NotificationPreferencesPageState
     extends State<NotificationPreferencesPage> {
-  static const _options = <(String, String, String)>[
-    ('chat', '角色聊天', '角色回覆訊息的推播'),
-    ('moments', '新瞬間', '關注的創作者及角色發布新貼文'),
-    ('social', '社交通知', '按讚、留言、追蹤與角色互動'),
-    ('announcements', '官方公告', '一般官方公告推播'),
-    ('events', '活動提醒', '活動即將結束的推播'),
-  ];
   final Map<String, bool> _pending = <String, bool>{};
   final Set<String> _saving = <String>{};
 
@@ -40,7 +34,7 @@ class _NotificationPreferencesPageState
       });
     } catch (error) {
       if (mounted) {
-        ToastUtils.showCenterToast(context, '通知設定儲存失敗，請稍後重試', isError: true);
+        ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.notification_preferences_save_failed1, isError: true);
       }
     } finally {
       if (mounted) {
@@ -55,16 +49,24 @@ class _NotificationPreferencesPageState
   @override
   Widget build(BuildContext context) {
     final uid = FirebaseAuth.instance.currentUser?.uid;
+    final l10n = AppLocalizations.of(context)!;
+    final options = <(String, String, String)>[
+      ('chat', l10n.notification_preferences_chat_title1, l10n.notification_preferences_chat_subtitle1),
+      ('moments', l10n.notification_preferences_moments_title1, l10n.notification_preferences_moments_subtitle1),
+      ('social', l10n.notification_preferences_social_title1, l10n.notification_preferences_social_subtitle1),
+      ('announcements', l10n.notification_preferences_announcements_title1, l10n.notification_preferences_announcements_subtitle1),
+      ('events', l10n.notification_preferences_events_title1, l10n.notification_preferences_events_subtitle1),
+    ];
     return Scaffold(
-      appBar: AppBar(title: const Text('通知偏好')),
+      appBar: AppBar(title: Text(l10n.notification_preferences_page_title1)),
       body: uid == null
-          ? const Center(child: Text('請先登入帳號'))
+          ? Center(child: Text(l10n.notification_preferences_login_required1))
           : StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
         stream: FirebaseFirestore.instance
             .collection('users').doc(uid).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return const Center(child: Text('無法讀取通知偏好，請稍後再試'));
+            return Center(child: Text(l10n.notification_preferences_load_failed1));
           }
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
@@ -76,7 +78,7 @@ class _NotificationPreferencesPageState
           return ListView(
             padding: const EdgeInsets.symmetric(vertical: 16),
             children: [
-              for (final (key, title, subtitle) in _options)
+              for (final (key, title, subtitle) in options)
                 SwitchListTile.adaptive(
                   title: Text(title),
                   subtitle: Text(subtitle),
@@ -85,13 +87,11 @@ class _NotificationPreferencesPageState
                       ? null
                       : (value) => _setPreference(key, value),
                 ),
-              const Padding(
-                padding: EdgeInsets.all(20),
+              Padding(
+                padding: const EdgeInsets.all(20),
                 child: Text(
-                  '此處設定同步至同一玩家帳號的所有裝置。'
-                      '手機系統通知權限需在各裝置分別設定。'
-                      '關閉推播不會刪除遊戲內信箱或已收到的通知。',
-                  style: TextStyle(fontSize: 12, height: 1.6),
+                  l10n.notification_preferences_footer1,
+                  style: const TextStyle(fontSize: 12, height: 1.6),
                 ),
               ),
             ],

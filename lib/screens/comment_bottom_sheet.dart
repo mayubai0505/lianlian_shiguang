@@ -14,22 +14,6 @@ import '../models/comment_model.dart';
 import '../utils/image_utils.dart'; // 為了 getAvatarImageProvider
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
-import '../widgets/user_avatar_with_frame.dart';import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:typed_data';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../services/toast_utils.dart';
-import 'character_model.dart';
-// ⚠️ 總裁請注意：這裡的 import 請替換成您實際的檔案路徑
-import '../models/moment_model.dart';
-import '../models/comment_model.dart';
-import '../utils/image_utils.dart'; // 為了 getAvatarImageProvider
-import '../services/app_constants.dart';
-import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import '../widgets/user_avatar_with_frame.dart';
 
 //留言功能
@@ -269,7 +253,8 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
       });
     } catch (error) {
       if (!mounted) return;
-      ToastUtils.showCenterToast(context, '讀取照片失敗：$error', isError: true);
+      debugPrint('讀取留言照片失敗：$error');
+      ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.comment_error_generic, isError: true);
     }
   }
 
@@ -415,7 +400,8 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
       }
     } catch (error) {
       if (mounted) {
-        ToastUtils.showCenterToast(context, '照片上傳失敗：$error', isError: true);
+        debugPrint('留言照片上傳失敗：$error');
+        ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.comment_error_generic, isError: true);
       }
       return;
     }
@@ -489,6 +475,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
 
       print("✅ 留言與通知發送成功！");
     } catch (e) {
+      debugPrint('留言發送失敗：$e');
       setState(() {
         _comments.removeWhere((c) => c.id == tempComment.id);
         _commentIsPersonalAuthor.remove(commentId);
@@ -497,7 +484,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
       if (mounted) {
         ToastUtils.showCenterToast(
           context,
-          l10n.comment_post_failed(e.toString()),
+          l10n.comment_error_generic,
           isError: true,
         );
       }
@@ -549,11 +536,12 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
         }
       }
     } catch (e) {
+      debugPrint('刪除留言失敗：$e');
       if (mounted) {
         // ✨ 總裁級：使用重量級錯誤提示，告知玩家刪除失敗且已復原
         ToastUtils.showCenterToast(
           context,
-          l10n.comment_delete_failed,
+          l10n.comment_error_generic,
           isError: true, // 💡 必須帶上紅驚嘆號，這是嚴肅的資料操作錯誤
         );
         setState(() => _comments.insert(originalIndex, backupComment));
@@ -691,11 +679,12 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
         );
       }
     } catch (e) {
+      debugPrint('檢舉留言失敗：$e');
       if (mounted) {
         // ⚠️ 檢舉失敗：使用重量級錯誤提示，告知玩家系統卡住了
         ToastUtils.showCenterToast(
           context,
-          l10n.comment_report_failed,
+          l10n.comment_error_generic,
           isError: true, // 💡 紅驚嘆號告知玩家需稍後再試
         );
       }
@@ -1095,7 +1084,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                   ),
                   const SizedBox(width: 6),
                   IconButton(
-                    tooltip: '加入照片',
+                    tooltip: l10n.comment_add_photo,
                     onPressed: _isPostingComment ? null : _pickCommentImage,
                     icon: Image.asset(
                       'assets/images/chat/chat_tool_photo_mask.png',

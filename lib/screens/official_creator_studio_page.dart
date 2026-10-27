@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/services.dart';
@@ -51,7 +52,7 @@ class _OfficialCreatorStudioPageState extends State<OfficialCreatorStudioPage> {
     } catch (error) {
       debugPrint('創作者導覽跨裝置進度儲存失敗：$error');
       if (mounted) {
-        ToastUtils.showCenterToast(context, '導覽已結束，但同步觀看紀錄失敗，之後可能再次顯示', isError: true);
+        ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.official_studio_text_0011, isError: true);
       }
     }
   }
@@ -61,17 +62,17 @@ class _OfficialCreatorStudioPageState extends State<OfficialCreatorStudioPage> {
     final user = FirebaseAuth.instance.currentUser;
     final theme = Theme.of(context);
     if (user == null) {
-      return const Scaffold(body: Center(child: Text('請先登入帳號')));
+      return Scaffold(body: Center(child: Text(AppLocalizations.of(context)!.official_studio_text_0021)));
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('合作創作者專區',
+        title: Text(AppLocalizations.of(context)!.official_studio_text_0031,
             style: GoogleFonts.notoSerifTc(fontWeight: FontWeight.w600)),
         actions: [
           TextButton(
             onPressed: () => _showCreatorIntro(manuallyOpened: true),
-            child: const Text('說明'),
+            child: Text(AppLocalizations.of(context)!.official_studio_text_0041),
           ),
         ],
       ),
@@ -80,16 +81,16 @@ class _OfficialCreatorStudioPageState extends State<OfficialCreatorStudioPage> {
             .collection('users').doc(user.uid).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return const Center(child: Text('無法驗證合作創作者資格，請稍後再試'));
+            return Center(child: Text(AppLocalizations.of(context)!.official_studio_text_0051));
           }
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
           }
           if (!snapshot.data!.exists ||
               !_isVerified(snapshot.data!.data() ?? <String, dynamic>{})) {
-            return const Center(child: Padding(
+            return Center(child: Padding(
               padding: EdgeInsets.all(24),
-              child: Text('目前沒有官方合作創作者權限。\n如已審核通過，請聯繫官方確認開通狀態。',
+              child: Text(AppLocalizations.of(context)!.official_studio_text_0061,
                   textAlign: TextAlign.center),
             ));
           }
@@ -128,29 +129,29 @@ class _OfficialCreatorStudioPageState extends State<OfficialCreatorStudioPage> {
                         fit: BoxFit.contain,
                       ),
                       const SizedBox(width: 8),
-                      Text('已認證合作創作者',
+                      Text(AppLocalizations.of(context)!.official_studio_text_0071,
                           style: GoogleFonts.notoSerifTc(
                               fontSize: 18, fontWeight: FontWeight.w600)),
                     ]),
                     const SizedBox(height: 9),
-                    Text('歡迎回到戀戀拾光創作者專區。專屬功能將陸續開放。',
+                    Text(AppLocalizations.of(context)!.official_studio_text_0081,
                         style: TextStyle(color: theme.colorScheme.onSurface
                             .withValues(alpha: 0.7), height: 1.5)),
                   ],
                 ),
               ),
               const SizedBox(height: 22),
-              Text('專屬工具', style: GoogleFonts.notoSerifTc(
+              Text(AppLocalizations.of(context)!.official_studio_text_0091, style: GoogleFonts.notoSerifTc(
                   fontSize: 19, fontWeight: FontWeight.w600)),
               const SizedBox(height: 12),
-              _tool(context, '粉絲管理', '查看追蹤者、移除粉絲', onTap: () => _openPage(context, const _OfficialFollowersPage())),
-              _tool(context, '創作數據', '角色人氣與累計遊玩次數', onTap: () => _openPage(context, const _OfficialCreatorStatsPage())),
-              _tool(context, '粉絲信件', '寄送訊息給追蹤者', onTap: () => _openPage(context, const _CreatorFanMailPage())),
-              _tool(context, '粉絲福利', '贈送自己的花花給追蹤者', onTap: () => _openPage(context, _CreatorFlowerGiftPage(onOpenShop: widget.onOpenShop))),
-              _tool(context, '每月創作獎勵', '新建並公開 3 位角色，可領取 300 花花', onTap: () => _openPage(context, const _CreatorMonthlyRewardPage())),
-              _tool(context, '專屬橫幅', '設定創作者公開頁面的橫幅圖片', onTap: () => _openPage(context, const _CreatorBannerPage())),
-              _tool(context, '合作資訊', '合作狀態、權益與公告', onTap: () => _openPage(context, const _CreatorCooperationPage())),
-              _tool(context, '問題回報中心', '提出問題、查看官方回覆與處理進度', onTap: () => _openPage(context, const CreatorSupportCenterPage())),
+              _tool(context, AppLocalizations.of(context)!.official_studio_text_0101, AppLocalizations.of(context)!.official_studio_text_0111, onTap: () => _openPage(context, const _OfficialFollowersPage())),
+              _tool(context, AppLocalizations.of(context)!.official_studio_text_0121, AppLocalizations.of(context)!.official_studio_text_0131, onTap: () => _openPage(context, const _OfficialCreatorStatsPage())),
+              _tool(context, AppLocalizations.of(context)!.official_studio_text_0141, AppLocalizations.of(context)!.official_studio_text_0151, onTap: () => _openPage(context, const _CreatorFanMailPage())),
+              _tool(context, AppLocalizations.of(context)!.official_studio_text_0161, AppLocalizations.of(context)!.official_studio_text_0171, onTap: () => _openPage(context, _CreatorFlowerGiftPage(onOpenShop: widget.onOpenShop))),
+              _tool(context, AppLocalizations.of(context)!.official_studio_text_0181, AppLocalizations.of(context)!.official_studio_text_0191, onTap: () => _openPage(context, const _CreatorMonthlyRewardPage())),
+              _tool(context, AppLocalizations.of(context)!.official_studio_text_0201, AppLocalizations.of(context)!.official_studio_text_0211, onTap: () => _openPage(context, const _CreatorBannerPage())),
+              _tool(context, AppLocalizations.of(context)!.official_studio_text_0221, AppLocalizations.of(context)!.official_studio_text_0231, onTap: () => _openPage(context, const _CreatorCooperationPage())),
+              _tool(context, AppLocalizations.of(context)!.official_studio_text_0241, AppLocalizations.of(context)!.official_studio_text_0251, onTap: () => _openPage(context, const CreatorSupportCenterPage())),
             ],
           );
         },
@@ -191,16 +192,16 @@ class _CreatorAccessGate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return const Center(child: Text('請先登入帳號'));
+    if (user == null) return Center(child: Text(AppLocalizations.of(context)!.official_studio_text_0021));
     return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
       stream: FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots(),
       builder: (context, snap) {
-        if (snap.hasError) return const Center(child: Text('資格驗證失敗，請稍後重試'));
+        if (snap.hasError) return Center(child: Text(AppLocalizations.of(context)!.official_studio_text_0261));
         if (!snap.hasData) return const Center(child: CircularProgressIndicator());
         if (!snap.data!.exists || !_officialCreatorVerified(snap.data!.data() ?? {})) {
-          return const Center(child: Padding(
+          return Center(child: Padding(
             padding: EdgeInsets.all(24),
-            child: Text('目前沒有官方合作創作者權限', textAlign: TextAlign.center),
+            child: Text(AppLocalizations.of(context)!.official_studio_text_0271, textAlign: TextAlign.center),
           ));
         }
         return child;
@@ -217,10 +218,10 @@ class _OfficialCreatorStatsPage extends StatelessWidget {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text('創作數據',
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.official_studio_text_0121,
           style: GoogleFonts.notoSerifTc(fontWeight: FontWeight.w600))),
       body: _CreatorAccessGate(child: uid == null
-          ? const Center(child: Text('請先登入帳號'))
+          ? Center(child: Text(AppLocalizations.of(context)!.official_studio_text_0021))
           : StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: FirebaseFirestore.instance
             .collection('artifacts')
@@ -230,7 +231,7 @@ class _OfficialCreatorStatsPage extends StatelessWidget {
             .snapshots(),
         builder: (context, characterSnap) {
           if (characterSnap.hasError) {
-            return const Center(child: Text('公開角色資料載入失敗'));
+            return Center(child: Text(AppLocalizations.of(context)!.official_studio_text_0281));
           }
           if (!characterSnap.hasData) {
             return const Center(child: CircularProgressIndicator());
@@ -249,35 +250,35 @@ class _OfficialCreatorStatsPage extends StatelessWidget {
           final followersRef = FirebaseFirestore.instance
               .collection('users').doc(uid).collection('followers');
           return ListView(padding: const EdgeInsets.all(18), children: [
-            Text('創作總覽', style: GoogleFonts.notoSerifTc(
+            Text(AppLocalizations.of(context)!.official_studio_text_0291, style: GoogleFonts.notoSerifTc(
                 fontSize: 21, fontWeight: FontWeight.w600)),
             const SizedBox(height: 12),
-            _metricCard(context, '公開角色', '${characters.length}'),
-            _metricCard(context, '累計遊玩次數', '$totalPlayCount'),
+            _metricCard(context, AppLocalizations.of(context)!.official_studio_text_1951, '${characters.length}'),
+            _metricCard(context, AppLocalizations.of(context)!.official_studio_text_0301, '$totalPlayCount'),
             FutureBuilder<AggregateQuerySnapshot>(
               future: followersRef.count().get(),
               builder: (context, countSnap) => _metricCard(
-                context, '目前追蹤者', countSnap.hasError ? '暫無法取得' :
-              countSnap.hasData ? '${countSnap.data!.count ?? 0}' : '讀取中…',
+                context, AppLocalizations.of(context)!.official_studio_text_0311, countSnap.hasError ? AppLocalizations.of(context)!.official_studio_text_0321 :
+              countSnap.hasData ? '${countSnap.data!.count ?? 0}' : AppLocalizations.of(context)!.official_studio_text_1961,
 
               ),
             ),
             const SizedBox(height: 14),
-            Text('各公開角色', style: GoogleFonts.notoSerifTc(
+            Text(AppLocalizations.of(context)!.official_studio_text_0331, style: GoogleFonts.notoSerifTc(
                 fontSize: 19, fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
             if (sorted.isEmpty)
-              const Padding(padding: EdgeInsets.symmetric(vertical: 24),
-                  child: Text('還沒有公開角色，發布後就會顯示在這裡。')),
+              Padding(padding: EdgeInsets.symmetric(vertical: 24),
+                  child: Text(AppLocalizations.of(context)!.official_studio_text_0341)),
             for (final character in sorted)
               Card(child: ListTile(
                 leading: _StudioAvatar(url: _studioCharacterImage(character.data()), size: 48),
-                title: Text((character.data()['name'] ?? '未命名角色').toString()),
-                subtitle: const Text('累計遊玩次數（playCount）'),
+                title: Text((character.data()['name'] ?? AppLocalizations.of(context)!.official_studio_text_0351).toString()),
+                subtitle: Text(AppLocalizations.of(context)!.official_studio_text_0361),
                 trailing: Text('${character.data()['playCount'] is num ? (character.data()['playCount'] as num).toInt() : 0}'),
               )),
             const SizedBox(height: 12),
-            Text('數據以資料庫現有欄位為準；累計遊玩次數不等於聊天訊息數、獨立玩家數或收入。',
+            Text(AppLocalizations.of(context)!.official_studio_text_0371,
                 style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurfaceVariant)),
           ]);
         },
@@ -303,23 +304,23 @@ class _OfficialFollowersPage extends StatelessWidget {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text('粉絲管理',
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.official_studio_text_0101,
           style: GoogleFonts.notoSerifTc(fontWeight: FontWeight.w600))),
       body: _CreatorAccessGate(child: uid == null
-          ? const Center(child: Text('請先登入帳號'))
+          ? Center(child: Text(AppLocalizations.of(context)!.official_studio_text_0021))
           : StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: FirebaseFirestore.instance.collection('users')
             .doc(uid).collection('followers').limit(100).snapshots(),
         builder: (context, snap) {
-          if (snap.hasError) return const Center(child: Text('追蹤者資料載入失敗'));
+          if (snap.hasError) return Center(child: Text(AppLocalizations.of(context)!.official_studio_text_0381));
           if (!snap.hasData) return const Center(child: CircularProgressIndicator());
           final entries = snap.data!.docs;
-          if (entries.isEmpty) return const Center(child: Text('目前還沒有追蹤者'));
+          if (entries.isEmpty) return Center(child: Text(AppLocalizations.of(context)!.official_studio_text_0391));
           return ListView(padding: const EdgeInsets.all(18), children: [
-            Text('追蹤者名單', style: GoogleFonts.notoSerifTc(
+            Text(AppLocalizations.of(context)!.official_studio_text_0401, style: GoogleFonts.notoSerifTc(
                 fontSize: 20, fontWeight: FontWeight.w600)),
             const SizedBox(height: 5),
-            Text('目前顯示最多 100 位追蹤者；僅顯示公開暱稱與頭像。',
+            Text(AppLocalizations.of(context)!.official_studio_text_0411,
                 style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurfaceVariant)),
             const SizedBox(height: 12),
             for (final entry in entries)
@@ -337,18 +338,18 @@ class _FollowerItem extends StatelessWidget {
 
   Future<void> _confirmRemoveFollower(BuildContext context, String id, String name) async {
     final accepted = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
-      title: const Text('移除粉絲'),
-      content: Text('確定將「$name」移出追蹤者名單嗎？對方將不再追蹤妳，但未來仍可再次追蹤。'),
-      actions: [TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('取消')),
-        FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('確認移除'))],
+      title: Text(AppLocalizations.of(context)!.official_studio_text_0421),
+      content: Text(AppLocalizations.of(context)!.official_studio_text_1771(name)),
+      actions: [TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(AppLocalizations.of(context)!.official_studio_text_0431)),
+        FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(AppLocalizations.of(context)!.official_studio_text_0441))],
     ));
     if (accepted != true || !context.mounted) return;
     try {
       await FirebaseFunctions.instanceFor(region: 'asia-east1')
           .httpsCallable('removeCreatorFollower').call({'followerUid': id});
-      if (context.mounted) ToastUtils.showCenterToast(context, '已移除粉絲');
+      if (context.mounted) ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.official_studio_text_0451);
     } catch (e) {
-      if (context.mounted) ToastUtils.showCenterToast(context, '移除失敗，請稍後重試', isError: true);
+      if (context.mounted) ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.official_studio_text_0461, isError: true);
       debugPrint('移除粉絲失敗：$e');
     }
   }
@@ -362,11 +363,11 @@ class _FollowerItem extends StatelessWidget {
         final nickname = (data['nickname'] ?? '').toString().trim();
         return Card(child: ListTile(
           leading: _StudioAvatar(url: (data['avatarPath'] ?? data['photoURL'] ?? '').toString(), size: 44),
-          title: Text(nickname.isNotEmpty ? nickname : (data['displayName'] ?? '玩家').toString()),
-          subtitle: snap.hasError ? const Text('無法載入公開資料') : null,
+          title: Text(nickname.isNotEmpty ? nickname : (data['displayName'] ?? AppLocalizations.of(context)!.official_studio_text_0471).toString()),
+          subtitle: snap.hasError ? Text(AppLocalizations.of(context)!.official_studio_text_0481) : null,
           trailing: TextButton(
-              onPressed: () => _confirmRemoveFollower(context, followerId, nickname.isEmpty ? '這位玩家' : nickname),
-              child: const Text('移除粉絲')),
+              onPressed: () => _confirmRemoveFollower(context, followerId, nickname.isEmpty ? AppLocalizations.of(context)!.official_studio_text_0491 : nickname),
+              child: Text(AppLocalizations.of(context)!.official_studio_text_0421)),
         ));
       },
     );
@@ -427,24 +428,24 @@ class _CreatorBannerPageState extends State<_CreatorBannerPage> {
       );
       if (cropped == null || !mounted) return;
       if (cropped.length > 2200000) {
-        ToastUtils.showCenterToast(context, '裁切後圖片仍過大，請使用其他圖片', isError: true);
+        ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.official_studio_text_0501, isError: true);
         return;
       }
       setState(() => _busy = true);
       await FirebaseFunctions.instanceFor(region: 'asia-east1')
           .httpsCallable('updateCreatorBanner', options: HttpsCallableOptions(timeout: const Duration(seconds: 90)))
           .call({'imageBase64': base64Encode(cropped), 'operation': 'upload'});
-      if (mounted) ToastUtils.showCenterToast(context, '橫幅已更新');
+      if (mounted) ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.official_studio_text_0511);
     } on FirebaseFunctionsException catch (e, st) {
       final message = (e.message ?? '').trim();
       debugPrint('[CREATOR_BANNER] 上傳失敗 code=${e.code} message=$message details=${e.details}');
       debugPrintStack(stackTrace: st);
       if (mounted) ToastUtils.showCenterToast(context,
-          '橫幅上傳失敗（${e.code}）${message.isEmpty ? '' : '：$message'}', isError: true);
+          AppLocalizations.of(context)!.official_studio_text_0521, isError: true);
     } catch (e, st) {
       debugPrint('[CREATOR_BANNER] 圖片處理或上傳失敗：$e');
       debugPrintStack(stackTrace: st);
-      if (mounted) ToastUtils.showCenterToast(context, '圖片處理失敗，請重新選擇圖片', isError: true);
+      if (mounted) ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.official_studio_text_0521, isError: true);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -454,33 +455,33 @@ class _CreatorBannerPageState extends State<_CreatorBannerPage> {
     try {
       await FirebaseFunctions.instanceFor(region: 'asia-east1')
           .httpsCallable('updateCreatorBanner').call({'operation': 'remove'});
-      if (mounted) ToastUtils.showCenterToast(context, '已移除橫幅');
+      if (mounted) ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.official_studio_text_0531);
     } catch (e) {
-      if (mounted) ToastUtils.showCenterToast(context, '移除失敗', isError: true);
+      if (mounted) ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.official_studio_text_0541, isError: true);
       debugPrint('移除橫幅失敗：$e');
     } finally { if (mounted) setState(() => _busy = false); }
   }
   @override Widget build(BuildContext context) {
     final uid = FirebaseAuth.instance.currentUser?.uid;
-    return Scaffold(appBar: AppBar(title: const Text('專屬橫幅')),
-        body: _CreatorAccessGate(child: uid == null ? const Center(child: Text('請先登入')) :
+    return Scaffold(appBar: AppBar(title: Text(AppLocalizations.of(context)!.official_studio_text_0201)),
+        body: _CreatorAccessGate(child: uid == null ? Center(child: Text(AppLocalizations.of(context)!.official_studio_text_0551)) :
         StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
           stream: FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
           builder: (context, snapshot) {
             final url = (snapshot.data?.data()?['creatorBannerUrl'] ?? '').toString();
             return ListView(padding: const EdgeInsets.all(20), children: [
-              const Text('公開頁橫幅', style: TextStyle(fontSize: 19, fontWeight: FontWeight.w600)),
+              Text(AppLocalizations.of(context)!.official_studio_text_0561, style: TextStyle(fontSize: 19, fontWeight: FontWeight.w600)),
               const SizedBox(height: 12),
               AspectRatio(aspectRatio: 2.5, child: ClipRRect(borderRadius: BorderRadius.circular(16),
                   child: url.startsWith('http') ? CachedNetworkImage(imageUrl: url, fit: BoxFit.cover,
-                      errorWidget: (_, __, ___) => const Center(child: Text('圖片讀取失敗')))
+                      errorWidget: (_, __, ___) => Center(child: Text(AppLocalizations.of(context)!.official_studio_text_0571)))
                       : Container(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.07),
-                      alignment: Alignment.center, child: const Text('尚未設定橫幅')))),
+                      alignment: Alignment.center, child: Text(AppLocalizations.of(context)!.official_studio_text_0581)))),
               const SizedBox(height: 12),
-              const Text('選擇照片後可在白色取景框內調整位置、縮放，確認後才上傳。'),
+              Text(AppLocalizations.of(context)!.official_studio_text_0591),
               const SizedBox(height: 18),
-              FilledButton(onPressed: _busy ? null : _upload, child: Text(_busy ? '處理中…' : '選擇圖片並裁切')),
-              if (url.isNotEmpty) TextButton(onPressed: _busy ? null : _remove, child: const Text('移除目前橫幅')),
+              FilledButton(onPressed: _busy ? null : _upload, child: Text(_busy ? AppLocalizations.of(context)!.official_studio_text_0601 : AppLocalizations.of(context)!.official_studio_text_0611)),
+              if (url.isNotEmpty) TextButton(onPressed: _busy ? null : _remove, child: Text(AppLocalizations.of(context)!.official_studio_text_0621)),
             ]);
           },
         )));
@@ -526,7 +527,7 @@ class _CreatorBannerCropPageState extends State<_CreatorBannerCropPage> {
     } catch (error, stack) {
       debugPrint('[CREATOR_BANNER] 解碼失敗：$error');
       debugPrintStack(stackTrace: stack);
-      if (mounted) ToastUtils.showCenterToast(context, '無法開啟這張圖片', isError: true);
+      if (mounted) ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.official_studio_text_0631, isError: true);
     }
   }
 
@@ -577,14 +578,14 @@ class _CreatorBannerCropPageState extends State<_CreatorBannerCropPage> {
       final result = data.buffer.asUint8List();
       if (!mounted) return;
       if (result.length > 2200000) {
-        ToastUtils.showCenterToast(context, '裁切後檔案過大，請更換照片', isError: true);
+        ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.official_studio_text_0641, isError: true);
         return;
       }
       Navigator.of(context).pop(result);
     } catch (error, stack) {
       debugPrint('[CREATOR_BANNER] 裁切失敗：$error');
       debugPrintStack(stackTrace: stack);
-      if (mounted) ToastUtils.showCenterToast(context, '裁切失敗，請再試一次', isError: true);
+      if (mounted) ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.official_studio_text_0651, isError: true);
     } finally {
       if (mounted) setState(() => _working = false);
     }
@@ -599,7 +600,7 @@ class _CreatorBannerCropPageState extends State<_CreatorBannerCropPage> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF1D1A20),
         foregroundColor: Colors.white,
-        title: const Text('調整橫幅取景', style: TextStyle(color: Colors.white)),
+        title: Text(AppLocalizations.of(context)!.official_studio_text_0661, style: TextStyle(color: Colors.white)),
       ),
       body: SafeArea(
         child: LayoutBuilder(builder: (context, constraints) {
@@ -612,10 +613,10 @@ class _CreatorBannerCropPageState extends State<_CreatorBannerCropPage> {
           final editorSize = Size(constraints.maxWidth, editorHeight);
           return Column(children: [
             const SizedBox(height: 12),
-            Text('移動照片，選擇橫幅要顯示的範圍',
+            Text(AppLocalizations.of(context)!.official_studio_text_0671,
                 style: GoogleFonts.notoSerifTc(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white)),
             const SizedBox(height: 6),
-            Text('單指拖曳位置・雙指縮放・也可以用下方滑桿',
+            Text(AppLocalizations.of(context)!.official_studio_text_0681,
                 style: const TextStyle(fontSize: 12, color: Color(0xFFEAE4ED))),
             const SizedBox(height: 14),
             SizedBox(
@@ -653,12 +654,12 @@ class _CreatorBannerCropPageState extends State<_CreatorBannerCropPage> {
               ),
             ),
             const SizedBox(height: 6),
-            Text('白框內的畫面，就是上傳後的橫幅（2.5：1）',
+            Text(AppLocalizations.of(context)!.official_studio_text_0691,
                 style: const TextStyle(fontSize: 12, color: Color(0xFFEAE4ED))),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(children: [
-                const Text('縮放', style: TextStyle(fontSize: 12, color: Colors.white)),
+                Text(AppLocalizations.of(context)!.official_studio_text_0701, style: TextStyle(fontSize: 12, color: Colors.white)),
                 Expanded(child: Slider(
                   activeColor: Theme.of(context).colorScheme.primary,
                   inactiveColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.28),
@@ -679,7 +680,7 @@ class _CreatorBannerCropPageState extends State<_CreatorBannerCropPage> {
                 _zoom = 1;
                 _offset = Offset.zero;
               }),
-              child: Text('重設位置', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w600)),
+              child: Text(AppLocalizations.of(context)!.official_studio_text_0711, style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w600)),
             ),
             const Spacer(),
             Padding(
@@ -688,12 +689,12 @@ class _CreatorBannerCropPageState extends State<_CreatorBannerCropPage> {
                 Expanded(child: OutlinedButton(
                   style: OutlinedButton.styleFrom(side: BorderSide(color: Theme.of(context).colorScheme.primary)),
                   onPressed: _working ? null : () => Navigator.of(context).pop(),
-                  child: const Text('取消', style: TextStyle(color: Colors.white)),
+                  child: Text(AppLocalizations.of(context)!.official_studio_text_0431, style: TextStyle(color: Colors.white)),
                 )),
                 const SizedBox(width: 12),
                 Expanded(child: FilledButton(
                   onPressed: image == null || _working ? null : () => _confirm(crop),
-                  child: Text(_working ? '裁切中…' : '確認裁切並上傳'),
+                  child: Text(_working ? AppLocalizations.of(context)!.official_studio_text_0721 : AppLocalizations.of(context)!.official_studio_text_0731),
                 )),
               ]),
             ),
@@ -763,29 +764,29 @@ class _CreatorCooperationPage extends StatelessWidget {
   const _CreatorCooperationPage();
   @override Widget build(BuildContext context) {
     final uid = FirebaseAuth.instance.currentUser?.uid;
-    return Scaffold(appBar: AppBar(title: const Text('合作資訊')),
-        body: _CreatorAccessGate(child: uid == null ? const Center(child: Text('請先登入')) :
+    return Scaffold(appBar: AppBar(title: Text(AppLocalizations.of(context)!.official_studio_text_0221)),
+        body: _CreatorAccessGate(child: uid == null ? Center(child: Text(AppLocalizations.of(context)!.official_studio_text_0551)) :
         StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
           stream: FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
           builder: (context, snap) {
             final data = snap.data?.data() ?? <String, dynamic>{};
             final verified = _officialCreatorVerified(data);
             return ListView(padding: const EdgeInsets.all(20), children: [
-              const Text('合作資格', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+              Text(AppLocalizations.of(context)!.official_studio_text_0741, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
               const SizedBox(height: 8),
-              Text(verified ? '已認證合作創作者' : '資格確認中'),
+              Text(verified ? AppLocalizations.of(context)!.official_studio_text_0071 : AppLocalizations.of(context)!.official_studio_text_0751),
               const Divider(height: 32),
-              const Text('目前可使用的專屬工具', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+              Text(AppLocalizations.of(context)!.official_studio_text_0761, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
               const SizedBox(height: 10),
-              const Text('粉絲管理、創作數據、粉絲信件、花花福利、每月創作獎勵及專屬橫幅。'),
+              Text(AppLocalizations.of(context)!.official_studio_text_0771),
               const Divider(height: 32),
-              const Text('每月創作獎勵', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+              Text(AppLocalizations.of(context)!.official_studio_text_0181, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
               const SizedBox(height: 10),
-              const Text('依目前系統規則，當月新建且首次公開 3 位符合資格的角色，可申請領取 300 朵花花。實際資格與核發以後端審核結果為準。'),
+              Text(AppLocalizations.of(context)!.official_studio_text_0781),
               const Divider(height: 32),
-              const Text('官方公告與合約', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+              Text(AppLocalizations.of(context)!.official_studio_text_0791, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
               const SizedBox(height: 10),
-              const Text('合作條款以雙方實際簽署的版本與官方正式通知為準；此頁不取代合作契約。若有資格或權益相關疑問，請聯繫官方。'),
+              Text(AppLocalizations.of(context)!.official_studio_text_0801),
             ]);
           },
         )));
@@ -822,7 +823,7 @@ class _CreatorFanMailPageState extends State<_CreatorFanMailPage> {
       if (!mounted) return;
       setState(() => _overview = Map<String,dynamic>.from(response.data as Map));
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('讀取信件額度失敗：$e')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.official_studio_text_1881)));
     } finally {if (mounted) setState(() => _loading = false);}
   }
 
@@ -832,19 +833,19 @@ class _CreatorFanMailPageState extends State<_CreatorFanMailPage> {
     final body = _body.text.trim();
     // 以使用者感知字元計數，與後端 Intl.Segmenter 一致。
     if (title.isEmpty || title.characters.length > 100) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('信件標題須在 1～100 字之間')));return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.official_studio_text_0811)));return;
     }
     if (body.isEmpty || body.characters.length > 5000) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('信件內容須在 1～5000 字之間')));return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.official_studio_text_0821)));return;
     }
     if (_mode=='single' && (_recipientUid==null || _recipientUid!.isEmpty)) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('請選擇一位追蹤者')));return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.official_studio_text_0831)));return;
     }
     final accepted = await showDialog<bool>(context: context,builder:(ctx)=>AlertDialog(
-      title: const Text('確認寄送粉絲信件'),
-      content: Text(_mode=='broadcast' ? '確定寄送給目前的全部追蹤者嗎？這次將使用 1 次群發額度。' : '確定寄送給這位粉絲嗎？這次將使用 1 次單人私信額度。'),
-      actions:[TextButton(onPressed:()=>Navigator.pop(ctx,false),child:const Text('取消')),
-        FilledButton(onPressed:()=>Navigator.pop(ctx,true),child:const Text('確認寄出'))],
+      title: Text(AppLocalizations.of(context)!.official_studio_text_0841),
+      content: Text(_mode=='broadcast' ? AppLocalizations.of(context)!.official_studio_text_0851 : AppLocalizations.of(context)!.official_studio_text_0861),
+      actions:[TextButton(onPressed:()=>Navigator.pop(ctx,false),child:Text(AppLocalizations.of(context)!.official_studio_text_0431)),
+        FilledButton(onPressed:()=>Navigator.pop(ctx,true),child:Text(AppLocalizations.of(context)!.official_studio_text_0871))],
     ));
     if (accepted!=true || !mounted) return;
     setState(()=>_sending=true);
@@ -857,10 +858,10 @@ class _CreatorFanMailPageState extends State<_CreatorFanMailPage> {
       });
       if (!mounted) return;
       _requestId=null;_title.clear();_body.clear();
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('已建立寄送工作；信件將由系統陸續投遞。')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.official_studio_text_0881)));
       await _refresh();
     } catch(e) {
-      if(mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('寄送未確認成功，請檢查紀錄後重試：$e')));
+      if(mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.official_studio_text_1891)));
     } finally {if(mounted)setState(()=>_sending=false);}
   }
 
@@ -870,32 +871,41 @@ class _CreatorFanMailPageState extends State<_CreatorFanMailPage> {
     final primary=Theme.of(context).colorScheme.primary;
     final jobs=(_overview['jobs'] as List?)??[];
     return Scaffold(
-      appBar: AppBar(title: Text('粉絲信件',style:GoogleFonts.notoSerifTc(fontWeight:FontWeight.w600))),
-      body: _CreatorAccessGate(child: uid==null?const Center(child:Text('請先登入帳號')):
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.official_studio_text_0141,style:GoogleFonts.notoSerifTc(fontWeight:FontWeight.w600))),
+      body: _CreatorAccessGate(child: uid==null?Center(child:Text(AppLocalizations.of(context)!.official_studio_text_0021)):
       RefreshIndicator(onRefresh:_refresh,child:ListView(padding:const EdgeInsets.all(18),children:[
-        Row(children:[const Expanded(child:Text('今日寄送額度',style:TextStyle(fontSize:18,fontWeight:FontWeight.bold))),
+        Row(children:[Expanded(child:Text(AppLocalizations.of(context)!.official_studio_text_0891,style:TextStyle(fontSize:18,fontWeight:FontWeight.bold))),
           IconButton(onPressed:_loading?null:_refresh,icon:const Icon(Icons.refresh_rounded))]),
         Card(child:Padding(padding:const EdgeInsets.all(15),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-          Text('單人私信：${_overview['singleUsed']??'—'} / 30 封'),
-          const SizedBox(height:8),Text('全體粉絲群發：${_overview['broadcastUsed']??'—'} / 5 次'),
-          const SizedBox(height:8),const Text('台灣時間每天 00:00 重置；群發一次可寄送給所有追蹤者。',style:TextStyle(fontSize:12)),
+          Text(
+            AppLocalizations.of(context)!.official_studio_text_1781(
+              (_overview['singleUsed'] as num?)?.toInt() ?? 0,
+            ),
+          ),
+          const SizedBox(height:8),
+          Text(
+            AppLocalizations.of(context)!.official_studio_text_1791(
+              (_overview['broadcastUsed'] as num?)?.toInt() ?? 0,
+            ),
+          ),
+          const SizedBox(height:8),Text(AppLocalizations.of(context)!.official_studio_text_0901,style:TextStyle(fontSize:12)),
         ]))),
         const SizedBox(height:14),
-        SegmentedButton<String>(segments:const [
-          ButtonSegment(value:'broadcast',label:Text('全體粉絲'),icon:Icon(Icons.groups_outlined)),
-          ButtonSegment(value:'single',label:Text('單一粉絲'),icon:Icon(Icons.person_outline))],
+        SegmentedButton<String>(segments:[
+          ButtonSegment(value:'broadcast',label:Text(AppLocalizations.of(context)!.official_studio_text_0911),icon:Icon(Icons.groups_outlined)),
+          ButtonSegment(value:'single',label:Text(AppLocalizations.of(context)!.official_studio_text_0921),icon:Icon(Icons.person_outline))],
             selected:{_mode},onSelectionChanged:_sending?null:(v)=>setState((){_mode=v.first;_requestId=null;})),
         if(_mode=='single') ...[
           const SizedBox(height:12),StreamBuilder<QuerySnapshot<Map<String,dynamic>>>(
               stream:FirebaseFirestore.instance.collection('users').doc(uid).collection('followers').limit(100).snapshots(),
               builder:(ctx,snap){
-                if(snap.hasError)return const Text('無法取得粉絲名單');
+                if(snap.hasError)return Text(AppLocalizations.of(context)!.official_studio_text_0931);
                 if(!snap.hasData)return const LinearProgressIndicator();
                 final docs=snap.data!.docs;
-                if(docs.isEmpty)return const Text('目前沒有可以寄信的粉絲');
+                if(docs.isEmpty)return Text(AppLocalizations.of(context)!.official_studio_text_0941);
                 final value=docs.any((d)=>d.id==_recipientUid)?_recipientUid:null;
                 return DropdownButtonFormField<String>(value:value,isExpanded:true,
-                    decoration:const InputDecoration(labelText:'選擇追蹤者（前 100 位）',border:OutlineInputBorder()),
+                    decoration:InputDecoration(labelText:AppLocalizations.of(context)!.official_studio_text_0951,border:OutlineInputBorder()),
                     items:docs.map((d)=>DropdownMenuItem(value:d.id,child:Text(d.data()['nickname']?.toString().trim().isNotEmpty==true
                         ?'${d.data()['nickname']} (${d.id.substring(0,d.id.length>8?8:d.id.length)})':d.id,
                         overflow:TextOverflow.ellipsis))).toList(),
@@ -905,26 +915,26 @@ class _CreatorFanMailPageState extends State<_CreatorFanMailPage> {
         const SizedBox(height:14),TextField(controller:_title,maxLength:100,enabled:!_sending,
             inputFormatters:[LengthLimitingTextInputFormatter(100)],
             onChanged:(_)=>_requestId=null,
-            decoration:const InputDecoration(labelText:'信件標題',border:OutlineInputBorder())),
+            decoration:InputDecoration(labelText:AppLocalizations.of(context)!.official_studio_text_0961,border:OutlineInputBorder())),
         const SizedBox(height:10),TextField(controller:_body,minLines:7,maxLines:12,enabled:!_sending,
             maxLength:5000,inputFormatters:[LengthLimitingTextInputFormatter(5000)],
             onChanged:(_)=>_requestId=null,
-            decoration:const InputDecoration(labelText:'信件內容',hintText:'寫一封給粉絲的信……',border:OutlineInputBorder())),
+            decoration:InputDecoration(labelText:AppLocalizations.of(context)!.official_studio_text_0971,hintText:AppLocalizations.of(context)!.official_studio_text_0981,border:OutlineInputBorder())),
         const SizedBox(height:8),FilledButton.icon(onPressed:_sending?null:_send,
             icon:_sending?const SizedBox(width:18,height:18,child:CircularProgressIndicator(strokeWidth:2)):const Icon(Icons.send_outlined),
-            label:Text(_sending?'提交中…':'確認並寄送')),
-        const SizedBox(height:25),Text('寄送紀錄',style:GoogleFonts.notoSerifTc(fontSize:19,fontWeight:FontWeight.w600)),
-        if(jobs.isEmpty)const Padding(padding:EdgeInsets.all(16),child:Text('還沒有寄送紀錄')),
+            label:Text(_sending?AppLocalizations.of(context)!.official_studio_text_0991:AppLocalizations.of(context)!.official_studio_text_1001)),
+        const SizedBox(height:25),Text(AppLocalizations.of(context)!.official_studio_text_1011,style:GoogleFonts.notoSerifTc(fontSize:19,fontWeight:FontWeight.w600)),
+        if(jobs.isEmpty)Padding(padding:EdgeInsets.all(16),child:Text(AppLocalizations.of(context)!.official_studio_text_1021)),
         for(final raw in jobs) if(raw is Map) Builder(builder:(ctx){
           final j=Map<String,dynamic>.from(raw);
           final status=(j['status'] ?? '').toString();
-          final statusLabel={'queued':'排隊中','processing':'投遞中','completed':'已完成','cancelled':'已取消','failed':'寄送失敗'}[status]??status;
+          final statusLabel={'queued':AppLocalizations.of(context)!.official_studio_text_1031,'processing':AppLocalizations.of(context)!.official_studio_text_1041,'completed':AppLocalizations.of(context)!.official_studio_text_1051,'cancelled':AppLocalizations.of(context)!.official_studio_text_1061,'failed':AppLocalizations.of(context)!.official_studio_text_1071}[status]??status;
           return Card(child:ListTile(
-              title:Text((j['title'] ?? '未命名信件').toString()),
-              subtitle:Text('${j['mode']=='broadcast'?'全體粉絲':'單一粉絲'} · $statusLabel · 已投遞 ${j['delivered']??0} 人'),
+              title:Text((j['title'] ?? AppLocalizations.of(context)!.official_studio_text_1081).toString()),
+              subtitle:Text(AppLocalizations.of(context)!.official_studio_text_1941(j['mode']=='broadcast'?AppLocalizations.of(context)!.official_studio_text_0911:AppLocalizations.of(context)!.official_studio_text_0921, statusLabel, (j['delivered']??0) is num ? (j['delivered'] as num).toInt() : int.tryParse((j['delivered']??0).toString())??0)),
               trailing:status=='failed'?const Icon(Icons.error_outline):null));
         }),
-        const SizedBox(height:20),const Text('寄送紀錄顯示近 20 筆；取消合作資格後，新的寄送與未投遞的工作都會停止。',
+        const SizedBox(height:20),Text(AppLocalizations.of(context)!.official_studio_text_1091,
             style:TextStyle(fontSize:12)),
       ]))),
     );
@@ -1015,7 +1025,7 @@ class _CreatorFlowerGiftPageState extends State<_CreatorFlowerGiftPage> {
         final data = Map<String, dynamic>.from(item);
         return _CreatorGiftRecipient(
           uid: (data['uid'] ?? '').toString(),
-          name: (data['name'] ?? '未設定暱稱的玩家').toString(),
+          name: (data['name'] ?? AppLocalizations.of(context)!.official_studio_text_1101).toString(),
           avatar: (data['avatar'] ?? '').toString(),
         );
       }).where((item) => item.uid.isNotEmpty);
@@ -1028,7 +1038,7 @@ class _CreatorFlowerGiftPageState extends State<_CreatorFlowerGiftPage> {
       });
     } catch (error) {
       if (!mounted || generation != _fanSearchGeneration) return;
-      ToastUtils.showCenterToast(context, '讀取粉絲失敗，請稍後重試', isError: true);
+      ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.official_studio_text_1111, isError: true);
       debugPrint('查詢送花粉絲失敗：$error');
     } finally {
       if (mounted && generation == _fanSearchGeneration) {
@@ -1040,10 +1050,10 @@ class _CreatorFlowerGiftPageState extends State<_CreatorFlowerGiftPage> {
   Future<void> _showShortage(int balance, int total) async {
     if (!mounted) return;
     await showDialog<void>(context:context, builder:(ctx) => AlertDialog(
-      title:const Text('花花餘額不足'),
-      content:Text('目前餘額：$balance 朵\n本次需要：$total 朵\n尚缺少：${total-balance} 朵\n\n可以前往商店補充花花。'),
+      title:Text(AppLocalizations.of(context)!.official_studio_text_1121),
+      content:Text(AppLocalizations.of(context)!.official_studio_text_1921(balance, total, total-balance)),
       actions:[
-        TextButton(onPressed:()=>Navigator.of(ctx).pop(),child:const Text('稍後再說')),
+        TextButton(onPressed:()=>Navigator.of(ctx).pop(),child:Text(AppLocalizations.of(context)!.official_studio_text_1131)),
         FilledButton.icon(onPressed:(){
           Navigator.of(ctx).pop();
           // 沿用既有商店入口；沒有外部回呼時直接開啟花花儲值分頁。
@@ -1057,7 +1067,7 @@ class _CreatorFlowerGiftPageState extends State<_CreatorFlowerGiftPage> {
               ),
             );
           }
-        },icon:const Icon(Icons.shopping_bag_outlined),label:const Text('前往商店')),
+        },icon:const Icon(Icons.shopping_bag_outlined),label:Text(AppLocalizations.of(context)!.official_studio_text_1141)),
       ],
     ));
   }
@@ -1066,24 +1076,24 @@ class _CreatorFlowerGiftPageState extends State<_CreatorFlowerGiftPage> {
     if (_submitting) return;
     final amount = int.tryParse(_amountController.text.trim());
     if (amount == null || amount < 1 || amount > 1000) {
-      ToastUtils.showCenterToast(context, '每位粉絲可贈送 1～1000 朵花花', isError: true);return;
+      ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.official_studio_text_1151, isError: true);return;
     }
     if (_selected.isEmpty || _selected.length > 20) {
-      ToastUtils.showCenterToast(context, '每次請選擇 1～20 位粉絲', isError: true);return;
+      ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.official_studio_text_1161, isError: true);return;
     }
     final total = amount * _selected.length;
     if (total > 5000) {
-      ToastUtils.showCenterToast(context, '單次贈送最多 5000 朵花花', isError: true);return;
+      ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.official_studio_text_1171, isError: true);return;
     }
     if (_noteController.text.trim().characters.length > 300) {
-      ToastUtils.showCenterToast(context, '祝福文字最多 300 字', isError: true);return;
+      ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.official_studio_text_1181, isError: true);return;
     }
     if (balance < total) {await _showShortage(balance, total);return;}
     final ok=await showDialog<bool>(context:context,builder:(ctx)=>AlertDialog(
-      title:const Text('確認贈送花花'),
-      content:Text('即將贈送給 ${_selected.length} 位粉絲，每人 $amount 朵，共扣除 $total 朵花花。\n贈送完成後無法自行撤回。'),
-      actions:[TextButton(onPressed:()=>Navigator.pop(ctx,false),child:const Text('取消')),
-        FilledButton(onPressed:()=>Navigator.pop(ctx,true),child:const Text('確認贈送'))],
+      title:Text(AppLocalizations.of(context)!.official_studio_text_1191),
+      content:Text(AppLocalizations.of(context)!.official_studio_text_1931(_selected.length, amount, total)),
+      actions:[TextButton(onPressed:()=>Navigator.pop(ctx,false),child:Text(AppLocalizations.of(context)!.official_studio_text_0431)),
+        FilledButton(onPressed:()=>Navigator.pop(ctx,true),child:Text(AppLocalizations.of(context)!.official_studio_text_1201))],
     ));
     if (ok!=true || !mounted) return;
     setState(()=>_submitting=true);
@@ -1097,7 +1107,7 @@ class _CreatorFlowerGiftPageState extends State<_CreatorFlowerGiftPage> {
       if (!mounted) return;
       final data=Map<String,dynamic>.from(result.data as Map);
       setState(() {_selected.clear(); _requestId=null; _noteController.clear();});
-      ToastUtils.showCenterToast(context, data['alreadySubmitted']==true?'這筆贈送已建立，沒有重複扣點':'贈送成功！$total 朵花花已寄到粉絲信箱，等待領取。');
+      ToastUtils.showCenterToast(context, data['alreadySubmitted']==true?AppLocalizations.of(context)!.official_studio_text_1211:AppLocalizations.of(context)!.official_studio_text_1801(total));
     } on FirebaseFunctionsException catch (e) {
       if (!mounted) return;
       final details=e.details;
@@ -1105,24 +1115,24 @@ class _CreatorFlowerGiftPageState extends State<_CreatorFlowerGiftPage> {
         final latest=(details['balance'] as num?)?.toInt()??balance;
         await _showShortage(latest,total);
       } else {
-        ToastUtils.showCenterToast(context, '贈送未確認成功：${e.message??e.code}。請先查詢紀錄再重試。', isError: true);
+        ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.official_studio_text_1911, isError: true);
       }
     } catch(e) {
-      if(mounted) ToastUtils.showCenterToast(context, '連線失敗，請確認紀錄後再重試：$e', isError: true);
+      if(mounted) ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.official_studio_text_1901, isError: true);
     } finally {if(mounted)setState(()=>_submitting=false);}
   }
 
   @override
   Widget build(BuildContext context) {
     final uid=FirebaseAuth.instance.currentUser?.uid;
-    if(uid==null)return const Scaffold(body:Center(child:Text('請先登入')));
+    if(uid==null)return Scaffold(body:Center(child:Text(AppLocalizations.of(context)!.official_studio_text_0551)));
     final primary=Theme.of(context).colorScheme.primary;
     return Scaffold(
-      appBar:AppBar(title:Text('粉絲福利・花花贈送',style:GoogleFonts.notoSerifTc(fontWeight:FontWeight.w600))),
+      appBar:AppBar(title:Text(AppLocalizations.of(context)!.official_studio_text_1221,style:GoogleFonts.notoSerifTc(fontWeight:FontWeight.w600))),
       body:_CreatorAccessGate(child:StreamBuilder<DocumentSnapshot<Map<String,dynamic>>>(
         stream:FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
         builder:(context,userSnapshot){
-          if(userSnapshot.hasError)return const Center(child:Text('無法讀取花花餘額'));
+          if(userSnapshot.hasError)return Center(child:Text(AppLocalizations.of(context)!.official_studio_text_1231));
           if(!userSnapshot.hasData)return const Center(child:CircularProgressIndicator());
           final raw=userSnapshot.data!.data()?['flowerPoints'];
           final balance=raw is num?raw.toInt():0;
@@ -1131,25 +1141,25 @@ class _CreatorFlowerGiftPageState extends State<_CreatorFlowerGiftPage> {
           return ListView(padding:const EdgeInsets.all(18),children:[
             Card(child:Padding(padding:const EdgeInsets.all(18),child:Column(
                 crossAxisAlignment:CrossAxisAlignment.start,children:[
-              const Text('我的花花餘額',style:TextStyle(fontWeight:FontWeight.w600)),
-              const SizedBox(height:8),Text('$balance 朵 🌸',style:TextStyle(fontSize:25,fontWeight:FontWeight.bold,color:primary)),
-              const SizedBox(height:7),const Text('花花從妳自己的帳戶扣除，不會由平台額外發放。',style:TextStyle(fontSize:12)),
+              Text(AppLocalizations.of(context)!.official_studio_text_1241,style:TextStyle(fontWeight:FontWeight.w600)),
+              const SizedBox(height:8),Text(AppLocalizations.of(context)!.official_studio_text_1811(balance),style:TextStyle(fontSize:25,fontWeight:FontWeight.bold,color:primary)),
+              const SizedBox(height:7),Text(AppLocalizations.of(context)!.official_studio_text_1251,style:TextStyle(fontSize:12)),
             ]))),
             const SizedBox(height:12),
-            Text('選擇粉絲（單次最多 20 位）',style:GoogleFonts.notoSerifTc(fontSize:18,fontWeight:FontWeight.w600)),
+            Text(AppLocalizations.of(context)!.official_studio_text_1261,style:GoogleFonts.notoSerifTc(fontSize:18,fontWeight:FontWeight.w600)),
             const SizedBox(height:6),
-            const Text('依玩家目前公開暱稱或 UID 搜尋；實際送出時由伺服器再次驗證。',style:TextStyle(fontSize:12)),
+            Text(AppLocalizations.of(context)!.official_studio_text_1271,style:TextStyle(fontSize:12)),
             const SizedBox(height:12),
             TextField(
               controller: _fanSearchController,
               enabled: !_submitting,
               onChanged: _onFanSearchChanged,
               decoration: InputDecoration(
-                labelText: '搜尋粉絲',
-                hintText: '輸入暱稱或玩家 UID',
+                labelText: AppLocalizations.of(context)!.official_studio_text_1281,
+                hintText: AppLocalizations.of(context)!.official_studio_text_1291,
                 prefixIcon: const Icon(Icons.search_rounded),
                 suffixIcon: _fanSearchController.text.isEmpty ? null : IconButton(
-                  tooltip: '清除搜尋',
+                  tooltip: AppLocalizations.of(context)!.official_studio_text_1301,
                   onPressed: () { _fanSearchController.clear(); _loadFans(reset: true); },
                   icon: const Icon(Icons.close_rounded),
                 ),
@@ -1161,8 +1171,8 @@ class _CreatorFlowerGiftPageState extends State<_CreatorFlowerGiftPage> {
               const Padding(padding: EdgeInsets.all(18), child: Center(child: CircularProgressIndicator())),
             if (!_fanLoading && _fanResults.isEmpty)
               Padding(padding: const EdgeInsets.all(18), child: Text(
-                  _fanAppliedKeyword.isEmpty ? '目前沒有可以贈送的粉絲' :
-                  (_fanHasMore ? '這批沒有符合的粉絲，可以繼續搜尋' : '找不到符合的粉絲'))),
+                  _fanAppliedKeyword.isEmpty ? AppLocalizations.of(context)!.official_studio_text_1311 :
+                  (_fanHasMore ? AppLocalizations.of(context)!.official_studio_text_1321 : AppLocalizations.of(context)!.official_studio_text_1331))),
             for (final person in _fanResults)
               CheckboxListTile(
                 dense: true,
@@ -1175,7 +1185,7 @@ class _CreatorFlowerGiftPageState extends State<_CreatorFlowerGiftPage> {
                       if (_selected.length < 20) {
                         _selected.add(person.uid);
                       } else {
-                        ToastUtils.showCenterToast(context, '單次最多選擇 20 位粉絲');
+                        ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.official_studio_text_1341);
                       }
                     } else {
                       _selected.remove(person.uid);
@@ -1190,8 +1200,8 @@ class _CreatorFlowerGiftPageState extends State<_CreatorFlowerGiftPage> {
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: OutlinedButton(
                   onPressed: _fanLoading ? null : () => _loadFans(),
-                  child: Text(_fanLoading ? '搜尋中…' :
-                  (_fanAppliedKeyword.isEmpty ? '載入更多粉絲' : '繼續搜尋更多粉絲')),
+                  child: Text(_fanLoading ? AppLocalizations.of(context)!.official_studio_text_1351 :
+                  (_fanAppliedKeyword.isEmpty ? AppLocalizations.of(context)!.official_studio_text_1361 : AppLocalizations.of(context)!.official_studio_text_1371)),
                 ),
               ),
             if (_fanLoading && _fanResults.isNotEmpty)
@@ -1200,19 +1210,19 @@ class _CreatorFlowerGiftPageState extends State<_CreatorFlowerGiftPage> {
             TextField(controller:_amountController,keyboardType:TextInputType.number,
                 enabled:!_submitting,inputFormatters:[FilteringTextInputFormatter.digitsOnly],
                 onChanged:(_){setState((){_requestId=null;});},
-                decoration:const InputDecoration(labelText:'每位粉絲贈送花花',hintText:'例如：10',border:OutlineInputBorder())),
+                decoration:InputDecoration(labelText:AppLocalizations.of(context)!.official_studio_text_1381,hintText:AppLocalizations.of(context)!.official_studio_text_1391,border:OutlineInputBorder())),
             const SizedBox(height:12),TextField(controller:_noteController,maxLines:4,maxLength:300,
                 enabled:!_submitting,onChanged:(_)=>_requestId=null,
-                decoration:const InputDecoration(labelText:'祝福文字（選填）',border:OutlineInputBorder())),
+                decoration:InputDecoration(labelText:AppLocalizations.of(context)!.official_studio_text_1401,border:OutlineInputBorder())),
             const SizedBox(height:12),Card(child:Padding(padding:const EdgeInsets.all(14),child:Column(children:[
-              Row(mainAxisAlignment:MainAxisAlignment.spaceBetween,children:[const Text('選擇粉絲'),Text('${_selected.length} 位')]),
-              const SizedBox(height:5),Row(mainAxisAlignment:MainAxisAlignment.spaceBetween,children:[const Text('預計扣除'),Text('$total 朵')]),
-              if(total>balance)Padding(padding:const EdgeInsets.only(top:8),child:Text('花花餘額不足，尚缺 ${total-balance} 朵',style:const TextStyle(color:Colors.deepOrange))),
+              Row(mainAxisAlignment:MainAxisAlignment.spaceBetween,children:[Text(AppLocalizations.of(context)!.official_studio_text_1971),Text(AppLocalizations.of(context)!.official_studio_text_1821(_selected.length))]),
+              const SizedBox(height:5),Row(mainAxisAlignment:MainAxisAlignment.spaceBetween,children:[Text(AppLocalizations.of(context)!.official_studio_text_1411),Text(AppLocalizations.of(context)!.official_studio_text_1831(total))]),
+              if(total>balance)Padding(padding:const EdgeInsets.only(top:8),child:Text(AppLocalizations.of(context)!.official_studio_text_1871(total-balance),style:const TextStyle(color:Colors.deepOrange))),
             ]))),
             const SizedBox(height:12),FilledButton.icon(
                 onPressed:_submitting||_selected.isEmpty?null:()=>_submit(balance),
-                icon:const Icon(Icons.card_giftcard_outlined),label:Text(_submitting?'處理中…':'確認贈送')),
-            const SizedBox(height:8),const Text('每次最多 20 位粉絲，單次最多 5000 朵。送出時先扣除創作者花花，玩家須至信箱手動領取後才會入帳。',style:TextStyle(fontSize:12)),
+                icon:const Icon(Icons.card_giftcard_outlined),label:Text(_submitting?AppLocalizations.of(context)!.official_studio_text_0601:AppLocalizations.of(context)!.official_studio_text_1201)),
+            const SizedBox(height:8),Text(AppLocalizations.of(context)!.official_studio_text_1421,style:TextStyle(fontSize:12)),
           ]);
         },
       )),
@@ -1241,31 +1251,31 @@ class _CreatorMonthlyRewardPageState extends State<_CreatorMonthlyRewardPage> {
       final result=await _functions.httpsCallable('getCreatorMonthlyReward',options:HttpsCallableOptions(timeout:const Duration(seconds:60))).call();
       if(mounted)setState(()=>_data=Map<String,dynamic>.from(result.data as Map));
     }on FirebaseFunctionsException catch(e){
-      if(mounted)ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(e.message??'無法讀取每月任務')));
+      if(mounted)ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(e.message??AppLocalizations.of(context)!.official_studio_text_1431)));
     }catch(e){
-      if(mounted)ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content:Text('讀取進度失敗，請稍後重試')));
+      if(mounted)ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(AppLocalizations.of(context)!.official_studio_text_1441)));
     }finally{if(mounted)setState(()=>_loading=false);}
   }
   Future<void> _claim() async {
     if(_claiming || (_data?['claimed']==true))return;
     final confirmed=await showDialog<bool>(context:context,builder:(ctx)=>AlertDialog(
-        title:const Text('確認領取創作獎勵'),
-        content:const Text('確定要領取本月 300 朵花花嗎？同一月份僅能領取一次。'),
-        actions:[TextButton(onPressed:()=>Navigator.pop(ctx,false),child:const Text('取消')),
-          FilledButton(onPressed:()=>Navigator.pop(ctx,true),child:const Text('確認領取'))]));
+        title:Text(AppLocalizations.of(context)!.official_studio_text_1451),
+        content:Text(AppLocalizations.of(context)!.official_studio_text_1461),
+        actions:[TextButton(onPressed:()=>Navigator.pop(ctx,false),child:Text(AppLocalizations.of(context)!.official_studio_text_0431)),
+          FilledButton(onPressed:()=>Navigator.pop(ctx,true),child:Text(AppLocalizations.of(context)!.official_studio_text_1471))]));
     if(confirmed!=true || !mounted)return;
     setState(()=>_claiming=true);
     try{
       final result=await _functions.httpsCallable('claimCreatorMonthlyReward',options:HttpsCallableOptions(timeout:const Duration(seconds:90))).call();
       if(!mounted)return;
       final res=Map<String,dynamic>.from(result.data as Map);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(res['alreadyClaimed']==true?'本月獎勵已領取':'成功領取 300 朵花花！')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(res['alreadyClaimed']==true?AppLocalizations.of(context)!.official_studio_text_1481:AppLocalizations.of(context)!.official_studio_text_1491)));
       await _load();
     }on FirebaseFunctionsException catch(e){
-      if(mounted)ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(e.message??'領取失敗，請稍後重試')));
+      if(mounted)ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(e.message??AppLocalizations.of(context)!.official_studio_text_1501)));
       await _load();
     }catch(e){
-      if(mounted)ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content:Text('無法確認領取結果，請重新整理紀錄')));
+      if(mounted)ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(AppLocalizations.of(context)!.official_studio_text_1511)));
       await _load();
     }finally{if(mounted)setState(()=>_claiming=false);}
   }
@@ -1274,27 +1284,27 @@ class _CreatorMonthlyRewardPageState extends State<_CreatorMonthlyRewardPage> {
     final d=_data;
     final count=((d?['qualifyingCount'] as num?)?.toInt()??0).clamp(0,3);
     final claimed=d?['claimed']==true;
-    final month=(d?['month']??'本月').toString();
+    final month=(d?['month']??AppLocalizations.of(context)!.official_studio_text_1521).toString();
     final color=Theme.of(context).colorScheme.primary;
-    return Scaffold(appBar:AppBar(title:Text('每月創作獎勵',style:GoogleFonts.notoSerifTc(fontWeight:FontWeight.w600))),
+    return Scaffold(appBar:AppBar(title:Text(AppLocalizations.of(context)!.official_studio_text_0181,style:GoogleFonts.notoSerifTc(fontWeight:FontWeight.w600))),
       body:_CreatorAccessGate(child:RefreshIndicator(onRefresh:_load,child:ListView(
           padding:const EdgeInsets.all(20),children:[
         Card(child:Padding(padding:const EdgeInsets.all(20),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-          Text('$month 創作獎勵',style:GoogleFonts.notoSerifTc(fontSize:20,fontWeight:FontWeight.w600)),
-          const SizedBox(height:8),Text('每月新建立並首次公開 3 位不同角色，手動領取 300 朵花花。',style:TextStyle(color:Theme.of(context).colorScheme.onSurfaceVariant,height:1.6)),
-          const SizedBox(height:18),Text('本月進度：$count / 3 位',style:const TextStyle(fontWeight:FontWeight.w600)),
+          Text(AppLocalizations.of(context)!.official_studio_text_1841(month),style:GoogleFonts.notoSerifTc(fontSize:20,fontWeight:FontWeight.w600)),
+          const SizedBox(height:8),Text(AppLocalizations.of(context)!.official_studio_text_1531,style:TextStyle(color:Theme.of(context).colorScheme.onSurfaceVariant,height:1.6)),
+          const SizedBox(height:18),Text(AppLocalizations.of(context)!.official_studio_text_1851(count),style:const TextStyle(fontWeight:FontWeight.w600)),
           const SizedBox(height:8),LinearProgressIndicator(value:count/3,color:color,minHeight:9,borderRadius:BorderRadius.circular(8)),
           const SizedBox(height:18),SizedBox(width:double.infinity,child:FilledButton.icon(
               onPressed:_loading||_claiming||d==null||claimed||count<3?null:_claim,
               icon:_claiming?const SizedBox(width:17,height:17,child:CircularProgressIndicator(strokeWidth:2)):const Icon(Icons.local_florist_outlined),
-              label:Text(claimed?'本月已領取':count<3?'尚差 ${3-count} 位公開角色':'領取 300 朵花花'))),
+              label:Text(claimed?AppLocalizations.of(context)!.official_studio_text_1981:count<3?AppLocalizations.of(context)!.official_studio_text_1861(3-count):'領取 300 朵花花'))),
           if(_loading)const Padding(padding:EdgeInsets.only(top:12),child:LinearProgressIndicator()),
         ]))),
         const SizedBox(height:12),
-        Text('規則：僅限已簽約並認證的合作創作者；當月新建、當月首次公開、目前仍公開的不同角色才計入。私人角色、草稿、舊角色重新公開均不計入。台灣時間每月重置，每月限領一次。',
+        Text(AppLocalizations.of(context)!.official_studio_text_1541,
             style:TextStyle(fontSize:12,height:1.7,color:Theme.of(context).colorScheme.onSurfaceVariant)),
         const SizedBox(height:8),
-        Text('如有重複、空白或違反創作規範的角色，官方得依合作條款暫停審查或合作資格。',
+        Text(AppLocalizations.of(context)!.official_studio_text_1551,
             style:TextStyle(fontSize:12,height:1.6,color:Theme.of(context).colorScheme.onSurfaceVariant)),
       ]))),);
   }
@@ -1311,32 +1321,32 @@ class _CreatorStudioIntroDialog extends StatefulWidget {
 class _CreatorStudioIntroDialogState extends State<_CreatorStudioIntroDialog> {
   int _step = 0;
 
-  static const _titles = <String>[
-    '歡迎加入官方合作創作者',
-    '掌握作品表現，與粉絲保持聯繫',
-    '分享花花，領取專屬創作獎勵',
-    '打造專屬頁面，隨時取得協助',
+  List<String> _titles(BuildContext context) => <String>[
+    AppLocalizations.of(context)!.official_studio_text_1561,
+    AppLocalizations.of(context)!.official_studio_text_1571,
+    AppLocalizations.of(context)!.official_studio_text_1581,
+    AppLocalizations.of(context)!.official_studio_text_1591,
   ];
 
-  static const _subtitles = <String>[
-    '妳的專屬創作空間',
-    '粉絲管理・創作數據・粉絲信件',
-    '粉絲福利・每月創作獎勵',
-    '專屬橫幅・合作資訊・問題回報',
+  List<String> _subtitles(BuildContext context) => <String>[
+    AppLocalizations.of(context)!.official_studio_text_1601,
+    AppLocalizations.of(context)!.official_studio_text_1611,
+    AppLocalizations.of(context)!.official_studio_text_1621,
+    AppLocalizations.of(context)!.official_studio_text_1631,
   ];
 
-  static const _descriptions = <String>[
-    '歡迎來到《戀戀拾光》官方合作創作者專區。這裡整合了創作管理、粉絲互動、專屬福利及合作資訊，讓妳能更方便地經營自己的角色與創作。',
-    '妳可以查看追蹤者、管理粉絲名單，並了解公開角色的遊玩次數與作品表現。也可以透過粉絲信件，向一位粉絲或所有追蹤者傳達訊息。',
-    '可以將自己帳戶中的花花贈送給粉絲，傳遞一份小小心意。另外，每月新建並首次公開符合資格的角色，還有機會領取專屬創作獎勵。',
-    '上傳專屬橫幅，打造屬於自己的創作者頁面。合作相關規範與權益可以在「合作資訊」查看；遇到問題，也可以透過「問題回報中心」聯繫官方。',
+  List<String> _descriptions(BuildContext context) => <String>[
+    AppLocalizations.of(context)!.official_studio_text_1641,
+    AppLocalizations.of(context)!.official_studio_text_1651,
+    AppLocalizations.of(context)!.official_studio_text_1661,
+    AppLocalizations.of(context)!.official_studio_text_1671,
   ];
 
-  static const _notes = <String>[
-    '只有符合官方合作資格的創作者，才能使用這裡的專屬功能。',
-    '粉絲信件設有每日寄送額度，使用前請留意頁面中的額度說明。',
-    '贈送花花會扣除自己的餘額；每月創作獎勵依現行活動規則與系統審核結果發放。',
-    '未來新增的創作者專屬功能，也會陸續在這裡開放。',
+  List<String> _notes(BuildContext context) => <String>[
+    AppLocalizations.of(context)!.official_studio_text_1681,
+    AppLocalizations.of(context)!.official_studio_text_1691,
+    AppLocalizations.of(context)!.official_studio_text_1701,
+    AppLocalizations.of(context)!.official_studio_text_1711,
   ];
 
   @override
@@ -1350,7 +1360,7 @@ class _CreatorStudioIntroDialogState extends State<_CreatorStudioIntroDialog> {
       actionsPadding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
       title: Row(
         children: [
-          Expanded(child: Text('創作者專區導覽', style: GoogleFonts.notoSerifTc(
+          Expanded(child: Text(AppLocalizations.of(context)!.official_studio_text_1721, style: GoogleFonts.notoSerifTc(
               fontSize: 18, fontWeight: FontWeight.w600))),
           Text('${_step + 1} / 4', style: TextStyle(
               fontSize: 12, color: theme.colorScheme.onSurfaceVariant)),
@@ -1374,13 +1384,13 @@ class _CreatorStudioIntroDialogState extends State<_CreatorStudioIntroDialog> {
                 ),
               ))),
               const SizedBox(height: 24),
-              Text(_subtitles[_step], style: TextStyle(
+              Text(_subtitles(context)[_step], style: TextStyle(
                   fontSize: 12, color: primary, fontWeight: FontWeight.w600)),
               const SizedBox(height: 10),
-              Text(_titles[_step], style: GoogleFonts.notoSerifTc(
+              Text(_titles(context)[_step], style: GoogleFonts.notoSerifTc(
                   fontSize: 19, height: 1.45, fontWeight: FontWeight.w600)),
               const SizedBox(height: 14),
-              Text(_descriptions[_step], style: TextStyle(
+              Text(_descriptions(context)[_step], style: TextStyle(
                   fontSize: 14, height: 1.75,
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.82))),
               const SizedBox(height: 18),
@@ -1391,7 +1401,7 @@ class _CreatorStudioIntroDialogState extends State<_CreatorStudioIntroDialog> {
                   color: primary.withValues(alpha: 0.07),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text(_notes[_step], style: TextStyle(
+                child: Text(_notes(context)[_step], style: TextStyle(
                     fontSize: 12.5, height: 1.6,
                     color: theme.colorScheme.onSurfaceVariant)),
               ),
@@ -1402,12 +1412,12 @@ class _CreatorStudioIntroDialogState extends State<_CreatorStudioIntroDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(true),
-          child: const Text('略過'),
+          child: Text(AppLocalizations.of(context)!.official_studio_text_1731),
         ),
         if (_step > 0)
           TextButton(
             onPressed: () => setState(() => _step--),
-            child: const Text('上一步'),
+            child: Text(AppLocalizations.of(context)!.official_studio_text_1741),
           ),
         FilledButton(
           onPressed: () {
@@ -1417,7 +1427,7 @@ class _CreatorStudioIntroDialogState extends State<_CreatorStudioIntroDialog> {
               setState(() => _step++);
             }
           },
-          child: Text(_step == 3 ? '完成' : '下一步'),
+          child: Text(_step == 3 ? AppLocalizations.of(context)!.official_studio_text_1751 : AppLocalizations.of(context)!.official_studio_text_1761),
         ),
       ],
     );

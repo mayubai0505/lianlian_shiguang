@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import '../services/app_constants.dart';
 import '../services/toast_utils.dart';
 
@@ -39,17 +40,17 @@ class _WorldEchoWallState extends State<WorldEchoWall> {
 
   Future<void> _compose() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) { _toast('請先登入後再留下時空迴音', error: true); return; }
+    if (user == null) { _toast(AppLocalizations.of(context)!.echo_login_to_post1, error: true); return; }
     if (_sending) return;
     try {
       final existing = await _echoes.where('userId', isEqualTo: user.uid).get();
       if (!mounted) return;
       if (existing.docs.length >= 3) {
-        _toast('每位玩家在同一個開放世界最多留下 3 則時空迴音', error: true);
+        _toast(AppLocalizations.of(context)!.echo_limit1, error: true);
         return;
       }
     } catch (e) {
-      _toast('無法確認迴音數量，請稍後再試', error: true);
+      _toast(AppLocalizations.of(context)!.echo_count_fail1, error: true);
       debugPrint('世界迴音數量讀取失敗：$e');
       return;
     }
@@ -61,9 +62,9 @@ class _WorldEchoWallState extends State<WorldEchoWall> {
         builder: (ctx, change) => SafeArea(top: false, child: Padding(
           padding: EdgeInsets.fromLTRB(18, 8, 18, MediaQuery.viewInsetsOf(ctx).bottom + 18),
           child: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('留下時空迴音', style: TextStyle(fontSize: 19, fontWeight: FontWeight.w600)),
+            Text(AppLocalizations.of(context)!.echo_compose_title1, style: TextStyle(fontSize: 19, fontWeight: FontWeight.w600)),
             const SizedBox(height: 6),
-            const Text('選擇喜歡的卡面，再寫下一段想留下的話。'),
+            Text(AppLocalizations.of(context)!.echo_compose_desc1),
             const SizedBox(height: 15),
             SizedBox(height: 86, child: ListView(scrollDirection: Axis.horizontal, children: [
               for (final item in _cards.entries) Padding(padding: const EdgeInsets.only(right: 10), child: InkWell(
@@ -77,14 +78,14 @@ class _WorldEchoWallState extends State<WorldEchoWall> {
             ])),
             const SizedBox(height: 12),
             TextField(controller: input, maxLength: 500, minLines: 3, maxLines: 6,
-                decoration: const InputDecoration(hintText: '在這個世界裡，你想留下什麼話？', border: OutlineInputBorder())),
+                decoration: InputDecoration(hintText: AppLocalizations.of(context)!.echo_compose_hint1, border: OutlineInputBorder())),
             const SizedBox(height: 8),
             SizedBox(width: double.infinity, child: FilledButton(
                 onPressed: () {
                   final message = input.text.trim();
                   if (message.isEmpty) return;
                   Navigator.pop(ctx, {'content': message, 'cardType': selected});
-                }, child: const Text('送出迴音'))),
+                }, child: Text(AppLocalizations.of(context)!.echo_send1))),
           ])),
         )),
       ),
@@ -106,10 +107,10 @@ class _WorldEchoWallState extends State<WorldEchoWall> {
         'likedBy': <String>[],
         'reporters': <String>[],
       });
-      _toast('時空迴音已留下');
+      _toast(AppLocalizations.of(context)!.echo_sent1);
     } catch (e) {
       debugPrint('世界迴音新增失敗：$e');
-      _toast('留言失敗，請確認權限與網路', error: true);
+      _toast(AppLocalizations.of(context)!.echo_post_fail1, error: true);
     } finally {
       if (mounted) setState(() => _sending = false);
     }
@@ -117,43 +118,53 @@ class _WorldEchoWallState extends State<WorldEchoWall> {
 
   Future<void> _like(DocumentSnapshot<Map<String,dynamic>> doc) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) { _toast('請先登入', error: true); return; }
+    if (uid == null) { _toast(AppLocalizations.of(context)!.echo_login1, error: true); return; }
     final likedBy = (doc.data()?['likedBy'] is List) ? List<String>.from(doc.data()!['likedBy']) : <String>[];
     try {
       await doc.reference.update({'likedBy': likedBy.contains(uid) ? FieldValue.arrayRemove([uid]) : FieldValue.arrayUnion([uid])});
-    } catch (e) { debugPrint('世界迴音按讚失敗：$e'); _toast('按讚失敗', error: true); }
+    } catch (e) { debugPrint('世界迴音按讚失敗：$e'); _toast(AppLocalizations.of(context)!.echo_like_fail1, error: true); }
   }
 
   Future<void> _delete(DocumentSnapshot<Map<String,dynamic>> doc) async {
     final confirmed = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
-      title: const Text('刪除時空迴音？'), content: const Text('刪除後將無法復原。'),
-      actions: [TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('取消')),
-        FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('刪除'))],
+      title: Text(AppLocalizations.of(context)!.echo_delete_title1), content: Text(AppLocalizations.of(context)!.echo_delete_warning1),
+      actions: [TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(AppLocalizations.of(context)!.echo_cancel1)),
+        FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(AppLocalizations.of(context)!.echo_delete1))],
     ));
     if (confirmed != true) return;
-    try { await doc.reference.delete(); _toast('時空迴音已刪除'); }
-    catch (e) { debugPrint('世界迴音刪除失敗：$e'); _toast('刪除失敗', error: true); }
+    try { await doc.reference.delete(); _toast(AppLocalizations.of(context)!.echo_deleted1); }
+    catch (e) { debugPrint('世界迴音刪除失敗：$e'); _toast(AppLocalizations.of(context)!.echo_delete_fail1, error: true); }
   }
 
   Future<void> _report(DocumentSnapshot<Map<String,dynamic>> doc) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) { _toast('請先登入', error: true); return; }
+    if (uid == null) { _toast(AppLocalizations.of(context)!.echo_login1, error: true); return; }
     final reasons = ['不當內容', '騷擾或攻擊', '垃圾訊息', '其他'];
     final reason = await showDialog<String>(context: context,
-        builder: (ctx) => SimpleDialog(title: const Text('檢舉時空迴音'), children: [
-          for (final r in reasons) SimpleDialogOption(onPressed: () => Navigator.pop(ctx, r), child: Text(r)),
+        builder: (ctx) => SimpleDialog(title: Text(AppLocalizations.of(context)!.echo_report_title1), children: [
+          for (final r in reasons) SimpleDialogOption(onPressed: () => Navigator.pop(ctx, r), child: Text(_reportReasonLabel(r))),
         ]));
     if (reason == null) return;
     try {
       final current = await doc.reference.get();
       final reporters = (current.data()?['reporters'] is List) ? List<String>.from(current.data()!['reporters']) : <String>[];
-      if (reporters.contains(uid)) { _toast('這則迴音已檢舉過'); return; }
+      if (reporters.contains(uid)) { _toast(AppLocalizations.of(context)!.echo_already_reported1); return; }
       await doc.reference.update({
         'reporters': FieldValue.arrayUnion([uid]),
         'reportReasons.$uid': reason,
       });
-      _toast('已收到檢舉');
-    } catch (e) { debugPrint('世界迴音檢舉失敗：$e'); _toast('檢舉失敗', error: true); }
+      _toast(AppLocalizations.of(context)!.echo_report_received1);
+    } catch (e) { debugPrint('世界迴音檢舉失敗：$e'); _toast(AppLocalizations.of(context)!.echo_report_fail1, error: true); }
+  }
+
+  String _reportReasonLabel(String reason) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (reason) {
+      case '不當內容': return l10n.echo_reason_inappropriate1;
+      case '騷擾或攻擊': return l10n.echo_reason_harassment1;
+      case '垃圾訊息': return l10n.echo_reason_spam1;
+      default: return l10n.echo_reason_other1;
+    }
   }
 
   String _cardAsset(String raw) {
@@ -194,22 +205,22 @@ class _WorldEchoWallState extends State<WorldEchoWall> {
             )),
           )),
           Positioned(right: 7, top: 4, child: PopupMenuButton<String>(
-            tooltip: '迴音選項',
+            tooltip: AppLocalizations.of(context)!.echo_options1,
             color: theme.scaffoldBackgroundColor,
             onSelected: (action) {
               if (action == 'delete') _delete(doc);
               if (action == 'report') _report(doc);
             },
             itemBuilder: (_) => [
-              if (isMine) const PopupMenuItem(value: 'delete', child: Text('刪除迴音')),
-              if (!isMine) const PopupMenuItem(value: 'report', child: Text('檢舉迴音')),
+              if (isMine) PopupMenuItem(value: 'delete', child: Text(AppLocalizations.of(context)!.echo_delete_option1)),
+              if (!isMine) PopupMenuItem(value: 'report', child: Text(AppLocalizations.of(context)!.echo_report_option1)),
             ],
             icon: Icon(Icons.more_horiz_rounded, size: 22, color: theme.colorScheme.onSurface.withValues(alpha: 0.72)),
           )),
         ])),
         Padding(padding: const EdgeInsets.fromLTRB(8, 0, 8, 0), child: Row(children: [
           Expanded(child: Text(
-            (d['nickname'] ?? '玩家').toString(), maxLines: 1, overflow: TextOverflow.ellipsis,
+            (d['nickname'] ?? AppLocalizations.of(context)!.echo_player1).toString(), maxLines: 1, overflow: TextOverflow.ellipsis,
             style: GoogleFonts.notoSerifTc(fontSize: 12, color: theme.colorScheme.onSurfaceVariant),
           )),
           InkWell(onTap: () => _like(doc), borderRadius: BorderRadius.circular(24),
@@ -229,17 +240,17 @@ class _WorldEchoWallState extends State<WorldEchoWall> {
     final currentUid = FirebaseAuth.instance.currentUser?.uid;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(children: [
-        Expanded(child: Text('時空迴音', style: GoogleFonts.notoSerifTc(
+        Expanded(child: Text(AppLocalizations.of(context)!.echo_wall_title1, style: GoogleFonts.notoSerifTc(
             fontSize: 20, fontWeight: FontWeight.w600, color: theme.colorScheme.onSurface))),
         IconButton(onPressed: _sending ? null : _compose,
-            tooltip: '留下迴音', icon: const Icon(Icons.add_rounded)),
+            tooltip: AppLocalizations.of(context)!.echo_add1, icon: const Icon(Icons.add_rounded)),
       ]),
       const SizedBox(height: 10),
       StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: _echoesStream,
         builder: (context, snapshot) {
-          if (snapshot.hasError) return const Padding(padding: EdgeInsets.all(16),
-              child: Text('時空迴音讀取失敗，請檢查 Firestore 權限設定'));
+          if (snapshot.hasError) return Padding(padding: const EdgeInsets.all(16),
+              child: Text(AppLocalizations.of(context)!.echo_load_fail1));
           if (!snapshot.hasData) return const Center(child: Padding(
               padding: EdgeInsets.all(22), child: CircularProgressIndicator()));
           if (snapshot.data!.docs.isEmpty) return Padding(
@@ -248,7 +259,7 @@ class _WorldEchoWallState extends State<WorldEchoWall> {
                 Opacity(opacity: 0.12, child: Image.asset('assets/images/profile/about_botanical.png',
                     width: 135, errorBuilder: (_, __, ___) => const SizedBox.shrink())),
                 const SizedBox(height: 16),
-                Text('還沒有時空迴音，留下第一段故事吧。',
+                Text(AppLocalizations.of(context)!.echo_empty1,
                     style: GoogleFonts.notoSerifTc(color: theme.colorScheme.onSurfaceVariant, fontSize: 14)),
               ])));
           return Column(children: [

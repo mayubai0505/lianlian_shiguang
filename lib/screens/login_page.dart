@@ -523,9 +523,9 @@ class _LoginPageState extends State<LoginPage> {
           await showDialog<void>(
             context: context,
             builder: (ctx) => AlertDialog(
-              title: const Text('帳號已進入刪除程序'),
-              content: const Text('此帳號已超過三天取消期限，無法再恢復使用。如需協助，請聯絡客服。'),
-              actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('確定'))],
+              title: Text(l10n.login_account_deletion_started1),
+              content: Text(l10n.login_account_deletion_expired_description1),
+              actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.login_account_deletion_confirm1))],
             ),
           );
           if (mounted) await _authService.signOut(context);

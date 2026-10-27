@@ -602,7 +602,7 @@ class _PrivateCharacterProfilePageState
                             if (isHidden) ...[
                               const SizedBox(width: 8),
                               Text(
-                                '私密',
+                                l10n.private_label1,
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,

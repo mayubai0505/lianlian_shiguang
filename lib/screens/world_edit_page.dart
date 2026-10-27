@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../services/app_constants.dart';
 import '../services/toast_utils.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 /// 獨立世界觀編輯器。與 CharacterEditPage / public_characters 完全分開。
 ///
@@ -78,13 +79,13 @@ class _WorldEditPageState extends State<WorldEditPage>
   Future<void> _load() async {
     try {
       final user = FirebaseAuth.instance.currentUser;
-      if (user == null) throw StateError('請先登入');
+      if (user == null) throw StateError(AppLocalizations.of(context)!.world_edit_login_required1);
       DocumentSnapshot<Map<String, dynamic>>? doc;
       if (_worldId != null) doc = await _worlds.doc(_worldId).get();
       if (_draftId != null) doc = await _drafts.doc(_draftId).get();
       if (doc != null && doc.exists) {
         final data = doc.data()!;
-        if (data['createdBy'] != user.uid) throw StateError('無權編輯此世界觀');
+        if (data['createdBy'] != user.uid) throw StateError(AppLocalizations.of(context)!.world_edit_no_edit_permission1);
         _name.text = data['name']?.toString() ?? '';
         _setting.text = data['worldSetting']?.toString() ?? '';
         _summary.text = data['summary']?.toString() ?? '';
@@ -119,12 +120,12 @@ class _WorldEditPageState extends State<WorldEditPage>
             _secretReadFailed = true;
             debugPrint('世界觀秘密篇章讀取失敗：code=${e.code}, message=${e.message}, worldId=$secretId, uid=${user.uid}');
             _notice(e.code == 'permission-denied'
-                ? '秘密篇章讀取權限不足，請確認 Firestore Rules 已部署。已暫停儲存以保護原資料。'
-                : '秘密篇章讀取失敗（${e.code}），已暫停儲存以保護原資料。', isError: true);
+                ? AppLocalizations.of(context)!.world_edit_secret_permission_error1
+                : AppLocalizations.of(context)!.world_edit_secret_read_error_code1(e.code), isError: true);
           } catch (e) {
             _secretReadFailed = true;
             debugPrint('世界觀秘密篇章讀取失敗：$e');
-            _notice('秘密篇章讀取失敗，已暫停儲存以保護原資料。', isError: true);
+            _notice(AppLocalizations.of(context)!.world_edit_secret_read_error1, isError: true);
           }
         }
         final rawImages = data['images'];
@@ -143,7 +144,7 @@ class _WorldEditPageState extends State<WorldEditPage>
         }
       }
     } catch (e) {
-      if (mounted) _notice('讀取世界觀失敗：$e');
+      if (mounted) _notice(AppLocalizations.of(context)!.world_edit_world_read_error1(e.toString()));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -168,9 +169,9 @@ class _WorldEditPageState extends State<WorldEditPage>
           selected.take(remaining).map((file) => _WorldImage(file: file)),
         );
       });
-      if (selected.length > remaining) _notice('世界觀最多只能放 $maxImages 張圖片');
+      if (selected.length > remaining) _notice(AppLocalizations.of(context)!.world_edit_image_max1(maxImages));
     } catch (e) {
-      _notice('讀取圖片失敗：$e');
+      _notice(AppLocalizations.of(context)!.world_edit_image_read_error1(e.toString()));
     }
   }
 
@@ -240,19 +241,36 @@ class _WorldEditPageState extends State<WorldEditPage>
       .toSet()
       .toList();
 
+  String _localizedTag(String tag) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (tag) {
+      case '懸疑': return l10n.world_edit_tag_mystery1;
+      case '恐怖': return l10n.world_edit_tag_horror1;
+      case '戀愛': return l10n.world_edit_tag_romance1;
+      case '現代奇幻': return l10n.world_edit_tag_modern_fantasy1;
+      case '校園': return l10n.world_edit_tag_school1;
+      case '群像': return l10n.world_edit_tag_ensemble1;
+      case '冒險': return l10n.world_edit_tag_adventure1;
+      case '日常': return l10n.world_edit_tag_daily1;
+      case '推理': return l10n.world_edit_tag_detective1;
+      case '異世界': return l10n.world_edit_tag_otherworld1;
+      default: return tag;
+    }
+  }
+
   Widget _tagPicker() {
     final chosen = _selectedTags;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const Text('主題標籤（最多 5 個）'),
+      Text(AppLocalizations.of(context)!.world_edit_tag_heading1),
       const SizedBox(height: 8),
       Wrap(spacing: 8, runSpacing: 4, children: [
         for (final tag in _suggestedTags)
           FilterChip(
-            label: Text(tag), selected: chosen.contains(tag),
+            label: Text(_localizedTag(tag)), selected: chosen.contains(tag),
             onSelected: _busy ? null : (selected) {
               final next = List<String>.from(_selectedTags);
               if (selected && next.length >= 5) {
-                _notice('最多選擇 5 個標籤');
+                _notice(AppLocalizations.of(context)!.world_edit_tag_max1);
                 return;
               }
               if (selected) { next.add(tag); } else { next.remove(tag); }
@@ -261,38 +279,38 @@ class _WorldEditPageState extends State<WorldEditPage>
           ),
       ]),
       const SizedBox(height: 8),
-      _field(_tags, '標籤（可自訂，以頓號分隔）', max: 120),
+      _field(_tags, AppLocalizations.of(context)!.world_edit_tag_custom1, max: 120),
     ]);
   }
 
   /// 一次儲存世界觀與圖像；正式發布需要檢查必填，草稿不需要。
   Future<bool> _save({required bool asDraft}) async {
     if (_busy || _secretReadFailed) {
-      if (_secretReadFailed) _notice('秘密篇章尚未成功讀取，為保護既有內容暫時無法發布。請確認權限並重新開啟頁面。');
+      if (_secretReadFailed) _notice(AppLocalizations.of(context)!.world_edit_secret_not_ready1);
       return false;
     }
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      _notice('請先登入');
+      _notice(AppLocalizations.of(context)!.world_edit_login_required1);
       return false;
     }
     if (!asDraft) {
       if (_name.text.trim().isEmpty || _images.isEmpty ||
           _setting.text.trim().isEmpty || _opening.text.trim().isEmpty ||
           _firstLine.text.trim().isEmpty) {
-        _notice('請完成世界名稱、至少一張圖片、世界背景、故事開場與第一句話');
+        _notice(AppLocalizations.of(context)!.world_edit_required_publish1);
         return false;
       }
     }
     if (_selectedTags.length > 5) {
-      _notice('主題標籤最多 5 個，請刪減後再儲存');
+      _notice(AppLocalizations.of(context)!.world_edit_max_tags_save1);
       return false;
     }
     if (_secretChapters.length > 12 || _secretChapters.any((c) =>
     (c['title'] ?? '').trim().isEmpty ||
         (c['condition'] ?? '').trim().isEmpty ||
         (c['content'] ?? '').trim().isEmpty)) {
-      _notice('每章請填寫標題、解鎖條件與秘密內容，最多 12 章');
+      _notice(AppLocalizations.of(context)!.world_edit_secret_validation1);
       return false;
     }
     setState(() => _busy = true);
@@ -364,7 +382,7 @@ class _WorldEditPageState extends State<WorldEditPage>
           'createdAt': FieldValue.serverTimestamp(),
         }, SetOptions(merge: true));
         await batch.commit();
-        _notice('開放世界草稿與秘密篇章已儲存');
+        _notice(AppLocalizations.of(context)!.world_edit_draft_saved1);
       } else {
         batch.set(_worlds.doc(worldId), {
           ...data,
@@ -381,11 +399,11 @@ class _WorldEditPageState extends State<WorldEditPage>
               ? (publishResult.data as Map)['publicPlayable'] == true
               : false;
           if (_isPublic && !published) {
-            throw StateError('後端尚未確認公開資格，請稍後再次發布。');
+            throw StateError(AppLocalizations.of(context)!.world_edit_publish_unconfirmed1);
           }
         } on FirebaseFunctionsException catch (e) {
           debugPrint('開放世界發布後端失敗：code=${e.code}, message=${e.message}, worldId=$worldId');
-          throw StateError('開放世界資料已儲存，但公開啟用失敗（${e.code}）：${e.message ?? '請確認 worldPublish 已部署'}。修正後可再次按「發布開放世界」。');
+          throw StateError(AppLocalizations.of(context)!.world_edit_publish_backend_error1(e.code, e.message ?? AppLocalizations.of(context)!.world_edit_publish_service_missing1));
         }
         if (_draftId != null) {
           try {
@@ -395,12 +413,12 @@ class _WorldEditPageState extends State<WorldEditPage>
             debugPrint('草稿清理失敗（世界觀已發布）：$e');
           }
         }
-        _notice(_isPublic ? '公開開放世界已發布' : '私人開放世界已儲存');
+        _notice(_isPublic ? AppLocalizations.of(context)!.world_edit_public_published1 : AppLocalizations.of(context)!.world_edit_private_saved1);
       }
       return true;
     } catch (e) {
       debugPrint('開放世界儲存／發布失敗：$e');
-      _notice('儲存／發布失敗：$e', isError: true);
+      _notice(AppLocalizations.of(context)!.world_edit_save_publish_failed1(e.toString()), isError: true);
       return false;
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -413,20 +431,20 @@ class _WorldEditPageState extends State<WorldEditPage>
     final choice = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('是否儲存草稿？'),
-        content: const Text('離開前要儲存目前的世界觀嗎？未儲存的內容將會遺失。'),
+        title: Text(AppLocalizations.of(context)!.world_edit_save_draft_question1),
+        content: Text(AppLocalizations.of(context)!.world_edit_save_draft_explain1),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, 'discard'),
-            child: const Text('不儲存'),
+            child: Text(AppLocalizations.of(context)!.world_edit_discard1),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, 'cancel'),
-            child: const Text('取消'),
+            child: Text(AppLocalizations.of(context)!.world_edit_cancel1),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, 'save'),
-            child: const Text('儲存草稿'),
+            child: Text(AppLocalizations.of(context)!.world_edit_save_draft1),
           ),
         ],
       ),
@@ -446,8 +464,8 @@ class _WorldEditPageState extends State<WorldEditPage>
   Widget _basicTab() => ListView(
     padding: const EdgeInsets.all(16),
     children: [
-      _field(_name, '開放世界名稱 *', max: 60),
-      const Text('世界觀圖片（最多 6 張，第一張為主要封面）'),
+      _field(_name, AppLocalizations.of(context)!.world_edit_world_name1, max: 60),
+      Text(AppLocalizations.of(context)!.world_edit_world_images1),
       const SizedBox(height: 10),
       GridView.builder(
         shrinkWrap: true,
@@ -489,9 +507,9 @@ class _WorldEditPageState extends State<WorldEditPage>
             Positioned(
               bottom: 0, left: 0,
               child: i == 0
-                  ? const Chip(label: Text('封面'))
+                  ? Chip(label: Text(AppLocalizations.of(context)!.world_edit_cover1))
                   : IconButton.filledTonal(
-                tooltip: '設為封面',
+                tooltip: AppLocalizations.of(context)!.world_edit_set_cover1,
                 icon: const Icon(Icons.vertical_align_top, size: 18),
                 onPressed: () => setState(() {
                   final selected = _images.removeAt(i);
@@ -503,23 +521,23 @@ class _WorldEditPageState extends State<WorldEditPage>
         },
       ),
       const SizedBox(height: 18),
-      _field(_shortPitch, '卡片一句話介紹（選填，最多 60 字）', max: 60),
-      _field(_summary, '世界觀公開簡介（不含劇透）', lines: 3, max: 1200),
-      _field(_era, '時空背景（例：架空現代、民國時期）', max: 120),
+      _field(_shortPitch, AppLocalizations.of(context)!.world_edit_short_pitch1, max: 60),
+      _field(_summary, AppLocalizations.of(context)!.world_edit_public_summary1, lines: 3, max: 1200),
+      _field(_era, AppLocalizations.of(context)!.world_edit_era1, max: 120),
       _tagPicker(),
-      _field(_setting, '世界觀背景與規則 *', lines: 6, max: 10000),
-      _field(_lore, '完整世界背景／事件與地點（給 AI 的設定）', lines: 6, max: 6000),
+      _field(_setting, AppLocalizations.of(context)!.world_edit_world_rules1, lines: 6, max: 10000),
+      _field(_lore, AppLocalizations.of(context)!.world_edit_full_lore1, lines: 6, max: 6000),
     ],
   );
 
   Widget _npcTab() => ListView(
     padding: const EdgeInsets.all(16),
     children: [
-      const Text('主要角色與 NPC 都能設定姓名、外貌、生日、人物關係與照片。玩家仍是自己故事的主角。'),
+      Text(AppLocalizations.of(context)!.world_edit_npc_intro1),
       const SizedBox(height: 18),
-      _personSection('主要角色', '在世界觀中較常登場的重要人物', 'main'),
+      _personSection(AppLocalizations.of(context)!.world_edit_main_characters1, AppLocalizations.of(context)!.world_edit_main_subtitle1, 'main'),
       const SizedBox(height: 24),
-      _personSection('NPC', '其他登場人物，也能隨劇情成為互動焦點', 'npc'),
+      _personSection('NPC', AppLocalizations.of(context)!.world_edit_npc_subtitle1, 'npc'),
     ],
   );
 
@@ -539,17 +557,17 @@ class _WorldEditPageState extends State<WorldEditPage>
               Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
             ],
           )),
-          Text('${entries.length} 位'),
+          Text(AppLocalizations.of(context)!.world_edit_people_count1(entries.length)),
         ]),
         const SizedBox(height: 9),
         for (final entry in entries)
           Card(child: ListTile(
             leading: _npcAvatar(entry.value, size: 48),
             title: Text(entry.value.name),
-            subtitle: Text(entry.value.role.isEmpty ? '尚未設定身分／職業' : entry.value.role),
+            subtitle: Text(entry.value.role.isEmpty ? AppLocalizations.of(context)!.world_edit_role_unset1 : entry.value.role),
             onTap: () => _editNpc(oldNpc: entry.value, index: entry.key),
             trailing: IconButton(
-              tooltip: '移除人物',
+              tooltip: AppLocalizations.of(context)!.world_edit_remove_person1,
               icon: const Icon(Icons.delete_outline),
               onPressed: _busy ? null : () => setState(() => _npcs.removeAt(entry.key)),
             ),
@@ -557,7 +575,7 @@ class _WorldEditPageState extends State<WorldEditPage>
         OutlinedButton.icon(
           onPressed: _busy ? null : () => _editNpc(kind: kind),
           icon: const Icon(Icons.person_add_alt_1),
-          label: Text('新增$title'),
+          label: Text(AppLocalizations.of(context)!.world_edit_add_person1(title)),
         ),
       ],
     );
@@ -571,20 +589,20 @@ class _WorldEditPageState extends State<WorldEditPage>
     try {
       final result = await showDialog<Map<String, String>>(context: context,
           builder: (ctx) => AlertDialog(
-            title: Text(index == null ? '新增秘密篇章' : '編輯秘密篇章'),
+            title: Text(index == null ? AppLocalizations.of(context)!.world_edit_add_secret1 : AppLocalizations.of(context)!.world_edit_edit_secret1),
             content: SizedBox(width: 520, child: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
-              TextField(controller: title, maxLength: 80, decoration: const InputDecoration(labelText: '篇章標題 *')),
-              TextField(controller: condition, maxLength: 500, maxLines: 3, decoration: const InputDecoration(labelText: '解鎖條件（給後端判定的描述）*')),
-              TextField(controller: content, maxLength: 5000, minLines: 5, maxLines: null, decoration: const InputDecoration(labelText: '秘密內容 *')),
+              TextField(controller: title, maxLength: 80, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.world_edit_chapter_title1)),
+              TextField(controller: condition, maxLength: 500, maxLines: 3, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.world_edit_unlock_condition1)),
+              TextField(controller: content, maxLength: 5000, minLines: 5, maxLines: null, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.world_edit_secret_content1)),
             ]))),
-            actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('取消')),
+            actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalizations.of(context)!.world_edit_cancel1)),
               FilledButton(onPressed: () {
                 if (title.text.trim().isEmpty || condition.text.trim().isEmpty || content.text.trim().isEmpty) return;
                 Navigator.pop(ctx, {
                   'id': original['id']?.isNotEmpty == true ? original['id']! : DateTime.now().microsecondsSinceEpoch.toString(),
                   'title': title.text.trim(), 'condition': condition.text.trim(), 'content': content.text.trim(),
                 });
-              }, child: const Text('確認'))],
+              }, child: Text(AppLocalizations.of(context)!.world_edit_confirm1))],
           ));
       if (!mounted || result == null) return;
       setState(() {if (index == null) {_secretChapters.add(result);} else {_secretChapters[index] = result;}});
@@ -594,12 +612,12 @@ class _WorldEditPageState extends State<WorldEditPage>
   Widget _storyTab() => ListView(
     padding: const EdgeInsets.all(16),
     children: [
-      _field(_opening, '故事開場 *', lines: 5, max: 1500),
-      _field(_firstLine, '故事第一句話 *', lines: 5, max: 3000),
+      _field(_opening, AppLocalizations.of(context)!.world_edit_story_opening1, lines: 5, max: 1500),
+      _field(_firstLine, AppLocalizations.of(context)!.world_edit_first_line1, lines: 5, max: 3000),
       const SizedBox(height: 12),
-      Text('秘密篇章', style: Theme.of(context).textTheme.titleMedium),
+      Text(AppLocalizations.of(context)!.world_edit_secret_chapters1, style: Theme.of(context).textTheme.titleMedium),
       const SizedBox(height: 6),
-      const Text('秘密篇章只儲存在私密資料區。正式公開不會直接公開內容；玩家需在遊玩中達成劇情條件才可解鎖。'),
+      Text(AppLocalizations.of(context)!.world_edit_secret_explain1),
       const SizedBox(height: 10),
       for (var i = 0; i < _secretChapters.length; i++)
         Card(child: ListTile(
@@ -610,19 +628,19 @@ class _WorldEditPageState extends State<WorldEditPage>
               onPressed: _busy ? null : () => setState(() => _secretChapters.removeAt(i))),
         )),
       OutlinedButton.icon(onPressed: _busy || _secretChapters.length >= 12 ? null : () => _editSecret(),
-          icon: const Icon(Icons.add), label: const Text('新增秘密篇章（最多 12 章）')),
+          icon: const Icon(Icons.add), label: Text(AppLocalizations.of(context)!.world_edit_add_secret_max1)),
       const Divider(height: 30),
-      const Text('發布設定', style: TextStyle(fontWeight: FontWeight.bold)),
+      Text(AppLocalizations.of(context)!.world_edit_publish_settings1, style: TextStyle(fontWeight: FontWeight.bold)),
       RadioListTile<bool>(
-        title: const Text('私人開放世界'),
-        subtitle: const Text('僅自己可以遊玩及測試，其他玩家無法進入'),
+        title: Text(AppLocalizations.of(context)!.world_edit_private_world1),
+        subtitle: Text(AppLocalizations.of(context)!.world_edit_private_world_desc1),
         value: false,
         groupValue: _isPublic,
         onChanged: _busy ? null : (value) => setState(() => _isPublic = value!),
       ),
       RadioListTile<bool>(
-        title: const Text('公開開放世界'),
-        subtitle: const Text('其他玩家可進入遊玩，每位玩家有獨立劇情進度'),
+        title: Text(AppLocalizations.of(context)!.world_edit_public_world1),
+        subtitle: Text(AppLocalizations.of(context)!.world_edit_public_world_desc1),
         value: true,
         groupValue: _isPublic,
         onChanged: _busy ? null : (value) => setState(() => _isPublic = value!),
@@ -640,13 +658,13 @@ class _WorldEditPageState extends State<WorldEditPage>
             icon: const Icon(Icons.arrow_back),
             onPressed: _busy ? null : _exit,
           ),
-          title: const Text('創立開放世界'),
+          title: Text(AppLocalizations.of(context)!.world_edit_create_world1),
           bottom: TabBar(
             controller: _tabs,
-            tabs: const [
-              Tab(text: '基本設定'),
-              Tab(text: '世界觀人物'),
-              Tab(text: '故事設定'),
+            tabs: [
+              Tab(text: AppLocalizations.of(context)!.world_edit_basic_tab1),
+              Tab(text: AppLocalizations.of(context)!.world_edit_characters_tab1),
+              Tab(text: AppLocalizations.of(context)!.world_edit_story_tab1),
             ],
           ),
         ),
@@ -679,7 +697,7 @@ class _WorldEditPageState extends State<WorldEditPage>
                     height: 20, width: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                      : const Text('發布開放世界'),
+                      : Text(AppLocalizations.of(context)!.world_edit_publish_world1),
                 ),
               ),
             ),
@@ -833,7 +851,7 @@ class _WorldPersonEditorState extends State<_WorldPersonEditor> {
   void save() {
     final name = fields['name']!.text.trim();
     if (name.isEmpty) {
-      ToastUtils.showCenterToast(context, '請先填寫人物姓名', isError: true);
+      ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.world_edit_name_required1, isError: true);
       return;
     }
     person.name = name;
@@ -852,9 +870,9 @@ class _WorldPersonEditorState extends State<_WorldPersonEditor> {
 
   @override
   Widget build(BuildContext context) {
-    final title = person.kind == 'main' ? '主要角色' : 'NPC';
+    final title = person.kind == 'main' ? AppLocalizations.of(context)!.world_edit_main_characters1 : 'NPC';
     return Scaffold(
-      appBar: AppBar(title: Text('編輯$title')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.world_edit_edit_person1(title))),
       body: SafeArea(child: Column(children: [
         Expanded(child: ListView(padding: const EdgeInsets.all(18), children: [
           Center(child: avatar()),
@@ -867,15 +885,14 @@ class _WorldPersonEditorState extends State<_WorldPersonEditor> {
               if (picked != null && mounted) setState(() => person.avatarFile = picked);
             },
             icon: const Icon(Icons.add_photo_alternate_outlined),
-            label: const Text('上傳人物照片（選填）'),
+            label: Text(AppLocalizations.of(context)!.world_edit_upload_photo1),
           )),
           const SizedBox(height: 12),
           SwitchListTile.adaptive(
             contentPadding: EdgeInsets.zero,
-            title: const Text('允許使用此人物照片生成其他照片'),
-            subtitle: const Text(
-              '僅在劇情適合時可將此人物的圖片作為生成參考。'
-                  '不勾選仍可正常聊天及贈送一般禮物；每位人物獨立設定。',
+            title: Text(AppLocalizations.of(context)!.world_edit_allow_photo1),
+            subtitle: Text(
+              AppLocalizations.of(context)!.world_edit_allow_photo_explain1,
             ),
             value: person.allowPhotoGeneration,
             onChanged: (allowed) => setState(() {
@@ -883,21 +900,21 @@ class _WorldPersonEditorState extends State<_WorldPersonEditor> {
             }),
           ),
           const SizedBox(height: 16),
-          field('name', '姓名 *', max: 60),
-          field('gender', '性別／性別設定', max: 80),
-          field('birthday', '生日（例：5月16日）', max: 60),
-          field('age', '年齡', max: 30),
-          field('role', '身分／職業', max: 120),
-          field('appearance', '外貌特徵', lines: 3, max: 2000),
-          field('personality', '個性與人物設定', lines: 4, max: 3000),
-          field('background', '過去經歷', lines: 4, max: 3000),
-          field('relationships', '與其他人物的關係', lines: 3, max: 2000),
-          field('speechStyle', '說話方式／口吻', lines: 3, max: 1000),
-          field('dialogueExamples', '對話範例（幫助 AI 理解語氣）', lines: 4, max: 1500),
+          field('name', AppLocalizations.of(context)!.world_edit_name1, max: 60),
+          field('gender', AppLocalizations.of(context)!.world_edit_gender1, max: 80),
+          field('birthday', AppLocalizations.of(context)!.world_edit_birthday1, max: 60),
+          field('age', AppLocalizations.of(context)!.world_edit_age1, max: 30),
+          field('role', AppLocalizations.of(context)!.world_edit_role1, max: 120),
+          field('appearance', AppLocalizations.of(context)!.world_edit_appearance1, lines: 3, max: 2000),
+          field('personality', AppLocalizations.of(context)!.world_edit_personality1, lines: 4, max: 3000),
+          field('background', AppLocalizations.of(context)!.world_edit_background1, lines: 4, max: 3000),
+          field('relationships', AppLocalizations.of(context)!.world_edit_relationships1, lines: 3, max: 2000),
+          field('speechStyle', AppLocalizations.of(context)!.world_edit_speech_style1, lines: 3, max: 1000),
+          field('dialogueExamples', AppLocalizations.of(context)!.world_edit_dialogue_examples1, lines: 4, max: 1500),
         ])),
         Padding(padding: const EdgeInsets.all(16), child: SizedBox(
           width: double.infinity,
-          child: FilledButton(onPressed: save, child: const Text('儲存人物設定')),
+          child: FilledButton(onPressed: save, child: Text(AppLocalizations.of(context)!.world_edit_save_person1)),
         )),
       ])),
     );

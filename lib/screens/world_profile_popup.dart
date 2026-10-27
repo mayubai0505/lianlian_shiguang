@@ -69,15 +69,15 @@ class _WorldProfilePageState extends State<_WorldProfilePage> {
         '關於這個我：${profile!['intro']}',
     ];
     if (nickname.length > 40) {
-      throw StateError('世界觀角色稱呼最多 40 字，請縮短後再儲存');
+      throw StateError(AppLocalizations.of(context)!.world_profile_name_too_long1);
     }
     final identity = sections.join('\n');
     if (identity.length > 2000) {
-      throw StateError('世界觀人物資料超過 2000 字，請縮短後再儲存');
+      throw StateError(AppLocalizations.of(context)!.world_profile_identity_too_long1);
     }
     await FirebaseFunctions.instanceFor(region: 'asia-east1')
         .httpsCallable('worldPrivateTest',
-            options: HttpsCallableOptions(timeout: const Duration(seconds: 60)))
+        options: HttpsCallableOptions(timeout: const Duration(seconds: 60)))
         .call({
       'worldId': widget.worldId,
       'action': 'saveProfile',
@@ -322,7 +322,7 @@ class _WorldProfilePageState extends State<_WorldProfilePage> {
 
     try {
       final chosen = isDeselecting ? null : _profiles.firstWhere(
-          (item) => item['id']?.toString() == profileId);
+              (item) => item['id']?.toString() == profileId);
       await _syncWorldProfile(chosen);
 
       final userDoc = FirebaseFirestore.instance

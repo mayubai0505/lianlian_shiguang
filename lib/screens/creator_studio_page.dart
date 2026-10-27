@@ -73,7 +73,7 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
         // 💡 總裁級防護：刪除失敗的緊急警告
         ToastUtils.showCenterToast(
           context,
-          l10n.creator_studio_delete_failed(e.toString()),
+          l10n.creator_dashboard_error1,
           isError: true,
         );
       }
@@ -251,9 +251,9 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
                   padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
                   child: Row(
                     children: [
-                      Expanded(child: _studioTabButton(context, '我的角色', 0, Icons.people_outline_rounded)),
+                      Expanded(child: _studioTabButton(context, l10n.creator_dashboard_my_characters1, 0, Icons.people_outline_rounded)),
                       const SizedBox(width: 10),
-                      Expanded(child: _studioTabButton(context, '我的開放世界', 1, Icons.public_rounded)),
+                      Expanded(child: _studioTabButton(context, l10n.creator_dashboard_my_worlds1, 1, Icons.public_rounded)),
                     ],
                   ),
                 ),
@@ -272,7 +272,7 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
                       if (snapshot.hasError) {
                         return Center(
                           child: Text(
-                            l10n.creator_studio_load_failed(snapshot.error.toString()),
+                            l10n.creator_dashboard_error1,
                           ),
                         );
                       }
@@ -303,12 +303,12 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
                           64,
                         ),
                         children: [
-                          // 每位玩家都看得到合作計畫入口，只有認證者進入專區。
+                          // 玩家可由此申請創作者後台，通過審核後進入專區。
                           StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                             stream: FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots(),
                             builder: (context, creatorSnapshot) {
                               if (creatorSnapshot.hasError) {
-                                return const Padding(padding: EdgeInsets.only(bottom: 16), child: Text('合作資格暫時無法讀取'));
+                                return Padding(padding: const EdgeInsets.only(bottom: 16), child: Text(l10n.creator_dashboard_error1));
                               }
                               if (!creatorSnapshot.hasData || !creatorSnapshot.data!.exists) {
                                 return const SizedBox.shrink();
@@ -334,23 +334,23 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
                               '${reapplyAt.year}/${reapplyAt.month.toString().padLeft(2, '0')}/${reapplyAt.day.toString().padLeft(2, '0')} '
                                   '${reapplyAt.hour.toString().padLeft(2, '0')}:${reapplyAt.minute.toString().padLeft(2, '0')}';
                               final String title = verified
-                                  ? '官方合作創作者專區'
+                                  ? l10n.creator_dashboard_access_title1
                                   : (status == 'revoked' && withinNoticePeriod)
-                                  ? '合作創作者資格異動通知'
-                                  : '成為官方合作創作者';
-                              final String subtitle = verified ? '粉絲管理・創作數據・專屬福利' :
+                                  ? l10n.creator_dashboard_status_notice_title1
+                                  : l10n.creator_dashboard_apply_title1;
+                              final String subtitle = verified ? l10n.creator_dashboard_access_subtitle1 :
                               switch (status) {
-                                'pending' => '申請已送出・官方審核中',
-                                'contract_pending' => '舊申請待官方確認',
-                                'approved' => '合作認證資料同步中，請稍後再試',
-                                'suspended' => '合作資格已暫停，請聯繫官方',
+                                'pending' => l10n.creator_dashboard_pending1,
+                                'contract_pending' => l10n.creator_dashboard_legacy_pending1,
+                                'approved' => l10n.creator_dashboard_syncing1,
+                                'suspended' => l10n.creator_dashboard_suspended1,
                                 'revoked' => permanentlyBlocked
-                                    ? '合作資格已累計取消 $revocationCount 次，已達申請次數上限，後續將無法再次提出合作申請。如有疑問，請聯繫官方。'
+                                    ? l10n.creator_dashboard_revoked_limit1
                                     : withinNoticePeriod
-                                    ? '您的合作創作者資格已取消。本次為流程測試，不計入正式取消次數。提醒將顯示至 $reapplyDate；目前可以立即重新申請。正式上線後將恢復三天等待期與累計五次限制。'
-                                    : '申請加入合作計畫，解鎖專屬創作者工具',
-                                'rejected' => '申請未通過・可重新申請',
-                                _ => '申請加入合作計畫，解鎖專屬創作者工具',
+                                    ? l10n.creator_dashboard_revoked_notice1
+                                    : l10n.creator_dashboard_apply_subtitle1,
+                                'rejected' => l10n.creator_dashboard_rejected1,
+                                _ => l10n.creator_dashboard_apply_subtitle1,
                               };
                               final canApply = status == 'none' || status.isEmpty ||
                                   status == 'rejected' || canReapplyRevoked;
@@ -381,7 +381,7 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
 
                                         ToastUtils.showCenterToast(
                                           context,
-                                          '申請已送出，請等待官方審核',
+                                          l10n.creator_dashboard_submitted1,
                                           customIcon: Icons.check_circle_outline_rounded,
                                         );
                                       });
@@ -391,7 +391,7 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
                                       builder: (ctx) => AlertDialog(
                                         title: Text(title),
                                         content: Text(subtitle),
-                                        actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('知道了'))],
+                                        actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.common_got_it))],
                                       ),
                                     ),
                                     child: Padding(
@@ -408,17 +408,17 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
                                               color: theme.colorScheme.onSurface.withValues(alpha: 0.65))),
                                           if (benefits) ...[
                                             const SizedBox(height: 12),
-                                            Text('加入合作計畫，解鎖專屬權益', style: GoogleFonts.notoSerifTc(fontWeight: FontWeight.w600)),
+                                            Text(l10n.creator_dashboard_benefits_title1, style: GoogleFonts.notoSerifTc(fontWeight: FontWeight.w600)),
                                             const SizedBox(height: 8),
-                                            const Text('🌸 每月創作獎勵：當月新建並公開 3 位不同角色，可手動領取 300 朵花花（每月限一次）。', style: TextStyle(fontSize: 12, height: 1.6)),
-                                            const Text('• 粉絲管理與公開角色創作數據', style: TextStyle(fontSize: 12, height: 1.6)),
-                                            const Text('• 粉絲信件：單人私信與全體公告（依每日額度）', style: TextStyle(fontSize: 12, height: 1.6)),
-                                            const Text('• 粉絲福利：使用自己的花花贈送追蹤者', style: TextStyle(fontSize: 12, height: 1.6)),
+                                            Text(l10n.creator_dashboard_benefit_monthly1, style: const TextStyle(fontSize: 12, height: 1.6)),
+                                            Text(l10n.creator_dashboard_benefit_analytics1, style: const TextStyle(fontSize: 12, height: 1.6)),
+                                            Text(l10n.creator_dashboard_benefit_mail1, style: const TextStyle(fontSize: 12, height: 1.6)),
+                                            Text(l10n.creator_dashboard_benefit_gifts1, style: const TextStyle(fontSize: 12, height: 1.6)),
                                             const SizedBox(height: 7),
-                                            Text('須經官方審核通過；私人角色、草稿、舊角色重新公開皆不列入每月獎勵。',
+                                            Text(l10n.creator_dashboard_reward_note1,
                                                 style: TextStyle(fontSize: 11, height: 1.5, color: theme.colorScheme.onSurfaceVariant)),
                                             const SizedBox(height: 8),
-                                            Text('點此了解並提交申請 →', style: TextStyle(fontSize: 12, color: primary, fontWeight: FontWeight.w600)),
+                                            Text(l10n.creator_dashboard_apply_cta1, style: TextStyle(fontSize: 12, color: primary, fontWeight: FontWeight.w600)),
                                           ],
                                         ])),
                                         Icon(Icons.chevron_right_rounded, color: primary),
@@ -563,7 +563,7 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
         .collection('draft_worlds')
         .where('createdBy', isEqualTo: uid)
         .snapshots();
-
+    final l10n = AppLocalizations.of(context)!;
     return StreamBuilder<Map<String, List<QueryDocumentSnapshot>>>(
       stream: Rx.combineLatest2(worldStream, draftStream,
               (QuerySnapshot worlds, QuerySnapshot drafts) => {
@@ -574,7 +574,7 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
         if (snapshot.hasError) {
           return Center(child: Padding(
             padding: const EdgeInsets.all(24),
-            child: Text('讀取開放世界失敗：${snapshot.error}'),
+            child: Text(l10n.creator_dashboard_error1),
           ));
         }
         if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
@@ -598,17 +598,17 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
                   builder: (_) => const WorldEditPage(),
                 )),
                 icon: const Icon(Icons.add_rounded),
-                label: const Text('創建開放世界'),
+                label: Text(AppLocalizations.of(context)!.creator_dashboard_create_world1),
               ),
             ),
             const SizedBox(height: 18),
-            _worldSection(context, theme, '已公開世界', '其他玩家可以探索',
+            _worldSection(context, theme, AppLocalizations.of(context)!.creator_dashboard_public_worlds1, AppLocalizations.of(context)!.creator_dashboard_public_worlds_hint1,
                 Icons.public_rounded, publicWorlds, 'public'),
             const SizedBox(height: 24),
-            _worldSection(context, theme, '私人世界', '只有自己可以查看與編輯',
+            _worldSection(context, theme, AppLocalizations.of(context)!.creator_dashboard_private_worlds1, AppLocalizations.of(context)!.creator_dashboard_private_worlds_hint1,
                 Icons.lock_outline_rounded, privateWorlds, 'private'),
             const SizedBox(height: 24),
-            _worldSection(context, theme, '世界觀草稿', '尚未建立完成的世界',
+            _worldSection(context, theme, AppLocalizations.of(context)!.creator_dashboard_world_drafts1, AppLocalizations.of(context)!.creator_dashboard_world_drafts_hint1,
                 Icons.edit_note_rounded, drafts, 'draft'),
           ],
         );
@@ -639,7 +639,7 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
         const SizedBox(height: 14),
         if (docs.isEmpty)
           Padding(padding: const EdgeInsets.symmetric(vertical: 20),
-              child: Center(child: Text('目前沒有${status == 'draft' ? '草稿' : '世界觀'}',
+              child: Center(child: Text(status == 'draft' ? AppLocalizations.of(context)!.creator_dashboard_no_drafts1 : AppLocalizations.of(context)!.creator_dashboard_no_worlds1,
                   style: TextStyle(color: theme.colorScheme.onSurfaceVariant))))
         else
           ...docs.map((doc) => _worldCard(context, theme, doc, status)),
@@ -652,7 +652,7 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
     final data = doc.data() as Map<String, dynamic>;
     final name = (data['name'] ?? '').toString().trim();
     final cover = (data['coverImage'] ?? '').toString();
-    final statusText = status == 'draft' ? '草稿' : status == 'public' ? '公開' : '私人';
+    final statusText = status == 'draft' ? AppLocalizations.of(context)!.creator_studio_status_draft : status == 'public' ? AppLocalizations.of(context)!.creator_studio_status_public : AppLocalizations.of(context)!.creator_studio_status_private;
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
       elevation: 0,
@@ -666,17 +666,17 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
                   errorBuilder: (_, __, ___) => const Icon(Icons.landscape_outlined))
                   : const Icon(Icons.landscape_outlined, size: 32)),
         ),
-        title: Text(name.isEmpty ? '未命名世界觀' : name, maxLines: 1, overflow: TextOverflow.ellipsis),
+        title: Text(name.isEmpty ? AppLocalizations.of(context)!.creator_dashboard_unnamed_world1 : name, maxLines: 1, overflow: TextOverflow.ellipsis),
         subtitle: Text(statusText),
         trailing: status == 'draft'
             ? IconButton(
-          tooltip: '刪除世界觀草稿',
+          tooltip: AppLocalizations.of(context)!.creator_dashboard_delete_world_draft1,
           icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
           onPressed: () => _deleteWorldDraft(context, doc.id),
         )
             : status == 'private'
             ? IconButton(
-          tooltip: '私人試玩',
+          tooltip: AppLocalizations.of(context)!.creator_dashboard_private_test1,
           icon: Icon(Icons.play_circle_outline_rounded,
               color: theme.colorScheme.primary, size: 29),
           onPressed: () => Navigator.of(context).push(
@@ -698,11 +698,11 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('刪除世界觀草稿？'),
-        content: const Text('刪除後無法恢復。已上傳的圖片不會一併刪除。'),
+        title: Text(AppLocalizations.of(context)!.creator_dashboard_delete_world_confirm_title1),
+        content: Text(AppLocalizations.of(context)!.creator_dashboard_delete_world_confirm_body1),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('取消')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('刪除')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(AppLocalizations.of(context)!.cancelButton)),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(AppLocalizations.of(context)!.delete_btn)),
         ],
       ),
     );
@@ -714,9 +714,9 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
         throw StateError('找不到自己的草稿');
       }
       await ref.delete();
-      if (context.mounted) ToastUtils.showCenterToast(context, '世界觀草稿已刪除');
+      if (context.mounted) ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.creator_dashboard_draft_deleted1);
     } catch (e) {
-      if (context.mounted) ToastUtils.showCenterToast(context, '刪除失敗：$e', isError: true);
+      if (context.mounted) ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.creator_dashboard_error1, isError: true);
     }
   }
 
@@ -1224,7 +1224,7 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
   }
 }
 
-// 合作創作者申請表：只有 Cloud Function 可以將申請狀態設為 pending。
+// 創作者後台申請表：只有 Cloud Function 可以將申請狀態設為 pending。
 class _CreatorCooperationApplicationPage extends StatefulWidget {
   const _CreatorCooperationApplicationPage();
   @override
@@ -1248,17 +1248,17 @@ class _CreatorCooperationApplicationPageState extends State<_CreatorCooperationA
     final direction = _directionController.text.trim();
     final reason = _reasonController.text.trim();
     if (direction.length < 2 || direction.length > 100 || reason.length < 10 || reason.length > 500) {
-      ToastUtils.showCenterToast(context, '創作方向須為 2～100 字，申請原因須為 10～500 字', isError: true);
+      ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.creator_dashboard_validation1, isError: true);
       return;
     }
     final accepted = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('確認提出合作申請'),
-        content: const Text('申請送出後將由官方審核；審核通過後即開通創作者專區，正式合作合約另行公告。'),
+        title: Text(AppLocalizations.of(context)!.creator_dashboard_confirm_application_title1),
+        content: Text(AppLocalizations.of(context)!.creator_dashboard_confirm_application_body1),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('取消')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('確認送出')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(AppLocalizations.of(context)!.cancelButton)),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(AppLocalizations.of(context)!.creator_dashboard_confirm_send1)),
         ],
       ),
     );
@@ -1275,9 +1275,9 @@ class _CreatorCooperationApplicationPageState extends State<_CreatorCooperationA
 
       Navigator.of(context).pop(true);
     } on FirebaseFunctionsException catch (e) {
-      if (mounted) ToastUtils.showCenterToast(context, e.message ?? '申請失敗，請稍後重試', isError: true);
+      if (mounted) ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.creator_dashboard_error1, isError: true);
     } catch (e) {
-      if (mounted) ToastUtils.showCenterToast(context, '申請暫時無法送出，請稍後重試', isError: true);
+      if (mounted) ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.creator_dashboard_error1, isError: true);
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -1287,27 +1287,27 @@ class _CreatorCooperationApplicationPageState extends State<_CreatorCooperationA
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text('合作創作者申請', style: GoogleFonts.notoSerifTc(fontWeight: FontWeight.w600))),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.creator_dashboard_apply_title1, style: GoogleFonts.notoSerifTc(fontWeight: FontWeight.w600))),
       body: SafeArea(child: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          Text('加入戀戀拾光合作計畫', style: GoogleFonts.notoSerifTc(fontSize: 20, fontWeight: FontWeight.w600)),
+          Text(AppLocalizations.of(context)!.creator_dashboard_form_heading1, style: GoogleFonts.notoSerifTc(fontSize: 20, fontWeight: FontWeight.w600)),
           const SizedBox(height: 10),
-          Text('請簡單介紹妳的創作方向與合作動機。送出後會進入官方審核；通過後即可使用創作者專區。正式合作授權與契約將另行公告。',
+          Text(AppLocalizations.of(context)!.creator_dashboard_form_description1,
               style: TextStyle(height: 1.7, color: theme.colorScheme.onSurfaceVariant)),
           const SizedBox(height: 22),
           TextField(controller: _directionController, maxLength: 100, enabled: !_submitting,
-              decoration: const InputDecoration(labelText: '創作方向', hintText: '例如：現代戀愛、奇幻、懸疑等', border: OutlineInputBorder())),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.creator_dashboard_direction_label1, hintText: AppLocalizations.of(context)!.creator_dashboard_direction_hint1, border: const OutlineInputBorder())),
           const SizedBox(height: 10),
           TextField(controller: _reasonController, maxLength: 500, enabled: !_submitting,
               minLines: 5, maxLines: 8,
-              decoration: const InputDecoration(labelText: '申請原因／合作動機', hintText: '請介紹創作經驗，以及希望如何與平台合作', border: OutlineInputBorder())),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.creator_dashboard_reason_label1, hintText: AppLocalizations.of(context)!.creator_dashboard_reason_hint1, border: const OutlineInputBorder())),
           const SizedBox(height: 8),
           FilledButton.icon(onPressed: _submitting ? null : _submit,
               icon: _submitting ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.send_outlined),
-              label: Text(_submitting ? '送出中…' : '提交合作申請')),
+              label: Text(_submitting ? AppLocalizations.of(context)!.creator_dashboard_sending1 : AppLocalizations.of(context)!.creator_dashboard_submit1)),
           const SizedBox(height: 12),
-          Text('提醒：申請不保證通過，請勿在欄位內填寫身分證字號、銀行帳號或其他敏感個資。',
+          Text(AppLocalizations.of(context)!.creator_dashboard_privacy_note1,
               style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurfaceVariant)),
         ],
       )),

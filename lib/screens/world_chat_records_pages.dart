@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,30 +22,30 @@ class WorldChatRecordsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text('劇情摘要', style: GoogleFonts.notoSerifTc(fontSize: 17)), centerTitle: true),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.world_records_summary_title1, style: GoogleFonts.notoSerifTc(fontSize: 17)), centerTitle: true),
       body: SafeArea(child: Column(children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(18, 12, 18, 6),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(worldName, style: GoogleFonts.notoSerifTc(fontSize: 20, fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
-            Text('已載入 $loadedMessageCount 筆聊天訊息；依劇情發生順序整理。',
+            Text(AppLocalizations.of(context)!.world_records_loaded_count1(loadedMessageCount),
                 style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 12)),
             const SizedBox(height: 4),
-            Text('目前提供已載入對話的劇情回顧；AI 自動濃縮摘要尚未接入。',
+            Text(AppLocalizations.of(context)!.world_records_auto_summary_pending1,
                 style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 12)),
           ]),
         ),
         const Divider(height: 20),
         Expanded(child: entries.isEmpty
-            ? const Center(child: Text('目前沒有可以回顧的劇情'))
+            ? Center(child: Text(AppLocalizations.of(context)!.world_records_empty_story1))
             : ListView.separated(
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 22),
           itemCount: entries.length,
           separatorBuilder: (_, __) => const SizedBox(height: 7),
           itemBuilder: (context, index) {
             final entry = entries[index];
-            final speaker = entry['speaker'] ?? '世界旁白';
+            final speaker = entry['speaker'] ?? AppLocalizations.of(context)!.world_records_narrator_name1;
             final description = entry['text'] ?? '';
             return Card(
               elevation: 0,
@@ -98,18 +99,18 @@ class WorldChatRelationshipsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text('人物關係', style: GoogleFonts.notoSerifTc(fontSize: 17)), centerTitle: true),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.world_records_relationships_title1, style: GoogleFonts.notoSerifTc(fontSize: 17)), centerTitle: true),
       body: SafeArea(child: Column(children: [
         Padding(padding: const EdgeInsets.all(16), child: Align(
           alignment: Alignment.centerLeft,
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(worldName, style: GoogleFonts.notoSerifTc(fontSize: 20, fontWeight: FontWeight.w600)),
             const SizedBox(height: 7),
-            Text('每位正式角色的好感度獨立計算；臨時 NPC 不計分。',
+            Text(AppLocalizations.of(context)!.world_records_affinity_note1,
                 style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 12)),
           ]),
         )),
-        Expanded(child: characters.isEmpty ? const Center(child: Text('目前沒有正式人物資料'))
+        Expanded(child: characters.isEmpty ? Center(child: Text(AppLocalizations.of(context)!.world_records_empty_characters1))
             : ListView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 14),
           itemCount: characters.length,
@@ -124,9 +125,9 @@ class WorldChatRelationshipsPage extends StatelessWidget {
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(person.name, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
                 const SizedBox(height: 5),
-                Text('好感度 ${person.score}${stage < 6 ? ' / $next' : ''}', style: const TextStyle(fontSize: 12)),
+                Text(stage < 6 ? AppLocalizations.of(context)!.world_records_affinity_score_with_next1(person.score, next) : AppLocalizations.of(context)!.world_records_affinity_score_only1(person.score), style: const TextStyle(fontSize: 12)),
                 const SizedBox(height: 5),
-                Text('關係階段 $stage', style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurfaceVariant)),
+                Text(AppLocalizations.of(context)!.world_records_relationship_stage1(stage), style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurfaceVariant)),
               ])),
               Image.asset('assets/images/affection/affection_stage_$stage.png', width: 28, height: 28,
                   errorBuilder: (_, __, ___) => const SizedBox.shrink()),
@@ -167,7 +168,7 @@ class _WorldChatMemoPageState extends State<WorldChatMemoPage> {
       if (!mounted) return;
       _controller.text = prefs.getString(_key) ?? '';
     } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('本機備忘錄讀取失敗')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.world_records_local_memo_read_failed1)));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -181,10 +182,10 @@ class _WorldChatMemoPageState extends State<WorldChatMemoPage> {
       final success = await prefs.setString(_key, _controller.text);
       if (!mounted) return success;
       if (success) setState(() => _changed = false);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(success ? '備忘錄已保存在此裝置' : '備忘錄保存失敗')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(success ? AppLocalizations.of(context)!.world_records_memo_saved_local1 : AppLocalizations.of(context)!.world_records_memo_save_failed1)));
       return success;
     } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('備忘錄保存失敗')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.world_records_memo_save_failed1)));
       return false;
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -205,11 +206,11 @@ class _WorldChatMemoPageState extends State<WorldChatMemoPage> {
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
         final shouldSave = await showDialog<bool>(context: context, builder: (dialogContext) => AlertDialog(
-          title: const Text('備忘錄尚未儲存'),
-          content: const Text('要先儲存再離開嗎？'),
+          title: Text(AppLocalizations.of(context)!.world_records_memo_unsaved1 ),
+          content: Text(AppLocalizations.of(context)!.world_records_memo_save_before_exit1),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('繼續編輯')),
-            FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('儲存並離開')),
+            TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(AppLocalizations.of(context)!.world_records_continue_editing1)),
+            FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(AppLocalizations.of(context)!.world_records_save_and_exit1)),
           ],
         ));
         if (shouldSave == true) {
@@ -218,14 +219,14 @@ class _WorldChatMemoPageState extends State<WorldChatMemoPage> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: Text('給世界的備忘錄', style: GoogleFonts.notoSerifTc(fontSize: 17)), centerTitle: true,
-            actions: [TextButton(onPressed: (_loading || _saving) ? null : _save, child: const Text('儲存'))]),
+        appBar: AppBar(title: Text(AppLocalizations.of(context)!.world_records_world_memo_title1, style: GoogleFonts.notoSerifTc(fontSize: 17)), centerTitle: true,
+            actions: [TextButton(onPressed: (_loading || _saving) ? null : _save, child: Text(AppLocalizations.of(context)!.world_records_save1))]),
         body: _loading ? const Center(child: CircularProgressIndicator()) : SafeArea(child: Padding(
           padding: const EdgeInsets.all(18),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(widget.worldName, style: GoogleFonts.notoSerifTc(fontSize: 20, fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
-            Text('私人備忘錄｜此版本僅儲存於目前裝置，不會傳給 AI，也不會跨裝置同步。',
+            Text(AppLocalizations.of(context)!.world_records_memo_local_disclaimer1,
                 style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurfaceVariant)),
             const SizedBox(height: 14),
             Expanded(child: TextField(
@@ -236,7 +237,7 @@ class _WorldChatMemoPageState extends State<WorldChatMemoPage> {
               maxLength: 5000,
               textAlignVertical: TextAlignVertical.top,
               decoration: InputDecoration(
-                hintText: '記下世界裡發現的線索、想完成的事，或想對角色說的話…',
+                hintText: AppLocalizations.of(context)!.world_records_memo_hint1,
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
                 contentPadding: const EdgeInsets.all(15),
               ),
@@ -256,7 +257,7 @@ class _SpeakerAvatar extends StatelessWidget {
   final bool isNarrator;
   @override
   Widget build(BuildContext context) {
-    if (isNarrator) return SizedBox(width: size, height: size, child: Center(child: Text('旁白',
+    if (isNarrator) return SizedBox(width: size, height: size, child: Center(child: Text(AppLocalizations.of(context)!.world_records_narrator_short1,
         style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant))));
     return ClipOval(child: SizedBox(width: size, height: size,
       child: path.trim().isEmpty
@@ -302,7 +303,7 @@ class _WorldStorySummaryPageState extends State<WorldStorySummaryPage> {
       });
     } catch (e) {
       if (!mounted) return;
-      setState(() { _loading = false; _error = e is FirebaseFunctionsException && e.code == 'not-found' ? '劇情摘要服務尚未部署（worldStoryMemory）。請部署後重新進入。' : '暫時無法讀取劇情摘要，請稍後重試。'; });
+      setState(() { _loading = false; _error = e is FirebaseFunctionsException && e.code == 'not-found' ? AppLocalizations.of(context)!.world_records_summary_service_missing1 : AppLocalizations.of(context)!.world_records_summary_load_failed1; });
     }
   }
 
@@ -310,18 +311,18 @@ class _WorldStorySummaryPageState extends State<WorldStorySummaryPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text('劇情摘要', style: GoogleFonts.notoSerifTc(fontSize: 17)), centerTitle: true),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.world_records_summary_title1, style: GoogleFonts.notoSerifTc(fontSize: 17)), centerTitle: true),
       body: SafeArea(child: _loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(padding: const EdgeInsets.all(20), children: [
         Text(widget.worldName, style: GoogleFonts.notoSerifTc(fontSize: 21, fontWeight: FontWeight.w600)),
         const SizedBox(height: 12),
-        Text('每段相遇與抉擇，都將成為故事的一部分。重要經歷與人物關係會在此留下紀錄，陪伴故事繼續向前。',
+        Text(AppLocalizations.of(context)!.world_records_summary_intro1,
             style: TextStyle(color: theme.colorScheme.onSurfaceVariant, height: 1.5)),
         const SizedBox(height: 18),
         Card(elevation: 0, color: theme.colorScheme.surfaceContainerLow,
             child: Padding(padding: const EdgeInsets.all(18), child: SelectableText(
-                _summary.isEmpty ? '故事仍在持續，精彩篇章即將收錄於此。' : _summary,
+                _summary.isEmpty ? AppLocalizations.of(context)!.world_records_summary_empty1 : _summary,
                 style: GoogleFonts.notoSerifTc(fontSize: 14, height: 1.9)))),
         const SizedBox(height: 18),
         if (_error != null) Padding(padding: const EdgeInsets.only(bottom: 12),

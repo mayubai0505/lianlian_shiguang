@@ -1,3 +1,5 @@
+
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
@@ -258,7 +260,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       final points = raw is num ? raw.toInt() : 0;
       if (points != _flowerPoints) setState(() => _flowerPoints = points);
     }, onError: (Object error) {
-      if (mounted) _showCenterNotice('花花餘額暫時無法同步', isError: true);
+      if (mounted) _showCenterNotice(AppLocalizations.of(context)!.world_chat_flower_sync1, isError: true);
     });
   }
 
@@ -380,7 +382,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
 
   void _openFlowerStore() {
     if (kIsWeb) {
-      _showCenterNotice('網頁版暫不支援購買花花');
+      _showCenterNotice(AppLocalizations.of(context)!.world_chat_web_store_unavailable1);
       return;
     }
     Navigator.push(context, MaterialPageRoute(builder: (_) => const StorePage()));
@@ -480,7 +482,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       _scrollToLatest();
     }, onError: (Object error) {
       // The callable remains the read-only fallback if rules have not yet been deployed.
-      if (mounted) _showCenterNotice('即時同步暫時不可用，仍可重新進入讀取紀錄', isError: true);
+      if (mounted) _showCenterNotice(AppLocalizations.of(context)!.world_chat_sync_unavailable1, isError: true);
     });
   }
 
@@ -607,14 +609,14 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
         });
         _pendingRequestId = null;
         _pendingRequestText = null;
-        _showCenterNotice('已停止生成，本次不扣花花');
+        _showCenterNotice(AppLocalizations.of(context)!.world_chat_stopped1);
       } else {
-        _showCenterNotice('回覆可能已完成，無法再停止；請確認聊天紀錄與花花');
+        _showCenterNotice(AppLocalizations.of(context)!.world_chat_cannot_stop1);
       }
     } on FirebaseFunctionsException catch (e) {
       if (mounted) _showCenterNotice('停止失敗：${e.message ?? '請再試一次'}', isError: true);
     } catch (e) {
-      if (mounted) _showCenterNotice('停止請求暫時失敗，請再試一次', isError: true);
+      if (mounted) _showCenterNotice(AppLocalizations.of(context)!.world_chat_stop_retry1, isError: true);
     } finally {
       if (mounted) setState(() => _stoppingGeneration = false);
     }
@@ -713,7 +715,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     } on FirebaseFunctionsException catch(e) {
       if(!mounted || (requestIdAtStart != null && _cancelledLocalRequests.contains(requestIdAtStart)))return;
       setState((){
-        _loading=false;_error=e.message ?? '連線失敗';
+        _loading=false;_error=e.message ?? AppLocalizations.of(context)!.world_chat_connection_failed1;
         if (action == 'send' || action == 'interact') {
           _pendingFailed = true;
           // Restore the unsent text if the request failed, so the player can retry.
@@ -729,7 +731,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     } catch(e) {
       if(!mounted || (requestIdAtStart != null && _cancelledLocalRequests.contains(requestIdAtStart)))return;
       setState((){
-        _loading=false;_error='網路暫時無法連線';
+        _loading=false;_error=AppLocalizations.of(context)!.world_chat_network_failed1;
         if (action == 'send' || action == 'interact') {
           _pendingFailed = true;
           // Restore the unsent text if the request failed, so the player can retry.
@@ -749,7 +751,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
   Future<void> _regenerateWorld() async {
     if (_sending || _loading || _sessionId == null) return;
     if (!_messages.any((m) => m is Map && m['sender'] == 'ai' && m['id'] != 'opening')) {
-      _showCenterNotice('尚無可重新生成的回覆');
+      _showCenterNotice(AppLocalizations.of(context)!.world_chat_no_regenerate1);
       return;
     }
     if (_regenerateFreeRemaining <= 0) {
@@ -764,11 +766,11 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       final confirmed = await showDialog<bool>(
         context:context,
         builder:(c) => AlertDialog(
-          title:const Text('付費重新生成'),
+          title:Text(AppLocalizations.of(context)!.world_chat_paid_regenerate1),
           content:Text('今日 3 次免費額度已用完，依原回覆模式收取 $price 朵花花。是否繼續？'),
           actions:[
-            TextButton(onPressed:()=>Navigator.pop(c,false),child:const Text('取消')),
-            TextButton(onPressed:()=>Navigator.pop(c,true),child:const Text('確認')),
+            TextButton(onPressed:()=>Navigator.pop(c,false),child:Text(AppLocalizations.of(context)!.world_chat_cancel1)),
+            TextButton(onPressed:()=>Navigator.pop(c,true),child:Text(AppLocalizations.of(context)!.world_chat_confirm1)),
           ],
         ),
       );
@@ -784,7 +786,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
   Future<void> _continueWorld() async {
     if (_sending || _loading || _sessionId == null) return;
     if (!_messages.any((m) => m is Map && m['sender'] == 'ai' && m['id'] != 'opening')) {
-      _showCenterNotice('尚無可接續的劇情');
+      _showCenterNotice(AppLocalizations.of(context)!.world_chat_no_continue1);
       return;
     }
     final price = _modes[_selectedMode] ?? 5;
@@ -945,7 +947,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
   /// represented by its own entry, preserving the actual speaker.
   Future<void> _saveWorldTranscript() async {
     if (_messages.isEmpty) {
-      _showCenterNotice('目前還沒有可以保存的對話');
+      _showCenterNotice(AppLocalizations.of(context)!.world_chat_no_save1);
       return;
     }
     final identity = await _latestTranscriptIdentity();
@@ -996,7 +998,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       }
     }
     if (transcript.isEmpty) {
-      _showCenterNotice('目前還沒有可以保存的對話');
+      _showCenterNotice(AppLocalizations.of(context)!.world_chat_no_save1);
       return;
     }
     if (!mounted) return;
@@ -1066,14 +1068,14 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     final cover = identity['cover'] as String;
     final sessionId = _sessionId;
     if (sessionId == null || sessionId.isEmpty) {
-      _showCenterNotice('聊天室仍在載入中');
+      _showCenterNotice(AppLocalizations.of(context)!.world_chat_loading1);
       return;
     }
     final persons = <WorldLiveRelationshipPerson>[];
     for (final id in _npcs.keys) {
       persons.add(WorldLiveRelationshipPerson(
         id: id,
-        name: names[id]?.trim().isNotEmpty == true ? names[id]! : (_names[id] ?? '未命名角色'),
+        name: names[id]?.trim().isNotEmpty == true ? names[id]! : (_names[id] ?? AppLocalizations.of(context)!.world_chat_unnamed_character1),
         avatar: avatars[id]?.trim().isNotEmpty == true ? avatars[id]! : cover,
       ));
     }
@@ -1084,7 +1086,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
 
   Future<void> _openWorldBackground() async {
     if (_sessionId == null || _sessionId!.isEmpty) {
-      _showCenterNotice('聊天室載入完成後即可更換背景');
+      _showCenterNotice(AppLocalizations.of(context)!.world_chat_bg_wait1);
       return;
     }
     await Navigator.of(context).push(MaterialPageRoute<void>(
@@ -1097,7 +1099,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
   Future<void> _openWorldMemo() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) {
-      _showCenterNotice('請先登入帳號', isError: true);
+      _showCenterNotice(AppLocalizations.of(context)!.world_chat_sign_in1, isError: true);
       return;
     }
     await Navigator.of(context).push(MaterialPageRoute<void>(
@@ -1118,8 +1120,8 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       showDragHandle: true,
       builder: (sheetContext) => SafeArea(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          const ListTile(title: Text('選擇世界觀模式'),
-              subtitle: Text('每則成功回覆依模式扣花花；失敗不收費')),
+          ListTile(title: Text(AppLocalizations.of(context)!.world_chat_choose_mode1),
+              subtitle: Text(AppLocalizations.of(context)!.world_chat_mode_charge_expl1)),
           for (final entry in _modes.entries)
             ListTile(
               title: Text(worldModeLabel(entry.key)),
@@ -1173,9 +1175,9 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       );
       if (!mounted || picked == null) return;
       await showDialog<void>(context: context, builder: (dialogContext) => AlertDialog(
-        title: const Text('已選取照片'),
+        title: Text(AppLocalizations.of(context)!.world_chat_photo_selected1),
         content: const Text('目前世界觀 AI 尚未串接照片上傳與辨識。照片不會傳送，也不會扣花花；待世界觀媒體 API 完成後才能正式送出。'),
-        actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('知道了'))],
+        actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(AppLocalizations.of(context)!.world_chat_got_it1))],
       ));
     } catch (e) {
       if (mounted) _showCenterNotice('無法開啟手機相簿：$e', isError: true);
@@ -1194,9 +1196,9 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
   }
 
   Future<void> _editWorldStatusSettings() async {
-    const labels = <String, String>{
-      'mood':'心情', 'outfit':'服裝', 'relationship':'關係', 'thought':'想法',
-      'weather':'天氣', 'currentState':'目前狀態', 'action':'動作', 'affinity':'好感度',
+    final labels = <String, String>{
+      'mood': AppLocalizations.of(context)!.world_chat_mood1, 'outfit': AppLocalizations.of(context)!.world_chat_outfit1, 'relationship': AppLocalizations.of(context)!.world_chat_relationship1, 'thought': AppLocalizations.of(context)!.world_chat_thought1,
+      'weather': AppLocalizations.of(context)!.world_chat_weather1, 'currentState': AppLocalizations.of(context)!.world_chat_current_state1, 'action': AppLocalizations.of(context)!.world_chat_action1, 'affinity': AppLocalizations.of(context)!.world_chat_affinity1,
     };
     try {
       final result = await _api.call({'worldId': widget.worldId, 'action':'loadStatus'});
@@ -1209,20 +1211,20 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
         builder: (ctx) => StatefulBuilder(builder: (ctx, refresh) => SafeArea(
           child: Padding(padding: const EdgeInsets.fromLTRB(16, 6, 16, 16),
               child: Column(mainAxisSize: MainAxisSize.min, children: [
-                const Text('世界觀狀態欄設定', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
+                Text(AppLocalizations.of(context)!.world_chat_status_settings1, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 8),
                 Flexible(child: ListView(shrinkWrap: true, children: [
                   for (final entry in labels.entries)
                     SwitchListTile(title: Text(entry.value), value: settings[entry.key] ?? false,
                         onChanged: (v) => refresh(() => settings[entry.key] = v)),
                 ])),
-                FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('儲存設定')),
+                FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(AppLocalizations.of(context)!.world_chat_save_settings1)),
               ])),
         )),
       );
       if (shouldSave != true || !mounted) return;
       await _api.call({'worldId': widget.worldId, 'action':'saveStatus', 'settings': settings});
-      if (mounted) _showCenterNotice('已儲存此世界的狀態欄顯示偏好');
+      if (mounted) _showCenterNotice(AppLocalizations.of(context)!.world_chat_status_saved1);
     } catch (e) {
       if (mounted) _showCenterNotice('狀態欄設定失敗：$e', isError: true);
     }
@@ -1231,7 +1233,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
   // 互動玩法使用獨立 action=interact，避免被當成一般聊天模式再次扣 12 朵。
   Future<void> _sendWorldInteraction(Map<String,dynamic> event) async {
     if (_loading || _sending || _sessionId == null) {
-      _showCenterNotice('世界觀聊天室尚未就緒', isError:true);
+      _showCenterNotice(AppLocalizations.of(context)!.world_chat_not_ready1, isError:true);
       return;
     }
     final type = (event['interactionType'] ?? '').toString();
@@ -1249,7 +1251,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
 
   Future<void> _openWorldInteraction() async {
     if (_sessionId == null || _sessionId!.isEmpty) {
-      _showCenterNotice('請先進入世界觀聊天室');
+      _showCenterNotice(AppLocalizations.of(context)!.world_chat_enter_first1);
       return;
     }
     final result = await Navigator.of(context).push<Map<String,dynamic>>(MaterialPageRoute(
@@ -1264,7 +1266,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
 
   Future<void> _openWorldScene() async {
     if (_sessionId == null || _sessionId!.isEmpty) {
-      _showCenterNotice('請先進入世界觀聊天室');
+      _showCenterNotice(AppLocalizations.of(context)!.world_chat_enter_first1);
       return;
     }
     final result = await Navigator.of(context).push<String>(MaterialPageRoute(
@@ -1289,7 +1291,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     if (!mounted) return;
     await showDialog<void>(context: context, builder: (ctx) => AlertDialog(
       title: Text(name), content: Text(reason),
-      actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('知道了'))],
+      actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalizations.of(context)!.world_chat_got_it1))],
     ));
   }
 
@@ -1343,17 +1345,17 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
             crossAxisCount: 3, mainAxisSpacing: 12, crossAxisSpacing: 12,
             childAspectRatio: 1.05, physics: const BouncingScrollPhysics(),
             children: [
-              _worldToolItem('assets/images/chat/chat_tool_photo_mask.png', '照片',
+              _worldToolItem('assets/images/chat/chat_tool_photo_mask.png', AppLocalizations.of(context)!.world_chat_photo1,
                       () => closeAnd(_pickWorldPlayerPhoto)),
-              _worldToolItem('assets/images/chat/chat_tool_archive_mask.png', '拾光檔案',
+              _worldToolItem('assets/images/chat/chat_tool_archive_mask.png', AppLocalizations.of(context)!.world_chat_profile1,
                       () => closeAnd(_editWorldPlayerIdentity)),
-              _worldToolItem('assets/images/chat/chat_tool_interaction_mask.png', '互動玩法',
+              _worldToolItem('assets/images/chat/chat_tool_interaction_mask.png', AppLocalizations.of(context)!.world_chat_interaction1,
                       () => closeAnd(_openWorldInteraction)),
-              _worldToolItem('assets/images/chat/chat_tool_scene_mask.png', '劇場',
+              _worldToolItem('assets/images/chat/chat_tool_scene_mask.png', AppLocalizations.of(context)!.world_chat_theater1,
                       () => closeAnd(_openWorldScene)),
-              _worldToolItem('assets/images/chat/chat_status_bar_mask.png', '狀態欄',
+              _worldToolItem('assets/images/chat/chat_status_bar_mask.png', AppLocalizations.of(context)!.world_chat_status1,
                       () => closeAnd(_editWorldStatusSettings)),
-              _worldToolItem('assets/images/chat/chat_tool_story_mask.png', '秘密篇章',
+              _worldToolItem('assets/images/chat/chat_tool_story_mask.png', AppLocalizations.of(context)!.world_chat_secret1,
                       () => closeAnd(() => Navigator.push(context, MaterialPageRoute(builder: (_) => WorldSecretChaptersPage(worldId: widget.worldId))))),
             ],
           )),
@@ -1424,10 +1426,10 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
   Widget _worldNpcStatusCards(Map<String, dynamic> message, ThemeData theme) {
     final rawStatuses = message['npcStatuses'];
     if (rawStatuses is! List || rawStatuses.isEmpty) return const SizedBox.shrink();
-    const labels = <String, String>{
-      'mood': '心情', 'outfit': '服裝', 'relationship': '關係',
-      'thought': '想法', 'weather': '天氣', 'currentState': '目前狀態',
-      'action': '動作', 'affinity': '好感度',
+    final labels = <String, String>{
+      'mood': AppLocalizations.of(context)!.world_chat_mood1, 'outfit': AppLocalizations.of(context)!.world_chat_outfit1, 'relationship': AppLocalizations.of(context)!.world_chat_relationship1,
+      'thought': AppLocalizations.of(context)!.world_chat_thought1, 'weather': AppLocalizations.of(context)!.world_chat_weather1, 'currentState': AppLocalizations.of(context)!.world_chat_current_state1,
+      'action': AppLocalizations.of(context)!.world_chat_action1, 'affinity': AppLocalizations.of(context)!.world_chat_affinity1,
     };
     final cards = <Widget>[];
     for (final raw in rawStatuses) {
@@ -1493,7 +1495,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     child: Align(
       alignment: Alignment.centerLeft,
       child: Text(
-        '世界正在悄悄運轉…',
+        AppLocalizations.of(context)!.world_chat_generating1,
         style: GoogleFonts.notoSerifTc(
           fontSize: 13,
           color: theme.colorScheme.onSurface.withValues(alpha: 0.65),
@@ -1573,19 +1575,19 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     final key = _worldSegmentKey(messageId, segmentIndex);
     final content = (segment['text'] ?? '').toString();
     showModalBottomSheet<void>(context: context, builder: (ctx) => SafeArea(child: Wrap(children: [
-      ListTile(leading: _worldActionIcon('screenshot'), title: const Text('截圖分享'),
+      ListTile(leading: _worldActionIcon('screenshot'), title: Text(AppLocalizations.of(context)!.world_chat_screenshot1),
           onTap: () { Navigator.pop(ctx); _beginWorldSelection(key, delete: false); }),
       const Divider(),
-      ListTile(leading: _worldActionIcon('copy'), title: const Text('複製內容'),
-          onTap: () { Navigator.pop(ctx); Clipboard.setData(ClipboardData(text: content)); _showCenterNotice('已複製'); }),
-      ListTile(leading: _worldActionIcon('edit'), title: const Text('編輯'),
+      ListTile(leading: _worldActionIcon('copy'), title: Text(AppLocalizations.of(context)!.world_chat_copy1),
+          onTap: () { Navigator.pop(ctx); Clipboard.setData(ClipboardData(text: content)); _showCenterNotice(AppLocalizations.of(context)!.world_chat_copied1); }),
+      ListTile(leading: _worldActionIcon('edit'), title: Text(AppLocalizations.of(context)!.world_chat_edit1),
           onTap: () { Navigator.pop(ctx); _editWorldSegment(messageId, segmentIndex, segment); }),
       ListTile(leading: _worldActionIcon('delete', danger: true),
-          title: const Text('刪除', style: TextStyle(color: Colors.redAccent)),
+          title: Text(AppLocalizations.of(context)!.world_chat_delete1, style: TextStyle(color: Colors.redAccent)),
           onTap: () { Navigator.pop(ctx); _beginWorldSelection(key, delete: true); }),
-      ListTile(leading: _worldActionIcon('report'), title: const Text('舉報此對話'),
+      ListTile(leading: _worldActionIcon('report'), title: Text(AppLocalizations.of(context)!.world_chat_report1),
           onTap: () { Navigator.pop(ctx); _reportWorldText('[$speaker] $content'); }),
-      ListTile(leading: _worldActionIcon('feedback'), title: const Text('給建議'),
+      ListTile(leading: _worldActionIcon('feedback'), title: Text(AppLocalizations.of(context)!.world_chat_feedback1),
           onTap: () { Navigator.pop(ctx); _suggestWorldChat(); }),
     ])));
   }
@@ -1594,10 +1596,10 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     final controller=TextEditingController(text:(segment['text']??'').toString());
     try {
       final text=await showDialog<String>(context:context,builder:(ctx)=>AlertDialog(
-          title:const Text('編輯角色段落'),
+          title:Text(AppLocalizations.of(context)!.world_chat_edit_segment1),
           content:TextField(controller:controller,maxLength:2500,minLines:2,maxLines:8),
-          actions:[TextButton(onPressed:()=>Navigator.pop(ctx),child:const Text('取消')),
-            FilledButton(onPressed:()=>Navigator.pop(ctx,controller.text.trim()),child:const Text('儲存'))]));
+          actions:[TextButton(onPressed:()=>Navigator.pop(ctx),child:Text(AppLocalizations.of(context)!.world_chat_cancel1)),
+            FilledButton(onPressed:()=>Navigator.pop(ctx,controller.text.trim()),child:Text(AppLocalizations.of(context)!.world_chat_save1))]));
       if(text==null||text.isEmpty||text==(segment['text']??'').toString())return;
       await _api.call({'worldId':widget.worldId,'action':'editSegment',
         'messageId':messageId,'segmentIndex':index,'message':text});
@@ -1608,15 +1610,15 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
 
   Future<void> _deleteWorldSegment(String messageId,int index,String speaker) async {
     final confirmed=await showDialog<bool>(context:context,builder:(ctx)=>AlertDialog(
-        title:const Text('刪除單一段落'),
+        title:Text(AppLocalizations.of(context)!.world_chat_delete_segment1),
         content:Text('確定只刪除「$speaker」的這一段嗎？其他角色與旁白會保留。刪除後無法復原。'),
-        actions:[TextButton(onPressed:()=>Navigator.pop(ctx,false),child:const Text('取消')),
-          FilledButton(onPressed:()=>Navigator.pop(ctx,true),child:const Text('刪除'))]));
+        actions:[TextButton(onPressed:()=>Navigator.pop(ctx,false),child:Text(AppLocalizations.of(context)!.world_chat_cancel1)),
+          FilledButton(onPressed:()=>Navigator.pop(ctx,true),child:Text(AppLocalizations.of(context)!.world_chat_delete1))]));
     if(confirmed!=true)return;
     try{
       await _api.call({'worldId':widget.worldId,'action':'deleteSegment',
         'messageId':messageId,'segmentIndex':index});
-      if(mounted)_showCenterNotice('已刪除這一段');
+      if(mounted)_showCenterNotice(AppLocalizations.of(context)!.world_chat_deleted_segment1);
     }catch(e){if(mounted)_showCenterNotice('刪除失敗：$e',isError:true);}
   }
 
@@ -1626,17 +1628,17 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     final controller = TextEditingController(text:(data['text'] ?? '').toString());
     try {
       final edited = await showDialog<String>(context:context, builder:(ctx) => AlertDialog(
-        title:const Text('編輯訊息'),
+        title:Text(AppLocalizations.of(context)!.world_chat_edit_message1),
         content:TextField(controller:controller,maxLength:2500,minLines:2,maxLines:8,
-            decoration:const InputDecoration(hintText:'修改你的文字')),
+            decoration:InputDecoration(hintText:AppLocalizations.of(context)!.world_chat_edit_hint1)),
         actions:[
-          TextButton(onPressed:()=>Navigator.pop(ctx),child:const Text('取消')),
-          FilledButton(onPressed:()=>Navigator.pop(ctx,controller.text.trim()),child:const Text('儲存')),
+          TextButton(onPressed:()=>Navigator.pop(ctx),child:Text(AppLocalizations.of(context)!.world_chat_cancel1)),
+          FilledButton(onPressed:()=>Navigator.pop(ctx,controller.text.trim()),child:Text(AppLocalizations.of(context)!.world_chat_save1)),
         ],
       ));
       if (edited == null || edited.isEmpty || edited == (data['text'] ?? '').toString()) return;
       await _api.call({'worldId':widget.worldId,'action':'edit','messageId':id,'message':edited});
-      if (mounted) _showCenterNotice('訊息已更新');
+      if (mounted) _showCenterNotice(AppLocalizations.of(context)!.world_chat_updated1);
     } catch (e) {
       if (mounted) _showCenterNotice('編輯失敗：$e',isError:true);
     } finally {controller.dispose();}
@@ -1646,11 +1648,11 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     final keys = _selectedMessageIds.toList();
     if (keys.isEmpty) return;
     final confirmed = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
-      title: const Text('刪除對話'),
+      title: Text(AppLocalizations.of(context)!.world_chat_delete_conversation1),
       content: Text('確定刪除選取的 ${keys.length} 段對話？其他未選取的角色與旁白會保留。刪除後無法還原。'),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('取消')),
-        FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('刪除')),
+        TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(AppLocalizations.of(context)!.world_chat_cancel1)),
+        FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(AppLocalizations.of(context)!.world_chat_delete1)),
       ],
     ));
     if (confirmed != true) return;
@@ -1902,19 +1904,19 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     if (id.isEmpty || data['sender'] != 'user') return;
     final content = _worldMessageText(data);
     showModalBottomSheet<void>(context: context, builder: (ctx) => SafeArea(child: Wrap(children: [
-      ListTile(leading: _worldActionIcon('screenshot'), title: const Text('截圖分享'),
+      ListTile(leading: _worldActionIcon('screenshot'), title: Text(AppLocalizations.of(context)!.world_chat_screenshot1),
           onTap: () { Navigator.pop(ctx); _beginWorldSelection(id, delete: false); }),
       const Divider(),
-      ListTile(leading: _worldActionIcon('copy'), title: const Text('複製內容'),
-          onTap: () { Navigator.pop(ctx); Clipboard.setData(ClipboardData(text: content)); _showCenterNotice('已複製'); }),
-      ListTile(leading: _worldActionIcon('edit'), title: const Text('編輯'),
+      ListTile(leading: _worldActionIcon('copy'), title: Text(AppLocalizations.of(context)!.world_chat_copy1),
+          onTap: () { Navigator.pop(ctx); Clipboard.setData(ClipboardData(text: content)); _showCenterNotice(AppLocalizations.of(context)!.world_chat_copied1); }),
+      ListTile(leading: _worldActionIcon('edit'), title: Text(AppLocalizations.of(context)!.world_chat_edit1),
           onTap: () { Navigator.pop(ctx); _editWorldMessage(data); }),
       ListTile(leading: _worldActionIcon('delete', danger: true),
-          title: const Text('刪除', style: TextStyle(color: Colors.redAccent)),
+          title: Text(AppLocalizations.of(context)!.world_chat_delete1, style: TextStyle(color: Colors.redAccent)),
           onTap: () { Navigator.pop(ctx); _beginWorldSelection(id, delete: true); }),
-      ListTile(leading: _worldActionIcon('report'), title: const Text('舉報此對話'),
+      ListTile(leading: _worldActionIcon('report'), title: Text(AppLocalizations.of(context)!.world_chat_report1),
           onTap: () { Navigator.pop(ctx); _reportWorldText(content); }),
-      ListTile(leading: _worldActionIcon('feedback'), title: const Text('給建議'),
+      ListTile(leading: _worldActionIcon('feedback'), title: Text(AppLocalizations.of(context)!.world_chat_feedback1),
           onTap: () { Navigator.pop(ctx); _suggestWorldChat(); }),
     ])));
   }
@@ -1950,7 +1952,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
         .collection('chatRoomBackgrounds').doc(_sessionId);
     return Scaffold(
       appBar: WorldChatHeader(
-        worldName: _name,
+        worldName: _name == '開放世界' ? AppLocalizations.of(context)!.world_chat_open_world1 : _name,
         flowerPoints: _flowerPoints,
         onFlowerTap: _openFlowerStore,
         modeId: _selectedMode,
@@ -1986,7 +1988,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
               SafeArea(child:Column(children:[
                 if(_loading)const Expanded(child:Center(child:CircularProgressIndicator()))
                 else Expanded(child: (_messages.isEmpty && !_pendingVisible && !_sending)
-                    ? Center(child: Text(_error.isEmpty ? '尚無對話' : '$_error\n可返回後重試',
+                    ? Center(child: Text(_error.isEmpty ? AppLocalizations.of(context)!.world_chat_no_chat1 : '$_error\n可返回後重試',
                     textAlign: TextAlign.center))
                     : ListView.builder(
                   controller: _scroll,
@@ -2028,14 +2030,14 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
                   SafeArea(top:false,child:Padding(
                     padding:const EdgeInsets.symmetric(horizontal:12,vertical:6),
                     child:Row(children:[
-                      IconButton(tooltip:'取消選取',onPressed:_exitWorldSelection,
+                      IconButton(tooltip:AppLocalizations.of(context)!.world_chat_cancel_select1,onPressed:_exitWorldSelection,
                           icon:const Icon(Icons.close)),
                       Expanded(child:Text('已選 ${_selectedMessageIds.length} 段（可繼續點選）')),
                       FilledButton.icon(
                         onPressed:_selectedMessageIds.isEmpty?null:
                         (_worldDeleteMode?_deleteWorldMessages:_shareWorldScreenshot),
                         icon:Icon(_worldDeleteMode?Icons.delete_outline:Icons.ios_share),
-                        label:Text(_worldDeleteMode?'刪除':'截圖分享'),
+                        label:Text(_worldDeleteMode?AppLocalizations.of(context)!.world_chat_delete1:AppLocalizations.of(context)!.world_chat_screenshot1),
                       ),
                     ]),
                   )),
@@ -2087,7 +2089,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
                   isGenerating: _sending,
                   isLoading: _loading,
                   showCounter: false,
-                  hintText: '書寫你們的故事…',
+                  hintText: AppLocalizations.of(context)!.world_chat_input_hint1,
                   regeneratingTooltip: '重新生成（每日前 3 次免費，之後依模式扣花花）',
                   continueTooltip: '繼續回覆（依目前模式扣花花）',
                   onChanged: _scheduleDraftSave,
@@ -2124,10 +2126,10 @@ class _WorldScreenshotPreviewState extends State<_WorldScreenshotPreview> {
   @override
   Widget build(BuildContext context) => AlertDialog(
     title: Row(children: [
-      const Expanded(child: Text('專屬時光已生成',
+      Expanded(child: Text(AppLocalizations.of(context)!.world_chat_screenshot_done1,
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
       IconButton(icon: const Icon(Icons.brush),
-          tooltip: '切換截圖配色', color: widget.primary,
+          tooltip: AppLocalizations.of(context)!.world_chat_screenshot_style1, color: widget.primary,
           onPressed: busy ? null : () async {
             setState(() => busy = true);
             try { await widget.onRestyle(); }
@@ -2143,12 +2145,12 @@ class _WorldScreenshotPreviewState extends State<_WorldScreenshotPreview> {
     ),
     actions: [
       TextButton(onPressed: busy ? null : widget.onCancel,
-          child: const Text('重新選取')),
+          child: Text(AppLocalizations.of(context)!.world_chat_reselect1)),
       ElevatedButton.icon(onPressed: busy ? null : widget.onShare,
           style: ElevatedButton.styleFrom(backgroundColor: widget.primary,
               foregroundColor: Colors.white),
           icon: const Icon(Icons.download, size: 18),
-          label: const Text('下載並分享')),
+          label: Text(AppLocalizations.of(context)!.world_chat_download_share1)),
     ],
   );
 }

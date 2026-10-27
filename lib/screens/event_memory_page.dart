@@ -7,6 +7,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../services/app_constants.dart';
 import 'event_memory_character_select_page.dart';
 import 'package:lianlian_shiguang/l10n/app_l10n.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+
 
 class EventMemoryPage extends StatelessWidget {
   final String eventId;
@@ -105,6 +107,7 @@ class EventMemoryPage extends StatelessWidget {
         : <String, dynamic>{};
     final memoryCardImageUrl =
     (decorationData['memoryCardImageUrl'] ?? '').toString().trim();
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: visual.background,
@@ -113,7 +116,7 @@ class EventMemoryPage extends StatelessWidget {
         child: Column(
           children: [
             _MemoryAppBar(
-              title: '限定回憶',
+              title: l10n.event_memory_limited_title1,
               textColor: visual.textPrimaryColor,
               accent: visual.accent,
             ),

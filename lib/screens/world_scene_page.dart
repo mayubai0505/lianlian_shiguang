@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import '../services/app_constants.dart';
 
 /// 世界觀劇場：提供創作者已設定的開場文字或玩家自訂場景。
@@ -52,44 +53,44 @@ class _WorldScenePageState extends State<WorldScenePage> {
 
   void _start(String title, String description) {
     if (title.trim().isEmpty || description.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('請填寫場景標題與內容')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.world_scene_required1)));
       return;
     }
     // 目前透過世界觀 AI 的 send 管線啟動場景，不偽稱已儲存獨立劇場狀態。
     Navigator.pop(context, '【世界觀劇場：${title.trim()}】\n'
-      '場景：${description.trim()}\n'
-      '（請讓世界觀中適合出場的角色依既有人設自然展開此場景；'
-      '玩家的選擇、心理與動作應由玩家本人決定，不能替玩家演繹。）');
+        '場景：${description.trim()}\n'
+        '（請讓世界觀中適合出場的角色依既有人設自然展開此場景；'
+        '玩家的選擇、心理與動作應由玩家本人決定，不能替玩家演繹。）');
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text('劇場', style: GoogleFonts.notoSerifTc())),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.world_scene_title1, style: GoogleFonts.notoSerifTc())),
       body: ListView(padding: const EdgeInsets.all(20), children: [
         Text(widget.worldName, style: GoogleFonts.notoSerifTc(fontSize: 19, fontWeight: FontWeight.w600)),
         const SizedBox(height: 8),
-        Text('世界觀劇場測試版：沿用世界觀聊天 AI 開啟場景；劇場專屬存檔及正式開場 API 尚未串接。',
-          style: TextStyle(color: theme.colorScheme.onSurfaceVariant)),
+        Text(AppLocalizations.of(context)!.world_scene_beta_notice1,
+            style: TextStyle(color: theme.colorScheme.onSurfaceVariant)),
         const SizedBox(height: 24),
-        Text('創作者劇場', style: GoogleFonts.notoSerifTc(fontSize: 17)),
+        Text(AppLocalizations.of(context)!.world_scene_creator_scenes1, style: GoogleFonts.notoSerifTc(fontSize: 17)),
         if (_loading) const Padding(padding: EdgeInsets.all(18), child: Center(child: CircularProgressIndicator())),
         if (!_loading && _creatorScenes.isEmpty)
-          const Padding(padding: EdgeInsets.symmetric(vertical: 12), child: Text('這個世界目前沒有可讀取的創作者劇場設定')),
+          Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text(AppLocalizations.of(context)!.world_scene_no_creator_scenes1)),
         for (final scene in _creatorScenes)
           Card(child: ListTile(title: Text(scene['title']!), subtitle: Text(scene['description']!, maxLines: 3),
-            trailing: const Icon(Icons.play_arrow),
-            onTap: () => _start(scene['title']!, scene['description']!))),
+              trailing: const Icon(Icons.play_arrow),
+              onTap: () => _start(scene['title']!, scene['description']!))),
         const SizedBox(height: 24),
-        Text('自行創建劇場', style: GoogleFonts.notoSerifTc(fontSize: 17)),
+        Text(AppLocalizations.of(context)!.world_scene_custom_scenes1, style: GoogleFonts.notoSerifTc(fontSize: 17)),
         const SizedBox(height: 12),
-        TextField(controller: _title, maxLength: 60, decoration: const InputDecoration(labelText: '場景名稱', border: OutlineInputBorder())),
+        TextField(controller: _title, maxLength: 60, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.world_scene_name1, border: const OutlineInputBorder())),
         const SizedBox(height: 12),
         TextField(controller: _description, maxLines: 6, maxLength: 2000,
-          decoration: const InputDecoration(labelText: '背景、地點、角色及開場情境', border: OutlineInputBorder())),
+            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.world_scene_setup1, border: const OutlineInputBorder())),
         const SizedBox(height: 12),
-        FilledButton(onPressed: () => _start(_title.text, _description.text), child: const Text('開始劇場')),
+        FilledButton(onPressed: () => _start(_title.text, _description.text), child: Text(AppLocalizations.of(context)!.world_scene_start1)),
       ]),
     );
   }

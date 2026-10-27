@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:showcaseview/showcaseview.dart';
-
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 class ChatHeaderModeOption {
   final String id;
   final String label;
@@ -85,7 +85,7 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
     final primary = theme.colorScheme.primary;
     final onSurface = theme.colorScheme.onSurface;
     final safeNextThreshold = nextThreshold <= 0 ? 1 : nextThreshold;
-
+    final l10n = AppLocalizations.of(context)!;
     return Material(
       color: theme.colorScheme.surface.withValues(alpha: 0.96),
       child: SafeArea(
@@ -215,8 +215,7 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
                     // 回覆模型：花花右側顯示目前模式；
                     // 展開後保留模式圖片，並把通話放在最下方。
                     PopupMenuButton<String>(
-                      tooltip: '回覆模型',
-                      initialValue: currentModeId,
+                      tooltip: l10n.reply_selection,                      initialValue: currentModeId,
                       onSelected: (value) {
                         if (value == '__call__') {
                           onCall();

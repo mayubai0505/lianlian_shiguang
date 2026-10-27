@@ -114,10 +114,11 @@ class _UserProfilePageState extends State<_UserProfilePage> {
         // 舊版單一名片相容：轉入全帳號共用 profiles。
         final oldProfile = Map<String, dynamic>.from(data['profile'] ?? {});
         final defaultId = DateTime.now().millisecondsSinceEpoch.toString();
+        final l10n = AppLocalizations.of(context)!;
         loadedProfiles = [
           {
             'id': defaultId,
-            'profileName': '預設檔案',
+            'profileName':l10n.defaultProfileName,
             'name': data['nickname'] ?? '',
             'height': oldProfile['height'] ?? '',
             'appearance': oldProfile['appearance'] ?? '',

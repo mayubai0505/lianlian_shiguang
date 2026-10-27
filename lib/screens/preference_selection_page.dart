@@ -77,7 +77,7 @@ class _PreferenceSelectionPageState
           SnackBar(
             behavior: SnackBarBehavior.floating,
             content: Text(
-              l10n.preference_selection_max_error(_maxSelection),
+              l10n.preference_selection_max_error1(_maxSelection),
               style: GoogleFonts.notoSerifTc(),
             ),
           ),
@@ -139,7 +139,7 @@ class _PreferenceSelectionPageState
           SnackBar(
             behavior: SnackBarBehavior.floating,
             content: Text(
-              l10n.preference_selection_save_failed,
+              l10n.preference_selection_save_failed1,
               style: GoogleFonts.notoSerifTc(),
             ),
           ),
@@ -189,7 +189,7 @@ class _PreferenceSelectionPageState
                           ),
                           const SizedBox(height: 14),
                           Text(
-                            l10n.preference_selection_title,
+                            l10n.preference_selection_title1,
                             style: GoogleFonts.notoSerifTc(
                               fontSize: 28,
                               fontWeight: FontWeight.w700,
@@ -200,7 +200,7 @@ class _PreferenceSelectionPageState
                           ),
                           const SizedBox(height: 10),
                           Text(
-                            l10n.preference_selection_description,
+                            l10n.preference_selection_description1,
                             style: GoogleFonts.notoSerifTc(
                               fontSize: 14,
                               height: 1.8,
@@ -240,7 +240,7 @@ class _PreferenceSelectionPageState
                               ),
                             ),
                             child: Text(
-                              l10n.preference_selection_recommendation_note,
+                              l10n.preference_selection_recommendation_note1,
                               style: GoogleFonts.notoSerifTc(
                                 fontSize: 12.5,
                                 height: 1.7,
@@ -298,7 +298,7 @@ class _PreferenceSelectionPageState
                             CrossAxisAlignment.start,
                             children: [
                               Text(
-                                l10n.preference_selection_selected,
+                                l10n.preference_selection_selected1,
                                 style: GoogleFonts.notoSerifTc(
                                   fontSize: 11.5,
                                   color: onSurface.withValues(
@@ -359,7 +359,7 @@ class _PreferenceSelectionPageState
                                 ),
                               )
                                   : Text(
-                                l10n.preference_selection_start,
+                                l10n.preference_selection_start1,
                                 style:
                                 GoogleFonts.notoSerifTc(
                                   fontSize: 15,
@@ -388,11 +388,11 @@ class _PreferenceSelectionPageState
       ) {
     switch (value) {
       case '性格氣質':
-        return l10n.preference_group_personality;
+        return l10n.preference_group_personality1;
       case '關係・年齡感':
-        return l10n.preference_group_relationship_age;
+        return l10n.preference_group_relationship_age1;
       case '故事氛圍':
-        return l10n.preference_group_story;
+        return l10n.preference_group_story1;
       default:
         return value;
     }
@@ -404,37 +404,37 @@ class _PreferenceSelectionPageState
       ) {
     switch (value) {
       case '溫柔':
-        return l10n.preference_tag_gentle;
+        return l10n.preference_tag_gentle1;
       case '高冷':
-        return l10n.preference_tag_cold;
+        return l10n.preference_tag_cold1;
       case '腹黑':
-        return l10n.preference_tag_scheming;
+        return l10n.preference_tag_scheming1;
       case '傲嬌':
-        return l10n.preference_tag_tsundere;
+        return l10n.preference_tag_tsundere1;
       case '忠犬':
-        return l10n.preference_tag_loyal;
+        return l10n.preference_tag_loyal1;
       case '病嬌':
-        return l10n.preference_tag_yandere;
+        return l10n.preference_tag_yandere1;
       case '神秘':
-        return l10n.preference_tag_mysterious;
+        return l10n.preference_tag_mysterious1;
       case '治癒':
-        return l10n.preference_tag_healing;
+        return l10n.preference_tag_healing1;
       case '反差感':
-        return l10n.preference_tag_gap_moe;
+        return l10n.preference_tag_gap_moe1;
       case '年上':
-        return l10n.preference_tag_older;
+        return l10n.preference_tag_older1;
       case '年下':
-        return l10n.preference_tag_younger;
+        return l10n.preference_tag_younger1;
       case '霸總':
-        return l10n.preference_tag_ceo;
+        return l10n.preference_tag_ceo1;
       case '校園':
-        return l10n.preference_tag_school;
+        return l10n.preference_tag_school1;
       case '職場':
-        return l10n.preference_tag_workplace;
+        return l10n.preference_tag_workplace1;
       case '古風':
-        return l10n.preference_tag_ancient;
+        return l10n.preference_tag_ancient1;
       case '非人':
-        return l10n.preference_tag_nonhuman;
+        return l10n.preference_tag_nonhuman1;
       default:
         return value;
     }

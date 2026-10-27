@@ -3729,7 +3729,7 @@
   "creator_profile_block_creator": "Chặn nhà sáng tạo",
   "creator_profile_report_login_required": "Vui lòng đăng nhập trước khi báo cáo nhà sáng tạo",
   "creator_profile_report_self_not_allowed": "Bạn không thể báo cáo trang nhà sáng tạo của chính mình",
-  "creator_profile_report_reason_prompt": "Vui lòng chọn lý do báo cáo “{creatorName}”:",
+  "creator_profile_report_reason_prompt1": "Vui lòng chọn lý do báo cáo “{creatorName}”:",
   "@creator_profile_report_reason_prompt": {
     "placeholders": {
       "creatorName": {
@@ -4664,7 +4664,12 @@
   "notification_channel_chat_description": "Dùng để nhận phản hồi mới nhất từ nhân vật và lời nhắc trong trò chơi.",
   "subscription_star_contract_name": "Lianlian Shiguang · Khế Ước Sao",
   "moment_notification_comment_on_your_post": "{senderNickname} đã bình luận bài viết của bạn: “{commentText}”",
-  "@moment_notification_comment_on_your_post": {"placeholders": {"commentText": {}, "senderNickname": {}}},
+  "@moment_notification_comment_on_your_post": {
+    "placeholders": {
+      "commentText": {},
+      "senderNickname": {}
+    }
+  },
   "moment_notification_new_reply_title": "Có phản hồi mới trong bài viết của bạn! 💬",
   "moment_notification_character_popularity_title": "Độ nổi tiếng của nhân vật đang tăng vọt! 🔥",
   "font_size_small": "Nhỏ",
@@ -4677,18 +4682,30 @@
   "font_size_title": "Cỡ chữ",
   "font_selection_tagline": "Một lần nữa, hãy viết nên câu chuyện của hai người cùng người bạn yêu thích.",
   "font_selection_applied_message": "Đã áp dụng “{value1}”",
-  "@font_selection_applied_message": {"placeholders": {"value1": {}}},
+  "@font_selection_applied_message": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "font_selection_local_storage_note": "Phông chữ và cỡ chữ sẽ được áp dụng ngay và lưu trên thiết bị này. Khi khôi phục giao diện mặc định, thiết lập sẽ trở về “Shiguang Serif + Tiêu chuẩn”.",
   "inbox_customer_service_report": "Báo cáo hỗ trợ khách hàng",
   "inbox_content_text_message_player_title_send": "Tiêu đề do người chơi gửi",
   "inbox_content_text_message_player_content_send": "Nội dung do người chơi gửi",
   "avatar_frame_equipped_message": "Đã trang bị “{value1}”",
-  "@avatar_frame_equipped_message": {"placeholders": {"value1": {}}},
+  "@avatar_frame_equipped_message": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "avatar_frame_unequip_frame_snackbar": "Đã tháo khung ảnh đại diện",
   "avatar_frame_unequip_frame_message_event": "Khung ảnh đại diện sự kiện",
   "avatar_frame_message": "Khung ảnh đại diện",
   "avatar_frame_load_failed": "Không thể tải khung ảnh đại diện: {value1}",
-  "@avatar_frame_load_failed": {"placeholders": {"value1": {}}},
+  "@avatar_frame_load_failed": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "avatar_frame_parse_frames_message_select": "Chọn khung ảnh đại diện bạn muốn sử dụng",
   "avatar_frame_parse_frames_message_event": "Khung ảnh đại diện nhận từ sự kiện sẽ được giữ vĩnh viễn và có thể đổi hoặc tháo bất cứ lúc nào.",
   "avatar_frame_parse_frames_title": "Không dùng khung ảnh đại diện",
@@ -4704,9 +4721,17 @@
   "background_subtitle_event_shop_redeem_chat": "Hình nền trò chuyện đổi trong cửa hàng sự kiện sẽ xuất hiện tại đây.",
   "background_is_limited_background_type_message_chat_event": "Hình nền trò chuyện giới hạn sự kiện",
   "background_is_limited_background_type_message_current_chat": "Đặt “{value1}” làm hình nền cho cuộc trò chuyện hiện tại?",
-  "@background_is_limited_background_type_message_current_chat": {"placeholders": {"value1": {}}},
+  "@background_is_limited_background_type_message_current_chat": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "character_edit_save_to_draft_message_current_character": "Nhân vật chính hiện tại: 【{value1}】\n",
-  "@character_edit_save_to_draft_message_current_character": {"placeholders": {"value1": {}}},
+  "@character_edit_save_to_draft_message_current_character": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "character_to_map_message_creator": "Nhà sáng tạo bí ẩn",
   "character_get_character_by_id_message_load_background_story": "Đang tải câu chuyện nền...",
   "character_get_character_by_id_message_sync": "Đang đồng bộ cốt truyện mở đầu...",
@@ -4736,24 +4761,49 @@
   "chat_empty_message_variant_b": "Yêu thích",
   "chat_send_sticker_message_current_unavailable_sticker": "Nhãn dán này hiện không thể sử dụng",
   "chat_message_theater": "—— Nhà hát・{sceneTitle} ——",
-  "@chat_message_theater": {"placeholders": {"sceneTitle": {}}},
+  "@chat_message_theater": {
+    "placeholders": {
+      "sceneTitle": {}
+    }
+  },
   "chat_handle_regenerate_button_message_character_reply_again": "Phản hồi trước đó của nhân vật sẽ được tạo lại.",
   "creator_profile_reason_tile_message_report_select_reason": "Chọn lý do báo cáo “{creatorName}”:",
-  "@creator_profile_reason_tile_message_report_select_reason": {"placeholders": {"creatorName": {}}},
+  "@creator_profile_reason_tile_message_report_select_reason": {
+    "placeholders": {
+      "creatorName": {}
+    }
+  },
   "widget_key_message": "Trạng thái",
   "widget_key_message_variant_b": "Vị trí",
   "widget_label_character": "Chưa có trạng thái nhân vật",
   "widget_format_post_time_label_moment_latest": "Bài viết mới nhất",
   "widget_format_post_time_label_update_moment": "Vừa cập nhật bài viết",
   "widget_format_post_time_label_minutes_ago_update_moment": "Đã cập nhật bài viết {value1} phút trước",
-  "@widget_format_post_time_label_minutes_ago_update_moment": {"placeholders": {"value1": {}}},
+  "@widget_format_post_time_label_minutes_ago_update_moment": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_format_post_time_label_hours_ago_update_moment": "Đã cập nhật bài viết {value1} giờ trước",
-  "@widget_format_post_time_label_hours_ago_update_moment": {"placeholders": {"value1": {}}},
+  "@widget_format_post_time_label_hours_ago_update_moment": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_format_post_time_label_update_moment_days": "Đã cập nhật bài viết hôm qua",
   "widget_format_post_time_label_update_moment_days_ago": "Đã cập nhật bài viết {value1} ngày trước",
-  "@widget_format_post_time_label_update_moment_days_ago": {"placeholders": {"value1": {}}},
+  "@widget_format_post_time_label_update_moment_days_ago": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_format_post_time_label_update_moment_variant_b": "Đã cập nhật bài viết vào {value1}/{value2}",
-  "@widget_format_post_time_label_update_moment_variant_b": {"placeholders": {"value1": {}, "value2": {}}},
+  "@widget_format_post_time_label_update_moment_variant_b": {
+    "placeholders": {
+      "value1": {},
+      "value2": {}
+    }
+  },
   "widget_format_post_time_message_share_photo": "Đã chia sẻ một ảnh",
   "widget_format_post_time_message_update_moment": "Đã cập nhật một bài viết",
   "widget_format_post_time_message_current_character_moment": "Chưa có bài viết của nhân vật",
@@ -4761,11 +4811,19 @@
   "widget_format_daily_quote_time_message_today": "Hôm nay chưa có một câu nào",
   "widget_load_period_care_state_message_today": "“Hôm nay đừng cố quá. Anh sẽ ở bên em, mình cứ từ từ thôi.”",
   "widget_load_period_care_state_message_period_days": "Ngày thứ {dayCount} của kỳ kinh",
-  "@widget_load_period_care_state_message_period_days": {"placeholders": {"dayCount": {}}},
+  "@widget_load_period_care_state_message_period_days": {
+    "placeholders": {
+      "dayCount": {}
+    }
+  },
   "widget_load_period_care_state_message_days": "“Mấy hôm nay nhớ nghỉ sớm một chút. Đừng để bản thân quá mệt.”",
   "widget_load_period_care_state_message_today_start": "Dự kiến bắt đầu hôm nay",
   "widget_load_period_care_state_message_days_variant_b": "Dự kiến còn {daysUntil} ngày",
-  "@widget_load_period_care_state_message_days_variant_b": {"placeholders": {"daysUntil": {}}},
+  "@widget_load_period_care_state_message_days_variant_b": {
+    "placeholders": {
+      "daysUntil": {}
+    }
+  },
   "widget_load_period_care_state_message_today_variant_b": "“Em đã cố gắng nhiều rồi. Hôm nay nhớ chăm sóc bản thân thật tốt.”",
   "widget_load_period_care_state_message_period_end": "Kỳ kinh vừa kết thúc",
   "widget_load_period_care_state_message_today_variant_c": "“Hôm nay cũng nhớ chăm sóc bản thân thật tốt nhé.”",
@@ -4776,18 +4834,34 @@
   "widget_build_birthday_countdown_lines_message_character_birthday": "Sinh nhật nhân vật",
   "widget_build_birthday_countdown_lines_message_birthday_settings": "Chưa đặt sinh nhật",
   "widget_build_birthday_countdown_lines_message_birthday_countdown": "Đến sinh nhật của anh ấy・{birthdayLabel}",
-  "@widget_build_birthday_countdown_lines_message_birthday_countdown": {"placeholders": {"birthdayLabel": {}}},
+  "@widget_build_birthday_countdown_lines_message_birthday_countdown": {
+    "placeholders": {
+      "birthdayLabel": {}
+    }
+  },
   "widget_build_birthday_countdown_lines_message_today": "Chính là hôm nay",
   "widget_build_birthday_countdown_lines_message_days": "Còn {days} ngày",
-  "@widget_build_birthday_countdown_lines_message_days": {"placeholders": {"days": {}}},
+  "@widget_build_birthday_countdown_lines_message_days": {
+    "placeholders": {
+      "days": {}
+    }
+  },
   "widget_build_birthday_countdown_lines_message": "Từ ngày gặp anh ấy",
   "widget_build_birthday_countdown_lines_message_variant_b": "Chưa có ghi chép lần gặp",
   "widget_build_birthday_countdown_lines_message_days_variant_b": "{value1} ngày",
-  "@widget_build_birthday_countdown_lines_message_days_variant_b": {"placeholders": {"value1": {}}},
+  "@widget_build_birthday_countdown_lines_message_days_variant_b": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_build_birthday_countdown_lines_message_variant_c": "Ngày quan trọng",
   "widget_build_birthday_countdown_lines_message_date_select": "Chưa chọn ngày",
   "widget_build_birthday_countdown_lines_message_elapsed_days": "Đã qua {value1} ngày",
-  "@widget_build_birthday_countdown_lines_message_elapsed_days": {"placeholders": {"value1": {}}},
+  "@widget_build_birthday_countdown_lines_message_elapsed_days": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_settings_remove_title_character_latest": "Bài viết mới nhất của nhân vật",
   "widget_settings_remove_subtitle_moment_latest": "Xem cập nhật mới nhất của anh ấy mà không cần mở app.",
   "widget_settings_remove_title_period": "Đồng hành trong kỳ kinh",
@@ -4804,7 +4878,12 @@
   "widget_settings_edit_saved_widget_message_character_reminder_again": "“Nhắc việc của nhân vật” phiên bản cũ đã được gộp vào “Kỷ niệm / Nhắc nhở”. Vui lòng tạo lại.",
   "widget_settings_delete_saved_widget_title_delete_small": "Xóa tiện ích?",
   "widget_settings_delete_saved_widget_message_stop_display_long_press_home_after_delete": "Bạn có chắc muốn xóa “{value1}・{value2}”?\n\nSau khi xóa, tiện ích này trên màn hình chính sẽ ngừng hiển thị nội dung nhân vật và nhắc người chơi nhấn giữ màn hình chính để gỡ bỏ.",
-  "@widget_settings_delete_saved_widget_message_stop_display_long_press_home_after_delete": {"placeholders": {"value1": {}, "value2": {}}},
+  "@widget_settings_delete_saved_widget_message_stop_display_long_press_home_after_delete": {
+    "placeholders": {
+      "value1": {},
+      "value2": {}
+    }
+  },
   "widget_settings_delete_saved_widget_message_delete_settings_small": "Đã xóa cài đặt tiện ích; tiện ích tương ứng trên màn hình chính đã bị vô hiệu hóa.",
   "widget_settings_message_desktop_widget": "Tiện ích màn hình chính",
   "widget_settings_message_character_days": "Để nhân vật bạn yêu thích đồng hành cùng bạn mỗi ngày.",
@@ -4812,7 +4891,11 @@
   "widget_settings_message_desktop_widget_variant_b": "Chưa có tiện ích màn hình chính",
   "widget_settings_message_character_reminder": "Chọn một nhân vật bạn thích và hiển thị lời nhắc, bài viết hoặc trạng thái của họ trên màn hình chính.",
   "widget_settings_message_size": "Kích thước {value1}",
-  "@widget_settings_message_size": {"placeholders": {"value1": {}}},
+  "@widget_settings_message_size": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_settings_tooltip": "Thêm vào màn hình chính",
   "widget_settings_tooltip_small": "Chỉnh sửa tiện ích",
   "widget_settings_tooltip_delete_small": "Xóa tiện ích",
@@ -4829,15 +4912,31 @@
   "widget_settings_message_character_photo_select": "Tiếp theo・Chọn ảnh nhân vật",
   "widget_settings_desktop_photo_selection_message_character_photo_select": "Chọn ảnh nhân vật",
   "widget_settings_desktop_photo_selection_message_current_affection_unlocked_photo": "Độ thân mật hiện tại {value1}・Ảnh đã mở khóa có thể dùng ngay.",
-  "@widget_settings_desktop_photo_selection_message_current_affection_unlocked_photo": {"placeholders": {"value1": {}}},
+  "@widget_settings_desktop_photo_selection_message_current_affection_unlocked_photo": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_settings_desktop_photo_selection_message_current_character_photo": "Nhân vật này hiện không có ảnh khả dụng.",
   "widget_settings_desktop_photo_selection_message_required_affection_unlock_photo": "Cần độ thân mật {value1} để mở khóa ảnh này.",
-  "@widget_settings_desktop_photo_selection_message_required_affection_unlock_photo": {"placeholders": {"value1": {}}},
+  "@widget_settings_desktop_photo_selection_message_required_affection_unlock_photo": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_settings_message_photo_public": "Ảnh công khai",
   "widget_settings_message_unlock": "Mở khóa ở độ thân mật {value1}",
-  "@widget_settings_message_unlock": {"placeholders": {"value1": {}}},
+  "@widget_settings_message_unlock": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_settings_message_unlocked": "Đã mở khóa・Độ thân mật {value1}",
-  "@widget_settings_message_unlocked": {"placeholders": {"value1": {}}},
+  "@widget_settings_message_unlocked": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_settings_message_content_settings": "Tiếp theo・Thiết lập nội dung hiển thị",
   "widget_settings_open_preview_message_player_select": "Vui lòng chọn trước một sự kiện / việc cần làm do người chơi tạo.",
   "widget_settings_pick_custom_memo_event_message_login_account": "Vui lòng đăng nhập trước.",
@@ -4869,7 +4968,11 @@
   "widget_settings_title_player": "Sự kiện / Việc cần làm do người chơi tạo",
   "widget_settings_message_memo_character_select_reminder": "Chọn một sự kiện hoặc việc cần làm từ ghi chú / lời nhắc của nhân vật này.",
   "widget_settings_message_selected": "Đã chọn: {_selectedMemoContent}",
-  "@widget_settings_message_selected": {"placeholders": {"_selectedMemoContent": {}}},
+  "@widget_settings_message_selected": {
+    "placeholders": {
+      "_selectedMemoContent": {}
+    }
+  },
   "widget_settings_message_select": "Chọn tối đa 3 mục",
   "widget_settings_message_character": "Trạng thái nhân vật có thể hiển thị tối đa 3 mục.",
   "widget_settings_message_small_variant_c": "Xem trước tiện ích",
@@ -4907,7 +5010,11 @@
   "event_memory_character_center_message_public_character_character_friend_add": "Hãy tạo nhân vật của riêng bạn hoặc thêm một nhân vật công khai bạn thích làm bạn trước.",
   "event_memory_character_message_character_select": "Vui lòng chọn nhân vật trước",
   "event_memory_character_message_continue": "Tiếp tục cùng {value1}",
-  "@event_memory_character_message_continue": {"placeholders": {"value1": {}}},
+  "@event_memory_character_message_continue": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_memory_character_card_message_private": "Của tôi・Riêng tư",
   "event_memory_character_error_label_load_again": "Tải lại",
   "event_memory_collection_show_collection_intro_if_needed_message_collection": "Bộ sưu tập Shiguang",
@@ -4927,11 +5034,19 @@
   "event_memory_collection_item_card_label": "Vật phẩm giới hạn",
   "event_memory_collection_confirm_delete_owned_item_message_delete": "Xóa vật phẩm giới hạn?",
   "event_memory_collection_confirm_delete_owned_item_message_after_delete_unavailable": "Sau khi xóa, bạn sẽ không thể sử dụng {_itemTypeLabel} này nữa,",
-  "@event_memory_collection_confirm_delete_owned_item_message_after_delete_unavailable": {"placeholders": {"_itemTypeLabel": {}}},
+  "@event_memory_collection_confirm_delete_owned_item_message_after_delete_unavailable": {
+    "placeholders": {
+      "_itemTypeLabel": {}
+    }
+  },
   "event_memory_collection_confirm_delete_owned_item_message_collection": "và nó cũng sẽ không còn xuất hiện trong “Bộ sưu tập Shiguang”.\n\n",
   "event_memory_collection_confirm_delete_owned_item_message_unavailable": "Điều này có nghĩa bạn sẽ từ bỏ vật phẩm giới hạn đã nhận lần này, và thao tác này không thể hoàn tác.\n\n",
   "event_memory_collection_confirm_delete_owned_item_message_delete_variant_b": "Bạn có chắc muốn xóa “{value1}”?",
-  "@event_memory_collection_confirm_delete_owned_item_message_delete_variant_b": {"placeholders": {"value1": {}}},
+  "@event_memory_collection_confirm_delete_owned_item_message_delete_variant_b": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_memory_collection_confirm_delete_owned_item_message_delete_variant_c": "Đã xóa vật phẩm giới hạn",
   "event_memory_collection_confirm_delete_owned_item_message_not_found_delete": "Không tìm thấy vật phẩm giới hạn này, có thể nó đã bị xóa",
   "event_memory_collection_confirm_delete_owned_item_message_collection_current_delete": "Hiện không thể xóa bộ sưu tập này",
@@ -4960,18 +5075,36 @@
   "event_memory_collection_collected_label_collection": "Vừa sưu tập",
   "event_memory_collection_collected_item_label_collection_date": "Chưa ghi nhận ngày sưu tập",
   "event_memory_collection_collected_item_label_collection": "Đã sưu tập vào {value1}/{month}/{day}",
-  "@event_memory_collection_collected_item_label_collection": {"placeholders": {"day": {}, "month": {}, "value1": {}}},
+  "@event_memory_collection_collected_item_label_collection": {
+    "placeholders": {
+      "day": {},
+      "month": {},
+      "value1": {}
+    }
+  },
   "event_memory_text_not_found_event": "Không tìm thấy dữ liệu sự kiện",
   "event_memory_message_limited_memory_failed_load": "Không thể tải ký ức giới hạn",
   "event_memory_as_map_label_unlocked": "Đã mở khóa",
   "event_memory_as_map_label_unlock": "Tích lũy {currencyIcon} {requiredValue} {currencyName} để mở khóa ({currentValue} / {requiredValue})",
-  "@event_memory_as_map_label_unlock": {"placeholders": {"currencyIcon": {}, "currencyName": {}, "currentValue": {}, "requiredValue": {}}},
+  "@event_memory_as_map_label_unlock": {
+    "placeholders": {
+      "currencyIcon": {},
+      "currencyName": {},
+      "currentValue": {},
+      "requiredValue": {}
+    }
+  },
   "event_memory_as_map_label_unlock_task_event_complete": "Mở khóa sau khi hoàn thành nhiệm vụ sự kiện được chỉ định",
   "event_memory_as_map_label_redeem_unlock_event": "Mở khóa sau khi đổi vật phẩm sự kiện được chỉ định",
   "event_memory_as_map_label_unlock_variant_b": "Chưa mở khóa",
   "event_memory_hero_message": "Hãy lưu lại trong mùa này một khoảnh khắc chỉ thuộc về hai người.",
   "event_memory_hero_message_limited_memory": "Ký ức giới hạn  {unlockedCount} / {totalCount}",
-  "@event_memory_hero_message_limited_memory": {"placeholders": {"totalCount": {}, "unlockedCount": {}}},
+  "@event_memory_hero_message_limited_memory": {
+    "placeholders": {
+      "totalCount": {},
+      "unlockedCount": {}
+    }
+  },
   "event_memory_status_label_unlocked": "Đã mở khóa・Chưa xem",
   "event_memory_status_label": "Đã xem",
   "event_memory_status_label_collection": "Đã sưu tập",
@@ -4997,21 +5130,44 @@
   "event_memory_profile_center_message_memory": "Bạn sẽ là ai trong ký ức này?",
   "event_memory_profile_center_message_profile_character_start": "Hồ sơ Shiguang bạn dùng gần đây nhất với nhân vật này đã được ưu tiên chọn. Bạn có thể đổi trước khi bắt đầu.",
   "event_memory_profile_center_message": "Với tư cách “{value1}” cùng",
-  "@event_memory_profile_center_message": {"placeholders": {"value1": {}}},
+  "@event_memory_profile_center_message": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_memory_profile_center_message_memory_variant_b": "“{value1}” trong ký ức này",
-  "@event_memory_profile_center_message_memory_variant_b": {"placeholders": {"value1": {}}},
+  "@event_memory_profile_center_message_memory_variant_b": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_memory_profile_center_label_memory_start": "Bắt đầu ký ức",
   "event_message_failed_load": "Không thể tải dữ liệu sự kiện",
   "event_message_not_found": "Không tìm thấy sự kiện",
   "event_remaining_label": "Sự kiện đang diễn ra",
   "event_remaining_label_days": "Còn {value1} ngày",
-  "@event_remaining_label_days": {"placeholders": {"value1": {}}},
+  "@event_remaining_label_days": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_remaining_label_hours": "Còn {value1} giờ",
-  "@event_remaining_label_hours": {"placeholders": {"value1": {}}},
+  "@event_remaining_label_hours": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_remaining_label_end": "Sắp kết thúc",
   "event_balance_pill_tooltip_back": "Quay lại",
   "event_claim_task_message_claim_current": "Đã nhận {value1} {reward} {value2}. Hiện bạn có {currency}",
-  "@event_claim_task_message_claim_current": {"placeholders": {"currency": {}, "reward": {}, "value1": {}, "value2": {}}},
+  "@event_claim_task_message_claim_current": {
+    "placeholders": {
+      "currency": {},
+      "reward": {},
+      "value1": {},
+      "value2": {}
+    }
+  },
   "event_claim_task_message_reward_claim": "Đã nhận phần thưởng",
   "event_claim_task_message_claim_failed": "Nhận thất bại",
   "event_claim_task_message_task_claim": "Nhiệm vụ này đã được nhận thưởng",
@@ -5022,42 +5178,101 @@
   "event_milestone_progress_label_reward_load": "Đang tải phần thưởng tích lũy…",
   "event_milestone_progress_label_reward_current": "Hiện không có phần thưởng tích lũy",
   "event_build_with_total_message_current": "Hiện tại  {totalEarned}",
-  "@event_build_with_total_message_current": {"placeholders": {"totalEarned": {}}},
+  "@event_build_with_total_message_current": {
+    "placeholders": {
+      "totalEarned": {}
+    }
+  },
   "event_progress_ref_message_redeem_confirm": "Xác nhận đổi",
   "event_progress_ref_message_redeem_flowers": "Dùng {value1} {price} để đổi “{itemName}”?\n\nSau khi đổi, bạn sẽ nhận {rewardAmount} Hoa.",
-  "@event_progress_ref_message_redeem_flowers": {"placeholders": {"itemName": {}, "price": {}, "rewardAmount": {}, "value1": {}}},
+  "@event_progress_ref_message_redeem_flowers": {
+    "placeholders": {
+      "itemName": {},
+      "price": {},
+      "rewardAmount": {},
+      "value1": {}
+    }
+  },
   "event_progress_ref_message_redeem": "Dùng {value1} {price} để đổi “{itemName}”?",
-  "@event_progress_ref_message_redeem": {"placeholders": {"itemName": {}, "price": {}, "value1": {}}},
+  "@event_progress_ref_message_redeem": {
+    "placeholders": {
+      "itemName": {},
+      "price": {},
+      "value1": {}
+    }
+  },
   "event_progress_ref_message_redeem_success_flowers": "Đổi thành công! Nhận {returnedReward} Hoa",
-  "@event_progress_ref_message_redeem_success_flowers": {"placeholders": {"returnedReward": {}}},
+  "@event_progress_ref_message_redeem_success_flowers": {
+    "placeholders": {
+      "returnedReward": {}
+    }
+  },
   "event_progress_ref_message_event_collection_redeem_success_add": "Đổi thành công! “{itemName}” đã được thêm vào Bộ sưu tập sự kiện",
-  "@event_progress_ref_message_event_collection_redeem_success_add": {"placeholders": {"itemName": {}}},
+  "@event_progress_ref_message_event_collection_redeem_success_add": {
+    "placeholders": {
+      "itemName": {}
+    }
+  },
   "event_progress_ref_message_redeem_failed": "Đổi thất bại",
   "event_progress_ref_message_redeem_variant_b": "Vật phẩm này đã được đổi rồi",
   "event_progress_ref_message_insufficient": "Không đủ tiền tệ",
   "event_progress_ref_message_insufficient_variant_b": "Không đủ {value1}",
-  "@event_progress_ref_message_insufficient_variant_b": {"placeholders": {"value1": {}}},
+  "@event_progress_ref_message_insufficient_variant_b": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_progress_ref_message_redeem_variant_c": "Đổi",
   "event_progress_ref_message_redeem_variant_d": "Đã đổi",
   "event_message_redeem_flowers": "Sau khi đổi, bạn sẽ nhận {rewardAmount} Hoa",
-  "@event_message_redeem_flowers": {"placeholders": {"rewardAmount": {}}},
+  "@event_message_redeem_flowers": {
+    "placeholders": {
+      "rewardAmount": {}
+    }
+  },
   "event_message_redeem": "Đã đổi {redeemedCount} lần",
-  "@event_message_redeem": {"placeholders": {"redeemedCount": {}}},
+  "@event_message_redeem": {
+    "placeholders": {
+      "redeemedCount": {}
+    }
+  },
   "event_message_event_shop_login": "Đăng nhập để sử dụng cửa hàng sự kiện",
   "event_message_redeem_current": "Hiện không có vật phẩm nào có thể đổi",
   "event_shop_item_card_message_flowers": "Nhận {rewardAmount} Hoa",
-  "@event_shop_item_card_message_flowers": {"placeholders": {"rewardAmount": {}}},
+  "@event_shop_item_card_message_flowers": {
+    "placeholders": {
+      "rewardAmount": {}
+    }
+  },
   "event_message_insufficient": "Không đủ",
   "notification_message_player": "Ảnh đính kèm của người chơi",
   "notification_message_qixi_letter": "Thư Thất Tịch từ {value1}",
-  "@notification_message_qixi_letter": {"placeholders": {"value1": {}}},
+  "@notification_message_qixi_letter": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "recommendation_remaining_label_days": "Còn {value1} ngày",
-  "@recommendation_remaining_label_days": {"placeholders": {"value1": {}}},
+  "@recommendation_remaining_label_days": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "recommendation_remaining_label_hours": "Còn {value1} giờ",
-  "@recommendation_remaining_label_hours": {"placeholders": {"value1": {}}},
+  "@recommendation_remaining_label_hours": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "settings_subtitle_character_days": "Để nhân vật bạn yêu thích đồng hành cùng bạn mỗi ngày",
   "moment_notification_comment_on_character_post": "{senderNickname} đã để lại lời nhắn cho {authorName}: “{commentText}”",
-  "@moment_notification_comment_on_character_post": {"placeholders": {"authorName": {}, "commentText": {}, "senderNickname": {}}},
+  "@moment_notification_comment_on_character_post": {
+    "placeholders": {
+      "authorName": {},
+      "commentText": {},
+      "senderNickname": {}
+    }
+  },
   "inbox_content_text_message_customer_service_message_send": "Tin nhắn hỗ trợ khách hàng đã gửi",
   "character_edit_relationship_none_label": "Không có",
   "auth_cancel_account_deletion_failed": "Không thể hủy xóa tài khoản. Vui lòng thử lại sau.",
@@ -5068,6 +5283,1640 @@
   "theme_font_system": "Phông hệ thống",
   "theme_font_shiguang_serif_description": "Mềm mại và giàu chất văn, phù hợp để đọc nhập tâm",
   "theme_font_clean_sans_description": "Rõ ràng, gọn gàng, thoải mái khi đọc lâu",
-  "theme_font_system_description": "Dùng phông hệ thống mặc định của thiết bị"
-
+  "theme_font_system_description": "Dùng phông hệ thống mặc định của thiết bị",
+  "font_selection_serif_name": "Noto Serif TC",
+  "font_selection_sans_name": "Noto Sans TC",
+  "font_selection_system_name": "Phông chữ hệ thống",
+  "font_selection_serif_description": "Phông chữ có chân thanh lịch, phù hợp để đọc nhập tâm.",
+  "font_selection_sans_description": "Phông chữ không chân rõ ràng, dịu mắt.",
+  "font_selection_system_description": "Sử dụng phông chữ mặc định của thiết bị.",
+  "font_selection_preview_sentence": "Viết tiếp một chương câu chuyện của riêng hai người cùng người bạn yêu mến.",
+  "avatar_frame_error_generic": "Lỗi",
+  "avatar_frame_sign_in_required": "Vui lòng đăng nhập trước",
+  "avatar_frame_default_name": "Khung ảnh đại diện sự kiện",
+  "background_exclusive_photos_tab": "Ảnh độc quyền",
+  "background_world_sign_in_chat": "Vui lòng đăng nhập và vào cuộc trò chuyện thế giới",
+  "background_world_photo_load_error": "Lỗi",
+  "background_world_no_photos": "Không có ảnh thế giới để chọn",
+  "background_world_cover": "Ảnh bìa thế giới",
+  "background_world_cover_confirm": "Đặt ảnh bìa thế giới làm hình nền cho cuộc trò chuyện này?",
+  "background_world_default_limited": "Hình nền giới hạn",
+  "background_world_default_character": "Nhân vật",
+  "background_world_no_character_photos": "Không có ảnh nhân vật khả dụng",
+  "background_world_unlock_required": "Cần {count} điểm thiện cảm để mở khóa",
+  "background_world_character_confirm": "Đặt ảnh của {name} làm hình nền cuộc trò chuyện thế giới?",
+  "background_world_affection_count": "{count} thiện cảm",
+  "@background_world_unlock_required": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@background_world_affection_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@background_world_character_confirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reply_selection": "Tùy chọn trả lời",
+  "chat_home_character_tab": "Trò chuyện với nhân vật",
+  "chat_home_world_tab": "Thế giới mở",
+  "chat_home_world_error_generic": "Lỗi",
+  "chat_home_world_pinned": "Đã ghim cuộc trò chuyện thế giới",
+  "chat_home_world_deleted": "Đã xóa cuộc trò chuyện và lịch sử của thế giới",
+  "chat_home_world_action_done": "Hoàn tất",
+  "chat_home_world_rename_title": "Đặt tên cho ký ức này",
+  "chat_home_world_delete_confirm": "Xóa lịch sử trò chuyện của “{name}”?\n\nHội thoại, tóm tắt truyện, các mối quan hệ và ghi chú sẽ bị xóa vĩnh viễn, không thể khôi phục. Thế giới đã công bố của tác giả vẫn được giữ nguyên.",
+  "chat_home_world_empty_title": "Chưa có cuộc trò chuyện Thế giới mở",
+  "chat_home_world_empty_desc": "Bắt đầu chơi trong Thế giới mở để xem cuộc trò chuyện tại đây.",
+  "chat_home_world_unnamed": "Thế giới chưa đặt tên",
+  "chat_home_world_private_test": "Chơi thử riêng tư",
+  "chat_home_world_no_messages": "Chưa có tin nhắn",
+  "expand_features": "Hiển thị thêm tính năng",
+  "chat_sticker_all": "Tất cả",
+  "chat_mode_short_daily": "Hằng ngày",
+  "chat_mode_short_story": "Cốt truyện",
+  "chat_mode_short_immersive": "Nhập vai",
+  "chat_mode_short_resonance": "Cộng hưởng",
+  "chat_mode_short_gemini": "Trò chuyện",
+  "chat_theater_tool": "Nhà hát",
+  "chat_regenerate_insufficient_flowers": "Không đủ Hoa. Tạo lại cần {cost} Hoa.",
+  "chat_regenerate_paid_title": "Tạo lại có phí",
+  "chat_regenerate_paid_confirm": "Bạn đã dùng hết lượt tạo lại miễn phí hôm nay. Ở chế độ hiện tại, lần này tốn {cost} Hoa. Tiếp tục?",
+  "chat_generic_error": "Lỗi",
+  "chat_regenerate_confirm": "Xác nhận",
+  "@chat_regenerate_insufficient_flowers": {
+    "placeholders": {
+      "cost": {
+        "type": "int"
+      }
+    }
+  },
+  "@chat_regenerate_paid_confirm": {
+    "placeholders": {
+      "cost": {
+        "type": "int"
+      }
+    }
+  },
+  "comment_add_photo": "Thêm ảnh",
+  "comment_error_generic": "Lỗi",
+  "creator_profile_report_reason_prompt": "Chọn lý do báo cáo “{creatorName}”:",
+  "creator_profile_open_worlds": "Thế giới mở",
+  "creator_profile_generic_error": "Lỗi",
+  "creator_profile_refresh": "Làm mới",
+  "creator_profile_no_open_worlds": "Nhà sáng tạo này chưa xuất bản thế giới mở nào.",
+  "creator_profile_unnamed_world": "Thế giới chưa có tên",
+  "creator_program_required_fields": "Vui lòng nhập định hướng sáng tác và lý do đăng ký.",
+  "creator_program_submitted": "Đã gửi đơn đăng ký. Thời gian xét duyệt khoảng 1–3 ngày.",
+  "creator_program_error": "Lỗi",
+  "creator_program_login_required": "Vui lòng đăng nhập trước khi đăng ký chương trình nhà sáng tạo.",
+  "creator_program_title": "Chương trình nhà sáng tạo",
+  "creator_program_headline": "Để nhiều người biết đến tác phẩm của bạn hơn",
+  "creator_program_intro": "Nếu có tác phẩm công khai, bạn có thể đăng ký tham gia chương trình nhà sáng tạo 《戀戀拾光》. Đơn sẽ được xét duyệt trong 1–3 ngày.",
+  "creator_program_benefits_title": "Quyền lợi chương trình",
+  "creator_program_benefit_dashboard": "Bảng điều khiển nhà sáng tạo: xem số người theo dõi, nhân vật công khai, tổng lượt thích và người theo dõi mới trong tháng.",
+  "creator_program_benefit_fans": "Quản lý người hâm mộ: gửi thư, quản lý fan và tặng phúc lợi bằng hoa của bạn.",
+  "creator_program_benefit_exposure": "Quảng bá chính thức: nhân vật mới có cơ hội được giới thiệu trên Instagram và trong đề xuất của trò chơi.",
+  "creator_program_benefit_monthly": "Thưởng sáng tác hằng tháng: công khai ít nhất 3 nhân vật mới trong tháng để nhận 520 hoa vào tháng sau.",
+  "creator_program_benefit_merch": "Hợp tác sản phẩm: nếu nhân vật của bạn tham gia dự án sản phẩm hoặc hộp quà chính thức, bạn có thể nhận thưởng tiền mặt theo từng dự án.",
+  "creator_program_last_review_note": "Ghi chú xét duyệt lần trước: {reason}",
+  "creator_program_apply_heading": "Đăng ký tham gia",
+  "creator_program_direction_label": "Định hướng sáng tác",
+  "creator_program_direction_hint": "Ví dụ: tình cảm hiện đại, cổ trang, kỳ ảo, BL, GL…",
+  "creator_program_reason_label": "Lý do muốn tham gia",
+  "creator_program_reason_hint": "Hãy chia sẻ cách bạn muốn phát triển nhân vật và kết nối với người hâm mộ.",
+  "creator_program_social_label": "Liên kết mạng xã hội (không bắt buộc)",
+  "creator_program_social_hint": "Instagram, Threads, trang web cá nhân, v.v.",
+  "creator_program_submit": "Gửi đơn đăng ký",
+  "creator_program_public_character_note": "Trước khi gửi, hệ thống sẽ kiểm tra tài khoản có ít nhất 1 nhân vật công khai.",
+  "creator_program_status_pending": "Đang xét duyệt đơn",
+  "creator_program_status_pending_desc": "Đã nhận đơn. Xét duyệt khoảng 1–3 ngày. Kết quả sẽ được thông báo qua hộp thư trong trò chơi.",
+  "creator_program_status_approved": "Đã duyệt tư cách nhà sáng tạo 🎉",
+  "creator_program_status_approved_desc": "Chúc mừng bạn tham gia chương trình nhà sáng tạo 《戀戀拾光》! Bảng điều khiển, quản lý fan và biểu ngữ đề xuất sẽ liên kết với trạng thái này trong các tính năng sắp tới.",
+  "creator_program_status_suspended": "Tạm đình chỉ tư cách nhà sáng tạo",
+  "creator_program_status_suspended_desc": "Các tính năng dành riêng cho nhà sáng tạo tạm thời không khả dụng. Hãy xem thông báo chính thức trong hộp thư trò chơi.",
+  "creator_program_status_revoked": "Đã thu hồi tư cách nhà sáng tạo",
+  "creator_program_status_revoked_desc": "Các tính năng riêng cho nhà sáng tạo không còn khả dụng. Nếu có thắc mắc, hãy liên hệ hỗ trợ.",
+  "creator_program_status_title": "Trạng thái nhà sáng tạo",
+  "creator_program_current_status": "Trạng thái hiện tại: {status}",
+  "creator_program_official_note": "Ghi chú chính thức: {reason}",
+  "@creator_program_last_review_note": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "@creator_program_current_status": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "@creator_program_official_note": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "creator_dashboard_error1": "Lỗi",
+  "creator_dashboard_access_title1": "Bảng điều khiển nhà sáng tạo",
+  "creator_dashboard_status_notice_title1": "Creator Dashboard Access Notice",
+  "creator_dashboard_apply_title1": "Đăng ký bảng điều khiển nhà sáng tạo",
+  "creator_dashboard_access_subtitle1": "Thống kê lượt chơi nhân vật · Người theo dõi tăng/giảm · Quản lý người theo dõi",
+  "creator_dashboard_pending1": "Application submitted · Under review",
+  "creator_dashboard_legacy_pending1": "Application pending confirmation",
+  "creator_dashboard_syncing1": "Syncing dashboard access. Please try again later.",
+  "creator_dashboard_suspended1": "Dashboard access suspended. Contact support.",
+  "creator_dashboard_apply_subtitle1": "Apply for access to character analytics and follower management",
+  "creator_dashboard_rejected1": "Application declined · You may apply again",
+  "creator_dashboard_submitted1": "Application submitted. Please wait for review.",
+  "creator_dashboard_benefits_title1": "Creator Dashboard features",
+  "creator_dashboard_benefit_monthly1": "🌸 Monthly creation reward: Publish 3 distinct new characters this month to claim 300 Flowers once.",
+  "creator_dashboard_benefit_analytics1": "• View public-character play metrics, follower totals, and follow/unfollow activity",
+  "creator_dashboard_benefit_mail1": "• Fan messages: private messages and announcements (daily limits apply)",
+  "creator_dashboard_benefit_gifts1": "• Fan rewards: gift your own Flowers to followers",
+  "creator_dashboard_reward_note1": "Approval required. Private characters, drafts, and republished older characters do not count toward the monthly reward.",
+  "creator_dashboard_apply_cta1": "Learn more and request dashboard access",
+  "creator_dashboard_my_characters1": "Nhân vật của tôi",
+  "creator_dashboard_my_worlds1": "Thế giới mở của tôi",
+  "creator_dashboard_create_world1": "Tạo thế giới mở",
+  "creator_dashboard_public_worlds1": "Thế giới đã công khai",
+  "creator_dashboard_public_worlds_hint1": "Other players can explore",
+  "creator_dashboard_private_worlds1": "Thế giới riêng tư",
+  "creator_dashboard_private_worlds_hint1": "Only you can view and edit",
+  "creator_dashboard_world_drafts1": "Bản nháp thế giới",
+  "creator_dashboard_world_drafts_hint1": "Worlds not yet finished",
+  "creator_dashboard_no_drafts1": "No drafts yet",
+  "creator_dashboard_no_worlds1": "No worlds yet",
+  "creator_dashboard_unnamed_world1": "Thế giới chưa đặt tên",
+  "creator_dashboard_delete_world_draft1": "Delete world draft",
+  "creator_dashboard_private_test1": "Thử nghiệm riêng tư",
+  "creator_dashboard_delete_world_confirm_title1": "Delete world draft?",
+  "creator_dashboard_delete_world_confirm_body1": "This cannot be undone. Uploaded images will not be deleted.",
+  "creator_dashboard_draft_deleted1": "World draft deleted",
+  "creator_dashboard_validation1": "Creative direction must be 2–100 characters and application reason 10–500 characters.",
+  "creator_dashboard_confirm_application_title1": "Confirm dashboard application",
+  "creator_dashboard_confirm_application_body1": "Your request will be reviewed. Approval grants dashboard access and does not constitute a partnership agreement.",
+  "creator_dashboard_confirm_send1": "Xác nhận gửi",
+  "creator_dashboard_form_heading1": "Apply for the Lianlian Shiguang Creator Dashboard",
+  "creator_dashboard_form_description1": "Tell us about your creative direction and how you plan to use character analytics and follower management. This is not a partnership contract.",
+  "creator_dashboard_direction_label1": "Định hướng sáng tác",
+  "creator_dashboard_direction_hint1": "Ví dụ: tình cảm hiện đại, cổ trang, kỳ ảo, BL, GL…",
+  "creator_dashboard_reason_label1": "Lý do đăng ký bảng điều khiển",
+  "creator_dashboard_reason_hint1": "Share your experience and which dashboard features you need",
+  "creator_dashboard_sending1": "Đang gửi…",
+  "creator_dashboard_submit1": "Gửi yêu cầu truy cập bảng điều khiển",
+  "creator_dashboard_privacy_note1": "Approval is not guaranteed. Do not enter identity numbers, banking details, or other sensitive information.",
+  "creator_dashboard_revoked_limit1": "Dashboard application limit reached. Please contact support.",
+  "creator_dashboard_revoked_notice1": "Your dashboard access was revoked. Check the page for available reapplication options.",
+  "creator_support_page_title1": "Trung tâm hỗ trợ",
+  "creator_support_new_report1": "Gửi báo cáo mới",
+  "creator_support_error1": "Lỗi",
+  "creator_support_no_cases1": "Chưa có báo cáo nào",
+  "creator_support_unread1": "Chưa đọc",
+  "creator_support_load_more1": "Tải thêm",
+  "creator_support_category_label1": "Loại vấn đề",
+  "creator_support_character_optional1": "Nhân vật liên quan (tùy chọn)",
+  "creator_support_no_character1": "Không chọn nhân vật",
+  "creator_support_report_title1": "Tiêu đề vấn đề",
+  "creator_support_report_description1": "Mô tả vấn đề",
+  "creator_support_select_images1": "Chọn ảnh chụp ({count}/3, dưới 2 MB mỗi ảnh)",
+  "@creator_support_select_images1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "creator_support_images_private1": "Chỉ nhà sáng tạo và đội ngũ chính thức xem được ảnh.",
+  "creator_support_submitting1": "Đang gửi…",
+  "creator_support_submit1": "Xác nhận gửi",
+  "creator_support_image_too_large1": "Ảnh vượt quá 2 MB. Hãy chọn ảnh khác.",
+  "creator_support_fill_title_description1": "Vui lòng nhập tiêu đề và nội dung.",
+  "creator_support_case_sent1": "Đã gửi báo cáo",
+  "creator_support_case_sent_partial1": "Đã gửi báo cáo nhưng tải lên thất bại {count} ảnh",
+  "@creator_support_case_sent_partial1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "creator_support_detail_title1": "Chi tiết báo cáo",
+  "creator_support_image_max1": "Mỗi ảnh phải dưới 2 MB",
+  "creator_support_jpg_png_only1": "Chỉ hỗ trợ JPG / PNG",
+  "creator_support_reply_sent1": "Đã gửi trả lời",
+  "creator_support_reply_sent_partial1": "Đã gửi nội dung nhưng tải lên thất bại {count} ảnh",
+  "@creator_support_reply_sent_partial1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "creator_support_empty_content1": "Nội dung không được để trống",
+  "creator_support_recall_message1": "Thu hồi tin nhắn",
+  "creator_support_delete_message1": "Xóa tin nhắn",
+  "creator_support_recall_warning1": "Cả hai bên sẽ thấy “Tin nhắn đã được thu hồi”; tệp đính kèm không thể xem.",
+  "creator_support_delete_warning1": "Chỉ ẩn trên màn hình của bạn; bên kia vẫn giữ tin nhắn.",
+  "creator_support_cancel1": "Hủy",
+  "creator_support_confirm1": "Xác nhận",
+  "creator_support_operation_success1": "Thao tác thành công",
+  "creator_support_edit_message1": "Chỉnh sửa tin nhắn",
+  "creator_support_recall_remaining1": "Thu hồi tin nhắn (còn {seconds} giây)",
+  "@creator_support_recall_remaining1": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "creator_support_recall_expired1": "Thu hồi tin nhắn (quá 60 giây)",
+  "creator_support_case_updated1": "Đã cập nhật báo cáo",
+  "creator_support_loading1": "Đang tải…",
+  "creator_support_creator_uid1": "UID nhà sáng tạo: {uid}",
+  "@creator_support_creator_uid1": {
+    "placeholders": {
+      "uid": {
+        "type": "String"
+      }
+    }
+  },
+  "creator_support_internal_note1": "Ghi chú nội bộ (ẩn với nhà sáng tạo)",
+  "creator_support_save_internal_note1": "Lưu ghi chú nội bộ",
+  "creator_support_case_images1": "Ảnh chụp báo cáo",
+  "creator_support_official1": "Đội ngũ chính thức Lianlian Shiguang",
+  "creator_support_creator1": "Nhà sáng tạo",
+  "creator_support_recalled1": "Tin nhắn đã được thu hồi",
+  "creator_support_edited1": "Đã chỉnh sửa",
+  "creator_support_reply_hint1": "Nhập trả lời…",
+  "creator_support_attach_image1": "Đính kèm ảnh (tối đa 3)",
+  "creator_support_send1": "Gửi",
+  "creator_support_admin_title1": "Quản lý báo cáo nhà sáng tạo",
+  "creator_support_new_reply1": "Trả lời mới",
+  "creator_support_load_more_cases1": "Tải thêm báo cáo",
+  "creator_support_image_load_error1": "Không tải được ảnh chụp",
+  "creator_support_edit_hint1": "Chỉnh sửa nội dung tin nhắn",
+  "creator_support_save1": "Lưu",
+  "creator_support_status_pending1": "Chờ xử lý",
+  "creator_support_status_progress1": "Đang xử lý",
+  "creator_support_status_waiting1": "Chờ bổ sung",
+  "creator_support_status_resolved1": "Đã giải quyết",
+  "creator_support_cat_character1": "Quản lý nhân vật",
+  "creator_support_cat_ai1": "Lỗi tương tác nhân vật AI",
+  "creator_support_cat_dashboard1": "Bảng điều khiển nhà sáng tạo",
+  "creator_support_cat_cooperation1": "Hợp tác và quyền lợi",
+  "creator_support_cat_other1": "Vấn đề khác",
+  "desktop_widget_size_small1": "Nhỏ",
+  "desktop_widget_size_medium1": "Vừa",
+  "desktop_widget_size_large1": "Lớn",
+  "desktop_widget_cancel1": "Hủy",
+  "desktop_widget_delete1": "Xóa",
+  "desktop_widget_days_remaining1": "Còn {days} ngày",
+  "@desktop_widget_days_remaining1": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "desktop_widget_days_today1": "Chính là hôm nay",
+  "desktop_widget_days_elapsed1": "Đã qua {days} ngày",
+  "@desktop_widget_days_elapsed1": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "desktop_widget_daily_quote1": "Câu nói hôm nay",
+  "desktop_widget_update_daily1": "Cập nhật mỗi ngày một lần",
+  "desktop_widget_character_birthday1": "Sinh nhật nhân vật",
+  "desktop_widget_change1": "Thay đổi",
+  "desktop_widget_mood1": "Tâm trạng",
+  "desktop_widget_current_state1": "Trạng thái hiện tại",
+  "desktop_widget_location1": "Địa điểm",
+  "desktop_widget_relationship1": "Mối quan hệ",
+  "desktop_widget_outfit1": "Trang phục",
+  "desktop_widget_weather1": "Thời tiết",
+  "desktop_widget_thought1": "Suy nghĩ",
+  "desktop_widget_action1": "Hành động",
+  "desktop_widget_affinity1": "Độ thiện cảm",
+  "desktop_widget_character_status1": "Trạng thái nhân vật",
+  "desktop_widget_no_posts1": "Chưa có bài đăng của nhân vật",
+  "desktop_widget_crop_position1": "Điều chỉnh vị trí nhân vật",
+  "desktop_widget_crop_action1": "Phóng to / kéo để căn khung",
+  "desktop_widget_crop_hint1": "Dùng hai ngón để thu phóng và một ngón để kéo, không làm cuộn cả trang.",
+  "desktop_widget_crop_title1": "Điều chỉnh khung hình nhân vật",
+  "desktop_widget_reset1": "Đặt lại",
+  "desktop_widget_crop_instructions1": "Kéo một ngón để di chuyển và dùng hai ngón để đổi kích thước. Khung hiển thị vùng sẽ xuất hiện trên tiện ích.",
+  "desktop_widget_crop_position_scale1": "Vị trí: {x}% / {y}% · Thu phóng: {scale}×",
+  "@desktop_widget_crop_position_scale1": {
+    "placeholders": {
+      "x": {
+        "type": "int"
+      },
+      "y": {
+        "type": "int"
+      },
+      "scale": {
+        "type": "String"
+      }
+    }
+  },
+  "desktop_widget_apply1": "Áp dụng",
+  "desktop_widget_just_posted1": "Vừa cập nhật bài đăng",
+  "desktop_widget_important_day1": "Ngày quan trọng",
+  "desktop_widget_no_date1": "Chưa chọn ngày",
+  "desktop_widget_first_met1": "Ngày gặp anh ấy",
+  "desktop_widget_error1": "Lỗi",
+  "event_memory_select_character_title1": "Chọn nhân vật",
+  "event_memory_my_characters1": "Nhân vật của tôi",
+  "event_memory_friend_characters1": "Nhân vật bạn bè",
+  "event_memory_friend_badge1": "Bạn bè",
+  "event_memory_unnamed_character1": "Nhân vật chưa đặt tên",
+  "event_memory_generic_error1": "Lỗi",
+  "memory_collection_title1": "Bộ sưu tập ký ức",
+  "memory_collection_avatar_frames1": "Khung ảnh đại diện",
+  "memory_collection_stickers1": "Nhãn dán",
+  "memory_collection_memories1": "Ký ức",
+  "memory_collection_try_again1": "Vui lòng thử lại sau.",
+  "memory_collection_error1": "Lỗi",
+  "memory_collection_chat_background1": "Hình nền trò chuyện",
+  "memory_collection_got_it1": "Đã hiểu",
+  "memory_collection_not_now1": "Để sau",
+  "memory_collection_confirm_delete1": "Xác nhận xóa",
+  "memory_collection_close1": "Đóng",
+  "memory_collection_delete1": "Xóa",
+  "memory_collection_image_preparing1": "Đang chuẩn bị ảnh",
+  "memory_collection_remove_favorite1": "Xóa khỏi bộ sưu tập",
+  "memory_collection_removed1": "Đã xóa khỏi bộ sưu tập",
+  "event_memory_performance_opening1": "Có những khoảnh khắc vẫn còn mãi,\ndù câu chuyện đã khép lại.",
+  "event_memory_performance_generic_error1": "Lỗi",
+  "event_memory_performance_collected1": "Đã lưu",
+  "event_memory_performance_saving1": "Đang lưu…",
+  "event_memory_performance_save_gallery1": "Lưu vào thư viện ảnh",
+  "event_memory_performance_done1": "Hoàn tất",
+  "event_memory_performance_uncollect_title1": "Bỏ khỏi bộ sưu tập?",
+  "event_memory_performance_not_now1": "Để sau",
+  "event_memory_performance_uncollect1": "Bỏ khỏi bộ sưu tập",
+  "event_memory_performance_uncollected1": "Đã bỏ khỏi bộ sưu tập",
+  "event_memory_performance_login_to_collect1": "Đăng nhập để lưu kỷ niệm này",
+  "event_memory_performance_web_gallery_unsupported1": "Bản web chưa hỗ trợ lưu trực tiếp vào thư viện ảnh điện thoại",
+  "event_memory_performance_gallery_permission1": "Cần quyền truy cập ảnh để lưu kỷ niệm này",
+  "event_memory_performance_image_not_ready1": "Ảnh kỷ niệm chưa sẵn sàng. Vui lòng thử lại",
+  "event_memory_performance_gallery_saved1": "Đã lưu vào thư viện ảnh",
+  "event_memory_performance_skip1": "Bỏ qua",
+  "event_memory_performance_memory_label1": "Kỷ niệm",
+  "event_memory_performance_tap_continue1": "Chạm để tiếp tục",
+  "event_memory_performance_tap_show_full1": "Chạm để xem toàn bộ nội dung",
+  "event_memory_performance_brand_limited_memory1": "Lianlian Shiguang · Kỷ niệm giới hạn",
+  "event_ended1": "Sự kiện đã kết thúc",
+  "event_default_name1": "Sự kiện giới hạn thời gian",
+  "event_default_subtitle1": "Cùng anh ấy tạo những kỷ niệm đặc biệt mùa này.",
+  "event_currency_default1": "Tiền sự kiện",
+  "event_tasks_today1": "Nhiệm vụ hôm nay",
+  "event_tasks_subtitle1": "Hoàn thành nhiệm vụ, thu thập {currency} và mở khóa nội dung độc quyền.",
+  "@event_tasks_subtitle1": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "event_milestones_title1": "Tiến độ tích lũy",
+  "event_milestones_subtitle1": "Tích lũy {currency} để nhận thưởng độc quyền.",
+  "@event_milestones_subtitle1": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "event_memory_title1": "Kỷ niệm độc quyền",
+  "event_memory_subtitle1": "Lưu giữ kỷ niệm riêng của sự kiện.",
+  "event_shop_title1": "Cửa hàng sự kiện",
+  "event_shop_subtitle1": "Dùng {currency} đổi phần thưởng độc quyền.",
+  "@event_shop_subtitle1": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "event_info_title1": "Thông tin sự kiện",
+  "event_info_default1": "Hoàn thành nhiệm vụ chỉ định để nhận tiền sự kiện.\nPhần thưởng đổi sẽ được gửi theo quy định.\nTiền chưa sử dụng sẽ được xử lý theo quy định khi sự kiện kết thúc.",
+  "event_generic_error1": "Lỗi",
+  "event_task_default1": "Nhiệm vụ sự kiện",
+  "event_claimed1": "Đã nhận",
+  "event_claim1": "Nhận",
+  "event_in_progress1": "Đang tiến hành",
+  "event_reward_default1": "Phần thưởng độc quyền",
+  "event_product_default1": "Vật phẩm sự kiện",
+  "event_cancel1": "Hủy",
+  "event_confirm_exchange1": "Xác nhận đổi",
+  "event_limited_product1": "Vật phẩm độc quyền",
+  "event_insufficient_currency1": "Không đủ {currency}",
+  "@event_insufficient_currency1": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "event_close1": "Đóng",
+  "event_redeemed_count_limit1": "Đã đổi {count} / {max} lần",
+  "@event_redeemed_count_limit1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "event_redeemed_count1": "Đã đổi {count} lần",
+  "@event_redeemed_count1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "event_redeemed1": "Đã đổi",
+  "event_exchange1": "Đổi",
+  "login_account_deletion_started1": "Tài khoản đang được xóa",
+  "login_account_deletion_expired_description1": "Đã hết thời hạn ba ngày để hủy xóa tài khoản. Không thể khôi phục tài khoản này nữa. Vui lòng liên hệ bộ phận hỗ trợ nếu cần trợ giúp.",
+  "login_account_deletion_confirm1": "Đồng ý",
+  "event_memory_limited_title1": "Kỷ niệm độc quyền",
+  "moment_detail_add_photo1": "Thêm ảnh",
+  "moment_detail_error1": "Lỗi",
+  "notification_claim_before_delete1": "Nhận hoa trước khi xóa thư quà tặng",
+  "notification_error1": "Lỗi",
+  "notification_creator_gift_already_claimed1": "Bạn đã nhận số hoa này rồi",
+  "notification_creator_gift_claim_success1": "Đã nhận thành công {amount} bông hoa!",
+  "notification_creator_gift_title1": "Quà tặng từ nhà sáng tạo",
+  "notification_creator_gift_amount1": "{amount} bông hoa",
+  "notification_creator_gift_claimed1": "Đã nhận",
+  "notification_creator_gift_claiming1": "Đang nhận…",
+  "notification_creator_gift_claim_button1": "Nhận hoa",
+  "notification_support_subject1": "Tiêu đề người chơi gửi",
+  "notification_support_content1": "Nội dung người chơi gửi",
+  "notification_support_reported1": "Nội dung bị báo cáo",
+  "notification_support_reply1": "Phản hồi hỗ trợ",
+  "notification_share_mail1": "Chia sẻ thư",
+  "notification_original_question1": "Câu hỏi ban đầu của bạn",
+  "@notification_creator_gift_claim_success1": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      }
+    }
+  },
+  "@notification_creator_gift_amount1": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      }
+    }
+  },
+  "notification_preferences_chat_title1": "Trò chuyện với nhân vật",
+  "notification_preferences_chat_subtitle1": "Thông báo đẩy khi nhân vật trả lời",
+  "notification_preferences_moments_title1": "Bài đăng mới",
+  "notification_preferences_moments_subtitle1": "Bài đăng mới từ nhà sáng tạo và nhân vật bạn theo dõi",
+  "notification_preferences_social_title1": "Thông báo xã hội",
+  "notification_preferences_social_subtitle1": "Lượt thích, bình luận, theo dõi và tương tác với nhân vật",
+  "notification_preferences_announcements_title1": "Thông báo chính thức",
+  "notification_preferences_announcements_subtitle1": "Thông báo đẩy về các thông báo chính thức",
+  "notification_preferences_events_title1": "Nhắc nhở sự kiện",
+  "notification_preferences_events_subtitle1": "Thông báo khi sự kiện sắp kết thúc",
+  "notification_preferences_save_failed1": "Không thể lưu cài đặt thông báo. Vui lòng thử lại sau.",
+  "notification_preferences_page_title1": "Tùy chọn thông báo",
+  "notification_preferences_login_required1": "Vui lòng đăng nhập vào tài khoản trước",
+  "notification_preferences_load_failed1": "Không thể tải tùy chọn thông báo. Vui lòng thử lại sau.",
+  "notification_preferences_footer1": "Các cài đặt này được đồng bộ trên mọi thiết bị dùng cùng tài khoản người chơi. Quyền thông báo của hệ thống phải được thiết lập riêng trên từng thiết bị. Tắt thông báo đẩy sẽ không xóa hộp thư trong trò chơi hoặc những thông báo đã nhận.",
+  "official_studio_text_0011": "Guide completed, but the viewed status could not sync and may appear again.",
+  "official_studio_text_0021": "Vui lòng đăng nhập trước",
+  "official_studio_text_0031": "Creator Partnership Studio",
+  "official_studio_text_0041": "Guide",
+  "official_studio_text_0051": "Unable to verify creator eligibility. Try again later.",
+  "official_studio_text_0061": "You do not currently have official creator access.\\nIf approved, contact support to verify activation.",
+  "official_studio_text_0071": "Verified Partner Creator",
+  "official_studio_text_0081": "Welcome back to the creator studio. More features are coming soon.",
+  "official_studio_text_0091": "Creator Tools",
+  "official_studio_text_0101": "Quản lý người theo dõi",
+  "official_studio_text_0111": "View and remove followers",
+  "official_studio_text_0121": "Thống kê nhà sáng tạo",
+  "official_studio_text_0131": "Character popularity and total play count",
+  "official_studio_text_0141": "Thư người hâm mộ",
+  "official_studio_text_0151": "Send messages to your followers",
+  "official_studio_text_0161": "Fan Benefits",
+  "official_studio_text_0171": "Gift your own flowers to followers",
+  "official_studio_text_0181": "Thưởng sáng tạo hàng tháng",
+  "official_studio_text_0191": "Publish 3 new characters to claim 300 flowers",
+  "official_studio_text_0201": "Ảnh bìa nhà sáng tạo",
+  "official_studio_text_0211": "Set your public creator-page banner",
+  "official_studio_text_0221": "Thông tin hợp tác",
+  "official_studio_text_0231": "Partnership status, benefits and notices",
+  "official_studio_text_0241": "Support Center",
+  "official_studio_text_0251": "Report issues and track support replies",
+  "official_studio_text_0261": "Eligibility verification failed. Try again later.",
+  "official_studio_text_0271": "Official creator access is not available",
+  "official_studio_text_0281": "Unable to load public characters",
+  "official_studio_text_0291": "Creator Overview",
+  "official_studio_text_0301": "Total Plays",
+  "official_studio_text_0311": "Current Followers",
+  "official_studio_text_0321": "Unavailable",
+  "official_studio_text_0331": "Public Character Breakdown",
+  "official_studio_text_0341": "No public characters yet. They will appear here after publishing.",
+  "official_studio_text_0351": "Unnamed Character",
+  "official_studio_text_0361": "Total plays (playCount)",
+  "official_studio_text_0371": "Statistics reflect available database fields. Plays are not messages, unique players, or revenue.",
+  "official_studio_text_0381": "Unable to load followers",
+  "official_studio_text_0391": "No followers yet",
+  "official_studio_text_0401": "Follower List",
+  "official_studio_text_0411": "Up to 100 followers shown; only public nicknames and avatars are displayed.",
+  "official_studio_text_0421": "Remove Follower",
+  "official_studio_text_0431": "Hủy",
+  "official_studio_text_0441": "Confirm Removal",
+  "official_studio_text_0451": "Follower removed",
+  "official_studio_text_0461": "Removal failed. Please try again later.",
+  "official_studio_text_0471": "Player",
+  "official_studio_text_0481": "Unable to load public data",
+  "official_studio_text_0491": "This player",
+  "official_studio_text_0501": "Cropped image is still too large. Choose another.",
+  "official_studio_text_0511": "Banner updated",
+  "official_studio_text_0521": "Image processing failed. Choose another image.",
+  "official_studio_text_0531": "Banner removed",
+  "official_studio_text_0541": "Removal failed",
+  "official_studio_text_0551": "Please sign in",
+  "official_studio_text_0561": "Public Profile Banner",
+  "official_studio_text_0571": "Image failed to load",
+  "official_studio_text_0581": "No banner set",
+  "official_studio_text_0591": "Select a photo, position it within the white frame and confirm to upload.",
+  "official_studio_text_0601": "Processing…",
+  "official_studio_text_0611": "Select and Crop Image",
+  "official_studio_text_0621": "Remove Current Banner",
+  "official_studio_text_0631": "Cannot open this image",
+  "official_studio_text_0641": "Cropped file is too large. Choose another image.",
+  "official_studio_text_0651": "Cropping failed. Try again.",
+  "official_studio_text_0661": "Adjust Banner Crop",
+  "official_studio_text_0671": "Move the image to select the banner area",
+  "official_studio_text_0681": "Drag to move · Pinch or use slider to zoom",
+  "official_studio_text_0691": "The white frame shows the final banner (2.5:1)",
+  "official_studio_text_0701": "Zoom",
+  "official_studio_text_0711": "Reset Position",
+  "official_studio_text_0721": "Cropping…",
+  "official_studio_text_0731": "Crop and Upload",
+  "official_studio_text_0741": "Partnership Eligibility",
+  "official_studio_text_0751": "Verifying Eligibility",
+  "official_studio_text_0761": "Available Creator Tools",
+  "official_studio_text_0771": "Follower management, analytics, fan mail, flower gifts, monthly rewards and banners.",
+  "official_studio_text_0781": "Under current rules, create and first publish three eligible characters this month to claim 300 flowers. Final eligibility is verified by the server.",
+  "official_studio_text_0791": "Official Notices and Agreement",
+  "official_studio_text_0801": "Signed agreement terms and official notices take precedence. This page does not replace an agreement. Contact support for questions.",
+  "official_studio_text_0811": "Mail subject must contain 1–100 characters",
+  "official_studio_text_0821": "Mail body must contain 1–5000 characters",
+  "official_studio_text_0831": "Please select a follower",
+  "official_studio_text_0841": "Confirm Fan Mail",
+  "official_studio_text_0851": "Send to all current followers? This uses one broadcast credit.",
+  "official_studio_text_0861": "Send to this follower? This uses one private-message credit.",
+  "official_studio_text_0871": "Confirm Send",
+  "official_studio_text_0881": "Mail job created. Messages will be delivered gradually.",
+  "official_studio_text_0891": "Today’s Sending Quota",
+  "official_studio_text_0901": "Resets daily at 00:00 Taiwan time. A broadcast reaches all followers.",
+  "official_studio_text_0911": "All Followers",
+  "official_studio_text_0921": "One Follower",
+  "official_studio_text_0931": "Unable to get follower list",
+  "official_studio_text_0941": "No followers available for messaging",
+  "official_studio_text_0951": "Select a follower (first 100)",
+  "official_studio_text_0961": "Mail Subject",
+  "official_studio_text_0971": "Message",
+  "official_studio_text_0981": "Write a letter to your fans…",
+  "official_studio_text_0991": "Submitting…",
+  "official_studio_text_1001": "Confirm and Send",
+  "official_studio_text_1011": "Sending History",
+  "official_studio_text_1021": "No sending history yet",
+  "official_studio_text_1031": "Queued",
+  "official_studio_text_1041": "Delivering",
+  "official_studio_text_1051": "Completed",
+  "official_studio_text_1061": "Cancelled",
+  "official_studio_text_1071": "Delivery Failed",
+  "official_studio_text_1081": "Untitled Message",
+  "official_studio_text_1091": "Shows the latest 20 sending jobs. New and pending jobs stop when creator access is revoked.",
+  "official_studio_text_1101": "Player without a nickname",
+  "official_studio_text_1111": "Unable to load followers. Try again later.",
+  "official_studio_text_1121": "Insufficient Flowers",
+  "official_studio_text_1131": "Maybe Later",
+  "official_studio_text_1141": "Đến cửa hàng",
+  "official_studio_text_1151": "You may gift 1–1000 flowers per follower",
+  "official_studio_text_1161": "Select 1–20 followers",
+  "official_studio_text_1171": "Maximum 5000 flowers per gift",
+  "official_studio_text_1181": "Gift message is limited to 300 characters",
+  "official_studio_text_1191": "Confirm Flower Gift",
+  "official_studio_text_1201": "Confirm Gift",
+  "official_studio_text_1211": "Gift already submitted; flowers were not deducted twice",
+  "official_studio_text_1221": "Fan Benefits · Flower Gifts",
+  "official_studio_text_1231": "Unable to load flower balance",
+  "official_studio_text_1241": "My Flower Balance",
+  "official_studio_text_1251": "Flowers are deducted from your own balance, not paid by the platform.",
+  "official_studio_text_1261": "Select followers (up to 20)",
+  "official_studio_text_1271": "Search by public nickname or UID; eligibility is verified by the server at submission.",
+  "official_studio_text_1281": "Tìm người theo dõi",
+  "official_studio_text_1291": "Enter nickname or player UID",
+  "official_studio_text_1301": "Clear Search",
+  "official_studio_text_1311": "No eligible followers available",
+  "official_studio_text_1321": "No matching followers on this page. Continue searching.",
+  "official_studio_text_1331": "No matching followers found",
+  "official_studio_text_1341": "Select up to 20 followers",
+  "official_studio_text_1351": "Searching…",
+  "official_studio_text_1361": "Load More Followers",
+  "official_studio_text_1371": "Search More Followers",
+  "official_studio_text_1381": "Flowers per Follower",
+  "official_studio_text_1391": "e.g. 10",
+  "official_studio_text_1401": "Gift Message (Optional)",
+  "official_studio_text_1411": "Estimated Deduction",
+  "official_studio_text_1421": "Up to 20 followers and 5000 flowers per gift. Flowers are deducted on submission; recipients must claim them in their mailbox.",
+  "official_studio_text_1431": "Unable to load monthly tasks",
+  "official_studio_text_1441": "Unable to load progress. Try again later.",
+  "official_studio_text_1451": "Confirm Creator Reward",
+  "official_studio_text_1461": "Claim 300 flowers for this month? Each month can only be claimed once.",
+  "official_studio_text_1471": "Confirm Claim",
+  "official_studio_text_1481": "Monthly reward already claimed",
+  "official_studio_text_1491": "Successfully claimed 300 flowers!",
+  "official_studio_text_1501": "Claim failed. Try again later.",
+  "official_studio_text_1511": "Unable to verify claim. Refresh your history.",
+  "official_studio_text_1521": "This month",
+  "official_studio_text_1531": "Create and first publish three different characters each month, then claim 300 flowers.",
+  "official_studio_text_1541": "Rules: Only signed and verified partner creators are eligible. Counted characters must be created and first published this month and remain public. Private, draft and republished older characters do not count. Resets monthly in Taiwan time, once per month.",
+  "official_studio_text_1551": "Duplicate, empty or rule-violating characters may lead to review or partnership suspension under the agreement.",
+  "official_studio_text_1561": "Welcome to the Partner Creator Program",
+  "official_studio_text_1571": "Track your work and stay connected",
+  "official_studio_text_1581": "Share flowers and earn creator rewards",
+  "official_studio_text_1591": "Build your page and get support",
+  "official_studio_text_1601": "Your own creative space",
+  "official_studio_text_1611": "Followers · Analytics · Fan Mail",
+  "official_studio_text_1621": "Fan Benefits · Monthly Rewards",
+  "official_studio_text_1631": "Banners · Partnership Info · Support",
+  "official_studio_text_1641": "Welcome to the official creator studio of Lianlian Shiguang, combining creator tools, fan engagement, benefits and partnership information.",
+  "official_studio_text_1651": "View and manage followers, track plays and character performance, and send messages to one follower or your entire audience.",
+  "official_studio_text_1661": "Gift flowers from your balance to fans. You may also earn monthly rewards for newly created and first-published eligible characters.",
+  "official_studio_text_1671": "Upload your personal creator banner. Review partnership rules and benefits in Partnership Info, or contact the Support Center.",
+  "official_studio_text_1681": "Only officially eligible partner creators can use these features.",
+  "official_studio_text_1691": "Fan mail has daily sending limits. Check your quota before sending.",
+  "official_studio_text_1701": "Flower gifts deduct your balance. Monthly rewards follow current rules and server verification.",
+  "official_studio_text_1711": "New creator-exclusive features will be added here over time.",
+  "official_studio_text_1721": "Creator Studio Guide",
+  "official_studio_text_1731": "Bỏ qua",
+  "official_studio_text_1741": "Trước",
+  "official_studio_text_1751": "Hoàn tất",
+  "official_studio_text_1761": "Tiếp theo",
+  "official_studio_text_1771": "Confirm removal of {name}? They will unfollow you but can follow again.",
+  "official_studio_text_1781": "Private messages: {count} / 30",
+  "official_studio_text_1791": "Broadcasts: {count} / 5",
+  "official_studio_text_1801": "Gift sent! {count} flowers are waiting in your followers’ mailboxes.",
+  "official_studio_text_1811": "{count} flowers 🌸",
+  "official_studio_text_1821": "{count} followers",
+  "official_studio_text_1831": "{count} flowers",
+  "official_studio_text_1841": "{month} creator reward",
+  "official_studio_text_1851": "This month: {count} / 3",
+  "official_studio_text_1861": "{count} public characters remaining",
+  "official_studio_text_1871": "Insufficient flowers: need {count} more",
+  "official_studio_text_1881": "Unable to load sending quota",
+  "official_studio_text_1891": "Sending is not confirmed. Check your history before retrying.",
+  "official_studio_text_1901": "Connection failed. Check your history before trying again.",
+  "official_studio_text_1911": "Gift status unconfirmed. Check history before retrying.",
+  "official_studio_text_1921": "Balance: {balance}\\nRequired: {total}\\nMissing: {missing}\\n\\nVisit the shop to get more flowers.",
+  "official_studio_text_1931": "Send {followers} flowers gifts of {amount} each, deducting {total} flowers.\\nGifts cannot be revoked.",
+  "official_studio_text_1941": "{mode} · {status} · Delivered to {count}",
+  "official_studio_text_1951": "Public characters",
+  "official_studio_text_1961": "Loading…",
+  "official_studio_text_1971": "Select followers",
+  "official_studio_text_1981": "Claimed this month",
+  "official_studio_text_188": "Unable to load message quota. Please try again later.",
+  "official_studio_text_189": "Delivery not confirmed. Check your records before retrying.",
+  "official_studio_text_190": "Connection failed. Check the records and try again.",
+  "official_studio_text_191": "Gift not confirmed. Check your records before retrying.",
+  "@official_studio_text_1771": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@official_studio_text_1781": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1791": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1801": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1811": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1821": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1831": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1841": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "@official_studio_text_1851": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1861": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1871": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1921": {
+    "placeholders": {
+      "balance": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "missing": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1931": {
+    "placeholders": {
+      "followers": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1941": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "preference_selection_title1": "Chọn kiểu nhân vật bạn yêu thích",
+  "preference_selection_description1": "Chọn 3–5 thẻ bạn thích để nhận gợi ý nhân vật hợp gu hơn.",
+  "preference_selection_recommendation_note1": "Các sở thích này chỉ giúp cải thiện đề xuất. Bạn vẫn có thể khám phá những kiểu nhân vật khác.",
+  "preference_selection_selected1": "Đã chọn",
+  "preference_selection_start1": "Bắt đầu khám phá",
+  "preference_selection_max_error1": "Bạn chỉ có thể chọn tối đa {count} thẻ.",
+  "preference_selection_save_failed1": "Không thể lưu sở thích. Vui lòng thử lại sau.",
+  "preference_group_personality1": "Tính cách",
+  "preference_group_relationship_age1": "Mối quan hệ và chênh lệch tuổi",
+  "preference_group_story1": "Bối cảnh câu chuyện",
+  "preference_tag_gentle1": "Dịu dàng",
+  "preference_tag_cold1": "Lạnh lùng",
+  "preference_tag_scheming1": "Thâm hiểm",
+  "preference_tag_tsundere1": "Tsundere",
+  "preference_tag_loyal1": "Trung thành",
+  "preference_tag_yandere1": "Yandere",
+  "preference_tag_mysterious1": "Bí ẩn",
+  "preference_tag_healing1": "Chữa lành",
+  "preference_tag_gap_moe1": "Tương phản bất ngờ",
+  "preference_tag_older1": "Lớn tuổi hơn",
+  "preference_tag_younger1": "Nhỏ tuổi hơn",
+  "preference_tag_ceo1": "Tổng tài bá đạo",
+  "preference_tag_school1": "Học đường",
+  "preference_tag_workplace1": "Công sở",
+  "preference_tag_ancient1": "Cổ trang",
+  "profile_page_world_tab1": "Thế giới mở",
+  "profile_page_login_required1": "Vui lòng đăng nhập trước",
+  "profile_page_world_load_failed1": "Không thể tải thế giới. Vui lòng thử lại sau.",
+  "profile_page_my_worlds1": "Thế giới mở của tôi",
+  "profile_page_create_world1": "Tạo thế giới",
+  "profile_page_worlds_empty1": "Chưa có thế giới nào được tạo",
+  "profile_page_worlds_empty_hint1": "Hãy tạo thế giới đầu tiên của bạn",
+  "profile_page_world_untitled1": "Thế giới chưa đặt tên",
+  "profile_page_world_public1": "Công khai",
+  "profile_page_world_private1": "Riêng tư",
+  "profile_page_world_character_count1": "{count} nhân vật",
+  "@profile_page_world_character_count1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profile_page_world_enter_chat1": "Vào trò chuyện",
+  "profile_page_world_edit1": "Chỉnh sửa",
+  "profile_page_create_character1": "Tạo nhân vật",
+  "profile_page_event_frame_default1": "Khung ảnh đại diện sự kiện",
+  "public_worlds_explore_title1": "Khám phá thế giới công khai",
+  "public_worlds_search_tooltip1": "Tìm kiếm thế giới mở",
+  "public_worlds_load_failed1": "Tạm thời không thể tải thế giới công khai",
+  "public_worlds_refresh1": "Làm mới",
+  "public_worlds_empty1": "Thế giới công khai đang được chuẩn bị. Hãy đón chờ!",
+  "public_worlds_unnamed1": "Thế giới chưa đặt tên",
+  "preference_tag_nonhuman1": "Phi nhân loại",
+  "@preference_selection_max_error1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "private_label1": "ส่วนตัว",
+  "world_explore_subtitle1": "Bước vào những thế giới khác nhau và khám phá những hành trình độc đáo",
+  "settings_notification_preferences_title1": "Tùy chọn thông báo",
+  "settings_notification_preferences_subtitle1": "Chọn loại thông báo muốn nhận và đồng bộ cài đặt giữa các thiết bị",
+  "settings_admin_section1": "Quản trị",
+  "settings_admin_dashboard1": "Bảng điều khiển quản trị",
+  "settings_admin_tools_subtitle1": "Công cụ quản lý nội bộ",
+  "world_chat_back1": "Quay lại",
+  "world_chat_mode_tooltip1": "Chế độ phản hồi (AI và trừ hoa chưa được kết nối)",
+  "world_chat_menu1": "Menu thế giới",
+  "world_chat_mode_story1": "Cốt truyện",
+  "world_chat_mode_immersive1": "Nhập vai",
+  "world_chat_mode_resonance1": "Cộng hưởng",
+  "world_chat_mode_interaction1": "Tương tác",
+  "world_chat_mode_cost1": "{mode} · {cost} hoa",
+  "@world_chat_mode_cost1": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
+      "cost": {
+        "type": "int"
+      }
+    }
+  },
+  "world_memo_read_failed1": "Không thể tải ghi chú: {error}",
+  "@world_memo_read_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_memo_sync_failed1": "Đồng bộ tạm thời thất bại. Đang hiển thị ghi chú đã tải trước đó.",
+  "world_memo_server_no_id1": "Máy chủ không trả về ID ghi chú",
+  "world_memo_save_failed1": "Lưu thất bại: {error}",
+  "@world_memo_save_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_memo_delete_title1": "Xóa ghi chú?",
+  "world_memo_delete_warning1": "Không thể hoàn tác sau khi xóa.",
+  "world_memo_cancel1": "Hủy",
+  "world_memo_delete1": "Xóa",
+  "world_memo_cancel_reminder_failed1": "Đã xóa ghi chú nhưng không thể hủy nhắc nhở trên thiết bị cũ: {error}",
+  "@world_memo_cancel_reminder_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_memo_delete_failed1": "Xóa thất bại: {error}",
+  "@world_memo_delete_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_memo_title1": "Ghi chú",
+  "world_memo_world_personal1": "{worldName} | Ghi chú cá nhân",
+  "@world_memo_world_personal1": {
+    "placeholders": {
+      "worldName": {
+        "type": "String"
+      }
+    }
+  },
+  "world_memo_sync_notice1": "Thời gian nhắc nhở được đồng bộ giữa các thiết bị. Thông báo đẩy được gửi đến các thiết bị đã đăng nhập và cho phép thông báo.",
+  "world_memo_loading1": "Đang tải…",
+  "world_memo_empty1": "Chưa có ghi chú. Nhấn + để thêm mới.",
+  "world_memo_reminder_date1": "Nhắc nhở: {date}",
+  "@world_memo_reminder_date1": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "world_memo_reminder_future1": "Thời gian nhắc nhở phải ở tương lai",
+  "world_memo_content_required1": "Hãy nhập nội dung ghi chú trước",
+  "world_memo_edit_title1": "Sửa ghi chú",
+  "world_memo_add_title1": "Ghi chú mới",
+  "world_memo_content_label1": "Nội dung ghi chú",
+  "world_memo_content_hint1": "Viết điều bạn muốn ghi nhớ…",
+  "world_memo_reminder_settings1": "Cài đặt nhắc nhở",
+  "world_memo_no_reminder1": "Chưa đặt nhắc nhở",
+  "world_memo_reminder_choose1": "Chọn ngày giờ để đồng bộ nhắc nhở qua đám mây",
+  "world_memo_clear_reminder1": "Xóa ngày nhắc nhở",
+  "world_memo_save1": "Lưu ghi chú",
+  "world_chat_open_world1": "Thế giới mở",
+  "world_chat_flower_sync1": "Tạm thời không thể đồng bộ số hoa",
+  "world_chat_web_store_unavailable1": "Bản web chưa hỗ trợ mua hoa",
+  "world_chat_sync_unavailable1": "Không thể đồng bộ thời gian thực. Hãy mở lại cuộc trò chuyện để tải lịch sử.",
+  "world_chat_stopped1": "Đã dừng tạo phản hồi, không trừ hoa.",
+  "world_chat_cannot_stop1": "Phản hồi có thể đã hoàn tất, không thể dừng. Hãy kiểm tra trò chuyện và số hoa.",
+  "world_chat_stop_retry1": "Không thể dừng lúc này. Vui lòng thử lại.",
+  "world_chat_connection_failed1": "Kết nối thất bại",
+  "world_chat_network_failed1": "Mạng tạm thời không khả dụng",
+  "world_chat_no_regenerate1": "Chưa có phản hồi nào để tạo lại",
+  "world_chat_paid_regenerate1": "Tạo lại có tính phí",
+  "world_chat_cancel1": "Hủy",
+  "world_chat_confirm1": "Xác nhận",
+  "world_chat_no_continue1": "Chưa có cốt truyện để tiếp tục",
+  "world_chat_no_save1": "Chưa có cuộc trò chuyện nào để lưu",
+  "world_chat_loading1": "Cuộc trò chuyện đang tải",
+  "world_chat_unnamed_character1": "Nhân vật chưa đặt tên",
+  "world_chat_bg_wait1": "Có thể đổi hình nền sau khi tải xong trò chuyện",
+  "world_chat_sign_in1": "Vui lòng đăng nhập trước",
+  "world_chat_choose_mode1": "Chọn chế độ thế giới",
+  "world_chat_mode_charge_expl1": "Mỗi phản hồi thành công sẽ trừ hoa theo chế độ; thất bại không tính phí.",
+  "world_chat_photo_selected1": "Đã chọn ảnh",
+  "world_chat_got_it1": "Đã hiểu",
+  "world_chat_status_settings1": "Cài đặt hiển thị trạng thái thế giới",
+  "world_chat_save_settings1": "Lưu cài đặt",
+  "world_chat_status_saved1": "Đã lưu tùy chọn hiển thị trạng thái của thế giới này",
+  "world_chat_not_ready1": "Trò chuyện thế giới chưa sẵn sàng",
+  "world_chat_enter_first1": "Hãy vào trò chuyện thế giới trước",
+  "world_chat_photo1": "Ảnh",
+  "world_chat_profile1": "Hồ sơ",
+  "world_chat_interaction1": "Tương tác",
+  "world_chat_theater1": "Sân khấu",
+  "world_chat_status1": "Trạng thái",
+  "world_chat_secret1": "Chương bí mật",
+  "world_chat_mood1": "Tâm trạng",
+  "world_chat_outfit1": "Trang phục",
+  "world_chat_relationship1": "Mối quan hệ",
+  "world_chat_thought1": "Suy nghĩ",
+  "world_chat_weather1": "Thời tiết",
+  "world_chat_current_state1": "Trạng thái hiện tại",
+  "world_chat_action1": "Hành động",
+  "world_chat_affinity1": "Độ thiện cảm",
+  "world_chat_generating1": "Thế giới đang lặng lẽ chuyển mình…",
+  "world_chat_screenshot1": "Chia sẻ ảnh chụp màn hình",
+  "world_chat_copy1": "Sao chép nội dung",
+  "world_chat_copied1": "Đã sao chép",
+  "world_chat_edit1": "Chỉnh sửa",
+  "world_chat_delete1": "Xóa",
+  "world_chat_report1": "Báo cáo cuộc trò chuyện",
+  "world_chat_feedback1": "Góp ý",
+  "world_chat_edit_segment1": "Chỉnh sửa đoạn của nhân vật",
+  "world_chat_save1": "Lưu",
+  "world_chat_updated1": "Đã cập nhật tin nhắn",
+  "world_chat_delete_segment1": "Xóa đoạn",
+  "world_chat_deleted_segment1": "Đã xóa đoạn",
+  "world_chat_edit_message1": "Chỉnh sửa tin nhắn",
+  "world_chat_edit_hint1": "Sửa nội dung của bạn",
+  "world_chat_delete_conversation1": "Xóa cuộc trò chuyện",
+  "world_chat_no_chat1": "Chưa có cuộc trò chuyện nào",
+  "world_chat_cancel_select1": "Hủy chọn",
+  "world_chat_input_hint1": "Viết nên câu chuyện của hai người…",
+  "world_chat_screenshot_done1": "Khoảnh khắc riêng đã sẵn sàng",
+  "world_chat_screenshot_style1": "Đổi màu ảnh chụp màn hình",
+  "world_chat_reselect1": "Chọn lại",
+  "world_chat_download_share1": "Tải xuống và chia sẻ",
+  "world_records_summary_title1": "Tóm tắt cốt truyện",
+  "world_records_loaded_count1": "Đã tải {count} tin nhắn và sắp xếp theo trình tự câu chuyện.",
+  "@world_records_loaded_count1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "world_records_auto_summary_pending1": "Hiện chỉ xem lại được những cuộc trò chuyện đã tải; tính năng AI tự động tóm tắt chưa khả dụng.",
+  "world_records_empty_story1": "Chưa có cốt truyện để xem lại",
+  "world_records_narrator_name1": "Người dẫn chuyện",
+  "world_records_relationships_title1": "Quan hệ nhân vật",
+  "world_records_affinity_note1": "Điểm tình cảm được tính riêng cho từng nhân vật chính thức; NPC tạm thời không được tính điểm.",
+  "world_records_empty_characters1": "Chưa có dữ liệu nhân vật chính thức",
+  "world_records_affinity_score_with_next1": "Tình cảm {score} / {next}",
+  "@world_records_affinity_score_with_next1": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "next": {
+        "type": "int"
+      }
+    }
+  },
+  "world_records_affinity_score_only1": "Tình cảm {score}",
+  "@world_records_affinity_score_only1": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "world_records_relationship_stage1": "Giai đoạn quan hệ {stage}",
+  "@world_records_relationship_stage1": {
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      }
+    }
+  },
+  "world_records_local_memo_read_failed1": "Không thể tải ghi chú trên thiết bị",
+  "world_records_memo_saved_local1": "Đã lưu ghi chú trên thiết bị này",
+  "world_records_memo_save_failed1": "Không thể lưu ghi chú",
+  "world_records_memo_unsaved1": "Ghi chú chưa lưu",
+  "world_records_memo_save_before_exit1": "Lưu trước khi thoát?",
+  "world_records_continue_editing1": "Tiếp tục chỉnh sửa",
+  "world_records_save_and_exit1": "Lưu và thoát",
+  "world_records_world_memo_title1": "Ghi chú cho thế giới này",
+  "world_records_save1": "Lưu",
+  "world_records_memo_local_disclaimer1": "Ghi chú riêng tư | Phiên bản này chỉ lưu trên thiết bị hiện tại, không gửi cho AI và không đồng bộ giữa các thiết bị.",
+  "world_records_memo_hint1": "Ghi lại manh mối, dự định hoặc những điều muốn nói với nhân vật…",
+  "world_records_narrator_short1": "Lời dẫn",
+  "world_records_summary_service_missing1": "Dịch vụ tóm tắt cốt truyện (worldStoryMemory) chưa được triển khai. Hãy triển khai rồi mở lại.",
+  "world_records_summary_load_failed1": "Tạm thời không thể tải tóm tắt cốt truyện. Vui lòng thử lại sau.",
+  "world_records_summary_intro1": "Mỗi cuộc gặp gỡ và lựa chọn đều trở thành một phần câu chuyện. Những trải nghiệm và mối quan hệ quan trọng sẽ được lưu lại tại đây.",
+  "world_records_summary_empty1": "Câu chuyện vẫn tiếp diễn. Những chương đáng nhớ sẽ sớm xuất hiện ở đây.",
+  "world_search_title1": "Tìm kiếm hội thoại",
+  "world_search_hint1": "Tìm nhân vật, lời thoại hoặc lời dẫn",
+  "world_search_clear1": "Xóa tìm kiếm",
+  "world_search_start1": "Nhập từ khóa để bắt đầu tìm kiếm",
+  "world_search_results1": "Tìm thấy {count} kết quả",
+  "world_search_empty_prompt1": "Tìm người chơi, nhân vật và lời dẫn",
+  "world_search_no_results1": "Không có hội thoại phù hợp",
+  "world_search_unknown_speaker1": "Nhân vật không xác định",
+  "world_search_collapse1": "Thu gọn",
+  "world_search_expand1": "Mở rộng",
+  "world_search_scope1": "Phạm vi tìm kiếm: 200 tin nhắn gần nhất đã tải trong cuộc trò chuyện",
+  "@world_search_results1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "world_menu_subtitle1": "Thế giới mở · Các tính năng sẽ được mở dần",
+  "world_menu_chat_section1": "Trò chuyện",
+  "world_menu_search1": "Tìm kiếm hội thoại",
+  "world_menu_save_transcript1": "Lưu lịch sử trò chuyện",
+  "world_menu_memories_background1": "Kỷ niệm và hình nền",
+  "world_menu_relations_section1": "Mối quan hệ trong thế giới",
+  "world_menu_story_summary1": "Tóm tắt cốt truyện",
+  "world_menu_relationships1": "Quan hệ nhân vật",
+  "world_menu_memos1": "Ghi chú",
+  "world_menu_memory_section1": "Quản lý ký ức",
+  "world_menu_reset_progress1": "Đặt lại tiến trình thế giới",
+  "world_chat_book_confirm1": "Xác nhận",
+  "world_custom_scene_title_required1": "Vui lòng nhập tiêu đề cảnh.",
+  "world_custom_scene_description_required1": "Vui lòng nhập mô tả cảnh.",
+  "world_custom_scene_save_failed1": "Lưu thất bại. Vui lòng thử lại sau.",
+  "world_custom_scene_edit_title1": "Chỉnh sửa cảnh",
+  "world_custom_scene_add_title1": "Thêm cảnh",
+  "world_discovery_share_desc1": "Bước vào thế giới mở của nhà sáng tạo và bắt đầu câu chuyện của riêng bạn.",
+  "world_discovery_share_text1": "Lianlian Shiguang · Lời mời vào thế giới mở\n\n“{title}”\n\n{description}\n\nKhám phá ngay: {link}",
+  "@world_discovery_share_text1": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "description": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "world_discovery_brand1": "Lianlian Shiguang",
+  "world_discovery_invite1": "Lời mời vào thế giới mở",
+  "world_discovery_scan1": "Quét để tải xuống",
+  "world_discovery_cancel1": "Hủy",
+  "world_discovery_share_button1": "Chia sẻ thiệp mời",
+  "world_discovery_share_missing_card1": "Không tìm thấy thiệp mời thế giới mở",
+  "world_discovery_share_image_failed1": "Không thể tạo ảnh chia sẻ",
+  "world_discovery_share_failed1": "Không thể chia sẻ thiệp mời. Vui lòng thử lại.",
+  "world_discovery_story_open1": "Mở đầu câu chuyện",
+  "world_discovery_story_unset1": "Chưa thiết lập phần mở đầu",
+  "world_discovery_first_unset1": "Chưa thiết lập câu thoại đầu tiên",
+  "world_discovery_background_title1": "Bối cảnh và mô tả thế giới",
+  "world_discovery_era1": "Bối cảnh thời gian: {era}",
+  "@world_discovery_era1": {
+    "placeholders": {
+      "era": {
+        "type": "String"
+      }
+    }
+  },
+  "world_discovery_background_unset1": "Chưa thiết lập bối cảnh thế giới",
+  "world_discovery_background_full1": "Bối cảnh thế giới đầy đủ",
+  "world_discovery_people_unset1": "Chưa có nhân vật",
+  "world_discovery_people_intro1": "Giới thiệu nhân vật",
+  "world_discovery_appearance_unset1": "Chưa có mô tả ngoại hình",
+  "world_discovery_creator_unset1": "Chưa có thông tin người sáng tạo",
+  "world_discovery_creator1": "Người sáng tạo",
+  "world_discovery_creator_load_failed1": "Không thể tải thông tin người sáng tạo",
+  "world_discovery_world_load_failed1": "Không thể tải thế giới mở: {error}",
+  "@world_discovery_world_load_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_discovery_unpublished1": "Thế giới này chưa được công khai",
+  "world_discovery_open_world1": "Thế giới mở",
+  "world_discovery_share_tooltip1": "Chia sẻ thế giới mở",
+  "world_discovery_world_background1": "Bối cảnh thế giới",
+  "world_discovery_not_playable1": "Thế giới mở này chưa thể chơi.",
+  "world_discovery_enter1": "Vào thế giới",
+  "world_edit_login_required1": "Vui lòng đăng nhập trước",
+  "world_edit_no_edit_permission1": "You do not have permission to edit this world",
+  "world_edit_secret_permission_error1": "Unable to access secret chapters. Check the deployed Firestore rules. Saving is paused to protect existing data.",
+  "world_edit_secret_read_error_code1": "Could not load secret chapters ({code}). Saving is paused to protect existing data.",
+  "@world_edit_secret_read_error_code1": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_secret_read_error1": "Could not load secret chapters. Saving is paused to protect existing data.",
+  "world_edit_world_read_error1": "Could not load world: {error}",
+  "@world_edit_world_read_error1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_image_max1": "A world can have up to {count} images",
+  "@world_edit_image_max1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "world_edit_image_read_error1": "Could not load images: {error}",
+  "@world_edit_image_read_error1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_tag_heading1": "Theme tags (up to 5)",
+  "world_edit_tag_max1": "Select up to 5 tags",
+  "world_edit_tag_custom1": "Tags (customizable; separate with commas)",
+  "world_edit_secret_not_ready1": "Secret chapters have not loaded. Publishing is paused to protect your content. Check permissions and reopen this page.",
+  "world_edit_required_publish1": "Enter a world name, at least one image, world background, story opening, and first line",
+  "world_edit_max_tags_save1": "Only 5 theme tags are allowed. Remove extras before saving",
+  "world_edit_secret_validation1": "Each chapter needs a title, unlock condition, and secret content (up to 12 chapters)",
+  "world_edit_draft_saved1": "World draft and secret chapters saved",
+  "world_edit_publish_unconfirmed1": "The server has not confirmed public eligibility. Please try publishing again later.",
+  "world_edit_publish_backend_error1": "World data was saved, but public activation failed ({code}): {message}. Fix the issue and select “Publish open world” again.",
+  "@world_edit_publish_backend_error1": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      },
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_publish_service_missing1": "Verify that worldPublish is deployed",
+  "world_edit_public_published1": "Public open world published",
+  "world_edit_private_saved1": "Private open world saved",
+  "world_edit_save_publish_failed1": "Save or publish failed: {error}",
+  "@world_edit_save_publish_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_save_draft_question1": "Lưu bản nháp?",
+  "world_edit_save_draft_explain1": "Lưu thế giới này trước khi thoát? Các thay đổi chưa lưu sẽ bị mất.",
+  "world_edit_discard1": "Không lưu",
+  "world_edit_cancel1": "Hủy",
+  "world_edit_save_draft1": "Lưu bản nháp",
+  "world_edit_world_name1": "Tên thế giới mở *",
+  "world_edit_world_images1": "World images (up to 6; first image is the cover)",
+  "world_edit_cover1": "Ảnh bìa",
+  "world_edit_set_cover1": "Đặt làm ảnh bìa",
+  "world_edit_short_pitch1": "One-line card description (optional, up to 60 characters)",
+  "world_edit_public_summary1": "Public world description (no spoilers)",
+  "world_edit_era1": "Time period (e.g. fictional present day, Republican era)",
+  "world_edit_world_rules1": "World background and rules *",
+  "world_edit_full_lore1": "Full world lore, events and locations (for AI)",
+  "world_edit_npc_intro1": "Set names, appearances, birthdays, relationships, and photos for main characters and NPCs. Each player remains the protagonist of their own story.",
+  "world_edit_main_characters1": "Nhân vật chính",
+  "world_edit_main_subtitle1": "Important characters who appear frequently in this world",
+  "world_edit_npc_subtitle1": "Other characters who may become interaction partners as the story unfolds",
+  "world_edit_people_count1": "{count} nhân vật",
+  "@world_edit_people_count1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "world_edit_role_unset1": "Role / occupation not set",
+  "world_edit_remove_person1": "Remove character",
+  "world_edit_add_person1": "Thêm {type}",
+  "@world_edit_add_person1": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_add_secret1": "Thêm chương bí mật",
+  "world_edit_edit_secret1": "Sửa chương bí mật",
+  "world_edit_chapter_title1": "Tiêu đề chương *",
+  "world_edit_unlock_condition1": "Unlock condition (description for server evaluation) *",
+  "world_edit_secret_content1": "Nội dung bí mật *",
+  "world_edit_confirm1": "Xác nhận",
+  "world_edit_story_opening1": "Mở đầu câu chuyện *",
+  "world_edit_first_line1": "Câu thoại đầu tiên *",
+  "world_edit_secret_chapters1": "Chương bí mật",
+  "world_edit_secret_explain1": "Secret chapters are stored privately. Publishing the world does not reveal them; players must meet story conditions to unlock them.",
+  "world_edit_add_secret_max1": "Add secret chapter (up to 12)",
+  "world_edit_publish_settings1": "Cài đặt xuất bản",
+  "world_edit_private_world1": "Thế giới riêng tư",
+  "world_edit_private_world_desc1": "Chỉ bạn có thể chơi và thử nghiệm; người khác không thể vào",
+  "world_edit_public_world1": "Thế giới công khai",
+  "world_edit_public_world_desc1": "Người chơi khác có thể vào và mỗi người có tiến trình riêng",
+  "world_edit_create_world1": "Tạo thế giới mở",
+  "world_edit_basic_tab1": "Cài đặt cơ bản",
+  "world_edit_characters_tab1": "Nhân vật thế giới",
+  "world_edit_story_tab1": "Cài đặt câu chuyện",
+  "world_edit_publish_world1": "Đăng thế giới mở",
+  "world_edit_name_required1": "Vui lòng nhập tên nhân vật",
+  "world_edit_edit_person1": "Sửa {type}",
+  "@world_edit_edit_person1": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_upload_photo1": "Tải ảnh nhân vật lên (tùy chọn)",
+  "world_edit_allow_photo1": "Allow generating other images from this character's photo",
+  "world_edit_allow_photo_explain1": "Use this character's photo as a reference only when appropriate for the story. Chatting and ordinary gifts still work if disabled. Set separately for each character.",
+  "world_edit_name1": "Tên *",
+  "world_edit_gender1": "Giới tính / bản dạng giới",
+  "world_edit_birthday1": "Sinh nhật (VD: 16 tháng 5)",
+  "world_edit_age1": "Tuổi",
+  "world_edit_role1": "Vai trò / nghề nghiệp",
+  "world_edit_appearance1": "Ngoại hình",
+  "world_edit_personality1": "Tính cách và thiết lập",
+  "world_edit_background1": "Quá khứ",
+  "world_edit_relationships1": "Quan hệ với nhân vật khác",
+  "world_edit_speech_style1": "Cách nói / giọng điệu",
+  "world_edit_dialogue_examples1": "Ví dụ hội thoại (cho AI)",
+  "world_edit_save_person1": "Lưu thiết lập nhân vật",
+  "world_edit_tag_mystery1": "Hồi hộp",
+  "world_edit_tag_horror1": "Kinh dị",
+  "world_edit_tag_romance1": "Lãng mạn",
+  "world_edit_tag_modern_fantasy1": "Kỳ ảo đô thị",
+  "world_edit_tag_school1": "Học đường",
+  "world_edit_tag_ensemble1": "Quần tượng",
+  "world_edit_tag_adventure1": "Phiêu lưu",
+  "world_edit_tag_daily1": "Đời thường",
+  "world_edit_tag_detective1": "Trinh thám",
+  "world_edit_tag_otherworld1": "Dị giới",
+  "chooseNpc1": "Chọn NPC",
+  "chooseInteractionTarget1": "Chọn người tương tác",
+  "unnamedCharacter1": "Nhân vật chưa đặt tên",
+  "chooseTargetFirst1": "Hãy chọn người tương tác trước",
+  "confirmGift1": "Xác nhận tặng quà",
+  "giftConfirmDetail1": "Gửi {gift} cho {target} tốn {cost} hoa. Chỉ trừ điểm sau khi AI phản hồi thành công.",
+  "@giftConfirmDetail1": {
+    "placeholders": {
+      "target": {
+        "type": "String"
+      },
+      "gift": {
+        "type": "String"
+      },
+      "cost": {
+        "type": "int"
+      }
+    }
+  },
+  "cancel1": "Hủy",
+  "send1": "Gửi",
+  "sendLocationTitle1": "Gửi địa điểm (3 hoa)",
+  "customLocation1": "Địa điểm tùy chỉnh",
+  "confirm1": "Xác nhận",
+  "cafe1": "Quán cà phê",
+  "park1": "Công viên",
+  "restaurant1": "Nhà hàng",
+  "street1": "Đường phố",
+  "giftHeart1": "Trái tim",
+  "giftFlower1": "Hoa",
+  "giftSun1": "Mặt trời",
+  "giftConfetti1": "Pháo giấy",
+  "giftCoffee1": "Cà phê",
+  "giftCake1": "Bánh kem",
+  "interactionPlayTitle1": "Tương tác",
+  "interactionTargetLabel1": "Người tương tác: {target}",
+  "@interactionTargetLabel1": {
+    "placeholders": {
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "intimateInteraction1": "Tương tác thân mật",
+  "poke1": "Chọc nhẹ",
+  "hug1": "Ôm",
+  "holdHands1": "Nắm tay",
+  "gifts1": "Quà tặng",
+  "funActivities1": "Trò chơi vui",
+  "sendLocation1": "Gửi địa điểm",
+  "diceDuel1": "Đấu xúc xắc",
+  "world_profile_name_too_long1": "Tên nhân vật trong thế giới không được vượt quá 40 ký tự. Hãy rút ngắn trước khi lưu.",
+  "world_profile_identity_too_long1": "Thông tin nhân vật trong thế giới vượt quá 2.000 ký tự. Hãy rút ngắn trước khi lưu.",
+  "world_relationship_live_title1": "Mối quan hệ nhân vật",
+  "world_relationship_live_load_failed1": "Không thể tải dữ liệu quan hệ. Hãy kiểm tra quyền Firestore.",
+  "world_relationship_live_no_people1": "Thế giới này chưa có nhân vật nào.",
+  "world_relationship_live_not_met1": "Quan hệ hiện tại: Chưa gặp nhau",
+  "world_relationship_live_first_meeting1": "Lần đầu gặp gỡ",
+  "world_relationship_live_current_relation1": "Quan hệ hiện tại: {relation}",
+  "@world_relationship_live_current_relation1": {
+    "placeholders": {
+      "relation": {
+        "type": "String"
+      }
+    }
+  },
+  "world_relationship_live_thought_title1": "Suy nghĩ hiện tại về người chơi",
+  "world_relationship_live_thought_pending1": "Ấn tượng sẽ dần hình thành qua những lần tương tác tiếp theo.",
+  "world_scene_full_load_error1": "Không thể tải cảnh: {error}",
+  "@world_scene_full_load_error1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_full_delete_title1": "Xóa cảnh",
+  "world_scene_full_delete_confirm1": "Xóa “{title}”?",
+  "@world_scene_full_delete_confirm1": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_full_cancel1": "Hủy",
+  "world_scene_full_delete1": "Xóa",
+  "world_scene_full_delete_error1": "Không thể xóa cảnh: {error}",
+  "@world_scene_full_delete_error1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_full_missing_fields1": "Vui lòng nhập tiêu đề và mô tả cảnh.",
+  "world_scene_full_activate_error1": "Không thể bắt đầu cảnh: {error}",
+  "@world_scene_full_activate_error1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_full_end_title1": "Kết thúc cảnh",
+  "world_scene_full_end_confirm1": "Kết thúc cảnh hiện tại?",
+  "world_scene_full_end_error1": "Không thể kết thúc cảnh: {error}",
+  "@world_scene_full_end_error1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_full_unnamed1": "Cảnh chưa đặt tên",
+  "world_scene_full_opening1": "Mở đầu: {opening}",
+  "@world_scene_full_opening1": {
+    "placeholders": {
+      "opening": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_full_edit1": "Chỉnh sửa",
+  "world_scene_full_start1": "Bắt đầu cảnh",
+  "world_scene_full_creator_empty1": "Chưa có cảnh của nhà sáng tạo",
+  "world_scene_full_custom_empty1": "Bạn chưa tạo cảnh nào",
+  "world_scene_full_add1": "Cảnh mới",
+  "world_scene_full_page_title1": "Cảnh",
+  "world_scene_full_creator_tab1": "Cảnh của nhà sáng tạo",
+  "world_scene_full_custom_tab1": "Cảnh tự tạo",
+  "world_scene_full_active1": "Cảnh đang diễn ra: {title}",
+  "@world_scene_full_active1": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_required1": "Vui lòng nhập tiêu đề và nội dung cảnh",
+  "world_scene_title1": "Cảnh",
+  "world_scene_beta_notice1": "Bản thử nghiệm cảnh thế giới: cảnh được mở bằng AI trò chuyện thế giới. Chức năng lưu riêng và API bắt đầu chính thức chưa được tích hợp.",
+  "world_scene_creator_scenes1": "Cảnh của nhà sáng tạo",
+  "world_scene_no_creator_scenes1": "Thế giới này hiện chưa có cảnh của nhà sáng tạo khả dụng",
+  "world_scene_custom_scenes1": "Tự tạo cảnh",
+  "world_scene_name1": "Tên cảnh",
+  "world_scene_setup1": "Bối cảnh, địa điểm, nhân vật và tình huống mở đầu",
+  "world_scene_start1": "Bắt đầu cảnh",
+  "worldSearchTitle1": "Tìm thế giới mở",
+  "worldSearchHint1": "Tìm tên thế giới, nhà sáng tạo hoặc thẻ",
+  "worldSearchClear1": "Xóa tìm kiếm",
+  "worldSearchEmpty1": "Không tìm thấy thế giới mở phù hợp",
+  "worldSearchTrending1": "Thế giới phổ biến",
+  "worldSearchResults1": "Kết quả tìm kiếm",
+  "worldSearchUnnamed1": "Thế giới chưa đặt tên",
+  "worldSearchCreator1": "Người sáng tạo: {creator}",
+  "@worldSearchCreator1": {
+    "placeholders": {
+      "creator": {
+        "type": "String"
+      }
+    }
+  },
+  "world_secret_chapters_title1": "Chương bí mật",
+  "world_secret_chapters_close1": "Đóng",
+  "world_secret_chapters_read_failed1": "Hiện không thể đọc chương bí mật này",
+  "world_secret_chapters_retry1": "Tải thất bại. Nhấn để thử lại",
+  "world_secret_chapters_empty1": "Nhà sáng tạo chưa thêm chương bí mật nào",
+  "world_secret_chapters_locked_chapter1": "Chương {number} · ???",
+  "@world_secret_chapters_locked_chapter1": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "world_secret_chapters_unlocked1": "Đã mở khóa · Nhấn để đọc",
+  "world_secret_chapters_locked1": "Chưa mở khóa · Tiếp tục khám phá câu chuyện",
+  "world_timeline_load_failed1": "Không thể tải tóm tắt câu chuyện: {error}",
+  "@world_timeline_load_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_timeline_edit_summary1": "Chỉnh sửa tóm tắt truyện",
+  "world_timeline_cancel1": "Hủy",
+  "world_timeline_save1": "Lưu",
+  "world_timeline_save_failed1": "Lưu thất bại: {error}",
+  "@world_timeline_save_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_timeline_delete_summary1": "Xóa tóm tắt",
+  "world_timeline_delete_confirm1": "Xóa mục ghi chép câu chuyện này?",
+  "world_timeline_delete1": "Xóa",
+  "world_timeline_delete_failed1": "Xóa thất bại: {error}",
+  "@world_timeline_delete_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_timeline_our_story1": "Câu chuyện của chúng ta",
+  "world_timeline_retry1": "Thử lại",
+  "world_timeline_empty1": "Câu chuyện vẫn đang tiếp diễn. Những ghi chép mới sẽ xuất hiện khi câu chuyện tiến triển.",
+  "world_timeline_recent1": "Ghi chép gần đây",
+  "world_timeline_edit1": "Chỉnh sửa",
+  "echo_login_to_post1": "Đăng nhập để để lại tiếng vọng thời gian",
+  "echo_limit1": "Mỗi người chơi chỉ có thể để lại tối đa 3 tiếng vọng trong cùng một thế giới mở",
+  "echo_count_fail1": "Không thể kiểm tra số tiếng vọng. Vui lòng thử lại sau.",
+  "echo_compose_title1": "Để lại tiếng vọng thời gian",
+  "echo_compose_desc1": "Chọn mẫu thẻ yêu thích rồi viết điều bạn muốn lưu lại.",
+  "echo_compose_hint1": "Bạn muốn để lại lời gì trong thế giới này?",
+  "echo_send1": "Gửi tiếng vọng",
+  "echo_player1": "Người chơi",
+  "echo_sent1": "Đã đăng tiếng vọng thời gian",
+  "echo_post_fail1": "Không thể đăng. Hãy kiểm tra quyền và kết nối mạng.",
+  "echo_login1": "Vui lòng đăng nhập",
+  "echo_like_fail1": "Không thể thích",
+  "echo_delete_title1": "Xóa tiếng vọng này?",
+  "echo_delete_warning1": "Không thể hoàn tác sau khi xóa.",
+  "echo_cancel1": "Hủy",
+  "echo_delete1": "Xóa",
+  "echo_deleted1": "Đã xóa tiếng vọng",
+  "echo_delete_fail1": "Xóa thất bại",
+  "echo_reason_inappropriate1": "Nội dung không phù hợp",
+  "echo_reason_harassment1": "Quấy rối hoặc công kích",
+  "echo_reason_spam1": "Tin rác",
+  "echo_reason_other1": "Khác",
+  "echo_report_title1": "Báo cáo tiếng vọng",
+  "echo_already_reported1": "Bạn đã báo cáo tiếng vọng này",
+  "echo_report_received1": "Đã nhận báo cáo",
+  "echo_report_fail1": "Báo cáo thất bại",
+  "echo_options1": "Tùy chọn tiếng vọng",
+  "echo_delete_option1": "Xóa tiếng vọng",
+  "echo_report_option1": "Báo cáo tiếng vọng",
+  "echo_wall_title1": "Tiếng vọng thời gian",
+  "echo_add1": "Để lại tiếng vọng",
+  "echo_load_fail1": "Không thể tải tiếng vọng. Hãy kiểm tra quyền Firestore.",
+  "echo_empty1": "Chưa có tiếng vọng nào. Hãy để lại câu chuyện đầu tiên.",
+  "store_pack_30_name1": "Gói Gặp Gỡ Đầu Tiên",
+  "store_pack_70_name1": "Gói Rung Động",
+  "store_pack_120_name1": "Gói Tim Đập Rộn Ràng",
+  "store_pack_190_name1": "Gói Tình Yêu Nồng Cháy",
+  "store_pack_250_name1": "Gói Tri Kỷ",
+  "store_pack_330_name1": "Gói Chờ Đợi",
+  "store_pack_450_name1": "Gói Tin Tưởng",
+  "store_pack_520_name1": "Gói Anh Yêu Em",
+  "store_pack_690_name1": "Gói Tuần Trăng Mật",
+  "store_pack_720_name1": "Gói Lời Hứa",
+  "store_pack_750_name1": "Gói Bên Nhau",
+  "store_pack_830_name1": "Gói Tình Yêu Sâu Đậm",
+  "store_pack_990_name1": "Gói Bền Lâu",
+  "store_pack_1050_name1": "Gói Duy Nhất",
+  "store_pack_1290_name1": "Gói Chân Ái",
+  "store_pack_1314_name1": "Gói Trọn Đời",
+  "store_pack_1930_name1": "Gói Thề Ước",
+  "store_pack_2990_name1": "Gói Tình Nhân Vĩnh Cửu"
 }

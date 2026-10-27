@@ -16,6 +16,7 @@ import '../services/app_constants.dart';
 import '../services/toast_utils.dart';
 import '../utils/image_utils.dart';
 import 'package:lianlian_shiguang/l10n/app_l10n.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 class EventMemoryPerformancePage extends StatefulWidget {
   final String eventId;
@@ -56,7 +57,7 @@ enum _MemoryPhase {
 class _EventMemoryPerformancePageState
     extends State<EventMemoryPerformancePage>
     with SingleTickerProviderStateMixin {
-  static const String _openingText = '有些瞬間，\n並不會因為故事結束而消失。';
+  String get _openingText => AppLocalizations.of(context)!.event_memory_performance_opening1;
 
   bool _loading = true;
   String? _error;
@@ -150,7 +151,8 @@ class _EventMemoryPerformancePageState
       setState(() {
         _loading = false;
         _phase = _MemoryPhase.finished;
-        _error = '載入回憶失敗：$e';
+        _error = AppLocalizations.of(context)!.event_memory_performance_generic_error1;
+        debugPrint('載入限定回憶失敗：$e');
       });
     }
   }
@@ -461,7 +463,7 @@ class _EventMemoryPerformancePageState
                       label: Text(
                         _collecting
                             ? appL10n.event_memory_performance_finish_message
-                            : (_isCollected ? '已收藏' : appL10n.event_memory_performance_finish_message_collection_memory),
+                            : (_isCollected ? AppLocalizations.of(context)!.event_memory_performance_collected1 : appL10n.event_memory_performance_finish_message_collection_memory),
                       ),
                       style: FilledButton.styleFrom(
                         minimumSize: const Size.fromHeight(50),
@@ -488,7 +490,7 @@ class _EventMemoryPerformancePageState
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                           : const Icon(Icons.photo_library_outlined),
-                      label: Text(_saving ? '正在儲存…' : '儲存到手機相簿'),
+                      label: Text(_saving ? AppLocalizations.of(context)!.event_memory_performance_saving1 : AppLocalizations.of(context)!.event_memory_performance_save_gallery1),
                       style: OutlinedButton.styleFrom(
                         minimumSize: const Size.fromHeight(50),
                       ),
@@ -501,7 +503,7 @@ class _EventMemoryPerformancePageState
                         Navigator.of(sheetContext).pop();
                         if (mounted) Navigator.of(context).pop();
                       },
-                      child: const Text('完成'),
+                      child: Text(AppLocalizations.of(context)!.event_memory_performance_done1),
                     ),
                   ],
                 ),
@@ -552,7 +554,7 @@ class _EventMemoryPerformancePageState
       builder: (dialogContext) {
         return AlertDialog(
           title: Text(
-            '取消收藏？',
+            AppLocalizations.of(context)!.event_memory_performance_uncollect_title1,
             style: GoogleFonts.notoSerifTc(
               fontWeight: FontWeight.w700,
             ),
@@ -564,11 +566,11 @@ class _EventMemoryPerformancePageState
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('先不要'),
+              child: Text(AppLocalizations.of(context)!.event_memory_performance_not_now1),
             ),
             FilledButton.tonal(
               onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: const Text('取消收藏'),
+              child: Text(AppLocalizations.of(context)!.event_memory_performance_uncollect1),
             ),
           ],
         );
@@ -599,12 +601,12 @@ class _EventMemoryPerformancePageState
 
       setState(() => _isCollected = false);
       _showMessage(
-        '已取消收藏',
+        AppLocalizations.of(context)!.event_memory_performance_uncollected1,
       );
       return true;
     } catch (e) {
       debugPrint('❌ 取消限定回憶收藏失敗：$e');
-      _showMessage('取消收藏失敗，請稍後再試', isError: true);
+      _showMessage(AppLocalizations.of(context)!.event_memory_performance_generic_error1, isError: true);
       return false;
     } finally {
       if (mounted) {
@@ -650,7 +652,7 @@ class _EventMemoryPerformancePageState
     try {
       final ref = _collectionRef();
       if (ref == null) {
-        _showMessage('請先登入後再收藏這段回憶', isError: true);
+        _showMessage(AppLocalizations.of(context)!.event_memory_performance_login_to_collect1, isError: true);
         return false;
       }
 
@@ -689,7 +691,7 @@ class _EventMemoryPerformancePageState
 
   Future<bool> _saveMemoryCardToGallery() async {
     if (kIsWeb) {
-      _showMessage('網頁版目前不支援直接儲存到手機相簿', isError: true);
+      _showMessage(AppLocalizations.of(context)!.event_memory_performance_web_gallery_unsupported1, isError: true);
       return false;
     }
 
@@ -700,21 +702,21 @@ class _EventMemoryPerformancePageState
       }
 
       if (!hasAccess) {
-        _showMessage('需要相簿權限才能儲存這段回憶', isError: true);
+        _showMessage(AppLocalizations.of(context)!.event_memory_performance_gallery_permission1, isError: true);
         return false;
       }
 
       final boundary = _memoryCardKey.currentContext?.findRenderObject()
       as RenderRepaintBoundary?;
       if (boundary == null) {
-        _showMessage('回憶圖片還沒準備好，請再試一次', isError: true);
+        _showMessage(AppLocalizations.of(context)!.event_memory_performance_image_not_ready1, isError: true);
         return false;
       }
 
       final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       if (byteData == null) {
-        _showMessage('產生回憶圖片失敗', isError: true);
+        _showMessage(AppLocalizations.of(context)!.event_memory_performance_generic_error1, isError: true);
         return false;
       }
 
@@ -743,17 +745,17 @@ class _EventMemoryPerformancePageState
       } catch (_) {}
 
       _showMessage(
-        '已儲存到手機相簿 ♡',
+        AppLocalizations.of(context)!.event_memory_performance_gallery_saved1,
       );
 
       return true;
     } on GalException catch (e) {
       debugPrint('❌ 儲存限定回憶失敗：${e.type}');
-      _showMessage('儲存失敗，請確認相簿權限後再試一次', isError: true);
+      _showMessage(AppLocalizations.of(context)!.event_memory_performance_generic_error1, isError: true);
       return false;
     } catch (e) {
       debugPrint('❌ 儲存限定回憶失敗：$e');
-      _showMessage('儲存失敗，請稍後再試', isError: true);
+      _showMessage(AppLocalizations.of(context)!.event_memory_performance_generic_error1, isError: true);
       return false;
     }
   }
@@ -808,8 +810,8 @@ class _EventMemoryPerformancePageState
                 top: 12,
                 child: TextButton(
                   onPressed: _skipOpening,
-                  child: const Text(
-                    '略過',
+                  child: Text(
+                    AppLocalizations.of(context)!.event_memory_performance_skip1,
                     style: TextStyle(color: Colors.white70),
                   ),
                 ),
@@ -896,7 +898,7 @@ class _EventMemoryPerformancePageState
             Row(
               children: [
                 Text(
-                  '回憶',
+                  AppLocalizations.of(context)!.event_memory_performance_memory_label1,
                   style: GoogleFonts.notoSerifTc(
                     color: Colors.white70,
                     fontSize: 11,
@@ -920,8 +922,8 @@ class _EventMemoryPerformancePageState
             alignment: Alignment.centerRight,
             child: Text(
               _typingDone
-                  ? (_index == _scenes.length - 1 ? appL10n.event_memory_performance_text_panel_message_complete : '點擊繼續')
-                  : '點擊顯示全文',
+                  ? (_index == _scenes.length - 1 ? appL10n.event_memory_performance_text_panel_message_complete : AppLocalizations.of(context)!.event_memory_performance_tap_continue1)
+                  : AppLocalizations.of(context)!.event_memory_performance_tap_show_full1,
               style: GoogleFonts.notoSerifTc(
                 color: Colors.white.withValues(alpha: 0.58),
                 fontSize: 9.5,
@@ -1112,7 +1114,7 @@ class _MemorySaveCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '戀戀拾光・限定回憶',
+                    AppLocalizations.of(context)!.event_memory_performance_brand_limited_memory1,
                     style: GoogleFonts.notoSerifTc(
                       color: Colors.white.withValues(alpha: 0.88),
                       fontSize: 11,

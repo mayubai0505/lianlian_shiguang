@@ -356,7 +356,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
         if (mounted) {
           ToastUtils.showCenterToast(
             context,
-            l10n.update_failed(e.toString()),
+            l10n.chat_home_world_error_generic,
             isError: true, // 💡 使用統一的紅驚嘆號，清楚標示錯誤
           );
         }
@@ -414,7 +414,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
 
       ToastUtils.showCenterToast(
         context,
-        l10n.update_failed(e.toString()),
+        l10n.chat_home_world_error_generic,
         isError: true,
       );
     }
@@ -506,7 +506,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
       if (!mounted) return;
       ToastUtils.showCenterToast(
         context,
-        l10n.chat_home_pin_update_failed(e.toString()),
+        l10n.chat_home_world_error_generic,
         isError: true,
       );
     }
@@ -832,6 +832,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
     String? name,
     bool? pinned,
   }) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       if (worldId.trim().isEmpty) throw StateError('世界觀 ID 不正確');
       await FirebaseFunctions.instanceFor(region: 'asia-east1')
@@ -845,35 +846,38 @@ class _ChatHomePageState extends State<ChatHomePage> {
       });
       if (!mounted) return;
       final message = switch (action) {
-        'renameRoom' => '聊天室名稱已更新',
-        'pinRoom' => pinned == true ? '已置頂世界觀聊天室' : '已取消置頂',
-        'deleteRoom' => '世界觀聊天室與對話紀錄已刪除',
-        _ => '操作完成',
+        'renameRoom' => l10n.room_name_updated,
+        'pinRoom' => pinned == true ? l10n.chat_home_world_pinned : l10n.chat_home_unpinned_success,
+        'deleteRoom' => l10n.chat_home_world_deleted,
+        _ => l10n.chat_home_world_action_done,
       };
       ToastUtils.showCenterToast(context, message);
     } on FirebaseFunctionsException catch (e) {
+      debugPrint('世界聊天室操作失敗：${e.code} ${e.message}');
       if (mounted) ToastUtils.showCenterToast(context,
-          e.message ?? '操作失敗，請稍後再試', isError: true);
+          l10n.chat_home_world_error_generic, isError: true);
     } catch (e) {
+      debugPrint('世界聊天室操作失敗：$e');
       if (mounted) ToastUtils.showCenterToast(context,
-          '操作失敗：$e', isError: true);
+          l10n.chat_home_world_error_generic, isError: true);
     }
   }
 
   Future<void> _renameWorldRoom(String worldId, String currentName) async {
+    final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController(text: currentName);
     try {
       final name = await showDialog<String>(context: context, builder: (ctx) =>
           AlertDialog(
-            title: const Text('為這段記憶命名'),
+            title: Text(l10n.chat_home_world_rename_title),
             content: TextField(controller: controller, autofocus: true,
                 maxLength: 20,
-                decoration: const InputDecoration(hintText: '輸入聊天室名稱')),
+                decoration: InputDecoration(hintText: l10n.rename_chat_hint)),
             actions: [
               TextButton(onPressed: () => Navigator.pop(ctx),
-                  child: const Text('取消')),
+                  child: Text(l10n.cancelButton)),
               FilledButton(onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-                  child: const Text('儲存')),
+                  child: Text(l10n.save_tag_btn)),
             ],
           ));
       if (name == null || name.isEmpty || name == currentName) return;
@@ -884,17 +888,16 @@ class _ChatHomePageState extends State<ChatHomePage> {
   }
 
   Future<void> _deleteWorldRoom(String worldId, String displayName) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('刪除聊天室'),
-          content: Text('確定刪除「$displayName」的世界觀聊天紀錄？\n\n'
-              '此操作會永久刪除該世界的對話、劇情摘要、人物關係及備忘錄，無法復原。'
-              '創作者公開的世界觀設定不會刪除。'),
+          title: Text(l10n.confirm_delete_title),
+          content: Text(l10n.chat_home_world_delete_confirm(displayName)),
           actions: [
             TextButton(onPressed: () => Navigator.pop(ctx, false),
-                child: const Text('取消')),
+                child: Text(l10n.cancelButton)),
             TextButton(onPressed: () => Navigator.pop(ctx, true),
-                child: const Text('刪除', style: TextStyle(color: Colors.red))),
+                child: Text(l10n.delete_btn, style: const TextStyle(color: Colors.red))),
           ],
         ));
     if (confirmed == true) await _manageWorldRoom(worldId, 'deleteRoom');
@@ -906,6 +909,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
     required bool isPinned,
   }) async {
     if (worldId.isEmpty) return;
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
     await showModalBottomSheet<void>(
@@ -925,7 +929,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
             minLeadingWidth: 34,
             leading: Image.asset('assets/images/chat/chat_pin_bookmark.png',
                 width: 32, height: 32, color: primary),
-            title: Text(isPinned ? '取消置頂' : '置頂',
+            title: Text(isPinned ? l10n.chat_home_unpin : l10n.chat_home_pin,
                 style: GoogleFonts.notoSerifTc(fontSize: 16, color: primary)),
             onTap: () { Navigator.pop(sheetContext);
             _manageWorldRoom(worldId, 'pinRoom', pinned: !isPinned); },
@@ -934,7 +938,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
             minLeadingWidth: 34,
             leading: Image.asset('assets/images/profile/profile_quill.png',
                 width: 32, height: 32, color: primary),
-            title: Text('為這段記憶命名',
+            title: Text(l10n.chat_home_world_rename_title,
                 style: GoogleFonts.notoSerifTc(fontSize: 16)),
             onTap: () { Navigator.pop(sheetContext);
             _renameWorldRoom(worldId, displayRoomName); },
@@ -943,7 +947,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
             minLeadingWidth: 34,
             leading: Image.asset('assets/images/chat/chat_msg_delete_mask.png',
                 width: 32, height: 32, color: Colors.redAccent),
-            title: Text('刪除', style: GoogleFonts.notoSerifTc(
+            title: Text(l10n.delete_btn, style: GoogleFonts.notoSerifTc(
                 fontSize: 16, color: Colors.redAccent)),
             onTap: () { Navigator.pop(sheetContext);
             _deleteWorldRoom(worldId, displayRoomName); },
@@ -956,6 +960,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
   // ── 開放世界聊天：獨立列表 ──
   // 不直接呼叫 ChatPage：ChatPage 必須接收 Character，無法正確承載多 NPC 世界。
   Widget _buildWorldSessionsSliver(ThemeData theme) {
+    final l10n = AppLocalizations.of(context)!;
     return StreamBuilder<QuerySnapshot>(
       stream: _worldSessionsStream,
       builder: (context, snapshot) {
@@ -969,7 +974,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
             child: Center(
               child: Padding(
                 padding: const EdgeInsets.all(24),
-                child: Text('開放世界聊天列表讀取失敗：${snapshot.error}',
+                child: Text(l10n.chat_home_world_error_generic,
                     textAlign: TextAlign.center),
               ),
             ),
@@ -1005,11 +1010,11 @@ class _ChatHomePageState extends State<ChatHomePage> {
                     Icon(Icons.public_rounded, size: 58,
                         color: theme.colorScheme.primary.withValues(alpha: 0.38)),
                     const SizedBox(height: 14),
-                    Text('還沒有開放世界聊天紀錄',
+                    Text(l10n.chat_home_world_empty_title,
                         style: GoogleFonts.notoSerifTc(fontSize: 17,
                             color: theme.colorScheme.onSurface)),
                     const SizedBox(height: 8),
-                    Text('等私人試玩聊天室串接完成後，進度就會顯示在這裡。',
+                    Text(l10n.chat_home_world_empty_desc,
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 12,
                             color: theme.colorScheme.onSurfaceVariant)),
@@ -1025,7 +1030,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
           sliver: SliverList(
             delegate: SliverChildBuilderDelegate((context, index) {
               final data = docs[index].data() as Map<String, dynamic>;
-              final name = (data['customRoomName'] ?? data['worldName'] ?? '未命名世界')
+              final name = (data['customRoomName'] ?? data['worldName'] ?? l10n.chat_home_world_unnamed)
                   .toString();
               final cover = (data['coverImage'] ?? data['worldCoverImage'] ?? '')
                   .toString().trim();
@@ -1085,11 +1090,11 @@ class _ChatHomePageState extends State<ChatHomePage> {
                                   style: GoogleFonts.notoSerifTc(fontSize: 16,
                                       fontWeight: FontWeight.w600)),
                               const SizedBox(height: 4),
-                              Text(isTest ? '私人試玩' : '開放世界',
+                              Text(isTest ? l10n.chat_home_world_private_test : l10n.chat_home_world_tab,
                                   style: TextStyle(fontSize: 11,
                                       color: theme.colorScheme.primary)),
                               const SizedBox(height: 5),
-                              Text(preview.isEmpty ? '尚無訊息' : preview,
+                              Text(preview.isEmpty ? l10n.chat_home_world_no_messages : preview,
                                   maxLines: 1, overflow: TextOverflow.ellipsis,
                                   style: TextStyle(fontSize: 12,
                                       color: theme.colorScheme.onSurfaceVariant)),
@@ -1227,9 +1232,9 @@ class _ChatHomePageState extends State<ChatHomePage> {
                             Expanded(
                               child: SegmentedButton<int>(
                                 showSelectedIcon: false,
-                                segments: const [
-                                  ButtonSegment(value: 0, label: Text('角色聊天')),
-                                  ButtonSegment(value: 1, label: Text('開放世界')),
+                                segments: [
+                                  ButtonSegment(value: 0, label: Text(l10n.chat_home_character_tab)),
+                                  ButtonSegment(value: 1, label: Text(l10n.chat_home_world_tab)),
                                 ],
                                 selected: <int>{_selectedChatCategory},
                                 onSelectionChanged: (selection) {
@@ -1261,7 +1266,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
                         }
                         if (snapshot.hasError) {
                           return SliverFillRemaining(
-                            child: Center(child: Text(l10n.load_chat_failed(snapshot.error.toString()))),
+                            child: Center(child: Text(l10n.chat_home_world_error_generic)),
                           );
                         }
                         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {

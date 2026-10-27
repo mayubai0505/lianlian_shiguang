@@ -489,7 +489,7 @@ class _ProfilePageState extends State<ProfilePage>
           ? (ownedItem!['imageUrl'] ?? '').toString().trim()
           : '';
       final resolvedName = valid
-          ? (ownedItem!['name'] ?? '活動頭像框').toString()
+          ? (ownedItem!['name'] ?? AppLocalizations.of(context)!.profile_page_event_frame_default1).toString()
           : '';
 
       setState(() {
@@ -2291,7 +2291,7 @@ class _ProfilePageState extends State<ProfilePage>
 
                       tabs: [
                         Tab(height: 48, text: l10n.profilePageTabCharacters),
-                        Tab(height: 48, text: Localizations.localeOf(context).languageCode == 'zh' ? '開放世界' : 'Worlds'),
+                        Tab(height: 48, text: l10n.profile_page_world_tab1),
                         Tab(height: 48, text: l10n.profilePageTabMoments),
                         Tab(
                           height: 48,
@@ -3489,7 +3489,7 @@ class _ProfilePageState extends State<ProfilePage>
   Widget _buildWorldsTab() {
     final theme = Theme.of(context);
     final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) return const Center(child: Text('請先登入'));
+    if (uid == null) return Center(child: Text(AppLocalizations.of(context)!.profile_page_login_required1));
     final worlds = _db.collection('artifacts').doc(_appId).collection('worlds');
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: worlds.where('createdBy', isEqualTo: uid).snapshots(),
@@ -3497,7 +3497,7 @@ class _ProfilePageState extends State<ProfilePage>
         if (snapshot.hasError) {
           return Center(child: Padding(
             padding: const EdgeInsets.all(24),
-            child: Text('讀取世界觀失敗：${snapshot.error}'),
+            child: Text(AppLocalizations.of(context)!.profile_page_world_load_failed1),
           ));
         }
         if (!snapshot.hasData) {
@@ -3515,13 +3515,13 @@ class _ProfilePageState extends State<ProfilePage>
           padding: const EdgeInsets.fromLTRB(18, 14, 18, 60),
           children: [
             Row(children: [
-              Expanded(child: Text('我的開放世界',
+              Expanded(child: Text(AppLocalizations.of(context)!.profile_page_my_worlds1,
                   style: GoogleFonts.notoSerifTc(fontSize: 18,
                       fontWeight: FontWeight.w600))),
               TextButton.icon(
                 onPressed: _createWorld,
                 icon: const Icon(Icons.add_rounded, size: 18),
-                label: const Text('建立世界觀'),
+                label: Text(AppLocalizations.of(context)!.profile_page_create_world1),
               ),
             ]),
             const SizedBox(height: 12),
@@ -3532,9 +3532,9 @@ class _ProfilePageState extends State<ProfilePage>
                   Icon(Icons.auto_stories_outlined, size: 48,
                       color: theme.colorScheme.primary.withValues(alpha: .55)),
                   const SizedBox(height: 14),
-                  const Text('還沒有建立開放世界'),
+                  Text(AppLocalizations.of(context)!.profile_page_worlds_empty1),
                   const SizedBox(height: 5),
-                  const Text('建立妳的第一個世界觀吧'),
+                  Text(AppLocalizations.of(context)!.profile_page_worlds_empty_hint1),
                 ]),
               ),
             for (final doc in docs) _buildMyWorldCard(doc, theme),
@@ -3547,7 +3547,7 @@ class _ProfilePageState extends State<ProfilePage>
   Widget _buildMyWorldCard(
       QueryDocumentSnapshot<Map<String, dynamic>> doc, ThemeData theme) {
     final data = doc.data();
-    final name = (data['name'] ?? '未命名世界觀').toString();
+    final name = (data['name'] ?? AppLocalizations.of(context)!.profile_page_world_untitled1).toString();
     final cover = (data['coverImage'] ?? '').toString();
     final isPublic = data['status'] == 'public' || data['isPublic'] == true;
     final count = data['npcCharacters'] is List
@@ -3578,7 +3578,7 @@ class _ProfilePageState extends State<ProfilePage>
                   style: GoogleFonts.notoSerifTc(fontSize: 15,
                       fontWeight: FontWeight.w600)),
               const SizedBox(height: 5),
-              Text('${isPublic ? '公開' : '私人'} · $count 位人物',
+              Text("${isPublic ? AppLocalizations.of(context)!.profile_page_world_public1 : AppLocalizations.of(context)!.profile_page_world_private1} · ${AppLocalizations.of(context)!.profile_page_world_character_count1(count)}",
                   style: TextStyle(fontSize: 12,
                       color: theme.colorScheme.onSurfaceVariant)),
               const SizedBox(height: 4),
@@ -3587,12 +3587,12 @@ class _ProfilePageState extends State<ProfilePage>
                     onPressed: () => Navigator.push(context,
                         MaterialPageRoute(builder: (_) =>
                             WorldChatPage(worldId: doc.id))),
-                    child: const Text('進入聊天')),
+                    child: Text(AppLocalizations.of(context)!.profile_page_world_enter_chat1)),
                 TextButton(
                     onPressed: () => Navigator.push(context,
                         MaterialPageRoute(builder: (_) =>
                             WorldEditPage(worldId: doc.id))),
-                    child: const Text('編輯')),
+                    child: Text(AppLocalizations.of(context)!.profile_page_world_edit1)),
               ]),
             ],
           )),
@@ -3654,7 +3654,7 @@ class _ProfilePageState extends State<ProfilePage>
                       color: theme.colorScheme.primary,
                     ),
                     label: Text(
-                      '創建角色',
+                      l10n.profile_page_create_character1,
                       style: TextStyle(
                         fontSize: 14,
                         color: theme.colorScheme.primary,

@@ -1191,7 +1191,7 @@ class _LatestTabState extends State<_LatestTab> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  '探索公開世界',
+                                  l10n.public_worlds_explore_title1,
                                   style: GoogleFonts.notoSerifTc(
                                     fontSize: useDesktopLayout ? 27 : 19,
                                     fontWeight: FontWeight.w700,
@@ -1212,7 +1212,7 @@ class _LatestTabState extends State<_LatestTab> {
                                     borderRadius: BorderRadius.circular(7),
                                   ),
                                   child: Text(
-                                    '走進不同的世界，探索不一樣的旅程',
+                                    AppLocalizations.of(context)!.world_explore_subtitle1,
                                     style: GoogleFonts.notoSerifTc(
                                       fontSize: useDesktopLayout ? 16 : 12.5,
                                       fontWeight: FontWeight.w600,

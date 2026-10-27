@@ -412,7 +412,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
       if (!mounted) return;
       ToastUtils.showCenterToast(
         context,
-        '讀取照片失敗：$error',
+        AppLocalizations.of(context)!.moment_detail_error1,
         isError: true,
       );
     }
@@ -659,9 +659,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
 
       ToastUtils.showCenterToast(
         context,
-        l10n.comment_post_failed(
-          error.toString(),
-        ),
+        l10n.moment_detail_error1,
         isError: true,
       );
     } finally {
@@ -1548,7 +1546,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
                       ),
                       const SizedBox(width: 8),
                       IconButton(
-                        tooltip: '加入照片',
+                        tooltip: l10n.moment_detail_add_photo1,
                         onPressed: _isPostingComment ? null : _pickCommentImage,
                         icon: ImageIcon(
                           const AssetImage(

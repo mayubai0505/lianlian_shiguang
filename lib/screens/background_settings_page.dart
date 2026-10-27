@@ -162,7 +162,7 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
                       fontWeight: FontWeight.w500,
                     ),
                     tabs: [
-                      Tab(text: '專屬照片'),
+                      Tab(text: appL10n.background_exclusive_photos_tab),
                       Tab(text: appL10n.background_settings_message),
                     ],
                   ),
@@ -298,7 +298,7 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
   /// 限定背景仍沿用原有 event_progress/ownedEventItems 清單。
   Widget _buildWorldPhotosTab(BuildContext context, {required String? currentUserId}) {
     if (currentUserId == null || widget.sessionId.isEmpty) {
-      return const Center(child: Text('請先登入並進入世界聊天室'));
+      return Center(child: Text(appL10n.background_world_sign_in_chat));
     }
     final app = FirebaseFirestore.instance.collection('artifacts').doc(
         const String.fromEnvironment('APP_ID', defaultValue: 'lianlianshiguang'));
@@ -306,7 +306,7 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
       future: app.collection('worlds').doc(widget.worldId!).get(),
       builder: (context, worldSnapshot) {
         if (!worldSnapshot.hasData) {
-          if (worldSnapshot.hasError) return const Center(child: Text('世界照片讀取失敗'));
+          if (worldSnapshot.hasError) return Center(child: Text(appL10n.background_world_photo_load_error));
           return const Center(child: CircularProgressIndicator());
         }
         final world = worldSnapshot.data?.data() ?? <String,dynamic>{};
@@ -317,7 +317,7 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
         // The displayed world cover is creator-configured world artwork, not a
         // character CG; no character-affection threshold applies to it.
         if (roster.isEmpty && coverUrl.isEmpty) {
-          return const Center(child: Text('目前尚無可選擇的世界照片'));
+          return Center(child: Text(appL10n.background_world_no_photos));
         }
         return StreamBuilder<QuerySnapshot<Map<String,dynamic>>>(
           stream: app.collection('world_chat_sessions').doc(widget.sessionId)
@@ -331,7 +331,7 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
               padding: const EdgeInsets.fromLTRB(18, 12, 18, 24),
               children: [
                 if (coverUrl.isNotEmpty) ...[
-                  Text('世界觀封面', style: GoogleFonts.notoSerifTc(
+                  Text(appL10n.background_world_cover, style: GoogleFonts.notoSerifTc(
                       fontSize: 16, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 10),
                   InkWell(
@@ -340,13 +340,13 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
                       final selected = await showDialog<bool>(
                         context: context,
                         builder: (dialogContext) => AlertDialog(
-                          title: const Text('更換聊天背景'),
-                          content: const Text('要將世界觀封面設為這個聊天室的背景嗎？'),
+                          title: Text(AppLocalizations.of(dialogContext)!.change_chat_bg),
+                          content: Text(appL10n.background_world_cover_confirm),
                           actions: [
                             TextButton(onPressed: () => Navigator.pop(dialogContext, false),
-                                child: const Text('取消')),
+                                child: Text(AppLocalizations.of(dialogContext)!.cancelButton)),
                             FilledButton(onPressed: () => Navigator.pop(dialogContext, true),
-                                child: const Text('確定')),
+                                child: Text(AppLocalizations.of(dialogContext)!.confirm_change)),
                           ],
                         ),
                       );
@@ -451,7 +451,7 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
                 (item['eventId'] ?? eventDoc.id).toString(),
                 itemId:
                 (item['itemId'] ?? entry.key).toString(),
-                name: (item['name'] ?? '限定背景').toString(),
+                name: (item['name'] ?? appL10n.background_world_default_limited).toString(),
                 description:
                 (item['description'] ?? '').toString(),
                 imageUrl: imageUrl,
@@ -1142,7 +1142,7 @@ class _WorldCharacterPhotos extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final id = (character['id'] ?? '').toString();
-    final name = (character['name'] ?? '角色').toString();
+    final name = (character['name'] ?? appL10n.background_world_default_character).toString();
     final fallback = (character['avatarUrl'] ?? '').toString().trim();
     final app = FirebaseFirestore.instance.collection('artifacts').doc(
         const String.fromEnvironment('APP_ID', defaultValue: 'lianlianshiguang'));
@@ -1168,7 +1168,7 @@ class _WorldCharacterPhotos extends StatelessWidget {
               photos.add({'imageUrl': fallback, 'requiredAffection': 0});
             }
             if (photos.isEmpty) {
-              return const Text('尚無可使用的角色照片');
+              return Text(appL10n.background_world_no_character_photos);
             }
             return SizedBox(height: 185, child: ListView.separated(
               scrollDirection: Axis.horizontal, itemCount: photos.length,
@@ -1181,12 +1181,12 @@ class _WorldCharacterPhotos extends StatelessWidget {
                 return InkWell(
                   onTap: () async {
                     if (!unlocked) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text('需要 $requiredScore 好感度才能解鎖')));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(appL10n.background_world_unlock_required(requiredScore))));
                       return;
                     }
                     final ok=await showDialog<bool>(context:context,builder:(c)=>AlertDialog(
-                        title: const Text('更換聊天背景'),
-                        content:Text('要把「$name」的照片設為世界聊天室背景嗎？'),
+                        title: Text(AppLocalizations.of(c)!.change_chat_bg),
+                        content:Text(appL10n.background_world_character_confirm(name)),
                         actions:[TextButton(onPressed:()=>Navigator.pop(c,false),child:const Text('取消')),
                           FilledButton(onPressed:()=>Navigator.pop(c,true),child:const Text('確定'))]));
                     if (ok != true || !context.mounted) return;
@@ -1201,7 +1201,7 @@ class _WorldCharacterPhotos extends StatelessWidget {
                     if (!unlocked) Container(color:Colors.black54,alignment:Alignment.center,
                         child:Column(mainAxisSize:MainAxisSize.min,children:[
                           const Icon(Icons.lock_outline,color:Colors.white),
-                          Text('$requiredScore 好感度',style:const TextStyle(color:Colors.white))])),
+                          Text(appL10n.background_world_affection_count(requiredScore),style:const TextStyle(color:Colors.white))])),
                   ]))),
                 );
               },

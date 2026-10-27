@@ -6732,7 +6732,7 @@ class AppLocalizationsId extends AppLocalizations {
       'Anda tidak dapat melaporkan profil kreator milik sendiri';
 
   @override
-  String creator_profile_report_reason_prompt(String creatorName) {
+  String creator_profile_report_reason_prompt1(String creatorName) {
     return 'Pilih alasan untuk melaporkan “$creatorName”:';
   }
 
@@ -10039,4 +10039,3504 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get theme_font_system_description =>
       'Ikuti font sistem default perangkat';
+
+  @override
+  String get font_selection_serif_name => 'Noto Serif TC';
+
+  @override
+  String get font_selection_sans_name => 'Noto Sans TC';
+
+  @override
+  String get font_selection_system_name => 'Font sistem';
+
+  @override
+  String get font_selection_serif_description =>
+      'Huruf serif elegan untuk pengalaman membaca yang mendalam.';
+
+  @override
+  String get font_selection_sans_description =>
+      'Huruf sans-serif yang jelas dan lembut.';
+
+  @override
+  String get font_selection_system_description =>
+      'Gunakan font bawaan perangkat.';
+
+  @override
+  String get font_selection_preview_sentence =>
+      'Tulis bab baru kisahmu bersama orang yang kamu sukai.';
+
+  @override
+  String get avatar_frame_error_generic => 'Kesalahan';
+
+  @override
+  String get avatar_frame_sign_in_required => 'Silakan masuk terlebih dahulu';
+
+  @override
+  String get avatar_frame_default_name => 'Bingkai avatar acara';
+
+  @override
+  String get background_exclusive_photos_tab => 'Foto Eksklusif';
+
+  @override
+  String get background_world_sign_in_chat =>
+      'Silakan masuk dan buka obrolan dunia';
+
+  @override
+  String get background_world_photo_load_error => 'Kesalahan';
+
+  @override
+  String get background_world_no_photos => 'Tidak ada foto dunia yang tersedia';
+
+  @override
+  String get background_world_cover => 'Sampul Dunia';
+
+  @override
+  String get background_world_cover_confirm =>
+      'Gunakan sampul dunia sebagai latar obrolan ini?';
+
+  @override
+  String get background_world_default_limited => 'Latar Terbatas';
+
+  @override
+  String get background_world_default_character => 'Karakter';
+
+  @override
+  String get background_world_no_character_photos =>
+      'Tidak ada foto karakter yang tersedia';
+
+  @override
+  String background_world_unlock_required(int count) {
+    return 'Perlu $count poin afeksi untuk membuka';
+  }
+
+  @override
+  String background_world_character_confirm(String name) {
+    return 'Gunakan foto $name sebagai latar obrolan dunia?';
+  }
+
+  @override
+  String background_world_affection_count(int count) {
+    return '$count Afeksi';
+  }
+
+  @override
+  String get reply_selection => 'Opsi balasan';
+
+  @override
+  String get chat_home_character_tab => 'Obrolan karakter';
+
+  @override
+  String get chat_home_world_tab => 'Dunia Terbuka';
+
+  @override
+  String get chat_home_world_error_generic => 'Kesalahan';
+
+  @override
+  String get chat_home_world_pinned => 'Obrolan dunia disematkan';
+
+  @override
+  String get chat_home_world_deleted =>
+      'Obrolan dunia dan riwayat percakapan dihapus';
+
+  @override
+  String get chat_home_world_action_done => 'Selesai';
+
+  @override
+  String get chat_home_world_rename_title => 'Beri nama kenangan ini';
+
+  @override
+  String chat_home_world_delete_confirm(String name) {
+    return 'Hapus riwayat obrolan “$name”?\n\nPercakapan, ringkasan cerita, hubungan, dan memo akan dihapus permanen dan tidak dapat dipulihkan. Dunia yang diterbitkan kreator tetap tersedia.';
+  }
+
+  @override
+  String get chat_home_world_empty_title => 'Belum ada obrolan Dunia Terbuka';
+
+  @override
+  String get chat_home_world_empty_desc =>
+      'Mulai bermain di Dunia Terbuka agar obrolan muncul di sini.';
+
+  @override
+  String get chat_home_world_unnamed => 'Dunia tanpa nama';
+
+  @override
+  String get chat_home_world_private_test => 'Uji coba privat';
+
+  @override
+  String get chat_home_world_no_messages => 'Belum ada pesan';
+
+  @override
+  String get expand_features => 'Tampilkan fitur lainnya';
+
+  @override
+  String get chat_sticker_all => 'Semua';
+
+  @override
+  String get chat_mode_short_daily => 'Harian';
+
+  @override
+  String get chat_mode_short_story => 'Cerita';
+
+  @override
+  String get chat_mode_short_immersive => 'Imersif';
+
+  @override
+  String get chat_mode_short_resonance => 'Resonansi';
+
+  @override
+  String get chat_mode_short_gemini => 'Obrolan';
+
+  @override
+  String get chat_theater_tool => 'Teater';
+
+  @override
+  String chat_regenerate_insufficient_flowers(int cost) {
+    return 'Bunga tidak cukup. Membuat ulang memerlukan $cost Bunga.';
+  }
+
+  @override
+  String get chat_regenerate_paid_title => 'Buat ulang berbayar';
+
+  @override
+  String chat_regenerate_paid_confirm(int cost) {
+    return 'Jatah buat ulang gratis hari ini sudah habis. Dalam mode saat ini, biaya buat ulang adalah $cost Bunga. Lanjutkan?';
+  }
+
+  @override
+  String get chat_generic_error => 'Kesalahan';
+
+  @override
+  String get chat_regenerate_confirm => 'Konfirmasi';
+
+  @override
+  String get comment_add_photo => 'Tambahkan foto';
+
+  @override
+  String get comment_error_generic => 'Kesalahan';
+
+  @override
+  String creator_profile_report_reason_prompt(String creatorName) {
+    return 'Pilih alasan melaporkan “$creatorName”:';
+  }
+
+  @override
+  String get creator_profile_open_worlds => 'Dunia Terbuka';
+
+  @override
+  String get creator_profile_generic_error => 'Kesalahan';
+
+  @override
+  String get creator_profile_refresh => 'Muat ulang';
+
+  @override
+  String get creator_profile_no_open_worlds =>
+      'Kreator ini belum menerbitkan dunia terbuka.';
+
+  @override
+  String get creator_profile_unnamed_world => 'Dunia Tanpa Nama';
+
+  @override
+  String get creator_program_required_fields =>
+      'Harap isi arah kreasi dan alasan mendaftar.';
+
+  @override
+  String get creator_program_submitted =>
+      'Pengajuan terkirim. Peninjauan memerlukan sekitar 1–3 hari.';
+
+  @override
+  String get creator_program_error => 'Kesalahan';
+
+  @override
+  String get creator_program_login_required =>
+      'Silakan masuk sebelum mendaftar Program Kreator.';
+
+  @override
+  String get creator_program_title => 'Program Kreator';
+
+  @override
+  String get creator_program_headline =>
+      'Biarkan lebih banyak orang menemukan karyamu';
+
+  @override
+  String get creator_program_intro =>
+      'Jika kamu punya karya publik, kamu boleh mendaftar Program Kreator 《戀戀拾光》. Tim akan meninjau dalam 1–3 hari.';
+
+  @override
+  String get creator_program_benefits_title => 'Manfaat program';
+
+  @override
+  String get creator_program_benefit_dashboard =>
+      'Dasbor kreator: lihat pengikut, karakter publik, total suka, dan pengikut baru bulan ini.';
+
+  @override
+  String get creator_program_benefit_fans =>
+      'Pengelolaan penggemar: kirim surat, kelola penggemar, dan beri hadiah dengan bungamu.';
+
+  @override
+  String get creator_program_benefit_exposure =>
+      'Promosi resmi: karakter baru berpeluang tampil di Instagram dan rekomendasi kreator dalam game.';
+
+  @override
+  String get creator_program_benefit_monthly =>
+      'Hadiah bulanan: terbitkan minimal 3 karakter baru dalam sebulan untuk menerima 520 bunga bulan berikutnya.';
+
+  @override
+  String get creator_program_benefit_merch =>
+      'Kolaborasi produk fisik: jika karaktermu ikut proyek produk atau kotak hadiah resmi, kamu dapat memperoleh imbalan tunai sesuai proyek.';
+
+  @override
+  String creator_program_last_review_note(String reason) {
+    return 'Catatan peninjauan sebelumnya: $reason';
+  }
+
+  @override
+  String get creator_program_apply_heading => 'Daftar bergabung';
+
+  @override
+  String get creator_program_direction_label => 'Arah kreasi';
+
+  @override
+  String get creator_program_direction_hint =>
+      'Misalnya: romansa modern, historis, fantasi, BL, GL…';
+
+  @override
+  String get creator_program_reason_label => 'Alasan ingin bergabung';
+
+  @override
+  String get creator_program_reason_hint =>
+      'Ceritakan bagaimana kamu ingin mengembangkan karakter dan berinteraksi dengan penggemar.';
+
+  @override
+  String get creator_program_social_label => 'Tautan media sosial (opsional)';
+
+  @override
+  String get creator_program_social_hint =>
+      'Instagram, Threads, situs pribadi, dll.';
+
+  @override
+  String get creator_program_submit => 'Kirim pengajuan';
+
+  @override
+  String get creator_program_public_character_note =>
+      'Sebelum mengirim, sistem memeriksa bahwa akunmu memiliki setidaknya 1 karakter publik.';
+
+  @override
+  String get creator_program_status_pending => 'Pengajuan sedang ditinjau';
+
+  @override
+  String get creator_program_status_pending_desc =>
+      'Pengajuanmu diterima. Peninjauan memerlukan sekitar 1–3 hari. Kami akan memberi tahu lewat kotak surat dalam game.';
+
+  @override
+  String get creator_program_status_approved => 'Status kreator disetujui ';
+
+  @override
+  String get creator_program_status_approved_desc =>
+      'Selamat bergabung dengan Program Kreator 《戀戀拾光》! Dasbor, pengelolaan penggemar, dan banner rekomendasi akan terhubung dengan status ini pada fitur mendatang.';
+
+  @override
+  String get creator_program_status_suspended => 'Status kreator ditangguhkan';
+
+  @override
+  String get creator_program_status_suspended_desc =>
+      'Fitur khusus kreator sementara tidak tersedia. Periksa pemberitahuan resmi di kotak surat dalam game.';
+
+  @override
+  String get creator_program_status_revoked => 'Status kreator dicabut';
+
+  @override
+  String get creator_program_status_revoked_desc =>
+      'Fitur khusus kreator tidak tersedia. Jika ada pertanyaan, hubungi dukungan.';
+
+  @override
+  String get creator_program_status_title => 'Status kreator';
+
+  @override
+  String creator_program_current_status(String status) {
+    return 'Status saat ini: $status';
+  }
+
+  @override
+  String creator_program_official_note(String reason) {
+    return 'Catatan resmi: $reason';
+  }
+
+  @override
+  String get creator_dashboard_error1 => 'Kesalahan';
+
+  @override
+  String get creator_dashboard_access_title1 => 'Dasbor Kreator';
+
+  @override
+  String get creator_dashboard_status_notice_title1 =>
+      'Creator Dashboard Access Notice';
+
+  @override
+  String get creator_dashboard_apply_title1 => 'Daftar Dasbor Kreator';
+
+  @override
+  String get creator_dashboard_access_subtitle1 =>
+      'Statistik permainan karakter · Pengikut baru dan berhenti · Kelola pengikut';
+
+  @override
+  String get creator_dashboard_pending1 =>
+      'Application submitted · Under review';
+
+  @override
+  String get creator_dashboard_legacy_pending1 =>
+      'Application pending confirmation';
+
+  @override
+  String get creator_dashboard_syncing1 =>
+      'Syncing dashboard access. Please try again later.';
+
+  @override
+  String get creator_dashboard_suspended1 =>
+      'Dashboard access suspended. Contact support.';
+
+  @override
+  String get creator_dashboard_apply_subtitle1 =>
+      'Apply for access to character analytics and follower management';
+
+  @override
+  String get creator_dashboard_rejected1 =>
+      'Application declined · You may apply again';
+
+  @override
+  String get creator_dashboard_submitted1 =>
+      'Application submitted. Please wait for review.';
+
+  @override
+  String get creator_dashboard_benefits_title1 => 'Creator Dashboard features';
+
+  @override
+  String get creator_dashboard_benefit_monthly1 =>
+      '🌸 Monthly creation reward: Publish 3 distinct new characters this month to claim 300 Flowers once.';
+
+  @override
+  String get creator_dashboard_benefit_analytics1 =>
+      '• View public-character play metrics, follower totals, and follow/unfollow activity';
+
+  @override
+  String get creator_dashboard_benefit_mail1 =>
+      '• Fan messages: private messages and announcements (daily limits apply)';
+
+  @override
+  String get creator_dashboard_benefit_gifts1 =>
+      '• Fan rewards: gift your own Flowers to followers';
+
+  @override
+  String get creator_dashboard_reward_note1 =>
+      'Approval required. Private characters, drafts, and republished older characters do not count toward the monthly reward.';
+
+  @override
+  String get creator_dashboard_apply_cta1 =>
+      'Learn more and request dashboard access';
+
+  @override
+  String get creator_dashboard_my_characters1 => 'Karakter saya';
+
+  @override
+  String get creator_dashboard_my_worlds1 => 'Dunia terbuka saya';
+
+  @override
+  String get creator_dashboard_create_world1 => 'Buat dunia terbuka';
+
+  @override
+  String get creator_dashboard_public_worlds1 => 'Dunia yang diterbitkan';
+
+  @override
+  String get creator_dashboard_public_worlds_hint1 =>
+      'Other players can explore';
+
+  @override
+  String get creator_dashboard_private_worlds1 => 'Dunia pribadi';
+
+  @override
+  String get creator_dashboard_private_worlds_hint1 =>
+      'Only you can view and edit';
+
+  @override
+  String get creator_dashboard_world_drafts1 => 'Draf dunia';
+
+  @override
+  String get creator_dashboard_world_drafts_hint1 => 'Worlds not yet finished';
+
+  @override
+  String get creator_dashboard_no_drafts1 => 'No drafts yet';
+
+  @override
+  String get creator_dashboard_no_worlds1 => 'No worlds yet';
+
+  @override
+  String get creator_dashboard_unnamed_world1 => 'Dunia tanpa nama';
+
+  @override
+  String get creator_dashboard_delete_world_draft1 => 'Delete world draft';
+
+  @override
+  String get creator_dashboard_private_test1 => 'Uji pribadi';
+
+  @override
+  String get creator_dashboard_delete_world_confirm_title1 =>
+      'Delete world draft?';
+
+  @override
+  String get creator_dashboard_delete_world_confirm_body1 =>
+      'This cannot be undone. Uploaded images will not be deleted.';
+
+  @override
+  String get creator_dashboard_draft_deleted1 => 'World draft deleted';
+
+  @override
+  String get creator_dashboard_validation1 =>
+      'Creative direction must be 2–100 characters and application reason 10–500 characters.';
+
+  @override
+  String get creator_dashboard_confirm_application_title1 =>
+      'Confirm dashboard application';
+
+  @override
+  String get creator_dashboard_confirm_application_body1 =>
+      'Your request will be reviewed. Approval grants dashboard access and does not constitute a partnership agreement.';
+
+  @override
+  String get creator_dashboard_confirm_send1 => 'Konfirmasi pengiriman';
+
+  @override
+  String get creator_dashboard_form_heading1 =>
+      'Apply for the Lianlian Shiguang Creator Dashboard';
+
+  @override
+  String get creator_dashboard_form_description1 =>
+      'Tell us about your creative direction and how you plan to use character analytics and follower management. This is not a partnership contract.';
+
+  @override
+  String get creator_dashboard_direction_label1 => 'Arah kreatif';
+
+  @override
+  String get creator_dashboard_direction_hint1 =>
+      'Misalnya: romansa modern, historis, fantasi, BL, GL…';
+
+  @override
+  String get creator_dashboard_reason_label1 =>
+      'Alasan mengajukan akses dasbor';
+
+  @override
+  String get creator_dashboard_reason_hint1 =>
+      'Share your experience and which dashboard features you need';
+
+  @override
+  String get creator_dashboard_sending1 => 'Mengirim…';
+
+  @override
+  String get creator_dashboard_submit1 => 'Ajukan akses dasbor';
+
+  @override
+  String get creator_dashboard_privacy_note1 =>
+      'Approval is not guaranteed. Do not enter identity numbers, banking details, or other sensitive information.';
+
+  @override
+  String get creator_dashboard_revoked_limit1 =>
+      'Dashboard application limit reached. Please contact support.';
+
+  @override
+  String get creator_dashboard_revoked_notice1 =>
+      'Your dashboard access was revoked. Check the page for available reapplication options.';
+
+  @override
+  String get creator_support_page_title1 => 'Pusat Bantuan';
+
+  @override
+  String get creator_support_new_report1 => 'Laporan baru';
+
+  @override
+  String get creator_support_error1 => 'Kesalahan';
+
+  @override
+  String get creator_support_no_cases1 => 'Belum ada laporan';
+
+  @override
+  String get creator_support_unread1 => 'Belum dibaca';
+
+  @override
+  String get creator_support_load_more1 => 'Muat lainnya';
+
+  @override
+  String get creator_support_category_label1 => 'Kategori masalah';
+
+  @override
+  String get creator_support_character_optional1 =>
+      'Karakter terkait (opsional)';
+
+  @override
+  String get creator_support_no_character1 => 'Tanpa karakter';
+
+  @override
+  String get creator_support_report_title1 => 'Judul laporan';
+
+  @override
+  String get creator_support_report_description1 => 'Deskripsi masalah';
+
+  @override
+  String creator_support_select_images1(int count) {
+    return 'Pilih tangkapan layar ($count/3, masing-masing di bawah 2 MB)';
+  }
+
+  @override
+  String get creator_support_images_private1 =>
+      'Tangkapan layar hanya dapat dilihat kreator dan tim resmi.';
+
+  @override
+  String get creator_support_submitting1 => 'Mengirim…';
+
+  @override
+  String get creator_support_submit1 => 'Konfirmasi pengiriman';
+
+  @override
+  String get creator_support_image_too_large1 =>
+      'Gambar lebih dari 2 MB. Pilih gambar lain.';
+
+  @override
+  String get creator_support_fill_title_description1 =>
+      'Isi judul dan deskripsi.';
+
+  @override
+  String get creator_support_case_sent1 => 'Laporan terkirim';
+
+  @override
+  String creator_support_case_sent_partial1(int count) {
+    return 'Laporan terkirim, tetapi $count tangkapan layar gagal diunggah';
+  }
+
+  @override
+  String get creator_support_detail_title1 => 'Detail laporan';
+
+  @override
+  String get creator_support_image_max1 =>
+      'Setiap tangkapan layar harus di bawah 2 MB';
+
+  @override
+  String get creator_support_jpg_png_only1 => 'Hanya JPG / PNG';
+
+  @override
+  String get creator_support_reply_sent1 => 'Balasan terkirim';
+
+  @override
+  String creator_support_reply_sent_partial1(int count) {
+    return 'Pesan terkirim, tetapi $count gambar gagal diunggah';
+  }
+
+  @override
+  String get creator_support_empty_content1 => 'Isi tidak boleh kosong';
+
+  @override
+  String get creator_support_recall_message1 => 'Tarik pesan';
+
+  @override
+  String get creator_support_delete_message1 => 'Hapus pesan';
+
+  @override
+  String get creator_support_recall_warning1 =>
+      'Kedua pihak akan melihat “Pesan ini ditarik”; lampiran tidak dapat dilihat.';
+
+  @override
+  String get creator_support_delete_warning1 =>
+      'Sembunyikan hanya di layar Anda; pihak lain tetap menyimpan pesan.';
+
+  @override
+  String get creator_support_cancel1 => 'Batal';
+
+  @override
+  String get creator_support_confirm1 => 'Konfirmasi';
+
+  @override
+  String get creator_support_operation_success1 => 'Berhasil';
+
+  @override
+  String get creator_support_edit_message1 => 'Edit pesan';
+
+  @override
+  String creator_support_recall_remaining1(int seconds) {
+    return 'Tarik pesan (tersisa $seconds detik)';
+  }
+
+  @override
+  String get creator_support_recall_expired1 =>
+      'Tarik pesan (lebih dari 60 detik)';
+
+  @override
+  String get creator_support_case_updated1 => 'Laporan diperbarui';
+
+  @override
+  String get creator_support_loading1 => 'Memuat…';
+
+  @override
+  String creator_support_creator_uid1(String uid) {
+    return 'UID kreator: $uid';
+  }
+
+  @override
+  String get creator_support_internal_note1 =>
+      'Catatan internal (tidak terlihat oleh kreator)';
+
+  @override
+  String get creator_support_save_internal_note1 => 'Simpan catatan internal';
+
+  @override
+  String get creator_support_case_images1 => 'Tangkapan layar laporan';
+
+  @override
+  String get creator_support_official1 => 'Tim Resmi Lianlian Shiguang';
+
+  @override
+  String get creator_support_creator1 => 'Kreator';
+
+  @override
+  String get creator_support_recalled1 => 'Pesan ini ditarik';
+
+  @override
+  String get creator_support_edited1 => 'Diedit';
+
+  @override
+  String get creator_support_reply_hint1 => 'Tulis balasan…';
+
+  @override
+  String get creator_support_attach_image1 =>
+      'Lampirkan tangkapan layar (maks. 3)';
+
+  @override
+  String get creator_support_send1 => 'Kirim';
+
+  @override
+  String get creator_support_admin_title1 => 'Manajemen Laporan Kreator';
+
+  @override
+  String get creator_support_new_reply1 => 'Balasan baru';
+
+  @override
+  String get creator_support_load_more_cases1 => 'Muat laporan lainnya';
+
+  @override
+  String get creator_support_image_load_error1 =>
+      'Gagal memuat tangkapan layar';
+
+  @override
+  String get creator_support_edit_hint1 => 'Edit isi pesan';
+
+  @override
+  String get creator_support_save1 => 'Simpan';
+
+  @override
+  String get creator_support_status_pending1 => 'Menunggu';
+
+  @override
+  String get creator_support_status_progress1 => 'Diproses';
+
+  @override
+  String get creator_support_status_waiting1 => 'Menunggu informasi';
+
+  @override
+  String get creator_support_status_resolved1 => 'Selesai';
+
+  @override
+  String get creator_support_cat_character1 => 'Pengelolaan karakter';
+
+  @override
+  String get creator_support_cat_ai1 => 'Masalah interaksi karakter AI';
+
+  @override
+  String get creator_support_cat_dashboard1 => 'Dasbor kreator';
+
+  @override
+  String get creator_support_cat_cooperation1 => 'Kerja sama dan manfaat';
+
+  @override
+  String get creator_support_cat_other1 => 'Masalah lainnya';
+
+  @override
+  String get desktop_widget_size_small1 => 'Kecil';
+
+  @override
+  String get desktop_widget_size_medium1 => 'Sedang';
+
+  @override
+  String get desktop_widget_size_large1 => 'Besar';
+
+  @override
+  String get desktop_widget_cancel1 => 'Batal';
+
+  @override
+  String get desktop_widget_delete1 => 'Hapus';
+
+  @override
+  String desktop_widget_days_remaining1(int days) {
+    return 'Tersisa $days hari';
+  }
+
+  @override
+  String get desktop_widget_days_today1 => 'Hari ini';
+
+  @override
+  String desktop_widget_days_elapsed1(int days) {
+    return '$days hari lalu';
+  }
+
+  @override
+  String get desktop_widget_daily_quote1 => 'Kutipan hari ini';
+
+  @override
+  String get desktop_widget_update_daily1 => 'Perbarui sekali sehari';
+
+  @override
+  String get desktop_widget_character_birthday1 => 'Ulang tahun karakter';
+
+  @override
+  String get desktop_widget_change1 => 'Ganti';
+
+  @override
+  String get desktop_widget_mood1 => 'Suasana hati';
+
+  @override
+  String get desktop_widget_current_state1 => 'Kondisi saat ini';
+
+  @override
+  String get desktop_widget_location1 => 'Lokasi';
+
+  @override
+  String get desktop_widget_relationship1 => 'Hubungan';
+
+  @override
+  String get desktop_widget_outfit1 => 'Pakaian';
+
+  @override
+  String get desktop_widget_weather1 => 'Cuaca';
+
+  @override
+  String get desktop_widget_thought1 => 'Pikiran';
+
+  @override
+  String get desktop_widget_action1 => 'Tindakan';
+
+  @override
+  String get desktop_widget_affinity1 => 'Tingkat kedekatan';
+
+  @override
+  String get desktop_widget_character_status1 => 'Status karakter';
+
+  @override
+  String get desktop_widget_no_posts1 => 'Belum ada postingan karakter';
+
+  @override
+  String get desktop_widget_crop_position1 => 'Atur posisi karakter';
+
+  @override
+  String get desktop_widget_crop_action1 =>
+      'Perbesar / geser untuk mengatur bingkai';
+
+  @override
+  String get desktop_widget_crop_hint1 =>
+      'Gunakan dua jari untuk zoom dan satu jari untuk menggeser tanpa menggulir halaman.';
+
+  @override
+  String get desktop_widget_crop_title1 => 'Atur bingkai karakter';
+
+  @override
+  String get desktop_widget_reset1 => 'Atur ulang';
+
+  @override
+  String get desktop_widget_crop_instructions1 =>
+      'Geser dengan satu jari untuk mengatur posisi dan cubit dengan dua jari untuk ukuran. Bingkai menunjukkan tampilan widget.';
+
+  @override
+  String desktop_widget_crop_position_scale1(int x, int y, String scale) {
+    return 'Posisi: $x% / $y% · Zoom: $scale×';
+  }
+
+  @override
+  String get desktop_widget_apply1 => 'Terapkan';
+
+  @override
+  String get desktop_widget_just_posted1 => 'Baru saja mengunggah';
+
+  @override
+  String get desktop_widget_important_day1 => 'Hari penting';
+
+  @override
+  String get desktop_widget_no_date1 => 'Tanggal belum dipilih';
+
+  @override
+  String get desktop_widget_first_met1 => 'Hari kami bertemu';
+
+  @override
+  String get desktop_widget_error1 => 'Kesalahan';
+
+  @override
+  String get event_memory_select_character_title1 => 'Pilih karakter';
+
+  @override
+  String get event_memory_my_characters1 => 'Karakter saya';
+
+  @override
+  String get event_memory_friend_characters1 => 'Karakter teman';
+
+  @override
+  String get event_memory_friend_badge1 => 'Teman';
+
+  @override
+  String get event_memory_unnamed_character1 => 'Karakter tanpa nama';
+
+  @override
+  String get event_memory_generic_error1 => 'Kesalahan';
+
+  @override
+  String get memory_collection_title1 => 'Koleksi Kenangan';
+
+  @override
+  String get memory_collection_avatar_frames1 => 'Bingkai Avatar';
+
+  @override
+  String get memory_collection_stickers1 => 'Stiker';
+
+  @override
+  String get memory_collection_memories1 => 'Kenangan';
+
+  @override
+  String get memory_collection_try_again1 => 'Silakan coba lagi nanti.';
+
+  @override
+  String get memory_collection_error1 => 'Kesalahan';
+
+  @override
+  String get memory_collection_chat_background1 => 'Latar Obrolan';
+
+  @override
+  String get memory_collection_got_it1 => 'Mengerti';
+
+  @override
+  String get memory_collection_not_now1 => 'Jangan sekarang';
+
+  @override
+  String get memory_collection_confirm_delete1 => 'Konfirmasi penghapusan';
+
+  @override
+  String get memory_collection_close1 => 'Tutup';
+
+  @override
+  String get memory_collection_delete1 => 'Hapus';
+
+  @override
+  String get memory_collection_image_preparing1 => 'Menyiapkan gambar';
+
+  @override
+  String get memory_collection_remove_favorite1 => 'Hapus dari koleksi';
+
+  @override
+  String get memory_collection_removed1 => 'Dihapus dari koleksi';
+
+  @override
+  String get event_memory_performance_opening1 =>
+      'Ada momen yang tetap tinggal,\nmeski cerita telah berakhir.';
+
+  @override
+  String get event_memory_performance_generic_error1 => 'Kesalahan';
+
+  @override
+  String get event_memory_performance_collected1 => 'Tersimpan';
+
+  @override
+  String get event_memory_performance_saving1 => 'Menyimpan…';
+
+  @override
+  String get event_memory_performance_save_gallery1 => 'Simpan ke galeri foto';
+
+  @override
+  String get event_memory_performance_done1 => 'Selesai';
+
+  @override
+  String get event_memory_performance_uncollect_title1 => 'Hapus dari koleksi?';
+
+  @override
+  String get event_memory_performance_not_now1 => 'Jangan sekarang';
+
+  @override
+  String get event_memory_performance_uncollect1 => 'Hapus dari koleksi';
+
+  @override
+  String get event_memory_performance_uncollected1 => 'Dihapus dari koleksi';
+
+  @override
+  String get event_memory_performance_login_to_collect1 =>
+      'Masuk untuk menyimpan kenangan ini';
+
+  @override
+  String get event_memory_performance_web_gallery_unsupported1 =>
+      'Versi web belum mendukung penyimpanan langsung ke galeri ponsel';
+
+  @override
+  String get event_memory_performance_gallery_permission1 =>
+      'Izin akses foto diperlukan untuk menyimpan kenangan ini';
+
+  @override
+  String get event_memory_performance_image_not_ready1 =>
+      'Gambar kenangan belum siap. Coba lagi';
+
+  @override
+  String get event_memory_performance_gallery_saved1 =>
+      'Tersimpan ke galeri foto';
+
+  @override
+  String get event_memory_performance_skip1 => 'Lewati';
+
+  @override
+  String get event_memory_performance_memory_label1 => 'Kenangan';
+
+  @override
+  String get event_memory_performance_tap_continue1 =>
+      'Ketuk untuk melanjutkan';
+
+  @override
+  String get event_memory_performance_tap_show_full1 =>
+      'Ketuk untuk menampilkan seluruh teks';
+
+  @override
+  String get event_memory_performance_brand_limited_memory1 =>
+      'Lianlian Shiguang · Kenangan Terbatas';
+
+  @override
+  String get event_ended1 => 'Acara telah berakhir';
+
+  @override
+  String get event_default_name1 => 'Acara waktu terbatas';
+
+  @override
+  String get event_default_subtitle1 =>
+      'Ciptakan kenangan istimewa bersamanya musim ini.';
+
+  @override
+  String get event_currency_default1 => 'Mata uang acara';
+
+  @override
+  String get event_tasks_today1 => 'Tugas hari ini';
+
+  @override
+  String event_tasks_subtitle1(String currency) {
+    return 'Selesaikan tugas, kumpulkan $currency, dan buka konten eksklusif.';
+  }
+
+  @override
+  String get event_milestones_title1 => 'Progres kumulatif';
+
+  @override
+  String event_milestones_subtitle1(String currency) {
+    return 'Kumpulkan $currency untuk hadiah eksklusif acara.';
+  }
+
+  @override
+  String get event_memory_title1 => 'Kenangan eksklusif';
+
+  @override
+  String get event_memory_subtitle1 => 'Simpan kenangan khusus dari acara ini.';
+
+  @override
+  String get event_shop_title1 => 'Toko acara';
+
+  @override
+  String event_shop_subtitle1(String currency) {
+    return 'Tukar $currency dengan hadiah eksklusif.';
+  }
+
+  @override
+  String get event_info_title1 => 'Detail acara';
+
+  @override
+  String get event_info_default1 =>
+      'Selesaikan tugas tertentu untuk mendapatkan mata uang acara.\nHadiah ditambahkan sesuai aturan acara.\nSisa mata uang setelah acara berakhir diproses sesuai aturan.';
+
+  @override
+  String get event_generic_error1 => 'Kesalahan';
+
+  @override
+  String get event_task_default1 => 'Tugas acara';
+
+  @override
+  String get event_claimed1 => 'Diklaim';
+
+  @override
+  String get event_claim1 => 'Klaim';
+
+  @override
+  String get event_in_progress1 => 'Sedang berlangsung';
+
+  @override
+  String get event_reward_default1 => 'Hadiah eksklusif';
+
+  @override
+  String get event_product_default1 => 'Item acara';
+
+  @override
+  String get event_cancel1 => 'Batal';
+
+  @override
+  String get event_confirm_exchange1 => 'Konfirmasi penukaran';
+
+  @override
+  String get event_limited_product1 => 'Item eksklusif';
+
+  @override
+  String event_insufficient_currency1(String currency) {
+    return '$currency tidak cukup';
+  }
+
+  @override
+  String get event_close1 => 'Tutup';
+
+  @override
+  String event_redeemed_count_limit1(int count, int max) {
+    return 'Ditukar $count / $max kali';
+  }
+
+  @override
+  String event_redeemed_count1(int count) {
+    return 'Ditukar $count kali';
+  }
+
+  @override
+  String get event_redeemed1 => 'Ditukar';
+
+  @override
+  String get event_exchange1 => 'Tukar';
+
+  @override
+  String get login_account_deletion_started1 =>
+      'Penghapusan akun sedang diproses';
+
+  @override
+  String get login_account_deletion_expired_description1 =>
+      'Batas waktu tiga hari untuk membatalkan penghapusan telah berakhir. Akun ini tidak dapat dipulihkan lagi. Hubungi dukungan jika memerlukan bantuan.';
+
+  @override
+  String get login_account_deletion_confirm1 => 'OK';
+
+  @override
+  String get event_memory_limited_title1 => 'Kenangan Eksklusif';
+
+  @override
+  String get moment_detail_add_photo1 => 'Tambahkan foto';
+
+  @override
+  String get moment_detail_error1 => 'Kesalahan';
+
+  @override
+  String get notification_claim_before_delete1 =>
+      'Klaim bunga sebelum menghapus pesan hadiah';
+
+  @override
+  String get notification_error1 => 'Kesalahan';
+
+  @override
+  String get notification_creator_gift_already_claimed1 =>
+      'Bunga ini sudah diklaim';
+
+  @override
+  String notification_creator_gift_claim_success1(Object amount) {
+    return 'Berhasil mengklaim $amount bunga!';
+  }
+
+  @override
+  String get notification_creator_gift_title1 => 'Hadiah Kreator';
+
+  @override
+  String notification_creator_gift_amount1(Object amount) {
+    return '$amount bunga';
+  }
+
+  @override
+  String get notification_creator_gift_claimed1 => 'Sudah diklaim';
+
+  @override
+  String get notification_creator_gift_claiming1 => 'Sedang mengklaim…';
+
+  @override
+  String get notification_creator_gift_claim_button1 => 'Klaim Bunga';
+
+  @override
+  String get notification_support_subject1 => 'Judul yang dikirim pemain';
+
+  @override
+  String get notification_support_content1 => 'Isi yang dikirim pemain';
+
+  @override
+  String get notification_support_reported1 => 'Konten yang dilaporkan';
+
+  @override
+  String get notification_support_reply1 => 'Balasan dukungan';
+
+  @override
+  String get notification_share_mail1 => 'Bagikan pesan';
+
+  @override
+  String get notification_original_question1 => 'Pertanyaan awal Anda';
+
+  @override
+  String get notification_preferences_chat_title1 => 'Obrolan karakter';
+
+  @override
+  String get notification_preferences_chat_subtitle1 =>
+      'Notifikasi push untuk balasan karakter';
+
+  @override
+  String get notification_preferences_moments_title1 => 'Postingan baru';
+
+  @override
+  String get notification_preferences_moments_subtitle1 =>
+      'Postingan baru dari kreator dan karakter yang kamu ikuti';
+
+  @override
+  String get notification_preferences_social_title1 => 'Notifikasi sosial';
+
+  @override
+  String get notification_preferences_social_subtitle1 =>
+      'Suka, komentar, ikuti, dan interaksi karakter';
+
+  @override
+  String get notification_preferences_announcements_title1 =>
+      'Pengumuman resmi';
+
+  @override
+  String get notification_preferences_announcements_subtitle1 =>
+      'Notifikasi pengumuman resmi umum';
+
+  @override
+  String get notification_preferences_events_title1 => 'Pengingat acara';
+
+  @override
+  String get notification_preferences_events_subtitle1 =>
+      'Notifikasi saat acara akan segera berakhir';
+
+  @override
+  String get notification_preferences_save_failed1 =>
+      'Gagal menyimpan pengaturan notifikasi. Coba lagi nanti.';
+
+  @override
+  String get notification_preferences_page_title1 => 'Preferensi notifikasi';
+
+  @override
+  String get notification_preferences_login_required1 =>
+      'Silakan masuk ke akunmu terlebih dahulu';
+
+  @override
+  String get notification_preferences_load_failed1 =>
+      'Gagal memuat preferensi notifikasi. Coba lagi nanti.';
+
+  @override
+  String get notification_preferences_footer1 =>
+      'Pengaturan ini disinkronkan di semua perangkat dengan akun pemain yang sama. Izin notifikasi sistem harus diatur secara terpisah di setiap perangkat. Menonaktifkan notifikasi push tidak akan menghapus kotak surat dalam game atau notifikasi yang sudah diterima.';
+
+  @override
+  String get official_studio_text_0011 =>
+      'Guide completed, but the viewed status could not sync and may appear again.';
+
+  @override
+  String get official_studio_text_0021 => 'Silakan masuk terlebih dahulu';
+
+  @override
+  String get official_studio_text_0031 => 'Creator Partnership Studio';
+
+  @override
+  String get official_studio_text_0041 => 'Guide';
+
+  @override
+  String get official_studio_text_0051 =>
+      'Unable to verify creator eligibility. Try again later.';
+
+  @override
+  String get official_studio_text_0061 =>
+      'You do not currently have official creator access.\\nIf approved, contact support to verify activation.';
+
+  @override
+  String get official_studio_text_0071 => 'Verified Partner Creator';
+
+  @override
+  String get official_studio_text_0081 =>
+      'Welcome back to the creator studio. More features are coming soon.';
+
+  @override
+  String get official_studio_text_0091 => 'Creator Tools';
+
+  @override
+  String get official_studio_text_0101 => 'Pengurusan Pengikut';
+
+  @override
+  String get official_studio_text_0111 => 'View and remove followers';
+
+  @override
+  String get official_studio_text_0121 => 'Analitik Pencipta';
+
+  @override
+  String get official_studio_text_0131 =>
+      'Character popularity and total play count';
+
+  @override
+  String get official_studio_text_0141 => 'Surat Peminat';
+
+  @override
+  String get official_studio_text_0151 => 'Send messages to your followers';
+
+  @override
+  String get official_studio_text_0161 => 'Fan Benefits';
+
+  @override
+  String get official_studio_text_0171 => 'Gift your own flowers to followers';
+
+  @override
+  String get official_studio_text_0181 => 'Ganjaran Pencipta Bulanan';
+
+  @override
+  String get official_studio_text_0191 =>
+      'Publish 3 new characters to claim 300 flowers';
+
+  @override
+  String get official_studio_text_0201 => 'Sepanduk Pencipta';
+
+  @override
+  String get official_studio_text_0211 => 'Set your public creator-page banner';
+
+  @override
+  String get official_studio_text_0221 => 'Maklumat Kerjasama';
+
+  @override
+  String get official_studio_text_0231 =>
+      'Partnership status, benefits and notices';
+
+  @override
+  String get official_studio_text_0241 => 'Support Center';
+
+  @override
+  String get official_studio_text_0251 =>
+      'Report issues and track support replies';
+
+  @override
+  String get official_studio_text_0261 =>
+      'Eligibility verification failed. Try again later.';
+
+  @override
+  String get official_studio_text_0271 =>
+      'Official creator access is not available';
+
+  @override
+  String get official_studio_text_0281 => 'Unable to load public characters';
+
+  @override
+  String get official_studio_text_0291 => 'Creator Overview';
+
+  @override
+  String get official_studio_text_0301 => 'Total Plays';
+
+  @override
+  String get official_studio_text_0311 => 'Current Followers';
+
+  @override
+  String get official_studio_text_0321 => 'Unavailable';
+
+  @override
+  String get official_studio_text_0331 => 'Public Character Breakdown';
+
+  @override
+  String get official_studio_text_0341 =>
+      'No public characters yet. They will appear here after publishing.';
+
+  @override
+  String get official_studio_text_0351 => 'Unnamed Character';
+
+  @override
+  String get official_studio_text_0361 => 'Total plays (playCount)';
+
+  @override
+  String get official_studio_text_0371 =>
+      'Statistics reflect available database fields. Plays are not messages, unique players, or revenue.';
+
+  @override
+  String get official_studio_text_0381 => 'Unable to load followers';
+
+  @override
+  String get official_studio_text_0391 => 'No followers yet';
+
+  @override
+  String get official_studio_text_0401 => 'Follower List';
+
+  @override
+  String get official_studio_text_0411 =>
+      'Up to 100 followers shown; only public nicknames and avatars are displayed.';
+
+  @override
+  String get official_studio_text_0421 => 'Remove Follower';
+
+  @override
+  String get official_studio_text_0431 => 'Batal';
+
+  @override
+  String get official_studio_text_0441 => 'Confirm Removal';
+
+  @override
+  String get official_studio_text_0451 => 'Follower removed';
+
+  @override
+  String get official_studio_text_0461 =>
+      'Removal failed. Please try again later.';
+
+  @override
+  String get official_studio_text_0471 => 'Player';
+
+  @override
+  String get official_studio_text_0481 => 'Unable to load public data';
+
+  @override
+  String get official_studio_text_0491 => 'This player';
+
+  @override
+  String get official_studio_text_0501 =>
+      'Cropped image is still too large. Choose another.';
+
+  @override
+  String get official_studio_text_0511 => 'Banner updated';
+
+  @override
+  String get official_studio_text_0521 =>
+      'Image processing failed. Choose another image.';
+
+  @override
+  String get official_studio_text_0531 => 'Banner removed';
+
+  @override
+  String get official_studio_text_0541 => 'Removal failed';
+
+  @override
+  String get official_studio_text_0551 => 'Please sign in';
+
+  @override
+  String get official_studio_text_0561 => 'Public Profile Banner';
+
+  @override
+  String get official_studio_text_0571 => 'Image failed to load';
+
+  @override
+  String get official_studio_text_0581 => 'No banner set';
+
+  @override
+  String get official_studio_text_0591 =>
+      'Select a photo, position it within the white frame and confirm to upload.';
+
+  @override
+  String get official_studio_text_0601 => 'Processing…';
+
+  @override
+  String get official_studio_text_0611 => 'Select and Crop Image';
+
+  @override
+  String get official_studio_text_0621 => 'Remove Current Banner';
+
+  @override
+  String get official_studio_text_0631 => 'Cannot open this image';
+
+  @override
+  String get official_studio_text_0641 =>
+      'Cropped file is too large. Choose another image.';
+
+  @override
+  String get official_studio_text_0651 => 'Cropping failed. Try again.';
+
+  @override
+  String get official_studio_text_0661 => 'Adjust Banner Crop';
+
+  @override
+  String get official_studio_text_0671 =>
+      'Move the image to select the banner area';
+
+  @override
+  String get official_studio_text_0681 =>
+      'Drag to move · Pinch or use slider to zoom';
+
+  @override
+  String get official_studio_text_0691 =>
+      'The white frame shows the final banner (2.5:1)';
+
+  @override
+  String get official_studio_text_0701 => 'Zoom';
+
+  @override
+  String get official_studio_text_0711 => 'Reset Position';
+
+  @override
+  String get official_studio_text_0721 => 'Cropping…';
+
+  @override
+  String get official_studio_text_0731 => 'Crop and Upload';
+
+  @override
+  String get official_studio_text_0741 => 'Partnership Eligibility';
+
+  @override
+  String get official_studio_text_0751 => 'Verifying Eligibility';
+
+  @override
+  String get official_studio_text_0761 => 'Available Creator Tools';
+
+  @override
+  String get official_studio_text_0771 =>
+      'Follower management, analytics, fan mail, flower gifts, monthly rewards and banners.';
+
+  @override
+  String get official_studio_text_0781 =>
+      'Under current rules, create and first publish three eligible characters this month to claim 300 flowers. Final eligibility is verified by the server.';
+
+  @override
+  String get official_studio_text_0791 => 'Official Notices and Agreement';
+
+  @override
+  String get official_studio_text_0801 =>
+      'Signed agreement terms and official notices take precedence. This page does not replace an agreement. Contact support for questions.';
+
+  @override
+  String get official_studio_text_0811 =>
+      'Mail subject must contain 1–100 characters';
+
+  @override
+  String get official_studio_text_0821 =>
+      'Mail body must contain 1–5000 characters';
+
+  @override
+  String get official_studio_text_0831 => 'Please select a follower';
+
+  @override
+  String get official_studio_text_0841 => 'Confirm Fan Mail';
+
+  @override
+  String get official_studio_text_0851 =>
+      'Send to all current followers? This uses one broadcast credit.';
+
+  @override
+  String get official_studio_text_0861 =>
+      'Send to this follower? This uses one private-message credit.';
+
+  @override
+  String get official_studio_text_0871 => 'Confirm Send';
+
+  @override
+  String get official_studio_text_0881 =>
+      'Mail job created. Messages will be delivered gradually.';
+
+  @override
+  String get official_studio_text_0891 => 'Today’s Sending Quota';
+
+  @override
+  String get official_studio_text_0901 =>
+      'Resets daily at 00:00 Taiwan time. A broadcast reaches all followers.';
+
+  @override
+  String get official_studio_text_0911 => 'All Followers';
+
+  @override
+  String get official_studio_text_0921 => 'One Follower';
+
+  @override
+  String get official_studio_text_0931 => 'Unable to get follower list';
+
+  @override
+  String get official_studio_text_0941 =>
+      'No followers available for messaging';
+
+  @override
+  String get official_studio_text_0951 => 'Select a follower (first 100)';
+
+  @override
+  String get official_studio_text_0961 => 'Mail Subject';
+
+  @override
+  String get official_studio_text_0971 => 'Message';
+
+  @override
+  String get official_studio_text_0981 => 'Write a letter to your fans…';
+
+  @override
+  String get official_studio_text_0991 => 'Submitting…';
+
+  @override
+  String get official_studio_text_1001 => 'Confirm and Send';
+
+  @override
+  String get official_studio_text_1011 => 'Sending History';
+
+  @override
+  String get official_studio_text_1021 => 'No sending history yet';
+
+  @override
+  String get official_studio_text_1031 => 'Queued';
+
+  @override
+  String get official_studio_text_1041 => 'Delivering';
+
+  @override
+  String get official_studio_text_1051 => 'Completed';
+
+  @override
+  String get official_studio_text_1061 => 'Cancelled';
+
+  @override
+  String get official_studio_text_1071 => 'Delivery Failed';
+
+  @override
+  String get official_studio_text_1081 => 'Untitled Message';
+
+  @override
+  String get official_studio_text_1091 =>
+      'Shows the latest 20 sending jobs. New and pending jobs stop when creator access is revoked.';
+
+  @override
+  String get official_studio_text_1101 => 'Player without a nickname';
+
+  @override
+  String get official_studio_text_1111 =>
+      'Unable to load followers. Try again later.';
+
+  @override
+  String get official_studio_text_1121 => 'Insufficient Flowers';
+
+  @override
+  String get official_studio_text_1131 => 'Maybe Later';
+
+  @override
+  String get official_studio_text_1141 => 'Pergi ke Kedai';
+
+  @override
+  String get official_studio_text_1151 =>
+      'You may gift 1–1000 flowers per follower';
+
+  @override
+  String get official_studio_text_1161 => 'Select 1–20 followers';
+
+  @override
+  String get official_studio_text_1171 => 'Maximum 5000 flowers per gift';
+
+  @override
+  String get official_studio_text_1181 =>
+      'Gift message is limited to 300 characters';
+
+  @override
+  String get official_studio_text_1191 => 'Confirm Flower Gift';
+
+  @override
+  String get official_studio_text_1201 => 'Confirm Gift';
+
+  @override
+  String get official_studio_text_1211 =>
+      'Gift already submitted; flowers were not deducted twice';
+
+  @override
+  String get official_studio_text_1221 => 'Fan Benefits · Flower Gifts';
+
+  @override
+  String get official_studio_text_1231 => 'Unable to load flower balance';
+
+  @override
+  String get official_studio_text_1241 => 'My Flower Balance';
+
+  @override
+  String get official_studio_text_1251 =>
+      'Flowers are deducted from your own balance, not paid by the platform.';
+
+  @override
+  String get official_studio_text_1261 => 'Select followers (up to 20)';
+
+  @override
+  String get official_studio_text_1271 =>
+      'Search by public nickname or UID; eligibility is verified by the server at submission.';
+
+  @override
+  String get official_studio_text_1281 => 'Cari Pengikut';
+
+  @override
+  String get official_studio_text_1291 => 'Enter nickname or player UID';
+
+  @override
+  String get official_studio_text_1301 => 'Clear Search';
+
+  @override
+  String get official_studio_text_1311 => 'No eligible followers available';
+
+  @override
+  String get official_studio_text_1321 =>
+      'No matching followers on this page. Continue searching.';
+
+  @override
+  String get official_studio_text_1331 => 'No matching followers found';
+
+  @override
+  String get official_studio_text_1341 => 'Select up to 20 followers';
+
+  @override
+  String get official_studio_text_1351 => 'Searching…';
+
+  @override
+  String get official_studio_text_1361 => 'Load More Followers';
+
+  @override
+  String get official_studio_text_1371 => 'Search More Followers';
+
+  @override
+  String get official_studio_text_1381 => 'Flowers per Follower';
+
+  @override
+  String get official_studio_text_1391 => 'e.g. 10';
+
+  @override
+  String get official_studio_text_1401 => 'Gift Message (Optional)';
+
+  @override
+  String get official_studio_text_1411 => 'Estimated Deduction';
+
+  @override
+  String get official_studio_text_1421 =>
+      'Up to 20 followers and 5000 flowers per gift. Flowers are deducted on submission; recipients must claim them in their mailbox.';
+
+  @override
+  String get official_studio_text_1431 => 'Unable to load monthly tasks';
+
+  @override
+  String get official_studio_text_1441 =>
+      'Unable to load progress. Try again later.';
+
+  @override
+  String get official_studio_text_1451 => 'Confirm Creator Reward';
+
+  @override
+  String get official_studio_text_1461 =>
+      'Claim 300 flowers for this month? Each month can only be claimed once.';
+
+  @override
+  String get official_studio_text_1471 => 'Confirm Claim';
+
+  @override
+  String get official_studio_text_1481 => 'Monthly reward already claimed';
+
+  @override
+  String get official_studio_text_1491 => 'Successfully claimed 300 flowers!';
+
+  @override
+  String get official_studio_text_1501 => 'Claim failed. Try again later.';
+
+  @override
+  String get official_studio_text_1511 =>
+      'Unable to verify claim. Refresh your history.';
+
+  @override
+  String get official_studio_text_1521 => 'This month';
+
+  @override
+  String get official_studio_text_1531 =>
+      'Create and first publish three different characters each month, then claim 300 flowers.';
+
+  @override
+  String get official_studio_text_1541 =>
+      'Rules: Only signed and verified partner creators are eligible. Counted characters must be created and first published this month and remain public. Private, draft and republished older characters do not count. Resets monthly in Taiwan time, once per month.';
+
+  @override
+  String get official_studio_text_1551 =>
+      'Duplicate, empty or rule-violating characters may lead to review or partnership suspension under the agreement.';
+
+  @override
+  String get official_studio_text_1561 =>
+      'Welcome to the Partner Creator Program';
+
+  @override
+  String get official_studio_text_1571 => 'Track your work and stay connected';
+
+  @override
+  String get official_studio_text_1581 =>
+      'Share flowers and earn creator rewards';
+
+  @override
+  String get official_studio_text_1591 => 'Build your page and get support';
+
+  @override
+  String get official_studio_text_1601 => 'Your own creative space';
+
+  @override
+  String get official_studio_text_1611 => 'Followers · Analytics · Fan Mail';
+
+  @override
+  String get official_studio_text_1621 => 'Fan Benefits · Monthly Rewards';
+
+  @override
+  String get official_studio_text_1631 =>
+      'Banners · Partnership Info · Support';
+
+  @override
+  String get official_studio_text_1641 =>
+      'Welcome to the official creator studio of Lianlian Shiguang, combining creator tools, fan engagement, benefits and partnership information.';
+
+  @override
+  String get official_studio_text_1651 =>
+      'View and manage followers, track plays and character performance, and send messages to one follower or your entire audience.';
+
+  @override
+  String get official_studio_text_1661 =>
+      'Gift flowers from your balance to fans. You may also earn monthly rewards for newly created and first-published eligible characters.';
+
+  @override
+  String get official_studio_text_1671 =>
+      'Upload your personal creator banner. Review partnership rules and benefits in Partnership Info, or contact the Support Center.';
+
+  @override
+  String get official_studio_text_1681 =>
+      'Only officially eligible partner creators can use these features.';
+
+  @override
+  String get official_studio_text_1691 =>
+      'Fan mail has daily sending limits. Check your quota before sending.';
+
+  @override
+  String get official_studio_text_1701 =>
+      'Flower gifts deduct your balance. Monthly rewards follow current rules and server verification.';
+
+  @override
+  String get official_studio_text_1711 =>
+      'New creator-exclusive features will be added here over time.';
+
+  @override
+  String get official_studio_text_1721 => 'Creator Studio Guide';
+
+  @override
+  String get official_studio_text_1731 => 'Langkau';
+
+  @override
+  String get official_studio_text_1741 => 'Kembali';
+
+  @override
+  String get official_studio_text_1751 => 'Selesai';
+
+  @override
+  String get official_studio_text_1761 => 'Seterusnya';
+
+  @override
+  String official_studio_text_1771(String name) {
+    return 'Confirm removal of $name? They will unfollow you but can follow again.';
+  }
+
+  @override
+  String official_studio_text_1781(int count) {
+    return 'Private messages: $count / 30';
+  }
+
+  @override
+  String official_studio_text_1791(int count) {
+    return 'Broadcasts: $count / 5';
+  }
+
+  @override
+  String official_studio_text_1801(int count) {
+    return 'Gift sent! $count flowers are waiting in your followers’ mailboxes.';
+  }
+
+  @override
+  String official_studio_text_1811(int count) {
+    return '$count flowers 🌸';
+  }
+
+  @override
+  String official_studio_text_1821(int count) {
+    return '$count followers';
+  }
+
+  @override
+  String official_studio_text_1831(int count) {
+    return '$count flowers';
+  }
+
+  @override
+  String official_studio_text_1841(String month) {
+    return '$month creator reward';
+  }
+
+  @override
+  String official_studio_text_1851(int count) {
+    return 'This month: $count / 3';
+  }
+
+  @override
+  String official_studio_text_1861(int count) {
+    return '$count public characters remaining';
+  }
+
+  @override
+  String official_studio_text_1871(int count) {
+    return 'Insufficient flowers: need $count more';
+  }
+
+  @override
+  String get official_studio_text_1881 => 'Unable to load sending quota';
+
+  @override
+  String get official_studio_text_1891 =>
+      'Sending is not confirmed. Check your history before retrying.';
+
+  @override
+  String get official_studio_text_1901 =>
+      'Connection failed. Check your history before trying again.';
+
+  @override
+  String get official_studio_text_1911 =>
+      'Gift status unconfirmed. Check history before retrying.';
+
+  @override
+  String official_studio_text_1921(int balance, int total, int missing) {
+    return 'Balance: $balance\\nRequired: $total\\nMissing: $missing\\n\\nVisit the shop to get more flowers.';
+  }
+
+  @override
+  String official_studio_text_1931(int followers, int amount, int total) {
+    return 'Send $followers flowers gifts of $amount each, deducting $total flowers.\\nGifts cannot be revoked.';
+  }
+
+  @override
+  String official_studio_text_1941(String mode, String status, int count) {
+    return '$mode · $status · Delivered to $count';
+  }
+
+  @override
+  String get official_studio_text_1951 => 'Public characters';
+
+  @override
+  String get official_studio_text_1961 => 'Loading…';
+
+  @override
+  String get official_studio_text_1971 => 'Select followers';
+
+  @override
+  String get official_studio_text_1981 => 'Claimed this month';
+
+  @override
+  String get preference_selection_title1 => 'Pilih tipe karakter favoritmu';
+
+  @override
+  String get preference_selection_description1 =>
+      'Pilih 3–5 tag yang kamu sukai agar kami bisa merekomendasikan karakter sesuai seleramu.';
+
+  @override
+  String get preference_selection_recommendation_note1 =>
+      'Preferensi ini hanya digunakan untuk meningkatkan rekomendasi. Kamu tetap bisa menjelajahi jenis karakter lainnya.';
+
+  @override
+  String get preference_selection_selected1 => 'Dipilih';
+
+  @override
+  String get preference_selection_start1 => 'Mulai jelajahi';
+
+  @override
+  String preference_selection_max_error1(int count) {
+    return 'Kamu hanya bisa memilih maksimal $count tag.';
+  }
+
+  @override
+  String get preference_selection_save_failed1 =>
+      'Gagal menyimpan preferensi. Coba lagi nanti.';
+
+  @override
+  String get preference_group_personality1 => 'Kepribadian';
+
+  @override
+  String get preference_group_relationship_age1 => 'Hubungan & perbedaan usia';
+
+  @override
+  String get preference_group_story1 => 'Latar cerita';
+
+  @override
+  String get preference_tag_gentle1 => 'Lembut';
+
+  @override
+  String get preference_tag_cold1 => 'Dingin dan cuek';
+
+  @override
+  String get preference_tag_scheming1 => 'Licik';
+
+  @override
+  String get preference_tag_tsundere1 => 'Tsundere';
+
+  @override
+  String get preference_tag_loyal1 => 'Setia';
+
+  @override
+  String get preference_tag_yandere1 => 'Yandere';
+
+  @override
+  String get preference_tag_mysterious1 => 'Misterius';
+
+  @override
+  String get preference_tag_healing1 => 'Menenangkan';
+
+  @override
+  String get preference_tag_gap_moe1 => 'Sisi yang tak terduga';
+
+  @override
+  String get preference_tag_older1 => 'Lebih tua';
+
+  @override
+  String get preference_tag_younger1 => 'Lebih muda';
+
+  @override
+  String get preference_tag_ceo1 => 'CEO dominan';
+
+  @override
+  String get preference_tag_school1 => 'Sekolah';
+
+  @override
+  String get preference_tag_workplace1 => 'Dunia kerja';
+
+  @override
+  String get preference_tag_ancient1 => 'Berlatar sejarah';
+
+  @override
+  String get preference_tag_nonhuman1 => 'Nonmanusia';
+
+  @override
+  String get private_label1 => 'Privat';
+
+  @override
+  String get profile_page_world_tab1 => 'Dunia Terbuka';
+
+  @override
+  String get profile_page_login_required1 => 'Silakan masuk terlebih dahulu';
+
+  @override
+  String get profile_page_world_load_failed1 =>
+      'Gagal memuat dunia. Coba lagi nanti.';
+
+  @override
+  String get profile_page_my_worlds1 => 'Dunia Terbuka Saya';
+
+  @override
+  String get profile_page_create_world1 => 'Buat Dunia';
+
+  @override
+  String get profile_page_worlds_empty1 => 'Belum ada dunia yang dibuat';
+
+  @override
+  String get profile_page_worlds_empty_hint1 => 'Buat dunia pertamamu';
+
+  @override
+  String get profile_page_world_untitled1 => 'Dunia Tanpa Nama';
+
+  @override
+  String get profile_page_world_public1 => 'Publik';
+
+  @override
+  String get profile_page_world_private1 => 'Privat';
+
+  @override
+  String profile_page_world_character_count1(int count) {
+    return '$count karakter';
+  }
+
+  @override
+  String get profile_page_world_enter_chat1 => 'Masuk Obrolan';
+
+  @override
+  String get profile_page_world_edit1 => 'Edit';
+
+  @override
+  String get profile_page_create_character1 => 'Buat Karakter';
+
+  @override
+  String get profile_page_event_frame_default1 => 'Bingkai Avatar Acara';
+
+  @override
+  String get public_worlds_explore_title1 => 'Jelajahi Dunia Publik';
+
+  @override
+  String get public_worlds_search_tooltip1 => 'Cari Dunia Terbuka';
+
+  @override
+  String get public_worlds_load_failed1 =>
+      'Dunia publik sementara tidak dapat dimuat';
+
+  @override
+  String get public_worlds_refresh1 => 'Muat ulang';
+
+  @override
+  String get public_worlds_empty1 => 'Dunia publik sedang disiapkan. Nantikan!';
+
+  @override
+  String get public_worlds_unnamed1 => 'Dunia Tanpa Nama';
+
+  @override
+  String get world_explore_subtitle1 =>
+      'Masuki berbagai dunia dan jelajahi perjalanan yang berbeda';
+
+  @override
+  String get settings_notification_preferences_title1 =>
+      'Preferensi notifikasi';
+
+  @override
+  String get settings_notification_preferences_subtitle1 =>
+      'Pilih jenis notifikasi yang ingin diterima dan sinkronkan antarperangkat';
+
+  @override
+  String get settings_admin_section1 => 'Administrasi';
+
+  @override
+  String get settings_admin_dashboard1 => 'Dasbor admin';
+
+  @override
+  String get settings_admin_tools_subtitle1 => 'Alat pengelolaan internal';
+
+  @override
+  String get world_chat_back1 => 'Kembali';
+
+  @override
+  String get world_chat_mode_tooltip1 =>
+      'Mode balasan (AI dan pengurangan bunga belum terhubung)';
+
+  @override
+  String get world_chat_menu1 => 'Menu dunia';
+
+  @override
+  String get world_chat_mode_story1 => 'Cerita';
+
+  @override
+  String get world_chat_mode_immersive1 => 'Imersif';
+
+  @override
+  String get world_chat_mode_resonance1 => 'Resonansi';
+
+  @override
+  String get world_chat_mode_interaction1 => 'Interaksi';
+
+  @override
+  String world_chat_mode_cost1(String mode, int cost) {
+    return '$mode · $cost bunga';
+  }
+
+  @override
+  String world_memo_read_failed1(String error) {
+    return 'Gagal memuat memo: $error';
+  }
+
+  @override
+  String get world_memo_sync_failed1 =>
+      'Sinkronisasi sementara gagal. Menampilkan memo yang dimuat sebelumnya.';
+
+  @override
+  String get world_memo_server_no_id1 => 'Server tidak mengembalikan ID memo';
+
+  @override
+  String world_memo_save_failed1(String error) {
+    return 'Gagal menyimpan: $error';
+  }
+
+  @override
+  String get world_memo_delete_title1 => 'Hapus memo?';
+
+  @override
+  String get world_memo_delete_warning1 =>
+      'Tindakan ini tidak dapat dibatalkan.';
+
+  @override
+  String get world_memo_cancel1 => 'Batal';
+
+  @override
+  String get world_memo_delete1 => 'Hapus';
+
+  @override
+  String world_memo_cancel_reminder_failed1(String error) {
+    return 'Memo telah dihapus, tetapi pengingat di perangkat lama gagal dibatalkan: $error';
+  }
+
+  @override
+  String world_memo_delete_failed1(String error) {
+    return 'Gagal menghapus: $error';
+  }
+
+  @override
+  String get world_memo_title1 => 'Memo';
+
+  @override
+  String world_memo_world_personal1(String worldName) {
+    return '$worldName | Memo pribadi';
+  }
+
+  @override
+  String get world_memo_sync_notice1 =>
+      'Waktu pengingat disinkronkan antarperangkat. Notifikasi push dikirim ke perangkat yang masuk dan mengizinkan notifikasi.';
+
+  @override
+  String get world_memo_loading1 => 'Memuat…';
+
+  @override
+  String get world_memo_empty1 => 'Belum ada memo. Ketuk + untuk menambahkan.';
+
+  @override
+  String world_memo_reminder_date1(String date) {
+    return 'Pengingat: $date';
+  }
+
+  @override
+  String get world_memo_reminder_future1 =>
+      'Waktu pengingat harus di masa mendatang';
+
+  @override
+  String get world_memo_content_required1 =>
+      'Masukkan isi memo terlebih dahulu';
+
+  @override
+  String get world_memo_edit_title1 => 'Edit memo';
+
+  @override
+  String get world_memo_add_title1 => 'Memo baru';
+
+  @override
+  String get world_memo_content_label1 => 'Isi memo';
+
+  @override
+  String get world_memo_content_hint1 => 'Tulis sesuatu yang ingin diingat…';
+
+  @override
+  String get world_memo_reminder_settings1 => 'Pengaturan pengingat';
+
+  @override
+  String get world_memo_no_reminder1 => 'Pengingat belum diatur';
+
+  @override
+  String get world_memo_reminder_choose1 =>
+      'Pilih tanggal dan waktu untuk pengingat tersinkronisasi';
+
+  @override
+  String get world_memo_clear_reminder1 => 'Hapus tanggal pengingat';
+
+  @override
+  String get world_memo_save1 => 'Simpan memo';
+
+  @override
+  String get world_chat_open_world1 => 'Dunia Terbuka';
+
+  @override
+  String get world_chat_flower_sync1 => 'Saldo bunga belum dapat disinkronkan';
+
+  @override
+  String get world_chat_web_store_unavailable1 =>
+      'Pembelian bunga belum tersedia di web';
+
+  @override
+  String get world_chat_sync_unavailable1 =>
+      'Sinkronisasi langsung tidak tersedia. Buka ulang obrolan untuk memuat riwayat.';
+
+  @override
+  String get world_chat_stopped1 =>
+      'Pembuatan dihentikan. Bunga tidak dipotong.';
+
+  @override
+  String get world_chat_cannot_stop1 =>
+      'Balasan mungkin sudah selesai. Periksa obrolan dan saldo bunga.';
+
+  @override
+  String get world_chat_stop_retry1 => 'Gagal menghentikan. Coba lagi.';
+
+  @override
+  String get world_chat_connection_failed1 => 'Koneksi gagal';
+
+  @override
+  String get world_chat_network_failed1 => 'Jaringan sementara tidak tersedia';
+
+  @override
+  String get world_chat_no_regenerate1 =>
+      'Belum ada balasan untuk dibuat ulang';
+
+  @override
+  String get world_chat_paid_regenerate1 => 'Buat ulang berbayar';
+
+  @override
+  String get world_chat_cancel1 => 'Batal';
+
+  @override
+  String get world_chat_confirm1 => 'Konfirmasi';
+
+  @override
+  String get world_chat_no_continue1 => 'Belum ada cerita untuk dilanjutkan';
+
+  @override
+  String get world_chat_no_save1 => 'Belum ada percakapan untuk disimpan';
+
+  @override
+  String get world_chat_loading1 => 'Obrolan masih dimuat';
+
+  @override
+  String get world_chat_unnamed_character1 => 'Karakter tanpa nama';
+
+  @override
+  String get world_chat_bg_wait1 =>
+      'Anda bisa mengganti latar setelah obrolan dimuat';
+
+  @override
+  String get world_chat_sign_in1 => 'Silakan masuk terlebih dahulu';
+
+  @override
+  String get world_chat_choose_mode1 => 'Pilih mode dunia';
+
+  @override
+  String get world_chat_mode_charge_expl1 =>
+      'Bunga dipotong per balasan berhasil sesuai mode; kegagalan gratis.';
+
+  @override
+  String get world_chat_photo_selected1 => 'Foto dipilih';
+
+  @override
+  String get world_chat_got_it1 => 'Mengerti';
+
+  @override
+  String get world_chat_status_settings1 => 'Pengaturan status dunia';
+
+  @override
+  String get world_chat_save_settings1 => 'Simpan pengaturan';
+
+  @override
+  String get world_chat_status_saved1 =>
+      'Preferensi tampilan status dunia ini disimpan';
+
+  @override
+  String get world_chat_not_ready1 => 'Obrolan dunia belum siap';
+
+  @override
+  String get world_chat_enter_first1 =>
+      'Masuk ke obrolan dunia terlebih dahulu';
+
+  @override
+  String get world_chat_photo1 => 'Foto';
+
+  @override
+  String get world_chat_profile1 => 'Profil';
+
+  @override
+  String get world_chat_interaction1 => 'Interaksi';
+
+  @override
+  String get world_chat_theater1 => 'Teater';
+
+  @override
+  String get world_chat_status1 => 'Status';
+
+  @override
+  String get world_chat_secret1 => 'Bab Rahasia';
+
+  @override
+  String get world_chat_mood1 => 'Suasana hati';
+
+  @override
+  String get world_chat_outfit1 => 'Pakaian';
+
+  @override
+  String get world_chat_relationship1 => 'Hubungan';
+
+  @override
+  String get world_chat_thought1 => 'Pikiran';
+
+  @override
+  String get world_chat_weather1 => 'Cuaca';
+
+  @override
+  String get world_chat_current_state1 => 'Keadaan saat ini';
+
+  @override
+  String get world_chat_action1 => 'Tindakan';
+
+  @override
+  String get world_chat_affinity1 => 'Kedekatan';
+
+  @override
+  String get world_chat_generating1 => 'Dunia perlahan bergerak…';
+
+  @override
+  String get world_chat_screenshot1 => 'Bagikan tangkapan layar';
+
+  @override
+  String get world_chat_copy1 => 'Salin konten';
+
+  @override
+  String get world_chat_copied1 => 'Disalin';
+
+  @override
+  String get world_chat_edit1 => 'Edit';
+
+  @override
+  String get world_chat_delete1 => 'Hapus';
+
+  @override
+  String get world_chat_report1 => 'Laporkan percakapan';
+
+  @override
+  String get world_chat_feedback1 => 'Beri masukan';
+
+  @override
+  String get world_chat_edit_segment1 => 'Edit bagian karakter';
+
+  @override
+  String get world_chat_save1 => 'Simpan';
+
+  @override
+  String get world_chat_updated1 => 'Pesan diperbarui';
+
+  @override
+  String get world_chat_delete_segment1 => 'Hapus bagian';
+
+  @override
+  String get world_chat_deleted_segment1 => 'Bagian dihapus';
+
+  @override
+  String get world_chat_edit_message1 => 'Edit pesan';
+
+  @override
+  String get world_chat_edit_hint1 => 'Ubah teks Anda';
+
+  @override
+  String get world_chat_delete_conversation1 => 'Hapus percakapan';
+
+  @override
+  String get world_chat_no_chat1 => 'Belum ada percakapan';
+
+  @override
+  String get world_chat_cancel_select1 => 'Batalkan pilihan';
+
+  @override
+  String get world_chat_input_hint1 => 'Tuliskan kisah kalian…';
+
+  @override
+  String get world_chat_screenshot_done1 => 'Momen spesial Anda siap';
+
+  @override
+  String get world_chat_screenshot_style1 => 'Ubah warna tangkapan layar';
+
+  @override
+  String get world_chat_reselect1 => 'Pilih ulang';
+
+  @override
+  String get world_chat_download_share1 => 'Unduh dan bagikan';
+
+  @override
+  String get world_records_summary_title1 => 'Ringkasan Cerita';
+
+  @override
+  String world_records_loaded_count1(int count) {
+    return '$count pesan dimuat dan diurutkan sesuai alur cerita.';
+  }
+
+  @override
+  String get world_records_auto_summary_pending1 =>
+      'Hanya percakapan yang dimuat yang dapat ditinjau; ringkasan otomatis AI belum tersedia.';
+
+  @override
+  String get world_records_empty_story1 => 'Belum ada cerita untuk ditinjau';
+
+  @override
+  String get world_records_narrator_name1 => 'Narator Dunia';
+
+  @override
+  String get world_records_relationships_title1 => 'Hubungan Karakter';
+
+  @override
+  String get world_records_affinity_note1 =>
+      'Afeksi dihitung terpisah untuk setiap karakter resmi; NPC sementara tidak mendapat skor.';
+
+  @override
+  String get world_records_empty_characters1 => 'Belum ada data karakter resmi';
+
+  @override
+  String world_records_affinity_score_with_next1(int score, int next) {
+    return 'Afeksi $score / $next';
+  }
+
+  @override
+  String world_records_affinity_score_only1(int score) {
+    return 'Afeksi $score';
+  }
+
+  @override
+  String world_records_relationship_stage1(int stage) {
+    return 'Tahap hubungan $stage';
+  }
+
+  @override
+  String get world_records_local_memo_read_failed1 =>
+      'Gagal memuat catatan lokal';
+
+  @override
+  String get world_records_memo_saved_local1 =>
+      'Catatan disimpan di perangkat ini';
+
+  @override
+  String get world_records_memo_save_failed1 => 'Gagal menyimpan catatan';
+
+  @override
+  String get world_records_memo_unsaved1 => 'Catatan belum disimpan';
+
+  @override
+  String get world_records_memo_save_before_exit1 => 'Simpan sebelum keluar?';
+
+  @override
+  String get world_records_continue_editing1 => 'Lanjut mengedit';
+
+  @override
+  String get world_records_save_and_exit1 => 'Simpan dan keluar';
+
+  @override
+  String get world_records_world_memo_title1 => 'Catatan untuk dunia ini';
+
+  @override
+  String get world_records_save1 => 'Simpan';
+
+  @override
+  String get world_records_memo_local_disclaimer1 =>
+      'Catatan pribadi | Versi ini hanya disimpan di perangkat ini, tidak dikirim ke AI atau disinkronkan ke perangkat lain.';
+
+  @override
+  String get world_records_memo_hint1 =>
+      'Catat petunjuk, rencana, atau hal yang ingin kamu sampaikan kepada karakter…';
+
+  @override
+  String get world_records_narrator_short1 => 'Narator';
+
+  @override
+  String get world_records_summary_service_missing1 =>
+      'Layanan ringkasan cerita (worldStoryMemory) belum diterapkan. Terapkan lalu buka kembali.';
+
+  @override
+  String get world_records_summary_load_failed1 =>
+      'Gagal memuat ringkasan cerita. Coba lagi nanti.';
+
+  @override
+  String get world_records_summary_intro1 =>
+      'Setiap pertemuan dan pilihan menjadi bagian cerita. Pengalaman dan hubungan penting tercatat di sini seiring berjalannya kisah.';
+
+  @override
+  String get world_records_summary_empty1 =>
+      'Ceritamu terus berlanjut. Bab-bab menarik akan segera muncul di sini.';
+
+  @override
+  String get world_search_title1 => 'Cari percakapan';
+
+  @override
+  String get world_search_hint1 => 'Cari tokoh, dialog, atau narasi';
+
+  @override
+  String get world_search_clear1 => 'Hapus pencarian';
+
+  @override
+  String get world_search_start1 => 'Masukkan kata kunci untuk mulai mencari';
+
+  @override
+  String world_search_results1(int count) {
+    return 'Ditemukan $count hasil';
+  }
+
+  @override
+  String get world_search_empty_prompt1 => 'Cari pemain, tokoh, dan narasi';
+
+  @override
+  String get world_search_no_results1 => 'Tidak ada percakapan yang cocok';
+
+  @override
+  String get world_search_unknown_speaker1 => 'Tokoh tidak dikenal';
+
+  @override
+  String get world_search_collapse1 => 'Ciutkan';
+
+  @override
+  String get world_search_expand1 => 'Luaskan';
+
+  @override
+  String get world_search_scope1 =>
+      'Cakupan pencarian: 200 pesan terbaru yang dimuat di obrolan';
+
+  @override
+  String get world_menu_subtitle1 => 'Dunia Terbuka · Fitur dirilis bertahap';
+
+  @override
+  String get world_menu_chat_section1 => 'Obrolan';
+
+  @override
+  String get world_menu_search1 => 'Cari percakapan';
+
+  @override
+  String get world_menu_save_transcript1 => 'Simpan riwayat obrolan';
+
+  @override
+  String get world_menu_memories_background1 => 'Kenangan & latar';
+
+  @override
+  String get world_menu_relations_section1 => 'Hubungan dunia';
+
+  @override
+  String get world_menu_story_summary1 => 'Ringkasan cerita';
+
+  @override
+  String get world_menu_relationships1 => 'Hubungan karakter';
+
+  @override
+  String get world_menu_memos1 => 'Memo';
+
+  @override
+  String get world_menu_memory_section1 => 'Kelola memori';
+
+  @override
+  String get world_menu_reset_progress1 => 'Atur ulang progres dunia';
+
+  @override
+  String get world_chat_book_confirm1 => 'OK';
+
+  @override
+  String get world_custom_scene_title_required1 =>
+      'Masukkan judul adegan terlebih dahulu.';
+
+  @override
+  String get world_custom_scene_description_required1 =>
+      'Masukkan deskripsi adegan terlebih dahulu.';
+
+  @override
+  String get world_custom_scene_save_failed1 =>
+      'Gagal menyimpan. Coba lagi nanti.';
+
+  @override
+  String get world_custom_scene_edit_title1 => 'Edit Adegan';
+
+  @override
+  String get world_custom_scene_add_title1 => 'Tambah Adegan';
+
+  @override
+  String get world_discovery_share_desc1 =>
+      'Masuki dunia terbuka karya kreator dan mulailah kisahmu sendiri.';
+
+  @override
+  String world_discovery_share_text1(
+      String title, String description, String link) {
+    return 'Lianlian Shiguang · Undangan Dunia Terbuka\n\n“$title”\n\n$description\n\nJelajahi sekarang: $link';
+  }
+
+  @override
+  String get world_discovery_brand1 => 'Lianlian Shiguang';
+
+  @override
+  String get world_discovery_invite1 => 'Undangan Dunia Terbuka';
+
+  @override
+  String get world_discovery_scan1 => 'Pindai untuk mengunduh';
+
+  @override
+  String get world_discovery_cancel1 => 'Batal';
+
+  @override
+  String get world_discovery_share_button1 => 'Bagikan kartu undangan';
+
+  @override
+  String get world_discovery_share_missing_card1 =>
+      'Kartu undangan dunia terbuka tidak ditemukan';
+
+  @override
+  String get world_discovery_share_image_failed1 =>
+      'Tidak dapat membuat gambar untuk dibagikan';
+
+  @override
+  String get world_discovery_share_failed1 =>
+      'Gagal membagikan kartu undangan. Coba lagi.';
+
+  @override
+  String get world_discovery_story_open1 => 'Awal cerita';
+
+  @override
+  String get world_discovery_story_unset1 => 'Awal cerita belum diatur';
+
+  @override
+  String get world_discovery_first_unset1 => 'Kalimat pembuka belum diatur';
+
+  @override
+  String get world_discovery_background_title1 => 'Latar dan penjelasan dunia';
+
+  @override
+  String world_discovery_era1(String era) {
+    return 'Latar waktu: $era';
+  }
+
+  @override
+  String get world_discovery_background_unset1 => 'Latar dunia belum diatur';
+
+  @override
+  String get world_discovery_background_full1 => 'Latar dunia lengkap';
+
+  @override
+  String get world_discovery_people_unset1 => 'Belum ada karakter';
+
+  @override
+  String get world_discovery_people_intro1 => 'Perkenalan karakter';
+
+  @override
+  String get world_discovery_appearance_unset1 => 'Penampilan tidak tersedia';
+
+  @override
+  String get world_discovery_creator_unset1 => 'Belum ada informasi kreator';
+
+  @override
+  String get world_discovery_creator1 => 'Kreator';
+
+  @override
+  String get world_discovery_creator_load_failed1 =>
+      'Gagal memuat informasi kreator';
+
+  @override
+  String world_discovery_world_load_failed1(String error) {
+    return 'Gagal memuat dunia terbuka: $error';
+  }
+
+  @override
+  String get world_discovery_unpublished1 => 'Dunia ini belum dipublikasikan';
+
+  @override
+  String get world_discovery_open_world1 => 'Dunia Terbuka';
+
+  @override
+  String get world_discovery_share_tooltip1 => 'Bagikan dunia terbuka';
+
+  @override
+  String get world_discovery_world_background1 => 'Latar Dunia';
+
+  @override
+  String get world_discovery_not_playable1 =>
+      'Dunia terbuka ini belum dapat dimainkan.';
+
+  @override
+  String get world_discovery_enter1 => 'Masuk ke Dunia';
+
+  @override
+  String get world_edit_login_required1 => 'Silakan masuk terlebih dahulu';
+
+  @override
+  String get world_edit_no_edit_permission1 =>
+      'You do not have permission to edit this world';
+
+  @override
+  String get world_edit_secret_permission_error1 =>
+      'Unable to access secret chapters. Check the deployed Firestore rules. Saving is paused to protect existing data.';
+
+  @override
+  String world_edit_secret_read_error_code1(String code) {
+    return 'Could not load secret chapters ($code). Saving is paused to protect existing data.';
+  }
+
+  @override
+  String get world_edit_secret_read_error1 =>
+      'Could not load secret chapters. Saving is paused to protect existing data.';
+
+  @override
+  String world_edit_world_read_error1(String error) {
+    return 'Could not load world: $error';
+  }
+
+  @override
+  String world_edit_image_max1(int count) {
+    return 'A world can have up to $count images';
+  }
+
+  @override
+  String world_edit_image_read_error1(String error) {
+    return 'Could not load images: $error';
+  }
+
+  @override
+  String get world_edit_tag_heading1 => 'Theme tags (up to 5)';
+
+  @override
+  String get world_edit_tag_max1 => 'Select up to 5 tags';
+
+  @override
+  String get world_edit_tag_custom1 =>
+      'Tags (customizable; separate with commas)';
+
+  @override
+  String get world_edit_secret_not_ready1 =>
+      'Secret chapters have not loaded. Publishing is paused to protect your content. Check permissions and reopen this page.';
+
+  @override
+  String get world_edit_required_publish1 =>
+      'Enter a world name, at least one image, world background, story opening, and first line';
+
+  @override
+  String get world_edit_max_tags_save1 =>
+      'Only 5 theme tags are allowed. Remove extras before saving';
+
+  @override
+  String get world_edit_secret_validation1 =>
+      'Each chapter needs a title, unlock condition, and secret content (up to 12 chapters)';
+
+  @override
+  String get world_edit_draft_saved1 => 'World draft and secret chapters saved';
+
+  @override
+  String get world_edit_publish_unconfirmed1 =>
+      'The server has not confirmed public eligibility. Please try publishing again later.';
+
+  @override
+  String world_edit_publish_backend_error1(String code, String message) {
+    return 'World data was saved, but public activation failed ($code): $message. Fix the issue and select “Publish open world” again.';
+  }
+
+  @override
+  String get world_edit_publish_service_missing1 =>
+      'Verify that worldPublish is deployed';
+
+  @override
+  String get world_edit_public_published1 => 'Public open world published';
+
+  @override
+  String get world_edit_private_saved1 => 'Private open world saved';
+
+  @override
+  String world_edit_save_publish_failed1(String error) {
+    return 'Save or publish failed: $error';
+  }
+
+  @override
+  String get world_edit_save_draft_question1 => 'Simpan draf?';
+
+  @override
+  String get world_edit_save_draft_explain1 =>
+      'Simpan dunia ini sebelum keluar? Perubahan yang belum disimpan akan hilang.';
+
+  @override
+  String get world_edit_discard1 => 'Jangan simpan';
+
+  @override
+  String get world_edit_cancel1 => 'Batal';
+
+  @override
+  String get world_edit_save_draft1 => 'Simpan draf';
+
+  @override
+  String get world_edit_world_name1 => 'Nama dunia terbuka *';
+
+  @override
+  String get world_edit_world_images1 =>
+      'World images (up to 6; first image is the cover)';
+
+  @override
+  String get world_edit_cover1 => 'Sampul';
+
+  @override
+  String get world_edit_set_cover1 => 'Jadikan sampul';
+
+  @override
+  String get world_edit_short_pitch1 =>
+      'One-line card description (optional, up to 60 characters)';
+
+  @override
+  String get world_edit_public_summary1 =>
+      'Public world description (no spoilers)';
+
+  @override
+  String get world_edit_era1 =>
+      'Time period (e.g. fictional present day, Republican era)';
+
+  @override
+  String get world_edit_world_rules1 => 'World background and rules *';
+
+  @override
+  String get world_edit_full_lore1 =>
+      'Full world lore, events and locations (for AI)';
+
+  @override
+  String get world_edit_npc_intro1 =>
+      'Set names, appearances, birthdays, relationships, and photos for main characters and NPCs. Each player remains the protagonist of their own story.';
+
+  @override
+  String get world_edit_main_characters1 => 'Tokoh utama';
+
+  @override
+  String get world_edit_main_subtitle1 =>
+      'Important characters who appear frequently in this world';
+
+  @override
+  String get world_edit_npc_subtitle1 =>
+      'Other characters who may become interaction partners as the story unfolds';
+
+  @override
+  String world_edit_people_count1(int count) {
+    return '$count tokoh';
+  }
+
+  @override
+  String get world_edit_role_unset1 => 'Role / occupation not set';
+
+  @override
+  String get world_edit_remove_person1 => 'Remove character';
+
+  @override
+  String world_edit_add_person1(String type) {
+    return 'Tambah $type';
+  }
+
+  @override
+  String get world_edit_add_secret1 => 'Tambah bab rahasia';
+
+  @override
+  String get world_edit_edit_secret1 => 'Edit bab rahasia';
+
+  @override
+  String get world_edit_chapter_title1 => 'Judul bab *';
+
+  @override
+  String get world_edit_unlock_condition1 =>
+      'Unlock condition (description for server evaluation) *';
+
+  @override
+  String get world_edit_secret_content1 => 'Konten rahasia *';
+
+  @override
+  String get world_edit_confirm1 => 'Konfirmasi';
+
+  @override
+  String get world_edit_story_opening1 => 'Pembukaan cerita *';
+
+  @override
+  String get world_edit_first_line1 => 'Kalimat pertama cerita *';
+
+  @override
+  String get world_edit_secret_chapters1 => 'Bab rahasia';
+
+  @override
+  String get world_edit_secret_explain1 =>
+      'Secret chapters are stored privately. Publishing the world does not reveal them; players must meet story conditions to unlock them.';
+
+  @override
+  String get world_edit_add_secret_max1 => 'Add secret chapter (up to 12)';
+
+  @override
+  String get world_edit_publish_settings1 => 'Pengaturan publikasi';
+
+  @override
+  String get world_edit_private_world1 => 'Dunia privat';
+
+  @override
+  String get world_edit_private_world_desc1 =>
+      'Hanya Anda yang dapat bermain dan menguji; pemain lain tidak bisa masuk';
+
+  @override
+  String get world_edit_public_world1 => 'Dunia publik';
+
+  @override
+  String get world_edit_public_world_desc1 =>
+      'Pemain lain dapat masuk dengan alur cerita masing-masing';
+
+  @override
+  String get world_edit_create_world1 => 'Buat dunia terbuka';
+
+  @override
+  String get world_edit_basic_tab1 => 'Pengaturan dasar';
+
+  @override
+  String get world_edit_characters_tab1 => 'Tokoh dunia';
+
+  @override
+  String get world_edit_story_tab1 => 'Pengaturan cerita';
+
+  @override
+  String get world_edit_publish_world1 => 'Terbitkan dunia terbuka';
+
+  @override
+  String get world_edit_name_required1 => 'Masukkan nama tokoh terlebih dahulu';
+
+  @override
+  String world_edit_edit_person1(String type) {
+    return 'Edit $type';
+  }
+
+  @override
+  String get world_edit_upload_photo1 => 'Unggah foto tokoh (opsional)';
+
+  @override
+  String get world_edit_allow_photo1 =>
+      'Allow generating other images from this character\'s photo';
+
+  @override
+  String get world_edit_allow_photo_explain1 =>
+      'Use this character\'s photo as a reference only when appropriate for the story. Chatting and ordinary gifts still work if disabled. Set separately for each character.';
+
+  @override
+  String get world_edit_name1 => 'Nama *';
+
+  @override
+  String get world_edit_gender1 => 'Jenis kelamin / gender';
+
+  @override
+  String get world_edit_birthday1 => 'Tanggal lahir (mis. 16 Mei)';
+
+  @override
+  String get world_edit_age1 => 'Usia';
+
+  @override
+  String get world_edit_role1 => 'Peran / pekerjaan';
+
+  @override
+  String get world_edit_appearance1 => 'Penampilan';
+
+  @override
+  String get world_edit_personality1 => 'Kepribadian dan profil';
+
+  @override
+  String get world_edit_background1 => 'Masa lalu';
+
+  @override
+  String get world_edit_relationships1 => 'Hubungan dengan tokoh lain';
+
+  @override
+  String get world_edit_speech_style1 => 'Gaya bicara / nada';
+
+  @override
+  String get world_edit_dialogue_examples1 => 'Contoh dialog (untuk AI)';
+
+  @override
+  String get world_edit_save_person1 => 'Simpan pengaturan tokoh';
+
+  @override
+  String get world_edit_tag_mystery1 => 'Ketegangan';
+
+  @override
+  String get world_edit_tag_horror1 => 'Horor';
+
+  @override
+  String get world_edit_tag_romance1 => 'Romansa';
+
+  @override
+  String get world_edit_tag_modern_fantasy1 => 'Fantasi urban';
+
+  @override
+  String get world_edit_tag_school1 => 'Sekolah';
+
+  @override
+  String get world_edit_tag_ensemble1 => 'Banyak tokoh';
+
+  @override
+  String get world_edit_tag_adventure1 => 'Petualangan';
+
+  @override
+  String get world_edit_tag_daily1 => 'Keseharian';
+
+  @override
+  String get world_edit_tag_detective1 => 'Misteri';
+
+  @override
+  String get world_edit_tag_otherworld1 => 'Dunia lain';
+
+  @override
+  String get chooseNpc1 => 'Pilih NPC';
+
+  @override
+  String get chooseInteractionTarget1 => 'Pilih teman interaksi';
+
+  @override
+  String get unnamedCharacter1 => 'Karakter tanpa nama';
+
+  @override
+  String get chooseTargetFirst1 => 'Pilih teman interaksi terlebih dahulu';
+
+  @override
+  String get confirmGift1 => 'Konfirmasi hadiah';
+
+  @override
+  String giftConfirmDetail1(String target, String gift, int cost) {
+    return 'Kirim $gift kepada $target seharga $cost bunga. Poin hanya dipotong setelah AI berhasil merespons.';
+  }
+
+  @override
+  String get cancel1 => 'Batal';
+
+  @override
+  String get send1 => 'Kirim';
+
+  @override
+  String get sendLocationTitle1 => 'Kirim lokasi (3 bunga)';
+
+  @override
+  String get customLocation1 => 'Lokasi khusus';
+
+  @override
+  String get confirm1 => 'Konfirmasi';
+
+  @override
+  String get cafe1 => 'Kafe';
+
+  @override
+  String get park1 => 'Taman';
+
+  @override
+  String get restaurant1 => 'Restoran';
+
+  @override
+  String get street1 => 'Jalan';
+
+  @override
+  String get giftHeart1 => 'Hati';
+
+  @override
+  String get giftFlower1 => 'Bunga';
+
+  @override
+  String get giftSun1 => 'Matahari';
+
+  @override
+  String get giftConfetti1 => 'Konfeti';
+
+  @override
+  String get giftCoffee1 => 'Kopi';
+
+  @override
+  String get giftCake1 => 'Kue';
+
+  @override
+  String get interactionPlayTitle1 => 'Interaksi';
+
+  @override
+  String interactionTargetLabel1(String target) {
+    return 'Teman interaksi: $target';
+  }
+
+  @override
+  String get intimateInteraction1 => 'Interaksi dekat';
+
+  @override
+  String get poke1 => 'Colek';
+
+  @override
+  String get hug1 => 'Peluk';
+
+  @override
+  String get holdHands1 => 'Bergandengan tangan';
+
+  @override
+  String get gifts1 => 'Hadiah';
+
+  @override
+  String get funActivities1 => 'Aktivitas seru';
+
+  @override
+  String get sendLocation1 => 'Kirim lokasi';
+
+  @override
+  String get diceDuel1 => 'Duel dadu';
+
+  @override
+  String get world_profile_name_too_long1 =>
+      'Nama karakter dalam dunia maksimal 40 karakter. Persingkat sebelum menyimpan.';
+
+  @override
+  String get world_profile_identity_too_long1 =>
+      'Detail karakter dalam dunia melebihi 2.000 karakter. Persingkat sebelum menyimpan.';
+
+  @override
+  String get world_relationship_live_title1 => 'Hubungan Karakter';
+
+  @override
+  String get world_relationship_live_load_failed1 =>
+      'Gagal memuat data hubungan. Periksa izin Firestore.';
+
+  @override
+  String get world_relationship_live_no_people1 =>
+      'Belum ada karakter yang dibuat di dunia ini.';
+
+  @override
+  String get world_relationship_live_not_met1 =>
+      'Hubungan saat ini: Belum bertemu';
+
+  @override
+  String get world_relationship_live_first_meeting1 => 'Pertemuan pertama';
+
+  @override
+  String world_relationship_live_current_relation1(String relation) {
+    return 'Hubungan saat ini: $relation';
+  }
+
+  @override
+  String get world_relationship_live_thought_title1 =>
+      'Pikiran saat ini tentang pemain';
+
+  @override
+  String get world_relationship_live_thought_pending1 =>
+      'Kesan akan terbentuk melalui interaksi berikutnya.';
+
+  @override
+  String world_scene_full_load_error1(String error) {
+    return 'Gagal memuat adegan: $error';
+  }
+
+  @override
+  String get world_scene_full_delete_title1 => 'Hapus adegan';
+
+  @override
+  String world_scene_full_delete_confirm1(String title) {
+    return 'Hapus “$title”?';
+  }
+
+  @override
+  String get world_scene_full_cancel1 => 'Batal';
+
+  @override
+  String get world_scene_full_delete1 => 'Hapus';
+
+  @override
+  String world_scene_full_delete_error1(String error) {
+    return 'Gagal menghapus adegan: $error';
+  }
+
+  @override
+  String get world_scene_full_missing_fields1 =>
+      'Isi judul dan deskripsi adegan terlebih dahulu.';
+
+  @override
+  String world_scene_full_activate_error1(String error) {
+    return 'Gagal memulai adegan: $error';
+  }
+
+  @override
+  String get world_scene_full_end_title1 => 'Akhiri adegan';
+
+  @override
+  String get world_scene_full_end_confirm1 =>
+      'Akhiri adegan yang sedang berlangsung?';
+
+  @override
+  String world_scene_full_end_error1(String error) {
+    return 'Gagal mengakhiri adegan: $error';
+  }
+
+  @override
+  String get world_scene_full_unnamed1 => 'Adegan tanpa judul';
+
+  @override
+  String world_scene_full_opening1(String opening) {
+    return 'Pembuka: $opening';
+  }
+
+  @override
+  String get world_scene_full_edit1 => 'Edit';
+
+  @override
+  String get world_scene_full_start1 => 'Mulai adegan';
+
+  @override
+  String get world_scene_full_creator_empty1 => 'Belum ada adegan kreator';
+
+  @override
+  String get world_scene_full_custom_empty1 => 'Kamu belum membuat adegan';
+
+  @override
+  String get world_scene_full_add1 => 'Adegan baru';
+
+  @override
+  String get world_scene_full_page_title1 => 'Adegan';
+
+  @override
+  String get world_scene_full_creator_tab1 => 'Adegan kreator';
+
+  @override
+  String get world_scene_full_custom_tab1 => 'Adegan saya';
+
+  @override
+  String world_scene_full_active1(String title) {
+    return 'Adegan aktif: $title';
+  }
+
+  @override
+  String get world_scene_required1 => 'Masukkan judul dan deskripsi adegan';
+
+  @override
+  String get world_scene_title1 => 'Adegan';
+
+  @override
+  String get world_scene_beta_notice1 =>
+      'Beta adegan dunia: adegan dimulai melalui AI obrolan dunia. Penyimpanan khusus adegan dan API pembuka resmi belum tersedia.';
+
+  @override
+  String get world_scene_creator_scenes1 => 'Adegan kreator';
+
+  @override
+  String get world_scene_no_creator_scenes1 =>
+      'Belum ada adegan kreator yang tersedia di dunia ini';
+
+  @override
+  String get world_scene_custom_scenes1 => 'Buat adegan sendiri';
+
+  @override
+  String get world_scene_name1 => 'Judul adegan';
+
+  @override
+  String get world_scene_setup1 =>
+      'Latar, lokasi, karakter, dan situasi pembuka';
+
+  @override
+  String get world_scene_start1 => 'Mulai adegan';
+
+  @override
+  String get worldSearchTitle1 => 'Cari dunia terbuka';
+
+  @override
+  String get worldSearchHint1 => 'Cari nama dunia, kreator, atau tag';
+
+  @override
+  String get worldSearchClear1 => 'Hapus pencarian';
+
+  @override
+  String get worldSearchEmpty1 => 'Tidak ada dunia terbuka yang cocok';
+
+  @override
+  String get worldSearchTrending1 => 'Dunia populer';
+
+  @override
+  String get worldSearchResults1 => 'Hasil pencarian';
+
+  @override
+  String get worldSearchUnnamed1 => 'Dunia tanpa nama';
+
+  @override
+  String worldSearchCreator1(String creator) {
+    return 'Kreator: $creator';
+  }
+
+  @override
+  String get world_secret_chapters_title1 => 'Bab Rahasia';
+
+  @override
+  String get world_secret_chapters_close1 => 'Tutup';
+
+  @override
+  String get world_secret_chapters_read_failed1 =>
+      'Bab rahasia belum dapat dibaca saat ini';
+
+  @override
+  String get world_secret_chapters_retry1 =>
+      'Gagal memuat. Ketuk untuk mencoba lagi';
+
+  @override
+  String get world_secret_chapters_empty1 =>
+      'Kreator belum menambahkan bab rahasia';
+
+  @override
+  String world_secret_chapters_locked_chapter1(String number) {
+    return 'Bab $number · ???';
+  }
+
+  @override
+  String get world_secret_chapters_unlocked1 => 'Terbuka · Ketuk untuk membaca';
+
+  @override
+  String get world_secret_chapters_locked1 =>
+      'Terkunci · Terus jelajahi cerita';
+
+  @override
+  String world_timeline_load_failed1(String error) {
+    return 'Gagal memuat ringkasan cerita: $error';
+  }
+
+  @override
+  String get world_timeline_edit_summary1 => 'Edit ringkasan cerita';
+
+  @override
+  String get world_timeline_cancel1 => 'Batal';
+
+  @override
+  String get world_timeline_save1 => 'Simpan';
+
+  @override
+  String world_timeline_save_failed1(String error) {
+    return 'Gagal menyimpan: $error';
+  }
+
+  @override
+  String get world_timeline_delete_summary1 => 'Hapus ringkasan';
+
+  @override
+  String get world_timeline_delete_confirm1 => 'Hapus catatan cerita ini?';
+
+  @override
+  String get world_timeline_delete1 => 'Hapus';
+
+  @override
+  String world_timeline_delete_failed1(String error) {
+    return 'Gagal menghapus: $error';
+  }
+
+  @override
+  String get world_timeline_our_story1 => 'Kisah Kita';
+
+  @override
+  String get world_timeline_retry1 => 'Coba lagi';
+
+  @override
+  String get world_timeline_empty1 =>
+      'Cerita masih berlanjut. Catatan baru akan muncul seiring perkembangan cerita.';
+
+  @override
+  String get world_timeline_recent1 => 'Catatan terbaru';
+
+  @override
+  String get world_timeline_edit1 => 'Edit';
+
+  @override
+  String get echo_login_to_post1 => 'Masuk untuk meninggalkan gema waktu';
+
+  @override
+  String get echo_limit1 =>
+      'Setiap pemain dapat meninggalkan maksimal 3 gema di dunia terbuka yang sama';
+
+  @override
+  String get echo_count_fail1 =>
+      'Tidak dapat memeriksa jumlah gema. Coba lagi nanti.';
+
+  @override
+  String get echo_compose_title1 => 'Tinggalkan Gema Waktu';
+
+  @override
+  String get echo_compose_desc1 =>
+      'Pilih kartu yang disukai lalu tulis pesan yang ingin ditinggalkan.';
+
+  @override
+  String get echo_compose_hint1 =>
+      'Apa yang ingin kamu sampaikan di dunia ini?';
+
+  @override
+  String get echo_send1 => 'Kirim Gema';
+
+  @override
+  String get echo_player1 => 'Pemain';
+
+  @override
+  String get echo_sent1 => 'Gema waktu berhasil dikirim';
+
+  @override
+  String get echo_post_fail1 => 'Gagal mengirim. Periksa izin dan koneksi.';
+
+  @override
+  String get echo_login1 => 'Silakan masuk';
+
+  @override
+  String get echo_like_fail1 => 'Gagal menyukai';
+
+  @override
+  String get echo_delete_title1 => 'Hapus gema waktu ini?';
+
+  @override
+  String get echo_delete_warning1 => 'Tindakan ini tidak dapat dibatalkan.';
+
+  @override
+  String get echo_cancel1 => 'Batal';
+
+  @override
+  String get echo_delete1 => 'Hapus';
+
+  @override
+  String get echo_deleted1 => 'Gema waktu dihapus';
+
+  @override
+  String get echo_delete_fail1 => 'Gagal menghapus';
+
+  @override
+  String get echo_reason_inappropriate1 => 'Konten tidak pantas';
+
+  @override
+  String get echo_reason_harassment1 => 'Pelecehan atau serangan';
+
+  @override
+  String get echo_reason_spam1 => 'Spam';
+
+  @override
+  String get echo_reason_other1 => 'Lainnya';
+
+  @override
+  String get echo_report_title1 => 'Laporkan Gema Waktu';
+
+  @override
+  String get echo_already_reported1 => 'Gema ini sudah kamu laporkan';
+
+  @override
+  String get echo_report_received1 => 'Laporan diterima';
+
+  @override
+  String get echo_report_fail1 => 'Gagal melaporkan';
+
+  @override
+  String get echo_options1 => 'Opsi gema';
+
+  @override
+  String get echo_delete_option1 => 'Hapus gema';
+
+  @override
+  String get echo_report_option1 => 'Laporkan gema';
+
+  @override
+  String get echo_wall_title1 => 'Gema Waktu';
+
+  @override
+  String get echo_add1 => 'Tinggalkan gema';
+
+  @override
+  String get echo_load_fail1 => 'Gagal memuat gema. Periksa izin Firestore.';
+
+  @override
+  String get echo_empty1 => 'Belum ada gema. Tinggalkan cerita pertama.';
+
+  @override
+  String get store_pack_30_name1 => 'Paket Pertemuan Pertama';
+
+  @override
+  String get store_pack_70_name1 => 'Paket Awal Asmara';
+
+  @override
+  String get store_pack_120_name1 => 'Paket Degup Hati';
+
+  @override
+  String get store_pack_190_name1 => 'Paket Cinta Membara';
+
+  @override
+  String get store_pack_250_name1 => 'Paket Belahan Jiwa';
+
+  @override
+  String get store_pack_330_name1 => 'Paket Kesetiaan';
+
+  @override
+  String get store_pack_450_name1 => 'Paket Kepercayaan';
+
+  @override
+  String get store_pack_520_name1 => 'Paket Aku Cinta Kamu';
+
+  @override
+  String get store_pack_690_name1 => 'Paket Bulan Madu';
+
+  @override
+  String get store_pack_720_name1 => 'Paket Janji';
+
+  @override
+  String get store_pack_750_name1 => 'Paket Bersama';
+
+  @override
+  String get store_pack_830_name1 => 'Paket Cinta Mendalam';
+
+  @override
+  String get store_pack_990_name1 => 'Paket Cinta Abadi';
+
+  @override
+  String get store_pack_1050_name1 => 'Paket Satu-satunya';
+
+  @override
+  String get store_pack_1290_name1 => 'Paket Cinta Sejati';
+
+  @override
+  String get store_pack_1314_name1 => 'Paket Seumur Hidup';
+
+  @override
+  String get store_pack_1930_name1 => 'Paket Ikrar';
+
+  @override
+  String get store_pack_2990_name1 => 'Paket Kekasih Abadi';
 }

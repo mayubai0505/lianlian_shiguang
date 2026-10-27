@@ -77,10 +77,11 @@ class _AvatarFramePickerPageState extends State<AvatarFramePickerPage> {
       );
       Navigator.of(context).pop(true);
     } catch (e) {
+      debugPrint('頭像框裝備失敗：$e');
       if (!mounted) return;
       ToastUtils.showCenterToast(
         context,
-        '裝備失敗：$e',
+        appL10n.avatar_frame_error_generic,
         isError: true,
       );
     } finally {
@@ -108,10 +109,11 @@ class _AvatarFramePickerPageState extends State<AvatarFramePickerPage> {
       );
       Navigator.of(context).pop(true);
     } catch (e) {
+      debugPrint('頭像框卸下失敗：$e');
       if (!mounted) return;
       ToastUtils.showCenterToast(
         context,
-        '卸下失敗：$e',
+        appL10n.avatar_frame_error_generic,
         isError: true,
       );
     } finally {
@@ -152,7 +154,7 @@ class _AvatarFramePickerPageState extends State<AvatarFramePickerPage> {
           _OwnedAvatarFrame(
             eventId: eventId,
             itemId: itemId,
-            name: name.isEmpty ? '活動頭像框' : name,
+            name: name.isEmpty ? appL10n.avatar_frame_default_name : name,
             imageUrl: imageUrl,
             description: description,
           ),
@@ -197,8 +199,8 @@ class _AvatarFramePickerPageState extends State<AvatarFramePickerPage> {
     final theme = Theme.of(context);
 
     if (user == null) {
-      return const Scaffold(
-        body: Center(child: Text('請先登入')),
+      return Scaffold(
+        body: Center(child: Text(appL10n.avatar_frame_sign_in_required)),
       );
     }
 
@@ -238,13 +240,12 @@ class _AvatarFramePickerPageState extends State<AvatarFramePickerPage> {
               }
 
               if (progressSnapshot.hasError) {
+                debugPrint('頭像框讀取失敗：${progressSnapshot.error}');
                 return Center(
                   child: Padding(
                     padding: const EdgeInsets.all(24),
                     child: Text(
-                      appL10n.avatar_frame_load_failed(
-                        progressSnapshot.error?.toString() ?? '',
-                      ),
+                      appL10n.avatar_frame_error_generic,
                     ),
                   ),
                 );

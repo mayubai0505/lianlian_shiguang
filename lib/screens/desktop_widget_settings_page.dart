@@ -358,9 +358,9 @@ class _DesktopWidgetSettingsPageState
   String _sizeLabel(String size) {
     switch (size) {
       case 'small':
-        return '小';
+        return AppLocalizations.of(context)!.desktop_widget_size_small1;
       case 'large':
-        return '大';
+        return AppLocalizations.of(context)!.desktop_widget_size_large1;
       default:
         return appL10n.widget_settings_size_label;
     }
@@ -440,7 +440,7 @@ class _DesktopWidgetSettingsPageState
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('取消'),
+              child: Text(AppLocalizations.of(context)!.desktop_widget_cancel1),
             ),
             FilledButton(
               style: FilledButton.styleFrom(
@@ -448,7 +448,7 @@ class _DesktopWidgetSettingsPageState
                 foregroundColor: theme.colorScheme.onError,
               ),
               onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: const Text('刪除'),
+              child: Text(AppLocalizations.of(context)!.desktop_widget_delete1),
             ),
           ],
         );
@@ -2450,10 +2450,10 @@ class _DesktopWidgetDisplaySettingsPageState
                             eventDay.difference(today).inDays;
 
                         final countdownText = days > 0
-                            ? '還有 $days 天'
+                            ? AppLocalizations.of(context)!.desktop_widget_days_remaining1(days)
                             : days == 0
-                            ? '就是今天'
-                            : '已過 ${days.abs()} 天';
+                            ? AppLocalizations.of(context)!.desktop_widget_days_today1
+                            : AppLocalizations.of(context)!.desktop_widget_days_elapsed1(days.abs());
 
                         return Material(
                           color: isSelected
@@ -2750,7 +2750,7 @@ class _DesktopWidgetDisplaySettingsPageState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _SettingsSectionTitle(
-              title: '今日一句',
+              title: AppLocalizations.of(context)!.desktop_widget_daily_quote1,
               primary: primary,
             ),
             _SettingsCard(
@@ -2780,7 +2780,7 @@ class _DesktopWidgetDisplaySettingsPageState
                     itemBuilder: (_) => [
                       PopupMenuItem(
                         value: 'daily',
-                        child: Text('每天更新一次'),
+                        child: Text(AppLocalizations.of(context)!.desktop_widget_update_daily1),
                       ),
                       PopupMenuItem(
                         value: 'app_open',
@@ -2819,7 +2819,7 @@ class _DesktopWidgetDisplaySettingsPageState
             _ChoiceCard(
               selected: _anniversaryEventType == 'birthday',
               icon: Icons.cake_outlined,
-              title: '角色生日',
+              title: AppLocalizations.of(context)!.desktop_widget_character_birthday1,
               subtitle: appL10n.widget_settings_subtitle_character_birthday,
               onTap: () {
                 setState(() {
@@ -2866,7 +2866,7 @@ class _DesktopWidgetDisplaySettingsPageState
                     ),
                     TextButton(
                       onPressed: _pickCustomMemoEvent,
-                      child: const Text('更換'),
+                      child: Text(AppLocalizations.of(context)!.desktop_widget_change1),
                     ),
                   ],
                 ),
@@ -2876,23 +2876,23 @@ class _DesktopWidgetDisplaySettingsPageState
         );
 
       case DesktopWidgetType.characterStatus:
-        const options = <String, String>{
-          'mood': '心情',
-          'currentState': '當前狀態',
-          'location': '地點',
-          'relationship': '關係',
-          'outfit': '衣著',
-          'weather': '天氣',
-          'thought': '想法',
-          'action': '動作',
-          'affinity': '好感度',
+        final options = <String, String>{
+          'mood': AppLocalizations.of(context)!.desktop_widget_mood1,
+          'currentState': AppLocalizations.of(context)!.desktop_widget_current_state1,
+          'location': AppLocalizations.of(context)!.desktop_widget_location1,
+          'relationship': AppLocalizations.of(context)!.desktop_widget_relationship1,
+          'outfit': AppLocalizations.of(context)!.desktop_widget_outfit1,
+          'weather': AppLocalizations.of(context)!.desktop_widget_weather1,
+          'thought': AppLocalizations.of(context)!.desktop_widget_thought1,
+          'action': AppLocalizations.of(context)!.desktop_widget_action1,
+          'affinity': AppLocalizations.of(context)!.desktop_widget_affinity1,
         };
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _SettingsSectionTitle(
-              title: '角色狀態',
+              title: AppLocalizations.of(context)!.desktop_widget_character_status1,
               primary: primary,
             ),
             Text(
@@ -3084,7 +3084,7 @@ class _DesktopWidgetPreviewPageState
         final rawLines = latestPost['lines'];
         displayLines = rawLines is List
             ? rawLines.map((e) => e.toString()).toList()
-            : const <String>['目前還沒有角色動態'];
+            : <String>[AppLocalizations.of(context)!.desktop_widget_no_posts1];
 
         displayImageUrl =
             latestPost['imageUrl']?.toString().trim() ?? widget.imageUrl;
@@ -3162,7 +3162,7 @@ class _DesktopWidgetPreviewPageState
 
       ToastUtils.showCenterToast(
         context,
-        '加入桌面小工具失敗：$error',
+        AppLocalizations.of(context)!.desktop_widget_error1,
         isError: true,
       );
     } finally {
@@ -3230,17 +3230,17 @@ class _DesktopWidgetPreviewPageState
                       spacing: 8,
                       children: [
                         _ChoiceChipButton(
-                          label: '小',
+                          label: AppLocalizations.of(context)!.desktop_widget_size_small1,
                           selected: _size == 'small',
                           onTap: () => setState(() => _size = 'small'),
                         ),
                         _ChoiceChipButton(
-                          label: '中',
+                          label: AppLocalizations.of(context)!.desktop_widget_size_medium1,
                           selected: _size == 'medium',
                           onTap: () => setState(() => _size = 'medium'),
                         ),
                         _ChoiceChipButton(
-                          label: '大',
+                          label: AppLocalizations.of(context)!.desktop_widget_size_large1,
                           selected: _size == 'large',
                           onTap: () => setState(() => _size = 'large'),
                         ),
@@ -3273,7 +3273,7 @@ class _DesktopWidgetPreviewPageState
                     if (Platform.isIOS) ...[
                       const SizedBox(height: 18),
                       _SettingsSectionTitle(
-                        title: '調整角色位置',
+                        title: AppLocalizations.of(context)!.desktop_widget_crop_position1,
                         primary: primary,
                       ),
                       SizedBox(
@@ -3285,7 +3285,7 @@ class _DesktopWidgetPreviewPageState
                           ),
                           icon: const Icon(Icons.crop_free_rounded),
                           label: Text(
-                            '放大／拖曳調整取景',
+                            AppLocalizations.of(context)!.desktop_widget_crop_action1,
                             style: GoogleFonts.notoSerifTc(
                               fontSize: 13.5,
                               fontWeight: FontWeight.w600,
@@ -3295,7 +3295,7 @@ class _DesktopWidgetPreviewPageState
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        '進入調整畫面後可雙指縮放、單指拖曳，不會再帶著整個頁面一起上下跑。',
+                        AppLocalizations.of(context)!.desktop_widget_crop_hint1,
                         style: GoogleFonts.notoSerifTc(
                           fontSize: 12,
                           height: 1.5,
@@ -3494,7 +3494,7 @@ class _DesktopWidgetPreviewPageState
                       children: [
                         Expanded(
                           child: Text(
-                            '調整角色取景',
+                            AppLocalizations.of(context)!.desktop_widget_crop_title1,
                             style: GoogleFonts.notoSerifTc(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
@@ -3502,7 +3502,7 @@ class _DesktopWidgetPreviewPageState
                           ),
                         ),
                         IconButton(
-                          tooltip: '重設',
+                          tooltip: AppLocalizations.of(context)!.desktop_widget_reset1,
                           onPressed: () {
                             setSheetState(() {
                               tempFocusX = 0.5;
@@ -3516,7 +3516,7 @@ class _DesktopWidgetPreviewPageState
                       ],
                     ),
                     Text(
-                      '單指拖曳調整上下左右位置；雙指縮放調整大小。框內看到的，就是桌面小工具會顯示的範圍。',
+                      AppLocalizations.of(context)!.desktop_widget_crop_instructions1,
                       style: GoogleFonts.notoSerifTc(
                         fontSize: 12,
                         height: 1.45,
@@ -3600,8 +3600,7 @@ class _DesktopWidgetPreviewPageState
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          '位置：${(tempFocusX * 100).round()}% / ${(tempFocusY * 100).round()}%　'
-                              '縮放：${tempScale.toStringAsFixed(1)}×',
+                          AppLocalizations.of(context)!.desktop_widget_crop_position_scale1((tempFocusX * 100).round(), (tempFocusY * 100).round(), tempScale.toStringAsFixed(1)),
                           style: GoogleFonts.notoSerifTc(
                             fontSize: 11.5,
                             color: theme.colorScheme.onSurface.withValues(
@@ -3617,7 +3616,7 @@ class _DesktopWidgetPreviewPageState
                         Expanded(
                           child: OutlinedButton(
                             onPressed: () => Navigator.pop(sheetContext),
-                            child: const Text('取消'),
+                            child: Text(AppLocalizations.of(context)!.desktop_widget_cancel1),
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -3633,7 +3632,7 @@ class _DesktopWidgetPreviewPageState
                                 },
                               );
                             },
-                            child: const Text('套用'),
+                            child: Text(AppLocalizations.of(context)!.desktop_widget_apply1),
                           ),
                         ),
                       ],
@@ -3790,7 +3789,7 @@ class _DesktopWidgetPreviewPageState
     switch (widget.info.type) {
       case DesktopWidgetType.latestPost:
         return [
-          '剛剛更新了動態',
+          AppLocalizations.of(context)!.desktop_widget_just_posted1,
           appL10n.widget_settings_sample_lines_message_today_end,
         ];
 
@@ -3826,8 +3825,8 @@ class _DesktopWidgetPreviewPageState
 
           if (targetDate == null) {
             return [
-              content.isEmpty ? '重要的日子' : content,
-              '尚未選擇日期',
+              content.isEmpty ? AppLocalizations.of(context)!.desktop_widget_important_day1 : content,
+              AppLocalizations.of(context)!.desktop_widget_no_date1,
             ];
           }
 
@@ -3841,21 +3840,21 @@ class _DesktopWidgetPreviewPageState
           final days = eventDay.difference(today).inDays;
 
           final countdown = days > 0
-              ? '還有 $days 天'
+              ? AppLocalizations.of(context)!.desktop_widget_days_remaining1(days)
               : days == 0
-              ? '就是今天'
-              : '已過 ${days.abs()} 天';
+              ? AppLocalizations.of(context)!.desktop_widget_days_today1
+              : AppLocalizations.of(context)!.desktop_widget_days_elapsed1(days.abs());
 
           final reminder =
               widget.settings['memoReminderText']?.toString().trim() ?? '';
 
           return [
-            content.isEmpty ? '重要的日子' : content,
+            content.isEmpty ? AppLocalizations.of(context)!.desktop_widget_important_day1 : content,
             countdown,
             if (reminder.isNotEmpty) reminder,
           ];
         }
-        return ['和他相遇', appL10n.widget_settings_sample_lines_label_days_variant_b];
+        return [AppLocalizations.of(context)!.desktop_widget_first_met1, appL10n.widget_settings_sample_lines_label_days_variant_b];
 
       case DesktopWidgetType.characterStatus:
         final fields = List<String>.from(

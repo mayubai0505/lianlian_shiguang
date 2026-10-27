@@ -7,6 +7,7 @@ import '../services/app_constants.dart';
 import '../utils/image_utils.dart';
 import 'event_memory_profile_confirm_page.dart';
 import 'package:lianlian_shiguang/l10n/app_l10n.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 class EventMemoryCharacterSelectPage extends StatefulWidget {
   final String eventId;
@@ -86,6 +87,7 @@ class _EventMemoryCharacterSelectPageState
   }
 
   Future<void> _loadCharacters() async {
+    final l10n = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       if (mounted) {
@@ -114,7 +116,7 @@ class _EventMemoryCharacterSelectPageState
         final data = doc.data();
         mine[doc.id] = _SelectableMemoryCharacter(
           id: doc.id,
-          name: (data['name'] ?? '未命名角色').toString(),
+          name: (data['name'] ?? l10n.event_memory_unnamed_character1).toString(),
           avatarPath: _avatarFromData(data),
           source: _CharacterSource.mine,
           isPrivate: false,
@@ -134,7 +136,7 @@ class _EventMemoryCharacterSelectPageState
         final data = doc.data();
         mine[doc.id] = _SelectableMemoryCharacter(
           id: doc.id,
-          name: (data['name'] ?? '未命名角色').toString(),
+          name: (data['name'] ?? l10n.event_memory_unnamed_character1).toString(),
           avatarPath: _avatarFromData(data),
           source: _CharacterSource.mine,
           isPrivate: true,
@@ -166,7 +168,7 @@ class _EventMemoryCharacterSelectPageState
         final friendData = friendDoc.data();
         friends[characterId] = _SelectableMemoryCharacter(
           id: characterId,
-          name: (data['name'] ?? friendData['name'] ?? '未命名角色')
+          name: (data['name'] ?? friendData['name'] ?? l10n.event_memory_unnamed_character1)
               .toString(),
           avatarPath: _avatarFromData(data).isNotEmpty
               ? _avatarFromData(data)
@@ -195,7 +197,8 @@ class _EventMemoryCharacterSelectPageState
       if (!mounted) return;
       setState(() {
         _loading = false;
-        _error = '讀取角色失敗：$e';
+        _error = l10n.event_memory_generic_error1;
+        debugPrint('讀取活動記憶角色失敗：$e');
       });
     }
   }
@@ -229,6 +232,7 @@ class _EventMemoryCharacterSelectPageState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final visual = _visual;
     final accent = visual.accent;
@@ -241,7 +245,7 @@ class _EventMemoryCharacterSelectPageState
         foregroundColor: visual.textPrimaryColor,
         surfaceTintColor: Colors.transparent,
         title: Text(
-          '選擇角色',
+          l10n.event_memory_select_character_title1,
           style: GoogleFonts.notoSerifTc(
             fontWeight: FontWeight.w700,
             color: visual.textPrimaryColor,
@@ -324,7 +328,7 @@ class _EventMemoryCharacterSelectPageState
                     ),
                     if (_myCharacters.isNotEmpty) ...[
                       _SectionHeader(
-                        title: '我的角色',
+                        title: l10n.event_memory_my_characters1,
                         count: _myCharacters.length,
                         visual: visual,
                       ),
@@ -339,7 +343,7 @@ class _EventMemoryCharacterSelectPageState
                     ],
                     if (_friendCharacters.isNotEmpty) ...[
                       _SectionHeader(
-                        title: '好友角色',
+                        title: l10n.event_memory_friend_characters1,
                         count: _friendCharacters.length,
                         visual: visual,
                       ),
@@ -591,6 +595,7 @@ class _CharacterCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final accent = visual.accent;
 
@@ -680,10 +685,10 @@ class _CharacterCard extends StatelessWidget {
                 ),
                 child: Text(
                   character.source == _CharacterSource.friend
-                      ? '好友'
+                      ? l10n.event_memory_friend_badge1
                       : character.isPrivate
                       ? appL10n.event_memory_character_card_message_private
-                      : '我的角色',
+                      : l10n.event_memory_my_characters1,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.notoSerifTc(

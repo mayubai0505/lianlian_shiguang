@@ -59,15 +59,16 @@ class _WorldCustomSceneEditPageState extends State<WorldCustomSceneEditPage> {
   Future<void> _save() async {
     if (_isSaving) return;
 
+    final l10n = AppLocalizations.of(context)!;
     final title = _titleController.text.trim();
     final description = _descriptionController.text.trim();
 
     if (title.isEmpty) {
-      _showMessage('請先填寫劇場標題。');
+      _showMessage(l10n.world_custom_scene_title_required1);
       return;
     }
     if (description.isEmpty) {
-      _showMessage('請先填寫場景說明。');
+      _showMessage(l10n.world_custom_scene_description_required1);
       return;
     }
 
@@ -88,7 +89,7 @@ class _WorldCustomSceneEditPageState extends State<WorldCustomSceneEditPage> {
       Navigator.pop(context);
     } catch (_) {
       if (!mounted) return;
-      _showMessage('儲存失敗，請稍後再試。');
+      _showMessage(l10n.world_custom_scene_save_failed1);
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
@@ -141,7 +142,7 @@ class _WorldCustomSceneEditPageState extends State<WorldCustomSceneEditPage> {
         backgroundColor: Colors.transparent,
         foregroundColor: theme.colorScheme.onSurface,
         title: Text(
-          widget.isEditing ? '編輯劇場' : '新增劇場',
+          widget.isEditing ? l10n.world_custom_scene_edit_title1 : l10n.world_custom_scene_add_title1,
           style: GoogleFonts.notoSerifTc(
             fontWeight: FontWeight.w700,
           ),

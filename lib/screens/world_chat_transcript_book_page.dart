@@ -1697,7 +1697,7 @@ class _WorldChatTranscriptBookPageState extends State<WorldChatTranscriptBookPag
         context: context,
         builder: (ctx) => AlertDialog(
           content: Text(l10n.chat_book_export_failed(e.toString())),
-          actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("確定"))],
+          actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.world_chat_book_confirm1))],
         ),
       );
     } finally {

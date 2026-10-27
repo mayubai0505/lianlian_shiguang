@@ -490,7 +490,7 @@ class CreatorProfilePage extends StatelessWidget {
             borderRadius: BorderRadius.circular(22),
           ),
           title: Text(
-            '檢舉創作者',
+            l10n.creator_profile_report_creator,
             style: GoogleFonts.notoSerifTc(
               fontSize: 17,
               fontWeight: FontWeight.w600,
@@ -501,7 +501,7 @@ class CreatorProfilePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '請選擇檢舉「$creatorName」的原因：',
+                l10n.creator_profile_report_reason_prompt1(creatorName),
                 style: GoogleFonts.notoSerifTc(
                   fontSize: 13,
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.68),
@@ -611,7 +611,7 @@ class CreatorProfilePage extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                '封鎖創作者',
+                l10n.creator_profile_block_creator,
                 style: GoogleFonts.notoSerifTc(
                   fontSize: 17,
                   fontWeight: FontWeight.w600,
@@ -767,7 +767,7 @@ class CreatorProfilePage extends StatelessWidget {
             Tab(text: l10n.profilePageTabBio),
             Tab(text: l10n.profilePageTabCharacters),
             Tab(text: l10n.profilePageTabMoments),
-            const Tab(text: '開放世界'),
+            Tab(text: l10n.creator_profile_open_worlds),
           ],
         ),
         Positioned(
@@ -931,7 +931,7 @@ class CreatorProfilePage extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                '：',
+                                ': ',
                                 style: GoogleFonts.notoSerifTc(
                                   fontSize: 13,
                                   height: 1.55,
@@ -1996,9 +1996,7 @@ class CreatorProfilePage extends StatelessWidget {
     if (characterSnapshot.hasError) {
       return Center(
         child: Text(
-          l10n.creatorProfileWorksLoadFailed(
-            characterSnapshot.error.toString(),
-          ),
+          l10n.creator_profile_generic_error,
         ),
       );
     }
@@ -2273,6 +2271,7 @@ class _CreatorOpenWorldsTabState extends State<_CreatorOpenWorldsTab> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: _worldsFuture,
       builder: (context, snapshot) {
@@ -2281,13 +2280,13 @@ class _CreatorOpenWorldsTabState extends State<_CreatorOpenWorldsTab> {
         }
         if (snapshot.hasError) {
           return Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Text('公開世界暫時無法載入', style: TextStyle(color: theme.colorScheme.onSurface)),
-            TextButton(onPressed: _refresh, child: const Text('重新整理')),
+            Text(l10n.creator_profile_generic_error, style: TextStyle(color: theme.colorScheme.onSurface)),
+            TextButton(onPressed: _refresh, child: Text(l10n.creator_profile_refresh)),
           ]));
         }
         final worlds = snapshot.data ?? <Map<String, dynamic>>[];
         if (worlds.isEmpty) {
-          return Center(child: Text('這位創作者尚未發布開放世界',
+          return Center(child: Text(l10n.creator_profile_no_open_worlds,
               style: TextStyle(color: theme.colorScheme.onSurfaceVariant)));
         }
         return RefreshIndicator(
@@ -2298,7 +2297,7 @@ class _CreatorOpenWorldsTabState extends State<_CreatorOpenWorldsTab> {
             itemBuilder: (context, i) {
               final world = worlds[i];
               final worldId = (world['id'] ?? '').toString();
-              final name = (world['name'] ?? '未命名世界').toString();
+              final name = (world['name'] ?? l10n.creator_profile_unnamed_world).toString();
               final cover = (world['coverImage'] ?? '').toString();
               final pitch = (world['shortPitch'] ?? '').toString().trim();
               final tags = (world['tags'] is List)
