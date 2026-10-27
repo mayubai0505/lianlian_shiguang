@@ -572,7 +572,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
                 ListTile(
                   minLeadingWidth: 34,
                   leading: optionIcon(
-                    'assets/images/chat/chat_pin_bookmark.png',
+                    'assets/images/chat/chat_pin_bookmark.webp',
                     color: primary,
                   ),
                   title: Text(
@@ -590,7 +590,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
                 ListTile(
                   minLeadingWidth: 34,
                   leading: optionIcon(
-                    'assets/images/profile/profile_quill.png',
+                    'assets/images/profile/profile_quill.webp',
                     color: primary,
                   ),
                   title: Text(
@@ -605,7 +605,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
                 ListTile(
                   minLeadingWidth: 34,
                   leading: optionIcon(
-                    'assets/images/chat/chat_msg_delete_mask.png',
+                    'assets/images/chat/chat_msg_delete_mask.webp',
                     color: Colors.redAccent,
                   ),
                   title: Text(
@@ -828,7 +828,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
 
 
   // ── 世界觀聊天室卡片長按操作（由後端驗證房間所屬玩家） ──
-  Future<void> _manageWorldRoom(String worldId, String action, {
+  Future<void> _manageWorldRoom(String worldId, String sessionId, String action, {
     String? name,
     bool? pinned,
   }) async {
@@ -840,6 +840,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
           options: HttpsCallableOptions(timeout: const Duration(seconds: 90)))
           .call(<String, dynamic>{
         'worldId': worldId,
+        'sessionId': sessionId,
         'action': action,
         if (name != null) 'roomName': name,
         if (pinned != null) 'pinned': pinned,
@@ -863,7 +864,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
     }
   }
 
-  Future<void> _renameWorldRoom(String worldId, String currentName) async {
+  Future<void> _renameWorldRoom(String worldId, String sessionId, String currentName) async {
     final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController(text: currentName);
     try {
@@ -881,13 +882,13 @@ class _ChatHomePageState extends State<ChatHomePage> {
             ],
           ));
       if (name == null || name.isEmpty || name == currentName) return;
-      await _manageWorldRoom(worldId, 'renameRoom', name: name);
+      await _manageWorldRoom(worldId, sessionId, 'renameRoom', name: name);
     } finally {
       controller.dispose();
     }
   }
 
-  Future<void> _deleteWorldRoom(String worldId, String displayName) async {
+  Future<void> _deleteWorldRoom(String worldId, String sessionId, String displayName) async {
     final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(context: context,
         builder: (ctx) => AlertDialog(
@@ -900,11 +901,12 @@ class _ChatHomePageState extends State<ChatHomePage> {
                 child: Text(l10n.delete_btn, style: const TextStyle(color: Colors.red))),
           ],
         ));
-    if (confirmed == true) await _manageWorldRoom(worldId, 'deleteRoom');
+    if (confirmed == true) await _manageWorldRoom(worldId, sessionId, 'deleteRoom');
   }
 
   Future<void> _showWorldRoomOptions({
     required String worldId,
+    required String sessionId,
     required String displayRoomName,
     required bool isPinned,
   }) async {
@@ -927,30 +929,30 @@ class _ChatHomePageState extends State<ChatHomePage> {
                   borderRadius: BorderRadius.circular(99))),
           ListTile(
             minLeadingWidth: 34,
-            leading: Image.asset('assets/images/chat/chat_pin_bookmark.png',
+            leading: Image.asset('assets/images/chat/chat_pin_bookmark.webp',
                 width: 32, height: 32, color: primary),
             title: Text(isPinned ? l10n.chat_home_unpin : l10n.chat_home_pin,
                 style: GoogleFonts.notoSerifTc(fontSize: 16, color: primary)),
             onTap: () { Navigator.pop(sheetContext);
-            _manageWorldRoom(worldId, 'pinRoom', pinned: !isPinned); },
+            _manageWorldRoom(worldId, sessionId, 'pinRoom', pinned: !isPinned); },
           ),
           ListTile(
             minLeadingWidth: 34,
-            leading: Image.asset('assets/images/profile/profile_quill.png',
+            leading: Image.asset('assets/images/profile/profile_quill.webp',
                 width: 32, height: 32, color: primary),
             title: Text(l10n.chat_home_world_rename_title,
                 style: GoogleFonts.notoSerifTc(fontSize: 16)),
             onTap: () { Navigator.pop(sheetContext);
-            _renameWorldRoom(worldId, displayRoomName); },
+            _renameWorldRoom(worldId, sessionId, displayRoomName); },
           ),
           ListTile(
             minLeadingWidth: 34,
-            leading: Image.asset('assets/images/chat/chat_msg_delete_mask.png',
+            leading: Image.asset('assets/images/chat/chat_msg_delete_mask.webp',
                 width: 32, height: 32, color: Colors.redAccent),
             title: Text(l10n.delete_btn, style: GoogleFonts.notoSerifTc(
                 fontSize: 16, color: Colors.redAccent)),
             onTap: () { Navigator.pop(sheetContext);
-            _deleteWorldRoom(worldId, displayRoomName); },
+            _deleteWorldRoom(worldId, sessionId, displayRoomName); },
           ),
         ]),
       )),
@@ -1035,7 +1037,10 @@ class _ChatHomePageState extends State<ChatHomePage> {
               final cover = (data['coverImage'] ?? data['worldCoverImage'] ?? '')
                   .toString().trim();
               final preview = (data['lastMessage'] ?? '').toString();
-              final isTest = data['isTestMode'] == true || data['isPrivateTest'] == true;
+              final isTest = data['entrySource'] == 'public'
+                  ? false
+                  : (data['entrySource'] == 'private' ||
+                  data['isTestMode'] == true || data['isPrivateTest'] == true);
               final worldId = (data['worldId'] ?? '').toString();
               final worldPinned = data['isPinned'] == true;
               return Card(
@@ -1048,64 +1053,79 @@ class _ChatHomePageState extends State<ChatHomePage> {
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(
                   onLongPress: () => _showWorldRoomOptions(
-                      worldId: worldId, displayRoomName: name, isPinned: worldPinned),
+                      worldId: worldId, sessionId: docs[index].id,
+                      displayRoomName: name, isPinned: worldPinned),
                   onTap: () {
                     final worldId = (data['worldId'] ?? '').toString();
                     if (worldId.isEmpty) return;
                     Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => WorldChatPage(worldId: worldId),
+                      builder: (_) => WorldChatPage(worldId: worldId, sessionId: docs[index].id),
                     ));
                   },
-                  child: Padding(
-                    padding: const EdgeInsets.all(14),
-                    child: Row(
+                  child: Stack(
                       children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(14),
-                          child: SizedBox(
-                            width: 60,
-                            height: 60,
-                            child: cover.startsWith('https://') || cover.startsWith('http://')
-                                ? CachedNetworkImage(
-                              imageUrl: cover,
-                              fit: BoxFit.cover,
-                              errorWidget: (_, __, ___) => Icon(Icons.public_rounded,
-                                  color: theme.colorScheme.primary),
-                            )
-                                : ColoredBox(
-                              color: theme.colorScheme.primary.withValues(alpha: 0.09),
-                              child: Icon(Icons.public_rounded,
-                                  color: theme.colorScheme.primary),
+                        if (worldPinned)
+                          Positioned(
+                            left: 10,
+                            top: 0,
+                            child: Image.asset(
+                              'assets/images/chat/chat_pin_bookmark.webp',
+                              width: 28,
+                              height: 36,
+                              fit: BoxFit.contain,
+                              color: theme.colorScheme.primary.withValues(alpha: 0.82),
+                              colorBlendMode: BlendMode.srcIn,
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        Padding(
+                          padding: const EdgeInsets.all(14),
+                          child: Row(
                             children: [
-                              if (worldPinned) Icon(Icons.push_pin_rounded, size: 17,
-                                  color: theme.colorScheme.primary),
-                              Text(name, maxLines: 1, overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.notoSerifTc(fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
-                              const SizedBox(height: 4),
-                              Text(isTest ? l10n.chat_home_world_private_test : l10n.chat_home_world_tab,
-                                  style: TextStyle(fontSize: 11,
-                                      color: theme.colorScheme.primary)),
-                              const SizedBox(height: 5),
-                              Text(preview.isEmpty ? l10n.chat_home_world_no_messages : preview,
-                                  maxLines: 1, overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(fontSize: 12,
-                                      color: theme.colorScheme.onSurfaceVariant)),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(14),
+                                child: SizedBox(
+                                  width: 60,
+                                  height: 60,
+                                  child: cover.startsWith('https://') || cover.startsWith('http://')
+                                      ? CachedNetworkImage(
+                                    imageUrl: cover,
+                                    fit: BoxFit.cover,
+                                    errorWidget: (_, __, ___) => Icon(Icons.public_rounded,
+                                        color: theme.colorScheme.primary),
+                                  )
+                                      : ColoredBox(
+                                    color: theme.colorScheme.primary.withValues(alpha: 0.09),
+                                    child: Icon(Icons.public_rounded,
+                                        color: theme.colorScheme.primary),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(name, maxLines: 1, overflow: TextOverflow.ellipsis,
+                                        style: GoogleFonts.notoSerifTc(fontSize: 16,
+                                            fontWeight: FontWeight.w600)),
+                                    const SizedBox(height: 4),
+                                    Text(isTest ? l10n.chat_home_world_private_test : l10n.chat_home_world_tab,
+                                        style: TextStyle(fontSize: 11,
+                                            color: theme.colorScheme.primary)),
+                                    const SizedBox(height: 5),
+                                    Text(preview.isEmpty ? l10n.chat_home_world_no_messages : preview,
+                                        maxLines: 1, overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(fontSize: 12,
+                                            color: theme.colorScheme.onSurfaceVariant)),
+                                  ],
+                                ),
+                              ),
+                              Icon(Icons.chevron_right_rounded,
+                                  color: theme.colorScheme.onSurfaceVariant),
                             ],
                           ),
                         ),
-                        Icon(Icons.chevron_right_rounded,
-                            color: theme.colorScheme.onSurfaceVariant),
-                      ],
-                    ),
-                  ),
+                      ]),
                 ),
               );
             }, childCount: docs.length),
@@ -1207,7 +1227,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
                                   child: Transform.scale(
                                     scale: 1.0,
                                     child: Image.asset(
-                                      'assets/images/chat/chat_header_paper_plane.png',
+                                      'assets/images/chat/chat_header_paper_plane.webp',
                                       width: 36,
                                       height: 36,
                                       color: theme.colorScheme.primary,
@@ -1407,7 +1427,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
                                               left: 10,
                                               top: 0,
                                               child: Image.asset(
-                                                'assets/images/chat/chat_pin_bookmark.png',
+                                                'assets/images/chat/chat_pin_bookmark.webp',
                                                 width: 28,
                                                 height: 36,
                                                 fit: BoxFit.contain,

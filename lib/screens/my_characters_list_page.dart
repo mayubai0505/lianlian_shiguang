@@ -63,7 +63,7 @@ class _MyCharactersListPageState extends State<MyCharactersListPage> {
   }
 
   ImageProvider _getImageProvider(String path) {
-    if (path.isEmpty) return const AssetImage('assets/images/blank_avatar.png');
+    if (path.isEmpty) return const AssetImage('assets/images/blank_avatar.webp');
     if (path.startsWith('http')) return NetworkImage(path);
     return AssetImage(path);
   }

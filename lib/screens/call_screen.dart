@@ -903,7 +903,7 @@ class _CallOverlayState extends State<CallOverlay> {
                 const SizedBox(width: 8),
                 IconButton(
                   icon: Image.asset(
-                    'assets/images/chat/chat_send_plane_mask.png',
+                    'assets/images/chat/chat_send_plane_mask.webp',
                     width: 38,
                     height: 38,
                     color: theme.colorScheme.primary,

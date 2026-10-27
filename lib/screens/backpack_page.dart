@@ -99,7 +99,7 @@ class BackpackPage extends StatelessWidget {
               child: Opacity(
                 opacity: 0.12,
                 child: Image.asset(
-                  'assets/images/contact/contact_bottom_right_botanical.png',
+                  'assets/images/contact/contact_bottom_right_botanical.webp',
                   width: 210,
                   fit: BoxFit.contain,
                 ),

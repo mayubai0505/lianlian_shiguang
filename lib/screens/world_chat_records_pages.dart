@@ -129,8 +129,12 @@ class WorldChatRelationshipsPage extends StatelessWidget {
                 const SizedBox(height: 5),
                 Text(AppLocalizations.of(context)!.world_records_relationship_stage1(stage), style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurfaceVariant)),
               ])),
-              Image.asset('assets/images/affection/affection_stage_$stage.png', width: 28, height: 28,
-                  errorBuilder: (_, __, ___) => const SizedBox.shrink()),
+              Image.asset(
+                'assets/images/affection/affection_stage_$stage.${stage == 1 ? 'png' : 'webp'}',
+                width: 28,
+                height: 28,
+                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+              ),
             ])),
             );
           },

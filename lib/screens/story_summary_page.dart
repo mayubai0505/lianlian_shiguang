@@ -350,7 +350,7 @@ class _StorySummaryPageState extends State<StorySummaryPage> {
                             ),
                             PopupMenuButton<String>(
                               icon: Image.asset(
-                                'assets/images/chat/chat_msg_edit_mask.png',
+                                'assets/images/chat/chat_msg_edit_mask.webp',
                                 width: 24,
                                 height: 24,
                                 fit: BoxFit.contain,
@@ -370,7 +370,7 @@ class _StorySummaryPageState extends State<StorySummaryPage> {
                                   child: Row(
                                     children: [
                                       Image.asset(
-                                        'assets/images/chat/chat_msg_edit_mask.png',
+                                        'assets/images/chat/chat_msg_edit_mask.webp',
                                         width: 20,
                                         height: 20,
                                         fit: BoxFit.contain,
@@ -387,7 +387,7 @@ class _StorySummaryPageState extends State<StorySummaryPage> {
                                   child: Row(
                                     children: [
                                       Image.asset(
-                                        'assets/images/chat/chat_msg_delete_mask.png',
+                                        'assets/images/chat/chat_msg_delete_mask.webp',
                                         width: 20,
                                         height: 20,
                                         fit: BoxFit.contain,

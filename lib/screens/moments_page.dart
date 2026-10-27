@@ -641,6 +641,7 @@ class MomentsPageState extends State<MomentsPage> {
 
     await showModalBottomSheet(
       context: context,
+      isScrollControlled: true, // 橫屏時允許選單使用適合的高度
       backgroundColor: theme.scaffoldBackgroundColor,
       showDragHandle: true,
       shape: const RoundedRectangleBorder(
@@ -679,112 +680,117 @@ class MomentsPageState extends State<MomentsPage> {
         }
 
         return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.only(
-              bottom: 12,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(context).height * 0.85,
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    24,
-                    4,
-                    24,
-                    10,
-                  ),
-                  child: Text(
-                    l10n.more_options,
-                    style: GoogleFonts.notoSerifTc(
-                      color: onSurface,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 1.0,
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        24,
+                        4,
+                        24,
+                        10,
+                      ),
+                      child: Text(
+                        l10n.more_options,
+                        style: GoogleFonts.notoSerifTc(
+                          color: onSurface,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                Divider(
-                  height: 1,
-                  color: theme.colorScheme.outlineVariant
-                      .withValues(alpha: 0.24),
-                ),
-                menuTile(
-                  title: l10n.moment_create_title,
-                  onTap: () {
-                    Navigator.pop(context);
-                    _showAuthorSelectionSheet();
-                  },
-                ),
-                menuTile(
-                  title: l10n.character_post_schedule,
-                  onTap: () {
-                    Navigator.pop(context);
-                    _showAutoPostManager(context);
-                  },
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 6,
-                  ),
-                  child: Divider(
-                    height: 1,
-                    color: theme.colorScheme.outlineVariant
-                        .withValues(alpha: 0.24),
-                  ),
-                ),
-                menuTile(
-                  title: l10n.liked_content,
-                  showArrow: true,
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                        const InteractionHistoryPage(
-                          initialIndex: 0,
-                        ),
+                    Divider(
+                      height: 1,
+                      color: theme.colorScheme.outlineVariant
+                          .withValues(alpha: 0.24),
+                    ),
+                    menuTile(
+                      title: l10n.moment_create_title,
+                      onTap: () {
+                        Navigator.pop(context);
+                        _showAuthorSelectionSheet();
+                      },
+                    ),
+                    menuTile(
+                      title: l10n.character_post_schedule,
+                      onTap: () {
+                        Navigator.pop(context);
+                        _showAutoPostManager(context);
+                      },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 6,
                       ),
-                    );
-                  },
-                ),
-                menuTile(
-                  title: l10n.my_favorites,
-                  showArrow: true,
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                        const InteractionHistoryPage(
-                          initialIndex: 1,
-                        ),
+                      child: Divider(
+                        height: 1,
+                        color: theme.colorScheme.outlineVariant
+                            .withValues(alpha: 0.24),
                       ),
-                    );
-                  },
+                    ),
+                    menuTile(
+                      title: l10n.liked_content,
+                      showArrow: true,
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                            const InteractionHistoryPage(
+                              initialIndex: 0,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    menuTile(
+                      title: l10n.my_favorites,
+                      showArrow: true,
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                            const InteractionHistoryPage(
+                              initialIndex: 1,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    menuTile(
+                      title: l10n.hidden_moments,
+                      showArrow: true,
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                            const HiddenMomentsPage(),
+                          ),
+                        ).then((_) {
+                          if (!mounted) return;
+                          setState(() {
+                            _feedReloadKey++;
+                          });
+                        });
+                      },
+                    ),
+                  ],
                 ),
-                menuTile(
-                  title: l10n.hidden_moments,
-                  showArrow: true,
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                        const HiddenMomentsPage(),
-                      ),
-                    ).then((_) {
-                      if (!mounted) return;
-                      setState(() {
-                        _feedReloadKey++;
-                      });
-                    });
-                  },
-                ),
-              ],
+              ),
             ),
           ),
         );
@@ -1049,7 +1055,7 @@ class MomentsPageState extends State<MomentsPage> {
                                   l10n.unknownCharacter;
                           final String avatar =
                               data['avatarPath'] ??
-                                  'assets/images/blank_avatar.png';
+                                  'assets/images/blank_avatar.webp';
 
                           final bool isEnabled =
                               data['autoPostEnabled'] ?? false;

@@ -36,6 +36,10 @@ class BackgroundSettingsPage extends StatefulWidget {
 
 class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
     with SingleTickerProviderStateMixin {
+  String get _backgroundKey => widget.worldId == null
+      ? widget.sessionId
+      : ThemeNotifier.worldBackgroundKey(widget.worldId!);
+
   static const String _topRightFloralAsset =
       'assets/images/theme/theme_card_starlight1.png';
 
@@ -352,7 +356,7 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
                       );
                       if (selected != true || !context.mounted) return;
                       await context.read<ThemeNotifier>().setChatRoomBackground(
-                          widget.sessionId, coverUrl);
+                          _backgroundKey, coverUrl);
                       if (context.mounted) Navigator.pop(context);
                     },
                     child: ClipRRect(
@@ -372,7 +376,7 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
                     key: ValueKey(character['id']),
                     character: character,
                     score: scores[(character['id'] ?? '').toString()] ?? 0,
-                    sessionId: widget.sessionId,
+                    sessionId: _backgroundKey,
                   ),
               ],
             );
@@ -1057,7 +1061,7 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
               await Provider.of<ThemeNotifier>(
                 pageContext,
                 listen: false,
-              ).resetChatRoomBackground(widget.sessionId);
+              ).resetChatRoomBackground(_backgroundKey);
 
               if (!dialogContext.mounted) return;
               Navigator.pop(dialogContext);
@@ -1111,7 +1115,7 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
                 pageContext,
                 listen: false,
               ).setChatRoomBackground(
-                widget.sessionId,
+                _backgroundKey,
                 cg.imageUrl,
               );
 

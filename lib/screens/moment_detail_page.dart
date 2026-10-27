@@ -97,7 +97,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
         _currentAuthorName =
         nickname.isNotEmpty ? nickname : l10n.chat_mysterious_player;
         _currentAuthorAvatar =
-        avatarPath.isNotEmpty ? avatarPath : 'assets/images/avatar1.png';
+        avatarPath.isNotEmpty ? avatarPath : 'assets/images/avatar1.webp';
       });
 
       final prefs = await SharedPreferences.getInstance();
@@ -184,7 +184,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
         prefs.getString('nickname') ?? l10n.chat_mysterious_player;
 
     final playerAvatar =
-        prefs.getString('avatarPath') ?? 'assets/images/avatar1.png';
+        prefs.getString('avatarPath') ?? 'assets/images/avatar1.webp';
 
     if (!mounted) return;
 
@@ -545,7 +545,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
     final String safeAuthorAvatar =
     _currentAuthorAvatar.isNotEmpty
         ? _currentAuthorAvatar
-        : 'assets/images/avatar1.png';
+        : 'assets/images/avatar1.webp';
 
     setState(() {
       _isPostingComment = true;
@@ -1171,7 +1171,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
                                       .isNotEmpty ==
                                       true
                                       ? data['authorAvatar'].toString().trim()
-                                      : 'assets/images/avatar1.png',
+                                      : 'assets/images/avatar1.webp',
                                 ),
                               ),
                               title: Wrap(
@@ -1516,7 +1516,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
                                 backgroundImage: getAvatarImageProvider(
                                   _currentAuthorAvatar.isNotEmpty
                                       ? _currentAuthorAvatar
-                                      : 'assets/images/avatar1.png',
+                                      : 'assets/images/avatar1.webp',
                                 ),
                               ),
                               Positioned(
@@ -1607,7 +1607,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
                         )
                             : ImageIcon(
                           const AssetImage(
-                            'assets/images/chat/chat_send_plane_mask.png',
+                            'assets/images/chat/chat_send_plane_mask.webp',
                           ),
                           size: 26,
                           color: theme.colorScheme.primary,

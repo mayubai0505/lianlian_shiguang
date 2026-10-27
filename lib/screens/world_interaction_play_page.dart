@@ -17,12 +17,12 @@ class _WorldInteractionPlayPageState extends State<WorldInteractionPlayPage> {
   String get _target => widget.characters[_targetId] ?? AppLocalizations.of(context)!.chooseNpc1;
 
   static const _giftAssets = <String, String>{
-    'heart': 'assets/images/chat/chat_gift_heart.png',
+    'heart': 'assets/images/chat/chat_gift_heart.webp',
     'flower': 'assets/images/chat/chat_gift_flower.png',
-    'sun': 'assets/images/chat/chat_gift_sun.png',
-    'confetti': 'assets/images/chat/chat_gift_confetti.png',
-    'coffee': 'assets/images/chat/chat_menu_model_mask.png',
-    'cake': 'assets/images/chat/chat_gift_cake.png',
+    'sun': 'assets/images/chat/chat_gift_sun.webp',
+    'confetti': 'assets/images/chat/chat_gift_confetti.webp',
+    'coffee': 'assets/images/chat/chat_menu_model_mask.webp',
+    'cake': 'assets/images/chat/chat_gift_cake.webp',
   };
 
   Future<void> _chooseTarget() async {
@@ -149,13 +149,13 @@ class _WorldInteractionPlayPageState extends State<WorldInteractionPlayPage> {
             const SizedBox(height: 24),
             _SectionTitle(text: l10n.intimateInteraction1, primary: primary),
             const SizedBox(height: 16),
-            _FeatureTile(assetPath: 'assets/images/chat/chat_interaction_poke_cheek.png',
+            _FeatureTile(assetPath: 'assets/images/chat/chat_interaction_poke_cheek.webp',
                 title: l10n.poke1, cost: '3', primary: primary, onTap: () => _finish('poke')),
             const SizedBox(height: 12),
-            _FeatureTile(assetPath: 'assets/images/chat/chat_interaction_hug.png',
+            _FeatureTile(assetPath: 'assets/images/chat/chat_interaction_hug.webp',
                 title: l10n.hug1, cost: '3', primary: primary, onTap: () => _finish('hug')),
             const SizedBox(height: 12),
-            _FeatureTile(assetPath: 'assets/images/chat/chat_interaction_hold_hands.png',
+            _FeatureTile(assetPath: 'assets/images/chat/chat_interaction_hold_hands.webp',
                 title: l10n.holdHands1, cost: '3', primary: primary, onTap: () => _finish('holdHands')),
             const SizedBox(height: 34),
             _SectionTitle(text: l10n.gifts1, primary: primary),
@@ -181,10 +181,10 @@ class _WorldInteractionPlayPageState extends State<WorldInteractionPlayPage> {
             const SizedBox(height: 34),
             _SectionTitle(text: l10n.funActivities1, primary: primary),
             const SizedBox(height: 16),
-            _FeatureTile(assetPath: 'assets/images/chat/chat_fun_location.png',
+            _FeatureTile(assetPath: 'assets/images/chat/chat_fun_location.webp',
                 title: l10n.sendLocation1, cost: '3', primary: primary, onTap: _location),
             const SizedBox(height: 12),
-            _FeatureTile(assetPath: 'assets/images/chat/chat_fun_dice.png',
+            _FeatureTile(assetPath: 'assets/images/chat/chat_fun_dice.webp',
                 title: l10n.diceDuel1, cost: '3', primary: primary, onTap: () => _finish('dice')),
           ]),
         ),

@@ -463,7 +463,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         opacity:
                         theme.brightness == Brightness.dark ? 0.08 : 0.16,
                         child: Image.asset(
-                          'assets/images/setting/settings_botanical_overlay_mask.png',
+                          'assets/images/setting/settings_botanical_overlay_mask.webp',
                           width: pageWidth + horizontalOverflow * 2,
                           height: pageHeight + verticalOverflow * 2,
                           fit: BoxFit.cover,
@@ -490,7 +490,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   // 1. 變更主題
                   _buildSettingsTile(
                     maskAsset:
-                    'assets/images/setting/settings_theme_palette_mask.png',
+                    'assets/images/setting/settings_theme_palette_mask.webp',
                     title: l10n.changeTheme,
                     onTap: () =>
                         Navigator.push(context, MaterialPageRoute(
@@ -517,7 +517,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   // 2. 恢復預設
                   _buildSettingsTile(
                     maskAsset:
-                    'assets/images/setting/settings_reset_appearance_mask.png',
+                    'assets/images/setting/settings_reset_appearance_mask.webp',
                     title: l10n.resetToDefaultAppearance,
                     subtitle: l10n.clearCustomSettings,
                     onTap: () => _showResetDialog(context, themeNotifier),
@@ -554,7 +554,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
                   _buildSettingsTile(
                     maskAsset:
-                    'assets/images/setting/settings_contact_mask.png',
+                    'assets/images/setting/settings_contact_mask.webp',
                     title: l10n.contactUs,
                     subtitle: l10n.contactDescription,
                     onTap: () =>
@@ -565,7 +565,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
                   _buildSettingsTile(
                     maskAsset:
-                    'assets/images/setting/settings_language_mask.png',
+                    'assets/images/setting/settings_language_mask.webp',
                     title: l10n.changeLanguage,
                     onTap: () =>
                         Navigator.push(context, MaterialPageRoute(builder: (
@@ -578,7 +578,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
                   _buildSettingsTile(
                     maskAsset:
-                    'assets/images/setting/settings_account_mask.png',
+                    'assets/images/setting/settings_account_mask.webp',
                     title: l10n.accountManagement,
                     subtitle: '${l10n.userId} ${currentUser?.uid ?? "N/A"}',
                     trailing: Text(
@@ -609,7 +609,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   if (canChangePassword)
                     _buildSettingsTile(
                       maskAsset:
-                      'assets/images/setting/settings_account_mask.png',
+                      'assets/images/setting/settings_account_mask.webp',
                       title: l10n.change_password_title,
                       subtitle: l10n.settingsChangePasswordSubtitle,
                       onTap: () {
@@ -625,7 +625,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
                   _buildSettingsTile(
                     maskAsset:
-                    'assets/images/setting/settings_blocked_character_mask.png',
+                    'assets/images/setting/settings_blocked_character_mask.webp',
                     title: l10n.characterManagement,
                     subtitle: l10n.viewBlockedCharacters,
                     onTap: () =>
@@ -641,7 +641,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
                     _buildSettingsTile(
                       maskAsset:
-                      'assets/images/setting/settings_account_mask.png',
+                      'assets/images/setting/settings_account_mask.webp',
                       title: l10n.settings_admin_dashboard1,
                       subtitle: l10n.settings_admin_tools_subtitle1,
                       onTap: () {
@@ -662,7 +662,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
                   _buildSettingsTile(
                     maskAsset:
-                    'assets/images/setting/settings_privacy_mask.png',
+                    'assets/images/setting/settings_privacy_mask.webp',
                     title: l10n.privacyPolicy,
                     theme: theme,
                     onTap: () {
@@ -679,7 +679,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
                   _buildSettingsTile(
                     maskAsset:
-                    'assets/images/setting/settings_terms_mask.png',
+                    'assets/images/setting/settings_terms_mask.webp',
                     title: l10n.termsOfService,
                     theme: theme,
                     onTap: () {
@@ -696,7 +696,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
                   _buildSettingsTile(
                     maskAsset:
-                    'assets/images/profile/profile_quill_mask.png',
+                    'assets/images/profile/profile_quill_mask.webp',
                     title: l10n.settingsCreatorGuidelines,
                     theme: theme,
                     onTap: () {
@@ -713,7 +713,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
                   _buildSettingsTile(
                     maskAsset:
-                    'assets/images/setting/settings_guide_mask.png',
+                    'assets/images/setting/settings_guide_mask.webp',
                     title: l10n.settingsPlayGuide,
                     theme: theme,
                     onTap: () {
@@ -728,7 +728,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   _buildSettingsTile(
                     maskAsset:
-                    'assets/images/setting/settings_open_source_mask.png',
+                    'assets/images/setting/settings_open_source_mask.webp',
                     title: l10n.openSourceLicenses,
                     subtitle: l10n.openSourceLicensesDescription,
                     theme: theme,

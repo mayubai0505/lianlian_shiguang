@@ -653,7 +653,7 @@ class _MemoPageState extends State<MemoPage> {
                       existingMemo: memo,
                     ),
                     icon: Image.asset(
-                      'assets/images/chat/chat_msg_edit_mask.png',
+                      'assets/images/chat/chat_msg_edit_mask.webp',
                       width: 28,
                       height: 28,
                       color: primary,
@@ -664,7 +664,7 @@ class _MemoPageState extends State<MemoPage> {
                     tooltip: l10n.delete_btn,
                     onPressed: () => _deleteMemo(memo.id),
                     icon: Image.asset(
-                      'assets/images/chat/chat_msg_delete_mask.png',
+                      'assets/images/chat/chat_msg_delete_mask.webp',
                       width: 28,
                       height: 28,
                       color: theme.colorScheme.error,

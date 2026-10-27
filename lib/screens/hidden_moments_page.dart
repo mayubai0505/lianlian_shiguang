@@ -10,7 +10,7 @@ class HiddenMomentsPage extends StatelessWidget {
   const HiddenMomentsPage({super.key});
 
   static const String _emptyIllustrationAsset =
-      'assets/images/echo/echo_hidden_empty_base.png';
+      'assets/images/echo/echo_hidden_empty_base.webp';
 
   Future<void> _unhideMoment(
       BuildContext context,

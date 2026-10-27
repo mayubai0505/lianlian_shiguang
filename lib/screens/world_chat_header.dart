@@ -56,8 +56,8 @@ class WorldChatHeader extends StatelessWidget implements PreferredSizeWidget {
     final primary = theme.colorScheme.primary;
     final onSurface = theme.colorScheme.onSurface;
     final flowersAsset = theme.brightness == Brightness.dark
-        ? 'assets/images/flower_gift_dark.png'
-        : 'assets/images/flower_gift.png';
+        ? 'assets/images/flower_gift_dark.webp'
+        : 'assets/images/flower_gift.webp';
 
     return Material(
       color: theme.colorScheme.surface.withValues(alpha: .96),

@@ -168,7 +168,7 @@ class _HelpPageState extends State<HelpPage> {
         child: Opacity(
           opacity: .20,
           child: Image.asset(
-            'assets/images/studio/studio_top_right.png',
+            'assets/images/studio/studio_top_right.webp',
           ),
         ),
       ),
@@ -179,7 +179,7 @@ class _HelpPageState extends State<HelpPage> {
         child: Opacity(
           opacity: .17,
           child: Image.asset(
-            'assets/images/studio/studio_bottom_left.png',
+            'assets/images/studio/studio_bottom_left.webp',
           ),
         ),
       ),
@@ -370,7 +370,7 @@ class _HelpPageState extends State<HelpPage> {
       (
       id: null,
       label: l10n.help_all_categories,
-      asset: 'assets/images/guide/guide_category_moments.png',
+      asset: 'assets/images/guide/guide_category_moments.webp',
       ),
       ...categories.map(
             (item) => (
@@ -480,7 +480,7 @@ class _HelpPageState extends State<HelpPage> {
     }
     const fallback = [
       'assets/images/guide/guide_category_character.png',
-      'assets/images/guide/guide_category_moments.png',
+      'assets/images/guide/guide_category_moments.webp',
       'assets/images/guide/guide_category_chat.png',
     ];
     return fallback[index % fallback.length];

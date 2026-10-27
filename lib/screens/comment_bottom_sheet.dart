@@ -195,7 +195,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
         final data = doc.data()!;
         setState(() {
           _currentAuthorName = data['nickname'] ?? l10n.chat_mysterious_player;
-          _currentAuthorAvatar = data['avatarPath'] ?? 'assets/images/avatar1.png';
+          _currentAuthorAvatar = data['avatarPath'] ?? 'assets/images/avatar1.webp';
           _currentAuthorId = user.uid;
         });
 
@@ -554,7 +554,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
     final myCharacters = await _fetchMyCharacters();
     final prefs = await SharedPreferences.getInstance();
     final playerNickname = prefs.getString('nickname') ?? l10n.chat_mysterious_player;
-    final playerAvatar = prefs.getString('avatarPath') ?? 'assets/images/avatar1.png';
+    final playerAvatar = prefs.getString('avatarPath') ?? 'assets/images/avatar1.webp';
 
     if (!mounted) return;
 
@@ -1118,7 +1118,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                   ),
                   IconButton(
                     icon: Image.asset(
-                      'assets/images/chat/chat_send_plane_mask.png',
+                      'assets/images/chat/chat_send_plane_mask.webp',
                       width: 24,
                       height: 24,
                       fit: BoxFit.contain,
@@ -1140,6 +1140,6 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
 
   ImageProvider getAvatarImageProvider(String path) {
     if (path.startsWith('http')) return NetworkImage(path);
-    return AssetImage(path.isNotEmpty ? path : 'assets/images/avatar1.png');
+    return AssetImage(path.isNotEmpty ? path : 'assets/images/avatar1.webp');
   }
 }

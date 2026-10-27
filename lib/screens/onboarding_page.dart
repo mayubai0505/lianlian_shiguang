@@ -90,7 +90,7 @@ class OnboardingPage extends StatelessWidget {
                                 color: primaryColor.withOpacity(0.1),
                               ),
                             ),
-                            Image.asset('assets/images/flower_gift.png', height: 100),
+                            Image.asset('assets/images/flower_gift.webp', height: 100),
                           ],
                         ),
 

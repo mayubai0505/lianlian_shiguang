@@ -12,12 +12,13 @@ class WorldProfilePopup {
   static Future<void> show(
       BuildContext context, {
         required String worldId,
+        String? sessionId,
         required VoidCallback onSaved,
       }) {
     return Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => _WorldProfilePage(
-          worldId: worldId,
+          worldId: worldId, sessionId: sessionId,
           onSaved: onSaved,
         ),
       ),
@@ -27,11 +28,12 @@ class WorldProfilePopup {
 
 class _WorldProfilePage extends StatefulWidget {
   const _WorldProfilePage({
-    required this.worldId,
+    required this.worldId, this.sessionId,
     required this.onSaved,
   });
 
   final String worldId;
+  final String? sessionId;
   final VoidCallback onSaved;
 
   @override
@@ -79,7 +81,7 @@ class _WorldProfilePageState extends State<_WorldProfilePage> {
         .httpsCallable('worldPrivateTest',
         options: HttpsCallableOptions(timeout: const Duration(seconds: 60)))
         .call({
-      'worldId': widget.worldId,
+      'worldId': widget.worldId, if (widget.sessionId != null) 'sessionId': widget.sessionId,
       'action': 'saveProfile',
       'nickname': nickname,
       'identity': identity,
@@ -447,7 +449,7 @@ class _WorldProfilePageState extends State<_WorldProfilePage> {
                 child: Opacity(
                   opacity: 0.10,
                   child: Image.asset(
-                    'assets/images/contact/contact_top_right_botanical.png',
+                    'assets/images/contact/contact_top_right_botanical.webp',
                     width: 190,
                     fit: BoxFit.contain,
                   ),

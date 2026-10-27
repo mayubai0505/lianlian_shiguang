@@ -678,7 +678,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'desc': p.description,
       }).toList();
       // 🌟 3. 大頭貼防護罩：從剛才整理好的 galleryPathsOnly 拿第一張，絕對不會拿到空字串
-      String currentAvatarPath = widget.character?.avatarPath ?? 'assets/images/blank_avatar.png';
+      String currentAvatarPath = widget.character?.avatarPath ?? 'assets/images/blank_avatar.webp';
       if (galleryPathsOnly.isNotEmpty) {
         currentAvatarPath = galleryPathsOnly.first;
       }
@@ -1517,7 +1517,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       // 相容舊版，還是把 galleryData 存在主資料夾一份
       final galleryData = _galleryPhotos.map((p) => p.toMap()).toList();
       Map<String, dynamic> characterData = {
-        'avatarPath': galleryPathsOnly.isNotEmpty ? galleryPathsOnly.first : 'assets/images/blank_avatar.png',
+        'avatarPath': galleryPathsOnly.isNotEmpty ? galleryPathsOnly.first : 'assets/images/blank_avatar.webp',
         'bannerImagePath': finalBannerImagePath,
         'galleryPaths': galleryPathsOnly,
         'gallery': galleryData,
@@ -1636,7 +1636,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       try {
         final String newAvatarUrl = galleryPathsOnly.isNotEmpty
             ? galleryPathsOnly.first
-            : 'assets/images/blank_avatar.png';
+            : 'assets/images/blank_avatar.webp';
         final String newName = _nameController.text.trim();
         final chatSessionsQuery = await db
             .collection('artifacts')
@@ -1739,7 +1739,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       }
       return FileImage(File(imageSource.path));
     }
-    return const AssetImage('assets/images/blank_avatar.png');
+    return const AssetImage('assets/images/blank_avatar.webp');
   }
 
   void _openEasterEggEditor({EasterEgg? egg, int? index}) {
@@ -2783,7 +2783,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 
     final String previewAvatarPath = previewGalleryPaths.isNotEmpty
         ? previewGalleryPaths.first
-        : 'assets/images/blank_avatar.png';
+        : 'assets/images/blank_avatar.webp';
 
     final String previewId =
         widget.character?.id ?? 'preview_${DateTime.now().millisecondsSinceEpoch}';

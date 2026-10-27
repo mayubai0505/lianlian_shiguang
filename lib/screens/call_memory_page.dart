@@ -250,7 +250,7 @@ class CallMemoryPage extends StatelessWidget {
                                   );
                                 },
                                 icon: Image.asset(
-                                  'assets/images/chat/chat_msg_delete_mask.png',
+                                  'assets/images/chat/chat_msg_delete_mask.webp',
                                   width: 23,
                                   height: 23,
                                   color: Colors.redAccent,

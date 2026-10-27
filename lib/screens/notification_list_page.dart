@@ -521,7 +521,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
                   child: Row(
                     children: [
                       Image.asset(
-                        'assets/images/chat/chat_msg_delete_mask.png',
+                        'assets/images/chat/chat_msg_delete_mask.webp',
                         width: 22,
                         height: 22,
                         color: Colors.redAccent,
@@ -562,7 +562,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
             ),
             onPressed: () => _deleteSelectedMails(userId),
             icon: Image.asset(
-              'assets/images/chat/chat_msg_delete_mask.png',
+              'assets/images/chat/chat_msg_delete_mask.webp',
               width: 21,
               height: 21,
               color: Colors.redAccent,
@@ -765,7 +765,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
                           ),
                         ),
                         child: Image.asset(
-                          'assets/images/love.png',
+                          'assets/images/love.webp',
                           fit: BoxFit.contain,
                           errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                         ),
@@ -1614,7 +1614,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
           children: [
             if (isQixi) ...[
               Image.asset(
-                'assets/images/love.png',
+                'assets/images/love.webp',
                 width: 82,
                 height: 82,
                 fit: BoxFit.contain,
@@ -1640,8 +1640,8 @@ class _MailDetailPageState extends State<_MailDetailPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 7),
                     child: Image.asset(
                       completed
-                          ? 'assets/images/qixi_progress_on.png'
-                          : 'assets/images/qixi_progress_off.png',
+                          ? 'assets/images/qixi_progress_on.webp'
+                          : 'assets/images/qixi_progress_off.webp',
                       width: 38,
                       height: 38,
                       fit: BoxFit.contain,
@@ -2408,8 +2408,8 @@ class _MailDetailPageState extends State<_MailDetailPage> {
             children: [
               Image.asset(
                 isCompleted
-                    ? 'assets/images/qixi_progress_on.png'
-                    : 'assets/images/qixi_progress_off.png',
+                    ? 'assets/images/qixi_progress_on.webp'
+                    : 'assets/images/qixi_progress_off.webp',
                 width: 42,
                 height: 42,
                 fit: BoxFit.contain,

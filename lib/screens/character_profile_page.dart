@@ -2050,7 +2050,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                         child: Opacity(
                           opacity: 0.07,
                           child: Image.asset(
-                            'assets/images/language/language_top_right_botanical.png',
+                            'assets/images/language/language_top_right_botanical.webp',
                             width: 160,
                             fit: BoxFit.contain,
                             errorBuilder: (_, __, ___) =>
@@ -2287,19 +2287,19 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
     const echoCards = <Map<String, String>>[
       {
         'id': 'butterfly',
-        'asset': 'assets/images/echo/echo_card_butterfly.png',
+        'asset': 'assets/images/echo/echo_card_butterfly.webp',
       },
       {
         'id': 'flower',
-        'asset': 'assets/images/echo/echo_card_flower.png',
+        'asset': 'assets/images/echo/echo_card_flower.webp',
       },
       {
         'id': 'starry',
-        'asset': 'assets/images/echo/echo_card_starry.png',
+        'asset': 'assets/images/echo/echo_card_starry.webp',
       },
       {
         'id': 'planet',
-        'asset': 'assets/images/echo/echo_card_planet.png',
+        'asset': 'assets/images/echo/echo_card_planet.webp',
       },
     ];
 
@@ -2504,15 +2504,15 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
     switch (rawStyle) {
       case 'flower':
       case 'sprout':
-        return 'assets/images/echo/echo_card_flower.png';
+        return 'assets/images/echo/echo_card_flower.webp';
       case 'starry':
       case 'star':
-        return 'assets/images/echo/echo_card_starry.png';
+        return 'assets/images/echo/echo_card_starry.webp';
       case 'planet':
-        return 'assets/images/echo/echo_card_planet.png';
+        return 'assets/images/echo/echo_card_planet.webp';
       case 'butterfly':
       default:
-        return 'assets/images/echo/echo_card_butterfly.png';
+        return 'assets/images/echo/echo_card_butterfly.webp';
     }
   }
 
@@ -3301,7 +3301,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
             child: Opacity(
               opacity: 0.08,
               child: Image.asset(
-                'assets/images/profile/about_botanical.png',
+                'assets/images/profile/about_botanical.webp',
                 width: 74,
                 fit: BoxFit.contain,
                 errorBuilder: (_, __, ___) => const SizedBox.shrink(),
@@ -3632,7 +3632,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
             Row(
               children: [
                 Image.asset(
-                  'assets/images/profile/about_botanical.png',
+                  'assets/images/profile/about_botanical.webp',
                   width: 34,
                   height: 34,
                   fit: BoxFit.contain,
@@ -4115,7 +4115,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                         child: Opacity(
                           opacity: 0.07,
                           child: Image.asset(
-                            'assets/images/language/language_top_right_botanical.png',
+                            'assets/images/language/language_top_right_botanical.webp',
                             width: 160,
                             fit: BoxFit.contain,
                             errorBuilder: (_, __, ___) =>
@@ -4403,7 +4403,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                           child: Row(
                             children: [
                               Image.asset(
-                                'assets/images/chat/chat_msg_edit_mask.png',
+                                'assets/images/chat/chat_msg_edit_mask.webp',
                                 width: 20,
                                 height: 20,
                                 color: theme.colorScheme.primary,
@@ -4419,7 +4419,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                           child: Row(
                             children: [
                               Image.asset(
-                                'assets/images/chat/chat_msg_delete_mask.png',
+                                'assets/images/chat/chat_msg_delete_mask.webp',
                                 width: 20,
                                 height: 20,
                                 color: Colors.redAccent,
@@ -4695,7 +4695,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                 child: Opacity(
                   opacity: 0.085,
                   child: Image.asset(
-                    'assets/images/language/language_top_right_botanical.png',
+                    'assets/images/language/language_top_right_botanical.webp',
                     width: 185,
                     fit: BoxFit.contain,
                     errorBuilder: (_, __, ___) => const SizedBox.shrink(),
@@ -4710,7 +4710,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                 child: Opacity(
                   opacity: 0.06,
                   child: Image.asset(
-                    'assets/images/profile/about_botanical.png',
+                    'assets/images/profile/about_botanical.webp',
                     width: 105,
                     fit: BoxFit.contain,
                     errorBuilder: (_, __, ___) => const SizedBox.shrink(),
@@ -4942,7 +4942,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                             Opacity(
                               opacity: 0.12,
                               child: Image.asset(
-                                'assets/images/profile/about_botanical.png',
+                                'assets/images/profile/about_botanical.webp',
                                 width: 135,
                                 fit: BoxFit.contain,
                                 errorBuilder: (_, __, ___) =>
@@ -5144,7 +5144,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                                       child: Row(
                                         children: [
                                           Image.asset(
-                                            'assets/images/chat/chat_msg_delete_mask.png',
+                                            'assets/images/chat/chat_msg_delete_mask.webp',
                                             width: 18,
                                             height: 18,
                                             color: Colors.redAccent,

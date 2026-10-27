@@ -243,7 +243,7 @@ class _AboutMePageState extends State<AboutMePage> {
               child: Opacity(
                 opacity: 0.10,
                 child: Image.asset(
-                  'assets/images/contact/contact_floating_petals.png',
+                  'assets/images/contact/contact_floating_petals.webp',
                   width: 125,
                   fit: BoxFit.contain,
                   errorBuilder: (_, __, ___) =>
@@ -476,7 +476,7 @@ class _AboutMePageState extends State<AboutMePage> {
                           : l10n.mark_special_focus,
                       onPressed: () => _toggleFavoriteStatus(memory),
                       icon: Image.asset(
-                        'assets/images/chat/chat_pin_bookmark.png',
+                        'assets/images/chat/chat_pin_bookmark.webp',
                         width: 21,
                         height: 21,
                         color: memory.isFavorite
@@ -494,7 +494,7 @@ class _AboutMePageState extends State<AboutMePage> {
                       tooltip: l10n.edit_btn,
                       onPressed: () => _editMemory(memory),
                       icon: Image.asset(
-                        'assets/images/profile/profile_quill_mask.png',
+                        'assets/images/profile/profile_quill_mask.webp',
                         width: 20,
                         height: 20,
                         color: onSurface.withValues(alpha: 0.38),
@@ -510,7 +510,7 @@ class _AboutMePageState extends State<AboutMePage> {
                       tooltip: l10n.delete_btn,
                       onPressed: () => _deleteMemory(memory.id),
                       icon: Image.asset(
-                        'assets/images/chat/chat_msg_delete_mask.png',
+                        'assets/images/chat/chat_msg_delete_mask.webp',
                         width: 20,
                         height: 20,
                         color: Colors.redAccent.withValues(alpha: 0.70),

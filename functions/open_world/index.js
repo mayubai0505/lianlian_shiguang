@@ -45,7 +45,7 @@ exports.worldPrivateTest = onCall({
   if (!/^[\w-]{1,160}$/.test(worldId)) {
     throw new HttpsError('invalid-argument', '世界觀 ID 不正確');
   }
-  if (!['load','send','edit','delete','editSegment','deleteSegment','renameRoom','pinRoom','deleteRoom','loadProfile','saveProfile','loadStatus','saveStatus','activateScene','clearScene','loadScenes','saveCustomScene','deleteCustomScene','interact','regenerate','continue','cancel'].includes(action)) {
+  if (!['newRoom','load','send','edit','delete','editSegment','deleteSegment','renameRoom','pinRoom','deleteRoom','loadProfile','saveProfile','loadStatus','saveStatus','activateScene','clearScene','loadScenes','saveCustomScene','deleteCustomScene','interact','regenerate','continue','cancel'].includes(action)) {
     throw new HttpsError('invalid-argument', '不支援的操作');
   }
   if (action === 'send' && (!rawMessage || rawMessage.length > 2500)) {
@@ -108,11 +108,21 @@ exports.worldPrivateTest = onCall({
     }
   }
   const namespace = isWorldOwner ? 'world_private_v1' : 'world_public_v1';
-  const sessionId = crypto.createHash('sha256')
-    .update(`${namespace}:${uid}:${worldId}`).digest('hex');
   const sessions = db.collection('artifacts').doc(APP_ID)
     .collection('world_chat_sessions');
+  const legacySessionId = crypto.createHash('sha256')
+    .update(`${namespace}:${uid}:${worldId}`).digest('hex');
+  // Only newRoom creates a new story. All other actions must target their room.
+  const requestedSessionId = String(payload.sessionId || '').trim();
+  if (requestedSessionId && !/^[A-Za-z0-9_-]{1,160}$/.test(requestedSessionId))
+    throw new HttpsError('invalid-argument','房間 ID 不正確');
+  const sessionId = action === 'newRoom' ? sessions.doc().id : (requestedSessionId || legacySessionId);
   const room = sessions.doc(sessionId);
+  if (action !== 'newRoom' && requestedSessionId) {
+    const requestedRoom = await room.get();
+    if (!requestedRoom.exists || requestedRoom.data()?.userId !== uid || requestedRoom.data()?.worldId !== worldId)
+      throw new HttpsError('permission-denied','無法存取此世界觀房間');
+  }
   const msgs = room.collection('messages');
   const now = FieldValue.serverTimestamp();
   // Safe, idempotent startup; opening is saved once per world/owner.
@@ -126,7 +136,10 @@ exports.worldPrivateTest = onCall({
     if (first) intro.push({kind:'narrator', text:first});
     tx.set(room, {
       userId:uid, worldId, worldName:String(world.name || '未命名世界'),
-      coverImage:String(world.coverImage || ''), isPrivateTest:isWorldOwner,
+      coverImage:String(world.coverImage || ''),
+      // 公開介紹頁 newRoom 一律屬於公開劇情，創作者本人也不例外。
+      isPrivateTest: action === 'newRoom' && isPublicPlayable ? false : isWorldOwner,
+      entrySource: action === 'newRoom' && isPublicPlayable ? 'public' : 'private',
       lastMessage: first || opening, lastActivity:now, createdAt:now,
       messageCount:0, processing:false,
     });
@@ -135,6 +148,7 @@ exports.worldPrivateTest = onCall({
     tx.set(msgs.doc('opening'), {sender:'ai',segments:intro,
       timestamp:now, sequence:0});
   });
+  if (action === 'newRoom') return {ok:true,sessionId,worldId};
   // 停止生成：由房間擁有者取消指定正在執行的請求。
   // 無法強制中斷跨實例的第三方 AI HTTP 呼叫，但可保證取消成功後不得入帳或寫入回覆。
   if (action === 'cancel') {
@@ -742,7 +756,10 @@ exports.worldSecretChapters = onCall({
     world.status==='public' && world.isDraft!==true;
   if (!owner && !published) throw new HttpsError('permission-denied','此世界未公開');
   const namespace=owner?'world_private_v1':'world_public_v1';
-  const sid=crypto.createHash('sha256').update(`${namespace}:${uid}:${worldId}`).digest('hex');
+  const legacySid=crypto.createHash('sha256').update(`${namespace}:${uid}:${worldId}`).digest('hex');
+  const requestedSid=String(request.data?.sessionId||'').trim();
+  if(requestedSid && !/^[A-Za-z0-9_-]{1,160}$/.test(requestedSid)) throw new HttpsError('invalid-argument','房間 ID 不正確');
+  const sid=requestedSid||legacySid;
   const room=db.collection('artifacts').doc(APP_ID).collection('world_chat_sessions').doc(sid);
   const roomSnap=await room.get();
   if (!roomSnap.exists || roomSnap.data()?.userId!==uid || roomSnap.data()?.worldId!==worldId)
@@ -751,14 +768,32 @@ exports.worldSecretChapters = onCall({
   const chapters=(Array.isArray(secretSnap.data()?.chapters)?secretSnap.data().chapters:[])
     .slice(0,12).map((c,i)=>({id:String(c.id||''),title:String(c.title||''),
       condition:String(c.condition||''),content:String(c.content||''),order:i+1})).filter(c=>c.id);
-  const unlocked=new Set(Array.isArray(roomSnap.data()?.unlockedSecretIds)?roomSnap.data().unlockedSecretIds:[]);
+  // Invalid placeholder conditions must never unlock, including via legacy progress.
+  // Real unlock conditions are complete story events, not test tokens such as "1".
+  const isUsableSecretCondition = c => {
+    const text = String(c.condition || '').trim();
+    return [...text].length >= 12 && /[\p{L}]/u.test(text);
+  };
+  const isSecretUnlocked = (c, ids) => isUsableSecretCondition(c) && ids.has(c.id);
+  // Shared progression: one player's unlocks persist across every room of this world.
+  // Kept outside public world documents, and all writes are server-authoritative.
+  const progressRef=db.collection('users').doc(uid).collection('world_progress').doc(worldId);
+  const progressSnap=await progressRef.get();
+  const unlocked=new Set([
+    ...(Array.isArray(progressSnap.data()?.unlockedSecretIds)?progressSnap.data().unlockedSecretIds:[]),
+    ...(Array.isArray(roomSnap.data()?.unlockedSecretIds)?roomSnap.data().unlockedSecretIds:[]),
+  ].filter(id=>typeof id==='string'));
+  // One-time migration from legacy room progress. Does not clear old records.
+  if (unlocked.size > (Array.isArray(progressSnap.data()?.unlockedSecretIds)?progressSnap.data().unlockedSecretIds.length:0)) {
+    await progressRef.set({userId:uid,worldId,unlockedSecretIds:FieldValue.arrayUnion(...unlocked),updatedAt:FieldValue.serverTimestamp()},{merge:true});
+  }
   if (action==='read') {
     const id=String(request.data?.chapterId||'');
     const c=chapters.find(c=>c.id===id);
-    if (!c || !unlocked.has(id)) throw new HttpsError('permission-denied','篇章尚未解鎖');
+    if (!c || !isSecretUnlocked(c, unlocked)) throw new HttpsError('permission-denied','篇章尚未解鎖');
     return {chapter:{id:c.id,title:c.title,content:c.content}};
   }
-  if (action==='check' && chapters.some(c=>!unlocked.has(c.id))) {
+  if (action==='check' && chapters.some(c=>isUsableSecretCondition(c) && !unlocked.has(c.id))) {
     const recent=await room.collection('messages').orderBy('timestamp','desc').limit(18).get();
     const latest=recent.docs.find(d=>d.data()?.sender==='ai' && d.id!=='opening');
     const lastChecked=String(roomSnap.data()?.lastSecretCheckedMessageId||'');
@@ -772,7 +807,7 @@ exports.worldSecretChapters = onCall({
           m.sender==='ai'?(Array.isArray(m.segments)?m.segments:[]).map(s=>
             `${s.kind==='npc'?String(s.name||'NPC'):'旁白'}：${String(s.text||'').slice(0,1500)}`).join('\n'):'';
       }).filter(Boolean).join('\n').slice(-18000);
-      const locked=chapters.filter(c=>!unlocked.has(c.id));
+      const locked=chapters.filter(c=>isUsableSecretCondition(c) && !unlocked.has(c.id));
       const judgePrompt=[
         '你是保守的劇情事件審核員，不能創作或補寫劇情。',
         '只有玩家與 NPC 的故事中確實已發生、且最新一則 AI 回覆明確呈現解鎖條件要求的事件時，才可解鎖。',
@@ -801,10 +836,15 @@ exports.worldSecretChapters = onCall({
         await db.runTransaction(async tx=>{
           const fresh=await tx.get(room);
           if(fresh.data()?.lastSecretCheckedMessageId===latest.id) return;
-          const old=new Set(Array.isArray(fresh.data()?.unlockedSecretIds)?fresh.data().unlockedSecretIds:[]);
+          // Re-read shared progression inside the transaction so concurrent rooms merge safely.
+          const shared=await tx.get(progressRef);
+          const old=new Set([
+            ...(Array.isArray(shared.data()?.unlockedSecretIds)?shared.data().unlockedSecretIds:[]),
+            ...(Array.isArray(fresh.data()?.unlockedSecretIds)?fresh.data().unlockedSecretIds:[]),
+          ]);
           for(const id of valid) old.add(id);
-          tx.update(room,{unlockedSecretIds:[...old],lastSecretCheckedMessageId:latest.id,
-            secretsUpdatedAt:FieldValue.serverTimestamp()});
+          tx.set(progressRef,{userId:uid,worldId,unlockedSecretIds:[...old],updatedAt:now},{merge:true});
+          tx.update(room,{lastSecretCheckedMessageId:latest.id,secretsUpdatedAt:now});
         });
       } catch(error) {
         logger.warn('world secret evaluation failed (no unlock granted)',{worldId,reason:String(error?.message||error)});
@@ -812,10 +852,13 @@ exports.worldSecretChapters = onCall({
       }
     }
   }
-  const finalRoom=action==='check'?(await room.get()).data()||{}:roomSnap.data()||{};
-  const finalSet=new Set(Array.isArray(finalRoom.unlockedSecretIds)?finalRoom.unlockedSecretIds:[]);
-  return {chapters:chapters.map(c=>({order:c.order,unlocked:finalSet.has(c.id),
-    ...(finalSet.has(c.id)?{id:c.id,title:c.title}: {})}))};
+  const finalProgress=action==='check'?(await progressRef.get()).data()||{}:progressSnap.data()||{};
+  const finalSet=new Set([
+    ...unlocked,
+    ...(Array.isArray(finalProgress.unlockedSecretIds)?finalProgress.unlockedSecretIds:[]),
+  ]);
+  return {chapters:chapters.map(c=>({order:c.order,unlocked:isSecretUnlocked(c,finalSet),
+    ...(isSecretUnlocked(c,finalSet)?{id:c.id,title:c.title}: {})}))};
 });
 
 // 世界觀發布：由後端驗證所有權及必要欄位，並投影不含內部設定的公開目錄。
@@ -919,8 +962,11 @@ exports.worldStoryMemory = onCall({
   const publicPlayable = world.isPublic === true && world.publicPlayable === true && world.isDraft !== true && world.status === 'public';
   if (!owner && !publicPlayable) throw new HttpsError('permission-denied', '沒有此世界的遊玩權限');
   const namespace = owner ? 'world_private_v1' : 'world_public_v1';
-  const sessionId = crypto.createHash('sha256')
+  const legacySessionId = crypto.createHash('sha256')
     .update(`${namespace}:${uid}:${worldId}`).digest('hex');
+  const requestedSessionId = String(request.data?.sessionId || '').trim();
+  if (requestedSessionId && !/^[A-Za-z0-9_-]{1,160}$/.test(requestedSessionId)) throw new HttpsError('invalid-argument','房間 ID 不正確');
+  const sessionId = requestedSessionId || legacySessionId;
   const room = db.collection('artifacts').doc(APP_ID)
     .collection('world_chat_sessions').doc(sessionId);
   const roomSnap = await room.get();
@@ -1057,8 +1103,11 @@ exports.worldPlayerState = onCall({
   }
   // 正式玩家房間與私人試玩必須使用不同 ID，避免兩種遊玩記憶相互覆蓋。
   const namespace = publicPlayable && !owner ? 'world_public_v1' : 'world_private_v1';
-  const sessionId = crypto.createHash('sha256')
+  const legacySessionId = crypto.createHash('sha256')
     .update(`${namespace}:${uid}:${worldId}`).digest('hex');
+  const requestedSessionId = String(request.data?.sessionId || '').trim();
+  if (requestedSessionId && !/^[A-Za-z0-9_-]{1,160}$/.test(requestedSessionId)) throw new HttpsError('invalid-argument','房間 ID 不正確');
+  const sessionId = requestedSessionId || legacySessionId;
   const sessionRef = db.collection('artifacts').doc(APP_ID)
     .collection('world_chat_sessions').doc(sessionId);
   const roomSnap = await sessionRef.get();
@@ -1133,9 +1182,15 @@ exports.worldMemo = onCall({region: REGION, memory: '256MiB', timeoutSeconds: 30
   if (w.createdBy !== uid && !(w.isPublic === true && w.publicPlayable === true && w.isDraft !== true && w.status === 'public'))
     throw new HttpsError('permission-denied', '世界未開放');
   const namespace = w.createdBy === uid ? 'world_private_v1' : 'world_public_v1';
-  const sid = crypto.createHash('sha256').update(`${namespace}:${uid}:${worldId}`).digest('hex');
-  const memos = db.collection('artifacts').doc(APP_ID).collection('world_chat_sessions')
-    .doc(sid).collection('player_memos');
+  const legacySid = crypto.createHash('sha256').update(`${namespace}:${uid}:${worldId}`).digest('hex');
+  const requestedSid = String(request.data?.sessionId || '').trim();
+  if (requestedSid && !/^[A-Za-z0-9_-]{1,160}$/.test(requestedSid)) throw new HttpsError('invalid-argument','房間 ID 不正確');
+  const sid = requestedSid || legacySid;
+  const memoRoomRef = db.collection('artifacts').doc(APP_ID).collection('world_chat_sessions').doc(sid);
+  const memoRoom = await memoRoomRef.get();
+  if (!memoRoom.exists || memoRoom.data()?.userId !== uid || memoRoom.data()?.worldId !== worldId)
+    throw new HttpsError('permission-denied','無權存取此房間備忘錄');
+  const memos = memoRoomRef.collection('player_memos');
   if (action === 'list') {
     const snap = await memos.orderBy('createdAt', 'desc').limit(100).get();
     return {memos: snap.docs.map(x => ({id:x.id, content:String(x.data().content||''),

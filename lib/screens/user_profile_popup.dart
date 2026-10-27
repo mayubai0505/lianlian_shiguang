@@ -416,7 +416,7 @@ class _UserProfilePageState extends State<_UserProfilePage> {
                 child: Opacity(
                   opacity: 0.10,
                   child: Image.asset(
-                    'assets/images/contact/contact_top_right_botanical.png',
+                    'assets/images/contact/contact_top_right_botanical.webp',
                     width: 190,
                     fit: BoxFit.contain,
                   ),

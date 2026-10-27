@@ -596,172 +596,172 @@ class _LoginPageState extends State<LoginPage> {
             defaultTargetPlatform == TargetPlatform.macOS;
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          width: double.infinity,
-          height: MediaQuery
-              .of(context)
-              .size
-              .height,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Color(0xFFF3E5F5),
-                Colors.white,
-              ],
+      body: LayoutBuilder(
+        builder: (context, viewport) => SingleChildScrollView(
+          // 直屏時至少佔滿可用高度；橫屏內容較高時則允許向下捲動。
+          child: Container(
+            width: double.infinity,
+            constraints: BoxConstraints(minHeight: viewport.maxHeight),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xFFF3E5F5),
+                  Colors.white,
+                ],
+              ),
             ),
-          ),
-          child: SafeArea(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // 🌸 遊戲標題
-                Text(
-                  l10n.app_name,
-                  style: const TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF7B1FA2),
-                    letterSpacing: 2,
-                  ),
-                ),
-
-                const SizedBox(height: 10),
-
-                Text(
-                  l10n.login_slogan,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Color(0xFFAB47BC),
-                  ),
-                ),
-                const SizedBox(height: 60),
-
-                // 🚀 Google 登入
-                if (showGoogleLogin) ...[
-                  _buildLoginButton(
-                    infoMethod: LoginMethod.google,
-                    text: l10n.login_with_google,
-                    iconWidget: Image.asset(
-                      'assets/images/google_logo.png',
-                      height: 24,
+            child: SafeArea(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // 🌸 遊戲標題
+                  Text(
+                    l10n.app_name,
+                    style: const TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF7B1FA2),
+                      letterSpacing: 2,
                     ),
-                    backgroundColor: Colors.white,
-                    textColor: Colors.black87,
-                    onPressed: () {
-                      _performLogin(_authService.signInWithGoogle);
-                    },
                   ),
-                ],
 
-// ✅ Apple 登入：只在 iOS / iPadOS 顯示
-                if (showAppleLogin) ...[
-                  _buildLoginButton(
-                    infoMethod: LoginMethod.apple,
-                    text: l10n.login_with_apple,
-                    iconWidget: const Icon(
-                      Icons.apple,
-                      color: Colors.white,
-                      size: 28,
+                  const SizedBox(height: 10),
+
+                  Text(
+                    l10n.login_slogan,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Color(0xFFAB47BC),
                     ),
-                    backgroundColor: Colors.black,
-                    textColor: Colors.white,
-                    onPressed: () {
-                      _performLogin(_authService.signInWithApple);
-                    },
                   ),
-                  const SizedBox(height: 16),
-                ],
+                  const SizedBox(height: 60),
 
-                // 🚀 Facebook 登入
-                if (showFacebookLogin) ...[
-                  const SizedBox(height: 16),
-                  _buildLoginButton(
-                    infoMethod: LoginMethod.facebook,
-                    text: l10n.login_with_facebook,
-                    iconWidget: const Icon(
-                      Icons.facebook,
-                      color: Colors.white,
-                      size: 28,
-                    ),
-                    backgroundColor: const Color(0xFF1877F2),
-                    textColor: Colors.white,
-                    onPressed: () {
-                      _performLogin(_authService.signInWithFacebook);
-                    },
-                  ),
-                ],
-
-                const SizedBox(height: 32),
-
-                // 分隔線
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      height: 1,
-                      width: 80,
-                      color: const Color(0xFFE1BEE7),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      child: Text(
-                        l10n.common_or,
-                        style: const TextStyle(
-                          color: Color(0xFF8E24AA),
-                        ),
+                  // 🚀 Google 登入
+                  if (showGoogleLogin) ...[
+                    _buildLoginButton(
+                      infoMethod: LoginMethod.google,
+                      text: l10n.login_with_google,
+                      iconWidget: Image.asset(
+                        'assets/images/google_logo.png',
+                        height: 24,
                       ),
-                    ),
-                    Container(
-                      height: 1,
-                      width: 80,
-                      color: const Color(0xFFE1BEE7),
+                      backgroundColor: Colors.white,
+                      textColor: Colors.black87,
+                      onPressed: () {
+                        _performLogin(_authService.signInWithGoogle);
+                      },
                     ),
                   ],
-                ),
 
-                const SizedBox(height: 32),
-
-                // 專屬信箱登入
-                _buildLoginButton(
-                  infoMethod: LoginMethod.email,
-                  text: l10n.login_with_email,
-                  iconWidget: const Icon(
-                    Icons.email_outlined,
-                    color: Colors.white,
-                    size: 23,
-                  ),
-                  backgroundColor: const Color(0xFFBA68C8),
-                  textColor: Colors.white,
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const EmailLoginPage(),
+// ✅ Apple 登入：只在 iOS / iPadOS 顯示
+                  if (showAppleLogin) ...[
+                    _buildLoginButton(
+                      infoMethod: LoginMethod.apple,
+                      text: l10n.login_with_apple,
+                      iconWidget: const Icon(
+                        Icons.apple,
+                        color: Colors.white,
+                        size: 28,
                       ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 20),
+                      backgroundColor: Colors.black,
+                      textColor: Colors.white,
+                      onPressed: () {
+                        _performLogin(_authService.signInWithApple);
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                  ],
 
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
+                  // 🚀 Facebook 登入
+                  if (showFacebookLogin) ...[
+                    const SizedBox(height: 16),
+                    _buildLoginButton(
+                      infoMethod: LoginMethod.facebook,
+                      text: l10n.login_with_facebook,
+                      iconWidget: const Icon(
+                        Icons.facebook,
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                      backgroundColor: const Color(0xFF1877F2),
+                      textColor: Colors.white,
+                      onPressed: () {
+                        _performLogin(_authService.signInWithFacebook);
+                      },
+                    ),
+                  ],
+
+                  const SizedBox(height: 32),
+
+                  // 分隔線
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        height: 1,
+                        width: 80,
+                        color: const Color(0xFFE1BEE7),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                        child: Text(
+                          l10n.common_or,
+                          style: const TextStyle(
+                            color: Color(0xFF8E24AA),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 1,
+                        width: 80,
+                        color: const Color(0xFFE1BEE7),
+                      ),
+                    ],
                   ),
-                  child: Text(
-                    l10n.email_policy_login_notice,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 12,
-                      height: 1.5,
-                      color: Colors.grey.shade600,
+
+                  const SizedBox(height: 32),
+
+                  // 專屬信箱登入
+                  _buildLoginButton(
+                    infoMethod: LoginMethod.email,
+                    text: l10n.login_with_email,
+                    iconWidget: const Icon(
+                      Icons.email_outlined,
+                      color: Colors.white,
+                      size: 23,
+                    ),
+                    backgroundColor: const Color(0xFFBA68C8),
+                    textColor: Colors.white,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const EmailLoginPage(),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 20),
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 40,
+                    ),
+                    child: Text(
+                      l10n.email_policy_login_notice,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 12,
+                        height: 1.5,
+                        color: Colors.grey.shade600,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 40),
-              ],
+                  const SizedBox(height: 40),
+                ],
+              ),
             ),
           ),
         ),

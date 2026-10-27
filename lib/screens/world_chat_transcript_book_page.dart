@@ -54,7 +54,7 @@ class _WorldChatTranscriptBookPageState extends State<WorldChatTranscriptBookPag
       'assets/images/brand/lianlian_butterfly_logo.png';
 
   static const String _floralBottomLeftAsset =
-      'assets/images/studio/studio_bottom_left.png';
+      'assets/images/studio/studio_bottom_left.webp';
 
 
   final PageController _pageController = PageController();
@@ -65,7 +65,7 @@ class _WorldChatTranscriptBookPageState extends State<WorldChatTranscriptBookPag
   late final Future<void> _initialProfileLoad;
 
   String _resolvedPlayerName = '';
-  String _playerAvatarPath = 'assets/images/avatar1.png';
+  String _playerAvatarPath = 'assets/images/avatar1.webp';
 
   late final List<String> _coverPhotoPaths;
   late String _coverPhotoPath;
@@ -87,7 +87,7 @@ class _WorldChatTranscriptBookPageState extends State<WorldChatTranscriptBookPag
         .toList();
 
     _coverPhotoPaths = photos.isEmpty
-        ? <String>['assets/images/blank_avatar.png']
+        ? <String>['assets/images/blank_avatar.webp']
         : photos;
     _coverPhotoPath = _coverPhotoPaths.first;
 
@@ -185,7 +185,7 @@ class _WorldChatTranscriptBookPageState extends State<WorldChatTranscriptBookPag
     if (!mounted || FirebaseAuth.instance.currentUser?.uid != uid) return;
     if (name.trim().isEmpty) name = l10n.chat_book_player;
     if (avatarPath.trim().isEmpty) {
-      avatarPath = 'assets/images/avatar1.png';
+      avatarPath = 'assets/images/avatar1.webp';
     }
 
     // 圖片確實無法解碼時，才依序嘗試 Firebase Auth 頭像和預設頭像。
@@ -207,7 +207,7 @@ class _WorldChatTranscriptBookPageState extends State<WorldChatTranscriptBookPag
           await canLoad(authAvatar)) {
         avatarPath = authAvatar;
       } else {
-        avatarPath = 'assets/images/avatar1.png';
+        avatarPath = 'assets/images/avatar1.webp';
       }
     }
 

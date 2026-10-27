@@ -2,7 +2,7 @@
 """Conservative Flutter image migration: preview, then WebP conversion and literal path rewrite.
 Requires Pillow: py -m pip install pillow
 """
-import argparse, csv, datetime, json, re, shutil, sys
+import argparse, csv, datetime, json, re, shutil, sys, os
 from pathlib import Path
 from PIL import Image
 
@@ -14,6 +14,7 @@ def main():
  p.add_argument('--project',default='.')
  p.add_argument('--apply',action='store_true',help='Perform conversion + update literal references + backup')
  p.add_argument('--quality',type=int,default=90)
+ p.add_argument('--method',type=int,choices=range(0,7),metavar='{0..6}',default=3,help='WebP encoder effort (0 fastest, 6 slowest; default 3)')
  p.add_argument('--min-saving',type=float,default=0.15,help='Minimum fraction saved to convert (default 0.15)')
  p.add_argument('--include',choices=['all','safe'],default='safe',help='safe excludes likely icons/logos/badges/splash/launch assets')
  args=p.parse_args()
@@ -22,14 +23,22 @@ def main():
  if not 1<=args.quality<=100 or not 0<=args.min_saving<1: p.error('invalid quality or min-saving')
  images=sorted(p for p in folder.rglob('*') if p.is_file() and p.suffix.lower() in ('.png','.jpg','.jpeg'))
  source_files=[]
- for path in root.rglob('*'):
-  if not path.is_file() or path.suffix.lower() not in TEXT_EXTS or any(x in SKIP_DIRS for x in path.relative_to(root).parts): continue
-  if path.stat().st_size>8_000_000: continue
-  try: source_files.append((path,path.read_text(encoding='utf-8')))
-  except UnicodeError: pass
+ print('Scanning source files (excluding build/cache folders)...', flush=True)
+ for current, dirs, files in os.walk(root):
+  dirs[:]=[d for d in dirs if d not in SKIP_DIRS and not d.startswith('.git')]
+  current=Path(current)
+  for name in files:
+   path=current/name
+   if path.suffix.lower() not in TEXT_EXTS: continue
+   try:
+    if path.stat().st_size>8_000_000: continue
+    source_files.append((path,path.read_text(encoding='utf-8')))
+   except (UnicodeError,OSError): pass
+ print(f'Scanned {len(source_files)} source text files. Checking {len(images)} images...', flush=True)
  manifest=[]; choices=[]; unsafe=[]
  risky=re.compile(r'(^|[/_])(icon|icons|logo|badge|splash|launch|adaptive|notification|app_icon)([/_.-]|$)',re.I)
- for image in images:
+ for index,image in enumerate(images,1):
+  if index==1 or index%10==0 or index==len(images): print(f"Checking image {index}/{len(images)}: {image.relative_to(root).as_posix()}",flush=True)
   rel=image.relative_to(root).as_posix(); new=image.with_suffix('.webp'); newrel=new.relative_to(root).as_posix()
   if new.exists(): manifest.append((rel,'SKIP: webp already exists',0,0)); continue
   if args.include=='safe' and risky.search(rel): manifest.append((rel,'SKIP: protected icon/logo/splash',0,0)); continue
@@ -44,7 +53,7 @@ def main():
     # Keep alpha and RGB; conversion only for display assets.
     if im.mode not in ('RGB','RGBA'): im=im.convert('RGBA' if ('A' in im.getbands() or 'transparency' in im.info) else 'RGB')
     import io
-    buffer=io.BytesIO(); im.save(buffer,format='WEBP',quality=args.quality,method=6)
+    buffer=io.BytesIO(); im.save(buffer,format='WEBP',quality=args.quality,method=args.method)
     blob=buffer.getvalue()
    old=image.stat().st_size; newsize=len(blob); saving=1-newsize/old
    if saving<args.min_saving: manifest.append((rel,'SKIP: not enough saving',old,newsize)); continue
@@ -53,6 +62,7 @@ def main():
    manifest.append((rel,'CONVERT',old,newsize))
   except Exception as e: manifest.append((rel,'ERROR: '+str(e),0,0))
  total_old=sum(item[-2] for item in choices); total_new=sum(item[-1] for item in choices)
+ print(f'WebP quality {args.quality}, method {args.method} (0 fastest, 6 slowest)')
  print(f'Mode: {"APPLY" if args.apply else "PREVIEW"}; scanned {len(images)} images; selected {len(choices)}; saving {(total_old-total_new)/1048576:.2f} MiB (selected only)')
  for image,new,rel,newrel,blob,refs,old,newsize in sorted(choices,key=lambda x:x[-2]-x[-1],reverse=True)[:25]:
   print(f' {old/1048576:5.2f} -> {newsize/1048576:5.2f} MiB  {rel}  ({len(refs)} source files)')

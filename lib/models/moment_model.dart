@@ -89,7 +89,7 @@ class Moment {
       id: doc.id,
       authorId: data['authorId'] ?? '',
       authorName: data['authorName'] ?? 'Unknown',
-      authorAvatar: data['authorAvatar'] ?? 'assets/images/blank_avatar.png',
+      authorAvatar: data['authorAvatar'] ?? 'assets/images/blank_avatar.webp',
       createdBy: data['createdBy'] ?? '', // ✨ 3. 從 Firestore 讀取 createdBy
       content: data['content'] ?? '',
       searchKeywords: List<String>.from(

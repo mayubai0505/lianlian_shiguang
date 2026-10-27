@@ -57,26 +57,26 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
 
   String _affectionStageAsset(int score) {
     if (score < 60) return 'assets/images/affection/affection_stage_1.png';
-    if (score < 150) return 'assets/images/affection/affection_stage_2.png';
-    if (score < 550) return 'assets/images/affection/affection_stage_3.png';
-    if (score < 1720) return 'assets/images/affection/affection_stage_4.png';
-    if (score < 2430) return 'assets/images/affection/affection_stage_5.png';
-    return 'assets/images/affection/affection_stage_6.png';
+    if (score < 150) return 'assets/images/affection/affection_stage_2.webp';
+    if (score < 550) return 'assets/images/affection/affection_stage_3.webp';
+    if (score < 1720) return 'assets/images/affection/affection_stage_4.webp';
+    if (score < 2430) return 'assets/images/affection/affection_stage_5.webp';
+    return 'assets/images/affection/affection_stage_6.webp';
   }
 
   String _legacyFlowerAsset(int score) {
-    if (score < 60) return 'assets/images/flower_stage_1.png';
-    if (score < 150) return 'assets/images/flower_stage_2.png';
-    if (score < 550) return 'assets/images/flower_stage_3.png';
-    if (score < 1720) return 'assets/images/flower_stage_4.png';
-    if (score < 2430) return 'assets/images/flower_stage_5.png';
-    return 'assets/images/flower_stage_6.png';
+    if (score < 60) return 'assets/images/flower_stage_1.webp';
+    if (score < 150) return 'assets/images/flower_stage_2.webp';
+    if (score < 550) return 'assets/images/flower_stage_3.webp';
+    if (score < 1720) return 'assets/images/flower_stage_4.webp';
+    if (score < 2430) return 'assets/images/flower_stage_5.webp';
+    return 'assets/images/flower_stage_6.webp';
   }
 
   String _giftFlowerAsset(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark
-        ? 'assets/images/flower_gift_dark.png'
-        : 'assets/images/flower_gift.png';
+        ? 'assets/images/flower_gift_dark.webp'
+        : 'assets/images/flower_gift.webp';
   }
 
   @override

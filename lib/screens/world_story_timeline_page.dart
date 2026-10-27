@@ -7,9 +7,10 @@ import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 /// 世界觀專屬「我們的故事」，沿用原版時間軸設計。
 /// 所有讀寫走 Callable，由後端驗證登入玩家與世界房間擁有權。
 class WorldStoryTimelinePage extends StatefulWidget {
-  const WorldStoryTimelinePage({super.key, required this.worldId, required this.worldName});
+  const WorldStoryTimelinePage({super.key, required this.worldId, required this.worldName, this.sessionId});
   final String worldId;
   final String worldName;
+  final String? sessionId;
   @override
   State<WorldStoryTimelinePage> createState() => _WorldStoryTimelinePageState();
 }
@@ -27,7 +28,7 @@ class _WorldStoryTimelinePageState extends State<WorldStoryTimelinePage> {
   Future<void> _load() async {
     setState(() { _loading = true; _error = null; });
     try {
-      final result = await _call.call({'worldId':widget.worldId, 'action':'listEntries'});
+      final result = await _call.call({'worldId':widget.worldId, if (widget.sessionId != null) 'sessionId':widget.sessionId, 'action':'listEntries'});
       final data = Map<String,dynamic>.from(result.data as Map);
       final items = (data['entries'] as List? ?? const [])
           .map((e) => Map<String,dynamic>.from(e as Map)).toList();
@@ -47,7 +48,7 @@ class _WorldStoryTimelinePageState extends State<WorldStoryTimelinePage> {
       ));
       if (content == null || content.isEmpty || !mounted) return;
       setState(() => _busy = true);
-      await _call.call({'worldId':widget.worldId,'action':'editEntry','entryId':item['id'],'content':content});
+      await _call.call({'worldId':widget.worldId, if (widget.sessionId != null) 'sessionId':widget.sessionId,'action':'editEntry','entryId':item['id'],'content':content});
       await _load();
     } catch(e) {if(mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(AppLocalizations.of(context)!.world_timeline_save_failed1(e.toString()))));}
     finally {if(mounted) setState(() => _busy=false); controller.dispose();}
@@ -59,7 +60,7 @@ class _WorldStoryTimelinePageState extends State<WorldStoryTimelinePage> {
           TextButton(onPressed:()=>Navigator.pop(ctx,true),child:Text(AppLocalizations.of(ctx)!.world_timeline_delete1))]));
     if (ok!=true || !mounted) return;
     try {setState(() => _busy=true);
-    await _call.call({'worldId':widget.worldId,'action':'deleteEntry','entryId':item['id']});
+    await _call.call({'worldId':widget.worldId, if (widget.sessionId != null) 'sessionId':widget.sessionId,'action':'deleteEntry','entryId':item['id']});
     await _load();
     } catch(e) {if(mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(AppLocalizations.of(context)!.world_timeline_delete_failed1(e.toString()))));}
     finally {if(mounted) setState(() => _busy=false);}

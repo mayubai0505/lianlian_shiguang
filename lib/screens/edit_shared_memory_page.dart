@@ -156,7 +156,7 @@ class _EditSharedMemoryPageState extends State<EditSharedMemoryPage> {
               child: Opacity(
                 opacity: 0.09,
                 child: Image.asset(
-                  'assets/images/contact/contact_bottom_left_botanical.png',
+                  'assets/images/contact/contact_bottom_left_botanical.webp',
                   width: 175,
                   fit: BoxFit.contain,
                   errorBuilder: (_, __, ___) =>

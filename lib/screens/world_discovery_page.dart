@@ -1,5 +1,6 @@
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -42,6 +43,7 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
 
   final GlobalKey _shareCardKey = GlobalKey();
   bool _sharing = false;
+  bool _creatingRoom = false;
   static const String _downloadLink = 'https://lianlianshiguang.web.app/download/';
 
   String _shareDescription(Map<String, dynamic> world) {
@@ -355,15 +357,33 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
         SafeArea(top:false,child:Padding(
           padding:const EdgeInsets.fromLTRB(16,8,16,12),
           child:SizedBox(width:double.infinity,child:FilledButton(
-            onPressed: () {
-              if(!canEnter) {
+            onPressed: _creatingRoom ? null : () async {
+              if (!canEnter) {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content:Text(AppLocalizations.of(context)!.world_discovery_not_playable1)));
                 return;
               }
-              Navigator.push(context,MaterialPageRoute(
-                  builder:(_)=>WorldChatPage(worldId:widget.worldId)));
-            },child:Text(AppLocalizations.of(context)!.world_discovery_enter1),
+              setState(() => _creatingRoom = true);
+              try {
+                final result = await FirebaseFunctions.instanceFor(region: 'asia-east1')
+                    .httpsCallable('worldPrivateTest').call({
+                  'worldId': widget.worldId, 'action': 'newRoom',
+                });
+                final data = Map<String, dynamic>.from(result.data as Map);
+                final newSessionId = (data['sessionId'] ?? '').toString().trim();
+                if (newSessionId.isEmpty) throw StateError('建立新房間失敗：沒有房間 ID');
+                if (!mounted) return;
+                await Navigator.push(context, MaterialPageRoute(
+                    builder: (_) => WorldChatPage(worldId: widget.worldId, sessionId: newSessionId)));
+              } catch (e) {
+                debugPrint('開始新世界觀劇情失敗：$e');
+                if (mounted) ToastUtils.showCenterToast(context, '無法建立新故事，請重試', isError: true);
+              } finally {
+                if (mounted) setState(() => _creatingRoom = false);
+              }
+            },child: _creatingRoom ? const SizedBox(height: 20, width: 20,
+              child: CircularProgressIndicator(strokeWidth: 2))
+              : Text(AppLocalizations.of(context)!.world_discovery_enter1),
           )),
         )),
       ]),
@@ -371,4 +391,3 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
   },
   );
 }
-

@@ -2,6 +2,7 @@
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'dart:async';
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
 import 'feedback_page.dart';
 import 'package:image_picker/image_picker.dart';
@@ -37,7 +38,8 @@ import '../services/theme_notifier.dart';
 /// 私人試玩；所有訊息經 Cloud Function 授權、讀取與儲存。
 /// 目前僅限世界創作者私人試玩；世界觀付費模式與互動由 Cloud Functions 計費。
 class WorldChatPage extends StatefulWidget {
-  const WorldChatPage({super.key, required this.worldId});
+  const WorldChatPage({super.key, required this.worldId, this.sessionId});
+  final String? sessionId;
   final String worldId;
   @override
   State<WorldChatPage> createState() => _WorldChatPageState();
@@ -54,8 +56,8 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
   bool _worldDeleteMode = false;
   // 只在本次 App 執行期間保留聊天快取，帳號與世界完全隔離。
   static final Map<String, Map<String, dynamic>> _roomCache = {};
-  String get _roomCacheKey => '${FirebaseAuth.instance.currentUser?.uid ?? 'signed_out'}:${widget.worldId}';
-  String get _roomSessionPrefKey => 'world_room_session_${FirebaseAuth.instance.currentUser?.uid ?? 'signed_out'}_${widget.worldId}';
+  String get _roomCacheKey => '${FirebaseAuth.instance.currentUser?.uid ?? 'signed_out'}:${widget.worldId}:${widget.sessionId ?? 'legacy'}';
+  String get _roomSessionPrefKey => 'world_room_session_${FirebaseAuth.instance.currentUser?.uid ?? 'signed_out'}_${widget.worldId}_${widget.sessionId ?? 'legacy'}';
   bool _serverLoadCompleted = false;
   bool _initialVisualsReady = false;
   String? _initialBackgroundPath;
@@ -105,7 +107,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     _listenFlowerPoints();
     // 優先呈現同帳號、同世界的記憶體快取，避免重複顯示載入動畫。
     final previous = _roomCache[_roomCacheKey];
-    if (previous != null && (previous['sessionId'] ?? '').toString().isNotEmpty) {
+    if (previous != null && (previous['sessionId'] ?? '').toString().isNotEmpty && (widget.sessionId == null || previous['sessionId'] == widget.sessionId)) {
       _applyCachedRoom(previous);
       _initialVisualsReady = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -141,7 +143,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     try {
       final prefs = await SharedPreferences.getInstance();
       final sid = prefs.getString(_roomSessionPrefKey) ?? '';
-      if (sid.isEmpty || !mounted || _serverLoadCompleted || _sessionId != null) return;
+      if (sid.isEmpty || (widget.sessionId != null && sid != widget.sessionId) || !mounted || _serverLoadCompleted || _sessionId != null) return;
       final snap = await FirebaseFirestore.instance
           .collection('artifacts').doc(AppConfig.appId)
           .collection('world_chat_sessions').doc(sid)
@@ -295,20 +297,20 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
 
   String _affectionAsset(int score) {
     if (score < 60) return 'assets/images/affection/affection_stage_1.png';
-    if (score < 150) return 'assets/images/affection/affection_stage_2.png';
-    if (score < 550) return 'assets/images/affection/affection_stage_3.png';
-    if (score < 1720) return 'assets/images/affection/affection_stage_4.png';
-    if (score < 2430) return 'assets/images/affection/affection_stage_5.png';
-    return 'assets/images/affection/affection_stage_6.png';
+    if (score < 150) return 'assets/images/affection/affection_stage_2.webp';
+    if (score < 550) return 'assets/images/affection/affection_stage_3.webp';
+    if (score < 1720) return 'assets/images/affection/affection_stage_4.webp';
+    if (score < 2430) return 'assets/images/affection/affection_stage_5.webp';
+    return 'assets/images/affection/affection_stage_6.webp';
   }
 
   String _legacyFlowerAsset(int score) {
-    if (score < 60) return 'assets/images/flower_stage_1.png';
-    if (score < 150) return 'assets/images/flower_stage_2.png';
-    if (score < 550) return 'assets/images/flower_stage_3.png';
-    if (score < 1720) return 'assets/images/flower_stage_4.png';
-    if (score < 2430) return 'assets/images/flower_stage_5.png';
-    return 'assets/images/flower_stage_6.png';
+    if (score < 60) return 'assets/images/flower_stage_1.webp';
+    if (score < 150) return 'assets/images/flower_stage_2.webp';
+    if (score < 550) return 'assets/images/flower_stage_3.webp';
+    if (score < 1720) return 'assets/images/flower_stage_4.webp';
+    if (score < 2430) return 'assets/images/flower_stage_5.webp';
+    return 'assets/images/flower_stage_6.webp';
   }
 
   int _nextAffectionStage(int score) {
@@ -343,7 +345,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
   Future<void> _recoverAffinitiesFromCallable() async {
     try {
       // Callable 由後端驗證房間持有人，可在 Firestore 子集合規則不允許直讀時備援。
-      final result = await _api.call({'worldId':widget.worldId, 'action':'load'});
+      final result = await _api.call({'worldId':widget.worldId, if (widget.sessionId != null) 'sessionId':widget.sessionId, 'action':'load'});
       final raw = (result.data as Map?)?['affinities'];
       if (!mounted || raw is! Map) return;
       final values = <String, int>{};
@@ -399,9 +401,27 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       final uid = FirebaseAuth.instance.currentUser?.uid;
       if (uid != null && sessionId.isNotEmpty) {
         final snap = await FirebaseFirestore.instance.collection('users').doc(uid)
-            .collection('chatRoomBackgrounds').doc(sessionId)
+            .collection('chatRoomBackgrounds').doc(ThemeNotifier.worldBackgroundKey(widget.worldId))
             .get().timeout(const Duration(seconds: 4));
         background = (snap.data()?['path'] ?? '').toString().trim();
+        // 第一次讀取共用背景時，沿用目前房間舊版背景（若尚未建立共用設定）。
+        if (!snap.exists) {
+          final sharedRef = FirebaseFirestore.instance.collection('users').doc(uid)
+              .collection('chatRoomBackgrounds').doc(ThemeNotifier.worldBackgroundKey(widget.worldId));
+          final legacy = await FirebaseFirestore.instance.collection('users').doc(uid)
+              .collection('chatRoomBackgrounds').doc(sessionId).get();
+          final oldPath = (legacy.data()?['path'] ?? '').toString().trim();
+          if (oldPath.isNotEmpty) {
+            await FirebaseFirestore.instance.runTransaction((tx) async {
+              final current = await tx.get(sharedRef);
+              if (!current.exists) tx.set(sharedRef, {
+                'path': oldPath, 'worldId': widget.worldId,
+                'updatedAt': FieldValue.serverTimestamp(),
+              });
+            });
+            background = oldPath;
+          }
+        }
       }
     } catch (e) {
       debugPrint('世界聊天室背景預載略過：$e');
@@ -500,7 +520,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     if (_sessionId == null || _sending || _loading) return;
     unawaited(FirebaseFunctions.instanceFor(region: 'asia-east1')
         .httpsCallable('worldStoryMemory', options: HttpsCallableOptions(timeout: const Duration(seconds: 120)))
-        .call({'worldId': widget.worldId, 'action': 'generate'})
+        .call({'worldId': widget.worldId, if (widget.sessionId != null) 'sessionId':widget.sessionId, 'action': 'generate'})
         .then((_) {}, onError: (Object error) {
       debugPrint('World story summary deferred: $error');
     }));
@@ -595,6 +615,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     try {
       final result = await _api.call({
         'worldId': widget.worldId,
+        if (widget.sessionId != null) 'sessionId': widget.sessionId,
         'action': 'cancel',
         'requestId': requestId,
       });
@@ -631,7 +652,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     final requestIdAtStart = _pendingRequestId;
     try {
       final result = await _api.call({
-        'action':action,'worldId':widget.worldId,
+        'action':action,'worldId':widget.worldId, if (widget.sessionId != null) 'sessionId':widget.sessionId,
         if(action=='send') 'message':message,
         if(action=='send' || action=='regenerate' || action=='continue') 'mode':_selectedMode,
         if(action=='regenerate') 'paidRegenerateConfirmed':_paidRegenerateConfirmed,
@@ -1056,7 +1077,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
 
   Future<void> _openWorldRecords() async {
     await Navigator.of(context).push(MaterialPageRoute<void>(
-      builder: (_) => WorldStoryTimelinePage(worldId: widget.worldId, worldName: _name),
+      builder: (_) => WorldStoryTimelinePage(worldId: widget.worldId, worldName: _name, sessionId: _sessionId),
     ));
   }
 
@@ -1104,7 +1125,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     }
     await Navigator.of(context).push(MaterialPageRoute<void>(
       builder: (_) => WorldChatMemosPage(
-        worldId: widget.worldId,
+        worldId: widget.worldId, sessionId: _sessionId,
         worldName: _name,
       ),
     ));
@@ -1188,7 +1209,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
   Future<void> _editWorldPlayerIdentity() async {
     await WorldProfilePopup.show(
       context,
-      worldId: widget.worldId,
+      worldId: widget.worldId, sessionId: _sessionId,
       onSaved: () {
         if (mounted) _showCenterNotice('世界觀拾光檔案已同步，下一輪 AI 對話將使用');
       },
@@ -1201,7 +1222,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       'weather': AppLocalizations.of(context)!.world_chat_weather1, 'currentState': AppLocalizations.of(context)!.world_chat_current_state1, 'action': AppLocalizations.of(context)!.world_chat_action1, 'affinity': AppLocalizations.of(context)!.world_chat_affinity1,
     };
     try {
-      final result = await _api.call({'worldId': widget.worldId, 'action':'loadStatus'});
+      final result = await _api.call({'worldId': widget.worldId, if (widget.sessionId != null) 'sessionId':widget.sessionId, 'action':'loadStatus'});
       if (!mounted) return;
       final response = Map<String, dynamic>.from(result.data as Map);
       final raw = Map<String, dynamic>.from(response['statusSettings'] as Map? ?? const {});
@@ -1223,7 +1244,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
         )),
       );
       if (shouldSave != true || !mounted) return;
-      await _api.call({'worldId': widget.worldId, 'action':'saveStatus', 'settings': settings});
+      await _api.call({'worldId': widget.worldId, if (widget.sessionId != null) 'sessionId':widget.sessionId, 'action':'saveStatus', 'settings': settings});
       if (mounted) _showCenterNotice(AppLocalizations.of(context)!.world_chat_status_saved1);
     } catch (e) {
       if (mounted) _showCenterNotice('狀態欄設定失敗：$e', isError: true);
@@ -1271,7 +1292,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     }
     final result = await Navigator.of(context).push<String>(MaterialPageRoute(
       builder: (_) => WorldScenePage(
-        worldId: widget.worldId,
+        worldId: widget.worldId, sessionId: _sessionId!,
         worldName: _name,
         characters: Map<String, String>.from(_names),
       ),
@@ -1353,10 +1374,10 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
                       () => closeAnd(_openWorldInteraction)),
               _worldToolItem('assets/images/chat/chat_tool_scene_mask.png', AppLocalizations.of(context)!.world_chat_theater1,
                       () => closeAnd(_openWorldScene)),
-              _worldToolItem('assets/images/chat/chat_status_bar_mask.png', AppLocalizations.of(context)!.world_chat_status1,
+              _worldToolItem('assets/images/chat/chat_status_bar_mask.webp', AppLocalizations.of(context)!.world_chat_status1,
                       () => closeAnd(_editWorldStatusSettings)),
               _worldToolItem('assets/images/chat/chat_tool_story_mask.png', AppLocalizations.of(context)!.world_chat_secret1,
-                      () => closeAnd(() => Navigator.push(context, MaterialPageRoute(builder: (_) => WorldSecretChaptersPage(worldId: widget.worldId))))),
+                      () => closeAnd(() => Navigator.push(context, MaterialPageRoute(builder: (_) => WorldSecretChaptersPage(worldId: widget.worldId, sessionId: _sessionId))))),
             ],
           )),
         ])),
@@ -1539,7 +1560,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
   });
 
   Widget _worldActionIcon(String file, {bool danger = false}) => Image.asset(
-    'assets/images/chat/chat_msg_${file}_mask.png',
+    'assets/images/chat/chat_msg_${file}_mask.webp',
     width: 36, height: 36, fit: BoxFit.contain,
     color: danger ? Colors.redAccent : Theme.of(context).colorScheme.primary,
     colorBlendMode: BlendMode.srcIn,
@@ -1601,7 +1622,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
           actions:[TextButton(onPressed:()=>Navigator.pop(ctx),child:Text(AppLocalizations.of(context)!.world_chat_cancel1)),
             FilledButton(onPressed:()=>Navigator.pop(ctx,controller.text.trim()),child:Text(AppLocalizations.of(context)!.world_chat_save1))]));
       if(text==null||text.isEmpty||text==(segment['text']??'').toString())return;
-      await _api.call({'worldId':widget.worldId,'action':'editSegment',
+      await _api.call({'worldId':widget.worldId, if (widget.sessionId != null) 'sessionId':widget.sessionId,'action':'editSegment',
         'messageId':messageId,'segmentIndex':index,'message':text});
       if(mounted)_showCenterNotice('段落已更新');
     }catch(e){if(mounted)_showCenterNotice('編輯失敗：$e',isError:true);}
@@ -1616,7 +1637,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
           FilledButton(onPressed:()=>Navigator.pop(ctx,true),child:Text(AppLocalizations.of(context)!.world_chat_delete1))]));
     if(confirmed!=true)return;
     try{
-      await _api.call({'worldId':widget.worldId,'action':'deleteSegment',
+      await _api.call({'worldId':widget.worldId, if (widget.sessionId != null) 'sessionId':widget.sessionId,'action':'deleteSegment',
         'messageId':messageId,'segmentIndex':index});
       if(mounted)_showCenterNotice(AppLocalizations.of(context)!.world_chat_deleted_segment1);
     }catch(e){if(mounted)_showCenterNotice('刪除失敗：$e',isError:true);}
@@ -1637,7 +1658,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
         ],
       ));
       if (edited == null || edited.isEmpty || edited == (data['text'] ?? '').toString()) return;
-      await _api.call({'worldId':widget.worldId,'action':'edit','messageId':id,'message':edited});
+      await _api.call({'worldId':widget.worldId, if (widget.sessionId != null) 'sessionId':widget.sessionId,'action':'edit','messageId':id,'message':edited});
       if (mounted) _showCenterNotice(AppLocalizations.of(context)!.world_chat_updated1);
     } catch (e) {
       if (mounted) _showCenterNotice('編輯失敗：$e',isError:true);
@@ -1672,11 +1693,11 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       try {
         final split = key.lastIndexOf('::');
         if (split >= 0) {
-          await _api.call({'worldId': widget.worldId, 'action': 'deleteSegment',
+          await _api.call({'worldId': widget.worldId, if (widget.sessionId != null) 'sessionId':widget.sessionId, 'action': 'deleteSegment',
             'messageId': key.substring(0, split),
             'segmentIndex': int.parse(key.substring(split + 2))});
         } else {
-          await _api.call({'worldId': widget.worldId, 'action': 'delete', 'messageId': key});
+          await _api.call({'worldId': widget.worldId, if (widget.sessionId != null) 'sessionId':widget.sessionId, 'action': 'delete', 'messageId': key});
         }
         done++;
       } catch (e) {
@@ -1721,7 +1742,11 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
 
   // 與一般聊天室同一截圖流程：畫面上逐段勾選、預覽長圖、
   // 畫筆循環切換跟隨主題／曜石黑／晨曦白，最後由玩家分享。
-  Widget _buildWorldScreenshotCanvas(List<Map<String, String>> lines) {
+  Widget _buildWorldScreenshotCanvas(
+      List<Map<String, String>> lines, {
+        bool showHeader = true,
+        bool showFooter = true,
+      }) {
     final theme = Theme.of(context);
     final dark = _worldScreenshotStyle == 1;
     final light = _worldScreenshotStyle == 2;
@@ -1731,6 +1756,17 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
         : light ? Colors.black87 : theme.colorScheme.onSurface;
     final accent = dark ? Colors.white70
         : light ? Colors.black54 : theme.colorScheme.primary;
+    // 只影響匯出圖片：玩家泡泡採柔和底色，避免主題 primary 過深。
+    final userBubbleColor = dark
+        ? const Color(0xFF363244)
+        : light
+        ? const Color(0xFFEAE5F2)
+        : theme.colorScheme.primaryContainer;
+    final userBubbleText = dark
+        ? const Color(0xFFF8F5FC)
+        : light
+        ? const Color(0xFF37303F)
+        : theme.colorScheme.onPrimaryContainer;
     return MediaQuery(
       data: const MediaQueryData(),
       child: Directionality(
@@ -1742,10 +1778,10 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
             padding: const EdgeInsets.fromLTRB(18, 24, 18, 16),
             color: bg,
             child: Column(mainAxisSize: MainAxisSize.min, children: [
-              Text('與$_name的專屬時光', textAlign: TextAlign.center,
+              if (showHeader) Text('與$_name的專屬時光', textAlign: TextAlign.center,
                   style: GoogleFonts.notoSerifTc(fontSize: 20,
                       fontWeight: FontWeight.bold, color: ink)),
-              const SizedBox(height: 24),
+              if (showHeader) const SizedBox(height: 24),
               for (final line in lines) Padding(
                 padding: const EdgeInsets.only(bottom: 13),
                 child: Row(
@@ -1765,44 +1801,46 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
                               : null),
                       const SizedBox(width: 8),
                     ],
-                    Flexible(child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: dark ? const Color(0xFF171419)
-                            : line['kind'] == 'user'
-                            ? theme.colorScheme.primary
-                            : light ? Colors.black.withValues(alpha: .06)
-                            : theme.colorScheme.surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(line['speaker'] ?? '',
-                              style: GoogleFonts.notoSerifTc(fontSize: 11,
-                                  fontWeight: FontWeight.bold,
-                                  color: dark ? Colors.white70
-                                      : line['kind'] == 'user'
-                                      ? theme.colorScheme.onPrimary
-                                      : accent)),
-                          const SizedBox(height: 5),
-                          Text(line['text'] ?? '',
-                              style: GoogleFonts.notoSerifTc(fontSize: 14,
-                                  height: 1.55,
-                                  color: dark ? Colors.white
-                                      : line['kind'] == 'user'
-                                      ? theme.colorScheme.onPrimary
-                                      : ink)),
-                        ],
-                      ),
-                    )),
+                    ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: line['kind'] == 'user' ? 284 : 244,
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: line['kind'] == 'user'
+                                ? userBubbleColor
+                                : dark ? const Color(0xFF292631)
+                                : light ? Colors.black.withValues(alpha: .06)
+                                : theme.colorScheme.surfaceContainerHighest,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(line['speaker'] ?? '',
+                                  style: GoogleFonts.notoSerifTc(fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                      color: line['kind'] == 'user'
+                                          ? userBubbleText
+                                          : dark ? Colors.white70 : accent)),
+                              const SizedBox(height: 5),
+                              Text(line['text'] ?? '',
+                                  style: GoogleFonts.notoSerifTc(fontSize: 14,
+                                      height: 1.55,
+                                      color: line['kind'] == 'user'
+                                          ? userBubbleText
+                                          : dark ? Colors.white : ink)),
+                            ],
+                          ),
+                        )),
                   ],
                 ),
               ),
-              const SizedBox(height: 12),
-              Divider(color: ink.withValues(alpha: .15)),
-              Text('戀戀拾光 · 開放世界',
+              if (showFooter) const SizedBox(height: 12),
+              if (showFooter) Divider(color: ink.withValues(alpha: .15)),
+              if (showFooter) Text('戀戀拾光 · 開放世界',
                   style: GoogleFonts.notoSerifTc(fontSize: 11,
                       color: ink.withValues(alpha: .55))),
             ]),
@@ -1810,6 +1848,93 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
         ),
       ),
     );
+  }
+
+  /// 將超長對話切成可獨立排版的短訊息；文字內容不刪減。
+  List<Map<String, String>> _splitWorldScreenshotLines(
+      List<Map<String, String>> original,
+      ) {
+    final result = <Map<String, String>>[];
+    for (final line in original) {
+      final points = (line['text'] ?? '').runes.toList();
+      if (points.isEmpty) {
+        result.add(line);
+        continue;
+      }
+      for (var offset = 0; offset < points.length; offset += 150) {
+        final end = (offset + 150 < points.length) ? offset + 150 : points.length;
+        result.add(<String, String>{
+          ...line,
+          'text': String.fromCharCodes(points.sublist(offset, end)),
+          'speaker': offset == 0 ? (line['speaker'] ?? '') : '${line['speaker'] ?? ''}（續）',
+        });
+      }
+    }
+    return result;
+  }
+
+  /// 不依賴目前的螢幕高度：每兩段個別渲染 PNG，最後在同一張畫布上合成長圖。
+  Future<Uint8List> _captureWorldLongScreenshot(
+      List<Map<String, String>> selected,
+      ) async {
+    final parts = _splitWorldScreenshotLines(selected);
+    final images = <ui.Image>[];
+    try {
+      for (var i = 0; i < parts.length; i += 2) {
+        final end = (i + 2 < parts.length) ? i + 2 : parts.length;
+        final png = await _worldScreenshot.captureFromWidget(
+          InheritedTheme.captureAll(
+            context,
+            _buildWorldScreenshotCanvas(
+              parts.sublist(i, end),
+              showHeader: i == 0,
+              showFooter: end == parts.length,
+            ),
+          ),
+          context: context,
+          delay: const Duration(milliseconds: 90),
+          pixelRatio: 2,
+        );
+        final codec = await ui.instantiateImageCodec(png);
+        try {
+          final frame = await codec.getNextFrame();
+          images.add(frame.image);
+        } finally {
+          codec.dispose();
+        }
+      }
+      if (images.isEmpty) throw StateError('沒有可以輸出的對話');
+      final width = images.first.width;
+      final height = images.fold<int>(0, (sum, img) => sum + img.height);
+      // 避免極大量訊息造成裝置圖片緩衝區配置失敗。
+      if (height > 16000 || width * height > 18000000) {
+        throw StateError('選取的對話太長，請減少勾選段數後再截圖');
+      }
+      final recorder = ui.PictureRecorder();
+      final canvas = ui.Canvas(recorder);
+      double top = 0;
+      for (final img in images) {
+        canvas.drawImage(img, ui.Offset(0, top), ui.Paint());
+        top += img.height.toDouble();
+      }
+      final picture = recorder.endRecording();
+      try {
+        final merged = await picture.toImage(width, height);
+        try {
+          final data = await merged.toByteData(format: ui.ImageByteFormat.png);
+          if (data == null) throw StateError('長截圖編碼失敗');
+          return data.buffer.asUint8List();
+        } finally {
+          merged.dispose();
+        }
+      } finally {
+        picture.dispose();
+      }
+    } finally {
+      for (final img in images) {
+        img.dispose();
+      }
+    }
   }
 
   Future<void> _shareWorldScreenshot() async {
@@ -1849,12 +1974,10 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     final theme = Theme.of(context);
     var dialogOpen = false;
     try {
-      // 截圖較長時讓畫布依文字自行延伸，避免裁切選取的 NPC／旁白。
-      Future<Uint8List> capture() async => _worldScreenshot.captureFromWidget(
-        SizedBox(width: 320, child: _buildWorldScreenshotCanvas(lines)),
-        delay: const Duration(milliseconds: 120),
-        pixelRatio: 2,
-      );
+      // 分段離屏截圖再合併：不能把所有長對話直接放進同一個受螢幕
+      // 高度限制的 Column，否則部分裝置會 RenderFlex overflow。
+      // 每段至多 150 個 Unicode code points，避免單則極長回覆再次溢出。
+      Future<Uint8List> capture() => _captureWorldLongScreenshot(lines);
       showDialog<void>(
         context: context,
         barrierDismissible: false,
@@ -1949,7 +2072,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     final theme=Theme.of(context);
     final bgRef = _sessionId == null ? null : FirebaseFirestore.instance
         .collection('users').doc(FirebaseAuth.instance.currentUser?.uid ?? '')
-        .collection('chatRoomBackgrounds').doc(_sessionId);
+        .collection('chatRoomBackgrounds').doc(ThemeNotifier.worldBackgroundKey(widget.worldId));
     return Scaffold(
       appBar: WorldChatHeader(
         worldName: _name == '開放世界' ? AppLocalizations.of(context)!.world_chat_open_world1 : _name,
@@ -2154,3 +2277,4 @@ class _WorldScreenshotPreviewState extends State<_WorldScreenshotPreview> {
     ],
   );
 }
+

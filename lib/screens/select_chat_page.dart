@@ -55,7 +55,7 @@ Widget _buildEncounterCachedImage(
 
   final Widget fallback = errorWidget ??
       Image.asset(
-        'assets/images/blank_avatar.png',
+        'assets/images/blank_avatar.webp',
         fit: fit,
         alignment: alignment,
       );
@@ -84,7 +84,7 @@ Widget _buildEncounterCachedImage(
       // 第一次真正尚未載入時只顯示靜態底圖，不顯示轉圈圈。
       return placeholder ??
           Image.asset(
-            'assets/images/blank_avatar.png',
+            'assets/images/blank_avatar.webp',
             fit: fit,
             alignment: alignment,
           );
@@ -1160,7 +1160,7 @@ class _LatestTabState extends State<_LatestTab> {
                       fit: StackFit.expand,
                       children: [
                         Image.asset(
-                          'assets/images/banners/open_world_banner.png',
+                          'assets/images/banners/open_world_banner.webp',
                           fit: BoxFit.cover,
                           alignment: Alignment.center,
                         ),
@@ -1491,7 +1491,7 @@ class _LatestTabState extends State<_LatestTab> {
                         )
                       else
                         Image.asset(
-                          'assets/images/blank_avatar.png',
+                          'assets/images/blank_avatar.webp',
                           fit: BoxFit.cover,
                         ),
                       Container(
@@ -1808,7 +1808,7 @@ class _LatestTabState extends State<_LatestTab> {
       ) {
     if (bannerImg.isEmpty) {
       return Image.asset(
-        'assets/images/blank_avatar.png',
+        'assets/images/blank_avatar.webp',
         fit: BoxFit.cover,
       );
     }
@@ -1830,7 +1830,7 @@ class _LatestTabState extends State<_LatestTab> {
     if (bannerImg.isEmpty) {
       return [
         Image.asset(
-          'assets/images/blank_avatar.png',
+          'assets/images/blank_avatar.webp',
           fit: BoxFit.cover,
         ),
       ];
@@ -1872,7 +1872,7 @@ class _LatestTabState extends State<_LatestTab> {
           cacheWidth: 1400,
           placeholder: const SizedBox.shrink(),
           errorWidget: Image.asset(
-            'assets/images/blank_avatar.png',
+            'assets/images/blank_avatar.webp',
             fit: BoxFit.contain,
           ),
         ),
@@ -2076,7 +2076,7 @@ class _LatestTabState extends State<_LatestTab> {
                   )
                 else
                   Image.asset(
-                    'assets/images/blank_avatar.png',
+                    'assets/images/blank_avatar.webp',
                     fit: BoxFit.cover,
                   ),
 
@@ -2419,7 +2419,7 @@ class _AllLatestCharactersPageState
                           )
                         else
                           Image.asset(
-                            'assets/images/blank_avatar.png',
+                            'assets/images/blank_avatar.webp',
                             fit: BoxFit
                                 .cover,
                           ),

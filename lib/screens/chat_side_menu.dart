@@ -192,7 +192,7 @@ class _ChatSideMenuState extends State<ChatSideMenu> {
               // 「閒聊」不再是獨立聊天室，而是其中一個可切換模式。
               if (widget.showModelSelector) ...[
                 _MenuTile(
-                  asset: 'assets/images/chat/chat_menu_model_mask.png',
+                  asset: 'assets/images/chat/chat_menu_model_mask.webp',
                   label: widget.modelLabel,
                   onTap: () {
                     setState(() {
@@ -227,7 +227,7 @@ class _ChatSideMenuState extends State<ChatSideMenu> {
                         children: [
                           _ModeTile(
                             asset:
-                            'assets/images/chat/chat_menu_model_mask.png',
+                            'assets/images/chat/chat_menu_model_mask.webp',
                             label: widget.dailyLabel,
                             selected: _selectedModeId == 'gemini',
                             disabled: _switchingMode,
@@ -251,7 +251,7 @@ class _ChatSideMenuState extends State<ChatSideMenu> {
                           ),
                           _ModeTile(
                             asset:
-                            'assets/images/chat/chat_menu_model_mask.png',
+                            'assets/images/chat/chat_menu_model_mask.webp',
                             label: widget.resonanceLabel,
                             selected: _selectedModeId == 'resonance',
                             disabled: _switchingMode,
@@ -285,7 +285,7 @@ class _ChatSideMenuState extends State<ChatSideMenu> {
                 onTap: widget.onSaveTranscript,
               ),
               _MenuTile(
-                asset: 'assets/images/chat/chat_menu_gallery_mask.png',
+                asset: 'assets/images/chat/chat_menu_gallery_mask.webp',
                 label: widget.galleryLabel,
                 onTap: widget.onGallery,
               ),
@@ -317,7 +317,7 @@ class _ChatSideMenuState extends State<ChatSideMenu> {
               _SectionTitle(label: l10n.chat_side_menu_section_memory),
               _MenuTile(
                 asset:
-                'assets/images/chat/chat_menu_reset_memory_mask.png',
+                'assets/images/chat/chat_menu_reset_memory_mask.webp',
                 label: widget.resetLabel,
                 onTap: widget.onReset,
                 danger: true,

@@ -141,7 +141,7 @@ class _WorldChatSearchPageState extends State<WorldChatSearchPage> {
                                   child: Image(
                                     image: getAvatarImageProvider(
                                       (entry['avatar'] ?? '').trim().isNotEmpty
-                                          ? entry['avatar']! : 'assets/images/avatar1.png',
+                                          ? entry['avatar']! : 'assets/images/avatar1.webp',
                                     ),
                                     fit: BoxFit.cover,
                                     errorBuilder: (_, __, ___) =>

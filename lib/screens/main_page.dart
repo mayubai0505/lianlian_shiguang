@@ -40,6 +40,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   bool _hasClaimedToday = false;
   bool _hasCheckedInToday = false;
   bool _isShowingCheckInDialog = false;
+  bool _isCheckingDailyCheckIn = false;
   // ✨ 效能優化：紀錄最後一次檢查日期，避免頻繁讀取資料庫
   String _lastCheckedDateString = "";
   final GlobalKey<RecommendationPageState> _recommendationKey = GlobalKey<RecommendationPageState>();
@@ -222,7 +223,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   }
   Future<void> _checkDailyCheckIn() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null || !mounted || _isShowingCheckInDialog) return;
+    if (user == null || !mounted || _isShowingCheckInDialog || _isCheckingDailyCheckIn) return;
+    _isCheckingDailyCheckIn = true;
     final userDocRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
     try {
       // 領取狀態不可用舊的本機快取決定，跨裝置必須以伺服器為準。
@@ -230,7 +232,21 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
       if (!mounted || FirebaseAuth.instance.currentUser?.uid != user.uid) return;
       if (!doc.exists) return;
       final last = doc.data()?['lastCheckInDate'];
-      final claimed = last is Timestamp && _checkInDayOf(last) == _checkInDayKey;
+      bool claimed = last is Timestamp && _checkInDayOf(last) == _checkInDayKey;
+      // 若舊版本只成功寫入當日明細，也視為已領取，避免重複彈窗。
+      if (!claimed) {
+        final today = _checkInDayKey.replaceAll('-', '');
+        try {
+          final log = await userDocRef.collection('flower_logs')
+              .doc('daily_check_in_$today')
+              .get(const GetOptions(source: Source.server));
+          claimed = log.exists;
+        } catch (e) {
+          debugPrint('每日贈禮明細檢查未完成: $e');
+        }
+      }
+      debugPrint('每日贈禮狀態：已領取=$claimed，紀錄類型=${last.runtimeType}');
+      if (!mounted || FirebaseAuth.instance.currentUser?.uid != user.uid) return;
       setState(() {
         _hasClaimedToday = claimed;
         _hasCheckedInToday = claimed;
@@ -240,6 +256,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
       // 伺服器無法驗證時不要顯示「可領」，以免誤導玩家重複領取。
       debugPrint('每日贈禮狀態檢查失敗: $error');
       debugPrintStack(stackTrace: stackTrace);
+    } finally {
+      _isCheckingDailyCheckIn = false;
     }
   }
   // --- 簽到彈窗 UI ---
@@ -265,27 +283,29 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
 
       await showDialog(
         context: context,
-        barrierDismissible: false,
+        // 尚未領取也可以點視窗外空白處略過本次提示。
+        barrierDismissible: true,
         builder: (dialogContext) {
           return StatefulBuilder(
             builder: (context, setStateInDialog) {
               return AlertDialog(
-                constraints: BoxConstraints(maxWidth: desktopWeb ? 440 : 360),
+                // AlertDialog 只有 maxWidth 會依文字的 intrinsic width 收縮。
+                // 明確指定最小寬度，避免電腦瀏覽器顯示成狹長直條。
+                constraints: BoxConstraints(
+                  minWidth: desktopWeb ? 420 :
+                  (MediaQuery.sizeOf(dialogContext).width - 80).clamp(0.0, 320.0),
+                  maxWidth: desktopWeb ? 420 : 360,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
-                title: Row(
-                  children: [
-                    const SizedBox(width: 8),
-                    Text(
-                      l10n.daily_gift_title,
-                      style: GoogleFonts.notoSerifTc(
-                        color: primaryColor,
-                        fontWeight: FontWeight.w700,
-                        fontSize: desktopWeb ? 22 : 18,
-                      ),
-                    ),
-                  ],
+                title: Text(
+                  l10n.daily_gift_title,
+                  style: GoogleFonts.notoSerifTc(
+                    color: primaryColor,
+                    fontWeight: FontWeight.w700,
+                    fontSize: desktopWeb ? 22 : 18,
+                  ),
                 ),
                 content: Text(
                   l10n.daily_login_welcome(
@@ -440,12 +460,39 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                           );
                         } catch (e) {
                           debugPrint('❌ 簽到失敗: $e');
+                          if (e is FirebaseException) {
+                            debugPrint('每日贈禮 Firebase 錯誤碼: ${e.code}；訊息: ${e.message}');
+                          }
 
                           if (!mounted) return;
 
                           final errorText = e.toString();
-                          final bool alreadyCheckedIn =
+                          bool alreadyCheckedIn =
                           errorText.contains('今天已經簽到過了');
+
+                          // Web 端可能把交易拒絕包裝成 FirebaseException；
+                          // 再向伺服器核對一次，避免已領取卻顯示網路錯誤。
+                          if (!alreadyCheckedIn) {
+                            try {
+                              final latest = await userDocRef.get(
+                                const GetOptions(source: Source.server),
+                              );
+                              final last = latest.data() is Map<String, dynamic>
+                                  ? (latest.data() as Map<String, dynamic>)['lastCheckInDate']
+                                  : null;
+                              alreadyCheckedIn = last is Timestamp &&
+                                  _checkInDayOf(last) == _checkInDayKey;
+                              if (!alreadyCheckedIn) {
+                                final log = await userDocRef.collection('flower_logs')
+                                    .doc('daily_check_in_${_checkInDayKey.replaceAll('-', '')}')
+                                    .get(const GetOptions(source: Source.server));
+                                alreadyCheckedIn = log.exists;
+                              }
+                            } catch (verifyError) {
+                              debugPrint('再次核對每日贈禮狀態失敗: $verifyError');
+                            }
+                          }
+                          if (!mounted || !dialogContext.mounted) return;
 
                           if (alreadyCheckedIn) {
                             final todayString = _checkInDayKey;

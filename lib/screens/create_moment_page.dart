@@ -930,7 +930,7 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
 
   // 終極防呆讀取器
   ImageProvider _getAvatarProvider(String path) {
-    if (path.isEmpty) return const AssetImage('assets/images/blank_avatar.png');
+    if (path.isEmpty) return const AssetImage('assets/images/blank_avatar.webp');
     if (path.startsWith('http')) return NetworkImage(path);
     if (path.startsWith('assets/')) return AssetImage(path);
 
@@ -938,7 +938,7 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
     if (file.existsSync()) {
       return FileImage(file);
     } else {
-      return const AssetImage('assets/images/avatar1.png');
+      return const AssetImage('assets/images/avatar1.webp');
     }
   }
 

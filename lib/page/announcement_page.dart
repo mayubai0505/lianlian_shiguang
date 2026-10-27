@@ -5,16 +5,16 @@ import 'package:intl/intl.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 const _bottomBotanical =
-    'assets/images/announcement/announcement_botanical_left.png';
+    'assets/images/announcement/announcement_botanical_left.webp';
 const _envelopeBack =
     'assets/images/announcement/announcement_envelope_back.png';
-const _letter = 'assets/images/announcement/announcement_letter.png';
+const _letter = 'assets/images/announcement/announcement_letter.webp';
 const _envelopeBotanical =
-    'assets/images/announcement/announcement_botanical.png';
+    'assets/images/announcement/announcement_botanical.webp';
 const _envelopeFront =
-    'assets/images/announcement/announcement_envelope_front.png';
+    'assets/images/announcement/announcement_envelope_front.webp';
 const _envelopeStars =
-    'assets/images/announcement/announcement_stars.png';
+    'assets/images/announcement/announcement_stars.webp';
 
 
 String _announcementLocaleKey(BuildContext context) {

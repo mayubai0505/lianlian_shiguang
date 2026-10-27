@@ -667,7 +667,7 @@ class _FeedbackPageState
                         width: topRightBotanicalWidth,
                         child: _tintedContactAsset(
                           theme,
-                          'assets/images/contact/contact_top_right_botanical.png',
+                          'assets/images/contact/contact_top_right_botanical.webp',
                           opacity: isDarkMode ? 0.11 : 0.25,
                         ),
                       ),
@@ -677,7 +677,7 @@ class _FeedbackPageState
                         width: floatingPetalsWidth,
                         child: _tintedContactAsset(
                           theme,
-                          'assets/images/contact/contact_floating_petals.png',
+                          'assets/images/contact/contact_floating_petals.webp',
                           opacity: isDarkMode ? 0.045 : 0.09,
                         ),
                       ),
@@ -687,7 +687,7 @@ class _FeedbackPageState
                         width: bottomLeftBotanicalWidth,
                         child: _tintedContactAsset(
                           theme,
-                          'assets/images/contact/contact_bottom_left_botanical.png',
+                          'assets/images/contact/contact_bottom_left_botanical.webp',
                           opacity: isDarkMode ? 0.08 : 0.17,
                         ),
                       ),
@@ -697,7 +697,7 @@ class _FeedbackPageState
                         width: bottomRightBotanicalWidth,
                         child: _tintedContactAsset(
                           theme,
-                          'assets/images/contact/contact_bottom_right_botanical.png',
+                          'assets/images/contact/contact_bottom_right_botanical.webp',
                           opacity: isDarkMode ? 0.08 : 0.17,
                         ),
                       ),
@@ -754,7 +754,7 @@ class _FeedbackPageState
                                 child: Opacity(
                                   opacity: 0.82,
                                   child: Image.asset(
-                                    'assets/images/contact/contact_section_flower.png',
+                                    'assets/images/contact/contact_section_flower.webp',
                                     fit: BoxFit.contain,
                                     errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                                   ),
@@ -789,7 +789,7 @@ class _FeedbackPageState
                           _buildContactSectionTitle(
                             theme,
                             l10n.feedback_category_section_title,
-                            'assets/images/contact/contact_section_leaves.png',
+                            'assets/images/contact/contact_section_leaves.webp',
                           ),
                           const SizedBox(height: 10),
                           if (widget.lockCategory)
@@ -917,7 +917,7 @@ class _FeedbackPageState
                                 child: IgnorePointer(
                                   child: _tintedContactAsset(
                                     theme,
-                                    'assets/images/contact/contact_input_sprig.png',
+                                    'assets/images/contact/contact_input_sprig.webp',
                                     opacity: isDarkMode ? 0.12 : 0.31,
                                   ),
                                 ),
@@ -1242,7 +1242,7 @@ class _FeedbackPageState
                           BlendMode.srcIn,
                         ),
                         child: Image.asset(
-                          'assets/images/contact/contact_section_leaves.png',
+                          'assets/images/contact/contact_section_leaves.webp',
 
                           // 原本是 48 × 30
                           width: 38,
@@ -1267,7 +1267,7 @@ class _FeedbackPageState
                             BlendMode.srcIn,
                           ),
                           child: Image.asset(
-                            'assets/images/contact/contact_section_leaves.png',
+                            'assets/images/contact/contact_section_leaves.webp',
                             width: 38,
                             height: 22,
                             fit: BoxFit.contain,

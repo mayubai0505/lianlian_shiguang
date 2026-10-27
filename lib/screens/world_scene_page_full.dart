@@ -8,8 +8,9 @@ import 'world_custom_scene_edit_page.dart';
 
 /// 世界觀劇場：沿用一般聊天室兩分頁設計；玩家場景由世界觀後端驗證權限。
 class WorldScenePage extends StatefulWidget {
-  const WorldScenePage({super.key, required this.worldId, required this.worldName, required this.characters});
+  const WorldScenePage({super.key, required this.worldId, required this.sessionId, required this.worldName, required this.characters});
   final String worldId;
+  final String sessionId;
   final String worldName;
   final Map<String, String> characters;
   @override
@@ -42,7 +43,7 @@ class _WorldScenePageState extends State<WorldScenePage> with SingleTickerProvid
     setState(() { _loading = true; _error = ''; });
     try {
       final values = await Future.wait<dynamic>([
-        _api.call({'action':'loadScenes','worldId':widget.worldId}),
+        _api.call({'action':'loadScenes','worldId':widget.worldId,'sessionId':widget.sessionId}),
         FirebaseFirestore.instance.collection('artifacts').doc(AppConfig.appId)
             .collection('worlds').doc(widget.worldId).get(),
       ]);
@@ -82,7 +83,7 @@ class _WorldScenePageState extends State<WorldScenePage> with SingleTickerProvid
           TextButton(onPressed:()=>Navigator.pop(ctx,true),child:Text(AppLocalizations.of(ctx)!.world_scene_full_delete1))]));
     if (yes != true || !mounted) return;
     try {
-      await _api.call({'action':'deleteCustomScene','worldId':widget.worldId,'sceneId':scene['id']});
+      await _api.call({'action':'deleteCustomScene','worldId':widget.worldId,'sessionId':widget.sessionId,'sceneId':scene['id']});
       await _load();
     } catch (e) { _notice(AppLocalizations.of(context)!.world_scene_full_delete_error1(e.toString())); }
   }
@@ -94,7 +95,7 @@ class _WorldScenePageState extends State<WorldScenePage> with SingleTickerProvid
     if (title.isEmpty || description.isEmpty) { _notice(AppLocalizations.of(context)!.world_scene_full_missing_fields1); return; }
     setState(() => _busy = true);
     try {
-      await _api.call({'action':'activateScene','worldId':widget.worldId,
+      await _api.call({'action':'activateScene','worldId':widget.worldId,'sessionId':widget.sessionId,
         'sceneType':type,'title':title,'description':description});
       if (!mounted) return;
       Navigator.pop(context, '【世界觀劇場：$title】\n場景：$description\n'
@@ -110,7 +111,7 @@ class _WorldScenePageState extends State<WorldScenePage> with SingleTickerProvid
           TextButton(onPressed:()=>Navigator.pop(ctx,true),child:Text(AppLocalizations.of(ctx)!.world_scene_full_end_title1))]));
     if (yes != true || !mounted) return;
     try {
-      await _api.call({'action':'clearScene','worldId':widget.worldId});
+      await _api.call({'action':'clearScene','worldId':widget.worldId,'sessionId':widget.sessionId});
       await _load();
     } catch (e) { _notice(AppLocalizations.of(context)!.world_scene_full_end_error1(e.toString())); }
   }

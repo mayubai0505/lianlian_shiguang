@@ -50,14 +50,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
   // --- 狀態變數 ---
   String _gender = '未選擇';
   DateTime? _birthDate;
-  String _avatarPath = 'assets/images/avatar1.png';
+  String _avatarPath = 'assets/images/avatar1.webp';
   bool _isAgeEditable = true;
   bool _hasChangedID = false;
   bool _isSaving = false;
   String _originalID = '';
   String _originalNickname = '';
   String _originalGender = '未選擇';
-  String _originalAvatarPath = 'assets/images/avatar1.png';
+  String _originalAvatarPath = 'assets/images/avatar1.webp';
   DateTime? _originalBirthDate;
   String _originalBio = '';
 
@@ -246,7 +246,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             setState(() {
               _nicknameController.text = data['nickname'] ?? '';
               _gender = data['gender'] ?? l10n.genderNotSelected;
-              _avatarPath = data['avatarPath'] ?? 'assets/images/avatar1.png';
+              _avatarPath = data['avatarPath'] ?? 'assets/images/avatar1.webp';
               _bioController.text =
                   data['bio']?.toString() ?? '';
               _setProfileLinks(data['profileLinks']);
@@ -320,8 +320,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
             : (prefs.getString('gender') ?? l10n.genderNotSelected);
 
         _avatarPath = widget.isCreating
-            ? 'assets/images/avatar1.png'
-            : (prefs.getString('avatarPath') ?? 'assets/images/avatar1.png');
+            ? 'assets/images/avatar1.webp'
+            : (prefs.getString('avatarPath') ?? 'assets/images/avatar1.webp');
 
         if (widget.isCreating) {
           _birthDate = null;
@@ -1292,7 +1292,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 children: [
                   ...List.generate(13, (i) {
                     final index = i + 1;
-                    final path = 'assets/images/avatar$index.png'; // 先定義路徑
+                    final path = 'assets/images/avatar$index.webp';// 先定義路徑
                     return ListTile(
                       leading: CircleAvatar(
                           backgroundImage: AssetImage(path)),
@@ -1423,7 +1423,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     if (normalizedPath.isEmpty) {
       return const AssetImage(
-        'assets/images/avatar1.png',
+        'assets/images/avatar1.webp',
       );
     }
 
@@ -1451,7 +1451,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
 
     return const AssetImage(
-      'assets/images/avatar1.png',
+      'assets/images/avatar1.webp',
     );
   }
 
@@ -1702,7 +1702,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     BlendMode.srcIn,
                   ),
                   child: Image.asset(
-                    'assets/images/studio/studio_top_right.png',
+                    'assets/images/studio/studio_top_right.webp',
                     width: topRightFlowerWidth,
                     fit: BoxFit.contain,
                   ),
@@ -1722,7 +1722,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     BlendMode.srcIn,
                   ),
                   child: Image.asset(
-                    'assets/images/heartbeat_diary/botanical_left.png',
+                    'assets/images/heartbeat_diary/botanical_left.webp',
                     width: bottomLeftFlowerWidth,
                     fit: BoxFit.contain,
                   ),

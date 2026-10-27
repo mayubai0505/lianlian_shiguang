@@ -56,7 +56,7 @@ class _ProfilePageState extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
   // --- 狀態變數 ---
   String _nickname = '';
-  String _avatarPath = 'assets/images/avatar1.png';
+  String _avatarPath = 'assets/images/avatar1.webp';
   String _equippedAvatarFrameImageUrl = '';
   String _equippedAvatarFrameName = '';
   String _equippedAvatarFrameKey = '';
@@ -538,7 +538,7 @@ class _ProfilePageState extends State<ProfilePage>
     }
     if (data.containsKey('avatarPath')) {
       await prefs.setString(_profileCacheKey(uid, 'avatarPath'),
-          data['avatarPath']?.toString() ?? 'assets/images/avatar1.png');
+          data['avatarPath']?.toString() ?? 'assets/images/avatar1.webp');
     }
     if (data.containsKey('playerID')) {
       await prefs.setString(_profileCacheKey(uid, 'playerID'),
@@ -639,7 +639,7 @@ class _ProfilePageState extends State<ProfilePage>
               children: [
                 const SizedBox(height: 16),
                 Image.asset(
-                  'assets/images/flower_gift.png',
+                  'assets/images/flower_gift.webp',
                   height: 80,
                   width: 80,
                 ),
@@ -1126,7 +1126,7 @@ class _ProfilePageState extends State<ProfilePage>
         // 僅使用目前登入帳號的本機快取，避免換帳號時顯示其他玩家資料。
         _nickname = prefs.getString(_profileCacheKey(uid, 'nickname')) ?? (currentUser.displayName ?? l10n.title_time_travel);
         _bio = prefs.getString(_profileCacheKey(uid, 'bio')) ?? '';
-        _avatarPath = prefs.getString(_profileCacheKey(uid, 'avatarPath')) ?? (currentUser.photoURL ?? 'assets/images/avatar1.png');
+        _avatarPath = prefs.getString(_profileCacheKey(uid, 'avatarPath')) ?? (currentUser.photoURL ?? 'assets/images/avatar1.webp');
         _playerID = prefs.getString(_profileCacheKey(uid, 'playerID')) ?? '';
 
         final cachedLinks = prefs.getString(_profileCacheKey(uid, 'profileLinks')) ?? '';
@@ -2049,7 +2049,7 @@ class _ProfilePageState extends State<ProfilePage>
                   BlendMode.srcIn,
                 ),
                 child: Image.asset(
-                  'assets/images/profile/about_botanical_mask.png',
+                  'assets/images/profile/about_botanical_mask.webp',
                   fit: BoxFit.contain,
                   alignment: Alignment.bottomRight,
                   filterQuality: FilterQuality.high,
@@ -2187,33 +2187,34 @@ class _ProfilePageState extends State<ProfilePage>
                   backgroundColor:
                   Theme.of(context).scaffoldBackgroundColor,
                   forceElevated: innerBoxIsScrolled,
-                  actions: [
-                    // 各按鈕使用各自的實際點擊區，不再以 Transform 平移圖示。
-                    // 原本公告圖示右移 30px、收藏右移 15px，視覺位置與
-                    // HitTest 區域錯開，容易點公告卻開啟收藏。
-                    IconButton(
-                      tooltip: l10n.profile_tooltip_announcement,
-                      constraints: const BoxConstraints(minWidth: 64, minHeight: 48),
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const AnnouncementListPage(),
-                          ),
-                        );
-                      },
-                      icon: _buildTintedProfileAsset(
-                        maskAsset: 'assets/images/profile/announcement_mask.png',
-                        size: 36,
-                        color: theme.colorScheme.primary,
-                        opacity: 0.62,
-                      ),
+                  // 公告獨立放在左上角，避免與右側的收藏按鈕混淆。
+                  automaticallyImplyLeading: false,
+                  leadingWidth: 62,
+                  leading: IconButton(
+                    tooltip: l10n.profile_tooltip_announcement,
+                    constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                    padding: const EdgeInsets.all(5),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const AnnouncementListPage(),
+                        ),
+                      );
+                    },
+                    icon: _buildTintedProfileAsset(
+                      maskAsset: 'assets/images/profile/announcement_mask.webp',
+                      size: 42,
+                      color: theme.colorScheme.primary,
+                      opacity: 0.62,
                     ),
+                  ),
+                  actions: [
+                    // 收藏靠近右側設定；維持獨立點擊範圍。
                     IconButton(
                       tooltip: l10n.event_memory_collection_show_collection_intro_if_needed_message_collection,
-                      constraints: const BoxConstraints(minWidth: 64, minHeight: 48),
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      constraints: const BoxConstraints(minWidth: 50, minHeight: 48),
+                      padding: const EdgeInsets.all(4),
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -2224,15 +2225,15 @@ class _ProfilePageState extends State<ProfilePage>
                       },
                       icon: _buildTintedProfileAsset(
                         maskAsset: 'assets/icons/icon_profile_collection.png',
-                        size: 36,
+                        size: 42,
                         color: theme.colorScheme.primary,
                         opacity: 0.62,
                       ),
                     ),
                     IconButton(
                       tooltip: l10n.profile_tooltip_settings,
-                      constraints: const BoxConstraints(minWidth: 56, minHeight: 48),
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      constraints: const BoxConstraints(minWidth: 54, minHeight: 48),
+                      padding: const EdgeInsets.all(5),
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -2242,8 +2243,8 @@ class _ProfilePageState extends State<ProfilePage>
                         );
                       },
                       icon: _buildTintedProfileAsset(
-                        maskAsset: 'assets/images/profile/top_settings_mask.png',
-                        size: 36,
+                        maskAsset: 'assets/images/profile/top_settings_mask.webp',
+                        size: 42,
                         color: theme.colorScheme.primary,
                         opacity: 0.62,
                       ),
@@ -2636,7 +2637,7 @@ class _ProfilePageState extends State<ProfilePage>
                             BlendMode.srcIn,
                           ),
                           child: Image.asset(
-                            'assets/images/profile/botanical_left_mask.png',
+                            'assets/images/profile/botanical_left_mask.webp',
                             fit: BoxFit.contain,
                             alignment: Alignment.centerLeft,
                             filterQuality: FilterQuality.high,
@@ -2657,7 +2658,7 @@ class _ProfilePageState extends State<ProfilePage>
                             BlendMode.srcIn,
                           ),
                           child: Image.asset(
-                            'assets/images/profile/botanical_right_mask.png',
+                            'assets/images/profile/botanical_right_mask.webp',
                             fit: BoxFit.contain,
                             alignment: Alignment.centerRight,
                             filterQuality: FilterQuality.high,
@@ -2828,7 +2829,7 @@ class _ProfilePageState extends State<ProfilePage>
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   _buildTintedProfileAsset(
-                                    maskAsset: 'assets/images/profile/profile_quill_mask.png',
+                                    maskAsset: 'assets/images/profile/profile_quill_mask.webp',
                                     size: 22,
                                     color: theme.colorScheme.primary,
                                     opacity: 0.78,
@@ -2866,8 +2867,8 @@ class _ProfilePageState extends State<ProfilePage>
                                 children: [
                                   Image.asset(
                                     isDarkMode
-                                        ? 'assets/images/flower_gift_dark.png'
-                                        : 'assets/images/flower_gift.png',
+                                        ? 'assets/images/flower_gift_dark.webp'
+                                        : 'assets/images/flower_gift.webp',
                                     width: 17,
                                     height: 17,
                                   ),
@@ -2956,7 +2957,7 @@ class _ProfilePageState extends State<ProfilePage>
                       )
                           : _buildTintedProfileAsset(
                         maskAsset:
-                        'assets/images/profile/calendar_base_mask.png',
+                        'assets/images/profile/calendar_base_mask.webp',
                         overlayMaskAsset: _hasCheckedInToday
                             ? 'assets/images/profile/calendar_check_mask.png'
                             : null,
@@ -2983,7 +2984,7 @@ class _ProfilePageState extends State<ProfilePage>
                       onTap: _showHeartbeatDiary,
                       icon: _buildTintedProfileAsset(
                         maskAsset:
-                        'assets/images/profile/heart_diary_mask.png',
+                        'assets/images/profile/heart_diary_mask.webp',
                         size: 82,
                         opacity: 0.92,
                       ),
@@ -3529,9 +3530,6 @@ class _ProfilePageState extends State<ProfilePage>
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 90),
                 child: Column(children: [
-                  Icon(Icons.auto_stories_outlined, size: 48,
-                      color: theme.colorScheme.primary.withValues(alpha: .55)),
-                  const SizedBox(height: 14),
                   Text(AppLocalizations.of(context)!.profile_page_worlds_empty1),
                   const SizedBox(height: 5),
                   Text(AppLocalizations.of(context)!.profile_page_worlds_empty_hint1),
@@ -3772,7 +3770,7 @@ class _ProfilePageState extends State<ProfilePage>
     final theme = Theme.of(context);
     final imagePath = character.avatarPath.trim().isNotEmpty
         ? character.avatarPath
-        : 'assets/images/avatar1.png';
+        : 'assets/images/avatar1.webp';
 
     return InkWell(
       onTap: () => _openMyCharacterEditor(character),
@@ -3907,7 +3905,7 @@ class _ProfilePageState extends State<ProfilePage>
     final String imagePath =
     character.avatarPath.trim().isNotEmpty
         ? character.avatarPath
-        : 'assets/images/avatar1.png';
+        : 'assets/images/avatar1.webp';
 
     final int playCount = character.playCount;
     final int likesCount = character.likesCount;
@@ -4376,7 +4374,7 @@ class _ProfilePageState extends State<ProfilePage>
                 child: TextButton.icon(
                   onPressed: _showProfileAuthorSelectionSheet,
                   icon: _buildTintedProfileAsset(
-                    maskAsset: 'assets/images/profile/profile_quill_mask.png',
+                    maskAsset: 'assets/images/profile/profile_quill_mask.webp',
                     size: 22,
                     color: theme.colorScheme.primary,
                     opacity: 0.72,

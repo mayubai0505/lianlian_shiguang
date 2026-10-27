@@ -21,10 +21,10 @@ class _WorldEchoWallState extends State<WorldEchoWall> {
       .collection('public_worlds').doc(widget.worldId).collection('echoes');
 
   static const _cards = <String, String>{
-    'butterfly': 'assets/images/echo/echo_card_butterfly.png',
-    'flower': 'assets/images/echo/echo_card_flower.png',
-    'starry': 'assets/images/echo/echo_card_starry.png',
-    'planet': 'assets/images/echo/echo_card_planet.png',
+    'butterfly': 'assets/images/echo/echo_card_butterfly.webp',
+    'flower': 'assets/images/echo/echo_card_flower.webp',
+    'starry': 'assets/images/echo/echo_card_starry.webp',
+    'planet': 'assets/images/echo/echo_card_planet.webp',
   };
   bool _sending = false;
   late final Stream<QuerySnapshot<Map<String, dynamic>>> _echoesStream;
@@ -256,7 +256,7 @@ class _WorldEchoWallState extends State<WorldEchoWall> {
           if (snapshot.data!.docs.isEmpty) return Padding(
               padding: const EdgeInsets.symmetric(vertical: 46),
               child: Center(child: Column(children: [
-                Opacity(opacity: 0.12, child: Image.asset('assets/images/profile/about_botanical.png',
+                Opacity(opacity: 0.12, child: Image.asset('assets/images/profile/about_botanical.webp',
                     width: 135, errorBuilder: (_, __, ___) => const SizedBox.shrink())),
                 const SizedBox(height: 16),
                 Text(AppLocalizations.of(context)!.echo_empty1,

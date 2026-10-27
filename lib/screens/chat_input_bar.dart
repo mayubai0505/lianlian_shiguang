@@ -149,7 +149,7 @@ class _ChatInputBarState extends State<ChatInputBar>
                     _BareIconButton(
                       tooltip: 'Tools',
                       asset:
-                      'assets/images/chat/chat_more_cloud_mask.png',
+                      'assets/images/chat/chat_more_cloud_mask.webp',
                       assetSize: 30,
                       onPressed:
                       disabled ? null : widget.onToolbox,
@@ -186,7 +186,7 @@ class _ChatInputBarState extends State<ChatInputBar>
                       child: _BareIconButton(
                         tooltip: widget.continueTooltip,
                         asset:
-                        'assets/images/chat/chat_continue_vine_mask.png',
+                        'assets/images/chat/chat_continue_vine_mask.webp',
                         assetSize: 30,
                         onPressed:
                         disabled ? null : widget.onContinue,
@@ -195,7 +195,7 @@ class _ChatInputBarState extends State<ChatInputBar>
                         : _BareIconButton(
                       tooltip: widget.continueTooltip,
                       asset:
-                      'assets/images/chat/chat_continue_vine_mask.png',
+                      'assets/images/chat/chat_continue_vine_mask.webp',
                       assetSize: 30,
                       onPressed:
                       disabled ? null : widget.onContinue,
@@ -305,7 +305,7 @@ class _ChatInputBarState extends State<ChatInputBar>
                     ? null
                     : (widget.focusNode.hasFocus &&
                     !_toolsExpandedWhileFocused)
-                    ? 'assets/images/chat/chat_send_plane_mask.png'
+                    ? 'assets/images/chat/chat_send_plane_mask.webp'
                     : 'assets/icons/icon_chat_sticker.png',
                 assetSize: 30,
                 iconSize: widget.isGenerating ? 25 : 27,

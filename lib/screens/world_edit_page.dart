@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import '../services/app_constants.dart';
 import '../services/toast_utils.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+import 'world_secret_chapter_editor_page.dart';
 
 /// 獨立世界觀編輯器。與 CharacterEditPage / public_characters 完全分開。
 ///
@@ -582,31 +583,25 @@ class _WorldEditPageState extends State<WorldEditPage>
   }
 
   Future<void> _editSecret({int? index}) async {
-    final original = index == null ? <String, String>{} : _secretChapters[index];
-    final title = TextEditingController(text: original['title'] ?? '');
-    final condition = TextEditingController(text: original['condition'] ?? '');
-    final content = TextEditingController(text: original['content'] ?? '');
-    try {
-      final result = await showDialog<Map<String, String>>(context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(index == null ? AppLocalizations.of(context)!.world_edit_add_secret1 : AppLocalizations.of(context)!.world_edit_edit_secret1),
-            content: SizedBox(width: 520, child: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
-              TextField(controller: title, maxLength: 80, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.world_edit_chapter_title1)),
-              TextField(controller: condition, maxLength: 500, maxLines: 3, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.world_edit_unlock_condition1)),
-              TextField(controller: content, maxLength: 5000, minLines: 5, maxLines: null, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.world_edit_secret_content1)),
-            ]))),
-            actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalizations.of(context)!.world_edit_cancel1)),
-              FilledButton(onPressed: () {
-                if (title.text.trim().isEmpty || condition.text.trim().isEmpty || content.text.trim().isEmpty) return;
-                Navigator.pop(ctx, {
-                  'id': original['id']?.isNotEmpty == true ? original['id']! : DateTime.now().microsecondsSinceEpoch.toString(),
-                  'title': title.text.trim(), 'condition': condition.text.trim(), 'content': content.text.trim(),
-                });
-              }, child: Text(AppLocalizations.of(context)!.world_edit_confirm1))],
-          ));
-      if (!mounted || result == null) return;
-      setState(() {if (index == null) {_secretChapters.add(result);} else {_secretChapters[index] = result;}});
-    } finally { title.dispose(); condition.dispose(); content.dispose(); }
+    if (_busy) return;
+    final original = index == null
+        ? <String, String>{}
+        : Map<String, String>.from(_secretChapters[index]);
+
+    final result = await Navigator.of(context).push<Map<String, String>>(
+      MaterialPageRoute(
+        builder: (_) => WorldSecretChapterEditorPage(original: original),
+      ),
+    );
+    if (!mounted || result == null) return;
+
+    setState(() {
+      if (index == null) {
+        if (_secretChapters.length < 12) _secretChapters.add(result);
+      } else if (index < _secretChapters.length) {
+        _secretChapters[index] = result;
+      }
+    });
   }
 
   Widget _storyTab() => ListView(

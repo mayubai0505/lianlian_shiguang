@@ -165,7 +165,7 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
                   child: Opacity(
                     opacity: 0.17,
                     child: Image.asset(
-                      'assets/images/studio/studio_top_right.png',
+                      'assets/images/studio/studio_top_right.webp',
                     ),
                   ),
                 ),
@@ -176,7 +176,7 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
                   child: Opacity(
                     opacity: 0.16,
                     child: Image.asset(
-                      'assets/images/studio/studio_bottom_left.png',
+                      'assets/images/studio/studio_bottom_left.webp',
                     ),
                   ),
                 ),
@@ -220,7 +220,7 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
                                 ),
                                 const SizedBox(width: 7),
                                 Image.asset(
-                                  'assets/images/studio/studio_title_leaf.png',
+                                  'assets/images/studio/studio_title_leaf.webp',
                                   width: 30,
                                   height: 30,
                                   fit: BoxFit.contain,
@@ -478,7 +478,7 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
                             theme: theme,
                             title: l10n.creator_studio_public_title,
                             subtitle: l10n.creator_studio_public_subtitle,
-                            assetPath: 'assets/images/studio/studio_public.png',
+                            assetPath: 'assets/images/studio/studio_public.webp',
                             count: publics.length,
                             emptyText: l10n.creator_studio_public_empty,
                             documents: publics,
@@ -492,7 +492,7 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
                             theme: theme,
                             title: l10n.creator_studio_private_title,
                             subtitle: l10n.creator_studio_private_subtitle,
-                            assetPath: 'assets/images/studio/studio_private.png',
+                            assetPath: 'assets/images/studio/studio_private.webp',
                             count: privates.length,
                             emptyText: l10n.creator_studio_private_empty,
                             documents: privates,
@@ -506,7 +506,7 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
                             theme: theme,
                             title: l10n.creator_studio_draft_title,
                             subtitle: l10n.creator_studio_draft_subtitle,
-                            assetPath: 'assets/images/studio/studio_draft_quill.png',
+                            assetPath: 'assets/images/studio/studio_draft_quill.webp',
                             count: drafts.length,
                             emptyText: l10n.creator_studio_draft_empty,
                             documents: drafts,
@@ -964,7 +964,7 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
                     image: getAvatarImageProvider(
                       avatarPath.isNotEmpty
                           ? avatarPath
-                          : 'assets/images/avatar1.png',
+                          : 'assets/images/avatar1.webp',
                     ),
                     fit: BoxFit.cover,
                     errorBuilder: (

@@ -10,18 +10,19 @@ import '../services/reminder_notification_service.dart';
 // Never persist private memo content into SharedPreferences.
 class _WorldMemoSessionCache {
   static final Map<String, List<Map<String, dynamic>>> entries = {};
-  static String? key(String? uid, String worldId) =>
-      uid == null ? null : '$uid::$worldId';
+  static String? key(String? uid, String worldId, String? sessionId) =>
+      uid == null ? null : '$uid::$worldId::${sessionId ?? 'legacy'}';
   static List<Map<String, dynamic>> clone(List<Map<String, dynamic>> source) =>
       source.map((m) => Map<String, dynamic>.from(m)).toList();
 }
 
 /// World-scoped personal memos. All reads/writes are authorized by Cloud Functions.
 class WorldChatMemosPage extends StatefulWidget {
-  const WorldChatMemosPage({super.key, required this.worldId, required this.worldName, this.initialMemoId});
+  const WorldChatMemosPage({super.key, required this.worldId, required this.worldName, this.initialMemoId, this.sessionId});
   final String worldId;
   final String worldName;
   final String? initialMemoId;
+  final String? sessionId;
   @override
   State<WorldChatMemosPage> createState() => _WorldChatMemosPageState();
 }
@@ -41,7 +42,7 @@ class _WorldChatMemosPageState extends State<WorldChatMemosPage> {
   void initState() {
     super.initState();
     _cacheKey = _WorldMemoSessionCache.key(
-        FirebaseAuth.instance.currentUser?.uid, widget.worldId);
+        FirebaseAuth.instance.currentUser?.uid, widget.worldId, widget.sessionId);
     final cached = _cacheKey == null ? null : _WorldMemoSessionCache.entries[_cacheKey];
     if (cached != null) _memos = _WorldMemoSessionCache.clone(cached);
     _initialLoading = cached == null;
@@ -67,14 +68,14 @@ class _WorldChatMemosPageState extends State<WorldChatMemosPage> {
       }
     });
     try {
-      final r = await _api.call({'worldId': widget.worldId, 'action': 'list'});
+      final r = await _api.call({'worldId': widget.worldId, if (widget.sessionId != null) 'sessionId': widget.sessionId, 'action': 'list'});
       final d = Map<String, dynamic>.from(r.data as Map);
       final items = (d['memos'] as List? ?? const [])
           .whereType<Map>()
           .map((m) => Map<String, dynamic>.from(m)).toList();
       if (mounted && _revision == readRevision &&
           _cacheKey == _WorldMemoSessionCache.key(
-              FirebaseAuth.instance.currentUser?.uid, widget.worldId)) {
+              FirebaseAuth.instance.currentUser?.uid, widget.worldId, widget.sessionId)) {
         setState(() { _memos = items; _error = null; });
         _storeCache();
       }
@@ -88,7 +89,7 @@ class _WorldChatMemosPageState extends State<WorldChatMemosPage> {
 
   String _notificationMemoId(String memoId) {
     final uid = FirebaseAuth.instance.currentUser?.uid ?? 'signed_out';
-    return 'world_${uid}_${widget.worldId}_$memoId';
+    return 'world_${uid}_${widget.worldId}_${widget.sessionId ?? 'legacy'}_$memoId';
   }
 
   DateTime? _dateOf(dynamic milliseconds) => milliseconds is num
@@ -106,7 +107,7 @@ class _WorldChatMemosPageState extends State<WorldChatMemosPage> {
     setState(() { _busy = true; _error = null; });
     try {
       final response = await _api.call({
-        'worldId': widget.worldId,
+        'worldId': widget.worldId, if (widget.sessionId != null) 'sessionId': widget.sessionId,
         'action': memo == null ? 'add' : 'update',
         if (memo != null) 'memoId': memo['id'],
         ...result,
@@ -152,7 +153,7 @@ class _WorldChatMemosPageState extends State<WorldChatMemosPage> {
     if (yes != true || !mounted) return;
     setState(() { _busy = true; _error = null; });
     try {
-      await _api.call({'worldId': widget.worldId, 'action': 'delete',
+      await _api.call({'worldId': widget.worldId, if (widget.sessionId != null) 'sessionId': widget.sessionId, 'action': 'delete',
         'memoId': memo['id']});
       if (mounted) setState(() {
         _revision++;
@@ -305,3 +306,4 @@ class _WorldMemoEditorPageState extends State<_WorldMemoEditorPage> {
     );
   }
 }
+

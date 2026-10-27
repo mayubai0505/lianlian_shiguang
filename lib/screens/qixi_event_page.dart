@@ -532,7 +532,7 @@ class _QixiEventPageState extends State<QixiEventPage> {
       child: Row(
         children: [
           Image.asset(
-            'assets/images/love.png',
+            'assets/images/love.webp',
             width: 62,
             height: 62,
             fit: BoxFit.contain,

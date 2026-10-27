@@ -1054,7 +1054,7 @@ class _MomentCardState extends State<MomentCard> {
               // 第一個按鈕：App 內轉發 / 私訊
               ListTile(
                 leading: Image.asset(
-                  'assets/images/chat/chat_send_plane_mask.png',
+                  'assets/images/chat/chat_send_plane_mask.webp',
                   width: 24,
                   height: 24,
                   fit: BoxFit.contain,
@@ -1456,11 +1456,11 @@ class _MomentCardState extends State<MomentCard> {
                         key: _likeKey,
                         description: l10n.tip_post_like,
                         child: IconButton(
-                          visualDensity: VisualDensity.compact,
+                          visualDensity: VisualDensity.standard,
                           icon: Image.asset(
                             'assets/images/chat/chat_gift_flower.png',
-                            width: 21,
-                            height: 21,
+                            width: 26,
+                            height: 26,
                             fit: BoxFit.contain,
                             color: _isLiked ? primary : actionColor,
                             colorBlendMode: BlendMode.srcIn,
@@ -1474,11 +1474,11 @@ class _MomentCardState extends State<MomentCard> {
                       )
                     else
                       IconButton(
-                        visualDensity: VisualDensity.compact,
+                        visualDensity: VisualDensity.standard,
                         icon: Image.asset(
                           'assets/images/chat/chat_gift_flower.png',
-                          width: 21,
-                          height: 21,
+                          width: 26,
+                          height: 26,
                           fit: BoxFit.contain,
                           color: _isLiked ? primary : actionColor,
                           colorBlendMode: BlendMode.srcIn,
@@ -1490,11 +1490,11 @@ class _MomentCardState extends State<MomentCard> {
                         },
                       ),
                     IconButton(
-                      visualDensity: VisualDensity.compact,
+                      visualDensity: VisualDensity.standard,
                       icon: Image.asset(
                         'assets/images/chat/chat_mode_daily_mask.png',
-                        width: 20,
-                        height: 20,
+                        width: 26,
+                        height: 26,
                         fit: BoxFit.contain,
                         color: actionColor,
                         colorBlendMode: BlendMode.srcIn,
@@ -1517,11 +1517,11 @@ class _MomentCardState extends State<MomentCard> {
                     ),
                     const SizedBox(width: 2),
                     IconButton(
-                      visualDensity: VisualDensity.compact,
+                      visualDensity: VisualDensity.standard,
                       icon: Image.asset(
-                        'assets/images/chat/chat_send_plane_mask.png',
-                        width: 21,
-                        height: 21,
+                        'assets/images/chat/chat_send_plane_mask.webp',
+                        width: 26,
+                        height: 26,
                         fit: BoxFit.contain,
                         color: actionColor,
                         colorBlendMode: BlendMode.srcIn,
@@ -1536,11 +1536,11 @@ class _MomentCardState extends State<MomentCard> {
                         key: _bookmarkKey,
                         description: l10n.tip_post_bookmark,
                         child: IconButton(
-                          visualDensity: VisualDensity.compact,
+                          visualDensity: VisualDensity.standard,
                           icon: Image.asset(
-                            'assets/images/chat/chat_pin_bookmark.png',
-                            width: 22,
-                            height: 22,
+                            'assets/images/chat/chat_pin_bookmark.webp',
+                            width: 32,
+                            height: 32,
                             fit: BoxFit.contain,
                             color: _isBookmarked ? primary : actionColor,
                             colorBlendMode: BlendMode.srcIn,
@@ -1554,11 +1554,11 @@ class _MomentCardState extends State<MomentCard> {
                       )
                     else
                       IconButton(
-                        visualDensity: VisualDensity.compact,
+                        visualDensity: VisualDensity.standard,
                         icon: Image.asset(
-                          'assets/images/chat/chat_pin_bookmark.png',
-                          width: 22,
-                          height: 22,
+                          'assets/images/chat/chat_pin_bookmark.webp',
+                          width: 32,
+                          height: 32,
                           fit: BoxFit.contain,
                           color: _isBookmarked ? primary : actionColor,
                           colorBlendMode: BlendMode.srcIn,

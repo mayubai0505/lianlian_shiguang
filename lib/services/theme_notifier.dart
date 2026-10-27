@@ -281,6 +281,9 @@ BoxDecoration _solidBackground(Color color) => BoxDecoration(color: color);
 
 // --- ✨✨✨ 核心修正 #2: Class 內部現在只負責邏輯，不再定義樣式 ---
 class ThemeNotifier extends ChangeNotifier {
+  // 同一玩家在同一世界的所有聊天室共用背景；一般角色聊天仍以 sessionId 分開。
+  static String worldBackgroundKey(String worldId) => 'world_${worldId.trim()}';
+
   // 載入 SharedPreferences 前先顯示拾光紫，避免啟動畫面短暫閃成藍色。
   AppTheme _currentThemeEnum = AppTheme.light;
   AppFont _currentFont = AppFont.notoSerifTc;

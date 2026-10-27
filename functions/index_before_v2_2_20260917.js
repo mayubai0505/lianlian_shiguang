@@ -7137,7 +7137,7 @@ exports.notifyFollowersOnNewMomentV2 = onDocumentCreated(
                                       authorName: characterData?.name || "角色",
                                       authorAvatar:
                                           characterData?.avatarPath ||
-                                          "assets/images/blank_avatar.png",
+                                          "assets/images/blank_avatar.webp",
                                       createdAt: FieldValue.serverTimestamp(),
                                       parentCommentId,
                                       replyToName,
@@ -7878,7 +7878,7 @@ exports.notifyFollowersOnNewMomentV2 = onDocumentCreated(
                                          content: generatedPost,
                                          authorId: doc.id,
                                          authorName: charData.name,
-                                         authorAvatar: charData.avatarPath || 'assets/images/blank_avatar.png',
+                                         authorAvatar: charData.avatarPath || 'assets/images/blank_avatar.webp',
                                          isPublic: true,
                                          createdAt: FieldValue.serverTimestamp(),
                                          commentCount: 0,

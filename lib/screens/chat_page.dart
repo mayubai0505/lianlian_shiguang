@@ -265,13 +265,13 @@ class _ChatPageState extends State<ChatPage> {
   // ✨ 煞車系統專用變數，必須放在類別最上方
   http.Client? _httpClient;
   static const List<FlowerStage> _flowerStages = [
-    FlowerStage(threshold: 0, imagePath: 'assets/images/flower_stage_1.png'),
-    FlowerStage(threshold: 60, imagePath: 'assets/images/flower_stage_2.png'),
-    FlowerStage(threshold: 150, imagePath: 'assets/images/flower_stage_3.png'),
-    FlowerStage(threshold: 550, imagePath: 'assets/images/flower_stage_4.png'),
-    FlowerStage(threshold: 1720, imagePath: 'assets/images/flower_stage_5.png'),
-    FlowerStage(threshold: 2430, imagePath: 'assets/images/flower_stage_6.png'),
-    FlowerStage(threshold: 5000, imagePath: 'assets/images/flower_stage_6.png'),
+    FlowerStage(threshold: 0, imagePath: 'assets/images/flower_stage_1.webp'),
+    FlowerStage(threshold: 60, imagePath: 'assets/images/flower_stage_2.webp'),
+    FlowerStage(threshold: 150, imagePath: 'assets/images/flower_stage_3.webp'),
+    FlowerStage(threshold: 550, imagePath: 'assets/images/flower_stage_4.webp'),
+    FlowerStage(threshold: 1720, imagePath: 'assets/images/flower_stage_5.webp'),
+    FlowerStage(threshold: 2430, imagePath: 'assets/images/flower_stage_6.webp'),
+    FlowerStage(threshold: 5000, imagePath: 'assets/images/flower_stage_6.webp'),
   ];
   String? _activeAiRequestId;
   // 已停止的請求即使晚到，也不能重新出現在目前聊天室。
@@ -621,8 +621,8 @@ class _ChatPageState extends State<ChatPage> {
                           ),
                           child: Image.asset(
                             isCompleted
-                                ? 'assets/images/qixi_progress_on.png'
-                                : 'assets/images/qixi_progress_off.png',
+                                ? 'assets/images/qixi_progress_on.webp'
+                                : 'assets/images/qixi_progress_off.webp',
                             key: ValueKey(
                               'qixi_${index}_$isCompleted',
                             ),
@@ -7130,7 +7130,7 @@ class _ChatPageState extends State<ChatPage> {
               // 截圖分享
               ListTile(
                 leading: Image.asset(
-                  'assets/images/chat/chat_msg_screenshot_mask.png',
+                  'assets/images/chat/chat_msg_screenshot_mask.webp',
                   width: 36,
                   height: 36,
                   color: theme.colorScheme.primary,
@@ -7157,7 +7157,7 @@ class _ChatPageState extends State<ChatPage> {
               // 複製內容
               ListTile(
                 leading: Image.asset(
-                  'assets/images/chat/chat_msg_copy_mask.png',
+                  'assets/images/chat/chat_msg_copy_mask.webp',
                   width: 36,
                   height: 36,
                   color: theme.colorScheme.primary,
@@ -7181,7 +7181,7 @@ class _ChatPageState extends State<ChatPage> {
               if (message.type == 'text')
                 ListTile(
                   leading: Image.asset(
-                    'assets/images/chat/chat_msg_edit_mask.png',
+                    'assets/images/chat/chat_msg_edit_mask.webp',
                     width: 36,
                     height: 36,
                     color: theme.colorScheme.primary,
@@ -7197,7 +7197,7 @@ class _ChatPageState extends State<ChatPage> {
               // 刪除
               ListTile(
                 leading: Image.asset(
-                  'assets/images/chat/chat_msg_delete_mask.png',
+                  'assets/images/chat/chat_msg_delete_mask.webp',
                   width: 36,
                   height: 36,
                   color: Colors.redAccent,
@@ -7227,7 +7227,7 @@ class _ChatPageState extends State<ChatPage> {
               // 舉報
               ListTile(
                 leading: Image.asset(
-                  'assets/images/chat/chat_msg_report_mask.png',
+                  'assets/images/chat/chat_msg_report_mask.webp',
                   width: 40,
                   height: 40,
                   color: theme.colorScheme.primary,
@@ -7246,7 +7246,7 @@ class _ChatPageState extends State<ChatPage> {
               // 給建議
               ListTile(
                 leading: Image.asset(
-                  'assets/images/chat/chat_msg_feedback_mask.png',
+                  'assets/images/chat/chat_msg_feedback_mask.webp',
                   width: 36,
                   height: 36,
                   color: theme.colorScheme.primary,
@@ -8435,7 +8435,7 @@ class _ChatPageState extends State<ChatPage> {
                           )
                               : IconButton(
                             icon: Image.asset(
-                              'assets/images/chat/chat_send_plane_mask.png',
+                              'assets/images/chat/chat_send_plane_mask.webp',
                               width: 32,
                               height: 32,
                               color: Theme.of(context).colorScheme.primary,
@@ -8694,7 +8694,7 @@ class _ChatPageState extends State<ChatPage> {
 
                               // 4. 錄音
                               _buildToolItem(
-                                'assets/images/chat/chat_tool_record_mask.png',
+                                'assets/images/chat/chat_tool_record_mask.webp',
                                 l10n.chat_tool_record,
                                     () {
                                   sheetSetState(() => showRecordingUI = true);
@@ -8824,7 +8824,7 @@ class _ChatPageState extends State<ChatPage> {
 
                               // 8. 狀態欄
                               _buildToolItem(
-                                'assets/images/chat/chat_status_bar_mask.png',
+                                'assets/images/chat/chat_status_bar_mask.webp',
                                 l10n.chatStatusBarTitle,
                                     () {
                                   Navigator.pop(context);
@@ -8834,7 +8834,7 @@ class _ChatPageState extends State<ChatPage> {
 
                               // 9. 聊天偏好／持續指令
                               _buildToolItem(
-                                'assets/images/chat/chat_preference_mask.png',
+                                'assets/images/chat/chat_preference_mask.webp',
                                 l10n.chatPreferenceTitle,
                                     () {
                                   Navigator.pop(context);
@@ -9484,7 +9484,7 @@ class _ChatPageState extends State<ChatPage> {
 
     if (path.isEmpty) {
       return const AssetImage(
-        'assets/images/avatar1.png',
+        'assets/images/avatar1.webp',
       );
     }
 
@@ -9507,7 +9507,7 @@ class _ChatPageState extends State<ChatPage> {
       provider = FileImage(File(path));
     } else {
       provider = const AssetImage(
-        'assets/images/avatar1.png',
+        'assets/images/avatar1.webp',
       );
     }
 
@@ -9769,7 +9769,7 @@ class _ChatPageState extends State<ChatPage> {
         'title': l10n.chat_mode_resonance,
         'cost': l10n.chat_mode_resonance_cost,
         'desc': l10n.chat_mode_resonance_desc,
-        'asset': 'assets/images/chat/chat_mode_resonance_mask.png',
+        'asset': 'assets/images/chat/chat_mode_resonance_mask.webp',
         'color': Colors.purple.shade200,
       },
     ];
@@ -10354,7 +10354,7 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                   trailing:
                   Image.asset(
-                    'assets/images/chat/chat_send_plane_mask.png',
+                    'assets/images/chat/chat_send_plane_mask.webp',
                     width: 18,
                     height: 18,
                     color: Theme.of(context).colorScheme.primary,
@@ -11821,7 +11821,7 @@ class _ChatPageState extends State<ChatPage> {
                     id: ChatMode.resonance.name,
                     label:
                     '${l10n.chat_mode_resonance} · ${l10n.chat_mode_resonance_cost}',
-                    asset: 'assets/images/chat/chat_mode_resonance_mask.png',
+                    asset: 'assets/images/chat/chat_mode_resonance_mask.webp',
                     fallbackIcon: Icons.favorite_rounded,
                   ),
                 ],

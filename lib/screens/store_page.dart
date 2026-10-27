@@ -603,11 +603,11 @@ class _StorePageState extends State<StorePage> {
     if (totalSpent >= 10000) return 'assets/images/tree_star.png';        // 👑 10,000+: 星花
     if (totalSpent >= 3000) return 'assets/images/tree_full_flower.png';  // 🌸 3,000+: 滿花
     if (totalSpent >= 1314) return 'assets/images/tree_blooming.png';     // 🌷 1,314+: 開花
-    if (totalSpent >= 880) return 'assets/images/tree_large.png';         // 🌳 880+: 大樹
-    if (totalSpent >= 520) return 'assets/images/tree_small.png';         // 🌲 520+: 小樹
-    if (totalSpent >= 250) return 'assets/images/tree_sapling.png';       // 🌿 250+: 樹苗
-    if (totalSpent >= 30) return 'assets/images/tree_sprout.png';         // 🌱 30+: 發芽
-    return 'assets/images/tree_seed.png';                                 // 🌰 0: 種子
+    if (totalSpent >= 880) return 'assets/images/tree_large.webp';         // 🌳 880+: 大樹
+    if (totalSpent >= 520) return 'assets/images/tree_small.webp';         // 🌲 520+: 小樹
+    if (totalSpent >= 250) return 'assets/images/tree_sapling.webp';       // 🌿 250+: 樹苗
+    if (totalSpent >= 30) return 'assets/images/tree_sprout.webp';         // 🌱 30+: 發芽
+    return 'assets/images/tree_seed.webp';                                 // 🌰 0: 種子
   }
 
   // ✨ VIP 上方總覽卡片 (結合朋友畫的手繪成長樹)
@@ -1349,7 +1349,7 @@ class ProductCard extends StatelessWidget {
     // 2400~4300  -> 豪華花束
     // 6400~10000 -> 頂級花束
     if (points <= 90) {
-      return 'assets/images/store/store_flower_single.png';
+      return 'assets/images/store/store_flower_single.webp';
     }
     if (points <= 370) {
       return 'assets/images/store/store_bouquet_small.png';
