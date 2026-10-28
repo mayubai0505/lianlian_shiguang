@@ -127,7 +127,7 @@ class _HeartbeatDiaryPageState extends State<HeartbeatDiaryPage> {
                           BlendMode.srcIn,
                         ),
                         child: Image.asset(
-                          'assets/images/heartbeat_diary/botanical_left.png',
+                          'assets/images/heartbeat_diary/botanical_left.webp',
                           width: flowerWidth,
                           fit: BoxFit.contain,
                         ),
@@ -151,7 +151,7 @@ class _HeartbeatDiaryPageState extends State<HeartbeatDiaryPage> {
                           BlendMode.srcIn,
                         ),
                         child: Image.asset(
-                          'assets/images/heartbeat_diary/botanical_right.png',
+                          'assets/images/heartbeat_diary/botanical_right.webp',
                           width: flowerWidth,
                           fit: BoxFit.contain,
                         ),
@@ -208,7 +208,7 @@ class _HeartbeatDiaryPageState extends State<HeartbeatDiaryPage> {
                       _buildTaskCard(
                         context: context,
                         assetPath:
-                        'assets/images/heartbeat_diary/task_daily_chat.png',
+                        'assets/images/heartbeat_diary/task_daily_chat.webp',
                         title: widget.dailyChatTitle,
                         subtitle: widget.dailyChatSubtitle,
                         progress: widget.dailyChatProgress,
@@ -237,7 +237,7 @@ class _HeartbeatDiaryPageState extends State<HeartbeatDiaryPage> {
                       _buildTaskCard(
                         context: context,
                         assetPath:
-                        'assets/images/heartbeat_diary/task_story.png',
+                        'assets/images/heartbeat_diary/task_story.webp',
                         title: widget.storyTitle,
                         subtitle: widget.storySubtitle,
                         progress: widget.storyProgress,
@@ -267,7 +267,7 @@ class _HeartbeatDiaryPageState extends State<HeartbeatDiaryPage> {
                       _buildTaskCard(
                         context: context,
                         assetPath:
-                        'assets/images/heartbeat_diary/task_social.png',
+                        'assets/images/heartbeat_diary/task_social.webp',
                         title: widget.socialTitle,
                         subtitle: widget.socialSubtitle,
                         progress: widget.socialProgress,
@@ -296,7 +296,7 @@ class _HeartbeatDiaryPageState extends State<HeartbeatDiaryPage> {
                       _buildTaskCard(
                         context: context,
                         assetPath:
-                        'assets/images/heartbeat_diary/task_monthly.png',
+                        'assets/images/heartbeat_diary/task_monthly.webp',
                         title: widget.monthlyTitle,
                         subtitle: widget.monthlySubtitle,
                         progress:

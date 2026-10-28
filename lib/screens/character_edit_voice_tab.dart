@@ -48,7 +48,6 @@ class CharacterEditVoiceTab extends StatelessWidget {
     required ThemeData theme,
     required String title,
     required List<Widget> children,
-    IconData? icon,
   }) {
     return Container(
       width: double.infinity,
@@ -59,14 +58,15 @@ class CharacterEditVoiceTab extends StatelessWidget {
         children: [
           Row(
             children: [
-              if (icon != null) ...[
-                Icon(
-                  icon,
-                  size: 19,
+              Container(
+                width: 3,
+                height: 20,
+                decoration: BoxDecoration(
                   color: theme.colorScheme.primary,
+                  borderRadius: BorderRadius.circular(99),
                 ),
-                const SizedBox(width: 8),
-              ],
+              ),
+              const SizedBox(width: 9),
               Expanded(
                 child: Text(
                   title.trim(),
@@ -114,7 +114,6 @@ class CharacterEditVoiceTab extends StatelessWidget {
           _buildCleanSection(
             theme: theme,
             title: l10n.section_voice_gen,
-            icon: Icons.graphic_eq_rounded,
             children: [
               Text(
                 l10n.voice_gen_desc,
@@ -286,7 +285,7 @@ class CharacterEditVoiceTab extends StatelessWidget {
               ] else
                 SizedBox(
                   width: double.infinity,
-                  child: OutlinedButton.icon(
+                  child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       foregroundColor: theme.colorScheme.primary,
                       side: BorderSide(
@@ -297,8 +296,7 @@ class CharacterEditVoiceTab extends StatelessWidget {
                         borderRadius: BorderRadius.circular(14),
                       ),
                     ),
-                    icon: const Icon(Icons.auto_awesome_rounded, size: 19),
-                    label: Text(
+                    child: Text(
                       l10n.voice_btn_generate,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -312,7 +310,6 @@ class CharacterEditVoiceTab extends StatelessWidget {
           _buildCleanSection(
             theme: theme,
             title: l10n.voice_advanced_tuning,
-            icon: Icons.tune_rounded,
             children: [
               Row(
                 children: [

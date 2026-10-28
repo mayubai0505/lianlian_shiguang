@@ -379,7 +379,7 @@ class Character {
       avatar = mainDocumentGallery.first.imageUrl.trim();
     } else {
       avatar =
-          (data['avatarPath'] ?? 'assets/images/blank_avatar.png').toString();
+          (data['avatarPath'] ?? 'assets/images/blank_avatar.webp').toString();
     }
 
     return Character(
@@ -507,12 +507,12 @@ class Character {
 
     // 3. ✨ 核心修正：處理大頭貼 (avatarPath)
     // 優先使用相簿裡的第一張照片當作大頭貼，確保更新聲線時絕對不會跳回預設圖！
-    String avatar = 'assets/images/blank_avatar.png';
+    String avatar = 'assets/images/blank_avatar.webp';
     if (finalGallery.isNotEmpty && finalGallery.first.imageUrl.isNotEmpty) {
       avatar = finalGallery.first.imageUrl;
     } else {
       // 若真的完全沒有相簿，才去讀舊的 avatarPath
-      avatar = data['avatarPath'] ?? 'assets/images/blank_avatar.png';
+      avatar = data['avatarPath'] ?? 'assets/images/blank_avatar.webp';
       if (avatar.startsWith('gs://')) {
         try {
           avatar = await FirebaseStorage.instance.refFromURL(avatar).getDownloadURL();
@@ -655,7 +655,7 @@ Character getCharacterById(String id) {
   return Character(
     id: id,
     name: "正在讀取中...",
-    avatarPath: "assets/images/blank_avatar.png", // 使用妳定義的預設圖
+    avatarPath: "assets/images/blank_avatar.webp", // 使用妳定義的預設圖
     galleryPaths: [],
     gallery: [],
     createdBy: "system",

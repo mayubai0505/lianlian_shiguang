@@ -40,7 +40,7 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
     ),
     _ThemeOption(
       theme: AppTheme.blueGradient,
-      asset: 'assets/images/theme/theme_card_ocean.png',
+      asset: 'assets/images/theme/theme_card_ocean.webp',
       accent: Color(0xFF7899CC),
     ),
     _ThemeOption(
@@ -279,7 +279,7 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
                   ? data['avatarPath'].toString().trim()
                   : (currentUser?.photoURL?.trim().isNotEmpty == true
                   ? currentUser!.photoURL!.trim()
-                  : 'assets/images/avatar1.png');
+                  : 'assets/images/avatar1.webp');
               final flowerPoints = data['flowerPoints'] is num
                   ? (data['flowerPoints'] as num).toInt()
                   : 10923;
@@ -348,7 +348,7 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 _tintedProfileAsset(
-                  'assets/images/profile/profile_quill_mask.png',
+                  'assets/images/profile/profile_quill_mask.webp',
                   size: 21,
                   opacity: 0.80,
                 ),
@@ -368,8 +368,8 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
               children: [
                 Image.asset(
                   _isDarkPreview
-                      ? 'assets/images/flower_gift_dark.png'
-                      : 'assets/images/flower_gift.png',
+                      ? 'assets/images/flower_gift_dark.webp'
+                      : 'assets/images/flower_gift.webp',
                   width: 17,
                   height: 17,
                 ),
@@ -384,7 +384,6 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
                 ),
               ],
             ),
-            Icon(Icons.share_outlined, size: 16, color: secondary),
           ],
         ),
         const SizedBox(height: 17),
@@ -400,7 +399,7 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
           children: [
             Expanded(
               child: _previewEditorialShortcut(
-                asset: 'assets/images/profile/calendar_base_mask.png',
+                asset: 'assets/images/profile/calendar_base_mask.webp',
                 overlayAsset: 'assets/images/profile/calendar_check_mask.png',
                 title: l10n.profile_check_in_done,
                 subtitle: l10n.profile_check_in_done_subtitle,
@@ -415,7 +414,7 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
             ),
             Expanded(
               child: _previewEditorialShortcut(
-                asset: 'assets/images/profile/heart_diary_mask.png',
+                asset: 'assets/images/profile/heart_diary_mask.webp',
                 title: l10n.tab_heartbeat_diary,
                 subtitle: l10n.profile_heartbeat_diary_subtitle,
                 foreground: foreground,
@@ -514,8 +513,6 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.auto_awesome, size: 17, color: _previewColor),
-        const SizedBox(width: 8),
         Text(
           title,
           style: GoogleFonts.notoSerifTc(
@@ -613,8 +610,6 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.eco_outlined, color: _previewColor, size: 18),
-            const SizedBox(width: 7),
             Flexible(
               child: Text(
                 l10n.theme_selection_previewing(_themeName(_selectedOption.theme, l10n)),
@@ -739,7 +734,6 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
       l10n.theme_selection_applied(
         _themeName(_selectedOption.theme, l10n),
       ),
-      customIcon: Icons.check_rounded,
     );
   }
 }

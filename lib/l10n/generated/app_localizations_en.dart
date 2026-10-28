@@ -6683,7 +6683,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'You cannot report your own creator profile';
 
   @override
-  String creator_profile_report_reason_prompt(String creatorName) {
+  String creator_profile_report_reason_prompt1(String creatorName) {
     return 'Select a reason for reporting “$creatorName”:';
   }
 
@@ -9978,4 +9978,3502 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get theme_font_system_description =>
       'Follow the device’s default system font';
+
+  @override
+  String get font_selection_serif_name => 'Noto Serif TC';
+
+  @override
+  String get font_selection_sans_name => 'Noto Sans TC';
+
+  @override
+  String get font_selection_system_name => 'System font';
+
+  @override
+  String get font_selection_serif_description =>
+      'Elegant serif typeface for immersive reading.';
+
+  @override
+  String get font_selection_sans_description =>
+      'Clear, gentle sans-serif typeface.';
+
+  @override
+  String get font_selection_system_description =>
+      'Use your device’s default font.';
+
+  @override
+  String get font_selection_preview_sentence =>
+      'Write another chapter of your story with the one you love.';
+
+  @override
+  String get avatar_frame_error_generic => 'Error';
+
+  @override
+  String get avatar_frame_sign_in_required => 'Please sign in first';
+
+  @override
+  String get avatar_frame_default_name => 'Event avatar frame';
+
+  @override
+  String get background_exclusive_photos_tab => 'Exclusive Photos';
+
+  @override
+  String get background_world_sign_in_chat =>
+      'Please sign in and enter a world chat';
+
+  @override
+  String get background_world_photo_load_error => 'Error';
+
+  @override
+  String get background_world_no_photos => 'No world photos available';
+
+  @override
+  String get background_world_cover => 'World Cover';
+
+  @override
+  String get background_world_cover_confirm =>
+      'Set the world cover as this chat background?';
+
+  @override
+  String get background_world_default_limited => 'Limited Background';
+
+  @override
+  String get background_world_default_character => 'Character';
+
+  @override
+  String get background_world_no_character_photos =>
+      'No character photos available';
+
+  @override
+  String background_world_unlock_required(int count) {
+    return 'Requires $count affection to unlock';
+  }
+
+  @override
+  String background_world_character_confirm(String name) {
+    return 'Set $name’s photo as the world chat background?';
+  }
+
+  @override
+  String background_world_affection_count(int count) {
+    return '$count Affection';
+  }
+
+  @override
+  String get reply_selection => 'Reply options';
+
+  @override
+  String get chat_home_character_tab => 'Character chats';
+
+  @override
+  String get chat_home_world_tab => 'Open Worlds';
+
+  @override
+  String get chat_home_world_error_generic => 'Error';
+
+  @override
+  String get chat_home_world_pinned => 'World chat pinned';
+
+  @override
+  String get chat_home_world_deleted =>
+      'World chat and conversation history deleted';
+
+  @override
+  String get chat_home_world_action_done => 'Done';
+
+  @override
+  String get chat_home_world_rename_title => 'Name this memory';
+
+  @override
+  String chat_home_world_delete_confirm(String name) {
+    return 'Delete the chat history for “$name”?\n\nThis permanently deletes conversations, story summaries, relationships, and memos. This cannot be undone. The creator’s published world will remain.';
+  }
+
+  @override
+  String get chat_home_world_empty_title => 'No Open World chats yet';
+
+  @override
+  String get chat_home_world_empty_desc =>
+      'Start playing an Open World to see your chats here.';
+
+  @override
+  String get chat_home_world_unnamed => 'Untitled world';
+
+  @override
+  String get chat_home_world_private_test => 'Private test';
+
+  @override
+  String get chat_home_world_no_messages => 'No messages yet';
+
+  @override
+  String get expand_features => 'Expand features';
+
+  @override
+  String get chat_sticker_all => 'All';
+
+  @override
+  String get chat_mode_short_daily => 'Daily';
+
+  @override
+  String get chat_mode_short_story => 'Story';
+
+  @override
+  String get chat_mode_short_immersive => 'Immersive';
+
+  @override
+  String get chat_mode_short_resonance => 'Resonance';
+
+  @override
+  String get chat_mode_short_gemini => 'Chat';
+
+  @override
+  String get chat_theater_tool => 'Theater';
+
+  @override
+  String chat_regenerate_insufficient_flowers(int cost) {
+    return 'Not enough Flowers. Regenerating requires $cost Flowers.';
+  }
+
+  @override
+  String get chat_regenerate_paid_title => 'Paid regeneration';
+
+  @override
+  String chat_regenerate_paid_confirm(int cost) {
+    return 'You have used all free regenerations today. This will cost $cost Flowers in the current mode. Continue?';
+  }
+
+  @override
+  String get chat_generic_error => 'Error';
+
+  @override
+  String get chat_regenerate_confirm => 'Confirm';
+
+  @override
+  String get comment_add_photo => 'Add photo';
+
+  @override
+  String get comment_error_generic => 'Error';
+
+  @override
+  String creator_profile_report_reason_prompt(String creatorName) {
+    return 'Select a reason for reporting “$creatorName”:';
+  }
+
+  @override
+  String get creator_profile_open_worlds => 'Open Worlds';
+
+  @override
+  String get creator_profile_generic_error => 'Error';
+
+  @override
+  String get creator_profile_refresh => 'Refresh';
+
+  @override
+  String get creator_profile_no_open_worlds =>
+      'This creator has not published any Open Worlds yet.';
+
+  @override
+  String get creator_profile_unnamed_world => 'Unnamed World';
+
+  @override
+  String get creator_program_required_fields =>
+      'Please enter your creative direction and reason for applying.';
+
+  @override
+  String get creator_program_submitted =>
+      'Application submitted. Review takes about 1–3 days.';
+
+  @override
+  String get creator_program_error => 'Error';
+
+  @override
+  String get creator_program_login_required =>
+      'Please sign in before applying to the Creator Program.';
+
+  @override
+  String get creator_program_title => 'Creator Program';
+
+  @override
+  String get creator_program_headline =>
+      'Let more people discover your creations';
+
+  @override
+  String get creator_program_intro =>
+      'If you have public creations, you are welcome to join the 《戀戀拾光》 Creator Program. Applications are reviewed within 1–3 days.';
+
+  @override
+  String get creator_program_benefits_title => 'Program benefits';
+
+  @override
+  String get creator_program_benefit_dashboard =>
+      'Creator dashboard: View followers, public characters, total likes, and new followers this month.';
+
+  @override
+  String get creator_program_benefit_fans =>
+      'Fan engagement: Send letters, manage fans, and reward them using your own flowers.';
+
+  @override
+  String get creator_program_benefit_exposure =>
+      'Official exposure: New characters may be featured on Instagram and in-game creator recommendations.';
+
+  @override
+  String get creator_program_benefit_monthly =>
+      'Monthly creation reward: Publish at least 3 brand-new characters in a month to receive 520 flowers the next month.';
+
+  @override
+  String get creator_program_benefit_merch =>
+      'Merchandise collaboration: If your characters join an official product or gift-box project, you may receive a cash creative reward under that project.';
+
+  @override
+  String creator_program_last_review_note(String reason) {
+    return 'Previous review notes: $reason';
+  }
+
+  @override
+  String get creator_program_apply_heading => 'Apply to join';
+
+  @override
+  String get creator_program_direction_label => 'Creative direction';
+
+  @override
+  String get creator_program_direction_hint =>
+      'e.g., contemporary romance, historical, fantasy, BL, GL…';
+
+  @override
+  String get creator_program_reason_label => 'Why do you want to join?';
+
+  @override
+  String get creator_program_reason_hint =>
+      'Tell us how you plan to develop your characters and engage with fans.';
+
+  @override
+  String get creator_program_social_label => 'Social link (optional)';
+
+  @override
+  String get creator_program_social_hint =>
+      'Instagram, Threads, personal website, etc.';
+
+  @override
+  String get creator_program_submit => 'Submit application';
+
+  @override
+  String get creator_program_public_character_note =>
+      'Before submission, the system checks that your account has at least one public character.';
+
+  @override
+  String get creator_program_status_pending => 'Application under review';
+
+  @override
+  String get creator_program_status_pending_desc =>
+      'Your application has been received. Review takes about 1–3 days. We will notify you through the in-game mailbox.';
+
+  @override
+  String get creator_program_status_approved => 'Creator status approved 🎉';
+
+  @override
+  String get creator_program_status_approved_desc =>
+      'Welcome to the 《戀戀拾光》 Creator Program! The creator dashboard, fan tools, and recommendation banners will be linked to this status in upcoming features.';
+
+  @override
+  String get creator_program_status_suspended => 'Creator status suspended';
+
+  @override
+  String get creator_program_status_suspended_desc =>
+      'Creator-only features are temporarily unavailable. Please check the official notice in your in-game mailbox.';
+
+  @override
+  String get creator_program_status_revoked => 'Creator status revoked';
+
+  @override
+  String get creator_program_status_revoked_desc =>
+      'Creator-only features are unavailable. If you have questions, please contact support.';
+
+  @override
+  String get creator_program_status_title => 'Creator status';
+
+  @override
+  String creator_program_current_status(String status) {
+    return 'Current status: $status';
+  }
+
+  @override
+  String creator_program_official_note(String reason) {
+    return 'Official note: $reason';
+  }
+
+  @override
+  String get creator_dashboard_error1 => 'Error';
+
+  @override
+  String get creator_dashboard_access_title1 => 'Creator Dashboard';
+
+  @override
+  String get creator_dashboard_status_notice_title1 =>
+      'Creator Dashboard Access Notice';
+
+  @override
+  String get creator_dashboard_apply_title1 => 'Apply for Creator Dashboard';
+
+  @override
+  String get creator_dashboard_access_subtitle1 =>
+      'Character play analytics · New and lost followers · Follower management';
+
+  @override
+  String get creator_dashboard_pending1 =>
+      'Application submitted · Under review';
+
+  @override
+  String get creator_dashboard_legacy_pending1 =>
+      'Application pending confirmation';
+
+  @override
+  String get creator_dashboard_syncing1 =>
+      'Syncing dashboard access. Please try again later.';
+
+  @override
+  String get creator_dashboard_suspended1 =>
+      'Dashboard access suspended. Contact support.';
+
+  @override
+  String get creator_dashboard_apply_subtitle1 =>
+      'Apply for access to character analytics and follower management';
+
+  @override
+  String get creator_dashboard_rejected1 =>
+      'Application declined · You may apply again';
+
+  @override
+  String get creator_dashboard_submitted1 =>
+      'Application submitted. Please wait for review.';
+
+  @override
+  String get creator_dashboard_benefits_title1 => 'Creator Dashboard features';
+
+  @override
+  String get creator_dashboard_benefit_monthly1 =>
+      '🌸 Monthly creation reward: Publish 3 distinct new characters this month to claim 300 Flowers once.';
+
+  @override
+  String get creator_dashboard_benefit_analytics1 =>
+      '• View public-character play metrics, follower totals, and follow/unfollow activity';
+
+  @override
+  String get creator_dashboard_benefit_mail1 =>
+      '• Fan messages: private messages and announcements (daily limits apply)';
+
+  @override
+  String get creator_dashboard_benefit_gifts1 =>
+      '• Fan rewards: gift your own Flowers to followers';
+
+  @override
+  String get creator_dashboard_reward_note1 =>
+      'Approval required. Private characters, drafts, and republished older characters do not count toward the monthly reward.';
+
+  @override
+  String get creator_dashboard_apply_cta1 =>
+      'Learn more and request dashboard access';
+
+  @override
+  String get creator_dashboard_my_characters1 => 'My characters';
+
+  @override
+  String get creator_dashboard_my_worlds1 => 'My open worlds';
+
+  @override
+  String get creator_dashboard_create_world1 => 'Create open world';
+
+  @override
+  String get creator_dashboard_public_worlds1 => 'Published worlds';
+
+  @override
+  String get creator_dashboard_public_worlds_hint1 =>
+      'Other players can explore';
+
+  @override
+  String get creator_dashboard_private_worlds1 => 'Private worlds';
+
+  @override
+  String get creator_dashboard_private_worlds_hint1 =>
+      'Only you can view and edit';
+
+  @override
+  String get creator_dashboard_world_drafts1 => 'World drafts';
+
+  @override
+  String get creator_dashboard_world_drafts_hint1 => 'Worlds not yet finished';
+
+  @override
+  String get creator_dashboard_no_drafts1 => 'No drafts yet';
+
+  @override
+  String get creator_dashboard_no_worlds1 => 'No worlds yet';
+
+  @override
+  String get creator_dashboard_unnamed_world1 => 'Untitled world';
+
+  @override
+  String get creator_dashboard_delete_world_draft1 => 'Delete world draft';
+
+  @override
+  String get creator_dashboard_private_test1 => 'Private test';
+
+  @override
+  String get creator_dashboard_delete_world_confirm_title1 =>
+      'Delete world draft?';
+
+  @override
+  String get creator_dashboard_delete_world_confirm_body1 =>
+      'This cannot be undone. Uploaded images will not be deleted.';
+
+  @override
+  String get creator_dashboard_draft_deleted1 => 'World draft deleted';
+
+  @override
+  String get creator_dashboard_validation1 =>
+      'Creative direction must be 2–100 characters and application reason 10–500 characters.';
+
+  @override
+  String get creator_dashboard_confirm_application_title1 =>
+      'Confirm dashboard application';
+
+  @override
+  String get creator_dashboard_confirm_application_body1 =>
+      'Your request will be reviewed. Approval grants dashboard access and does not constitute a partnership agreement.';
+
+  @override
+  String get creator_dashboard_confirm_send1 => 'Submit application';
+
+  @override
+  String get creator_dashboard_form_heading1 =>
+      'Apply for the Lianlian Shiguang Creator Dashboard';
+
+  @override
+  String get creator_dashboard_form_description1 =>
+      'Tell us about your creative direction and how you plan to use character analytics and follower management. This is not a partnership contract.';
+
+  @override
+  String get creator_dashboard_direction_label1 => 'Creative direction';
+
+  @override
+  String get creator_dashboard_direction_hint1 =>
+      'e.g., contemporary romance, historical, fantasy, BL, GL…';
+
+  @override
+  String get creator_dashboard_reason_label1 => 'Reason for dashboard access';
+
+  @override
+  String get creator_dashboard_reason_hint1 =>
+      'Share your experience and which dashboard features you need';
+
+  @override
+  String get creator_dashboard_sending1 => 'Submitting…';
+
+  @override
+  String get creator_dashboard_submit1 => 'Apply for dashboard access';
+
+  @override
+  String get creator_dashboard_privacy_note1 =>
+      'Approval is not guaranteed. Do not enter identity numbers, banking details, or other sensitive information.';
+
+  @override
+  String get creator_dashboard_revoked_limit1 =>
+      'Dashboard application limit reached. Please contact support.';
+
+  @override
+  String get creator_dashboard_revoked_notice1 =>
+      'Your dashboard access was revoked. Check the page for available reapplication options.';
+
+  @override
+  String get creator_support_page_title1 => 'Support Center';
+
+  @override
+  String get creator_support_new_report1 => 'New Support Request';
+
+  @override
+  String get creator_support_error1 => 'Error';
+
+  @override
+  String get creator_support_no_cases1 => 'No support requests yet';
+
+  @override
+  String get creator_support_unread1 => 'Unread';
+
+  @override
+  String get creator_support_load_more1 => 'Load more';
+
+  @override
+  String get creator_support_category_label1 => 'Issue category';
+
+  @override
+  String get creator_support_character_optional1 =>
+      'Related character (optional)';
+
+  @override
+  String get creator_support_no_character1 => 'No character selected';
+
+  @override
+  String get creator_support_report_title1 => 'Issue title';
+
+  @override
+  String get creator_support_report_description1 => 'Issue description';
+
+  @override
+  String creator_support_select_images1(int count) {
+    return 'Select screenshots ($count/3, under 2 MB each)';
+  }
+
+  @override
+  String get creator_support_images_private1 =>
+      'Screenshots are visible only to the creator and the official team.';
+
+  @override
+  String get creator_support_submitting1 => 'Submitting…';
+
+  @override
+  String get creator_support_submit1 => 'Submit request';
+
+  @override
+  String get creator_support_image_too_large1 =>
+      'Image exceeds 2 MB. Choose another.';
+
+  @override
+  String get creator_support_fill_title_description1 =>
+      'Enter a title and description.';
+
+  @override
+  String get creator_support_case_sent1 => 'Request submitted';
+
+  @override
+  String creator_support_case_sent_partial1(int count) {
+    return 'Request submitted, but $count screenshots failed to upload';
+  }
+
+  @override
+  String get creator_support_detail_title1 => 'Request details';
+
+  @override
+  String get creator_support_image_max1 => 'Each screenshot must be under 2 MB';
+
+  @override
+  String get creator_support_jpg_png_only1 => 'JPG / PNG only';
+
+  @override
+  String get creator_support_reply_sent1 => 'Reply sent';
+
+  @override
+  String creator_support_reply_sent_partial1(int count) {
+    return 'Message sent, but $count images failed to upload';
+  }
+
+  @override
+  String get creator_support_empty_content1 => 'Content cannot be empty';
+
+  @override
+  String get creator_support_recall_message1 => 'Recall message';
+
+  @override
+  String get creator_support_delete_message1 => 'Delete message';
+
+  @override
+  String get creator_support_recall_warning1 =>
+      'Both parties will see “This message was recalled”; attachments will be unavailable.';
+
+  @override
+  String get creator_support_delete_warning1 =>
+      'Hide only from your view; the other party keeps the message.';
+
+  @override
+  String get creator_support_cancel1 => 'Cancel';
+
+  @override
+  String get creator_support_confirm1 => 'Confirm';
+
+  @override
+  String get creator_support_operation_success1 => 'Operation successful';
+
+  @override
+  String get creator_support_edit_message1 => 'Edit message';
+
+  @override
+  String creator_support_recall_remaining1(int seconds) {
+    return 'Recall message (${seconds}s left)';
+  }
+
+  @override
+  String get creator_support_recall_expired1 => 'Recall message (over 60s)';
+
+  @override
+  String get creator_support_case_updated1 => 'Request updated';
+
+  @override
+  String get creator_support_loading1 => 'Loading…';
+
+  @override
+  String creator_support_creator_uid1(String uid) {
+    return 'Creator UID: $uid';
+  }
+
+  @override
+  String get creator_support_internal_note1 =>
+      'Internal staff notes (hidden from creator)';
+
+  @override
+  String get creator_support_save_internal_note1 => 'Save internal notes';
+
+  @override
+  String get creator_support_case_images1 => 'Request screenshots';
+
+  @override
+  String get creator_support_official1 => 'Lianlian Shiguang Official';
+
+  @override
+  String get creator_support_creator1 => 'Creator';
+
+  @override
+  String get creator_support_recalled1 => 'This message was recalled';
+
+  @override
+  String get creator_support_edited1 => 'Edited';
+
+  @override
+  String get creator_support_reply_hint1 => 'Type a reply…';
+
+  @override
+  String get creator_support_attach_image1 => 'Attach screenshots (up to 3)';
+
+  @override
+  String get creator_support_send1 => 'Send';
+
+  @override
+  String get creator_support_admin_title1 => 'Creator Request Management';
+
+  @override
+  String get creator_support_new_reply1 => 'New reply';
+
+  @override
+  String get creator_support_load_more_cases1 => 'Load more requests';
+
+  @override
+  String get creator_support_image_load_error1 => 'Failed to load screenshot';
+
+  @override
+  String get creator_support_edit_hint1 => 'Edit message content';
+
+  @override
+  String get creator_support_save1 => 'Save';
+
+  @override
+  String get creator_support_status_pending1 => 'Pending';
+
+  @override
+  String get creator_support_status_progress1 => 'In progress';
+
+  @override
+  String get creator_support_status_waiting1 => 'Awaiting details';
+
+  @override
+  String get creator_support_status_resolved1 => 'Resolved';
+
+  @override
+  String get creator_support_cat_character1 => 'Character management';
+
+  @override
+  String get creator_support_cat_ai1 => 'AI character interaction issue';
+
+  @override
+  String get creator_support_cat_dashboard1 => 'Creator dashboard issue';
+
+  @override
+  String get creator_support_cat_cooperation1 => 'Collaboration and benefits';
+
+  @override
+  String get creator_support_cat_other1 => 'Other issue';
+
+  @override
+  String get desktop_widget_size_small1 => 'Small';
+
+  @override
+  String get desktop_widget_size_medium1 => 'Medium';
+
+  @override
+  String get desktop_widget_size_large1 => 'Large';
+
+  @override
+  String get desktop_widget_cancel1 => 'Cancel';
+
+  @override
+  String get desktop_widget_delete1 => 'Delete';
+
+  @override
+  String desktop_widget_days_remaining1(int days) {
+    return '$days days remaining';
+  }
+
+  @override
+  String get desktop_widget_days_today1 => 'Today is the day';
+
+  @override
+  String desktop_widget_days_elapsed1(int days) {
+    return '$days days ago';
+  }
+
+  @override
+  String get desktop_widget_daily_quote1 => 'Daily quote';
+
+  @override
+  String get desktop_widget_update_daily1 => 'Update once daily';
+
+  @override
+  String get desktop_widget_character_birthday1 => 'Character birthday';
+
+  @override
+  String get desktop_widget_change1 => 'Change';
+
+  @override
+  String get desktop_widget_mood1 => 'Mood';
+
+  @override
+  String get desktop_widget_current_state1 => 'Current state';
+
+  @override
+  String get desktop_widget_location1 => 'Location';
+
+  @override
+  String get desktop_widget_relationship1 => 'Relationship';
+
+  @override
+  String get desktop_widget_outfit1 => 'Outfit';
+
+  @override
+  String get desktop_widget_weather1 => 'Weather';
+
+  @override
+  String get desktop_widget_thought1 => 'Thoughts';
+
+  @override
+  String get desktop_widget_action1 => 'Actions';
+
+  @override
+  String get desktop_widget_affinity1 => 'Affection';
+
+  @override
+  String get desktop_widget_character_status1 => 'Character status';
+
+  @override
+  String get desktop_widget_no_posts1 => 'No character posts yet';
+
+  @override
+  String get desktop_widget_crop_position1 => 'Adjust character position';
+
+  @override
+  String get desktop_widget_crop_action1 => 'Zoom / drag to adjust framing';
+
+  @override
+  String get desktop_widget_crop_hint1 =>
+      'Use two fingers to zoom and one finger to drag without moving the whole page.';
+
+  @override
+  String get desktop_widget_crop_title1 => 'Adjust character framing';
+
+  @override
+  String get desktop_widget_reset1 => 'Reset';
+
+  @override
+  String get desktop_widget_crop_instructions1 =>
+      'Drag with one finger to position; pinch with two fingers to resize. The frame shows what the home screen widget will display.';
+
+  @override
+  String desktop_widget_crop_position_scale1(int x, int y, String scale) {
+    return 'Position: $x% / $y% · Zoom: $scale×';
+  }
+
+  @override
+  String get desktop_widget_apply1 => 'Apply';
+
+  @override
+  String get desktop_widget_just_posted1 => 'Just posted an update';
+
+  @override
+  String get desktop_widget_important_day1 => 'Special day';
+
+  @override
+  String get desktop_widget_no_date1 => 'No date selected';
+
+  @override
+  String get desktop_widget_first_met1 => 'The day we met';
+
+  @override
+  String get desktop_widget_error1 => 'Error';
+
+  @override
+  String get event_memory_select_character_title1 => 'Select a character';
+
+  @override
+  String get event_memory_my_characters1 => 'My characters';
+
+  @override
+  String get event_memory_friend_characters1 => 'Friend characters';
+
+  @override
+  String get event_memory_friend_badge1 => 'Friend';
+
+  @override
+  String get event_memory_unnamed_character1 => 'Unnamed character';
+
+  @override
+  String get event_memory_generic_error1 => 'Error';
+
+  @override
+  String get memory_collection_title1 => 'Memory Collection';
+
+  @override
+  String get memory_collection_avatar_frames1 => 'Avatar Frames';
+
+  @override
+  String get memory_collection_stickers1 => 'Stickers';
+
+  @override
+  String get memory_collection_memories1 => 'Memories';
+
+  @override
+  String get memory_collection_try_again1 => 'Please try again later.';
+
+  @override
+  String get memory_collection_error1 => 'Error';
+
+  @override
+  String get memory_collection_chat_background1 => 'Chat Backgrounds';
+
+  @override
+  String get memory_collection_got_it1 => 'Got it';
+
+  @override
+  String get memory_collection_not_now1 => 'Not now';
+
+  @override
+  String get memory_collection_confirm_delete1 => 'Confirm deletion';
+
+  @override
+  String get memory_collection_close1 => 'Close';
+
+  @override
+  String get memory_collection_delete1 => 'Delete';
+
+  @override
+  String get memory_collection_image_preparing1 => 'Preparing image';
+
+  @override
+  String get memory_collection_remove_favorite1 => 'Remove from collection';
+
+  @override
+  String get memory_collection_removed1 => 'Removed from collection';
+
+  @override
+  String get event_memory_performance_opening1 =>
+      'Some moments remain,\neven after the story ends.';
+
+  @override
+  String get event_memory_performance_generic_error1 => 'Error';
+
+  @override
+  String get event_memory_performance_collected1 => 'Saved';
+
+  @override
+  String get event_memory_performance_saving1 => 'Saving…';
+
+  @override
+  String get event_memory_performance_save_gallery1 => 'Save to photo gallery';
+
+  @override
+  String get event_memory_performance_done1 => 'Done';
+
+  @override
+  String get event_memory_performance_uncollect_title1 =>
+      'Remove from collection?';
+
+  @override
+  String get event_memory_performance_not_now1 => 'Not now';
+
+  @override
+  String get event_memory_performance_uncollect1 => 'Remove from collection';
+
+  @override
+  String get event_memory_performance_uncollected1 => 'Removed from collection';
+
+  @override
+  String get event_memory_performance_login_to_collect1 =>
+      'Sign in to save this memory';
+
+  @override
+  String get event_memory_performance_web_gallery_unsupported1 =>
+      'Saving directly to your phone gallery is not supported on the web';
+
+  @override
+  String get event_memory_performance_gallery_permission1 =>
+      'Photo access is required to save this memory';
+
+  @override
+  String get event_memory_performance_image_not_ready1 =>
+      'The memory image is not ready. Please try again';
+
+  @override
+  String get event_memory_performance_gallery_saved1 =>
+      'Saved to your photo gallery';
+
+  @override
+  String get event_memory_performance_skip1 => 'Skip';
+
+  @override
+  String get event_memory_performance_memory_label1 => 'Memory';
+
+  @override
+  String get event_memory_performance_tap_continue1 => 'Tap to continue';
+
+  @override
+  String get event_memory_performance_tap_show_full1 =>
+      'Tap to reveal all text';
+
+  @override
+  String get event_memory_performance_brand_limited_memory1 =>
+      'Lianlian Shiguang · Limited Memory';
+
+  @override
+  String get event_ended1 => 'Event ended';
+
+  @override
+  String get event_default_name1 => 'Limited-time event';
+
+  @override
+  String get event_default_subtitle1 =>
+      'Make special memories with him this season.';
+
+  @override
+  String get event_currency_default1 => 'Event currency';
+
+  @override
+  String get event_tasks_today1 => 'Today’s tasks';
+
+  @override
+  String event_tasks_subtitle1(String currency) {
+    return 'Complete tasks, collect $currency, and unlock more exclusive content.';
+  }
+
+  @override
+  String get event_milestones_title1 => 'Milestone progress';
+
+  @override
+  String event_milestones_subtitle1(String currency) {
+    return 'Accumulate $currency to claim exclusive event rewards.';
+  }
+
+  @override
+  String get event_memory_title1 => 'Exclusive memories';
+
+  @override
+  String get event_memory_subtitle1 =>
+      'Keep an exclusive memory of this event.';
+
+  @override
+  String get event_shop_title1 => 'Event shop';
+
+  @override
+  String event_shop_subtitle1(String currency) {
+    return 'Exchange $currency for exclusive rewards.';
+  }
+
+  @override
+  String get event_info_title1 => 'Event details';
+
+  @override
+  String get event_info_default1 =>
+      'Complete specified tasks during the event to earn event currency.\nRedeemed rewards will be delivered to your account according to event rules.\nUnused event currency will be handled according to event rules after the event ends.';
+
+  @override
+  String get event_generic_error1 => 'Error';
+
+  @override
+  String get event_task_default1 => 'Event task';
+
+  @override
+  String get event_claimed1 => 'Claimed';
+
+  @override
+  String get event_claim1 => 'Claim';
+
+  @override
+  String get event_in_progress1 => 'In progress';
+
+  @override
+  String get event_reward_default1 => 'Exclusive reward';
+
+  @override
+  String get event_product_default1 => 'Event item';
+
+  @override
+  String get event_cancel1 => 'Cancel';
+
+  @override
+  String get event_confirm_exchange1 => 'Confirm exchange';
+
+  @override
+  String get event_limited_product1 => 'Exclusive item';
+
+  @override
+  String event_insufficient_currency1(String currency) {
+    return 'Not enough $currency';
+  }
+
+  @override
+  String get event_close1 => 'Close';
+
+  @override
+  String event_redeemed_count_limit1(int count, int max) {
+    return 'Redeemed $count / $max times';
+  }
+
+  @override
+  String event_redeemed_count1(int count) {
+    return 'Redeemed $count times';
+  }
+
+  @override
+  String get event_redeemed1 => 'Redeemed';
+
+  @override
+  String get event_exchange1 => 'Exchange';
+
+  @override
+  String get login_account_deletion_started1 => 'Account deletion in progress';
+
+  @override
+  String get login_account_deletion_expired_description1 =>
+      'The three-day cancellation period has expired, and this account can no longer be restored. Please contact support if you need assistance.';
+
+  @override
+  String get login_account_deletion_confirm1 => 'OK';
+
+  @override
+  String get event_memory_limited_title1 => 'Limited Memory';
+
+  @override
+  String get moment_detail_add_photo1 => 'Add photo';
+
+  @override
+  String get moment_detail_error1 => 'Error';
+
+  @override
+  String get notification_claim_before_delete1 =>
+      'Claim the flowers before deleting the gift message';
+
+  @override
+  String get notification_error1 => 'Error';
+
+  @override
+  String get notification_creator_gift_already_claimed1 =>
+      'You have already claimed these flowers';
+
+  @override
+  String notification_creator_gift_claim_success1(Object amount) {
+    return 'Successfully claimed $amount flowers!';
+  }
+
+  @override
+  String get notification_creator_gift_title1 => 'Creator Gift';
+
+  @override
+  String notification_creator_gift_amount1(Object amount) {
+    return '$amount flowers';
+  }
+
+  @override
+  String get notification_creator_gift_claimed1 => 'Claimed';
+
+  @override
+  String get notification_creator_gift_claiming1 => 'Claiming…';
+
+  @override
+  String get notification_creator_gift_claim_button1 => 'Claim Flowers';
+
+  @override
+  String get notification_support_subject1 => 'Title submitted by player';
+
+  @override
+  String get notification_support_content1 => 'Content submitted by player';
+
+  @override
+  String get notification_support_reported1 => 'Reported content';
+
+  @override
+  String get notification_support_reply1 => 'Support reply';
+
+  @override
+  String get notification_share_mail1 => 'Share message';
+
+  @override
+  String get notification_original_question1 => 'Your original question';
+
+  @override
+  String get notification_preferences_chat_title1 => 'Character chats';
+
+  @override
+  String get notification_preferences_chat_subtitle1 =>
+      'Push notifications for character replies';
+
+  @override
+  String get notification_preferences_moments_title1 => 'New posts';
+
+  @override
+  String get notification_preferences_moments_subtitle1 =>
+      'New posts from creators and characters you follow';
+
+  @override
+  String get notification_preferences_social_title1 => 'Social notifications';
+
+  @override
+  String get notification_preferences_social_subtitle1 =>
+      'Likes, comments, follows, and character interactions';
+
+  @override
+  String get notification_preferences_announcements_title1 =>
+      'Official announcements';
+
+  @override
+  String get notification_preferences_announcements_subtitle1 =>
+      'General official announcement notifications';
+
+  @override
+  String get notification_preferences_events_title1 => 'Event reminders';
+
+  @override
+  String get notification_preferences_events_subtitle1 =>
+      'Notifications when events are about to end';
+
+  @override
+  String get notification_preferences_save_failed1 =>
+      'Could not save notification settings. Please try again later.';
+
+  @override
+  String get notification_preferences_page_title1 => 'Notification preferences';
+
+  @override
+  String get notification_preferences_login_required1 =>
+      'Please sign in to your account';
+
+  @override
+  String get notification_preferences_load_failed1 =>
+      'Could not load notification preferences. Please try again later.';
+
+  @override
+  String get notification_preferences_footer1 =>
+      'These settings sync across all devices signed in to the same player account. System notification permissions must be configured separately on each device. Turning off push notifications does not delete your in-game mailbox or notifications you have already received.';
+
+  @override
+  String get official_studio_text_0011 =>
+      'Guide completed, but the viewed status could not sync and may appear again.';
+
+  @override
+  String get official_studio_text_0021 => 'Please sign in first';
+
+  @override
+  String get official_studio_text_0031 => 'Creator Partnership Studio';
+
+  @override
+  String get official_studio_text_0041 => 'Guide';
+
+  @override
+  String get official_studio_text_0051 =>
+      'Unable to verify creator eligibility. Try again later.';
+
+  @override
+  String get official_studio_text_0061 =>
+      'You do not currently have official creator access.\\nIf approved, contact support to verify activation.';
+
+  @override
+  String get official_studio_text_0071 => 'Verified Partner Creator';
+
+  @override
+  String get official_studio_text_0081 =>
+      'Welcome back to the creator studio. More features are coming soon.';
+
+  @override
+  String get official_studio_text_0091 => 'Creator Tools';
+
+  @override
+  String get official_studio_text_0101 => 'Follower Management';
+
+  @override
+  String get official_studio_text_0111 => 'View and remove followers';
+
+  @override
+  String get official_studio_text_0121 => 'Creator Analytics';
+
+  @override
+  String get official_studio_text_0131 =>
+      'Character popularity and total play count';
+
+  @override
+  String get official_studio_text_0141 => 'Fan Mail';
+
+  @override
+  String get official_studio_text_0151 => 'Send messages to your followers';
+
+  @override
+  String get official_studio_text_0161 => 'Fan Benefits';
+
+  @override
+  String get official_studio_text_0171 => 'Gift your own flowers to followers';
+
+  @override
+  String get official_studio_text_0181 => 'Monthly Creator Reward';
+
+  @override
+  String get official_studio_text_0191 =>
+      'Publish 3 new characters to claim 300 flowers';
+
+  @override
+  String get official_studio_text_0201 => 'Creator Banner';
+
+  @override
+  String get official_studio_text_0211 => 'Set your public creator-page banner';
+
+  @override
+  String get official_studio_text_0221 => 'Partnership Info';
+
+  @override
+  String get official_studio_text_0231 =>
+      'Partnership status, benefits and notices';
+
+  @override
+  String get official_studio_text_0241 => 'Support Center';
+
+  @override
+  String get official_studio_text_0251 =>
+      'Report issues and track support replies';
+
+  @override
+  String get official_studio_text_0261 =>
+      'Eligibility verification failed. Try again later.';
+
+  @override
+  String get official_studio_text_0271 =>
+      'Official creator access is not available';
+
+  @override
+  String get official_studio_text_0281 => 'Unable to load public characters';
+
+  @override
+  String get official_studio_text_0291 => 'Creator Overview';
+
+  @override
+  String get official_studio_text_0301 => 'Total Plays';
+
+  @override
+  String get official_studio_text_0311 => 'Current Followers';
+
+  @override
+  String get official_studio_text_0321 => 'Unavailable';
+
+  @override
+  String get official_studio_text_0331 => 'Public Character Breakdown';
+
+  @override
+  String get official_studio_text_0341 =>
+      'No public characters yet. They will appear here after publishing.';
+
+  @override
+  String get official_studio_text_0351 => 'Unnamed Character';
+
+  @override
+  String get official_studio_text_0361 => 'Total plays (playCount)';
+
+  @override
+  String get official_studio_text_0371 =>
+      'Statistics reflect available database fields. Plays are not messages, unique players, or revenue.';
+
+  @override
+  String get official_studio_text_0381 => 'Unable to load followers';
+
+  @override
+  String get official_studio_text_0391 => 'No followers yet';
+
+  @override
+  String get official_studio_text_0401 => 'Follower List';
+
+  @override
+  String get official_studio_text_0411 =>
+      'Up to 100 followers shown; only public nicknames and avatars are displayed.';
+
+  @override
+  String get official_studio_text_0421 => 'Remove Follower';
+
+  @override
+  String get official_studio_text_0431 => 'Cancel';
+
+  @override
+  String get official_studio_text_0441 => 'Confirm Removal';
+
+  @override
+  String get official_studio_text_0451 => 'Follower removed';
+
+  @override
+  String get official_studio_text_0461 =>
+      'Removal failed. Please try again later.';
+
+  @override
+  String get official_studio_text_0471 => 'Player';
+
+  @override
+  String get official_studio_text_0481 => 'Unable to load public data';
+
+  @override
+  String get official_studio_text_0491 => 'This player';
+
+  @override
+  String get official_studio_text_0501 =>
+      'Cropped image is still too large. Choose another.';
+
+  @override
+  String get official_studio_text_0511 => 'Banner updated';
+
+  @override
+  String get official_studio_text_0521 =>
+      'Image processing failed. Choose another image.';
+
+  @override
+  String get official_studio_text_0531 => 'Banner removed';
+
+  @override
+  String get official_studio_text_0541 => 'Removal failed';
+
+  @override
+  String get official_studio_text_0551 => 'Please sign in';
+
+  @override
+  String get official_studio_text_0561 => 'Public Profile Banner';
+
+  @override
+  String get official_studio_text_0571 => 'Image failed to load';
+
+  @override
+  String get official_studio_text_0581 => 'No banner set';
+
+  @override
+  String get official_studio_text_0591 =>
+      'Select a photo, position it within the white frame and confirm to upload.';
+
+  @override
+  String get official_studio_text_0601 => 'Processing…';
+
+  @override
+  String get official_studio_text_0611 => 'Select and Crop Image';
+
+  @override
+  String get official_studio_text_0621 => 'Remove Current Banner';
+
+  @override
+  String get official_studio_text_0631 => 'Cannot open this image';
+
+  @override
+  String get official_studio_text_0641 =>
+      'Cropped file is too large. Choose another image.';
+
+  @override
+  String get official_studio_text_0651 => 'Cropping failed. Try again.';
+
+  @override
+  String get official_studio_text_0661 => 'Adjust Banner Crop';
+
+  @override
+  String get official_studio_text_0671 =>
+      'Move the image to select the banner area';
+
+  @override
+  String get official_studio_text_0681 =>
+      'Drag to move · Pinch or use slider to zoom';
+
+  @override
+  String get official_studio_text_0691 =>
+      'The white frame shows the final banner (2.5:1)';
+
+  @override
+  String get official_studio_text_0701 => 'Zoom';
+
+  @override
+  String get official_studio_text_0711 => 'Reset Position';
+
+  @override
+  String get official_studio_text_0721 => 'Cropping…';
+
+  @override
+  String get official_studio_text_0731 => 'Crop and Upload';
+
+  @override
+  String get official_studio_text_0741 => 'Partnership Eligibility';
+
+  @override
+  String get official_studio_text_0751 => 'Verifying Eligibility';
+
+  @override
+  String get official_studio_text_0761 => 'Available Creator Tools';
+
+  @override
+  String get official_studio_text_0771 =>
+      'Follower management, analytics, fan mail, flower gifts, monthly rewards and banners.';
+
+  @override
+  String get official_studio_text_0781 =>
+      'Under current rules, create and first publish three eligible characters this month to claim 300 flowers. Final eligibility is verified by the server.';
+
+  @override
+  String get official_studio_text_0791 => 'Official Notices and Agreement';
+
+  @override
+  String get official_studio_text_0801 =>
+      'Signed agreement terms and official notices take precedence. This page does not replace an agreement. Contact support for questions.';
+
+  @override
+  String get official_studio_text_0811 =>
+      'Mail subject must contain 1–100 characters';
+
+  @override
+  String get official_studio_text_0821 =>
+      'Mail body must contain 1–5000 characters';
+
+  @override
+  String get official_studio_text_0831 => 'Please select a follower';
+
+  @override
+  String get official_studio_text_0841 => 'Confirm Fan Mail';
+
+  @override
+  String get official_studio_text_0851 =>
+      'Send to all current followers? This uses one broadcast credit.';
+
+  @override
+  String get official_studio_text_0861 =>
+      'Send to this follower? This uses one private-message credit.';
+
+  @override
+  String get official_studio_text_0871 => 'Confirm Send';
+
+  @override
+  String get official_studio_text_0881 =>
+      'Mail job created. Messages will be delivered gradually.';
+
+  @override
+  String get official_studio_text_0891 => 'Today’s Sending Quota';
+
+  @override
+  String get official_studio_text_0901 =>
+      'Resets daily at 00:00 Taiwan time. A broadcast reaches all followers.';
+
+  @override
+  String get official_studio_text_0911 => 'All Followers';
+
+  @override
+  String get official_studio_text_0921 => 'One Follower';
+
+  @override
+  String get official_studio_text_0931 => 'Unable to get follower list';
+
+  @override
+  String get official_studio_text_0941 =>
+      'No followers available for messaging';
+
+  @override
+  String get official_studio_text_0951 => 'Select a follower (first 100)';
+
+  @override
+  String get official_studio_text_0961 => 'Mail Subject';
+
+  @override
+  String get official_studio_text_0971 => 'Message';
+
+  @override
+  String get official_studio_text_0981 => 'Write a letter to your fans…';
+
+  @override
+  String get official_studio_text_0991 => 'Submitting…';
+
+  @override
+  String get official_studio_text_1001 => 'Confirm and Send';
+
+  @override
+  String get official_studio_text_1011 => 'Sending History';
+
+  @override
+  String get official_studio_text_1021 => 'No sending history yet';
+
+  @override
+  String get official_studio_text_1031 => 'Queued';
+
+  @override
+  String get official_studio_text_1041 => 'Delivering';
+
+  @override
+  String get official_studio_text_1051 => 'Completed';
+
+  @override
+  String get official_studio_text_1061 => 'Cancelled';
+
+  @override
+  String get official_studio_text_1071 => 'Delivery Failed';
+
+  @override
+  String get official_studio_text_1081 => 'Untitled Message';
+
+  @override
+  String get official_studio_text_1091 =>
+      'Shows the latest 20 sending jobs. New and pending jobs stop when creator access is revoked.';
+
+  @override
+  String get official_studio_text_1101 => 'Player without a nickname';
+
+  @override
+  String get official_studio_text_1111 =>
+      'Unable to load followers. Try again later.';
+
+  @override
+  String get official_studio_text_1121 => 'Insufficient Flowers';
+
+  @override
+  String get official_studio_text_1131 => 'Maybe Later';
+
+  @override
+  String get official_studio_text_1141 => 'Go to Shop';
+
+  @override
+  String get official_studio_text_1151 =>
+      'You may gift 1–1000 flowers per follower';
+
+  @override
+  String get official_studio_text_1161 => 'Select 1–20 followers';
+
+  @override
+  String get official_studio_text_1171 => 'Maximum 5000 flowers per gift';
+
+  @override
+  String get official_studio_text_1181 =>
+      'Gift message is limited to 300 characters';
+
+  @override
+  String get official_studio_text_1191 => 'Confirm Flower Gift';
+
+  @override
+  String get official_studio_text_1201 => 'Confirm Gift';
+
+  @override
+  String get official_studio_text_1211 =>
+      'Gift already submitted; flowers were not deducted twice';
+
+  @override
+  String get official_studio_text_1221 => 'Fan Benefits · Flower Gifts';
+
+  @override
+  String get official_studio_text_1231 => 'Unable to load flower balance';
+
+  @override
+  String get official_studio_text_1241 => 'My Flower Balance';
+
+  @override
+  String get official_studio_text_1251 =>
+      'Flowers are deducted from your own balance, not paid by the platform.';
+
+  @override
+  String get official_studio_text_1261 => 'Select followers (up to 20)';
+
+  @override
+  String get official_studio_text_1271 =>
+      'Search by public nickname or UID; eligibility is verified by the server at submission.';
+
+  @override
+  String get official_studio_text_1281 => 'Search Followers';
+
+  @override
+  String get official_studio_text_1291 => 'Enter nickname or player UID';
+
+  @override
+  String get official_studio_text_1301 => 'Clear Search';
+
+  @override
+  String get official_studio_text_1311 => 'No eligible followers available';
+
+  @override
+  String get official_studio_text_1321 =>
+      'No matching followers on this page. Continue searching.';
+
+  @override
+  String get official_studio_text_1331 => 'No matching followers found';
+
+  @override
+  String get official_studio_text_1341 => 'Select up to 20 followers';
+
+  @override
+  String get official_studio_text_1351 => 'Searching…';
+
+  @override
+  String get official_studio_text_1361 => 'Load More Followers';
+
+  @override
+  String get official_studio_text_1371 => 'Search More Followers';
+
+  @override
+  String get official_studio_text_1381 => 'Flowers per Follower';
+
+  @override
+  String get official_studio_text_1391 => 'e.g. 10';
+
+  @override
+  String get official_studio_text_1401 => 'Gift Message (Optional)';
+
+  @override
+  String get official_studio_text_1411 => 'Estimated Deduction';
+
+  @override
+  String get official_studio_text_1421 =>
+      'Up to 20 followers and 5000 flowers per gift. Flowers are deducted on submission; recipients must claim them in their mailbox.';
+
+  @override
+  String get official_studio_text_1431 => 'Unable to load monthly tasks';
+
+  @override
+  String get official_studio_text_1441 =>
+      'Unable to load progress. Try again later.';
+
+  @override
+  String get official_studio_text_1451 => 'Confirm Creator Reward';
+
+  @override
+  String get official_studio_text_1461 =>
+      'Claim 300 flowers for this month? Each month can only be claimed once.';
+
+  @override
+  String get official_studio_text_1471 => 'Confirm Claim';
+
+  @override
+  String get official_studio_text_1481 => 'Monthly reward already claimed';
+
+  @override
+  String get official_studio_text_1491 => 'Successfully claimed 300 flowers!';
+
+  @override
+  String get official_studio_text_1501 => 'Claim failed. Try again later.';
+
+  @override
+  String get official_studio_text_1511 =>
+      'Unable to verify claim. Refresh your history.';
+
+  @override
+  String get official_studio_text_1521 => 'This month';
+
+  @override
+  String get official_studio_text_1531 =>
+      'Create and first publish three different characters each month, then claim 300 flowers.';
+
+  @override
+  String get official_studio_text_1541 =>
+      'Rules: Only signed and verified partner creators are eligible. Counted characters must be created and first published this month and remain public. Private, draft and republished older characters do not count. Resets monthly in Taiwan time, once per month.';
+
+  @override
+  String get official_studio_text_1551 =>
+      'Duplicate, empty or rule-violating characters may lead to review or partnership suspension under the agreement.';
+
+  @override
+  String get official_studio_text_1561 =>
+      'Welcome to the Partner Creator Program';
+
+  @override
+  String get official_studio_text_1571 => 'Track your work and stay connected';
+
+  @override
+  String get official_studio_text_1581 =>
+      'Share flowers and earn creator rewards';
+
+  @override
+  String get official_studio_text_1591 => 'Build your page and get support';
+
+  @override
+  String get official_studio_text_1601 => 'Your own creative space';
+
+  @override
+  String get official_studio_text_1611 => 'Followers · Analytics · Fan Mail';
+
+  @override
+  String get official_studio_text_1621 => 'Fan Benefits · Monthly Rewards';
+
+  @override
+  String get official_studio_text_1631 =>
+      'Banners · Partnership Info · Support';
+
+  @override
+  String get official_studio_text_1641 =>
+      'Welcome to the official creator studio of Lianlian Shiguang, combining creator tools, fan engagement, benefits and partnership information.';
+
+  @override
+  String get official_studio_text_1651 =>
+      'View and manage followers, track plays and character performance, and send messages to one follower or your entire audience.';
+
+  @override
+  String get official_studio_text_1661 =>
+      'Gift flowers from your balance to fans. You may also earn monthly rewards for newly created and first-published eligible characters.';
+
+  @override
+  String get official_studio_text_1671 =>
+      'Upload your personal creator banner. Review partnership rules and benefits in Partnership Info, or contact the Support Center.';
+
+  @override
+  String get official_studio_text_1681 =>
+      'Only officially eligible partner creators can use these features.';
+
+  @override
+  String get official_studio_text_1691 =>
+      'Fan mail has daily sending limits. Check your quota before sending.';
+
+  @override
+  String get official_studio_text_1701 =>
+      'Flower gifts deduct your balance. Monthly rewards follow current rules and server verification.';
+
+  @override
+  String get official_studio_text_1711 =>
+      'New creator-exclusive features will be added here over time.';
+
+  @override
+  String get official_studio_text_1721 => 'Creator Studio Guide';
+
+  @override
+  String get official_studio_text_1731 => 'Skip';
+
+  @override
+  String get official_studio_text_1741 => 'Back';
+
+  @override
+  String get official_studio_text_1751 => 'Done';
+
+  @override
+  String get official_studio_text_1761 => 'Next';
+
+  @override
+  String official_studio_text_1771(String name) {
+    return 'Confirm removal of $name? They will unfollow you but can follow again.';
+  }
+
+  @override
+  String official_studio_text_1781(int count) {
+    return 'Private messages: $count / 30';
+  }
+
+  @override
+  String official_studio_text_1791(int count) {
+    return 'Broadcasts: $count / 5';
+  }
+
+  @override
+  String official_studio_text_1801(int count) {
+    return 'Gift sent! $count flowers are waiting in your followers’ mailboxes.';
+  }
+
+  @override
+  String official_studio_text_1811(int count) {
+    return '$count flowers 🌸';
+  }
+
+  @override
+  String official_studio_text_1821(int count) {
+    return '$count followers';
+  }
+
+  @override
+  String official_studio_text_1831(int count) {
+    return '$count flowers';
+  }
+
+  @override
+  String official_studio_text_1841(String month) {
+    return '$month creator reward';
+  }
+
+  @override
+  String official_studio_text_1851(int count) {
+    return 'This month: $count / 3';
+  }
+
+  @override
+  String official_studio_text_1861(int count) {
+    return '$count public characters remaining';
+  }
+
+  @override
+  String official_studio_text_1871(int count) {
+    return 'Insufficient flowers: need $count more';
+  }
+
+  @override
+  String get official_studio_text_1881 => 'Unable to load sending quota';
+
+  @override
+  String get official_studio_text_1891 =>
+      'Sending is not confirmed. Check your history before retrying.';
+
+  @override
+  String get official_studio_text_1901 =>
+      'Connection failed. Check your history before trying again.';
+
+  @override
+  String get official_studio_text_1911 =>
+      'Gift status unconfirmed. Check history before retrying.';
+
+  @override
+  String official_studio_text_1921(int balance, int total, int missing) {
+    return 'Balance: $balance\\nRequired: $total\\nMissing: $missing\\n\\nVisit the shop to get more flowers.';
+  }
+
+  @override
+  String official_studio_text_1931(int followers, int amount, int total) {
+    return 'Send $followers flowers gifts of $amount each, deducting $total flowers.\\nGifts cannot be revoked.';
+  }
+
+  @override
+  String official_studio_text_1941(String mode, String status, int count) {
+    return '$mode · $status · Delivered to $count';
+  }
+
+  @override
+  String get official_studio_text_1951 => 'Public characters';
+
+  @override
+  String get official_studio_text_1961 => 'Loading…';
+
+  @override
+  String get official_studio_text_1971 => 'Select followers';
+
+  @override
+  String get official_studio_text_1981 => 'Claimed this month';
+
+  @override
+  String get preference_selection_title1 =>
+      'Choose your favorite character types';
+
+  @override
+  String get preference_selection_description1 =>
+      'Pick 3–5 tags you like so we can recommend characters that suit your tastes.';
+
+  @override
+  String get preference_selection_recommendation_note1 =>
+      'These preferences help personalize recommendations. You can still explore every type of character.';
+
+  @override
+  String get preference_selection_selected1 => 'Selected';
+
+  @override
+  String get preference_selection_start1 => 'Start exploring';
+
+  @override
+  String preference_selection_max_error1(int count) {
+    return 'You can select up to $count tags.';
+  }
+
+  @override
+  String get preference_selection_save_failed1 =>
+      'Could not save your preferences. Please try again later.';
+
+  @override
+  String get preference_group_personality1 => 'Personality';
+
+  @override
+  String get preference_group_relationship_age1 => 'Relationship & age dynamic';
+
+  @override
+  String get preference_group_story1 => 'Story setting';
+
+  @override
+  String get preference_tag_gentle1 => 'Gentle';
+
+  @override
+  String get preference_tag_cold1 => 'Cool and aloof';
+
+  @override
+  String get preference_tag_scheming1 => 'Cunning';
+
+  @override
+  String get preference_tag_tsundere1 => 'Tsundere';
+
+  @override
+  String get preference_tag_loyal1 => 'Devoted';
+
+  @override
+  String get preference_tag_yandere1 => 'Yandere';
+
+  @override
+  String get preference_tag_mysterious1 => 'Mysterious';
+
+  @override
+  String get preference_tag_healing1 => 'Comforting';
+
+  @override
+  String get preference_tag_gap_moe1 => 'Unexpected contrast';
+
+  @override
+  String get preference_tag_older1 => 'Older';
+
+  @override
+  String get preference_tag_younger1 => 'Younger';
+
+  @override
+  String get preference_tag_ceo1 => 'Powerful CEO';
+
+  @override
+  String get preference_tag_school1 => 'School life';
+
+  @override
+  String get preference_tag_workplace1 => 'Workplace';
+
+  @override
+  String get preference_tag_ancient1 => 'Historical';
+
+  @override
+  String get preference_tag_nonhuman1 => 'Non-human';
+
+  @override
+  String get private_label1 => 'Private';
+
+  @override
+  String get profile_page_world_tab1 => 'Open Worlds';
+
+  @override
+  String get profile_page_login_required1 => 'Please sign in';
+
+  @override
+  String get profile_page_world_load_failed1 =>
+      'Could not load worlds. Please try again later.';
+
+  @override
+  String get profile_page_my_worlds1 => 'My Open Worlds';
+
+  @override
+  String get profile_page_create_world1 => 'Create World';
+
+  @override
+  String get profile_page_worlds_empty1 => 'No open worlds yet';
+
+  @override
+  String get profile_page_worlds_empty_hint1 => 'Create your first world';
+
+  @override
+  String get profile_page_world_untitled1 => 'Untitled World';
+
+  @override
+  String get profile_page_world_public1 => 'Public';
+
+  @override
+  String get profile_page_world_private1 => 'Private';
+
+  @override
+  String profile_page_world_character_count1(int count) {
+    return '$count characters';
+  }
+
+  @override
+  String get profile_page_world_enter_chat1 => 'Enter Chat';
+
+  @override
+  String get profile_page_world_edit1 => 'Edit';
+
+  @override
+  String get profile_page_create_character1 => 'Create Character';
+
+  @override
+  String get profile_page_event_frame_default1 => 'Event Avatar Frame';
+
+  @override
+  String get public_worlds_explore_title1 => 'Explore Public Worlds';
+
+  @override
+  String get public_worlds_search_tooltip1 => 'Search Open Worlds';
+
+  @override
+  String get public_worlds_load_failed1 =>
+      'Public worlds are temporarily unavailable';
+
+  @override
+  String get public_worlds_refresh1 => 'Refresh';
+
+  @override
+  String get public_worlds_empty1 =>
+      'Public worlds are being prepared. Stay tuned!';
+
+  @override
+  String get public_worlds_unnamed1 => 'Untitled World';
+
+  @override
+  String get world_explore_subtitle1 =>
+      'Step into different worlds and discover unique journeys';
+
+  @override
+  String get settings_notification_preferences_title1 =>
+      'Notification preferences';
+
+  @override
+  String get settings_notification_preferences_subtitle1 =>
+      'Choose which notifications to receive; sync across devices';
+
+  @override
+  String get settings_admin_section1 => 'Administration';
+
+  @override
+  String get settings_admin_dashboard1 => 'Admin dashboard';
+
+  @override
+  String get settings_admin_tools_subtitle1 => 'Internal management tools';
+
+  @override
+  String get world_chat_back1 => 'Back';
+
+  @override
+  String get world_chat_mode_tooltip1 =>
+      'Reply mode (AI and flower deductions not connected yet)';
+
+  @override
+  String get world_chat_menu1 => 'World menu';
+
+  @override
+  String get world_chat_mode_story1 => 'Story';
+
+  @override
+  String get world_chat_mode_immersive1 => 'Immersive';
+
+  @override
+  String get world_chat_mode_resonance1 => 'Resonance';
+
+  @override
+  String get world_chat_mode_interaction1 => 'Interaction';
+
+  @override
+  String world_chat_mode_cost1(String mode, int cost) {
+    return '$mode · $cost flowers';
+  }
+
+  @override
+  String world_memo_read_failed1(String error) {
+    return 'Failed to load memos: $error';
+  }
+
+  @override
+  String get world_memo_sync_failed1 =>
+      'Sync temporarily failed. Showing your previously loaded memos.';
+
+  @override
+  String get world_memo_server_no_id1 => 'Server did not return a memo ID';
+
+  @override
+  String world_memo_save_failed1(String error) {
+    return 'Failed to save: $error';
+  }
+
+  @override
+  String get world_memo_delete_title1 => 'Delete memo?';
+
+  @override
+  String get world_memo_delete_warning1 => 'This cannot be undone.';
+
+  @override
+  String get world_memo_cancel1 => 'Cancel';
+
+  @override
+  String get world_memo_delete1 => 'Delete';
+
+  @override
+  String world_memo_cancel_reminder_failed1(String error) {
+    return 'Memo deleted, but failed to cancel the reminder on the old device: $error';
+  }
+
+  @override
+  String world_memo_delete_failed1(String error) {
+    return 'Failed to delete: $error';
+  }
+
+  @override
+  String get world_memo_title1 => 'Memos';
+
+  @override
+  String world_memo_world_personal1(String worldName) {
+    return '$worldName | Personal memos';
+  }
+
+  @override
+  String get world_memo_sync_notice1 =>
+      'Reminder times sync across devices. Push notifications are sent to signed-in devices with notifications enabled.';
+
+  @override
+  String get world_memo_loading1 => 'Loading…';
+
+  @override
+  String get world_memo_empty1 => 'No memos yet. Tap + below to add one.';
+
+  @override
+  String world_memo_reminder_date1(String date) {
+    return 'Reminder: $date';
+  }
+
+  @override
+  String get world_memo_reminder_future1 =>
+      'Reminder time must be in the future';
+
+  @override
+  String get world_memo_content_required1 => 'Enter memo content first';
+
+  @override
+  String get world_memo_edit_title1 => 'Edit memo';
+
+  @override
+  String get world_memo_add_title1 => 'New memo';
+
+  @override
+  String get world_memo_content_label1 => 'Memo content';
+
+  @override
+  String get world_memo_content_hint1 =>
+      'Write something you want to remember…';
+
+  @override
+  String get world_memo_reminder_settings1 => 'Reminder settings';
+
+  @override
+  String get world_memo_no_reminder1 => 'No reminder set';
+
+  @override
+  String get world_memo_reminder_choose1 =>
+      'Choose a date and time for cloud-synced reminders';
+
+  @override
+  String get world_memo_clear_reminder1 => 'Clear reminder date';
+
+  @override
+  String get world_memo_save1 => 'Save memo';
+
+  @override
+  String get world_chat_open_world1 => 'Open World';
+
+  @override
+  String get world_chat_flower_sync1 =>
+      'Unable to sync flower balance right now';
+
+  @override
+  String get world_chat_web_store_unavailable1 =>
+      'Flower purchases are not available on the web';
+
+  @override
+  String get world_chat_sync_unavailable1 =>
+      'Live sync is unavailable. Reopen the chat to load your history.';
+
+  @override
+  String get world_chat_stopped1 => 'Generation stopped. No flowers charged.';
+
+  @override
+  String get world_chat_cannot_stop1 =>
+      'The reply may already be complete and cannot be stopped. Check your chat and flowers.';
+
+  @override
+  String get world_chat_stop_retry1 =>
+      'Unable to stop right now. Please try again.';
+
+  @override
+  String get world_chat_connection_failed1 => 'Connection failed';
+
+  @override
+  String get world_chat_network_failed1 => 'Network temporarily unavailable';
+
+  @override
+  String get world_chat_no_regenerate1 => 'No reply available to regenerate';
+
+  @override
+  String get world_chat_paid_regenerate1 => 'Paid regeneration';
+
+  @override
+  String get world_chat_cancel1 => 'Cancel';
+
+  @override
+  String get world_chat_confirm1 => 'Confirm';
+
+  @override
+  String get world_chat_no_continue1 => 'No story available to continue';
+
+  @override
+  String get world_chat_no_save1 => 'No conversations to save yet';
+
+  @override
+  String get world_chat_loading1 => 'Chat is still loading';
+
+  @override
+  String get world_chat_unnamed_character1 => 'Unnamed character';
+
+  @override
+  String get world_chat_bg_wait1 =>
+      'You can change the background once the chat loads';
+
+  @override
+  String get world_chat_sign_in1 => 'Please sign in first';
+
+  @override
+  String get world_chat_choose_mode1 => 'Choose a world mode';
+
+  @override
+  String get world_chat_mode_charge_expl1 =>
+      'Flowers are charged per successful reply by mode; failures are free.';
+
+  @override
+  String get world_chat_photo_selected1 => 'Photo selected';
+
+  @override
+  String get world_chat_got_it1 => 'Got it';
+
+  @override
+  String get world_chat_status_settings1 => 'World status display settings';
+
+  @override
+  String get world_chat_save_settings1 => 'Save settings';
+
+  @override
+  String get world_chat_status_saved1 =>
+      'Status display preferences saved for this world';
+
+  @override
+  String get world_chat_not_ready1 => 'World chat is not ready yet';
+
+  @override
+  String get world_chat_enter_first1 => 'Enter the world chat first';
+
+  @override
+  String get world_chat_photo1 => 'Photo';
+
+  @override
+  String get world_chat_profile1 => 'Profile';
+
+  @override
+  String get world_chat_interaction1 => 'Interactions';
+
+  @override
+  String get world_chat_theater1 => 'Theater';
+
+  @override
+  String get world_chat_status1 => 'Status';
+
+  @override
+  String get world_chat_secret1 => 'Secret Chapters';
+
+  @override
+  String get world_chat_mood1 => 'Mood';
+
+  @override
+  String get world_chat_outfit1 => 'Outfit';
+
+  @override
+  String get world_chat_relationship1 => 'Relationship';
+
+  @override
+  String get world_chat_thought1 => 'Thoughts';
+
+  @override
+  String get world_chat_weather1 => 'Weather';
+
+  @override
+  String get world_chat_current_state1 => 'Current state';
+
+  @override
+  String get world_chat_action1 => 'Action';
+
+  @override
+  String get world_chat_affinity1 => 'Affinity';
+
+  @override
+  String get world_chat_generating1 => 'The world is quietly unfolding…';
+
+  @override
+  String get world_chat_screenshot1 => 'Share screenshot';
+
+  @override
+  String get world_chat_copy1 => 'Copy content';
+
+  @override
+  String get world_chat_copied1 => 'Copied';
+
+  @override
+  String get world_chat_edit1 => 'Edit';
+
+  @override
+  String get world_chat_delete1 => 'Delete';
+
+  @override
+  String get world_chat_report1 => 'Report conversation';
+
+  @override
+  String get world_chat_feedback1 => 'Send feedback';
+
+  @override
+  String get world_chat_edit_segment1 => 'Edit character passage';
+
+  @override
+  String get world_chat_save1 => 'Save';
+
+  @override
+  String get world_chat_updated1 => 'Message updated';
+
+  @override
+  String get world_chat_delete_segment1 => 'Delete passage';
+
+  @override
+  String get world_chat_deleted_segment1 => 'Passage deleted';
+
+  @override
+  String get world_chat_edit_message1 => 'Edit message';
+
+  @override
+  String get world_chat_edit_hint1 => 'Edit your text';
+
+  @override
+  String get world_chat_delete_conversation1 => 'Delete conversation';
+
+  @override
+  String get world_chat_no_chat1 => 'No conversations yet';
+
+  @override
+  String get world_chat_cancel_select1 => 'Cancel selection';
+
+  @override
+  String get world_chat_input_hint1 => 'Write your story…';
+
+  @override
+  String get world_chat_screenshot_done1 => 'Your special moment is ready';
+
+  @override
+  String get world_chat_screenshot_style1 => 'Change screenshot colors';
+
+  @override
+  String get world_chat_reselect1 => 'Select again';
+
+  @override
+  String get world_chat_download_share1 => 'Download and share';
+
+  @override
+  String get world_records_summary_title1 => 'Story Summary';
+
+  @override
+  String world_records_loaded_count1(int count) {
+    return 'Loaded $count chat messages, arranged in story order.';
+  }
+
+  @override
+  String get world_records_auto_summary_pending1 =>
+      'This review covers loaded conversations only; AI-generated summaries are not available yet.';
+
+  @override
+  String get world_records_empty_story1 => 'No story events to review yet';
+
+  @override
+  String get world_records_narrator_name1 => 'World Narrator';
+
+  @override
+  String get world_records_relationships_title1 => 'Character Relationships';
+
+  @override
+  String get world_records_affinity_note1 =>
+      'Affection is tracked separately for each official character; temporary NPCs do not receive scores.';
+
+  @override
+  String get world_records_empty_characters1 =>
+      'No official character data yet';
+
+  @override
+  String world_records_affinity_score_with_next1(int score, int next) {
+    return 'Affection $score / $next';
+  }
+
+  @override
+  String world_records_affinity_score_only1(int score) {
+    return 'Affection $score';
+  }
+
+  @override
+  String world_records_relationship_stage1(int stage) {
+    return 'Relationship stage $stage';
+  }
+
+  @override
+  String get world_records_local_memo_read_failed1 =>
+      'Could not load the local memo';
+
+  @override
+  String get world_records_memo_saved_local1 => 'Memo saved on this device';
+
+  @override
+  String get world_records_memo_save_failed1 => 'Could not save the memo';
+
+  @override
+  String get world_records_memo_unsaved1 => 'Unsaved memo';
+
+  @override
+  String get world_records_memo_save_before_exit1 => 'Save before leaving?';
+
+  @override
+  String get world_records_continue_editing1 => 'Continue editing';
+
+  @override
+  String get world_records_save_and_exit1 => 'Save and leave';
+
+  @override
+  String get world_records_world_memo_title1 => 'Memo for this world';
+
+  @override
+  String get world_records_save1 => 'Save';
+
+  @override
+  String get world_records_memo_local_disclaimer1 =>
+      'Private memo | This version saves only on this device. It is not sent to AI or synced across devices.';
+
+  @override
+  String get world_records_memo_hint1 =>
+      'Write down clues, plans, or anything you want to tell a character…';
+
+  @override
+  String get world_records_narrator_short1 => 'Narrator';
+
+  @override
+  String get world_records_summary_service_missing1 =>
+      'The story summary service (worldStoryMemory) is not deployed. Deploy it and reopen this page.';
+
+  @override
+  String get world_records_summary_load_failed1 =>
+      'Could not load the story summary. Please try again later.';
+
+  @override
+  String get world_records_summary_intro1 =>
+      'Every encounter and choice becomes part of your story. Important experiences and relationships are recorded here as your journey unfolds.';
+
+  @override
+  String get world_records_summary_empty1 =>
+      'Your story continues. Memorable chapters will appear here soon.';
+
+  @override
+  String get world_search_title1 => 'Search Conversations';
+
+  @override
+  String get world_search_hint1 => 'Search characters, dialogue, or narration';
+
+  @override
+  String get world_search_clear1 => 'Clear search';
+
+  @override
+  String get world_search_start1 => 'Enter a keyword to start searching';
+
+  @override
+  String world_search_results1(int count) {
+    return 'Found $count results';
+  }
+
+  @override
+  String get world_search_empty_prompt1 =>
+      'Search players, characters, and narration';
+
+  @override
+  String get world_search_no_results1 => 'No matching conversations';
+
+  @override
+  String get world_search_unknown_speaker1 => 'Unknown character';
+
+  @override
+  String get world_search_collapse1 => 'Collapse';
+
+  @override
+  String get world_search_expand1 => 'Expand';
+
+  @override
+  String get world_search_scope1 =>
+      'Search scope: the most recent 200 messages loaded in this chat';
+
+  @override
+  String get world_menu_subtitle1 => 'Open World · Features coming gradually';
+
+  @override
+  String get world_menu_chat_section1 => 'Chat';
+
+  @override
+  String get world_menu_search1 => 'Search conversations';
+
+  @override
+  String get world_menu_save_transcript1 => 'Save chat history';
+
+  @override
+  String get world_menu_memories_background1 => 'Memories & backgrounds';
+
+  @override
+  String get world_menu_relations_section1 => 'World relationships';
+
+  @override
+  String get world_menu_story_summary1 => 'Story summary';
+
+  @override
+  String get world_menu_relationships1 => 'Character relationships';
+
+  @override
+  String get world_menu_memos1 => 'Memos';
+
+  @override
+  String get world_menu_memory_section1 => 'Memory management';
+
+  @override
+  String get world_menu_reset_progress1 => 'Reset world progress';
+
+  @override
+  String get world_chat_book_confirm1 => 'OK';
+
+  @override
+  String get world_custom_scene_title_required1 =>
+      'Please enter a scene title.';
+
+  @override
+  String get world_custom_scene_description_required1 =>
+      'Please enter a scene description.';
+
+  @override
+  String get world_custom_scene_save_failed1 =>
+      'Could not save. Please try again later.';
+
+  @override
+  String get world_custom_scene_edit_title1 => 'Edit Scene';
+
+  @override
+  String get world_custom_scene_add_title1 => 'Add Scene';
+
+  @override
+  String get world_discovery_share_desc1 =>
+      'Step into a creator’s open world and begin your own story.';
+
+  @override
+  String world_discovery_share_text1(
+      String title, String description, String link) {
+    return 'Lianlian Shiguang · Open World Invitation\n\n“$title”\n\n$description\n\nExplore now: $link';
+  }
+
+  @override
+  String get world_discovery_brand1 => 'Lianlian Shiguang';
+
+  @override
+  String get world_discovery_invite1 => 'Open World Invitation';
+
+  @override
+  String get world_discovery_scan1 => 'Scan to download';
+
+  @override
+  String get world_discovery_cancel1 => 'Cancel';
+
+  @override
+  String get world_discovery_share_button1 => 'Share invitation card';
+
+  @override
+  String get world_discovery_share_missing_card1 =>
+      'Open world invitation card not found';
+
+  @override
+  String get world_discovery_share_image_failed1 =>
+      'Unable to generate sharing image';
+
+  @override
+  String get world_discovery_share_failed1 =>
+      'Could not share the invitation card. Please try again.';
+
+  @override
+  String get world_discovery_story_open1 => 'Story opening';
+
+  @override
+  String get world_discovery_story_unset1 => 'No story opening yet';
+
+  @override
+  String get world_discovery_first_unset1 => 'No opening line yet';
+
+  @override
+  String get world_discovery_background_title1 =>
+      'World setting and description';
+
+  @override
+  String world_discovery_era1(String era) {
+    return 'Setting: $era';
+  }
+
+  @override
+  String get world_discovery_background_unset1 => 'No world setting yet';
+
+  @override
+  String get world_discovery_background_full1 => 'Full world lore';
+
+  @override
+  String get world_discovery_people_unset1 => 'No characters yet';
+
+  @override
+  String get world_discovery_people_intro1 => 'Character introductions';
+
+  @override
+  String get world_discovery_appearance_unset1 => 'Appearance not provided';
+
+  @override
+  String get world_discovery_creator_unset1 => 'No creator information';
+
+  @override
+  String get world_discovery_creator1 => 'Creator';
+
+  @override
+  String get world_discovery_creator_load_failed1 =>
+      'Unable to load creator information';
+
+  @override
+  String world_discovery_world_load_failed1(String error) {
+    return 'Failed to load open world: $error';
+  }
+
+  @override
+  String get world_discovery_unpublished1 => 'This world is not public';
+
+  @override
+  String get world_discovery_open_world1 => 'Open World';
+
+  @override
+  String get world_discovery_share_tooltip1 => 'Share open world';
+
+  @override
+  String get world_discovery_world_background1 => 'World Background';
+
+  @override
+  String get world_discovery_not_playable1 =>
+      'This open world is not yet available to play.';
+
+  @override
+  String get world_discovery_enter1 => 'Enter World';
+
+  @override
+  String get world_edit_login_required1 => 'Please sign in first';
+
+  @override
+  String get world_edit_no_edit_permission1 =>
+      'You do not have permission to edit this world';
+
+  @override
+  String get world_edit_secret_permission_error1 =>
+      'Unable to access secret chapters. Check the deployed Firestore rules. Saving is paused to protect existing data.';
+
+  @override
+  String world_edit_secret_read_error_code1(String code) {
+    return 'Could not load secret chapters ($code). Saving is paused to protect existing data.';
+  }
+
+  @override
+  String get world_edit_secret_read_error1 =>
+      'Could not load secret chapters. Saving is paused to protect existing data.';
+
+  @override
+  String world_edit_world_read_error1(String error) {
+    return 'Could not load world: $error';
+  }
+
+  @override
+  String world_edit_image_max1(int count) {
+    return 'A world can have up to $count images';
+  }
+
+  @override
+  String world_edit_image_read_error1(String error) {
+    return 'Could not load images: $error';
+  }
+
+  @override
+  String get world_edit_tag_heading1 => 'Theme tags (up to 5)';
+
+  @override
+  String get world_edit_tag_max1 => 'Select up to 5 tags';
+
+  @override
+  String get world_edit_tag_custom1 =>
+      'Tags (customizable; separate with commas)';
+
+  @override
+  String get world_edit_secret_not_ready1 =>
+      'Secret chapters have not loaded. Publishing is paused to protect your content. Check permissions and reopen this page.';
+
+  @override
+  String get world_edit_required_publish1 =>
+      'Enter a world name, at least one image, world background, story opening, and first line';
+
+  @override
+  String get world_edit_max_tags_save1 =>
+      'Only 5 theme tags are allowed. Remove extras before saving';
+
+  @override
+  String get world_edit_secret_validation1 =>
+      'Each chapter needs a title, unlock condition, and secret content (up to 12 chapters)';
+
+  @override
+  String get world_edit_draft_saved1 => 'World draft and secret chapters saved';
+
+  @override
+  String get world_edit_publish_unconfirmed1 =>
+      'The server has not confirmed public eligibility. Please try publishing again later.';
+
+  @override
+  String world_edit_publish_backend_error1(String code, String message) {
+    return 'World data was saved, but public activation failed ($code): $message. Fix the issue and select “Publish open world” again.';
+  }
+
+  @override
+  String get world_edit_publish_service_missing1 =>
+      'Verify that worldPublish is deployed';
+
+  @override
+  String get world_edit_public_published1 => 'Public open world published';
+
+  @override
+  String get world_edit_private_saved1 => 'Private open world saved';
+
+  @override
+  String world_edit_save_publish_failed1(String error) {
+    return 'Save or publish failed: $error';
+  }
+
+  @override
+  String get world_edit_save_draft_question1 => 'Save as draft?';
+
+  @override
+  String get world_edit_save_draft_explain1 =>
+      'Save this world before leaving? Unsaved changes will be lost.';
+
+  @override
+  String get world_edit_discard1 => 'Don\'t save';
+
+  @override
+  String get world_edit_cancel1 => 'Cancel';
+
+  @override
+  String get world_edit_save_draft1 => 'Save draft';
+
+  @override
+  String get world_edit_world_name1 => 'Open world name *';
+
+  @override
+  String get world_edit_world_images1 =>
+      'World images (up to 6; first image is the cover)';
+
+  @override
+  String get world_edit_cover1 => 'Cover';
+
+  @override
+  String get world_edit_set_cover1 => 'Set as cover';
+
+  @override
+  String get world_edit_short_pitch1 =>
+      'One-line card description (optional, up to 60 characters)';
+
+  @override
+  String get world_edit_public_summary1 =>
+      'Public world description (no spoilers)';
+
+  @override
+  String get world_edit_era1 =>
+      'Time period (e.g. fictional present day, Republican era)';
+
+  @override
+  String get world_edit_world_rules1 => 'World background and rules *';
+
+  @override
+  String get world_edit_full_lore1 =>
+      'Full world lore, events and locations (for AI)';
+
+  @override
+  String get world_edit_npc_intro1 =>
+      'Set names, appearances, birthdays, relationships, and photos for main characters and NPCs. Each player remains the protagonist of their own story.';
+
+  @override
+  String get world_edit_main_characters1 => 'Main characters';
+
+  @override
+  String get world_edit_main_subtitle1 =>
+      'Important characters who appear frequently in this world';
+
+  @override
+  String get world_edit_npc_subtitle1 =>
+      'Other characters who may become interaction partners as the story unfolds';
+
+  @override
+  String world_edit_people_count1(int count) {
+    return '$count characters';
+  }
+
+  @override
+  String get world_edit_role_unset1 => 'Role / occupation not set';
+
+  @override
+  String get world_edit_remove_person1 => 'Remove character';
+
+  @override
+  String world_edit_add_person1(String type) {
+    return 'Add $type';
+  }
+
+  @override
+  String get world_edit_add_secret1 => 'Add secret chapter';
+
+  @override
+  String get world_edit_edit_secret1 => 'Edit secret chapter';
+
+  @override
+  String get world_edit_chapter_title1 => 'Chapter title *';
+
+  @override
+  String get world_edit_unlock_condition1 =>
+      'Unlock condition (description for server evaluation) *';
+
+  @override
+  String get world_edit_secret_content1 => 'Secret content *';
+
+  @override
+  String get world_edit_confirm1 => 'Confirm';
+
+  @override
+  String get world_edit_story_opening1 => 'Story opening *';
+
+  @override
+  String get world_edit_first_line1 => 'First line of the story *';
+
+  @override
+  String get world_edit_secret_chapters1 => 'Secret chapters';
+
+  @override
+  String get world_edit_secret_explain1 =>
+      'Secret chapters are stored privately. Publishing the world does not reveal them; players must meet story conditions to unlock them.';
+
+  @override
+  String get world_edit_add_secret_max1 => 'Add secret chapter (up to 12)';
+
+  @override
+  String get world_edit_publish_settings1 => 'Publishing settings';
+
+  @override
+  String get world_edit_private_world1 => 'Private open world';
+
+  @override
+  String get world_edit_private_world_desc1 =>
+      'Only you can play and test; other players cannot enter';
+
+  @override
+  String get world_edit_public_world1 => 'Public open world';
+
+  @override
+  String get world_edit_public_world_desc1 =>
+      'Other players can enter, each with independent story progress';
+
+  @override
+  String get world_edit_create_world1 => 'Create open world';
+
+  @override
+  String get world_edit_basic_tab1 => 'Basic settings';
+
+  @override
+  String get world_edit_characters_tab1 => 'World characters';
+
+  @override
+  String get world_edit_story_tab1 => 'Story settings';
+
+  @override
+  String get world_edit_publish_world1 => 'Publish open world';
+
+  @override
+  String get world_edit_name_required1 => 'Enter a character name first';
+
+  @override
+  String world_edit_edit_person1(String type) {
+    return 'Edit $type';
+  }
+
+  @override
+  String get world_edit_upload_photo1 => 'Upload character photo (optional)';
+
+  @override
+  String get world_edit_allow_photo1 =>
+      'Allow generating other images from this character\'s photo';
+
+  @override
+  String get world_edit_allow_photo_explain1 =>
+      'Use this character\'s photo as a reference only when appropriate for the story. Chatting and ordinary gifts still work if disabled. Set separately for each character.';
+
+  @override
+  String get world_edit_name1 => 'Name *';
+
+  @override
+  String get world_edit_gender1 => 'Gender / gender identity';
+
+  @override
+  String get world_edit_birthday1 => 'Birthday (e.g. May 16)';
+
+  @override
+  String get world_edit_age1 => 'Age';
+
+  @override
+  String get world_edit_role1 => 'Role / occupation';
+
+  @override
+  String get world_edit_appearance1 => 'Appearance';
+
+  @override
+  String get world_edit_personality1 => 'Personality and character details';
+
+  @override
+  String get world_edit_background1 => 'Backstory';
+
+  @override
+  String get world_edit_relationships1 => 'Relationships with other characters';
+
+  @override
+  String get world_edit_speech_style1 => 'Speaking style / tone';
+
+  @override
+  String get world_edit_dialogue_examples1 =>
+      'Dialogue examples (help AI understand the tone)';
+
+  @override
+  String get world_edit_save_person1 => 'Save character settings';
+
+  @override
+  String get world_edit_tag_mystery1 => 'Suspense';
+
+  @override
+  String get world_edit_tag_horror1 => 'Horror';
+
+  @override
+  String get world_edit_tag_romance1 => 'Romance';
+
+  @override
+  String get world_edit_tag_modern_fantasy1 => 'Urban fantasy';
+
+  @override
+  String get world_edit_tag_school1 => 'School';
+
+  @override
+  String get world_edit_tag_ensemble1 => 'Ensemble cast';
+
+  @override
+  String get world_edit_tag_adventure1 => 'Adventure';
+
+  @override
+  String get world_edit_tag_daily1 => 'Slice of life';
+
+  @override
+  String get world_edit_tag_detective1 => 'Mystery';
+
+  @override
+  String get world_edit_tag_otherworld1 => 'Another world';
+
+  @override
+  String get chooseNpc1 => 'Choose an NPC';
+
+  @override
+  String get chooseInteractionTarget1 => 'Choose interaction partner';
+
+  @override
+  String get unnamedCharacter1 => 'Unnamed character';
+
+  @override
+  String get chooseTargetFirst1 => 'Please select an interaction partner first';
+
+  @override
+  String get confirmGift1 => 'Confirm gift';
+
+  @override
+  String giftConfirmDetail1(String target, String gift, int cost) {
+    return 'Send to $target: $gift. Costs $cost flowers. Points are only deducted after AI responds successfully.';
+  }
+
+  @override
+  String get cancel1 => 'Cancel';
+
+  @override
+  String get send1 => 'Send';
+
+  @override
+  String get sendLocationTitle1 => 'Send location (3 flowers)';
+
+  @override
+  String get customLocation1 => 'Custom location';
+
+  @override
+  String get confirm1 => 'Confirm';
+
+  @override
+  String get cafe1 => 'Café';
+
+  @override
+  String get park1 => 'Park';
+
+  @override
+  String get restaurant1 => 'Restaurant';
+
+  @override
+  String get street1 => 'Street';
+
+  @override
+  String get giftHeart1 => 'Heart';
+
+  @override
+  String get giftFlower1 => 'Flower';
+
+  @override
+  String get giftSun1 => 'Sun';
+
+  @override
+  String get giftConfetti1 => 'Confetti';
+
+  @override
+  String get giftCoffee1 => 'Coffee';
+
+  @override
+  String get giftCake1 => 'Cake';
+
+  @override
+  String get interactionPlayTitle1 => 'Interactions';
+
+  @override
+  String interactionTargetLabel1(String target) {
+    return 'Interaction partner: $target';
+  }
+
+  @override
+  String get intimateInteraction1 => 'Close interactions';
+
+  @override
+  String get poke1 => 'Poke';
+
+  @override
+  String get hug1 => 'Hug';
+
+  @override
+  String get holdHands1 => 'Hold hands';
+
+  @override
+  String get gifts1 => 'Gifts';
+
+  @override
+  String get funActivities1 => 'Fun activities';
+
+  @override
+  String get sendLocation1 => 'Send location';
+
+  @override
+  String get diceDuel1 => 'Dice duel';
+
+  @override
+  String get world_profile_name_too_long1 =>
+      'World character name must be 40 characters or fewer. Shorten it before saving.';
+
+  @override
+  String get world_profile_identity_too_long1 =>
+      'World character details exceed 2,000 characters. Shorten them before saving.';
+
+  @override
+  String get world_relationship_live_title1 => 'Character Relationships';
+
+  @override
+  String get world_relationship_live_load_failed1 =>
+      'Unable to load relationship data. Check Firestore permissions.';
+
+  @override
+  String get world_relationship_live_no_people1 =>
+      'No characters have been created in this world yet.';
+
+  @override
+  String get world_relationship_live_not_met1 =>
+      'Current relationship: Not yet met';
+
+  @override
+  String get world_relationship_live_first_meeting1 => 'First meeting';
+
+  @override
+  String world_relationship_live_current_relation1(String relation) {
+    return 'Current relationship: $relation';
+  }
+
+  @override
+  String get world_relationship_live_thought_title1 =>
+      'Current thoughts about the player';
+
+  @override
+  String get world_relationship_live_thought_pending1 =>
+      'An impression will develop through future interactions.';
+
+  @override
+  String world_scene_full_load_error1(String error) {
+    return 'Failed to load scenes: $error';
+  }
+
+  @override
+  String get world_scene_full_delete_title1 => 'Delete scene';
+
+  @override
+  String world_scene_full_delete_confirm1(String title) {
+    return 'Delete “$title”?';
+  }
+
+  @override
+  String get world_scene_full_cancel1 => 'Cancel';
+
+  @override
+  String get world_scene_full_delete1 => 'Delete';
+
+  @override
+  String world_scene_full_delete_error1(String error) {
+    return 'Failed to delete scene: $error';
+  }
+
+  @override
+  String get world_scene_full_missing_fields1 =>
+      'Please provide a title and scene description first.';
+
+  @override
+  String world_scene_full_activate_error1(String error) {
+    return 'Failed to activate scene: $error';
+  }
+
+  @override
+  String get world_scene_full_end_title1 => 'End scene';
+
+  @override
+  String get world_scene_full_end_confirm1 => 'End the current scene?';
+
+  @override
+  String world_scene_full_end_error1(String error) {
+    return 'Failed to end scene: $error';
+  }
+
+  @override
+  String get world_scene_full_unnamed1 => 'Untitled scene';
+
+  @override
+  String world_scene_full_opening1(String opening) {
+    return 'Opening: $opening';
+  }
+
+  @override
+  String get world_scene_full_edit1 => 'Edit';
+
+  @override
+  String get world_scene_full_start1 => 'Start scene';
+
+  @override
+  String get world_scene_full_creator_empty1 => 'No creator scenes yet';
+
+  @override
+  String get world_scene_full_custom_empty1 =>
+      'You have not created any scenes yet';
+
+  @override
+  String get world_scene_full_add1 => 'New scene';
+
+  @override
+  String get world_scene_full_page_title1 => 'Scenes';
+
+  @override
+  String get world_scene_full_creator_tab1 => 'Creator scenes';
+
+  @override
+  String get world_scene_full_custom_tab1 => 'My scenes';
+
+  @override
+  String world_scene_full_active1(String title) {
+    return 'Active scene: $title';
+  }
+
+  @override
+  String get world_scene_required1 =>
+      'Please enter a scene title and description';
+
+  @override
+  String get world_scene_title1 => 'Scenes';
+
+  @override
+  String get world_scene_beta_notice1 =>
+      'World scene beta: scenes use the world chat AI. Scene-specific saves and the official scene-start API are not yet available.';
+
+  @override
+  String get world_scene_creator_scenes1 => 'Creator scenes';
+
+  @override
+  String get world_scene_no_creator_scenes1 =>
+      'No creator scenes are currently available for this world';
+
+  @override
+  String get world_scene_custom_scenes1 => 'Create your own scene';
+
+  @override
+  String get world_scene_name1 => 'Scene title';
+
+  @override
+  String get world_scene_setup1 =>
+      'Background, location, characters, and opening situation';
+
+  @override
+  String get world_scene_start1 => 'Start scene';
+
+  @override
+  String get worldSearchTitle1 => 'Search Open Worlds';
+
+  @override
+  String get worldSearchHint1 => 'Search worlds, creators, or tags';
+
+  @override
+  String get worldSearchClear1 => 'Clear search';
+
+  @override
+  String get worldSearchEmpty1 => 'No matching open worlds found';
+
+  @override
+  String get worldSearchTrending1 => 'Popular worlds';
+
+  @override
+  String get worldSearchResults1 => 'Search results';
+
+  @override
+  String get worldSearchUnnamed1 => 'Untitled world';
+
+  @override
+  String worldSearchCreator1(String creator) {
+    return 'Creator: $creator';
+  }
+
+  @override
+  String get world_secret_chapters_title1 => 'Secret Chapters';
+
+  @override
+  String get world_secret_chapters_close1 => 'Close';
+
+  @override
+  String get world_secret_chapters_read_failed1 =>
+      'Unable to read this secret chapter right now';
+
+  @override
+  String get world_secret_chapters_retry1 => 'Failed to load. Tap to retry';
+
+  @override
+  String get world_secret_chapters_empty1 =>
+      'The creator has not added any secret chapters yet';
+
+  @override
+  String world_secret_chapters_locked_chapter1(String number) {
+    return 'Chapter $number · ???';
+  }
+
+  @override
+  String get world_secret_chapters_unlocked1 => 'Unlocked · Tap to read';
+
+  @override
+  String get world_secret_chapters_locked1 =>
+      'Locked · Keep exploring the story';
+
+  @override
+  String world_timeline_load_failed1(String error) {
+    return 'Failed to load story summary: $error';
+  }
+
+  @override
+  String get world_timeline_edit_summary1 => 'Edit story summary';
+
+  @override
+  String get world_timeline_cancel1 => 'Cancel';
+
+  @override
+  String get world_timeline_save1 => 'Save';
+
+  @override
+  String world_timeline_save_failed1(String error) {
+    return 'Failed to save: $error';
+  }
+
+  @override
+  String get world_timeline_delete_summary1 => 'Delete summary';
+
+  @override
+  String get world_timeline_delete_confirm1 => 'Delete this story entry?';
+
+  @override
+  String get world_timeline_delete1 => 'Delete';
+
+  @override
+  String world_timeline_delete_failed1(String error) {
+    return 'Failed to delete: $error';
+  }
+
+  @override
+  String get world_timeline_our_story1 => 'Our Story';
+
+  @override
+  String get world_timeline_retry1 => 'Retry';
+
+  @override
+  String get world_timeline_empty1 =>
+      'Your story is still unfolding. New entries will appear as the story progresses.';
+
+  @override
+  String get world_timeline_recent1 => 'Recent entry';
+
+  @override
+  String get world_timeline_edit1 => 'Edit';
+
+  @override
+  String get echo_login_to_post1 => 'Sign in to leave a time echo';
+
+  @override
+  String get echo_limit1 =>
+      'Each player can leave up to 3 echoes in the same open world';
+
+  @override
+  String get echo_count_fail1 =>
+      'Unable to check the number of echoes. Try again later.';
+
+  @override
+  String get echo_compose_title1 => 'Leave a Time Echo';
+
+  @override
+  String get echo_compose_desc1 =>
+      'Choose a card design and write something you want to leave behind.';
+
+  @override
+  String get echo_compose_hint1 => 'What would you like to say in this world?';
+
+  @override
+  String get echo_send1 => 'Post Echo';
+
+  @override
+  String get echo_player1 => 'Player';
+
+  @override
+  String get echo_sent1 => 'Your time echo has been posted';
+
+  @override
+  String get echo_post_fail1 =>
+      'Could not post. Check your connection and permissions.';
+
+  @override
+  String get echo_login1 => 'Please sign in';
+
+  @override
+  String get echo_like_fail1 => 'Failed to like';
+
+  @override
+  String get echo_delete_title1 => 'Delete this time echo?';
+
+  @override
+  String get echo_delete_warning1 => 'This cannot be undone.';
+
+  @override
+  String get echo_cancel1 => 'Cancel';
+
+  @override
+  String get echo_delete1 => 'Delete';
+
+  @override
+  String get echo_deleted1 => 'Time echo deleted';
+
+  @override
+  String get echo_delete_fail1 => 'Failed to delete';
+
+  @override
+  String get echo_reason_inappropriate1 => 'Inappropriate content';
+
+  @override
+  String get echo_reason_harassment1 => 'Harassment or abuse';
+
+  @override
+  String get echo_reason_spam1 => 'Spam';
+
+  @override
+  String get echo_reason_other1 => 'Other';
+
+  @override
+  String get echo_report_title1 => 'Report Time Echo';
+
+  @override
+  String get echo_already_reported1 => 'You have already reported this echo';
+
+  @override
+  String get echo_report_received1 => 'Report received';
+
+  @override
+  String get echo_report_fail1 => 'Failed to report';
+
+  @override
+  String get echo_options1 => 'Echo options';
+
+  @override
+  String get echo_delete_option1 => 'Delete echo';
+
+  @override
+  String get echo_report_option1 => 'Report echo';
+
+  @override
+  String get echo_wall_title1 => 'Time Echoes';
+
+  @override
+  String get echo_add1 => 'Leave an echo';
+
+  @override
+  String get echo_load_fail1 =>
+      'Unable to load time echoes. Check Firestore permissions.';
+
+  @override
+  String get echo_empty1 => 'No time echoes yet. Leave the first story.';
+
+  @override
+  String get store_pack_30_name1 => 'First Encounter Pack';
+
+  @override
+  String get store_pack_70_name1 => 'Sweet Attraction Pack';
+
+  @override
+  String get store_pack_120_name1 => 'Heartflutter Pack';
+
+  @override
+  String get store_pack_190_name1 => 'Passionate Love Pack';
+
+  @override
+  String get store_pack_250_name1 => 'Soulmate Pack';
+
+  @override
+  String get store_pack_330_name1 => 'Devotion Pack';
+
+  @override
+  String get store_pack_450_name1 => 'Trust Pack';
+
+  @override
+  String get store_pack_520_name1 => 'I Love You Pack';
+
+  @override
+  String get store_pack_690_name1 => 'Honeymoon Pack';
+
+  @override
+  String get store_pack_720_name1 => 'Promise Pack';
+
+  @override
+  String get store_pack_750_name1 => 'Together Pack';
+
+  @override
+  String get store_pack_830_name1 => 'Deep Love Pack';
+
+  @override
+  String get store_pack_990_name1 => 'Everlasting Pack';
+
+  @override
+  String get store_pack_1050_name1 => 'The One Pack';
+
+  @override
+  String get store_pack_1290_name1 => 'True Love Pack';
+
+  @override
+  String get store_pack_1314_name1 => 'Forever and Always Pack';
+
+  @override
+  String get store_pack_1930_name1 => 'Vow Pack';
+
+  @override
+  String get store_pack_2990_name1 => 'Eternal Lovers Pack';
 }

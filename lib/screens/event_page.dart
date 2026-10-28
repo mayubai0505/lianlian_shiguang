@@ -8,6 +8,7 @@ import '../services/toast_utils.dart';
 import '../services/app_constants.dart';
 import 'event_memory_page.dart';
 import 'package:lianlian_shiguang/l10n/app_l10n.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 const Color _eventDefaultTextPrimary = Color(0xFF3B3340);
 const Color _eventDefaultTextSecondary = Color(0xFF6F6673);
@@ -230,10 +231,10 @@ class _EventContent extends StatelessWidget {
 
   DateTime? _date(dynamic value) => value is Timestamp ? value.toDate() : null;
 
-  String _remaining(DateTime? end) {
+  String _remaining(BuildContext context, DateTime? end) {
     if (end == null) return appL10n.event_remaining_label;
     final d = end.difference(DateTime.now());
-    if (d.isNegative) return '活動已結束';
+    if (d.isNegative) return AppLocalizations.of(context)!.event_ended1;
     if (d.inDays >= 1) return appL10n.event_remaining_label_days(d.inDays + 1);
     if (d.inHours >= 1) return appL10n.event_remaining_label_hours(d.inHours);
     return appL10n.event_remaining_label_end;
@@ -265,12 +266,12 @@ class _EventContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final style = _EventVisualStyle.fromData(context, data);
 
-    final name = (data['name'] ?? '期間限定活動').toString();
+    final name = (data['name'] ?? AppLocalizations.of(context)!.event_default_name1).toString();
     final subtitle =
-    (data['subtitle'] ?? '和他一起留下這個季節的特別回憶。').toString();
+    (data['subtitle'] ?? AppLocalizations.of(context)!.event_default_subtitle1).toString();
     final heroImageUrl =
     (data['heroImageUrl'] ?? data['bannerImageUrl'] ?? '').toString();
-    final currencyName = (data['currencyName'] ?? '活動貨幣').toString();
+    final currencyName = (data['currencyName'] ?? AppLocalizations.of(context)!.event_currency_default1).toString();
     final currencyIcon = (data['currencyIcon'] ?? '✦').toString();
     final startAt = _date(data['startAt']);
     final endAt = _date(data['endAt']);
@@ -347,7 +348,7 @@ class _EventContent extends StatelessWidget {
                   name: name,
                   subtitle: subtitle,
                   heroImageUrl: heroImageUrl,
-                  remainingLabel: _remaining(endAt),
+                  remainingLabel: _remaining(context, endAt),
                   dateLabel: _dateText(startAt, endAt),
                   currencyIcon: currencyIcon,
                   currencyName: currencyName,
@@ -365,10 +366,10 @@ class _EventContent extends StatelessWidget {
                       const SizedBox(height: 14),
                       _RichSectionShell(
                         style: style,
-                        title: _text('tasksTitle', '今日任務'),
+                        title: _text('tasksTitle', AppLocalizations.of(context)!.event_tasks_today1),
                         subtitle: _text(
                           'tasksSubtitle',
-                          '完成任務，收集$currencyName，解鎖更多限定內容。',
+                          AppLocalizations.of(context)!.event_tasks_subtitle1(currencyName),
                         ),
                         child: _TaskList(
                           eventId: eventId,
@@ -386,10 +387,10 @@ class _EventContent extends StatelessWidget {
                       const SizedBox(height: 14),
                       _RichSectionShell(
                         style: style,
-                        title: _text('milestonesTitle', '累積進度'),
+                        title: _text('milestonesTitle', AppLocalizations.of(context)!.event_milestones_title1),
                         subtitle: _text(
                           'milestonesSubtitle',
-                          '累積$currencyName，領取活動限定獎勵。',
+                          AppLocalizations.of(context)!.event_milestones_subtitle1(currencyName),
                         ),
                         trailingDecorationUrl: style.progressDecorationUrl,
                         child: _MilestoneProgress(
@@ -413,10 +414,10 @@ class _EventContent extends StatelessWidget {
                                 textPrimaryColor: style.textPrimaryColor,
                                 textSecondaryColor: style.textSecondaryColor,
                                 imageUrl: style.memoryFeatureImageUrl,
-                                title: _text('memoryTitle', '限定回憶'),
+                                title: _text('memoryTitle', AppLocalizations.of(context)!.event_memory_title1),
                                 subtitle: _text(
                                   'memorySubtitle',
-                                  '留下這次活動的專屬回憶。',
+                                  AppLocalizations.of(context)!.event_memory_subtitle1,
                                 ),
                                 onTap: () {
                                   Navigator.of(context).push(
@@ -437,10 +438,10 @@ class _EventContent extends StatelessWidget {
                                 textPrimaryColor: style.textPrimaryColor,
                                 textSecondaryColor: style.textSecondaryColor,
                                 imageUrl: style.shopFeatureImageUrl,
-                                title: _text('shopTitle', '活動商店'),
+                                title: _text('shopTitle', AppLocalizations.of(context)!.event_shop_title1),
                                 subtitle: _text(
                                   'shopSubtitle',
-                                  '使用$currencyName兌換限定獎勵。',
+                                  AppLocalizations.of(context)!.event_shop_subtitle1(currencyName),
                                 ),
                                 onTap: () {
                                   Navigator.of(context).push(
@@ -468,9 +469,9 @@ class _EventContent extends StatelessWidget {
                     ],
                     const SizedBox(height: 14),
                     _RichEventInfoCard(
-                      title: _text('infoTitle', '活動說明'),
+                      title: _text('infoTitle', AppLocalizations.of(context)!.event_info_title1),
                       description: (data['description'] ??
-                          '活動期間完成指定任務即可取得活動貨幣。\n兌換的獎勵會依活動規則發放至帳號。\n活動結束後，未使用的活動貨幣將依活動規則處理。')
+                          AppLocalizations.of(context)!.event_info_default1)
                           .toString(),
                       accent: style.accent,
                       cardColor: style.cardColor,
@@ -998,17 +999,16 @@ class _TaskListState extends State<_TaskList> {
         reward > 0
             ? appL10n.event_claim_task_message_claim_current(currency, reward, widget.currencyIcon, widget.currencyName)
             : appL10n.event_claim_task_message_reward_claim,
-        customIcon: Icons.check_circle_rounded,
       );
     } on FirebaseFunctionsException catch (error) {
       if (!mounted) return;
 
-      String message = error.message ?? appL10n.event_claim_task_message_claim_failed;
+      String message = AppLocalizations.of(context)!.event_generic_error1;
 
       if (error.code == 'already-exists') {
         message = appL10n.event_claim_task_message_task_claim;
       } else if (error.code == 'failed-precondition') {
-        message = error.message ?? appL10n.event_claim_task_message_incomplete_task;
+        message = AppLocalizations.of(context)!.event_generic_error1;
       }
 
       ToastUtils.showCenterToast(
@@ -1021,7 +1021,7 @@ class _TaskListState extends State<_TaskList> {
 
       ToastUtils.showCenterToast(
         context,
-        '領取失敗：$error',
+        AppLocalizations.of(context)!.event_generic_error1,
         isError: true,
       );
     } finally {
@@ -1075,7 +1075,7 @@ class _TaskListState extends State<_TaskList> {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 9),
                   child: _TaskCard(
-                    title: (data['title'] ?? '活動任務').toString(),
+                    title: (data['title'] ?? AppLocalizations.of(context)!.event_task_default1).toString(),
                     description: (data['description'] ?? '').toString(),
                     rewardText:
                     '${widget.currencyIcon} ${widget.currencyName} ×$reward',
@@ -1138,9 +1138,9 @@ class _TaskCard extends StatelessWidget {
     final progressValue = target <= 0 ? 0.0 : (progress / target).clamp(0.0, 1.0);
 
     String buttonText() {
-      if (claimed) return '已領取';
-      if (completed) return '領取';
-      return '進行中';
+      if (claimed) return AppLocalizations.of(context)!.event_claimed1;
+      if (completed) return AppLocalizations.of(context)!.event_claim1;
+      return AppLocalizations.of(context)!.event_in_progress1;
     }
 
     return Container(
@@ -1356,7 +1356,7 @@ class _MilestoneProgress extends StatelessWidget {
                 children: docs.map((doc) {
                   final data = doc.data();
                   final target = _intValue(data['target']);
-                  final title = (data['title'] ?? '限定獎勵').toString();
+                  final title = (data['title'] ?? AppLocalizations.of(context)!.event_reward_default1).toString();
                   final unlocked = totalEarned >= target;
                   return Expanded(
                     child: Padding(
@@ -1681,7 +1681,7 @@ class _EventShopPageState extends State<EventShopPage> {
   }) async {
     if (_redeemingItemIds.contains(itemId)) return;
 
-    final itemName = (data['name'] ?? '活動商品').toString();
+    final itemName = (data['name'] ?? AppLocalizations.of(context)!.event_product_default1).toString();
     final itemType = (data['itemType'] ?? 'other').toString();
     final rewardAmount = data['rewardAmount'] is num
         ? (data['rewardAmount'] as num).toInt()
@@ -1709,11 +1709,11 @@ class _EventShopPageState extends State<EventShopPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('取消'),
+              child: Text(AppLocalizations.of(context)!.event_cancel1),
             ),
             FilledButton(
               onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: const Text('確認兌換'),
+              child: Text(AppLocalizations.of(context)!.event_confirm_exchange1),
             ),
           ],
         );
@@ -1749,12 +1749,11 @@ class _EventShopPageState extends State<EventShopPage> {
         returnedReward > 0
             ? appL10n.event_progress_ref_message_redeem_success_flowers(returnedReward)
             : appL10n.event_progress_ref_message_event_collection_redeem_success_add(itemName),
-        customIcon: Icons.check_circle_rounded,
       );
     } on FirebaseFunctionsException catch (error) {
       if (!mounted) return;
 
-      String message = error.message ?? appL10n.event_progress_ref_message_redeem_failed;
+      String message = AppLocalizations.of(context)!.event_generic_error1;
 
       if (error.code == 'already-exists') {
         message = appL10n.event_progress_ref_message_redeem_variant_b;
@@ -1772,7 +1771,7 @@ class _EventShopPageState extends State<EventShopPage> {
       if (!mounted) return;
       ToastUtils.showCenterToast(
         context,
-        '兌換失敗：$error',
+        AppLocalizations.of(context)!.event_generic_error1,
         isError: true,
       );
     } finally {
@@ -1793,7 +1792,7 @@ class _EventShopPageState extends State<EventShopPage> {
   }) async {
     final colors = Theme.of(context).colorScheme;
     final imageUrl = (data['imageUrl'] ?? '').toString().trim();
-    final name = (data['name'] ?? '限定商品').toString();
+    final name = (data['name'] ?? AppLocalizations.of(context)!.event_limited_product1).toString();
     final description = (data['description'] ?? '').toString().trim();
     final itemType = (data['itemType'] ?? 'other').toString();
     final rewardAmount = data['rewardAmount'] is num
@@ -1808,7 +1807,7 @@ class _EventShopPageState extends State<EventShopPage> {
         if (alreadyRedeemed) {
           buttonText = appL10n.event_progress_ref_message_redeem_variant_d;
         } else if (insufficient) {
-          buttonText = '${widget.currencyName}不足';
+          buttonText = AppLocalizations.of(context)!.event_insufficient_currency1(widget.currencyName);
         }
 
         return Dialog(
@@ -1883,7 +1882,7 @@ class _EventShopPageState extends State<EventShopPage> {
                                   ),
                                 ),
                                 IconButton(
-                                  tooltip: '關閉',
+                                  tooltip: AppLocalizations.of(context)!.event_close1,
                                   onPressed: () =>
                                       Navigator.of(dialogContext).pop(),
                                   icon: const Icon(Icons.close_rounded),
@@ -1917,8 +1916,8 @@ class _EventShopPageState extends State<EventShopPage> {
                               const SizedBox(height: 8),
                               Text(
                                 maxRedemptions > 0
-                                    ? '已兌換 $redeemedCount / $maxRedemptions 次'
-                                    : '已兌換 $redeemedCount 次',
+                                    ? AppLocalizations.of(context)!.event_redeemed_count_limit1(redeemedCount, maxRedemptions)
+                                    : AppLocalizations.of(context)!.event_redeemed_count1(redeemedCount),
                                 style: GoogleFonts.notoSerifTc(
                                   fontSize: 10.5,
                                   color: colors.onSurface
@@ -1995,7 +1994,7 @@ class _EventShopPageState extends State<EventShopPage> {
         foregroundColor: widget.textPrimaryColor,
         surfaceTintColor: Colors.transparent,
         title: Text(
-          '活動商店',
+          AppLocalizations.of(context)!.event_shop_title1,
           style: GoogleFonts.notoSerifTc(
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -2050,12 +2049,6 @@ class _EventShopPageState extends State<EventShopPage> {
                         ),
                         errorWidget: (_, __, ___) => Container(
                           color: widget.accentColor.withValues(alpha: 0.04),
-                          alignment: Alignment.center,
-                          child: Icon(
-                            Icons.storefront_rounded,
-                            size: 40,
-                            color: widget.accentColor.withValues(alpha: 0.35),
-                          ),
                         ),
                       ),
                     ),
@@ -2300,7 +2293,7 @@ class _ShopItemCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        (data['name'] ?? '限定商品').toString(),
+                        (data['name'] ?? AppLocalizations.of(context)!.event_limited_product1).toString(),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.notoSerifTc(
@@ -2337,8 +2330,8 @@ class _ShopItemCard extends StatelessWidget {
                         const SizedBox(height: 3),
                         Text(
                           maxRedemptions > 0
-                              ? '已兌換 $redeemedCount / $maxRedemptions 次'
-                              : '已兌換 $redeemedCount 次',
+                              ? AppLocalizations.of(context)!.event_redeemed_count_limit1(redeemedCount, maxRedemptions)
+                              : AppLocalizations.of(context)!.event_redeemed_count1(redeemedCount),
                           style: GoogleFonts.notoSerifTc(
                             fontSize: 9.5,
                             color: textMutedColor,
@@ -2378,10 +2371,10 @@ class _ShopItemCard extends StatelessWidget {
                               )
                                   : Text(
                                 alreadyRedeemed
-                                    ? '已兌換'
+                                    ? AppLocalizations.of(context)!.event_redeemed1
                                     : insufficient
                                     ? appL10n.event_message_insufficient
-                                    : '兌換',
+                                    : AppLocalizations.of(context)!.event_exchange1,
                                 style: GoogleFonts.notoSerifTc(
                                   fontSize: 10.5,
                                   fontWeight: FontWeight.w700,
@@ -2411,12 +2404,6 @@ class _ShopFallback extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: colors.primary.withValues(alpha: 0.05),
-      alignment: Alignment.center,
-      child: Icon(
-        Icons.card_giftcard_rounded,
-        color: colors.primary.withValues(alpha: 0.38),
-        size: 36,
-      ),
     );
   }
 }
@@ -2495,12 +2482,6 @@ class _EventUnavailablePage extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          Icon(
-            Icons.event_busy_outlined,
-            size: 48,
-            color: colors.primary.withValues(alpha: 0.35),
-          ),
-          const SizedBox(height: 14),
           Text(
             message,
             style: GoogleFonts.notoSerifTc(

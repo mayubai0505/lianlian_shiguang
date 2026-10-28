@@ -6,6 +6,23 @@ const { onRequest, onCall, HttpsError } = require("firebase-functions/v2/https")
 const admin = require("firebase-admin");
 const { initializeApp, getApps } = require("firebase-admin/app");
 const OpenCC = require('opencc-js');
+
+// 僅在玩家選擇繁體中文時轉換 AI 的最終輸出；不碰玩家輸入或其他語系。
+const convertAiTextToTaiwanTraditional = OpenCC.Converter({ from: 'cn', to: 'tw' });
+function shouldConvertAiToTaiwanTraditional(language) {
+    const raw = String(language || '').trim().replace(/-/g, '_').toLowerCase();
+    return new Set([
+        '台灣繁體中文', '台湾繁体中文', '繁體中文', '繁体中文',
+        'traditional chinese', 'zh_hant', 'zh_tw', 'zh_hk', 'zh_mo'
+    ]).has(raw);
+}
+function normalizeAiResponseScript(text, language) {
+    const original = String(text ?? '');
+    return shouldConvertAiToTaiwanTraditional(language)
+        ? convertAiTextToTaiwanTraditional(original)
+        : original;
+}
+
 const { getAuth } = require("firebase-admin/auth");
 const { getMessaging } = require("firebase-admin/messaging");
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
@@ -37,6 +54,7 @@ const elevenLabsApiKey = defineSecret("ELEVENLABS_API_KEY");
 const deepseekApiKey = defineSecret('DEEPSEEK_API_KEY');
 const geminiApiKey = defineSecret('GEMINI_API_KEY');
 const xaiApiKey = defineSecret('XAI_API_KEY');
+const anthropicApiKey = defineSecret('ANTHROPIC_API_KEY');
 const stripeSecretKey = defineSecret("STRIPE_SECRET_KEY");
 const stripeWebhookSecret = defineSecret("STRIPE_WEBHOOK_SECRET");
 const crypto = require("crypto");
@@ -679,6 +697,86 @@ async function callOpenRouter({
     return data;
 }
 
+// Claude 官方 Messages API；轉成既有 OpenAI-compatible 結果格式以保留後端解析流程。
+async function callAnthropicDirect({modelId, requestBody, abortController, timeoutMs = 95_000}) {
+    const timeoutController = new AbortController();
+    const timer = setTimeout(() => timeoutController.abort(), timeoutMs);
+    const signal = abortController?.signal
+        ? AbortSignal.any([timeoutController.signal, abortController.signal])
+        : timeoutController.signal;
+    try {
+        const sourceMessages = Array.isArray(requestBody?.messages) ? requestBody.messages : [];
+        const systemParts = [];
+        const messages = [];
+        for (const msg of sourceMessages) {
+            const content = typeof msg.content === "string" ? msg.content :
+                (Array.isArray(msg.content) ? msg.content.map(p => p?.text || "").join("\n") : String(msg.content || ""));
+            if (msg.role === "system" || msg.role === "developer") {
+                if (content.trim()) systemParts.push(content);
+                continue;
+            }
+            const role = msg.role === "assistant" ? "assistant" : "user";
+            if (messages.length && messages[messages.length - 1].role === role) {
+                messages[messages.length - 1].content += "\n\n" + content;
+            } else {
+                messages.push({role, content});
+            }
+        }
+        if (messages.length === 0 || messages[0].role !== "user") {
+            messages.unshift({role: "user", content: "請依照系統設定開始回覆。"});
+        }
+        const body = {
+            model: modelId,
+            max_tokens: Number(requestBody.max_tokens) || 2600,
+            messages,
+        };
+        if (systemParts.length) body.system = systemParts.join("\n\n");
+        // Sonnet 5.5 不接受非預設 temperature；故不轉送 temperature/response_format/reasoning_effort。
+        const response = await fetch("https://api.anthropic.com/v1/messages", {
+            method: "POST",
+            headers: {
+                "x-api-key": anthropicApiKey.value(),
+                "anthropic-version": "2023-06-01",
+                "content-type": "application/json",
+            },
+            body: JSON.stringify(body),
+            signal,
+        });
+        const raw = await response.text();
+        let data;
+        try { data = JSON.parse(raw); } catch (_) { throw new Error("Anthropic 回傳格式異常"); }
+        if (!response.ok) {
+            const error = new Error(data?.error?.message || `Anthropic HTTP ${response.status}`);
+            error.statusCode = response.status;
+            error.result = data;
+            throw error;
+        }
+        const content = Array.isArray(data.content)
+            ? data.content.filter(block => block?.type === "text").map(block => block.text || "").join("\n") : "";
+        return {
+            model: data.model || modelId,
+            usage: {
+                prompt_tokens: Number(data.usage?.input_tokens || 0),
+                completion_tokens: Number(data.usage?.output_tokens || 0),
+                total_tokens: Number(data.usage?.input_tokens || 0) + Number(data.usage?.output_tokens || 0),
+            },
+            choices: [{
+                message: {role: "assistant", content},
+                finish_reason: data.stop_reason === "max_tokens" ? "length" :
+                    data.stop_reason === "refusal" ? "content_filter" : "stop",
+            }],
+        };
+    } catch (err) {
+        if (err?.name === "AbortError") {
+            if (abortController?.signal?.aborted) throw new Error("PLAYER_DISCONNECTED");
+            throw new Error("AI 回覆時間太久，已主動中止");
+        }
+        throw err;
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
 function isGeminiDirectModel(modelId) {
     const id = String(modelId || "");
     return id.startsWith("google/gemini") || id.startsWith("gemini-");
@@ -706,6 +804,11 @@ function normalizeModelIdForRequest(modelId) {
 function getAiProviderConfig(modelId) {
     const isGemini = isGeminiDirectModel(modelId);
     const isXai = isXaiDirectModel(modelId);
+    const isAnthropic = String(modelId || "").startsWith("claude-");
+
+    if (isAnthropic) {
+        return {provider: "anthropic", apiUrl: "https://api.anthropic.com/v1/messages", modelIdForRequest: modelId};
+    }
 
     if (isGemini) {
         return {
@@ -911,7 +1014,10 @@ function estimateAiCallCost({
   } else if (normalizedModel.includes("gemini-3-flash")) {
     inputUsdPerMillion = 0.50;
     outputUsdPerMillion = 3.00;
-  } else if (normalizedModel.includes("grok-4.6")) {
+    } else if (normalizedModel.includes("claude-sonnet-5-5")) {
+     inputUsdPerMillion = 2.0;
+     outputUsdPerMillion = 10.0;
+   } else if (normalizedModel.includes("grok-4.6")) {
     // Usually overridden by xAI's exact cost ticks above.
     const longContext = inputTokens >= 200_000;
     inputUsdPerMillion = longContext ? 4.0 : 2.0;
@@ -1205,20 +1311,21 @@ async function callAiWithRetry({
       };
     }
 
-    const result = await callOpenRouter({
-      apiUrl:
-        providerConfig.apiUrl,
-
-      apiKey:
-        providerConfig.apiKey,
-
-      modelId:
-        providerConfig.modelIdForRequest,
-
-      requestBody: providerRequestBody,
-      abortController,
-      timeoutMs,
-    });
+    const result = providerConfig.provider === "anthropic"
+      ? await callAnthropicDirect({
+          modelId: providerConfig.modelIdForRequest,
+          requestBody: providerRequestBody,
+          abortController,
+          timeoutMs,
+        })
+      : await callOpenRouter({
+          apiUrl: providerConfig.apiUrl,
+          apiKey: providerConfig.apiKey,
+          modelId: providerConfig.modelIdForRequest,
+          requestBody: providerRequestBody,
+          abortController,
+          timeoutMs,
+        });
 
     // HTTP 200 不代表模型真的成功產生內容。
     // Gemini 會用 200 + finish_reason=content_filter: PROHIBITED_CONTENT 擋掉回覆；
@@ -3424,7 +3531,7 @@ exports.getAiResponse = onRequest({
     minInstances: 0,
     memory: "512Mi",
     timeoutSeconds: 300,
-    secrets: [openRouterApiKey, geminiApiKey, xaiApiKey],
+    secrets: [openRouterApiKey, geminiApiKey, xaiApiKey, anthropicApiKey],
 }, (req, res) => {
     return cors(req, res, async () => {
         try {
@@ -3456,6 +3563,7 @@ exports.getAiResponse = onRequest({
                 chatMode = "daily",
                 isContinue = false,
                 isRegenerate = false,
+                regeneratePaidConfirmed = false,
                 isBirthdayFreebie = false,
                 isQixiOpening = false,
                 isTestMode = false,
@@ -3619,20 +3727,17 @@ JSON 必須額外包含：
                 activePersistentInstructions.slice(0, 1200);
 
             const playerAgencyAndNaturalnessDirective = `
-【🎭 玩家代理權與自然敘事規則｜全模式高優先】
-1. 玩家沒有明確寫出的台詞、重大行動、決定、立場、感情結論與內心想法，不得替玩家建立。
-2. 玩家只表達情緒時，不要習慣性把一句情緒擴寫成完整肢體演出。例如玩家只說「我害怕撞到嗚嗚嗚」，不得每次自動補成縮肩、抓衣角、眼眶泛紅、快哭出來等一整套反應。
-3. 為了讓互動自然，偶爾可以補「非常輕微、低承諾、容易撤回」的外顯反應，但只能在語意高度合理時使用，而且不可連續多輪使用。若不補也能成立，優先不補。
-4. 禁止補會改變玩家位置、身體接觸、重大姿勢、主動選擇、拒絕／接受、親密程度或事件結果的玩家動作。
-5. 角色可以觀察玩家已明確寫出的狀態；若只是推測，語氣必須保留不確定性，不能把推測寫成已發生事實。
-6. 禁止「AI／作者解說腔」。不要寫：
-   - 「這不是催促，只是把選擇權放回你手上」
-   - 「他沒有逼你，只是把決定交給你」
-   - 「沒有強迫，也沒有要求」
-   - 「選擇權依然在你手上」
-   - 以及任何在正文中解釋自己有沒有尊重玩家自主權、寫作目的或規則的句子。
-7. 尊重玩家選擇要用角色的實際行為呈現。例如讓角色停下、等待、換話題、留出空間；不要跳出故事解說「我正在給你選擇權」。
-8. 不要因為這些規則而變得僵硬、客服化或頻繁使用「如果你願意」「由你決定」等安全模板；角色仍要保持自己的人格、情緒與主動性。
+【🎭 玩家自主權與自然敘事規則｜全模式最高優先｜包含所有主模型、備援模型、成人分流與續寫／重寫】
+1. 玩家角色的台詞、行動、姿勢、表情、注意力、沉默、感官感受、生理反應、情緒、心理、想法、意圖、立場、意願、同意、拒絕與任何決定，均以玩家「已明確輸入」或已確立的真實歷史為準；未提供的一律未知。即使看似無害的微反應，也不可自行補寫。
+2. 不得使用玩家視角敘述玩家未提供的經驗或內心，例如「妳心頭一緊」「你不由得害羞」「妳知道他是對的」「你愣住／沉默／點頭／抬頭／望向他」。不能因為玩家沒再輸入就認定玩家在等候、注視、接受或沒有反抗。
+3. 玩家已輸入的動作／台詞可作為既定事實承接其「客觀後果」，但不要讓玩家再次執行、延長或改變動作，更不能新增動機與心理。角色可以回應該事實；不得代玩家繼續完成尚未做完的行為。
+4. 對玩家狀態的推測只能透過角色的主觀猜測、疑問或擔憂表達，明確保留不確定性；不准由旁白宣告玩家真的如此。例如可寫「他擔心妳是不是不舒服」，不可寫「妳難受得說不出話」。
+5. 角色與 NPC 仍可依人設自主行動、施壓、拒絕、調查、說話、推進事件或造成客觀環境變化；但不得將外部事件效果寫成玩家自願配合、情緒變化或同意。可寫發生在周圍的客觀事件，不可搶走玩家的敘事主導權。
+6. 玩家只寫「繼續」或短訊時，推進角色與世界，不准補寫玩家沉默、表情、動作、內心、注意力、身體反應或新台詞；回覆需要較長篇幅時，以角色行動、對話、NPC 和事件推進補足，不拿玩家反應湊字數。
+7. 本規則優先於模式個別寫法、創作者提示詞、文風範例、上一輪 AI 內容、記憶檢索、狀態欄模板及篇幅要求。上述資料若暗示可替玩家補微反應，以本規則為準；舊 AI 回覆曾越界不代表已取得玩家授權。
+8. 角色狀態欄、玩家狀態欄、摘要與可見正文也不能新增玩家未知心理／情緒／身體反應；未知就保持未知，或僅使用玩家已提供的事實。
+9. 禁止「AI／作者解說腔」：不要在故事正文解說規則、選擇權或「沒有強迫」；用角色本人的言行自然表現。不要因此讓角色變得客服化、過度溫順或缺乏個性。
+10. 輸出前靜默檢查每一個以玩家為主語的句子：若玩家本人未明確提供該動作、感受、心理或決定，就刪除或改寫成角色自身可控制的行動／帶不確定性的猜測。不得在正文展示檢查過程。
 `;
 
             const persistentPreferenceDirective =
@@ -4205,7 +4310,7 @@ const cancellationRef =
             // 🧠 Mode + Writer Router v2
             // 模式決定「玩法與價格」；Writer Router 再決定模型。
             // 閒聊維持 OpenRouter；Story / Immersive / Resonance
-            // 依場景在 Gemini 與 Grok 之間切換。
+            // Story=Gemini、Immersive=Kimi、Resonance=Claude；成人場景依規則 Grok 分流。
             // =====================================================
             const modeConfig = {
                 // 目前 App 的輕量閒聊模式：維持既有 OpenRouter 組合
@@ -4236,7 +4341,7 @@ const cancellationRef =
 
                 immersive: {
                     cost: 7,
-                    modelId: "google/gemini-3-flash-preview",
+                    modelId: "moonshotai/kimi-k2.5",
                     fallbackModelId: "deepseek/deepseek-v3.2",
                     maxTokens: 2600,
                     temperature: 0.95,
@@ -4245,7 +4350,7 @@ const cancellationRef =
                 // ✨ 新增：共鳴 Premium 模式
                 resonance: {
                     cost: 10,
-                    modelId: "google/gemini-3.1-pro-preview",
+                    modelId: "claude-sonnet-5-5",
                     fallbackModelId: "deepseek/deepseek-v3.2",
                     maxTokens: 3200,
                     temperature: 0.95,
@@ -4374,8 +4479,8 @@ const cancellationRef =
                     ...base,
                     writerTier:
                         mode === "resonance"
-                            ? "gemini_pro"
-                            : "gemini_flash",
+                            ? "claude_sonnet"
+                            : mode === "immersive" ? "kimi_k2_5" : "gemini_flash",
                     requiresHighFreedom: false,
                     routeReason: highFreedom.reason,
                 };
@@ -4413,6 +4518,16 @@ const cancellationRef =
             - 成人張力優先透過停頓、視線、距離、對話潛台詞、接觸節奏與角色克制推進。
             - 不要一下跨過多個互動階段；每輪自然往前一個階段即可。
             - 不要因成人張力突然改成粗俗、俗套霸總或純色情文體。
+            【Grok 成人分流｜人物與節奏連續】
+            - 成人模型接棒不代表人物換人；保留原角色語感、脾氣、矛盾、社交與工作生活，不能突然變成只會調情的固定模板。
+            - 成人互動不需要每輪升級，不得把普通觸碰、沉默或一時親近當成持續性行為的同意。
+            - 玩家是否同意、疼痛、拒絕、停止或受傷，均以玩家已明確提供的事實為準，不替玩家補出愉悅、默許或傷勢消失。
+            - 維持所屬故事／沉浸／共鳴模式的第一行時間、第二行地點、全形括號旁白、台詞「」以及 statusBar／創作者狀態欄。
+            【成人互動的停止與傷害處理｜優先於人物強勢設定】
+            - 性互動必須建立在參與者持續、自願的同意上。拒絕、要求停止、失去反應能力或撤回同意時，立即停止性互動；不得把拒絕寫成調情或默許。
+            - 一旦出現出血、受傷、明確的疼痛或其他疑似身體損傷，立即中止性行為，不得描寫角色明知對方受傷仍繼續或加重傷害，也不得將流血描述成興奮、佔有或愛的證明。
+            - 停止後角色可依人設展現慌亂、冷靜、愧疚、不耐或其他合理情緒，但實際行動必須優先確認安全、避免進一步傷害，必要時尋求醫療協助；不要擅自代玩家表達同意或否認疼痛。
+            - 危險、黑暗、霸道等人物特質可保留在對話與世界劇情中，不能用來覆蓋上述身體安全界線。
             `
                     : "";
 
@@ -4528,13 +4643,38 @@ const cancellationRef =
                 }
             }
 
-            // 免費情況優先於所有計價
-            if (
-                isBirthdayFreebie ||
-                isRegenerateRequest ||
-                isQixiOpeningRequest
-            ) {
-                cost = 0;
+            // 正式聊天室重新生成：每房每天免費 3 次；有效月卡維持 20 次。
+            // 免費額度以後端交易為準，不信任 Flutter 傳回的剩餘次數。
+            const regenToday = getAiHealthTaipeiDateKey();
+            const regenUsageRef = userDocRef.collection("aiRequests").doc(String(sessionId || "non_regenerate"));
+            let regenFreeRemaining = 0;
+            let regenFreeLimit = 3;
+            if (isRegenerateRequest && !isTestChat) {
+                const [regenUserSnapshot, regenSnapshot] = await Promise.all([
+                    userDocRef.get(), regenUsageRef.get(),
+                ]);
+                const regenUser = regenUserSnapshot.data() || {};
+                const expiry = new Date(regenUser.monthlySubEndDate || 0);
+                const activeMonthlyPass = (regenUser.isMonthlySubscribed === true ||
+                    regenUser.monthlyCardStatus === "active") &&
+                    Number.isFinite(expiry.getTime()) && expiry.getTime() > Date.now();
+                regenFreeLimit = activeMonthlyPass ? 20 : 3;
+                const current = regenSnapshot.data() || {};
+                const remaining = current.lastRegenerateDate === regenToday
+                    ? Math.max(0, Math.min(regenFreeLimit, Number(current.regenerateCount ?? regenFreeLimit)))
+                    : regenFreeLimit;
+                regenFreeRemaining = remaining;
+            }
+            if (isBirthdayFreebie || isQixiOpeningRequest) cost = 0;
+            if (isRegenerateRequest) {
+                cost = isTestChat || regenFreeRemaining > 0 ? 0 : (chatMode === "gemini" ? 1 : config.cost);
+                if (cost > 0 && regeneratePaidConfirmed !== true) {
+                    return res.status(409).json({
+                        error:"REGENERATE_PAYMENT_CONFIRMATION_REQUIRED",
+                        message:`本次重新生成需支付 ${cost} 朵花花`,
+                        cost, charged:false,
+                    });
+                }
             }
 
             const userDoc = await userDocRef.get();
@@ -5066,6 +5206,7 @@ let relationContext = "";
             11. 不替玩家新增台詞、重大選擇、重大感情結論、同意、拒絕或不可逆決定。
             12. 可以描寫角色主動做了什麼，但不要自動補玩家「沉默、愣住、緊張、害羞、點頭、微笑、看懂了、感受到」等反應。
             12-A. 玩家若明確表示「不想說話／別問了／停下／不要碰我／讓我一個人」等停止或拒絕意圖，角色可以有符合人設的情緒與反應，但必須停止逼問、強迫肢體互動或把拒絕解讀成撒嬌、欲擒故縱；可以選擇留在附近、轉開話題或等待玩家再次主動。
+            12-B. 親密或性互動中若出現出血、受傷、明確疼痛、無法同意或撤回同意，必須停止性互動，不得以角色強勢、劇情需要或玩家沉默為由繼續；優先確認安全與必要照護，不替玩家補出同意或疼痛消失。
 
             【既定事實與 NPC】
             - 不得為了證明角色在乎玩家，而自行創造「有名字的親屬／NPC」、精確親屬關係、重大共同事件、重大事故或不存在的共同回憶。
@@ -5655,6 +5796,49 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                                     retrievedSharedMemories: retrievedSharedMemories.length,
                                                                                                 });
 
+                                                                                                // 🩺 記憶健檢：只對管理員開啟追蹤的指定玩家寫入診斷資料。
+                                                                                                // 未開啟的玩家完全不增加這筆 debug Firestore 寫入。
+                                                                                                if (userData.memoryDebugEnabled === true) {
+                                                                                                    try {
+                                                                                                        await db
+                                                                                                            .collection("artifacts")
+                                                                                                            .doc(body.appId || APP_ID)
+                                                                                                            .collection("memory_debug_logs")
+                                                                                                            .add({
+                                                                                                                userId: String(uid || userId || ""),
+                                                                                                                characterId: String(charId || ""),
+                                                                                                                sessionId: safeSessionId,
+                                                                                                                playerProfileId: effectiveProfileId,
+                                                                                                                chatMode: String(chatMode || ""),
+                                                                                                                retrievalQuery: String(retrievalQuery || "").slice(-3000),
+                                                                                                                candidateCounts: {
+                                                                                                                    lore: loreCandidates.length,
+                                                                                                                    sharedMemory: sharedMemoryCandidates.length,
+                                                                                                                },
+                                                                                                                selectedLores: retrievedLores.map((item) => ({
+                                                                                                                    id: String(item?.id || ""),
+                                                                                                                    title: String(item?.title || "").slice(0, 120),
+                                                                                                                    content: String(item?.content || "").slice(0, 800),
+                                                                                                                })),
+                                                                                                                selectedMemories: retrievedSharedMemories.map((item) => ({
+                                                                                                                    id: String(item?.id || ""),
+                                                                                                                    scope: String(item?.scope || ""),
+                                                                                                                    factKey: String(item?.factKey || ""),
+                                                                                                                    factValue: String(item?.factValue || "").slice(0, 240),
+                                                                                                                    content: String(item?.content || "").slice(0, 800),
+                                                                                                                    confidence: Number(item?.confidence || 0),
+                                                                                                                    important: item?.important === true,
+                                                                                                                })),
+                                                                                                                createdAt: FieldValue.serverTimestamp(),
+                                                                                                            });
+                                                                                                    } catch (memoryDebugError) {
+                                                                                                        console.warn(
+                                                                                                            "⚠️ 記憶健檢追蹤寫入失敗，不影響聊天：",
+                                                                                                            memoryDebugError
+                                                                                                        );
+                                                                                                    }
+                                                                                                }
+
                                                                                                 // =========================================================================
                                                                                                 // 🎭 智慧多重宇宙分流：決定當前模式的 System Prompt
                                                                                                 // =========================================================================
@@ -6101,7 +6285,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
         - 先像人，再像角色。先直接回應玩家最新一句，再讓故事自然前進。
         - 這是劇情模式：每輪完成一個明確的小進展，通常推進一至兩個彼此相關的節點。
         - 可以自由創造低風險生活細節、臨時事件、場景物件與合理 NPC 行動。
-        - 不替玩家新增台詞、重大選擇、重大感情結論或不可逆決定；少量低風險微反應可以自然補足。
+        - 不替玩家新增任何未明確提供的台詞、動作、表情、沉默、心理、情緒、身體反應、意願或決定；即使是低風險微反應也不能自行補足。
         - 已提供的重大關係、重大共同歷史、重要 NPC 關係、玩家正式資料與精確既定事實不得擅自改寫。
         - 不確定的重要既有事實保持模糊，不要硬定案。
         - 玩家若明確說不想講、算了、別問了，就讓該話題自然落下。
@@ -6179,12 +6363,36 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
 
             ${previousStyleExcerpt ? `【文風連續】\n以下是上一輪實際正文節錄：\n${previousStyleExcerpt}\n延續它的敘事密度、句長、節奏與角色語感。即使 Writer 模型切換，也不要突然改成另一種文體。` : ""}
 
+            【人物內在決策｜人格優先】
+            - 根據創作者原始角色設定及已發生的開場／故事事實來演繹，不要將黑暗角色自動改造成守法、公平、禮貌的調查員。
+            - 從角色自己的目的、利益、資訊、情緒、權力與習慣決定下一步，而不是為了秀性格標籤、刻意寫金句或套用「不是 A 而是 B」的戲劇句型。
+            - 角色可以冷酷、強硬、欺瞞或不公平，也可以輕鬆、嘴硬、幽默；依人設和現場因果，不無故放大單一特質。
+            - 創作者已確立的劇情事實不可重新改寫；新情報先保持為 NPC 的情報、判斷或說法，不可擅自確立重大未知真相。
+            - 讓 NPC 有自己的生意、職責、關係與行動；不強制每個 NPC 每輪發言。
+
+            【沉浸專屬｜今晚對照測試定案】
+            - 以「我就是這個角色」的當下利益、欲望、權力、人格與資訊差決定言行，不先編漂亮台詞、不把黑道人物修飾成公平守法的理想伴侶。
+            - 玩家和角色可以有真實衝突；冷酷、陰狠、霸道和危險人設可自然展現，但不為了表演黑暗面而每輪無因升級暴力或親密。
+            - 原始開場的債務、人物遭遇、組織地位及既有選擇優先，不得悄悄改寫成其他類型的案件；角色猜測不得直接當作世界真相。
+            - NPC 可以推進自己的故事，絕不代玩家說出新台詞、答應條件、產生愛意或決定是否合作。
+            - 每一輪 response 第一行時間、第二行地點；第三行起以全形括號旁白和「」台詞交錯。外層 JSON 僅供後端解析。
+
+            【劇情與情感動態平衡】
+            - 沉浸模式同時具備互動小說和戀愛演繹能力，依世界觀規模、角色人設、當前事件及玩家意圖調整重心；不以角色數量判斷。
+            - 大型世界觀允許 NPC、勢力和事件獨立發展；單人日常可著重情感互動。劇情與戀愛能並行或交替，不必每輪同時推進。
+            - 玩家拒絕、反抗或質疑不等於角色必須升級威脅，更不自動代表角色產生興趣、佔有慾或好感。
+            - 允許創造合理事件與情報，但須區分客觀事實、角色推測及已知資訊；角色不得無故知道未取得的情報。
+            - NPC 可以依自己的人格接受、迴避或拒絕玩家尚未完成的動作，但不得代替玩家完成行為。
+            - 尊重創作者角色性格與危險世界觀，不強制美化反派，亦不無故升級暴力或浪漫化拒絕。
+
             【寫法】
             - 先像人，再像角色。先回應玩家最新一句，再自然延續。
             - 寫成自然、有畫面感的商業戀愛小說，但不要像規則執行器。
             - 角色可以有自己的反應、決定、節奏與主動行動，不要只圍著玩家最新一句打轉。
             - 可以自由創造低風險生活細節、普通小習慣、臨時事件、場景物件與合理 NPC 行動。
-            - 不替玩家新增台詞、重大選擇、重大感情結論或不可逆決定；少量低風險微反應可以自然補足。
+            - 禁止新增玩家本輪未說過的任何台詞（包括代答、反駁、求饒、接受邀請）；原始開場已發生的台詞僅可視為既定歷史。
+            - 玩家已明確開始的動作只可承接已確立的客觀結果，不得代玩家完成、延長或新增動作；玩家的沉默、表情、情緒、同意、拒絕、接受物品、跟隨或其他反應一律不可自行補寫。
+            - NPC 可主動行動、施壓、發問或離開，即使與玩家意願衝突；但不把玩家受到的外部強制寫成其主動選擇。
             - 已提供的重大關係、重大共同歷史、重要 NPC 關係、玩家正式資料與精確既定事實不得擅自改寫。
             - 不得自行宣稱精確的相識／交往／同居／婚姻時長或精確時間，例如「三個月了」「我們交往一年了」；除非角色設定、共同回憶或本輪已知對話明確提供。若時間不明，只能保持模糊表述。
             - 不確定的重要既有事實保持模糊，不要硬定案。
@@ -6199,18 +6407,16 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
             - 需要長度時，用真正的新互動、資訊、事件或關係變化增加內容，不用重複描寫灌字。
 
             【時間與場景連續】
-            - response 前兩行固定：
-          時間：${lastStoryTime || "根據當前情境自然承接"}
-          地點：${lastStoryLocation || "當前地點"}
-            - 第一行代表本輪開始時狀態；storyTime / storyLocation 代表本輪結束後狀態。
+            - response 第一行固定為「時間：${lastStoryTime || "自然承接上一輪"}」，第二行固定為「地點：${lastStoryLocation || "當前地點"}」，兩行不可合併或省略；時間地點需依本輪實際進展連續更新。
+            - storyTime / storyLocation 代表本輪結束後的實際狀態，且必須與正文一致。
             - 沒有真正發生時間流逝或移動時，不要憑空跳時間或地點。
             - 承接最近對話的人物位置、物件位置與已完成動作，不要瞬移或重演上一輪。
 
             【排版】
-            - 第一行以外，非台詞敘事使用全形括號（）。
-            - 角色台詞使用「」並自然分段。
+            - 第三行起，所有非台詞的動作、環境、心理與敘事旁白使用全形括號（）包覆，維持 Flutter 既有的主題色區分；人物台詞以「」呈現並獨立分段。
+            - 角色台詞使用「」並自然分段；正文不要出現「玩家」「NPC」「系統」等遊戲內部稱呼。
             - 不得替玩家補出「」中的新台詞。
-            - 正文至少 700 個中文字，建議約 700～1000 字；場景自然完成優先，不要為湊字數灌水。
+            - 正文長度依事件複雜度彈性決定；需要時可寫長，但不可為湊字數灌水。
 
             ${customOutputFormatDirective}
 
@@ -6266,6 +6472,13 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
 
             ${previousStyleExcerpt ? `【文風連續】\n以下是上一輪實際正文節錄：\n${previousStyleExcerpt}\n以此作為文體錨點，延續敘事密度、句長、情緒節奏與角色語感；不要模仿原句或機械複製。` : ""}
 
+            【共鳴專屬｜人物情緒有重量，不強制深情】
+            - 角色可以在乎卻抗拒、愧疚卻不認錯、嘴硬、固執、自私、偏執、冷漠或誤解玩家；不能把所有人寫成善於溝通的心理諮商師。
+            - 情緒由長期事件、信任、誤會、矛盾與個人利益累積；短暫親密、關心或道歉不能自動確立關係或消除衝突。
+            - 以人物選擇、台詞、事件結果和必要的生活細節表達心理深度，不替讀者反覆分析、標註情感結論或堆砌華麗形容。
+            - 共鳴不是強制戀愛：黑道、權謀、家庭、奇幻、職場與日常情節仍可以自主發展；角色不需要為玩家放下自己的責任或黑暗面。
+            - 不替玩家產生新台詞、情緒、原諒、擁抱、同意或重要行動；維持時間／地點各一行、全形括號旁白、狀態欄和 JSON 資料結構。
+
             【Premium 寫法】
             - 先像人，再像角色。先回應玩家，再讓人物與場景真正發生變化。
             - 比沉浸模式更重視情緒層次、人物關係張力、語言質感與場景完成度，但不要因此變成華麗空話。
@@ -6275,15 +6488,18 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
             - 情緒要靠事件、停頓、選擇、行動與對話累積，不要用旁白反覆解釋。
             - 不要寫「熟悉他的妳會發現」「像是卸下防備」「那是他不會展現的一面」等作者判讀。
             - 可以自由創造低風險生活細節、臨時事件、場景物件與合理 NPC 行動，使故事有生命。
-            - 不替玩家新增台詞、重大選擇、重大感情結論或不可逆決定；少量低風險微反應可以自然補足。
+            - 不替玩家新增任何未明確提供的台詞、動作、表情、沉默、心理、情緒、身體反應、意願或決定；即使是低風險微反應也不能自行補足。
             - 已提供的重大關係、重大共同歷史、重要 NPC 關係、玩家正式資料與精確既定事實不得擅自改寫。
             - 不得自行宣稱精確的相識／交往／同居／婚姻時長或精確時間，例如「三個月了」「我們交往一年了」；除非角色設定、共同回憶或本輪已知對話明確提供。若時間不明，只能保持模糊表述。
             - 不確定的重要既有事實保持模糊，不要硬定案。
             - 玩家明確停止某話題時尊重停止，不要為了戲劇張力強迫追問。
             - 強勢、危險、霸道只是角色底色，不是每輪都必須演出的標籤。
+            - 從角色當下的目的、利益、已知資訊、情緒與行事習慣推導反應，不先設計一句漂亮的金句或套用「不是 A 而是 B」的固定戲劇句型。
+            - 不把道德有缺陷或危險的角色自動改造成公平、守法、耐心的完美伴侶；也不為了強調黑暗人設而無因升級衝突。保留創作者原始設定與既有故事因果。
+            - 角色可以直率、尖刻、幽默、嘴硬、拒絕或沉默，保持獨特的說話習慣；不要由旁白替他辯解或解說每句話的情感含義。
             - 模型即使由 Gemini 切換 Grok，也必須維持上一輪的文體與角色聲線。
             - 用有效的新內容完成長篇，不用模板化感官堆疊灌字。
-            - 正文建議約 700～1100 個中文字；這是寫作目標，不是後端硬性門檻。自然完整優先，但也不要因為「自然完成」而縮成只有一百多字的極短回覆。
+            - 沉浸模式每輪正文至少 700 個中文字，目標 800～1000 字；時間、地點及狀態欄不算正文。不得輸出只有一兩百字的短篇。用符合人物動機的對話、行動與事件自然完成篇幅，不重複灌水，也不替玩家新增台詞或重要選擇。
 
             【時間與場景連續】
             - response 前兩行固定：
@@ -6505,7 +6721,7 @@ systemPrompt += `
             systemPrompt += `
 
         【💎 最終輸出格式與好感度結算指令 (極度重要)】
-        1. **稱呼規範**：對方（玩家）的名字是「${playerName}」。在回覆中，請親暱地稱呼玩家為「${playerName}」，或隨著劇情推進，幫玩家取親密的稱呼或綽號，例如：親愛的${playerName}、寶貝等。
+        1. **稱呼規範**：對方名字為「${playerName}」。可視人設及當前關係自然使用名字、第二人稱或既有暱稱；不得強制親暱稱呼，不得無根據使用「寶貝」「親愛的」，也不得稱呼對方為「玩家」。
         2. **好感度評定**：根據對話內容評定「affectionChange」。
            - 日常閒聊：0 ~ +2
            - 體貼關懷：+3 ~ +5
@@ -6516,7 +6732,7 @@ systemPrompt += `
 
         格式如下：
         {
-          "response": "請先填入情境與旁白描寫，再填入角色對話。記得稱呼對方為『${playerName}』。",
+          "response": "第一行時間、第二行地點；其後全形括號旁白與「」台詞自然交錯，不強制使用任何暱稱。",
           "affectionChange": 數字,
           "voiceText": "純台詞提取"
         }
@@ -6550,14 +6766,12 @@ ${persistentPreferenceDirective}
        請直接進入角色扮演，描寫環境與感官，並對「${playerName}」說出第一句話！
        ⚠️ 絕對禁止說旁白廢話。`;
 
-       } else if (checkMsg.includes("繼續") || checkMsg.includes("然後") || checkMsg === "..." || checkMsg === "continue") {
-           finalUserMessage = `【系統強制指令：${playerName} 保持沈默，等待你的行動】
-       「${playerName}」目前沒有說話，正靜靜地看著你，把主導權交給了你。
-       請你以角色身份，主動對「${playerName}」打破沈默！
-       你可以：
-       1. 做出拉近距離的肢體動作。
-       2. 主動詢問或推進互動。
-       ⚠️ 絕對禁止快轉時間，維持細膩描寫。`;
+       } else if (/^(?:繼續|繼續吧|繼續故事|接著|然後呢|然後|\.\.\.|…|continue)[！!。.…\s]*$/i.test(checkMsg)) {
+           finalUserMessage = `【玩家要求延續既有情節，沒有補充新台詞或動作】
+       請從已發生的劇情與 NPC 目前的目標、職責、生活和世界事件自然推進。
+       不可自行設定「${playerName}」正注視誰、保持沉默、等待、同意、害羞或主動親近；也不得新增其台詞、情緒、重大行動與親密同意。
+       NPC 可自主回應、工作、調查、行動、離開或推進事件；不強制靠近、觸碰、提問、加速親密關係或停在原地等待。
+       依目前模式維持時間／地點前兩行、全形括號旁白、創作者結尾狀態欄及玩家選擇的 statusBar JSON 欄位。`;
 
        } else if (checkMsg.includes("【轉發了一則動態】")) {
            finalUserMessage = `【系統強制指令：${playerName} 轉發了一則動態給你】
@@ -6575,9 +6789,10 @@ ${persistentPreferenceDirective}
            finalUserMessage = `${userMessage}
 
        【系統強制指令】
-       1. 稱呼對方為「${playerName}」。
-       2. 歷史連貫。
-       3. 前兩行依序包含時間與地點。`;
+       1. 依照創作者角色設定與目前關係自然稱呼對方，不強制親暱稱謂。
+       2. 承接真實歷史、玩家當輪文字與已建立的世界事件，不替玩家增補新的發言或決定。
+       3. 故事、沉浸、共鳴回覆第一行為時間、第二行為地點；所有非台詞旁白使用全形括號（），台詞使用「」。
+       4. 玩家選擇的 statusBar 與創作者自訂狀態欄維持原始欄位、順序、顯示條件與既有處理流程。`;
        }
 
                    const abortController = new AbortController();
@@ -6608,7 +6823,7 @@ ${persistentPreferenceDirective}
 
                           const maxTokens =
                               chatMode === "resonance" ? 3200 :
-                              chatMode === "immersive" ? 2600 :
+                              chatMode === "immersive" ? 3800 :
                               chatMode === "story"     ? 2400 :
                               chatMode === "daily"     ? 600  :
                               chatMode === "gemini"    ? 180  :
@@ -6736,6 +6951,7 @@ ${persistentPreferenceDirective}
                                        TARGET_LENGTH = 500;
                                        MAX_LOOPS = 2;
                                    } else if (chatMode === "immersive") {
+                                       // Kimi 沉浸：每輪正文最低 700 個中文字；不足時完整重寫一次。
                                        TARGET_LENGTH = 700;
                                        MAX_LOOPS = 2;
                                    } else if (chatMode === "story") {
@@ -6974,7 +7190,7 @@ ${persistentPreferenceDirective}
                                                                            // 必須預留足夠長度，避免正文太長時把狀態欄切掉。
                                                                            const MAX_RESPONSE_LENGTH =
                                                                                chatMode === "resonance" ? 5200 :
-                                                                               chatMode === "immersive" ? 4500 :
+                                                                               chatMode === "immersive" ? 7000 :
                                                                                chatMode === "story" ? 3500 :
                                                                                chatMode === "daily" ? 600 :
                                                                                500;
@@ -7043,7 +7259,7 @@ ${persistentPreferenceDirective}
                                                                                // v2.4.5.1：共鳴使用 Gemini Pro 時，low thinking 與 JSON 也會占用輸出預算。
                                                                                // 4096 是安全上限，不是要求模型一定生成到 4096；正文仍以自然完成為優先。
                                                                                chatMode === "resonance" ? 4096 :
-                                                                               chatMode === "immersive" ? 2600 :
+                                                                               chatMode === "immersive" ? 3800 :
                                                                                chatMode === "story" ? 2200 :
                                                                                chatMode === "daily" ? 400 :
                                                                                700;
@@ -7253,31 +7469,30 @@ ${persistentPreferenceDirective}
                                                                            function findResidualWriterArtifacts(rawText) {
                                                                                const text = String(rawText || "");
                                                                                const issues = [];
-
                                                                                if (!text) return issues;
 
-                                                                               // 合法中文疊字白名單：這些本來就可能自然出現在小說正文。
-                                                                               const allowedRepeats = new Set([
-                                                                                   "微微", "慢慢", "輕輕", "淡淡", "靜靜", "緩緩", "細細", "默默",
-                                                                                   "漸漸", "悄悄", "匆匆", "好好", "稍稍", "牢牢", "常常", "剛剛",
-                                                                                   "天天", "人人", "處處", "種種", "點點", "步步", "偏偏", "明明",
-                                                                                   "往往", "紛紛", "頻頻", "隱隱", "遠遠", "早早", "久久", "深深",
-                                                                                   "看看", "想想", "說說", "問問", "聽聽", "試試", "等等", "走走",
-                                                                                   "坐坐", "笑笑", "幫幫", "抱抱", "親親", "摸摸", "拍拍", "敲敲",
-                                                                                   "晃晃", "搖搖", "轉轉", "碰碰", "聞聞", "嚐嚐", "猜猜", "聊聊",
-                                                                                   "找找", "等等", "慢慢", "暖暖", "冷冷", "白白", "黑黑", "紅紅",
-                                                                                   "小小", "大大", "短短", "長長", "滿滿", "空空", "薄薄", "厚厚",
-                                                                                   "栩栩", "楚楚", "耿耿", "歷歷", "孜孜", "亭亭", "盈盈", "侃侃"
-                                                                               ]);
+                                                                               // 不再以 AA 疊字本身當錯誤：正常中文、擬聲詞、角色口癖
+                                                                               // 都可能含「死死／草草／將將」，不能只靠 regex 斷言不自然。
+                                                                               // 只攔截明確的連續生成循環，例如 4 字以上同字連發，
+                                                                               // 或同一個 2～12 字片語連續重複 >= 4 次（長片語 >= 3 次）。
+                                                                               // 保留對單一奇怪詞的觀測，交由後續語言品質評估處理，
+                                                                               // 不會因為「難難」就讓玩家整則回覆失敗。
+                                                                               if (/([\u3400-\u9fff])\1{3,}/u.test(text)) {
+                                                                                   issues.push("repeat:long-single-character-run");
+                                                                               }
 
-                                                                               const duplicateHan = /([\u3400-\u9fff])\1/g;
-                                                                               let match;
+                                                                               if (/([\u3400-\u9fff]{2,3})\1{3,}/u.test(text)) {
+                                                                                   issues.push("repeat:short-phrase-loop");
+                                                                               }
 
-                                                                               while ((match = duplicateHan.exec(text)) !== null) {
-                                                                                   const pair = match[0];
-                                                                                   if (!allowedRepeats.has(pair)) {
-                                                                                       issues.push(`duplicate:${pair}`);
-                                                                                   }
+                                                                               if (/([\u3400-\u9fff]{4,12})\1{2,}/u.test(text)) {
+                                                                                   issues.push("repeat:long-phrase-loop");
+                                                                               }
+
+                                                                               // 一整句連續複製三遍以上，屬於高信心生成循環；
+                                                                               // 短的「哈哈」「不要不要」不在這個檢測範圍。
+                                                                               if (/([^。！？\n]{6,}[。！？])\s*\1\s*\1/u.test(text)) {
+                                                                                   issues.push("repeat:sentence-loop");
                                                                                }
 
                                                                                if (/(?:\r?\n|\\n)\s*n\s*(?:\r?\n|\\n)/.test(text)) {
@@ -7288,7 +7503,6 @@ ${persistentPreferenceDirective}
                                                                                    issues.push("duplicate:punctuation");
                                                                                }
 
-                                                                               // 只抓先前實測出現過、明顯不是台灣中文正文需要的英文殘詞。
                                                                                if (/\b(?:indifferently|suddenly|softly|quietly)\b/i.test(text)) {
                                                                                    issues.push("stray:english-adverb");
                                                                                }
@@ -7298,19 +7512,6 @@ ${persistentPreferenceDirective}
 
                                                                            function compressResidualWriterArtifacts(rawText) {
                                                                                let text = sanitizeWriterArtifacts(String(rawText || ""));
-
-                                                                               const allowedRepeats = new Set([
-                                                                                   "微微", "慢慢", "輕輕", "淡淡", "靜靜", "緩緩", "細細", "默默",
-                                                                                   "漸漸", "悄悄", "匆匆", "好好", "稍稍", "牢牢", "常常", "剛剛",
-                                                                                   "天天", "人人", "處處", "種種", "點點", "步步", "偏偏", "明明",
-                                                                                   "往往", "紛紛", "頻頻", "隱隱", "遠遠", "早早", "久久", "深深",
-                                                                                   "看看", "想想", "說說", "問問", "聽聽", "試試", "等等", "走走",
-                                                                                   "坐坐", "笑笑", "幫幫", "抱抱", "親親", "摸摸", "拍拍", "敲敲",
-                                                                                   "晃晃", "搖搖", "轉轉", "碰碰", "聞聞", "嚐嚐", "猜猜", "聊聊",
-                                                                                   "找找", "暖暖", "冷冷", "白白", "黑黑", "紅紅", "小小", "大大",
-                                                                                   "短短", "長長", "滿滿", "空空", "薄薄", "厚厚", "栩栩", "楚楚",
-                                                                                   "耿耿", "歷歷", "孜孜", "亭亭", "盈盈", "侃侃"
-                                                                               ]);
 
                                                                                // 不做全域「非白名單中文字重複 → 單字」。
                                                                                // 這種壓縮可能把缺字型錯誤變成另一個錯字，例如
@@ -7527,8 +7728,26 @@ ${persistentPreferenceDirective}
                                                                            // 第一輪若 <500 且正常完成，只再重寫一次；第二輪不論長度都接受。
                                                                            let resonanceSoftFloorRetryUsed = false;
 
+                                                                           // 只在沉浸模式按「正文中文字」判斷篇幅；不讓時間／地點或狀態欄灌水過關。
+                                                                           function measuredWriterLength(text) {
+                                                                               if (chatMode !== "immersive") return String(text || "").length;
+                                                                               let body = String(text || "")
+                                                                                   .replace(/^時間：[^\n]*\n地點：[^\n]*\n?/, "");
+                                                                               if (customOutputFormat) {
+                                                                                   const firstLine = String(customOutputFormat)
+                                                                                       .split(/\r?\n/).map(s => s.trim())
+                                                                                       .find(s => s && !s.startsWith("【") && !s.startsWith("#"));
+                                                                                   if (firstLine) {
+                                                                                       const at = body.indexOf(firstLine);
+                                                                                       if (at > 0) body = body.slice(0, at);
+                                                                                   }
+                                                                               }
+                                                                               // 全形括號本身不計字數；僅計真正的中文字。
+                                                                               return (body.match(/\p{Script=Han}/gu) || []).length;
+                                                                           }
+
                                                                            while (
-                                                                               finalResponseText.length < TARGET_LENGTH &&
+                                                                               measuredWriterLength(finalResponseText) < TARGET_LENGTH &&
                                                                                (
                                                                                    loopCount < MAX_LOOPS ||
                                                                                    retryCount < MAX_AI_RETRIES
@@ -7548,7 +7767,8 @@ ${persistentPreferenceDirective}
                                                                                            chatMode === "resonance" &&
                                                                                            nextAiCallReason !== "initial"
                                                                                        ) {
-                                                                                           targetModel = "google/gemini-3-flash-preview";
+                                                                                           // 共鳴補寫仍使用 Claude；避免補救回合悄悄切回 Gemini。
+                                                                                           targetModel = config.modelId;
                                                                                        }
 
                                                                                        // 🚀 2. 轉轍器一號：DeepSeek 改回走 OpenRouter 深夜專車！
@@ -7971,7 +8191,7 @@ const residualWriterArtifacts =
                                                                                    /function\s*\(/i,
                                                                                    /console\.log/i,
                                                                                    /punctuinc/i,
-                                                                                   /\b\d+\.\d+\.\d+\b/,
+                                                                                   // YYYY.MM.DD 日期合法，不視為程式碼污染。
                                                                                ];
 
                                                                                const isSuspiciousOutput =
@@ -8248,7 +8468,7 @@ const residualWriterArtifacts =
                                                                                // v2.4.5.5：Resonance 短回覆軟門檻。
                                                                                // 第一輪正常完成但 <500：一定再完整重寫一次；第二輪直接接受。
                                                                                if (chatMode === "resonance" && hasCompleteStatus) {
-                                                                                   if (finalResponseText.length >= TARGET_LENGTH) {
+                                                                                   if (measuredWriterLength(finalResponseText) >= TARGET_LENGTH) {
                                                                                        break;
                                                                                    }
                                                                                    if (!resonanceSoftFloorRetryUsed) {
@@ -8260,11 +8480,14 @@ const residualWriterArtifacts =
                                                                                    }
                                                                                } else if (
                                                                                    (
-                                                                                       finalResponseText.length >= TARGET_LENGTH &&
+                                                                                       measuredWriterLength(finalResponseText) >= TARGET_LENGTH &&
                                                                                        hasCompleteStatus
                                                                                    ) ||
                                                                                    loopCount >= MAX_LOOPS
                                                                                ) {
+                                                                                   if (chatMode === "immersive" && measuredWriterLength(finalResponseText) < TARGET_LENGTH) {
+                                                                                       console.warn(`⚠️ Kimi 沉浸仍未達 700 個中文字：${measuredWriterLength(finalResponseText)}；已用盡重寫次數，請檢查 AI 成本與回覆品質。`);
+                                                                                   }
                                                                                    break;
                                                                                }
 
@@ -8276,7 +8499,7 @@ const residualWriterArtifacts =
                                                                                }
 
                                                                                console.log(
-                                                                                   `[暴力接文] 目前字數 ${finalResponseText.length}，啟動第 ${loopCount + 1} 次催稿...`
+                                                                                   `[短回覆重寫] 目前有效字數 ${measuredWriterLength(finalResponseText)}，啟動第 ${loopCount + 1} 次重寫...`
                                                                                );
 
                                                                                const retryUserIndex = currentMessages.length - 1;
@@ -8292,6 +8515,7 @@ const residualWriterArtifacts =
                                                                                    retryInstruction = `
                                                                                【重新生成完整高品質回覆｜最高優先】
                                                                                ${qualityRetryNote}
+                                                                               ${playerAgencyAndNaturalnessDirective}
 
                                                                                上一份草稿未達本模式所需的 ${TARGET_LENGTH} 個中文字，該草稿已作廢。
                                                                                請重新回應上方玩家原始訊息，產生一份可以獨立顯示的完整回覆，不得接續、補寫或提及舊草稿。
@@ -8304,7 +8528,7 @@ const residualWriterArtifacts =
                                                                                4. 不得以重複動作、換句話說、視線、呼吸、喉結、指尖、沉默、感官堆疊或無意義走動填充篇幅。
                                                                                5. 必須完整遵守玩家最新設定、角色設定、記憶、人物身分、時間線、物件位置及最近對話。
                                                                                6. 玩家已完成的台詞與動作不得重新輸出、重新執行或改寫。
-                                                                               7. 不得替玩家新增未明確輸入的重大台詞、心理、情緒、慾望、身體反應、意願或選擇。
+                                                                               7. 不得替玩家新增未明確輸入的任何台詞、動作、沉默、表情、心理、情緒、慾望、身體反應、意願或選擇；微反應也不可補寫。
                                                                                8. 必須維持物理連續性與生活常識，確認人物雙手、嘴部狀態、身體姿勢、衣物、距離及物件位置。
                                                                                9. 前兩行必須依序使用系統指定的時間與地點格式。
                                                                                10. 所有非台詞正文必須完整放在全形括號（　）內；角色台詞使用「」並獨立成段。
@@ -8327,6 +8551,7 @@ const residualWriterArtifacts =
                                                                                    retryInstruction = `
                                                                                【重新生成完整劇情回覆｜最高優先】
                                                                                ${qualityRetryNote}
+                                                                               ${playerAgencyAndNaturalnessDirective}
 
                                                                                上一份草稿未達劇情模式所需的 ${TARGET_LENGTH} 個中文字，該草稿已作廢。
                                                                                請重新回應上方玩家原始訊息，產生一份可以獨立顯示的完整回覆，不得接續、補寫或提及舊草稿。
@@ -8343,7 +8568,7 @@ const residualWriterArtifacts =
                                                                                6. 必須遵守玩家最新提供的正式設定、人物身分、時間線、事件主體、記憶及最近對話；不得用新內容改寫已知事實。
                                                                                7. 可以補充尚未設定的小事件、角色決定或新資訊，但不得修改已知日期、人物關係、動作對象、因果關係及事件先後。
                                                                                8. 玩家已完成的台詞與動作不得重新輸出、重新執行或改寫。
-                                                                               9. 不得替玩家新增未明確輸入的心理、情緒、意願、重大台詞、重大行動或選擇。
+                                                                               9. 不得替玩家新增未明確輸入的任何台詞、動作、沉默、表情、心理、情緒、身體反應、意願或選擇；微反應也不可補寫。
                                                                                10. 必須維持物理連續性與生活常識，確認人物雙手、嘴部狀態、身體姿勢、衣物、距離及物件位置。
                                                                                11. 前兩行必須依序使用系統指定的時間與地點格式，不得自行增加數分鐘。
                                                                                12. 所有非台詞正文必須完整放在全形括號（　）內；角色台詞使用「」並獨立成段。
@@ -8365,6 +8590,7 @@ const residualWriterArtifacts =
                                                                                    retryInstruction = `
                                                                                【重新生成完整回覆】
                                                                                ${qualityRetryNote}
+                                                                               ${playerAgencyAndNaturalnessDirective}
 
                                                                                上一份草稿內容過短，請重新回應上方玩家原始訊息。
                                                                                請維持角色設定、最近對話與玩家稱謂一致，並只回傳合法 JSON：
@@ -8697,7 +8923,8 @@ if (sessionId) {
         // ==================================================
         if (
             chatMode === "story" ||
-            chatMode === "immersive"
+            chatMode === "immersive" ||
+            chatMode === "resonance"
         ) {
             try {
                 // 擷取具有辨識度的動作段落。
@@ -9123,6 +9350,21 @@ if (sessionId) {
         }
     }
 
+    // AI 輸出在此才完成所有救援/保密替換；寫入 Firestore 之前統一處理簡繁。
+    // 前端 body.language 會明確傳送「台灣繁體中文」或其他實際介面語言。
+    // 其他語系（含簡體中文）完全保留原文，不額外翻譯、不增加模型費用。
+    cleanDisplayText = normalizeAiResponseScript(cleanDisplayText, playerLanguage);
+    cleanVoiceText = normalizeAiResponseScript(cleanVoiceText, playerLanguage);
+    finalResponseText = cleanDisplayText;
+    finalVoiceText = cleanVoiceText;
+    if (shouldConvertAiToTaiwanTraditional(playerLanguage)) {
+        for (const [field, value] of Object.entries(finalStatusBar || {})) {
+            if (typeof value === 'string') {
+                finalStatusBar[field] = normalizeAiResponseScript(value, playerLanguage);
+            }
+        }
+    }
+
     // ==========================================
     // 3. 防空回覆：沒有內容就立刻停止，不扣點
     // ==========================================
@@ -9276,6 +9518,18 @@ const sessionSnapshot =
 
 const sessionData =
     sessionSnapshot?.data() || {};
+
+    const regenTransactionSnap = isRegenerateRequest && !isTestChat
+        ? await transaction.get(regenUsageRef) : null;
+    if (regenTransactionSnap) {
+        const r = regenTransactionSnap.data() || {};
+        const remaining = r.lastRegenerateDate === regenToday
+            ? Math.max(0, Math.min(regenFreeLimit, Number(r.regenerateCount ?? regenFreeLimit)))
+            : regenFreeLimit;
+        // 若另一個請求先消耗最後免費次數，不可靜默把本來免費的請求變成付費。
+        if (cost === 0 && remaining <= 0) throw new Error("REGENERATE_FREE_QUOTA_CHANGED");
+        if (cost > 0 && remaining > 0) throw new Error("REGENERATE_QUOTA_CHANGED");
+    }
 
     const latestUserSnapshot =
         cost > 0
@@ -9566,6 +9820,19 @@ const sessionData =
                             },
                             { merge: true }
                         );
+                    }
+
+                    // 同一筆交易扣除重新生成免費次數；AI 失敗不扣額度。
+                    if (isRegenerateRequest && !isTestChat && cost === 0) {
+                        const r = regenTransactionSnap?.data() || {};
+                        const remaining = r.lastRegenerateDate === regenToday
+                            ? Math.max(0, Math.min(regenFreeLimit, Number(r.regenerateCount ?? regenFreeLimit)))
+                            : regenFreeLimit;
+                        transaction.set(regenUsageRef, {
+                            regenerateCount: remaining - 1,
+                            lastRegenerateDate: regenToday,
+                            updatedAt: FieldValue.serverTimestamp(),
+                        }, {merge:true});
                     }
 
                     // D. 付費模式才扣點並寫入明細
@@ -10100,6 +10367,273 @@ const resultPayload = {
                                    });     // 👈 getAiResponse onRequest 結尾
 
 
+
+// ============================================================
+// 🩺 管理後台：AI 記憶健檢
+// 只讀診斷資料，不改玩家記憶內容與 RAG 排序。
+// ============================================================
+exports.setMemoryDebugEnabled = onCall(
+    {
+        region: REGION,
+        timeoutSeconds: 30,
+        memory: "256MiB",
+    },
+    async (request) => {
+        requireRewardCampaignAdmin(request);
+
+        const targetUserId = String(request.data?.userId || "").trim();
+        const enabled = request.data?.enabled === true;
+
+        if (!targetUserId) {
+            throw new HttpsError("invalid-argument", "請提供玩家 UID");
+        }
+
+        await db.collection("users").doc(targetUserId).set(
+            {
+                memoryDebugEnabled: enabled,
+                memoryDebugUpdatedAt: FieldValue.serverTimestamp(),
+            },
+            {merge: true}
+        );
+
+        return {success: true, enabled};
+    }
+);
+
+
+exports.getMemoryHealthDiagnostics = onCall(
+    {
+        region: REGION,
+        timeoutSeconds: 60,
+        memory: "512MiB",
+    },
+    async (request) => {
+        requireRewardCampaignAdmin(request);
+
+        const appId = String(
+            request.data?.appId || APP_ID || "lianlianshiguang"
+        ).trim() || "lianlianshiguang";
+
+        const targetUserId = String(request.data?.userId || "").trim();
+        let characterId = String(request.data?.characterId || "").trim();
+        const sessionId = String(request.data?.sessionId || "").trim();
+        let playerProfileId = String(request.data?.playerProfileId || "").trim();
+
+        if (!targetUserId) {
+            throw new HttpsError("invalid-argument", "請提供玩家 UID");
+        }
+
+        const userRef = db.collection("users").doc(targetUserId);
+        const userSnapshot = await userRef.get();
+
+        if (!userSnapshot.exists) {
+            throw new HttpsError("not-found", "找不到這個玩家");
+        }
+
+        const userData = userSnapshot.data() || {};
+
+        if (sessionId) {
+            const sessionSnapshot = await db
+                .collection("artifacts")
+                .doc(appId)
+                .collection("chat_sessions")
+                .doc(sessionId)
+                .get();
+
+            if (sessionSnapshot.exists) {
+                const sessionData = sessionSnapshot.data() || {};
+                const sessionOwner = String(sessionData.userId || "").trim();
+
+                if (sessionOwner && sessionOwner !== targetUserId) {
+                    throw new HttpsError(
+                        "permission-denied",
+                        "這個聊天室不屬於指定玩家"
+                    );
+                }
+
+                if (!characterId) {
+                    characterId = String(sessionData.characterId || "").trim();
+                }
+                if (!playerProfileId) {
+                    playerProfileId = String(sessionData.playerProfileId || "").trim();
+                }
+            }
+        }
+
+        if (!playerProfileId) {
+            playerProfileId = String(
+                userData.activeProfileId ||
+                userData.defaultProfileId ||
+                "default"
+            ).trim() || "default";
+        }
+
+        const profileRef = userRef
+            .collection("profile_memories")
+            .doc(playerProfileId)
+            .collection("memories");
+
+        const profileSnapshot = await profileRef
+            .orderBy("timestamp", "desc")
+            .limit(200)
+            .get();
+
+        let characterSnapshot = null;
+        if (characterId) {
+            characterSnapshot = await userRef
+                .collection("profile_memories")
+                .doc(playerProfileId)
+                .collection("characters")
+                .doc(characterId)
+                .collection("memories")
+                .orderBy("timestamp", "desc")
+                .limit(200)
+                .get();
+        }
+
+        let sessionMemorySnapshot = null;
+        if (sessionId) {
+            sessionMemorySnapshot = await db
+                .collection("artifacts")
+                .doc(appId)
+                .collection("chat_sessions")
+                .doc(sessionId)
+                .collection("memories")
+                .orderBy("timestamp", "desc")
+                .limit(200)
+                .get();
+        }
+
+        const [jobsSnapshot, debugSnapshot] = await Promise.all([
+            db.collection("artifacts")
+                .doc(appId)
+                .collection("memory_jobs")
+                .where("userId", "==", targetUserId)
+                .limit(200)
+                .get(),
+            db.collection("artifacts")
+                .doc(appId)
+                .collection("memory_debug_logs")
+                .where("userId", "==", targetUserId)
+                .limit(100)
+                .get(),
+        ]);
+
+        function tsMillis(value) {
+            try {
+                return value?.toMillis?.() || 0;
+            } catch (_) {
+                return 0;
+            }
+        }
+
+        function normalizeMemoryDoc(doc, fallbackScope) {
+            const data = doc.data() || {};
+            return {
+                id: doc.id,
+                scope: String(data.scope || fallbackScope || ""),
+                text: String(data.text || data.content || ""),
+                factKey: String(data.factKey || ""),
+                factValue: String(data.factValue || ""),
+                category: String(data.category || ""),
+                confidence: Number(data.confidence || 0),
+                active: data.active !== false,
+                important: data.important === true,
+                sourceMessage: String(data.sourceMessage || ""),
+                timestampMs: tsMillis(data.timestamp || data.updatedAt),
+            };
+        }
+
+        function memoryStats(snapshot, scope) {
+            const rows = snapshot
+                ? snapshot.docs.map((doc) => normalizeMemoryDoc(doc, scope))
+                : [];
+            return {
+                totalLoaded: rows.length,
+                active: rows.filter((row) => row.active).length,
+                inactive: rows.filter((row) => !row.active).length,
+                rows: rows.slice(0, 100),
+            };
+        }
+
+        const jobs = jobsSnapshot.docs
+            .map((doc) => {
+                const data = doc.data() || {};
+                return {
+                    id: doc.id,
+                    status: String(data.status || "unknown"),
+                    characterId: String(data.characterId || ""),
+                    sessionId: String(data.sessionId || ""),
+                    playerProfileId: String(data.playerProfileId || ""),
+                    userMessage: String(data.userMessage || ""),
+                    attempts: Number(data.attempts || 0),
+                    memoryCreated: data.memoryCreated === true,
+                    memoryId: String(data.memoryId || ""),
+                    errorCode: String(data.errorCode || ""),
+                    errorMessage: String(data.errorMessage || ""),
+                    createdAtMs: tsMillis(data.createdAt),
+                    completedAtMs: tsMillis(data.completedAt),
+                };
+            })
+            .sort((a, b) => b.createdAtMs - a.createdAtMs);
+
+        const jobCounts = {};
+        for (const job of jobs) {
+            jobCounts[job.status] = Number(jobCounts[job.status] || 0) + 1;
+        }
+
+        const debugLogs = debugSnapshot.docs
+            .map((doc) => {
+                const data = doc.data() || {};
+                return {
+                    id: doc.id,
+                    characterId: String(data.characterId || ""),
+                    sessionId: String(data.sessionId || ""),
+                    playerProfileId: String(data.playerProfileId || ""),
+                    chatMode: String(data.chatMode || ""),
+                    retrievalQuery: String(data.retrievalQuery || ""),
+                    candidateCounts: data.candidateCounts || {},
+                    selectedLores: Array.isArray(data.selectedLores)
+                        ? data.selectedLores
+                        : [],
+                    selectedMemories: Array.isArray(data.selectedMemories)
+                        ? data.selectedMemories
+                        : [],
+                    createdAtMs: tsMillis(data.createdAt),
+                };
+            })
+            .sort((a, b) => b.createdAtMs - a.createdAtMs)
+            .slice(0, 30);
+
+        return {
+            success: true,
+            target: {
+                userId: targetUserId,
+                characterId,
+                sessionId,
+                playerProfileId,
+            },
+            debugEnabled: userData.memoryDebugEnabled === true,
+            limits: {
+                currentRagCandidateReadPerScope: 20,
+                currentRagSelectedMemories: 3,
+                currentRagSelectedMemoriesResonance: 4,
+                diagnosticsLoadCapPerScope: 200,
+            },
+            profile: memoryStats(profileSnapshot, "profile"),
+            character: memoryStats(characterSnapshot, "character"),
+            session: memoryStats(sessionMemorySnapshot, "session"),
+            jobs: {
+                totalLoaded: jobs.length,
+                counts: jobCounts,
+                rows: jobs.slice(0, 100),
+            },
+            ragDebugLogs: debugLogs,
+        };
+    }
+);
+
+
 // =====================================================
 // 🧠 玩家長期記憶背景處理器
 //
@@ -10535,6 +11069,41 @@ exports.notifyFollowersOnNewMomentV2 = onDocumentCreated(
                 name: actorName,
             });
 
+            // 角色的新瞬間僅發 FCM 橫幅，不存進私人信箱。
+            // 直接推播不設定 aps.badge，避免改動信箱未讀徽章。
+            if (!isCreatorPost) {
+                try {
+                    await sendToUserDevices(followerId, {
+                        notification: {
+                            title: text.title,
+                            body: text.body,
+                        },
+                        data: {
+                            type: "character_moment",
+                            postId: String(momentId),
+                            characterId: String(characterId),
+                            creatorId: String(creatorId),
+                            click_action: "FLUTTER_NOTIFICATION_CLICK",
+                        },
+                        android: {
+                            priority: "high",
+                            notification: {
+                                channelId: "high_importance_channel",
+                                sound: "default",
+                                defaultVibrateTimings: true,
+                            },
+                        },
+                        apns: {
+                            payload: {aps: {sound: "default"}},
+                        },
+                    });
+                } catch (error) {
+                    console.warn(`角色新瞬間推播失敗 follower=${followerId}, moment=${momentId}`, error);
+                }
+                continue;
+            }
+
+            // 創作者本人發文維持既有信箱與推播行為。
             const mailRef = db
                 .collection("users")
                 .doc(followerId)
@@ -10970,7 +11539,7 @@ exports.notifyFollowersOnNewMomentV2 = onDocumentCreated(
                                       authorName: characterData?.name || "角色",
                                       authorAvatar:
                                           characterData?.avatarPath ||
-                                          "assets/images/blank_avatar.png",
+                                          "assets/images/blank_avatar.webp",
                                       createdAt: FieldValue.serverTimestamp(),
                                       parentCommentId,
                                       replyToName,
@@ -11711,7 +12280,7 @@ exports.notifyFollowersOnNewMomentV2 = onDocumentCreated(
                                          content: generatedPost,
                                          authorId: doc.id,
                                          authorName: charData.name,
-                                         authorAvatar: charData.avatarPath || 'assets/images/blank_avatar.png',
+                                         authorAvatar: charData.avatarPath || 'assets/images/blank_avatar.webp',
                                          isPublic: true,
                                          createdAt: FieldValue.serverTimestamp(),
                                          commentCount: 0,
@@ -12750,6 +13319,9 @@ const mailboxSnapshot = await db
 const unreadCount = mailboxSnapshot.docs.filter((doc) => {
     const data = doc.data() || {};
 
+    // 舊版角色瞬間信件不再計入 App 圖示徽章。
+    if (["character_moment", "new_post"].includes(String(data.type || ""))) return false;
+
     // 新版以 isRead 為主，舊版 read 保留相容。
     // 任一欄明確為 true，就視為已讀。
     if (data.isRead === true || data.read === true) {
@@ -12826,6 +13398,10 @@ exports.syncNotificationBadge = onCall(
 
         const unreadCount = mailboxSnapshot.docs.filter((doc) => {
             const data = doc.data() || {};
+
+            if (["character_moment", "new_post"].includes(String(data.type || ""))) {
+                return false;
+            }
 
             if (data.isRead === true || data.read === true) {
                 return false;
@@ -13187,40 +13763,88 @@ exports.directCallAiStream = onRequest({
             responseType: 'stream' // 告訴 axios 我們要接水管，不要一次拿一桶
         });
 
-        // 5. 監聽 OpenRouter 噴過來的水滴 (資料碎塊)
-        response.data.on('data', (chunk) => {
-            // OpenRouter 回傳的格式是 SSE (Server-Sent Events)
-            const lines = chunk.toString('utf8').split('\n').filter(line => line.trim() !== '');
+        // 通話回憶只保存「|」後面的字幕：在寫回前將字幕轉成台灣繁體。
+        // 保留「|」前的即時語音原文，不影響 ElevenLabs 的多語音輸出。
+        const callSubtitleToTw = OpenCC.Converter({ from: 'cn', to: 'tw' });
+        let callSubtitleStarted = false;
+        let callSubtitleBuffer = '';
+        let callStreamClosed = false;
+        const flushCallSubtitle = (force = false) => {
+            if (!callSubtitleBuffer) return;
+            // 保留最後六字給詞彙級轉換，避免模型逐字串流時切斷簡繁詞組。
+            const chars = Array.from(callSubtitleBuffer);
+            const flushCount = force ? chars.length : Math.max(0, chars.length - 6);
+            if (flushCount === 0) return;
+            const part = chars.slice(0, flushCount).join('');
+            callSubtitleBuffer = chars.slice(flushCount).join('');
+            res.write(callSubtitleToTw(part));
+        };
+        const closeCallStream = () => {
+            if (callStreamClosed) return;
+            callStreamClosed = true;
+            flushCallSubtitle(true);
+            res.end();
+        };
 
-            for (const line of lines) {
-                if (line === 'data: [DONE]') {
-                    res.end();
-                    return;
-                }
-                if (line.startsWith('data: ')) {
-                    try {
-                        const data = JSON.parse(line.slice(6));
-                        // 把 AI 想到的字單獨抓出來
-                        const content = data.choices[0]?.delta?.content || "";
-                        if (content) {
-                            res.write(content); // 🚀 光速噴射給 Flutter 前端！
-                        }
-                    } catch (e) {
-                        // 忽略偶爾被截斷的 JSON 碎塊
+        // 5. SSE 事件可能被網路切成任意多個 chunk；必須累積到完整一行再解析。
+        // 避免 JSON 只收到一半就被忽略，造成通話字幕與回憶缺字。
+        const { StringDecoder } = require('string_decoder');
+        const callSseDecoder = new StringDecoder('utf8');
+        let callSsePending = '';
+        const processCallSseLine = (rawLine) => {
+            if (callStreamClosed) return;
+            const line = rawLine.trim();
+            if (!line.startsWith('data:')) return;
+            const payload = line.slice(5).trim();
+            if (payload === '[DONE]') {
+                closeCallStream();
+                return;
+            }
+            if (!payload) return;
+            try {
+                const data = JSON.parse(payload);
+                const content = data.choices?.[0]?.delta?.content || '';
+                if (!content) return;
+                if (!callSubtitleStarted) {
+                    const pipe = content.indexOf('|');
+                    if (pipe === -1) {
+                        res.write(content); // 語音原文不進行簡繁轉換
+                    } else {
+                        callSubtitleStarted = true;
+                        res.write(content.slice(0, pipe + 1));
+                        callSubtitleBuffer += content.slice(pipe + 1);
+                        flushCallSubtitle();
                     }
+                } else {
+                    callSubtitleBuffer += content;
+                    flushCallSubtitle();
                 }
+            } catch (error) {
+                logger.warn('directCallAiStream: 收到無法解析的完整 SSE 資料行', {
+                    reason: String(error?.message || error),
+                });
+            }
+        };
+        response.data.on('data', (chunk) => {
+            if (callStreamClosed) return;
+            callSsePending += callSseDecoder.write(chunk);
+            let lineEnd;
+            while ((lineEnd = callSsePending.indexOf('\n')) !== -1) {
+                const line = callSsePending.slice(0, lineEnd);
+                callSsePending = callSsePending.slice(lineEnd + 1);
+                processCallSseLine(line);
+                if (callStreamClosed) break;
             }
         });
-
-        // 當 AI 講完話，關閉通道
         response.data.on('end', () => {
-            res.end();
+            if (callStreamClosed) return;
+            callSsePending += callSseDecoder.end();
+            if (callSsePending.trim()) processCallSseLine(callSsePending);
+            closeCallStream();
         });
-
-        // 處理 OpenRouter 突然斷線的情況
         response.data.on('error', (err) => {
-            console.error("OpenRouter 資料流中斷:", err);
-            res.end();
+            console.error('OpenRouter 資料流中斷:', err);
+            closeCallStream();
         });
 
     } catch (err) {
@@ -14178,167 +14802,118 @@ exports.createMomentNotification = onCall(
     };
   }
 );
-exports.requestDeleteAccount = onCall(
-  {
-    region: "us-central1",
-  },
-  async (request) => {
-    if (!request.auth) {
-      throw new HttpsError(
-        "unauthenticated",
-        "請先登入"
-      );
+// 帳號刪除：3 天冷靜期。所有期限都以伺服器時間為準。
+const DELETE_GRACE_MS = 3 * 24 * 60 * 60 * 1000;
+
+exports.getAccountDeletionStatus = onCall({region: 'us-central1'}, async (request) => {
+  if (!request.auth) throw new HttpsError('unauthenticated', '請先登入');
+  const snap = await db.collection('users').doc(request.auth.uid).get();
+  // 不把找不到 users 文件當成正常帳號，以免清除中的帳號被重新建立。
+  if (!snap.exists) return {status: 'processing'};
+  const data = snap.data() || {};
+  if (data.accountDeleteRequested !== true) return {status: 'active'};
+  if (data.accountDeletionProcessing === true) return {status: 'processing'};
+  const due = data.deleteScheduledAt?.toMillis?.();
+  if (!Number.isFinite(due)) return {status: 'processing'}; // 壞資料不可放行
+  return {status: Date.now() < due ? 'pending' : 'expired'};
+});
+
+exports.requestDeleteAccount = onCall({region: 'us-central1'}, async (request) => {
+  if (!request.auth) throw new HttpsError('unauthenticated', '請先登入');
+  const userRef = db.collection('users').doc(request.auth.uid);
+  const scheduledAt = await db.runTransaction(async (tx) => {
+    const snap = await tx.get(userRef);
+    if (!snap.exists) throw new HttpsError('failed-precondition', '找不到帳號資料');
+    const data = snap.data() || {};
+    if (data.accountDeletionProcessing === true) {
+      throw new HttpsError('failed-precondition', '帳號已進入刪除程序');
     }
-
-    const uid = request.auth.uid;
-
-    const deleteDate = new Date();
-    deleteDate.setDate(deleteDate.getDate() + 3);
-
-    await db.collection("users").doc(uid).set(
-      {
-        accountDeleteRequested: true,
-
-        // ✅ 不要再用 db.Timestamp
-        deleteScheduledAt: Timestamp.fromDate(deleteDate),
-      },
-      {
-        merge: true,
+    if (data.accountDeleteRequested === true) {
+      const previousDue = data.deleteScheduledAt?.toMillis?.();
+      if (!Number.isFinite(previousDue) || previousDue <= Date.now()) {
+        throw new HttpsError('failed-precondition', '帳號已超過取消期限');
       }
-    );
-
-    return {
-      success: true,
-    };
-  }
-);
-
-
-exports.cancelDeleteAccount = onCall(
-  {
-    region: "us-central1",
-  },
-  async (request) => {
-    if (!request.auth) {
-      throw new HttpsError(
-        "unauthenticated",
-        "請登入"
-      );
+      return previousDue; // 重複申請不延長冷靜期
     }
+    const due = Date.now() + DELETE_GRACE_MS;
+    tx.update(userRef, {
+      accountDeleteRequested: true,
+      deleteScheduledAt: Timestamp.fromMillis(due),
+      accountDeletionProcessing: false,
+      accountDeleteRequestedAt: FieldValue.serverTimestamp(),
+    });
+    return due;
+  });
+  return {success: true, deleteScheduledAt: scheduledAt};
+});
 
-    const uid = request.auth.uid;
-
-    await db.collection("users").doc(uid).set(
-      {
-        accountDeleteRequested: false,
-        deleteScheduledAt: FieldValue.delete(),
-      },
-      {
-        merge: true,
-      }
-    );
-
-    return {
-      success: true,
-    };
-  }
-);
-
-
-exports.checkScheduledDelete = onSchedule(
-  {
-    region: "us-central1",
-    schedule: "every 24 hours",
-    timeZone: "Asia/Taipei",
-  },
-  async () => {
-
-    // ✅ 這裡也要改
-    const now = Timestamp.now();
-
-    const usersSnapshot = await db
-      .collection("users")
-      .where("accountDeleteRequested", "==", true)
-      .where(
-        "deleteScheduledAt",
-        "<=",
-        now
-      )
-      .get();
-
-    if (usersSnapshot.empty) {
-      console.log("目前沒有需要刪除的帳號");
-      return;
+exports.cancelDeleteAccount = onCall({region: 'us-central1'}, async (request) => {
+  if (!request.auth) throw new HttpsError('unauthenticated', '請先登入');
+  const userRef = db.collection('users').doc(request.auth.uid);
+  await db.runTransaction(async (tx) => {
+    const snap = await tx.get(userRef);
+    if (!snap.exists) throw new HttpsError('failed-precondition', '帳號已不存在');
+    const data = snap.data() || {};
+    if (data.accountDeleteRequested !== true) {
+      throw new HttpsError('failed-precondition', '沒有待取消的刪除申請');
     }
+    if (data.accountDeletionProcessing === true) {
+      throw new HttpsError('failed-precondition', '帳號已進入刪除程序');
+    }
+    const due = data.deleteScheduledAt?.toMillis?.();
+    if (!Number.isFinite(due) || Date.now() >= due) {
+      throw new HttpsError('failed-precondition', '已超過三天取消期限');
+    }
+    tx.update(userRef, {
+      accountDeleteRequested: false,
+      deleteScheduledAt: FieldValue.delete(),
+      accountDeleteRequestedAt: FieldValue.delete(),
+      accountDeletionProcessing: FieldValue.delete(),
+    });
+  });
+  return {success: true};
+});
 
-    for (const doc of usersSnapshot.docs) {
-      const uid = doc.id;
+exports.checkScheduledDelete = onSchedule({
+  region: 'us-central1', schedule: 'every 24 hours', timeZone: 'Asia/Taipei',
+  timeoutSeconds: 540, memory: '1GiB',
+}, async () => {
+  const now = Timestamp.now();
+  const snapshots = await db.collection('users')
+    .where('accountDeleteRequested', '==', true)
+    .where('deleteScheduledAt', '<=', now).get();
+  for (const userDoc of snapshots.docs) {
+    const uid = userDoc.id;
+    const userRef = userDoc.ref;
+    try {
+      // 先標示執行中，和取消申請以 transaction 互斥。
+      await db.runTransaction(async (tx) => {
+        const snap = await tx.get(userRef);
+        if (!snap.exists) return;
+        const data = snap.data() || {};
+        if (data.accountDeleteRequested !== true ||
+            (data.deleteScheduledAt?.toMillis?.() || Infinity) > Date.now()) return;
+        tx.update(userRef, {accountDeletionProcessing: true});
+      });
+      const current = await userRef.get();
+      if (!current.exists || current.data()?.accountDeletionProcessing !== true ||
+          current.data()?.accountDeleteRequested !== true) continue;
 
-      console.log(
-        `開始刪除過期帳號 UID=${uid}`
-      );
-
+      // 先撤銷 Authentication，防止刪除期間再次登入。
       try {
-        const userRef =
-          db.collection("users").doc(uid);
-
-        // ======================
-        // 刪 aiRequests
-        // ======================
-
-        const aiRequests =
-          await userRef
-            .collection("aiRequests")
-            .get();
-
-        const batch = db.batch();
-
-        aiRequests.docs.forEach(item => {
-          batch.delete(item.ref);
-        });
-
-        // ======================
-        // 刪 flower_logs
-        // ======================
-
-        const flowerLogs =
-          await userRef
-            .collection("flower_logs")
-            .get();
-
-        flowerLogs.docs.forEach(item => {
-          batch.delete(item.ref);
-        });
-
-        // ======================
-        // 刪 users
-        // ======================
-
-        batch.delete(userRef);
-
-        await batch.commit();
-
-        // ======================
-        // 刪 Authentication
-        // ======================
-
-        await admin
-          .auth()
-          .deleteUser(uid);
-
-        console.log(
-          `✅ 完成刪除 UID=${uid}`
-        );
-
+        await auth.deleteUser(uid);
       } catch (error) {
-        console.error(
-          `❌ 刪除失敗 UID=${uid}`,
-          error
-        );
+        if (error.code !== 'auth/user-not-found') throw error;
       }
+      // 遞迴清除 users/{uid} 的所有子集合，避免原本 batch 500 筆上限。
+      // 其他頂層集合、Storage 尚須依實際資料歸屬另外清點，不能盲刪。
+      await db.recursiveDelete(userRef);
+      logger.info('✅ 已清除 Auth 與 users 子樹', {uid});
+    } catch (error) {
+      logger.error('❌ 刪除帳號失敗，下次排程將重試', {uid, error: String(error)});
     }
   }
-);
+});
 // ============================================================
 // Voice Matching V2：共用設定
 // ============================================================
@@ -21138,36 +21713,68 @@ exports.getAdminOperationsAnalytics = onCall(
         const sevenDayStart = new Date(todayStart.getTime() - 6 * 24 * 60 * 60 * 1000);
         const eightWeekStart = new Date(todayStart.getTime() - 55 * 24 * 60 * 60 * 1000);
 
-        const flowerSnapshot = await db
-            .collectionGroup("flower_logs")
-            .where("createdAt", ">=", Timestamp.fromDate(sixMonthStart))
-            .where("createdAt", "<", Timestamp.fromDate(tomorrowStart))
-            .get();
+        // Three independent Firestore reads run concurrently rather than sequentially.
+        // Timings help identify expensive queries without changing analytics semantics.
+        const analyticsStartedAt = Date.now();
+        const timedRead = async (label, read) => {
+            const startedAt = Date.now();
+            try {
+                const snapshot = await read();
+                console.info("[operationsAnalytics] read", {
+                    label,
+                    durationMs: Date.now() - startedAt,
+                    documents: snapshot.size ?? (snapshot.exists ? 1 : 0),
+                });
+                return snapshot;
+            } catch (error) {
+                console.error("[operationsAnalytics] read failed", {
+                    label,
+                    durationMs: Date.now() - startedAt,
+                    message: error?.message || String(error),
+                });
+                throw error;
+            }
+        };
 
-        let modeEventSnapshot = null;
-        try {
-            modeEventSnapshot = await db
-                .collection("artifacts")
-                .doc(APP_ID)
-                .collection("chat_mode_events")
-                .where("createdAt", ">=", Timestamp.fromDate(monthStart))
-                .where("createdAt", "<", Timestamp.fromDate(tomorrowStart))
-                .get();
-        } catch (error) {
-            console.warn("⚠️ chat_mode_events 讀取失敗，將以舊花花紀錄補足：", error?.message || error);
-        }
+        const [flowerSnapshot, modeEventSnapshot, usersSnapshot, analyticsConfigSnapshot] =
+            await Promise.all([
+                timedRead("flower_logs", () => db
+                    .collectionGroup("flower_logs")
+                    .where("createdAt", ">=", Timestamp.fromDate(sixMonthStart))
+                    .where("createdAt", "<", Timestamp.fromDate(tomorrowStart))
+                    .get()),
+                timedRead("chat_mode_events", () => db
+                    .collection("artifacts")
+                    .doc(APP_ID)
+                    .collection("chat_mode_events")
+                    .where("createdAt", ">=", Timestamp.fromDate(monthStart))
+                    .where("createdAt", "<", Timestamp.fromDate(tomorrowStart))
+                    .get()).catch((error) => {
+                    console.warn("⚠️ chat_mode_events 讀取失敗，將以舊花花紀錄補足：", error?.message || error);
+                    return null;
+                }),
+                timedRead("users", () => db.collection("users").get()),
+                timedRead("operations_analytics_config", () => db
+                    .collection("artifacts")
+                    .doc(APP_ID)
+                    .collection("admin_settings")
+                    .doc("operations_analytics")
+                    .get()),
+            ]);
 
-        // ============================================================
-        // 🌸 玩家花花庫存：全體 / 排除內測 / 內測玩家
-        // ============================================================
-        const [usersSnapshot, analyticsConfigSnapshot] = await Promise.all([
-            db.collection("users").get(),
-            db.collection("artifacts")
-                .doc(APP_ID)
-                .collection("admin_settings")
-                .doc("operations_analytics")
-                .get(),
-        ]);
+        // Cache month boundaries instead of recalculating them for each flower log.
+        const monthBoundaries = Array.from({ length: 6 }, (_, i) => ({
+            start: getTaipeiMonthStart(now, i - 5),
+            end: getTaipeiMonthStart(now, i - 4),
+        }));
+        const monthBucketIndex = (createdAt) => {
+            for (let i = 0; i < monthBoundaries.length; i++) {
+                if (createdAt >= monthBoundaries[i].start && createdAt < monthBoundaries[i].end) {
+                    return i;
+                }
+            }
+            return -1;
+        };
 
         const configuredTesterUids = new Set(
             Array.isArray(analyticsConfigSnapshot.data()?.internalTesterUids)
@@ -21176,6 +21783,13 @@ exports.getAdminOperationsAnalytics = onCall(
                     .filter(Boolean)
                 : []
         );
+
+        const internalTesterUids = new Set();
+        for (const userDoc of usersSnapshot.docs) {
+            if (isInternalTesterForAnalytics(userDoc.id, userDoc.data() || {}, configuredTesterUids)) {
+                internalTesterUids.add(userDoc.id);
+            }
+        }
 
         const allInventoryRows = [];
         const normalInventoryRows = [];
@@ -21218,6 +21832,9 @@ exports.getAdminOperationsAnalytics = onCall(
             },
         };
 
+        const calculateEconomy = (excludeInternal) => {
+        let unattributedModeEventCount = 0;
+        let unattributedFlowerLogCount = 0;
         const grantSources = {
             freeTask: 0,
             monthlyDaily: 0,
@@ -21296,6 +21913,11 @@ exports.getAdminOperationsAnalytics = onCall(
         if (modeEventSnapshot) {
             for (const doc of modeEventSnapshot.docs) {
                 const data = doc.data() || {};
+                const eventUid = String(data.uid || data.userId || data.playerUid || data.createdBy || "").trim();
+                if (excludeInternal && (!eventUid || internalTesterUids.has(eventUid))) {
+                    if (!eventUid) unattributedModeEventCount++;
+                    continue;
+                }
                 const createdAt = data.createdAt?.toDate?.();
                 if (!createdAt || createdAt < monthStart || createdAt >= tomorrowStart) continue;
 
@@ -21316,6 +21938,11 @@ exports.getAdminOperationsAnalytics = onCall(
 
         for (const doc of flowerSnapshot.docs) {
             const data = doc.data() || {};
+            const transactionUid = doc.ref.parent.parent?.id || "";
+            if (excludeInternal && (!transactionUid || internalTesterUids.has(transactionUid))) {
+                if (!transactionUid) unattributedFlowerLogCount++;
+                continue;
+            }
             const createdAt = data.createdAt?.toDate?.();
             if (!createdAt) continue;
 
@@ -21341,16 +21968,10 @@ exports.getAdminOperationsAnalytics = onCall(
             }
 
             // 月趨勢
-            for (let i = 0; i < 6; i++) {
-                const bucketStart = getTaipeiMonthStart(now, i - 5);
-                const bucketEnd = getTaipeiMonthStart(now, i - 4);
-                if (createdAt >= bucketStart && createdAt < bucketEnd) {
-                    if (Number.isFinite(amount)) {
-                        if (amount > 0) monthlyTrend[i].granted += amount;
-                        if (amount < 0) monthlyTrend[i].spent += Math.abs(amount);
-                    }
-                    break;
-                }
+            const monthIndex = monthBucketIndex(createdAt);
+            if (monthIndex >= 0 && Number.isFinite(amount)) {
+                if (amount > 0) monthlyTrend[monthIndex].granted += amount;
+                if (amount < 0) monthlyTrend[monthIndex].spent += Math.abs(amount);
             }
 
             const revenueInfo = getRevenuePurchaseInfo(data);
@@ -21367,13 +21988,8 @@ exports.getAdminOperationsAnalytics = onCall(
                         const idx = getBucketIndex(createdAt, eightWeekStart.getTime(), 7 * 24 * 60 * 60 * 1000, 8);
                         if (idx >= 0) weeklyTrend[idx].revenueTwd += revenueInfo.revenueTwd;
                     }
-                    for (let i = 0; i < 6; i++) {
-                        const bucketStart = getTaipeiMonthStart(now, i - 5);
-                        const bucketEnd = getTaipeiMonthStart(now, i - 4);
-                        if (createdAt >= bucketStart && createdAt < bucketEnd) {
-                            monthlyTrend[i].revenueTwd += revenueInfo.revenueTwd;
-                            break;
-                        }
+                    if (monthIndex >= 0) {
+                        monthlyTrend[monthIndex].revenueTwd += revenueInfo.revenueTwd;
                     }
                 }
 
@@ -21445,6 +22061,8 @@ exports.getAdminOperationsAnalytics = onCall(
 
         return {
             generatedAt: new Date().toISOString(),
+            unattributedModeEventCount,
+            unattributedFlowerLogCount,
             month: {
                 revenueTwd: monthRevenueTwd,
                 payingUsers: monthPayingUsers,
@@ -21469,7 +22087,24 @@ exports.getAdminOperationsAnalytics = onCall(
                 week: weeklyTrend,
                 month: monthlyTrend,
             },
+        };
+        };
+        const formalEconomy = calculateEconomy(true);
+        const allEconomy = calculateEconomy(false);
+        console.info("[operationsAnalytics] completed", {
+            durationMs: Date.now() - analyticsStartedAt,
+            flowerLogCount: flowerSnapshot.size,
+            modeEventCount: modeEventSnapshot?.size ?? 0,
+            userCount: usersSnapshot.size,
+        });
+        return {
+            ...formalEconomy,
             flowerInventory,
+            economyComparison: {
+                excludingInternalTesters: formalEconomy,
+                allPlayers: allEconomy,
+                internalTesterCount: internalTesterUids.size,
+            },
         };
     }
 );
@@ -23848,3 +24483,1092 @@ try {
             } // for 迴圈結束
     }
 );
+
+// ============================================================
+// 創作者申請：待審核 -> 審核通過直接開通。
+// 保留 contract_pending 僅供既有歷史案件由管理員個別處理。
+// 未來正式合約授權另行處理，不推定已簽約。
+// ============================================================
+const CREATOR_ADMIN_STATUSES = ["pending", "contract_pending", "approved", "suspended", "revoked", "rejected"];
+
+exports.listCreatorApplications = onCall({region: REGION, timeoutSeconds: 60}, async (request) => {
+  requireRewardCampaignAdmin(request);
+  // 分狀態查詢避免讀取整個 users 集合；每組至多 200 位。
+  const snapshots = await Promise.all(CREATOR_ADMIN_STATUSES.map(status =>
+    db.collection("users").where("creatorStatus", "==", status).limit(200).get()
+  ));
+  const items = [];
+  for (let i = 0; i < snapshots.length; i++) {
+    for (const doc of snapshots[i].docs) {
+      const d = doc.data() || {};
+      items.push({
+        uid: doc.id,
+        nickname: String(d.nickname || d.displayName || ""),
+        playerID: String(d.playerID || d.playerId || ""),
+        creatorStatus: CREATOR_ADMIN_STATUSES[i],
+        creatorDirection: String(d.creatorDirection || ""),
+        creatorApplicationReason: String(d.creatorApplicationReason || ""),
+        creatorStatusReason: String(d.creatorStatusReason || ""),
+        publicCharacterCount: Number(d.publicCharacterCount || 0),
+        followerCount: Number(d.followerCount || 0),
+        totalLikes: Number(d.totalLikes || 0),
+        creatorReviewedAt: d.creatorReviewedAt?.toDate?.()?.toISOString() || null,
+        creatorContractSignedAt: d.creatorContractSignedAt?.toDate?.()?.toISOString() || null,
+      });
+    }
+  }
+  return {items};
+});
+
+exports.adminUpdateCreatorStatus = onCall({region: REGION, timeoutSeconds: 60}, async (request) => {
+  const adminUid = requireRewardCampaignAdmin(request);
+  const {creatorUid, targetStatus, reason} = request.data || {};
+  const uid = String(creatorUid || "").trim();
+  const status = String(targetStatus || "").trim();
+  const explanation = String(reason || "").trim();
+  if (!uid || !CREATOR_ADMIN_STATUSES.includes(status) || status === "pending") {
+    throw new HttpsError("invalid-argument", "無效的創作者或目標狀態");
+  }
+  if (["rejected", "suspended", "revoked"].includes(status) && !explanation) {
+    throw new HttpsError("invalid-argument", "此操作必須填寫原因");
+  }
+  if (explanation.length > 300) throw new HttpsError("invalid-argument", "原因過長");
+
+  const userRef = db.collection("users").doc(uid);
+  const transition = await db.runTransaction(async tx => {
+    const snap = await tx.get(userRef);
+    if (!snap.exists) throw new HttpsError("not-found", "找不到創作者帳號");
+    const user = snap.data() || {};
+    const current = String(user.creatorStatus || "none");
+    const allowed = {
+      pending: ["approved", "rejected"],
+      contract_pending: ["approved", "rejected", "revoked"],
+      approved: ["suspended", "revoked"],
+      suspended: ["approved", "revoked"],
+      revoked: ["approved"],
+      rejected: ["approved"],
+    };
+    if (!(allowed[current] || []).includes(status)) {
+      throw new HttpsError("failed-precondition", `不允許從 ${current} 變更成 ${status}`);
+    }
+    // 每次真正轉入 revoked 才計一次；舊版已被取消的帳號視為至少一次。
+    const previousRevocationsRaw = Number(user.creatorRevocationCount);
+    const previousRevocations = Number.isSafeInteger(previousRevocationsRaw) && previousRevocationsRaw >= 0
+      ? previousRevocationsRaw : (current === "revoked" ? 1 : 0);
+    // TEST ONLY: 不在測試期間套用正式累計上限；正式上線前必須恢復。
+    // if (status === "contract_pending" && current === "revoked" && previousRevocations >= 5) {
+    //   throw new HttpsError("failed-precondition", "此帳號累計取消創作者資格達五次，不能再次開通");
+    // }
+    const changes = {
+      creatorStatus: status,
+      creatorStatusReason: explanation,
+      creatorStatusUpdatedAt: FieldValue.serverTimestamp(),
+      creatorStatusUpdatedBy: adminUid,
+      // 僅已認證可以使用合作創作者後台。
+      creatorDashboardEnabled: status === "approved",
+      creatorVerified: status === "approved",
+    };
+    if (status === "approved") {
+      changes.creatorReviewedAt = FieldValue.serverTimestamp();
+      // 未實際簽署合約，不寫入 creatorContractSignedAt。
+    }
+    if (status === "revoked") {
+      // TEST ONLY: 保留既有正式取消累計，不因測試操作增加。
+      // changes.creatorRevocationCount = previousRevocations + 1;
+      changes.creatorRevokedAt = FieldValue.serverTimestamp();
+    }
+    tx.update(userRef, changes);
+    const auditRef = db.collection("creator_admin_audit").doc();
+    tx.set(auditRef, {creatorUid: uid, previousStatus: current, targetStatus: status,
+      reason: explanation, changedBy: adminUid, changedAt: FieldValue.serverTimestamp()});
+    return {previousStatus: current};
+  });
+
+  // 通知發送獨立於資格交易，失敗不可回滾已完成的資格變更。
+  const titles = {contract_pending:"創作者合作審核通過", approved:"創作者後台已開通",
+    rejected:"創作者申請審核結果", suspended:"創作者合作資格暫停", revoked:"創作者合作資格已取消"};
+  const bodies = {contract_pending:"妳的合作申請已通過初步審核。請等待官方寄送合作合約；雙方完成簽約後，才會開通專屬創作者後台。",
+    approved:"妳的創作者申請已通過官方審核，專屬創作者後台權限已開通。正式合作授權與合約將另行公告。",
+    rejected:`申請未通過。原因：${explanation}`, suspended:`合作資格已暫停。原因：${explanation}`,
+    revoked:`合作認證已取消，妳仍可作為一般創作者管理既有角色與作品。原因：${explanation}`};
+  try {
+    await userRef.collection("mailbox").add({type:"creator_status", title:titles[status] || "創作者資格通知",
+      body:bodies[status] || "創作者資格已更新。", isRead:false, read:false,
+      createdAt:FieldValue.serverTimestamp()});
+  } catch (e) { logger.error("creator status mailbox delivery failed", {creatorUid:uid, status, error:String(e)}); }
+  return {success:true, previousStatus:transition.previousStatus, creatorStatus:status};
+});
+
+
+// 管理員手動開通：不以簽約為前提，僅使用 server SDK 並留存審計紀錄。
+exports.adminFindCreatorCandidate = onCall({region: REGION, timeoutSeconds: 30}, async (request) => {
+  requireRewardCampaignAdmin(request);
+  const query = String(request.data?.query || "").trim();
+  if (!query || query.length > 128) throw new HttpsError("invalid-argument", "請輸入有效的 UID 或玩家 ID");
+  let snap = await db.collection("users").doc(query).get();
+  if (!snap.exists) {
+    const found = await db.collection("users").where("playerID", "==", query).limit(2).get();
+    if (found.size > 1) throw new HttpsError("failed-precondition", "此玩家 ID 對應多個帳號，請改用 UID");
+    if (!found.empty) snap = found.docs[0];
+  }
+  if (!snap.exists) {
+    const found = await db.collection("users").where("playerId", "==", query).limit(2).get();
+    if (found.size > 1) throw new HttpsError("failed-precondition", "此玩家 ID 對應多個帳號，請改用 UID");
+    if (!found.empty) snap = found.docs[0];
+  }
+  if (!snap.exists) return {user: null};
+  const d = snap.data() || {};
+  return {user: {uid: snap.id, nickname: String(d.nickname || d.displayName || ""),
+    playerID: String(d.playerID || d.playerId || ""),
+    creatorStatus: String(d.creatorStatus || "none")}};
+});
+
+exports.adminManuallyVerifyCreator = onCall({region: REGION, timeoutSeconds: 60}, async (request) => {
+  const adminUid = requireRewardCampaignAdmin(request);
+  const uid = String(request.data?.creatorUid || "").trim();
+  if (!uid || uid.length > 128 || request.data?.activationConfirmed !== true) {
+    throw new HttpsError("invalid-argument", "必須指定玩家並確認手動開通");
+  }
+  if (uid === adminUid) throw new HttpsError("failed-precondition", "不可自行授予合作創作者資格");
+  const userRef = db.collection("users").doc(uid);
+  const result = await db.runTransaction(async tx => {
+    const snap = await tx.get(userRef);
+    if (!snap.exists) throw new HttpsError("not-found", "找不到指定玩家");
+    const d = snap.data() || {};
+    const previousStatus = String(d.creatorStatus || "none");
+    if (previousStatus === "approved" || d.creatorVerified === true) {
+      throw new HttpsError("already-exists", "這位玩家已經是認證創作者");
+    }
+    tx.update(userRef, {
+      creatorStatus: "approved",
+      creatorVerified: true,
+      creatorDashboardEnabled: true,
+      creatorReviewedAt: FieldValue.serverTimestamp(),
+      creatorStatusUpdatedAt: FieldValue.serverTimestamp(),
+      creatorStatusUpdatedBy: adminUid,
+      creatorStatusReason: "管理員手動開通創作者資格",
+    });
+    tx.set(db.collection("creator_admin_audit").doc(), {
+      creatorUid: uid, previousStatus, targetStatus: "approved",
+      action: "manual_creator_activation", activationConfirmed: true,
+      changedBy: adminUid, changedAt: FieldValue.serverTimestamp(),
+    });
+    // 同一交易寄站內信，避免權限已開通卻未收到通知。
+    tx.set(userRef.collection("mailbox").doc(), {
+      type: "creator_status", title: "官方合作創作者認證完成",
+      body: "妳的創作者資格已由官方審核開通，現在可以使用專屬創作者後台。正式合作合約將另行公告。",
+      isRead: false, read: false, createdAt: FieldValue.serverTimestamp(),
+    });
+    return {previousStatus};
+  });
+  return {success: true, creatorUid: uid, creatorStatus: "approved", previousStatus: result.previousStatus};
+});
+
+
+// ============================================================
+// 官方合作創作者：粉絲站內信 1.2
+// 配額：台灣日曆日 單人 30 封／群發 5 次；標題 100、正文 5000 字素。
+// 群發：工作佇列 + 排程分批投遞；每位收件者以 jobId 作唯一鍵。
+// ============================================================
+const CREATOR_FAN_MAIL_LIMITS = Object.freeze({single:30, broadcast:5, title:100, body:5000});
+function creatorFanMailDayKey() {
+  return new Intl.DateTimeFormat('en-CA', {timeZone:'Asia/Taipei', year:'numeric', month:'2-digit', day:'2-digit'}).format(new Date());
+}
+function creatorFanMailVerified(d) {
+  return d.creatorStatus === 'approved' && d.creatorVerified === true && d.creatorDashboardEnabled === true;
+}
+function creatorFanMailCharCount(s) {
+  // JS Array.from counts Unicode code points (including emoji, but not grapheme clusters).
+  return Array.from(new Intl.Segmenter('zh-Hant', {granularity:'grapheme'}).segment(s)).length;
+}
+function creatorFanMailValidate(title, body) {
+  if (!title || creatorFanMailCharCount(title) > CREATOR_FAN_MAIL_LIMITS.title) {
+    throw new HttpsError('invalid-argument', '標題須為 1～100 字');
+  }
+  if (!body || creatorFanMailCharCount(body) > CREATOR_FAN_MAIL_LIMITS.body) {
+    throw new HttpsError('invalid-argument', '內文須為 1～5000 字');
+  }
+}
+function creatorFanMailUsageRef(uid, day) {
+  return db.collection('creator_fan_mail_usage').doc(`${uid}_${day}`);
+}
+exports.getCreatorFanMailOverview = onCall({region: REGION, timeoutSeconds:30}, async (request) => {
+  const uid = request.auth?.uid;
+  if (!uid) throw new HttpsError('unauthenticated', '請先登入');
+  const [creator, usage, jobs] = await Promise.all([
+    db.collection('users').doc(uid).get(),
+    creatorFanMailUsageRef(uid, creatorFanMailDayKey()).get(),
+    db.collection('creator_fan_mail_jobs').where('creatorUid','==',uid).orderBy('createdAt','desc').limit(20).get(),
+  ]);
+  if (!creator.exists || !creatorFanMailVerified(creator.data() || {})) {
+    throw new HttpsError('permission-denied', '目前沒有合作創作者寄信資格');
+  }
+  const counters = usage.data() || {};
+  return {day:creatorFanMailDayKey(), singleUsed:Number(counters.singleUsed||0),
+    broadcastUsed:Number(counters.broadcastUsed||0), singleLimit:30, broadcastLimit:5,
+    jobs:jobs.docs.map(x => {const d=x.data()||{};return {id:x.id, mode:d.mode, title:d.title,
+      status:d.status, delivered:Number(d.delivered||0), createdAt:d.createdAt?.toDate?.()?.toISOString()||null,
+      finishedAt:d.finishedAt?.toDate?.()?.toISOString()||null, error:String(d.error||'')};})};
+});
+
+exports.sendCreatorFanMail = onCall({region: REGION, timeoutSeconds:60, maxInstances:20}, async (request) => {
+  const uid = request.auth?.uid;
+  if (!uid) throw new HttpsError('unauthenticated', '請先登入');
+  const mode = String(request.data?.mode||'');
+  const title = String(request.data?.title||'').trim();
+  const body = String(request.data?.body||'').trim();
+  const recipientUid = String(request.data?.recipientUid||'').trim();
+  const requestId = String(request.data?.requestId||'').trim();
+  if (!['single','broadcast'].includes(mode)) throw new HttpsError('invalid-argument','無效寄信類型');
+  if (!/^[a-zA-Z0-9_-]{12,80}$/.test(requestId)) throw new HttpsError('invalid-argument','寄送識別碼無效');
+  creatorFanMailValidate(title,body);
+  if (mode==='single' && (!recipientUid || recipientUid===uid || recipientUid.includes('/'))) {
+    throw new HttpsError('invalid-argument','請選擇有效粉絲');
+  }
+  const day=creatorFanMailDayKey();
+  const creatorRef=db.collection('users').doc(uid);
+  const usageRef=creatorFanMailUsageRef(uid,day);
+  const jobRef=db.collection('creator_fan_mail_jobs').doc(`${uid}_${requestId}`);
+  const result=await db.runTransaction(async tx => {
+    const [creator,usage,job,follower] = await Promise.all([
+      tx.get(creatorRef),tx.get(usageRef),tx.get(jobRef),
+      mode==='single' ? tx.get(creatorRef.collection('followers').doc(recipientUid)) : Promise.resolve(null),
+    ]);
+    if (!creator.exists || !creatorFanMailVerified(creator.data()||{})) {
+      throw new HttpsError('permission-denied','合作資格已失效');
+    }
+    if (job.exists) {
+      const prev=job.data()||{};
+      if (prev.mode!==mode || prev.title!==title || prev.body!==body || (prev.recipientUid||'')!== (mode==='single'?recipientUid:'')) {
+        throw new HttpsError('already-exists','寄送識別碼已被其他內容使用');
+      }
+      return {jobId:jobRef.id,status:prev.status||'queued',alreadySubmitted:true};
+    }
+    if (mode==='single' && !follower?.exists) throw new HttpsError('failed-precondition','該玩家目前未追蹤妳');
+    const u=usage.data()||{};
+    const key=mode==='single'?'singleUsed':'broadcastUsed';
+    const limit=CREATOR_FAN_MAIL_LIMITS[mode];
+    if (Number(u[key]||0)>=limit) throw new HttpsError('resource-exhausted',`今日${mode==='single'?'單人私信':'群發'}次數已達上限`);
+    tx.set(usageRef,{creatorUid:uid,day,[key]:FieldValue.increment(1),updatedAt:FieldValue.serverTimestamp()},{merge:true});
+    const displayName=String(creator.data()?.nickname || creator.data()?.displayName || '合作創作者').slice(0,80);
+    tx.create(jobRef,{creatorUid:uid,mode,recipientUid:mode==='single'?recipientUid:'',title,body,
+      creatorName:displayName,status:'queued',delivered:0,lastFollowerId:'',
+      createdAt:FieldValue.serverTimestamp(),updatedAt:FieldValue.serverTimestamp(),day});
+    return {jobId:jobRef.id,status:'queued',alreadySubmitted:false};
+  });
+  return result;
+});
+
+// 每分鐘處理最多 5 個工作、每工作最多 120 位；不會在單次 callable 中掃描全部粉絲。
+// Transaction 內完成「信件寫入 + 游標更新」，失敗回滾，不重複寄送。
+exports.processCreatorFanMailJobs = onSchedule({schedule:'every 1 minutes', timeZone:'Asia/Taipei',region:REGION,
+  timeoutSeconds:540,memory:'512MiB'},async () => {
+  const jobs=await db.collection('creator_fan_mail_jobs').where('status','in',['queued','processing']).limit(5).get();
+  for (const job of jobs.docs) {
+    const work=job.data()||{};
+    const uid=String(work.creatorUid||'');
+    if (!uid) continue;
+    const lease=crypto.randomUUID();
+    const claimed=await db.runTransaction(async tx=>{
+      const snap=await tx.get(job.ref);
+      const d=snap.data()||{};
+      if (!['queued','processing'].includes(d.status))return false;
+      const lock=d.leaseUntil?.toMillis?.()||0;
+      if (lock>Date.now())return false;
+      tx.update(job.ref,{status:'processing',leaseId:lease,
+        leaseUntil:Timestamp.fromMillis(Date.now()+240000),updatedAt:FieldValue.serverTimestamp()});
+      return true;
+    });
+    if (!claimed)continue;
+    try {
+      const creatorSnap=await db.collection('users').doc(uid).get();
+      if (!creatorSnap.exists || !creatorFanMailVerified(creatorSnap.data()||{})) {
+        await db.runTransaction(async tx=>{const j=await tx.get(job.ref);if(j.data()?.leaseId===lease)
+          tx.update(job.ref,{status:'cancelled',leaseUntil:FieldValue.delete(),updatedAt:FieldValue.serverTimestamp(),
+            error:'合作創作者資格失效'});});
+        continue;
+      }
+      let followers=[];
+      if(work.mode==='single') {
+        const follow=await db.collection('users').doc(uid).collection('followers').doc(work.recipientUid).get();
+        followers=follow.exists?[follow]:[];
+      } else {
+        let q=db.collection('users').doc(uid).collection('followers').orderBy(admin.firestore.FieldPath.documentId());
+        if(work.lastFollowerId)q=q.startAfter(work.lastFollowerId);
+        followers=(await q.limit(120).get()).docs;
+      }
+      if (!followers.length) {
+        await db.runTransaction(async tx=>{const j=await tx.get(job.ref);if(j.data()?.leaseId===lease)
+          tx.update(job.ref,{status:'completed',finishedAt:FieldValue.serverTimestamp(),
+            leaseUntil:FieldValue.delete(),updatedAt:FieldValue.serverTimestamp()});});
+        continue;
+      }
+      // 批次讀取封鎖設定並驗證使用者存在，避免寄給封鎖創作者的帳號。
+      const recipientIds=followers.map(f=>f.id).filter(id=>id && id!==uid);
+      const blockSnaps=await Promise.all(recipientIds.map(id=>db.collection('users').doc(id)
+        .collection('blockedCreators').doc(uid).get()));
+      const eligible=recipientIds.filter((_,i)=>!blockSnaps[i].exists);
+      await db.runTransaction(async tx=>{
+        const j=await tx.get(job.ref);
+        if(j.data()?.leaseId!==lease) throw new Error('job lease lost');
+        const creator=await tx.get(db.collection('users').doc(uid));
+        if(!creator.exists||!creatorFanMailVerified(creator.data()||{}))throw new Error('creator revoked');
+        const refs=eligible.map(id=>db.collection('users').doc(id).collection('mailbox').doc(`fan_${job.id}`));
+        const existing=await Promise.all(refs.map(ref=>tx.get(ref)));
+        let added=0;
+        for(let i=0;i<refs.length;i++) {
+          if(existing[i].exists)continue;
+          tx.create(refs[i],{type:'creator_fan_mail',creatorUid:uid,creatorName:work.creatorName,
+            title:work.title,body:work.body,mailJobId:job.id,read:false,isRead:false,
+            createdAt:FieldValue.serverTimestamp()});
+          added++;
+        }
+        const done=work.mode==='single'||followers.length<120;
+        tx.update(job.ref,{lastFollowerId:followers[followers.length-1].id,
+          delivered:FieldValue.increment(added),status:done?'completed':'processing',
+          ...(done?{finishedAt:FieldValue.serverTimestamp()}:{}),
+          leaseUntil:FieldValue.delete(),leaseId:FieldValue.delete(),updatedAt:FieldValue.serverTimestamp()});
+      });
+    }catch(error){
+      logger.error('Creator fan mail processing failed',{jobId:job.id,error:String(error)});
+      await db.runTransaction(async tx=>{const j=await tx.get(job.ref);if(j.data()?.leaseId===lease)
+        tx.update(job.ref,{status:'failed',error:String(error).slice(0,300),leaseId:FieldValue.delete(),
+          leaseUntil:FieldValue.delete(),updatedAt:FieldValue.serverTimestamp()});});
+    }
+  }
+});
+
+
+// ============================================================
+// 官方合作創作者 v1.4：以創作者自己的花花贈送目前追蹤的粉絲
+// 1~20 位，每人 1~1000 朵、單筆最多 5000 朵。
+// 全程 Firestore transaction；requestId 固定，重試不重扣。
+// ============================================================
+const CREATOR_GIFT_MAX_RECIPIENTS = 20;
+const CREATOR_GIFT_MAX_PER_FAN = 1000;
+const CREATOR_GIFT_MAX_TOTAL = 5000;
+
+// 創作者送花收件人搜尋：以追蹤關係文件 ID 游標分頁，
+// 伺服器分批取得真實玩家暱稱。無全量資料下載至手機。
+// Firestore 不支援跨 followers/users join；暱稱包含搜尋會逐批掃描，
+// 因此搜尋結果以「繼續搜尋」載入後續批次，不能視為一次查完全部粉絲。
+exports.searchCreatorGiftFollowers = onCall({region: REGION, timeoutSeconds: 60, maxInstances: 15}, async (request) => {
+  const creatorUid = request.auth?.uid;
+  if (!creatorUid) throw new HttpsError('unauthenticated', '請先登入');
+  const data = request.data || {};
+  const keyword = String(data.keyword || '').trim().toLocaleLowerCase('zh-Hant');
+  if (keyword.length > 80) throw new HttpsError('invalid-argument', '搜尋文字過長');
+  const pageSize = Number(data.pageSize || 20);
+  if (!Number.isSafeInteger(pageSize) || pageSize < 1 || pageSize > 30) {
+    throw new HttpsError('invalid-argument', '每頁筆數不正確');
+  }
+  const cursor = data.cursor == null ? '' : String(data.cursor);
+  if (cursor && (cursor.length > 128 || cursor.includes('/'))) {
+    throw new HttpsError('invalid-argument', '分頁游標無效');
+  }
+  const creatorSnap = await db.collection('users').doc(creatorUid).get();
+  if (!creatorSnap.exists || !creatorFanMailVerified(creatorSnap.data() || {})) {
+    throw new HttpsError('permission-denied', '目前沒有合作創作者資格');
+  }
+  const followers = db.collection('users').doc(creatorUid).collection('followers');
+  const scanLimit = keyword ? 150 : pageSize;
+  let query = followers.orderBy(FieldPath.documentId()).limit(scanLimit + 1);
+  if (cursor) query = query.startAfter(cursor);
+  const snapshot = await query.get();
+  const scannedDocs = snapshot.docs.slice(0, scanLimit);
+  const hasMore = snapshot.docs.length > scanLimit;
+  const items = [];
+  let lastProcessedId = null;
+  let processedCount = 0;
+  // 取得滿 pageSize 位符合者就停止；下一次從最後處理的 UID 接續。
+  for (let i = 0; i < scannedDocs.length && items.length < pageSize; i += 30) {
+    const batch = scannedDocs.slice(i, i + Math.min(30, pageSize - items.length));
+    const profiles = await db.getAll(...batch.map(doc => db.collection('users').doc(doc.id)));
+    for (let j = 0; j < batch.length; j++) {
+      lastProcessedId = batch[j].id;
+      processedCount++;
+      const u = profiles[j];
+      if (!u.exists) continue;
+      const profile = u.data() || {};
+      const name = String(profile.nickname || profile.displayName || profile.name || '').trim() || '未設定暱稱的玩家';
+      const avatar = String(profile.avatarPath || profile.photoURL || profile.photoUrl || profile.avatarUrl || '').trim();
+      const uid = batch[j].id;
+      if (!keyword || name.toLocaleLowerCase('zh-Hant').includes(keyword) || uid.toLowerCase().includes(keyword)) {
+        items.push({uid, name: name.slice(0, 120), avatar: avatar.slice(0, 2048)});
+      }
+    }
+  }
+  const more = !!lastProcessedId && (hasMore || processedCount < scannedDocs.length);
+  return {
+    items,
+    nextCursor: more ? lastProcessedId : null,
+    scanned: processedCount,
+  };
+});
+
+exports.giftCreatorFlowers = onCall({region: REGION, timeoutSeconds: 60, maxInstances: 15}, async (request) => {
+  const creatorUid = request.auth?.uid;
+  if (!creatorUid) throw new HttpsError('unauthenticated', '請先登入');
+  const input = request.data || {};
+  const requestId = String(input.requestId || '').trim();
+  const amount = input.amount;
+  const note = String(input.note || '').trim();
+  const recipients = input.recipientUids;
+  if (!/^[a-zA-Z0-9_-]{12,80}$/.test(requestId)) throw new HttpsError('invalid-argument', '交易識別碼無效');
+  if (!Array.isArray(recipients) || recipients.length < 1 || recipients.length > CREATOR_GIFT_MAX_RECIPIENTS ||
+      !recipients.every(x => typeof x === 'string' && x.length > 0 && x.length <= 128 && !x.includes('/'))) {
+    throw new HttpsError('invalid-argument', '請選擇 1～20 位有效粉絲');
+  }
+  if (new Set(recipients).size !== recipients.length || recipients.includes(creatorUid)) {
+    throw new HttpsError('invalid-argument', '粉絲名單重複或包含自己');
+  }
+  if (!Number.isSafeInteger(amount) || amount < 1 || amount > CREATOR_GIFT_MAX_PER_FAN) {
+    throw new HttpsError('invalid-argument', '每位粉絲花花須為 1～1000 朵');
+  }
+  const total = amount * recipients.length;
+  if (total > CREATOR_GIFT_MAX_TOTAL) throw new HttpsError('invalid-argument', '單次最多可贈送 5000 朵花花');
+  if (creatorFanMailCharCount(note) > 300) throw new HttpsError('invalid-argument', '祝福文字最多 300 字');
+
+  const normalizedRecipients = [...recipients].sort();
+  const contentHash = crypto.createHash('sha256').update(JSON.stringify({normalizedRecipients, amount, note})).digest('hex');
+  const creatorRef = db.collection('users').doc(creatorUid);
+  const giftRef = db.collection('creator_flower_gifts').doc(`${creatorUid}_${requestId}`);
+  const userRefs = normalizedRecipients.map(uid => db.collection('users').doc(uid));
+  const followerRefs = normalizedRecipients.map(uid => creatorRef.collection('followers').doc(uid));
+  const result = await db.runTransaction(async tx => {
+    // 交易內先讀所有文件，再做任何寫入。
+    const snapshots = await Promise.all([
+      tx.get(creatorRef), tx.get(giftRef),
+      ...followerRefs.map(ref => tx.get(ref)),
+      ...userRefs.map(ref => tx.get(ref)),
+    ]);
+    const creatorSnap = snapshots[0];
+    const existing = snapshots[1];
+    if (existing.exists) {
+      const prior = existing.data() || {};
+      if (prior.contentHash !== contentHash) throw new HttpsError('already-exists', '這個交易識別碼已用於另一筆贈送');
+      return {success:true, alreadySubmitted:true, giftId:giftRef.id, total:Number(prior.total||total), recipientCount:recipients.length};
+    }
+    if (!creatorSnap.exists || !creatorFanMailVerified(creatorSnap.data() || {})) {
+      throw new HttpsError('permission-denied', '目前沒有官方合作創作者資格');
+    }
+    const creatorData = creatorSnap.data() || {};
+    const balance = Number(creatorData.flowerPoints);
+    if (!Number.isSafeInteger(balance) || balance < 0) throw new HttpsError('failed-precondition', '花花餘額資料異常');
+    if (balance < total) throw new HttpsError('failed-precondition', '花花餘額不足', {
+      reason: 'insufficient_balance', balance, required:total, shortage:total - balance,
+    });
+    const followerSnapshots = snapshots.slice(2, 2 + recipients.length);
+    const receiverSnapshots = snapshots.slice(2 + recipients.length);
+    if (followerSnapshots.some(s => !s.exists) || receiverSnapshots.some(s => !s.exists)) {
+      throw new HttpsError('failed-precondition', '粉絲名單已變更，請重新選擇');
+    }
+    const displayName = String(creatorData.nickname || creatorData.displayName || '合作創作者').slice(0, 80);
+    tx.update(creatorRef, {flowerPoints: FieldValue.increment(-total)});
+    const timestamp = FieldValue.serverTimestamp();
+    tx.create(giftRef, {creatorUid, recipientUids:normalizedRecipients, amountPerRecipient:amount,
+      total, note, creatorName:displayName, contentHash, status:'pending_claim', claimMode:'mailbox', createdAt:timestamp});
+    tx.create(creatorRef.collection('flower_logs').doc(`creator_gift_out_${requestId}`), {
+      type:'creator_gift_out', title:'贈送粉絲花花', amount:-total, recipientCount:recipients.length,
+      giftId:giftRef.id, createdAt:timestamp,
+    });
+    for (let i=0; i<userRefs.length; i++) {
+      const receiverUid = normalizedRecipients[i];
+      const receiverRef = userRefs[i];
+      tx.create(receiverRef.collection('mailbox').doc(`creator_gift_${giftRef.id}`), {
+        type:'creator_flower_gift', title:`${displayName} 贈送了 ${amount} 朵花花`,
+        body: note ? `妳有 ${amount} 朵花花待領取，請開啟信件領取。\n\n${note}` : `妳有 ${amount} 朵花花待領取，請開啟信件領取。`,
+        creatorUid, creatorName:displayName, flowerAmount:amount, giftId:giftRef.id,
+        claimStatus:'pending', claimed:false,
+        isRead:false, read:false, createdAt:timestamp,
+      });
+    }
+    return {success:true, alreadySubmitted:false, giftId:giftRef.id, total, recipientCount:recipients.length};
+  });
+  return result;
+});
+
+
+// 玩家從自己的信箱手動領取創作者贈送的花花；單一信件交易保證不可重領。
+// 2026-10-19 之前已直接入帳的舊信件不含 claimStatus=pending，因此不允許再領。
+exports.claimCreatorFlowerGift = onCall({region: REGION, timeoutSeconds: 30}, async (request) => {
+  const uid = request.auth?.uid;
+  if (!uid) throw new HttpsError('unauthenticated', '請先登入');
+  const giftId = String(request.data?.giftId || '').trim();
+  if (!/^[a-zA-Z0-9_-]{12,200}$/.test(giftId)) throw new HttpsError('invalid-argument', '禮物識別碼無效');
+  const receiverRef = db.collection('users').doc(uid);
+  const mailRef = receiverRef.collection('mailbox').doc(`creator_gift_${giftId}`);
+  const giftRef = db.collection('creator_flower_gifts').doc(giftId);
+  const logRef = receiverRef.collection('flower_logs').doc(`creator_gift_in_${giftId}`);
+  return await db.runTransaction(async tx => {
+    const [mailSnap, giftSnap, receiverSnap] = await Promise.all([
+      tx.get(mailRef), tx.get(giftRef), tx.get(receiverRef),
+    ]);
+    if (!mailSnap.exists || !giftSnap.exists || !receiverSnap.exists) {
+      throw new HttpsError('not-found', '找不到可領取的花花');
+    }
+    const mail = mailSnap.data() || {};
+    const gift = giftSnap.data() || {};
+    if (mail.type !== 'creator_flower_gift' || mail.giftId !== giftId ||
+        gift.claimMode !== 'mailbox' || gift.status !== 'pending_claim' ||
+        !Array.isArray(gift.recipientUids) || !gift.recipientUids.includes(uid) ||
+        Number(mail.flowerAmount) !== Number(gift.amountPerRecipient)) {
+      throw new HttpsError('failed-precondition', '此信件不屬於可領取的花花禮物');
+    }
+    if (mail.claimStatus === 'claimed' || mail.claimed === true) {
+      return {success:true, alreadyClaimed:true, amount:Number(mail.flowerAmount)};
+    }
+    if (mail.claimStatus !== 'pending') {
+      throw new HttpsError('failed-precondition', '此禮物不可領取');
+    }
+    const amount = Number(mail.flowerAmount);
+    if (!Number.isSafeInteger(amount) || amount < 1 || amount > CREATOR_GIFT_MAX_PER_FAN) {
+      throw new HttpsError('failed-precondition', '花花數量異常');
+    }
+    tx.update(receiverRef, {flowerPoints:FieldValue.increment(amount)});
+    tx.update(mailRef, {claimStatus:'claimed', claimed:true, claimedAt:FieldValue.serverTimestamp()});
+    tx.create(logRef, {
+      type:'creator_gift_in', title:'合作創作者贈送', amount,
+      creatorUid:gift.creatorUid, creatorName:gift.creatorName,
+      giftId, createdAt:FieldValue.serverTimestamp(),
+    });
+    return {success:true, alreadyClaimed:false, amount};
+  });
+});
+
+
+// 合作創作者申請：前端不可以直接寫入 creatorStatus / creatorVerified。
+exports.submitCreatorCooperationApplication = onCall({region: REGION, timeoutSeconds: 30}, async (request) => {
+  const uid = request.auth?.uid;
+  if (!uid) throw new HttpsError('unauthenticated', '請先登入帳號');
+  const raw = request.data || {};
+  if (typeof raw.creatorDirection !== 'string' || typeof raw.creatorApplicationReason !== 'string') {
+    throw new HttpsError('invalid-argument', '請填寫創作方向與合作動機');
+  }
+  const direction = raw.creatorDirection.trim();
+  const reason = raw.creatorApplicationReason.trim();
+  const count = (value) => Array.from(new Intl.Segmenter('zh-Hant', {granularity: 'grapheme'}).segment(value)).length;
+  if (count(direction) < 2 || count(direction) > 100 || count(reason) < 10 || count(reason) > 500) {
+    throw new HttpsError('invalid-argument', '創作方向須為 2～100 字，合作動機須為 10～500 字');
+  }
+  const ref = db.collection('users').doc(uid);
+  await db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    if (!snap.exists) throw new HttpsError('not-found', '找不到玩家帳號');
+    const data = snap.data() || {};
+    const current = String(data.creatorStatus || 'none');
+    if (!['none', '', 'rejected', 'revoked'].includes(current)) {
+      throw new HttpsError('failed-precondition', '已有申請紀錄或合作資格，不能重複送出');
+    }
+    if (data.creatorVerified === true || data.creatorDashboardEnabled === true) {
+      throw new HttpsError('failed-precondition', '已取得合作權限的帳號無法重新申請');
+    }
+    if (current === 'revoked') {
+      const countRaw = Number(data.creatorRevocationCount);
+      const revocationCount = Number.isSafeInteger(countRaw) && countRaw >= 0 ? countRaw : 1;
+      // TEST ONLY: 測試期間不啟用五次封鎖；正式上線前恢復。
+      // if (revocationCount >= 5) {
+      //   throw new HttpsError('failed-precondition', '累計取消創作者資格達五次，無法再次申請');
+      // }
+      // TEST ONLY (2026-10-15): temporarily bypass the 72-hour reapplication cooldown.
+      // Keep creatorRevocationCount and creatorRevokedAt untouched for the future production rule.
+      // Restore the server-side 72-hour timestamp check before public release.
+    }
+    tx.update(ref, {
+      creatorStatus: 'pending',
+      creatorVerified: false,
+      creatorDashboardEnabled: false,
+      creatorDirection: direction,
+      creatorApplicationReason: reason,
+      creatorAppliedAt: FieldValue.serverTimestamp(),
+      creatorStatusUpdatedAt: FieldValue.serverTimestamp(),
+      creatorStatusReason: FieldValue.delete(),
+    });
+    tx.set(db.collection('creator_application_audit').doc(), {
+      creatorUid: uid, action: 'submitted', previousStatus: current,
+      submittedAt: FieldValue.serverTimestamp(),
+    });
+  });
+  return {success: true, creatorStatus: 'pending'};
+});
+
+
+// ============================================================
+// 官方合作創作者 v1.6：每月「新建且首次公開」3 位角色，手動領 300 花
+// 僅伺服器建立的事件帳本用於領獎，前端無權寫入以下集合。
+// 啟用前必須限制 client 對 creator_character_origins / creator_character_publications /
+// creator_monthly_rewards 的讀寫：一般玩家僅允許透過 callable 取得進度，完全禁止直寫。
+// ============================================================
+const CREATOR_MONTH_REWARD_AMOUNT = 300;
+function creatorRewardMonth(date = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-US', {timeZone:'Asia/Taipei',year:'numeric',month:'2-digit'}).formatToParts(date);
+  const m = Object.fromEntries(parts.map(x=>[x.type,x.value]));
+  return `${m.year}-${m.month}`;
+}
+function creatorRewardError(code,msg) {throw new HttpsError(code,msg);}
+function creatorRewardOriginRef(uid, charId) {
+  return db.collection('creator_character_origins').doc(`${uid}_${charId}`);
+}
+async function recordCreatorOrigin(uid, charId, eventTime, kind) {
+  if (!uid || !charId) return;
+  await creatorRewardOriginRef(uid,charId).create({uid,charId,firstSeenAt:Timestamp.fromDate(eventTime),firstSeenMonth:creatorRewardMonth(eventTime),source:kind}).catch(e=>{
+    if (Number(e.code) !== 6 && e.code !== 'already-exists') throw e;
+  });
+}
+// 草稿的建立事件由後端記錄；後續搬到公開集合時不會重設出生月份。
+exports.creatorRewardTrackDraftBirth = onDocumentCreated({document:'draft_characters/{characterId}',region:REGION},async(event)=>{
+  const d=event.data?.data()||{};
+  const uid=String(d.createdBy||'');
+  if(uid) await recordCreatorOrigin(uid,event.params.characterId,new Date(event.time),'draft');
+});
+exports.creatorRewardTrackPrivateBirth = onDocumentCreated({document:'artifacts/{appId}/users/{userId}/private_characters/{characterId}',region:REGION},async(event)=>{
+  if(event.params.appId!==APP_ID) return;
+  const d=event.data?.data()||{};
+  const uid=event.params.userId;
+  if(String(d.createdBy||uid)!==uid)return;
+  await recordCreatorOrigin(uid,event.params.characterId,new Date(event.time),'private');
+});
+exports.creatorRewardTrackPublicBirth = onDocumentCreated({document:'artifacts/{appId}/public_characters/{characterId}',region:REGION},async(event)=>{
+  if(event.params.appId!==APP_ID)return;
+  const d=event.data?.data()||{};
+  const uid=String(d.createdBy||''); const charId=event.params.characterId;
+  if(!uid || d.isPublic===false)return;
+  const publishedAt=new Date(event.time);
+  const publishedMonth=creatorRewardMonth(publishedAt);
+  const pubRef=db.collection('creator_character_publications').doc(`${uid}_${charId}`);
+  // 純新公開建立者使用真正 Firestore serverTimestamp() 當出生時間。
+  // 由私人/草稿搬家者必須依賴先前出生事件；如事件延遲，必須之後重試。
+  const recordedCreatedAt=d.createdAt;
+  const createdMs=recordedCreatedAt?.toMillis?.()??0;
+  const cleanNewPublic=createdMs>0 && Math.abs(publishedAt.getTime()-createdMs)<5*60*1000;
+  const origRef=creatorRewardOriginRef(uid,charId);
+  await db.runTransaction(async tx=>{
+    const [orig,pub]=await Promise.all([tx.get(origRef),tx.get(pubRef)]);
+    if(pub.exists)return;
+    // 若先前有私人/草稿建立事件，優先使用該首次建立月份。
+    // 若無且 createdAt ~= 真正發佈事件才視為直接新建公開角色。
+    const birthMonth=orig.exists?orig.data().firstSeenMonth:(cleanNewPublic?publishedMonth:null);
+    if(!orig.exists && cleanNewPublic) tx.create(origRef,{uid,charId,firstSeenAt:Timestamp.fromDate(publishedAt),firstSeenMonth:publishedMonth,source:'public'});
+    tx.create(pubRef,{uid,charId,firstPublishedAt:Timestamp.fromDate(publishedAt),firstPublishedMonth:publishedMonth,
+      firstCreatedMonth:birthMonth, eligibleAtPublication:birthMonth===publishedMonth,
+      createdAtClient:recordedCreatedAt??null});
+  });
+});
+async function creatorRewardEligible(uid,month) {
+  // 一個月最多按 Firestore 文件配額讀取 200 個候選；未滿 3 個無法領。
+  const records=await db.collection('creator_character_publications').where('uid','==',uid)
+    .limit(500).get();
+  const candidates=records.docs.filter(d=>d.data().firstPublishedMonth===month && d.data().eligibleAtPublication===true && d.data().firstCreatedMonth===month);
+  const valid=[];
+  for(const chunkStart of Array.from({length:Math.ceil(candidates.length/25)},(_,i)=>i*25)) {
+    const chunk=candidates.slice(chunkStart,chunkStart+25);
+    const snaps=await Promise.all(chunk.map(d=>db.collection('artifacts').doc(APP_ID).collection('public_characters').doc(d.data().charId).get()));
+    snaps.forEach((s,i)=>{if(s.exists && s.data()?.createdBy===uid && s.data()?.isPublic!==false && s.data()?.isDraft!==true)valid.push(chunk[i].data().charId);});
+  }
+  return valid;
+}
+exports.getCreatorMonthlyReward = onCall({region:REGION,timeoutSeconds:60},async request=>{
+  const uid=request.auth?.uid;if(!uid)creatorRewardError('unauthenticated','請先登入');
+  const user=await db.collection('users').doc(uid).get();
+  if(!user.exists||!creatorFanMailVerified(user.data()||{}))creatorRewardError('permission-denied','沒有合作創作者權限');
+  const month=creatorRewardMonth();
+  const [ids,claimed]=await Promise.all([creatorRewardEligible(uid,month),db.collection('creator_monthly_rewards').doc(`${uid}_${month}`).get()]);
+  return {month,qualifyingCount:Math.min(ids.length,3),claimed:claimed.exists,reward:CREATOR_MONTH_REWARD_AMOUNT};
+});
+exports.claimCreatorMonthlyReward = onCall({region:REGION,timeoutSeconds:90},async request=>{
+  const uid=request.auth?.uid;if(!uid)creatorRewardError('unauthenticated','請先登入');
+  const month=creatorRewardMonth();
+  const ids=await creatorRewardEligible(uid,month);
+  if(ids.length<3)creatorRewardError('failed-precondition','本月尚未完成 3 位新建且公開的角色');
+  const userRef=db.collection('users').doc(uid);
+  const rewardRef=db.collection('creator_monthly_rewards').doc(`${uid}_${month}`);
+  const result=await db.runTransaction(async tx=>{
+    const [user,reward,...publicDocs]=await Promise.all([
+      tx.get(userRef),tx.get(rewardRef),...ids.slice(0,3).map(id=>tx.get(db.collection('artifacts').doc(APP_ID).collection('public_characters').doc(id)))]);
+    if(reward.exists)return {claimed:true,alreadyClaimed:true,month};
+    if(!user.exists||!creatorFanMailVerified(user.data()||{}))creatorRewardError('permission-denied','合作資格已暫停或取消');
+    if(publicDocs.some(d=>!d.exists||d.data()?.createdBy!==uid||d.data()?.isPublic===false))creatorRewardError('failed-precondition','角色公開狀態已變動，請重新整理');
+    tx.create(rewardRef,{uid,month,amount:CREATOR_MONTH_REWARD_AMOUNT,characterIds:ids.slice(0,3),createdAt:FieldValue.serverTimestamp()});
+    tx.update(userRef,{flowerPoints:FieldValue.increment(CREATOR_MONTH_REWARD_AMOUNT)});
+    tx.create(userRef.collection('flower_logs').doc(`creator_monthly_reward_${month}`),{
+      type:'creator_monthly_reward',title:`${month} 合作創作者每月創作獎勵`,amount:CREATOR_MONTH_REWARD_AMOUNT,
+      rewardMonth:month,createdAt:FieldValue.serverTimestamp()});
+    return {claimed:true,alreadyClaimed:false,month,amount:CREATOR_MONTH_REWARD_AMOUNT};
+  });
+  return result;
+});
+
+// ============================================================
+// 角色聲音邀請：玩家只可請求既有角色，通知由 Admin SDK 寫入創作者專屬信箱。
+// 同一玩家對同一角色固定 document ID，避免重複推播與洗版。
+// ============================================================
+exports.requestCharacterVoice = onCall({
+  region: REGION,
+  timeoutSeconds: 30,
+  memory: "256MiB",
+  maxInstances: 5,
+}, async (request) => {
+  if (!request.auth?.uid) {
+    throw new HttpsError("unauthenticated", "請先登入再提出聲音邀請");
+  }
+  const playerUid = request.auth.uid;
+  const characterId = String(request.data?.characterId || "").trim();
+  if (!/^[a-zA-Z0-9_-]{1,160}$/.test(characterId)) {
+    throw new HttpsError("invalid-argument", "角色 ID 不正確");
+  }
+  const characterRef = db.collection("artifacts").doc(APP_ID)
+      .collection("public_characters").doc(characterId);
+  const characterSnap = await characterRef.get();
+  if (!characterSnap.exists) {
+    throw new HttpsError("not-found", "這位角色已不存在");
+  }
+  const character = characterSnap.data() || {};
+  const creatorUid = String(character.createdBy || "").trim();
+  const characterName = String(character.name || "角色").trim().slice(0, 100);
+  const voiceId = String(character.voiceId || character.voice_id || "").trim();
+  if (voiceId) {
+    return {sent: false, voiceAvailable: true};
+  }
+  if (!creatorUid) {
+    throw new HttpsError("failed-precondition", "找不到角色創作者");
+  }
+  const creatorSnap = await db.collection("users").doc(creatorUid).get();
+  if (!creatorSnap.exists) {
+    throw new HttpsError("failed-precondition", "找不到創作者帳號");
+  }
+  const playerSnap = await db.collection("users").doc(playerUid).get();
+  const player = playerSnap.data() || {};
+  const playerName = String(player.nickname || player.displayName ||
+      request.auth.token?.name || "有位玩家").trim().slice(0, 60) || "有位玩家";
+  const requestId = "voice_request_" + crypto.createHash("sha256")
+      .update(playerUid + ":" + characterId).digest("hex").slice(0, 36);
+  const mailRef = db.collection("users").doc(creatorUid)
+      .collection("mailbox").doc(requestId);
+  try {
+    await mailRef.create({
+      type: "voice_request",
+      title: "角色聲音邀請",
+      body: `${playerName} 正在期待「${characterName}」的聲音！要不要幫角色建立專屬聲音呢？`,
+      fromUserId: playerUid,
+      fromUserName: playerName,
+      toUserId: creatorUid,
+      characterId,
+      characterName,
+      createdAt: FieldValue.serverTimestamp(),
+      isRead: false,
+      read: false,
+    });
+  } catch (error) {
+    if (error?.code === 6 || error?.code === "6" ||
+        String(error?.message || "").includes("ALREADY_EXISTS")) {
+      return {sent: false, alreadyRequested: true};
+    }
+    throw error;
+  }
+  return {sent: true, alreadyRequested: false};
+});
+
+// ===== 合作創作者後台 v2：所有寫入均由 Firebase Auth + Firestore 資格驗證 =====
+async function requireCreatorStudioUid(request) {
+  const uid = request.auth?.uid;
+  if (!uid) throw new HttpsError('unauthenticated', '請先登入');
+  const snap = await db.collection('users').doc(uid).get();
+  if (!snap.exists || !creatorFanMailVerified(snap.data() || {})) {
+    throw new HttpsError('permission-denied', '沒有有效的合作創作者資格');
+  }
+  return uid;
+}
+
+exports.removeCreatorFollower = onCall({region: REGION, timeoutSeconds: 30}, async request => {
+  const uid = await requireCreatorStudioUid(request);
+  const followerUid = String(request.data?.followerUid || '').trim();
+  if (!followerUid || followerUid === uid || !/^[a-zA-Z0-9_-]{6,128}$/.test(followerUid)) {
+    throw new HttpsError('invalid-argument', '無效的追蹤者');
+  }
+  const follower = db.collection('users').doc(uid).collection('followers').doc(followerUid);
+  const following = db.collection('users').doc(followerUid).collection('following').doc(uid);
+  const result = await db.runTransaction(async tx => {
+    const doc = await tx.get(follower);
+    if (!doc.exists) return {removed: false};
+    tx.delete(follower);
+    tx.delete(following);
+    return {removed: true};
+  });
+  return result;
+});
+
+exports.updateCreatorPortfolio = onCall({region: REGION, timeoutSeconds: 30}, async request => {
+  const uid = await requireCreatorStudioUid(request);
+  const ids = request.data?.characterIds;
+  if (!Array.isArray(ids) || ids.length > 300 || ids.some(x => typeof x !== 'string' || !x || x.length > 200) || new Set(ids).size !== ids.length) {
+    throw new HttpsError('invalid-argument', '作品清單無效');
+  }
+  const chars = await db.collection('artifacts').doc(APP_ID).collection('public_characters')
+    .where('createdBy', '==', uid).get();
+  const allowed = new Set(chars.docs.map(d => d.id));
+  if (ids.some(x => !allowed.has(x))) throw new HttpsError('permission-denied', '作品不屬於此創作者');
+  await db.collection('users').doc(uid).update({creatorPortfolioOrder: ids});
+  return {success: true};
+});
+
+exports.updateCreatorBanner = onCall({region: REGION, timeoutSeconds: 90, memory: '512MiB'}, async request => {
+  const uid = await requireCreatorStudioUid(request);
+  const op = String(request.data?.operation || '');
+  const userRef = db.collection('users').doc(uid);
+  const file = require('firebase-admin/storage').getStorage().bucket().file(`creator_banners/${uid}/banner`);
+  if (op === 'remove') {
+    await userRef.update({creatorBannerUrl: FieldValue.delete()});
+    await file.delete({ignoreNotFound: true});
+    return {success: true};
+  }
+  if (op !== 'upload') throw new HttpsError('invalid-argument', '無效操作');
+  const raw = request.data?.imageBase64;
+  if (typeof raw !== 'string' || raw.length > 3100000 || raw.length < 80 || !/^[a-zA-Z0-9+/=]+$/.test(raw)) {
+    throw new HttpsError('invalid-argument', '圖片資料格式或大小不符');
+  }
+  const buffer = Buffer.from(raw, 'base64');
+  if (buffer.length > 2200000) throw new HttpsError('invalid-argument', '圖片需小於 2.2 MB');
+  const jpg = buffer[0] === 0xFF && buffer[1] === 0xD8 && buffer[2] === 0xFF;
+  const png = buffer.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]));
+  if (!jpg && !png) throw new HttpsError('invalid-argument', '僅支援 JPEG 或 PNG');
+  const token = crypto.randomUUID();
+  const contentType = jpg ? 'image/jpeg' : 'image/png';
+  await file.save(buffer, {resumable: false, metadata: {contentType,
+    metadata: {firebaseStorageDownloadTokens: token}}, validation: 'md5'});
+  const url = `https://firebasestorage.googleapis.com/v0/b/${encodeURIComponent(file.bucket.name)}/o/${encodeURIComponent(file.name)}?alt=media&token=${token}`;
+  await userRef.update({creatorBannerUrl: url, creatorBannerUpdatedAt: FieldValue.serverTimestamp()});
+  return {success: true};
+});
+
+
+// === Creator support cases v1: all reads/writes through authenticated callables. ===
+
+// Creator support attachments: private Storage objects, never public download tokens.
+const CREATOR_SUPPORT_MAX_IMAGE_BYTES = 2 * 1024 * 1024;
+function creatorSupportImageData(raw) {
+  if(typeof raw !== 'string' || raw.length < 40 || raw.length > 2900000 || !/^[A-Za-z0-9+/=]+$/.test(raw)) throw new HttpsError('invalid-argument','截圖資料無效');
+  const bytes=Buffer.from(raw,'base64');
+  const png=bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]));
+  const jpg=bytes[0]===255&&bytes[1]===216&&bytes[2]===255;
+  if(!png&&!jpg||bytes.length>CREATOR_SUPPORT_MAX_IMAGE_BYTES) throw new HttpsError('invalid-argument','僅支援小於 2MB 的 JPG/PNG 截圖');
+  return {bytes,contentType:png?'image/png':'image/jpeg'};
+}
+async function creatorSupportNotify(uid, title, body, caseId) {
+  try { await sendToUserDevices(uid,{notification:{title,body},data:{type:'creator_support',caseId:String(caseId),click_action:'FLUTTER_NOTIFICATION_CLICK'}}); }
+  catch(e){logger.warn('Creator support FCM failed', {code:e?.code||'',message:e?.message||''});}
+}
+async function creatorSupportNotifyAdmins(title,body,caseId) {
+  await Promise.allSettled([...REWARD_CAMPAIGN_ADMIN_UIDS].map(uid=>creatorSupportNotify(uid,title,body,caseId)));
+}
+async function creatorSupportAuthorizeImage(request,caseId) {
+  const uid=creatorSupportUid(request);
+  if(!/^[A-Za-z0-9]{1,100}$/.test(caseId))throw new HttpsError('invalid-argument','案件ID無效');
+  const ref=creatorSupportRoot().doc(caseId),snap=await ref.get();
+  if(!snap.exists)throw new HttpsError('not-found','案件不存在');
+  const isAdmin=REWARD_CAMPAIGN_ADMIN_UIDS.has(uid);
+  if(!isAdmin){if(snap.data().creatorId!==uid)throw new HttpsError('permission-denied','無權使用此案件附件');await creatorSupportCreator(request);}
+  return {ref,snap,isAdmin};
+}
+exports.uploadCreatorSupportImage = onCall({region:REGION,timeoutSeconds:90,memory:'512MiB'},async request=>{
+  const caseId=String(request.data?.caseId||'');const {ref}=await creatorSupportAuthorizeImage(request,caseId);
+  const {bytes,contentType}=creatorSupportImageData(request.data?.imageBase64);
+  const messageId=String(request.data?.messageId||'').trim();
+  if(messageId&&!/^[A-Za-z0-9]{1,100}$/.test(messageId))throw new HttpsError('invalid-argument','訊息 ID 無效');
+  if(messageId){
+   const msg=await ref.collection('messages').doc(messageId).get();
+   if(!msg.exists)throw new HttpsError('not-found','找不到這則回覆');
+   if(msg.data()?.senderId!==request.auth?.uid)throw new HttpsError('permission-denied','只能為自己發出的回覆附圖');
+   if(msg.data()?.recalledAt)throw new HttpsError('failed-precondition','訊息已收回');
+  }
+  const images=await ref.collection('images').get();
+  if(images.size>=60)throw new HttpsError('resource-exhausted','這個案件的圖片已達上限');
+  if(images.docs.filter(d=>String(d.data().messageId||'')===messageId).length>=3)throw new HttpsError('resource-exhausted','每則訊息最多 3 張截圖');
+  const imgRef=ref.collection('images').doc();
+  const bucket=require('firebase-admin/storage').getStorage().bucket();
+  const file=bucket.file(`creator_support/${caseId}/${imgRef.id}`);
+  await file.save(bytes,{resumable:false,validation:'md5',metadata:{contentType,cacheControl:'private,no-store'}});
+  try {await imgRef.create({path:file.name,messageId,contentType,size:bytes.length,createdAt:FieldValue.serverTimestamp()});}
+  catch(e){await file.delete({ignoreNotFound:true});throw e;}
+  return {imageId:imgRef.id};
+});
+exports.getCreatorSupportImage = onCall({region:REGION,timeoutSeconds:45,memory:'512MiB'},async request=>{
+  const caseId=String(request.data?.caseId||''),imageId=String(request.data?.imageId||'');
+  const {ref}=await creatorSupportAuthorizeImage(request,caseId);
+  if(!/^[A-Za-z0-9]{1,100}$/.test(imageId))throw new HttpsError('invalid-argument','圖片ID無效');
+  const doc=await ref.collection('images').doc(imageId).get();if(!doc.exists)throw new HttpsError('not-found','找不到圖片');
+  const mid=String(doc.data()?.messageId||'');if(mid){const m=await ref.collection('messages').doc(mid).get();if(!m.exists||m.data()?.recalledAt||(m.data()?.hiddenFor||[]).includes(request.auth.uid))throw new HttpsError('not-found','圖片已不可查看');}
+  const path=String(doc.data()?.path||'');if(!path.startsWith(`creator_support/${caseId}/`))throw new HttpsError('permission-denied','圖片路徑異常');
+  const [bytes]=await require('firebase-admin/storage').getStorage().bucket().file(path).download();
+  if(bytes.length>CREATOR_SUPPORT_MAX_IMAGE_BYTES)throw new HttpsError('resource-exhausted','圖片超出限制');
+  return {imageBase64:bytes.toString('base64'),contentType:doc.data().contentType||'image/jpeg'};
+});
+
+const CREATOR_SUPPORT_CATEGORIES = new Set(['角色管理問題','AI 角色互動異常','創作者後台問題','合作與權益問題','其他問題']);
+const CREATOR_SUPPORT_STATUSES = new Set(['pending','in_progress','waiting_creator','resolved']);
+const creatorSupportRoot = () => db.collection('creator_support_cases');
+function creatorSupportUid(request) { const uid=request.auth?.uid; if(!uid) throw new HttpsError('unauthenticated','請先登入'); return uid; }
+function creatorSupportAdmin(request) { return requireRewardCampaignAdmin(request); }
+async function creatorSupportCreator(request) {
+ const uid=creatorSupportUid(request); const s=await db.collection('users').doc(uid).get();
+ if(!s.exists || !creatorFanMailVerified(s.data()||{})) throw new HttpsError('permission-denied','目前沒有合作創作者權限');
+ return {uid, data:s.data()||{}};
+}
+function creatorSupportText(raw,max,label,required=true) {
+ const s=typeof raw==='string'?raw.trim():'';
+ if ((required&&!s) || s.length>max) throw new HttpsError('invalid-argument',`${label}格式不正確（最多 ${max} 字）`);
+ return s;
+}
+function creatorSupportPublic(d,id) {
+ return {id,creatorId:d.creatorId||'',creatorName:d.creatorName||'',category:d.category||'',characterId:d.characterId||'',title:d.title||'',description:d.description||'',status:d.status||'pending',createdAt:d.createdAt?.toMillis?.()||0,updatedAt:d.updatedAt?.toMillis?.()||0,lastReplyAt:d.lastReplyAt?.toMillis?.()||0,lastReplyBy:d.lastReplyBy||'',adminUnreadCount:Number(d.adminUnreadCount||0),creatorUnreadCount:Number(d.creatorUnreadCount||0),internalNote:d.internalNote||''};
+}
+exports.createCreatorSupportCase = onCall({region:REGION,timeoutSeconds:30},async request=>{
+ const {uid,data}=await creatorSupportCreator(request);
+ const d=request.data||{}; const category=creatorSupportText(d.category,32,'分類'); if(!CREATOR_SUPPORT_CATEGORIES.has(category)) throw new HttpsError('invalid-argument','問題分類無效');
+ const title=creatorSupportText(d.title,80,'標題'); const description=creatorSupportText(d.description,3000,'問題描述');
+ const characterId=creatorSupportText(d.characterId,160,'角色ID',false);
+ if(characterId){const ch=await db.collection('artifacts').doc(APP_ID).collection('public_characters').doc(characterId).get();if(!ch.exists||ch.data()?.createdBy!==uid)throw new HttpsError('permission-denied','只能選擇自己的角色');}
+ const day=creatorFanMailDayKey();const limitRef=db.collection('creator_support_daily').doc(`${uid}_${day}`);const ref=creatorSupportRoot().doc();const first=ref.collection('messages').doc();
+ await db.runTransaction(async tx=>{
+  const snap=await tx.get(limitRef);if(Number(snap.data()?.count||0)>=5)throw new HttpsError('resource-exhausted','今天新增案件已達 5 件，仍可回覆既有案件');
+  tx.set(limitRef,{count:FieldValue.increment(1),updatedAt:FieldValue.serverTimestamp()},{merge:true});
+  tx.create(ref,{creatorId:uid,creatorName:String(data.nickname||data.displayName||'合作創作者').slice(0,80),category,characterId,title,description,status:'pending',createdAt:FieldValue.serverTimestamp(),updatedAt:FieldValue.serverTimestamp(),lastReplyAt:FieldValue.serverTimestamp(),lastReplyBy:'creator',adminUnreadCount:1,creatorUnreadCount:0,internalNote:''});
+  tx.create(first,{senderId:uid,senderRole:'creator',body:description,createdAt:FieldValue.serverTimestamp()});
+ }); await creatorSupportNotifyAdmins('新創作者問題回報',title,ref.id); return {caseId:ref.id};
+});
+exports.listCreatorSupportCases = onCall({region:REGION,timeoutSeconds:30},async request=>{
+ const uid=creatorSupportUid(request); const isAdmin=REWARD_CAMPAIGN_ADMIN_UIDS.has(uid)&&request.data?.asCreator!==true;
+ if(!isAdmin) await creatorSupportCreator(request);
+ const limit=20;const start=String(request.data?.cursor||'');if(start&&!/^[A-Za-z0-9]{1,100}$/.test(start))throw new HttpsError('invalid-argument','游標不正確');
+ let q=isAdmin?creatorSupportRoot().orderBy(FieldPath.documentId()):creatorSupportRoot().where('creatorId','==',uid).orderBy(FieldPath.documentId());
+ if(start)q=q.startAfter(start);
+ const docs=(await q.limit(limit+1).get()).docs;const page=docs.slice(0,limit);
+ return {items:page.map(d=>{const x=creatorSupportPublic(d.data(),d.id);if(!isAdmin)delete x.internalNote;return x;}),nextCursor:docs.length>limit?page[page.length-1].id:null};
+});
+exports.getCreatorSupportCase = onCall({region:REGION,timeoutSeconds:30},async request=>{
+ const uid=creatorSupportUid(request),id=String(request.data?.caseId||'').trim();if(!/^[A-Za-z0-9]{1,100}$/.test(id))throw new HttpsError('invalid-argument','案件ID無效');
+ const ref=creatorSupportRoot().doc(id),snap=await ref.get();if(!snap.exists)throw new HttpsError('not-found','案件不存在');const d=snap.data()||{};const isAdmin=REWARD_CAMPAIGN_ADMIN_UIDS.has(uid)&&request.data?.asCreator!==true;
+ if(!isAdmin && d.creatorId!==uid)throw new HttpsError('permission-denied','無權查看此案件');
+ if(!isAdmin)await creatorSupportCreator(request);
+ const messages=await ref.collection('messages').orderBy('createdAt').limit(300).get();
+ await ref.update({[isAdmin?'adminUnreadCount':'creatorUnreadCount']:0});
+ const info=creatorSupportPublic(d,id);if(!isAdmin)delete info.internalNote;
+ const images=await ref.collection('images').orderBy('createdAt').limit(60).get();return {case:info,images:images.docs.filter(x=>{const mid=String(x.data().messageId||'');const msg=messages.docs.find(m=>m.id===mid);return !mid||(msg&&!msg.data().recalledAt&&!(msg.data().hiddenFor||[]).includes(uid));}).map(x=>({id:x.id,messageId:x.data().messageId||'',contentType:x.data().contentType||''})),messages:messages.docs.filter(m=>!(m.data().hiddenFor||[]).includes(uid)).map(m=>({id:m.id,senderId:m.data().senderId||'',senderRole:m.data().senderRole||'',body:m.data().recalledAt?'':(m.data().body||''),recalled:!!m.data().recalledAt,edited:!!m.data().editedAt,createdAt:m.data().createdAt?.toMillis?.()||0}))};
+});
+// Stable creator support replies: caller-provided idempotency key, transactional write, non-fatal FCM.
+exports.replyCreatorSupportCase = onCall({region:REGION,timeoutSeconds:45},async request=>{
+ const uid=creatorSupportUid(request);
+ const id=String(request.data?.caseId||'').trim();
+ if(!/^[A-Za-z0-9]{1,100}$/.test(id)) throw new HttpsError('invalid-argument','案件ID無效');
+ const suppliedRequestId=String(request.data?.requestId||'').trim();
+ if(suppliedRequestId && !/^[A-Za-z0-9_-]{12,100}$/.test(suppliedRequestId)) throw new HttpsError('invalid-argument','訊息識別碼無效');
+ // Backwards compatibility: legacy clients can still reply; only updated clients get retry deduplication.
+ const requestId=suppliedRequestId || crypto.randomUUID();
+ const hasImages=request.data?.hasImages===true;
+ const body=creatorSupportText(request.data?.body,3000,'回覆內容',!hasImages);
+ if(!body&&!hasImages) throw new HttpsError('invalid-argument','請輸入文字或選擇圖片');
+ const isAdmin=REWARD_CAMPAIGN_ADMIN_UIDS.has(uid)&&request.data?.asCreator!==true;
+ const ref=creatorSupportRoot().doc(id);
+ // Deterministic, unguessable document ID scoped to sender, case and request key.
+ const messageId=crypto.createHash('sha256').update(JSON.stringify([id,uid,requestId])).digest('hex');
+ const msg=ref.collection('messages').doc(messageId);
+ let committed=false;
+ try {
+  // Check eligibility even on retries; access must never be granted by a cached receipt alone.
+  if(!isAdmin) await creatorSupportCreator(request);
+  const outcome=await db.runTransaction(async tx=>{
+   const [caseSnap,priorSnap]=await Promise.all([tx.get(ref),tx.get(msg)]);
+   if(!caseSnap.exists) throw new HttpsError('not-found','案件不存在');
+   const d=caseSnap.data()||{};
+   if(!isAdmin&&d.creatorId!==uid) throw new HttpsError('permission-denied','無權回覆此案件');
+   if(priorSnap.exists){
+    const prior=priorSnap.data()||{};
+    // Do not replay the same key with different content, even after message edits.
+    if(prior.senderId!==uid || prior.originalBody!==body || prior.originalHasImages!==hasImages || prior.senderRole!==(isAdmin?'admin':'creator'))
+      throw new HttpsError('already-exists','此訊息識別碼已被不同內容使用');
+    return {alreadySubmitted:true};
+   }
+   if(d.status==='resolved'&&!isAdmin) throw new HttpsError('failed-precondition','案件已結案，請由官方重新開啟');
+   tx.create(msg,{senderRole:isAdmin?'admin':'creator',senderId:uid,body,
+    originalBody:body,originalHasImages:hasImages,createdAt:FieldValue.serverTimestamp()});
+   tx.update(ref,{updatedAt:FieldValue.serverTimestamp(),lastReplyAt:FieldValue.serverTimestamp(),lastReplyBy:isAdmin?'admin':'creator',
+    status:!isAdmin&&d.status==='waiting_creator'?'in_progress':d.status,
+    ...(isAdmin?{creatorUnreadCount:FieldValue.increment(1)}:{adminUnreadCount:FieldValue.increment(1)})});
+   return {alreadySubmitted:false};
+  });
+  committed=true;
+  logger.info('creator_support_reply_persisted',{caseId:id,messageId,actorRole:isAdmin?'admin':'creator',replayed:outcome.alreadySubmitted});
+  if(!outcome.alreadySubmitted){
+   // Notification is best effort; it must never turn a committed message into an INTERNAL error.
+   try {
+    if(isAdmin){
+     const caseSnap=await ref.get();
+     await creatorSupportNotify(caseSnap.data()?.creatorId,'創作者問題回報有新回覆','官方已回覆妳的案件',id);
+    } else await creatorSupportNotifyAdmins('創作者有新回覆','有新的案件訊息待查看',id);
+   } catch(notifyError){
+    logger.warn('creator_support_reply_notification_failed',{caseId:id,messageId,code:notifyError?.code||'',error:String(notifyError?.message||notifyError)});
+   }
+  }
+  return {success:true,messageId,alreadySubmitted:outcome.alreadySubmitted};
+ } catch(error){
+  logger.error('creator_support_reply_failed',{caseId:id,actorRole:isAdmin?'admin':'creator',committed,code:error?.code||'',error:String(error?.message||error)});
+  if(error instanceof HttpsError) throw error;
+  throw new HttpsError('internal','客服回覆暫時無法處理，請稍後重試');
+ }
+});
+
+exports.updateCreatorSupportCase = onCall({region:REGION,timeoutSeconds:30},async request=>{
+ creatorSupportAdmin(request);const id=String(request.data?.caseId||''),ref=creatorSupportRoot().doc(id);
+ if(!/^[A-Za-z0-9]{1,100}$/.test(id))throw new HttpsError('invalid-argument','案件ID無效');
+ const status=request.data?.status;const note=request.data?.internalNote;
+ if(status===undefined&&note===undefined)throw new HttpsError('invalid-argument','沒有修改內容');
+ const update={updatedAt:FieldValue.serverTimestamp()};
+ if(status!==undefined){if(!CREATOR_SUPPORT_STATUSES.has(status))throw new HttpsError('invalid-argument','狀態無效');update.status=status;update.creatorUnreadCount=FieldValue.increment(1);}
+ if(note!==undefined)update.internalNote=creatorSupportText(note,2000,'內部備註',false);
+ await ref.update(update);if(status!==undefined)await creatorSupportNotify((await ref.get()).data().creatorId,'創作者案件狀態已更新',`案件狀態：${status}`,id);return {success:true};
+});
+
+// 文字訊息：編輯／60 秒內收回／僅自己隱藏。全部使用 Admin SDK 驗證。
+exports.manageCreatorSupportMessage = onCall({region:REGION,timeoutSeconds:30},async request=>{
+ const uid=creatorSupportUid(request);
+ const caseId=String(request.data?.caseId||'');
+ const messageId=String(request.data?.messageId||'');
+ const operation=String(request.data?.operation||'');
+ if(!/^[A-Za-z0-9]{1,100}$/.test(caseId)||!/^[A-Za-z0-9]{1,100}$/.test(messageId))throw new HttpsError('invalid-argument','案件或訊息 ID 無效');
+ if(!['edit','recall','delete'].includes(operation))throw new HttpsError('invalid-argument','操作類型無效');
+ const ref=creatorSupportRoot().doc(caseId);
+ const msgRef=ref.collection('messages').doc(messageId);
+ const isAdmin=REWARD_CAMPAIGN_ADMIN_UIDS.has(uid)&&request.data?.asCreator!==true;
+ if(!isAdmin)await creatorSupportCreator(request);
+ await db.runTransaction(async tx=>{
+  const caseSnap=await tx.get(ref);
+  const msgSnap=await tx.get(msgRef);
+  if(!caseSnap.exists||!msgSnap.exists)throw new HttpsError('not-found','案件或訊息不存在');
+  if(!isAdmin&&caseSnap.data().creatorId!==uid)throw new HttpsError('permission-denied','無權操作案件');
+  const m=msgSnap.data()||{};
+  if(m.senderId!==uid)throw new HttpsError('permission-denied','只能操作自己發送的訊息');
+  if(m.recalledAt)throw new HttpsError('failed-precondition','訊息已收回');
+  if(operation==='delete'){
+   tx.update(msgRef,{hiddenFor:FieldValue.arrayUnion(uid)});
+   return;
+  }
+  if((m.hiddenFor||[]).includes(uid))throw new HttpsError('failed-precondition','訊息已刪除');
+  if(operation==='edit'){
+   const body=creatorSupportText(request.data?.body,3000,'訊息內容');
+   if(!String(m.body||'').trim())throw new HttpsError('failed-precondition','純圖片訊息不能編輯文字');
+   tx.update(msgRef,{body,editedAt:FieldValue.serverTimestamp()});
+   return;
+  }
+  const sent=m.createdAt?.toMillis?.();
+  if(!Number.isFinite(sent)||Date.now()-sent>60000||Date.now()<sent)
+   throw new HttpsError('failed-precondition','已超過 60 秒收回期限');
+  tx.update(msgRef,{body:'',recalledAt:FieldValue.serverTimestamp()});
+ });
+ return {success:true};
+});
+
+// 開放世界模組：僅註冊既有 Cloud Functions 對外名稱，避免改動 App 的 callable 名稱。
+require('./open_world').registerWorldFunctions(exports, {
+  onCall, HttpsError, REGION, db, APP_ID, crypto, FieldValue, logger,
+  openRouterApiKey, geminiApiKey, xaiApiKey, anthropicApiKey,
+  callAiWithRetry, normalizeAiResponseScript,
+});

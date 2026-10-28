@@ -47,7 +47,7 @@ class CharacterManagementPage extends StatelessWidget {
                     child: Opacity(
                       opacity: isDarkMode ? 0.08 : 0.24,
                       child: Image.asset(
-                        'assets/images/blocked/blocked_top_right_botanical.png',
+                        'assets/images/blocked/blocked_top_right_botanical.webp',
                         fit: BoxFit.contain,
                       ),
                     ),
@@ -59,7 +59,7 @@ class CharacterManagementPage extends StatelessWidget {
                     child: Opacity(
                       opacity: isDarkMode ? 0.08 : 0.22,
                       child: Image.asset(
-                        'assets/images/blocked/blocked_bottom_left_botanical.png',
+                        'assets/images/blocked/blocked_bottom_left_botanical.webp',
                         fit: BoxFit.contain,
                       ),
                     ),
@@ -558,7 +558,7 @@ class CharacterManagementPage extends StatelessWidget {
             Opacity(
               opacity: theme.brightness == Brightness.dark ? 0.42 : 0.78,
               child: Image.asset(
-                'assets/images/blocked/blocked_empty_state.png',
+                'assets/images/blocked/blocked_empty_state.webp',
                 width: imageSize,
                 height: imageSize,
                 fit: BoxFit.contain,

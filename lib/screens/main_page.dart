@@ -1,4 +1,6 @@
+import 'world_chat_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -38,6 +40,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   bool _hasClaimedToday = false;
   bool _hasCheckedInToday = false;
   bool _isShowingCheckInDialog = false;
+  bool _isCheckingDailyCheckIn = false;
   // ✨ 效能優化：紀錄最後一次檢查日期，避免頻繁讀取資料庫
   String _lastCheckedDateString = "";
   final GlobalKey<RecommendationPageState> _recommendationKey = GlobalKey<RecommendationPageState>();
@@ -148,6 +151,30 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
       // 只有「上次主分頁 = 聊天」時才嘗試回到最後聊天室。
       if (savedIndex != 2) return;
 
+      // 世界觀房間是獨立類型，不能誤當成角色聊天室路由。
+      final lastType = prefs.getString('last_chat_type_$uid') ?? '';
+      if (lastType == 'world') {
+        final worldId = prefs.getString('last_chat_world_$uid')?.trim() ?? '';
+        final worldSessionId =
+            prefs.getString('last_chat_world_session_$uid')?.trim() ?? '';
+        // 多房間世界觀必須同時取得世界與房間 ID；缺少其中之一時
+        // 僅留在聊天列表，不能退回舊版固定世界觀房間。
+        if (worldId.isEmpty || worldSessionId.isEmpty) {
+          debugPrint('世界觀最後房間紀錄不完整，略過自動開啟');
+          return;
+        }
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted || FirebaseAuth.instance.currentUser?.uid != uid) return;
+          Navigator.of(context).push(MaterialPageRoute<void>(
+            builder: (_) => WorldChatPage(
+              worldId: worldId,
+              sessionId: worldSessionId,
+            ),
+          ));
+        });
+        return;
+      }
+
       final characterId =
           prefs.getString('last_chat_character_$uid')?.trim() ?? '';
       final sessionId =
@@ -184,9 +211,16 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
     }
   }
 
+  // 所有裝置共用台灣日界線，避免不同時區的領取日不一致。
+  String get _checkInDayKey => DateFormat('yyyy-MM-dd').format(
+      DateTime.now().toUtc().add(const Duration(hours: 8)));
+
+  String _checkInDayOf(Timestamp stamp) => DateFormat('yyyy-MM-dd').format(
+      stamp.toDate().toUtc().add(const Duration(hours: 8)));
+
   // --- 每日簽到邏輯 ---
   void _performDailyTasks() {
-    final String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final String today = _checkInDayKey;
 
     // 如果今天在 App 運行期間已經檢查過了，就不再重複檢查
     if (_lastCheckedDateString == today) return;
@@ -199,31 +233,42 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   }
   Future<void> _checkDailyCheckIn() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null || !mounted) return;
+    if (user == null || !mounted || _isShowingCheckInDialog || _isCheckingDailyCheckIn) return;
+    _isCheckingDailyCheckIn = true;
     final userDocRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
-    final doc = await userDocRef.get();
-
-    // Firestore 等待期間 MainPage 可能已被導頁移除。
-    // 回來後一定要重新確認 mounted，避免 setState() called after dispose。
-    if (!mounted) return;
-    if (!doc.exists) return;
-    final data = doc.data()!;
-    final lastCheckInTimestamp = data['lastCheckInDate'] as Timestamp?;
-    // 🌟 這裡一定要統一用本地時間來抓「今天」的字串
-    final todayString = DateFormat('yyyy-MM-dd').format(DateTime.now());
-    if (lastCheckInTimestamp != null) {
-      // 🌟 這裡就是定義 lastDate 的地方！
-      final String lastDate = DateFormat('yyyy-MM-dd').format(lastCheckInTimestamp.toDate());
-      if (lastDate == todayString) {
-        print("✅ 今天已經簽到過囉！");
-        setState(() {
-          _hasClaimedToday = true; // 🌟 現在系統認識它了！
-        });
-        return;
+    try {
+      // 領取狀態不可用舊的本機快取決定，跨裝置必須以伺服器為準。
+      final doc = await userDocRef.get(const GetOptions(source: Source.server));
+      if (!mounted || FirebaseAuth.instance.currentUser?.uid != user.uid) return;
+      if (!doc.exists) return;
+      final last = doc.data()?['lastCheckInDate'];
+      bool claimed = last is Timestamp && _checkInDayOf(last) == _checkInDayKey;
+      // 若舊版本只成功寫入當日明細，也視為已領取，避免重複彈窗。
+      if (!claimed) {
+        final today = _checkInDayKey.replaceAll('-', '');
+        try {
+          final log = await userDocRef.collection('flower_logs')
+              .doc('daily_check_in_$today')
+              .get(const GetOptions(source: Source.server));
+          claimed = log.exists;
+        } catch (e) {
+          debugPrint('每日贈禮明細檢查未完成: $e');
+        }
       }
+      debugPrint('每日贈禮狀態：已領取=$claimed，紀錄類型=${last.runtimeType}');
+      if (!mounted || FirebaseAuth.instance.currentUser?.uid != user.uid) return;
+      setState(() {
+        _hasClaimedToday = claimed;
+        _hasCheckedInToday = claimed;
+      });
+      if (!claimed && mounted) await _showCheckInDialog(userDocRef);
+    } catch (error, stackTrace) {
+      // 伺服器無法驗證時不要顯示「可領」，以免誤導玩家重複領取。
+      debugPrint('每日贈禮狀態檢查失敗: $error');
+      debugPrintStack(stackTrace: stackTrace);
+    } finally {
+      _isCheckingDailyCheckIn = false;
     }
-    // 通過檢查，顯示彈窗
-    if (mounted) _showCheckInDialog(userDocRef);
   }
   // --- 簽到彈窗 UI ---
   Future<void> _showCheckInDialog(DocumentReference userDocRef) async {
@@ -239,6 +284,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
 
     try {
       final int rewardAmount = AppConfig.dailyCheckIn;
+      final bool desktopWeb = kIsWeb && MediaQuery.sizeOf(context).width >= 900;
       bool isClaiming = false;
 
       final l10n = AppLocalizations.of(context)!;
@@ -247,26 +293,29 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
 
       await showDialog(
         context: context,
-        barrierDismissible: false,
+        // 尚未領取也可以點視窗外空白處略過本次提示。
+        barrierDismissible: true,
         builder: (dialogContext) {
           return StatefulBuilder(
             builder: (context, setStateInDialog) {
               return AlertDialog(
+                // AlertDialog 只有 maxWidth 會依文字的 intrinsic width 收縮。
+                // 明確指定最小寬度，避免電腦瀏覽器顯示成狹長直條。
+                constraints: BoxConstraints(
+                  minWidth: desktopWeb ? 420 :
+                  (MediaQuery.sizeOf(dialogContext).width - 80).clamp(0.0, 320.0),
+                  maxWidth: desktopWeb ? 420 : 360,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
-                title: Row(
-                  children: [
-                    const SizedBox(width: 8),
-                    Text(
-                      l10n.daily_gift_title,
-                      style: GoogleFonts.notoSerifTc(
-                        color: primaryColor,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ],
+                title: Text(
+                  l10n.daily_gift_title,
+                  style: GoogleFonts.notoSerifTc(
+                    color: primaryColor,
+                    fontWeight: FontWeight.w700,
+                    fontSize: desktopWeb ? 22 : 18,
+                  ),
                 ),
                 content: Text(
                   l10n.daily_login_welcome(
@@ -274,7 +323,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                     rewardAmount.toString(),
                   ),
                   style: GoogleFonts.notoSerifTc(
-                    fontSize: 14,
+                    fontSize: desktopWeb ? 17 : 14,
                     height: 1.6,
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.78),
                   ),
@@ -312,52 +361,31 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                             throw Exception('使用者未登入');
                           }
 
-                          final todayString =
-                          DateFormat('yyyy-MM-dd').format(DateTime.now());
-
-                          // 1. Transaction：真正防止重複簽到
-                          await FirebaseFirestore.instance
-                              .runTransaction((transaction) async {
+                          if (FirebaseAuth.instance.currentUser?.uid != userDocRef.id) {
+                            throw StateError('登入帳號已變更，請重新進入頁面');
+                          }
+                          final todayString = _checkInDayKey;
+                          // 固定每日明細 ID，交易重試也只建立一筆明細。
+                          final logRef = userDocRef.collection('flower_logs')
+                              .doc('daily_check_in_${todayString.replaceAll('-', '')}');
+                          await FirebaseFirestore.instance.runTransaction((transaction) async {
                             final snapshot = await transaction.get(userDocRef);
-
-                            if (!snapshot.exists) {
-                              throw Exception('找不到玩家資料');
+                            if (!snapshot.exists) throw StateError('找不到玩家資料');
+                            final data = snapshot.data() as Map<String, dynamic>? ?? {};
+                            final last = data['lastCheckInDate'];
+                            if (last is Timestamp && _checkInDayOf(last) == todayString) {
+                              throw StateError('今天已經簽到過了');
                             }
-
-                            final data =
-                                snapshot.data() as Map<String, dynamic>? ?? {};
-
-                            final lastCheckInTimestamp =
-                            data['lastCheckInDate'] as Timestamp?;
-
-                            if (lastCheckInTimestamp != null) {
-                              final lastCheckInString =
-                              DateFormat('yyyy-MM-dd').format(
-                                lastCheckInTimestamp.toDate(),
-                              );
-
-                              if (lastCheckInString == todayString) {
-                                throw Exception('今天已經簽到過了');
-                              }
-                            }
-
+                            // 使用同一筆交易：點數與花花明細共同成功或共同失敗。
                             transaction.update(userDocRef, {
-                              'flowerPoints':
-                              FieldValue.increment(rewardAmount),
-                              'lastCheckInDate':
-                              FieldValue.serverTimestamp(),
+                              'flowerPoints': FieldValue.increment(rewardAmount),
+                              'lastCheckInDate': FieldValue.serverTimestamp(),
                             });
-                          });
-
-                          // 2. 寫入花花明細
-                          await FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(user.uid)
-                              .collection('flower_logs')
-                              .add({
-                            'title': l10n.title_daily_check_in,
-                            'amount': rewardAmount,
-                            'createdAt': FieldValue.serverTimestamp(),
+                            transaction.set(logRef, {
+                              'title': l10n.title_daily_check_in,
+                              'amount': rewardAmount,
+                              'createdAt': FieldValue.serverTimestamp(),
+                            });
                           });
 
                           if (!mounted) return;
@@ -442,16 +470,42 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                           );
                         } catch (e) {
                           debugPrint('❌ 簽到失敗: $e');
+                          if (e is FirebaseException) {
+                            debugPrint('每日贈禮 Firebase 錯誤碼: ${e.code}；訊息: ${e.message}');
+                          }
 
                           if (!mounted) return;
 
                           final errorText = e.toString();
-                          final bool alreadyCheckedIn =
+                          bool alreadyCheckedIn =
                           errorText.contains('今天已經簽到過了');
 
+                          // Web 端可能把交易拒絕包裝成 FirebaseException；
+                          // 再向伺服器核對一次，避免已領取卻顯示網路錯誤。
+                          if (!alreadyCheckedIn) {
+                            try {
+                              final latest = await userDocRef.get(
+                                const GetOptions(source: Source.server),
+                              );
+                              final last = latest.data() is Map<String, dynamic>
+                                  ? (latest.data() as Map<String, dynamic>)['lastCheckInDate']
+                                  : null;
+                              alreadyCheckedIn = last is Timestamp &&
+                                  _checkInDayOf(last) == _checkInDayKey;
+                              if (!alreadyCheckedIn) {
+                                final log = await userDocRef.collection('flower_logs')
+                                    .doc('daily_check_in_${_checkInDayKey.replaceAll('-', '')}')
+                                    .get(const GetOptions(source: Source.server));
+                                alreadyCheckedIn = log.exists;
+                              }
+                            } catch (verifyError) {
+                              debugPrint('再次核對每日贈禮狀態失敗: $verifyError');
+                            }
+                          }
+                          if (!mounted || !dialogContext.mounted) return;
+
                           if (alreadyCheckedIn) {
-                            final todayString =
-                            DateFormat('yyyy-MM-dd').format(DateTime.now());
+                            final todayString = _checkInDayKey;
 
                             setState(() {
                               _hasClaimedToday = true;
@@ -488,7 +542,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                         style: GoogleFonts.notoSerifTc(
                           color: primaryColor,
                           fontWeight: FontWeight.w700,
-                          fontSize: 16,
+                          fontSize: desktopWeb ? 18 : 16,
                         ),
                       ),
                     ),

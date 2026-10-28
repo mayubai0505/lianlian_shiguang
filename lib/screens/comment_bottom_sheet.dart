@@ -46,6 +46,52 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
   String _currentAuthorId = '';
   String _currentAuthorName = ''; // ✨ 改成空字串，稍後由 l10n 動態處理
   String _currentAuthorAvatar = '';
+  // 只查詢實際以玩家本人身分留言的 UID；快取 Future 避免重複讀取。
+  final Map<String, Future<bool>> _creatorBadgeChecks = <String, Future<bool>>{};
+  final Map<String, bool> _commentIsPersonalAuthor = <String, bool>{};
+
+  Future<bool> _isVerifiedCreator(String uid) async {
+    if (uid.isEmpty) return false;
+    try {
+      final doc = await _db.collection('users').doc(uid).get();
+      final data = doc.data();
+      return data != null &&
+          data['creatorStatus'] == 'approved' &&
+          data['creatorVerified'] == true &&
+          data['creatorDashboardEnabled'] == true;
+    } catch (error) {
+      debugPrint('讀取創作者認證失敗: $error');
+      return false;
+    }
+  }
+
+  Widget _creatorBadgeForComment(Comment comment) {
+    // 角色留言的 authorId 是角色 ID，而 createdBy 是擁有者 UID；
+    // 即使該擁有者是認證創作者，角色也不能繼承徽章。
+    if (_commentIsPersonalAuthor[comment.id] != true) {
+      return const SizedBox.shrink();
+    }
+    final check = _creatorBadgeChecks.putIfAbsent(
+      comment.authorId,
+          () => _isVerifiedCreator(comment.authorId),
+    );
+    return FutureBuilder<bool>(
+      future: check,
+      builder: (context, snapshot) {
+        if (snapshot.data != true) return const SizedBox.shrink();
+        return Padding(
+          padding: const EdgeInsets.only(left: 4),
+          child: Image.asset(
+            'assets/images/creator/creator_verified_badge.png',
+            width: 18,
+            height: 18,
+            fit: BoxFit.contain,
+          ),
+        );
+      },
+    );
+  }
+
   List<Comment> _comments = [];
   bool _isLoadingComments = true;
   bool _isPostingComment = false;
@@ -116,6 +162,21 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
       if (mounted) {
         setState(() {
           _comments = snapshot.docs.map((doc) => Comment.fromFirestore(doc)).toList();
+          _commentIsPersonalAuthor
+            ..clear()
+            ..addEntries(snapshot.docs.map((doc) {
+              final data = doc.data();
+              final authorId = data['authorId'];
+              final createdBy = data['createdBy'];
+              // 必須是明確標示本人發言且作者 UID 與擁有者 UID 相同。
+              return MapEntry(
+                doc.id,
+                data['isPlayer'] == true &&
+                    authorId is String &&
+                    authorId.isNotEmpty &&
+                    authorId == createdBy,
+              );
+            }));
           _isLoadingComments = false;
         });
       }
@@ -134,7 +195,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
         final data = doc.data()!;
         setState(() {
           _currentAuthorName = data['nickname'] ?? l10n.chat_mysterious_player;
-          _currentAuthorAvatar = data['avatarPath'] ?? 'assets/images/avatar1.png';
+          _currentAuthorAvatar = data['avatarPath'] ?? 'assets/images/avatar1.webp';
           _currentAuthorId = user.uid;
         });
 
@@ -192,7 +253,8 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
       });
     } catch (error) {
       if (!mounted) return;
-      ToastUtils.showCenterToast(context, '讀取照片失敗：$error', isError: true);
+      debugPrint('讀取留言照片失敗：$error');
+      ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.comment_error_generic, isError: true);
     }
   }
 
@@ -338,7 +400,8 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
       }
     } catch (error) {
       if (mounted) {
-        ToastUtils.showCenterToast(context, '照片上傳失敗：$error', isError: true);
+        debugPrint('留言照片上傳失敗：$error');
+        ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.comment_error_generic, isError: true);
       }
       return;
     }
@@ -357,6 +420,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
     );
 
     setState(() {
+      _commentIsPersonalAuthor[commentId] = safeAuthorId == currentUser.uid;
       _isPostingComment = true;
       _replyTarget = null;
       _comments.add(tempComment);
@@ -381,7 +445,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
         'createdAt': FieldValue.serverTimestamp(),
         'parentCommentId': parentId,
         'replyToName': replyName,
-        'isPlayer': true,
+        'isPlayer': safeAuthorId == currentUser.uid,
         'createdBy': currentUser.uid,
       });
 
@@ -411,14 +475,16 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
 
       print("✅ 留言與通知發送成功！");
     } catch (e) {
+      debugPrint('留言發送失敗：$e');
       setState(() {
         _comments.removeWhere((c) => c.id == tempComment.id);
+        _commentIsPersonalAuthor.remove(commentId);
       });
 
       if (mounted) {
         ToastUtils.showCenterToast(
           context,
-          l10n.comment_post_failed(e.toString()),
+          l10n.comment_error_generic,
           isError: true,
         );
       }
@@ -470,11 +536,12 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
         }
       }
     } catch (e) {
+      debugPrint('刪除留言失敗：$e');
       if (mounted) {
         // ✨ 總裁級：使用重量級錯誤提示，告知玩家刪除失敗且已復原
         ToastUtils.showCenterToast(
           context,
-          l10n.comment_delete_failed,
+          l10n.comment_error_generic,
           isError: true, // 💡 必須帶上紅驚嘆號，這是嚴肅的資料操作錯誤
         );
         setState(() => _comments.insert(originalIndex, backupComment));
@@ -487,7 +554,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
     final myCharacters = await _fetchMyCharacters();
     final prefs = await SharedPreferences.getInstance();
     final playerNickname = prefs.getString('nickname') ?? l10n.chat_mysterious_player;
-    final playerAvatar = prefs.getString('avatarPath') ?? 'assets/images/avatar1.png';
+    final playerAvatar = prefs.getString('avatarPath') ?? 'assets/images/avatar1.webp';
 
     if (!mounted) return;
 
@@ -612,11 +679,12 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
         );
       }
     } catch (e) {
+      debugPrint('檢舉留言失敗：$e');
       if (mounted) {
         // ⚠️ 檢舉失敗：使用重量級錯誤提示，告知玩家系統卡住了
         ToastUtils.showCenterToast(
           context,
-          l10n.comment_report_failed,
+          l10n.comment_error_generic,
           isError: true, // 💡 紅驚嘆號告知玩家需稍後再試
         );
       }
@@ -706,6 +774,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                   ),
                 ),
               ),
+              _creatorBadgeForComment(comment),
               if (isReply) ...[
                 const Icon(Icons.arrow_right, size: 16, color: Colors.grey),
                 Flexible(
@@ -1015,13 +1084,17 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                   ),
                   const SizedBox(width: 6),
                   IconButton(
-                    tooltip: '加入照片',
+                    tooltip: l10n.comment_add_photo,
                     onPressed: _isPostingComment ? null : _pickCommentImage,
-                    icon: Icon(
-                      Icons.image_outlined,
+                    icon: Image.asset(
+                      'assets/images/chat/chat_tool_photo_mask.png',
+                      width: 24,
+                      height: 24,
+                      fit: BoxFit.contain,
                       color: _selectedCommentImageBytes != null
                           ? Theme.of(context).colorScheme.primary
                           : Theme.of(context).colorScheme.onSurfaceVariant,
+                      colorBlendMode: BlendMode.srcIn,
                     ),
                   ),
                   const SizedBox(width: 2),
@@ -1044,11 +1117,15 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                     ),
                   ),
                   IconButton(
-                    icon: Icon(
-                      Icons.send,
+                    icon: Image.asset(
+                      'assets/images/chat/chat_send_plane_mask.webp',
+                      width: 24,
+                      height: 24,
+                      fit: BoxFit.contain,
                       color: _isPostingComment
                           ? Colors.grey
                           : Theme.of(context).colorScheme.primary,
+                      colorBlendMode: BlendMode.srcIn,
                     ),
                     onPressed: _isPostingComment ? null : _postComment,
                   ),
@@ -1063,6 +1140,6 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
 
   ImageProvider getAvatarImageProvider(String path) {
     if (path.startsWith('http')) return NetworkImage(path);
-    return AssetImage(path.isNotEmpty ? path : 'assets/images/avatar1.png');
+    return AssetImage(path.isNotEmpty ? path : 'assets/images/avatar1.webp');
   }
 }

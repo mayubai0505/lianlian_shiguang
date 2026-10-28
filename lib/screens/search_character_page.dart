@@ -928,13 +928,6 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
     return Container(
       color: theme.colorScheme
           .secondaryContainer,
-      alignment: Alignment.center,
-      child: Icon(
-        Icons.person_rounded,
-        size: 56,
-        color: theme.colorScheme
-            .onSecondaryContainer,
-      ),
     );
   }
   String _buildCharacterInfoText(

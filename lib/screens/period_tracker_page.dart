@@ -1,3 +1,4 @@
+import '../services/tutorial_seen_sync.dart';
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -337,10 +338,10 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
 
   Future<void> _showFirstUseGuide() async {
     final prefs = await SharedPreferences.getInstance();
-    final hasSeen = prefs.getBool('seen_period_tracker_guide_v2') ?? false;
+    final hasSeen = await TutorialSeenSync.hasSeen('seen_period_tracker_guide_v2');
     if (!hasSeen && mounted) {
       await _showGuide();
-      await prefs.setBool('seen_period_tracker_guide_v2', true);
+      await TutorialSeenSync.markSeen('seen_period_tracker_guide_v2');
     }
   }
 
@@ -349,21 +350,9 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
     await showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            Icon(
-              Icons.water_drop_outlined,
-              color: Colors.redAccent,
-              size: 24,
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                l10n.periodGuideTitle,
-                style: const TextStyle(fontSize: 19),
-              ),
-            ),
-          ],
+        title: Text(
+          l10n.periodGuideTitle,
+          style: const TextStyle(fontSize: 19),
         ),
         content: Text(l10n.periodGuideContent),
         actions: [
@@ -626,7 +615,6 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
           DateFormat.yMMMd(Localizations.localeOf(context).toString())
               .format(_selectedDay),
         ),
-        customIcon: Icons.favorite_rounded,
       );
     } on StateError catch (e) {
       if (!mounted) return;
@@ -711,8 +699,6 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
         children: [
           Row(
             children: [
-              Icon(Icons.water_drop_outlined, color: theme.colorScheme.primary),
-              const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   ongoing == null
@@ -1222,7 +1208,6 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
                             decoration: InputDecoration(
                               labelText: l10n.periodOtherMood,
                               hintText: l10n.periodOtherMoodHint,
-                              prefixIcon: const Icon(Icons.add_reaction_outlined),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
                                 borderSide: BorderSide(
@@ -1261,7 +1246,6 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
                             decoration: InputDecoration(
                               labelText: l10n.periodOtherSymptom,
                               hintText: l10n.periodOtherSymptomHint,
-                              prefixIcon: const Icon(Icons.edit_note_rounded),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
                                 borderSide: BorderSide(
@@ -1364,10 +1348,6 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
                             vertical: 4,
                           ),
                           child: ListTile(
-                            leading: Icon(
-                              Icons.water_drop_outlined,
-                              color: primaryColor,
-                            ),
                             title: Text(
                               '${DateFormat('yyyy/MM/dd').format(record.startDate)}－${DateFormat('MM/dd').format(record.endDate)}',
                             ),

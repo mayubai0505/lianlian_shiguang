@@ -17,7 +17,10 @@ import '../services/toast_utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'world_discovery_page.dart';
 import '../widgets/user_avatar_with_frame.dart';
+import '../utils/image_utils.dart';
 
 //創作者公開頁面
 class CreatorProfilePage extends StatelessWidget {
@@ -142,15 +145,9 @@ class CreatorProfilePage extends StatelessWidget {
         final String finalPath =
         (avatarPath ?? photoUrl ?? '').trim();
 
-        if (finalPath.isNotEmpty) {
-          if (finalPath.startsWith('http')) {
-            imageProvider =
-                CachedNetworkImageProvider(finalPath);
-          } else {
-            imageProvider =
-                AssetImage(finalPath);
-          }
-        }
+        // 舊玩家資料仍可能保存 avatar1.png 等路徑，
+        // 統一透過共用工具轉成現行 WebP 資產。
+        imageProvider = getAvatarImageProvider(finalPath);
 
         // =================================================
         // 2. 監聽目前玩家封鎖的角色
@@ -341,7 +338,7 @@ class CreatorProfilePage extends StatelessWidget {
                           child: Opacity(
                             opacity: 0.30,
                             child: Image.asset(
-                              'assets/images/creator_public/creator_public_top_left_wash.png',
+                              'assets/images/creator_public/creator_public_top_left_wash.webp',
                               width: 180,
                               fit: BoxFit.contain,
                             ),
@@ -355,7 +352,7 @@ class CreatorProfilePage extends StatelessWidget {
                           child: Opacity(
                             opacity: 0.18,
                             child: Image.asset(
-                              'assets/images/creator_public/creator_public_top_right_botanical.png',
+                              'assets/images/creator_public/creator_public_top_right_botanical.webp',
                               width: 170,
                               fit: BoxFit.contain,
                             ),
@@ -369,7 +366,7 @@ class CreatorProfilePage extends StatelessWidget {
                           child: Opacity(
                             opacity: 0.12,
                             child: Image.asset(
-                              'assets/images/creator_public/creator_public_bottom_left_botanical.png',
+                              'assets/images/creator_public/creator_public_bottom_left_botanical.webp',
                               width: 170,
                               fit: BoxFit.contain,
                             ),
@@ -377,53 +374,45 @@ class CreatorProfilePage extends StatelessWidget {
                         ),
                       ),
                       DefaultTabController(
-                        length: 3,
-                        child: Column(
-                          children: [
-                            _buildCreatorHeader(
-                              context,
-                              theme,
-                              creatorId: creatorId,
-                              displayNickname: displayNickname,
-                              displayPlayerID: displayPlayerID,
-                              creatorBio: creatorBio,
-                              imageProvider: imageProvider,
-                              isOwner: isOwner,
-                              workCount: characters.length,
-                              totalLikes: totalLikes,
+                        length: 4,
+                        child: NestedScrollView(
+                          // 讓創作者資訊隨頁面捲動，而非在小畫面擠壓 TabBarView。
+                          headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                            SliverToBoxAdapter(
+                              child: _buildCreatorHeader(
+                                context,
+                                theme,
+                                creatorId: creatorId,
+                                displayNickname: displayNickname,
+                                displayPlayerID: displayPlayerID,
+                                creatorBio: creatorBio,
+                                imageProvider: imageProvider,
+                                isOwner: isOwner,
+                                workCount: characters.length,
+                                totalLikes: totalLikes,
+                              ),
                             ),
-                            _buildCreatorMainTabBar(
-                              context,
-                              theme,
-                              l10n,
-                            ),
-                            Expanded(
-                              child: TabBarView(
-                                children: [
-                                  _buildCreatorAboutTab(
-                                    context,
-                                    theme,
-                                    creatorBio,
-                                    profileLinks,
-                                  ),
-                                  _buildCreatorWorks(
-                                    context,
-                                    theme,
-                                    l10n,
-                                    characters,
-                                    isOwner,
-                                    characterSnapshot,
-                                  ),
-                                  _buildCreatorMomentsTab(
-                                    context,
-                                    theme,
-                                    creatorId,
-                                    characters,
-                                  ),
-                                ],
+                            SliverPersistentHeader(
+                              pinned: true,
+                              delegate: _CreatorPinnedTabsDelegate(
+                                backgroundColor: theme.scaffoldBackgroundColor,
+                                child: _buildCreatorMainTabBar(context, theme, l10n),
                               ),
                             ),
                           ],
+                          body: TabBarView(
+                            children: [
+                              _buildCreatorAboutTab(context, theme, creatorBio, profileLinks),
+                              _buildCreatorWorks(
+                                context, theme, l10n, characters, isOwner,
+                                characterSnapshot,
+                              ),
+                              _buildCreatorMomentsTab(
+                                context, theme, creatorId, characters,
+                              ),
+                              _CreatorOpenWorldsTab(creatorId: creatorId),
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -487,7 +476,7 @@ class CreatorProfilePage extends StatelessWidget {
             borderRadius: BorderRadius.circular(22),
           ),
           title: Text(
-            '檢舉創作者',
+            l10n.creator_profile_report_creator,
             style: GoogleFonts.notoSerifTc(
               fontSize: 17,
               fontWeight: FontWeight.w600,
@@ -498,7 +487,7 @@ class CreatorProfilePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '請選擇檢舉「$creatorName」的原因：',
+                l10n.creator_profile_report_reason_prompt1(creatorName),
                 style: GoogleFonts.notoSerifTc(
                   fontSize: 13,
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.68),
@@ -608,7 +597,7 @@ class CreatorProfilePage extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                '封鎖創作者',
+                l10n.creator_profile_block_creator,
                 style: GoogleFonts.notoSerifTc(
                   fontSize: 17,
                   fontWeight: FontWeight.w600,
@@ -764,6 +753,7 @@ class CreatorProfilePage extends StatelessWidget {
             Tab(text: l10n.profilePageTabBio),
             Tab(text: l10n.profilePageTabCharacters),
             Tab(text: l10n.profilePageTabMoments),
+            Tab(text: l10n.creator_profile_open_worlds),
           ],
         ),
         Positioned(
@@ -772,7 +762,7 @@ class CreatorProfilePage extends StatelessWidget {
             child: Opacity(
               opacity: 0.72,
               child: Image.asset(
-                'assets/images/creator_public/creator_public_tab_ornament.png',
+                'assets/images/creator_public/creator_public_tab_ornament.webp',
                 width: 92,
                 height: 12,
                 fit: BoxFit.contain,
@@ -806,7 +796,7 @@ class CreatorProfilePage extends StatelessWidget {
           const SizedBox(height: 34),
           Center(
             child: Image.asset(
-              'assets/images/creator_public/creator_public_avatar_branch.png',
+              'assets/images/creator_public/creator_public_avatar_branch.webp',
               width: 72,
               fit: BoxFit.contain,
               opacity: const AlwaysStoppedAnimation(0.42),
@@ -867,7 +857,7 @@ class CreatorProfilePage extends StatelessWidget {
                   child: Opacity(
                     opacity: 0.20,
                     child: Image.asset(
-                      'assets/images/creator_public/creator_public_bottom_right_ink.png',
+                      'assets/images/creator_public/creator_public_bottom_right_ink.webp',
                       width: 105,
                       fit: BoxFit.contain,
                     ),
@@ -927,7 +917,7 @@ class CreatorProfilePage extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                '：',
+                                ': ',
                                 style: GoogleFonts.notoSerifTc(
                                   fontSize: 13,
                                   height: 1.55,
@@ -1595,7 +1585,7 @@ class CreatorProfilePage extends StatelessWidget {
                         child: Opacity(
                           opacity: 0.66,
                           child: Image.asset(
-                            'assets/images/creator_public/creator_public_avatar_branch.png',
+                            'assets/images/creator_public/creator_public_avatar_branch.webp',
                             width: 58,
                             fit: BoxFit.contain,
                           ),
@@ -1992,9 +1982,7 @@ class CreatorProfilePage extends StatelessWidget {
     if (characterSnapshot.hasError) {
       return Center(
         child: Text(
-          l10n.creatorProfileWorksLoadFailed(
-            characterSnapshot.error.toString(),
-          ),
+          l10n.creator_profile_generic_error,
         ),
       );
     }
@@ -2031,20 +2019,8 @@ class CreatorProfilePage extends StatelessWidget {
 
         final ImageProvider cardImage;
 
-        if (safeAvatar.startsWith('http')) {
-          cardImage =
-              CachedNetworkImageProvider(
-                safeAvatar,
-              );
-        } else if (safeAvatar
-            .startsWith('assets/')) {
-          cardImage =
-              AssetImage(safeAvatar);
-        } else {
-          cardImage = const AssetImage(
-            'assets/images/default.png',
-          );
-        }
+        // 舊版角色頭像若仍指向預設 PNG，透過共用工具相容 WebP。
+        cardImage = getAvatarImageProvider(safeAvatar);
 
         return GestureDetector(
           onTap: () {
@@ -2234,4 +2210,145 @@ class CreatorProfilePage extends StatelessWidget {
       },
     );
   }
+}
+
+/// 創作者已公開的開放世界：重用公開白名單目錄，不讀取世界內部設定與秘密。
+class _CreatorOpenWorldsTab extends StatefulWidget {
+  const _CreatorOpenWorldsTab({required this.creatorId});
+  final String creatorId;
+
+  @override
+  State<_CreatorOpenWorldsTab> createState() => _CreatorOpenWorldsTabState();
+}
+
+class _CreatorOpenWorldsTabState extends State<_CreatorOpenWorldsTab> {
+  late Future<List<Map<String, dynamic>>> _worldsFuture = _fetch();
+
+  Future<List<Map<String, dynamic>>> _fetch() async {
+    final result = await FirebaseFunctions.instanceFor(region: 'asia-east1')
+        .httpsCallable('worldPublicCatalog').call();
+    final raw = result.data;
+    if (raw is! Map) return <Map<String, dynamic>>[];
+    final entries = raw['worlds'];
+    if (entries is! List) return <Map<String, dynamic>>[];
+    return entries.whereType<Map>().map((e) => Map<String, dynamic>.from(e))
+        .where((world) => (world['creatorId'] ?? '').toString() == widget.creatorId)
+        .toList();
+  }
+
+  Future<void> _refresh() async {
+    final updated = _fetch();
+    setState(() => _worldsFuture = updated);
+    try { await updated; } catch (_) { /* 顯示於 FutureBuilder */ }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: _worldsFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Text(l10n.creator_profile_generic_error, style: TextStyle(color: theme.colorScheme.onSurface)),
+            TextButton(onPressed: _refresh, child: Text(l10n.creator_profile_refresh)),
+          ]));
+        }
+        final worlds = snapshot.data ?? <Map<String, dynamic>>[];
+        if (worlds.isEmpty) {
+          return Center(child: Text(l10n.creator_profile_no_open_worlds,
+              style: TextStyle(color: theme.colorScheme.onSurfaceVariant)));
+        }
+        return RefreshIndicator(
+          onRefresh: _refresh,
+          child: ListView.builder(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+            itemCount: worlds.length,
+            itemBuilder: (context, i) {
+              final world = worlds[i];
+              final worldId = (world['id'] ?? '').toString();
+              final name = (world['name'] ?? l10n.creator_profile_unnamed_world).toString();
+              final cover = (world['coverImage'] ?? '').toString();
+              final pitch = (world['shortPitch'] ?? '').toString().trim();
+              final tags = (world['tags'] is List)
+                  ? (world['tags'] as List).map((tag) => tag.toString()).join(' · ') : '';
+              return Card(
+                margin: const EdgeInsets.only(bottom: 14),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: worldId.isEmpty ? null : () => Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => WorldDiscoveryPage(worldId: worldId))),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: cover.isEmpty
+                          ? ColoredBox(color: theme.colorScheme.surfaceContainerHighest,
+                          child: const Center(child: Icon(Icons.image_outlined)))
+                          : CachedNetworkImage(
+                        imageUrl: cover,
+                        fit: BoxFit.cover,
+                        memCacheWidth: 960,
+                        placeholder: (_, __) => ColoredBox(
+                            color: theme.colorScheme.surfaceContainerHighest,
+                            child: const Center(child: CircularProgressIndicator(strokeWidth: 2))),
+                        errorWidget: (_, __, ___) => const Center(child: Icon(Icons.broken_image_outlined)),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(14),
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text(name, maxLines: 2, overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.notoSerifTc(fontSize: 17, fontWeight: FontWeight.w600)),
+                        if (pitch.isNotEmpty) ...[
+                          const SizedBox(height: 7),
+                          Text(pitch, maxLines: 2, overflow: TextOverflow.ellipsis,
+                              style: TextStyle(color: theme.colorScheme.onSurfaceVariant, height: 1.5)),
+                        ],
+                        if (tags.isNotEmpty) ...[
+                          const SizedBox(height: 9),
+                          Text(tags, maxLines: 1, overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: 12, color: theme.colorScheme.primary)),
+                        ],
+                      ]),
+                    ),
+                  ]),
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+}
+
+// 創作者頁籤固定於頂端；內容可隨 NestedScrollView 捲動，
+// 避免橫向畫面或小螢幕出現 RenderFlex 底部溢出。
+class _CreatorPinnedTabsDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+  final Color backgroundColor;
+
+  const _CreatorPinnedTabsDelegate({
+    required this.child,
+    required this.backgroundColor,
+  });
+
+  @override
+  double get minExtent => 48.0;
+
+  @override
+  double get maxExtent => 48.0;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Material(color: backgroundColor, child: child);
+  }
+
+  @override
+  bool shouldRebuild(covariant _CreatorPinnedTabsDelegate oldDelegate) =>
+      oldDelegate.child != child || oldDelegate.backgroundColor != backgroundColor;
 }

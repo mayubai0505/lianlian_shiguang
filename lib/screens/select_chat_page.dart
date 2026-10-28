@@ -6,16 +6,15 @@ import 'dart:ui';
 import 'dart:math';
 import 'character_model.dart';
 import 'character_profile_page.dart';
+import 'world_discovery_page.dart';
+import 'public_worlds_page.dart';
 import 'search_character_page.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb, listEquals;
-import '../services/character_report_service.dart';
-import '../services/character_block_service.dart';
 
 import 'dart:async';
 
@@ -56,7 +55,7 @@ Widget _buildEncounterCachedImage(
 
   final Widget fallback = errorWidget ??
       Image.asset(
-        'assets/images/blank_avatar.png',
+        'assets/images/blank_avatar.webp',
         fit: fit,
         alignment: alignment,
       );
@@ -85,13 +84,77 @@ Widget _buildEncounterCachedImage(
       // 第一次真正尚未載入時只顯示靜態底圖，不顯示轉圈圈。
       return placeholder ??
           Image.asset(
-            'assets/images/blank_avatar.png',
+            'assets/images/blank_avatar.webp',
             fit: fit,
             alignment: alignment,
           );
     },
     errorBuilder: (context, error, stackTrace) => fallback,
   );
+}
+
+
+/// 世界遊玩次數：僅顯示後端確實提供的數值，不自行推估。
+String _worldPlayCountLabel(Object? raw) {
+  if (raw is! num) return '0';
+  final n = raw.toInt();
+  if (n < 0) return '0';
+  if (n < 1000) return '$n';
+  if (n < 1000000) {
+    final v = n / 1000;
+    return '${v >= 100 ? v.toStringAsFixed(0) : v.toStringAsFixed(1)}K';
+  }
+  final v = n / 1000000;
+  return '${v >= 100 ? v.toStringAsFixed(0) : v.toStringAsFixed(1)}M';
+}
+
+Widget _worldPlayBadge(Object? playCount) {
+  return Positioned(
+    top: 10,
+    right: 10,
+    child: IgnorePointer(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+        decoration: BoxDecoration(
+          color: Colors.black.withValues(alpha: 0.65),
+          borderRadius: BorderRadius.circular(999),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.chat_bubble_outline_rounded, color: Colors.white, size: 13),
+            const SizedBox(width: 5),
+            Text(_worldPlayCountLabel(playCount),
+                style: const TextStyle(color: Colors.white, fontSize: 12,
+                    fontWeight: FontWeight.w600)),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+class _DiscoveryWorld {
+  const _DiscoveryWorld(this.id, this.data);
+  final String id;
+  final Map<String, dynamic> data;
+  String get name => (data['name'] ?? '').toString();
+  String get createdBy => (data['createdBy'] ?? '').toString();
+  String get cover => (data['coverImage'] ?? '').toString();
+  String get shortPitch => (data['shortPitch'] ?? '').toString().trim();
+  List<String> get tags => (data['tags'] is List)
+      ? (data['tags'] as List).map((v) => v.toString()).toList()
+      : <String>[];
+}
+
+class _DiscoveryCategory {
+  const _DiscoveryCategory(this.id, this.label, {this.isEvent = false,
+    this.characterIds = const [], this.worldIds = const [], this.scope = 'both',
+    this.order = 100});
+  final String id, label, scope;
+  final bool isEvent;
+  final List<String> characterIds, worldIds;
+  final int order;
 }
 
 // 邂逅頁面
@@ -108,7 +171,6 @@ class SelectChatPageState extends State<SelectChatPage> {
   String? _userId;
   Future<List<Character>>? _charactersFuture;
   String? _lastFirstCharacterId;
-  Set<String> _friendIds = {};
   Set<String> _blockedCharacterIds = {};
   Set<String> _blockedCreatorIds = {};
   final Set<String> _preloadedImageUrls = {};
@@ -150,7 +212,6 @@ class SelectChatPageState extends State<SelectChatPage> {
 
     try {
       if (_userId == null) {
-        _friendIds.clear();
         _blockedCharacterIds.clear();
         _blockedCreatorIds.clear();
 
@@ -166,7 +227,6 @@ class SelectChatPageState extends State<SelectChatPage> {
 
       // 好友／封鎖資料彼此無相依，維持平行讀取。
       await Future.wait([
-        _loadFriendIds(),
         _loadBlockedCharacterIds(),
         _loadBlockedCreatorIds(),
       ]);
@@ -238,25 +298,6 @@ class SelectChatPageState extends State<SelectChatPage> {
           debugPrint('預載邂逅角色圖片失敗：$error');
         });
       }
-    }
-  }
-
-  Future<void> _loadFriendIds() async {
-    if (_userId == null) return;
-    try {
-      final snapshot = await _db
-          .collection('users')
-          .doc(_userId!)
-          .collection('friends')
-          .get();
-      final ids = snapshot.docs.map((doc) => doc.id).toSet();
-      if (mounted) {
-        setState(() {
-          _friendIds = ids;
-        });
-      }
-    } catch (e) {
-      print("❌ 讀取好友列表失敗: $e");
     }
   }
 
@@ -359,290 +400,6 @@ class SelectChatPageState extends State<SelectChatPage> {
     }
   }
 
-  // 1. 專屬加好友成功彈窗
-  Future<void> _showAddFriendSuccessDialog(String characterName) async {
-    final prefs = await SharedPreferences.getInstance();
-    final todayStr = DateTime.now().toString().substring(0, 10);
-    final l10n = AppLocalizations.of(context)!;
-    if (prefs.getString('hideAddFriendDate') == todayStr) return;
-    if (!mounted) return;
-
-    bool dontShowAgain = false;
-    final theme = Theme.of(context);
-
-    await showDialog(
-        context: context,
-        builder: (context) {
-          return StatefulBuilder(
-              builder: (context, setStateInDialog) {
-                return AlertDialog(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                    backgroundColor: Colors.white,
-                    content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.favorite, size: 60, color: theme.colorScheme.primary),
-                          const SizedBox(height: 16),
-                          Text(l10n.add_friend_success(characterName),
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 16),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                  height: 24,
-                                  width: 24,
-                                  child: Checkbox(
-                                      value: dontShowAgain,
-                                      activeColor: theme.colorScheme.primary,
-                                      onChanged: (val) {
-                                        setStateInDialog(() => dontShowAgain = val ?? false);
-                                      }
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Text(l10n.do_not_show_again_today, style: const TextStyle(color: Colors.grey, fontSize: 12)),
-                              ]
-                          ),
-                          const SizedBox(height: 20),
-                          SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: theme.colorScheme.primary,
-                                  foregroundColor: Colors.white,
-                                  elevation: 0,
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                ),
-                                onPressed: () async {
-                                  if (dontShowAgain) {
-                                    await prefs.setString('hideAddFriendDate', todayStr);
-                                  }
-                                  Navigator.pop(context);
-                                },
-                                child: Text(l10n.ok_button, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                              )
-                          )
-                        ]
-                    )
-                );
-              }
-          );
-        }
-    );
-  }
-
-  // 2. 通用結果彈窗
-  void _showResultDialog(String message, {bool isError = false}) {
-    final l10n = AppLocalizations.of(context)!;
-    if (!mounted) return;
-    final theme = Theme.of(context);
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-              backgroundColor: Colors.white,
-              content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(isError ? Icons.error_outline : Icons.check_circle_outline,
-                        size: 60, color: isError ? Colors.redAccent : theme.colorScheme.primary),
-                    const SizedBox(height: 16),
-                    Text(message, textAlign: TextAlign.center, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87)),
-                    const SizedBox(height: 24),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: isError ? Colors.redAccent : theme.colorScheme.primary,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        ),
-                        onPressed: () => Navigator.pop(context),
-                        child: Text(l10n.deleteAccountDialogActionConfirm, style: const TextStyle(fontWeight: FontWeight.bold)),
-                      ),
-                    )
-                  ]
-              )
-          );
-        }
-    );
-  }
-
-  Future<void> _addFriend(Character character) async {
-    final l10n = AppLocalizations.of(context)!;
-    if (_userId == null) {
-      _showResultDialog(l10n.error_login_required_add_friend, isError: true);
-      return;
-    }
-
-    try {
-      final String charId = character.id;
-      final String userId = _userId!;
-
-      final encounterRef = _db
-          .collection('artifacts')
-          .doc(AppConfig.appId)
-          .collection('public_characters')
-          .doc(charId)
-          .collection('unique_encounters')
-          .doc(userId);
-
-      final charDocRef = _db
-          .collection('artifacts')
-          .doc(AppConfig.appId)
-          .collection('public_characters')
-          .doc(charId);
-
-      final myFriendRef = _db
-          .collection('users')
-          .doc(userId)
-          .collection('friends')
-          .doc(charId);
-
-      await _db.runTransaction((transaction) async {
-        final encounterDoc = await transaction.get(encounterRef);
-        if (!encounterDoc.exists) {
-          transaction.update(charDocRef, {
-            'playCount': FieldValue.increment(1),
-          });
-          transaction.set(encounterRef, {
-            'encounteredAt': FieldValue.serverTimestamp(),
-          });
-        }
-        transaction.set(myFriendRef, {
-          'characterId': character.id,
-          'name': character.name,
-          'avatarPath': character.avatarPath,
-          'addedAt': FieldValue.serverTimestamp(),
-        });
-      });
-
-      if (mounted) {
-        setState(() {
-          _friendIds.add(character.id);
-        });
-        _showAddFriendSuccessDialog(character.name);
-      }
-    } catch (e) {
-      if (mounted) {
-        _showResultDialog(l10n.add_friend_failed_retry, isError: true);
-      }
-    }
-  }
-
-  Future<void> _deleteFriend(Character character) async {
-    final l10n = AppLocalizations.of(context)!;
-    if (_userId == null) return;
-    final bool? confirm = await showDialog<bool>(
-        context: context,
-        builder: (context) =>
-            AlertDialog(
-              title: Text(l10n.dialog_title_remove_friend),
-              content: Text(l10n.dialog_msg_remove_friend(character.name)),
-              actions: [
-                TextButton(onPressed: () => Navigator.of(context).pop(false),
-                    child: Text(l10n.cancelButton)),
-                TextButton(onPressed: () => Navigator.of(context).pop(true),
-                    child: Text(l10n.action_remove, style: const TextStyle(color: Colors.red))),
-              ],
-            )
-    );
-    if (confirm == true) {
-      try {
-        await _db.collection('users').doc(_userId!).collection('friends').doc(
-            character.id).delete();
-        if (mounted) {
-          setState(() {
-            _friendIds.remove(character.id);
-          });
-          _showResultDialog(l10n.snackbar_friend_removed(character.name));
-        }
-      } catch (e) {
-        if (mounted) _showResultDialog(l10n.snackbar_operation_failed, isError: true);
-      }
-    }
-  }
-
-  Future<void> _blockCharacter(
-      Character character,
-      ) async {
-    final bool blocked =
-    await CharacterBlockService
-        .showBlockDialog(
-      context: context,
-      character: character,
-    );
-
-    if (!blocked || !mounted) {
-      return;
-    }
-
-    // 畫面立即排除，不必等重新進 App
-    setState(() {
-      _blockedCharacterIds.add(
-        character.id,
-      );
-    });
-
-    await _refreshAllData();
-  }
-
-  Future<void> _reportCharacter(
-      Character character,
-      ) async {
-    await CharacterReportService
-        .showReportDialog(
-      context: context,
-      character: character,
-      source: 'encounter',
-    );
-  }
-
-  void _showMoreOptions(Character character, bool isFriend) {
-    final l10n = AppLocalizations.of(context)!;
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return SafeArea(
-          child: Wrap(
-            children: <Widget>[
-              if (isFriend)
-                ListTile(
-                  leading: const Icon(Icons.person_remove_outlined, color: Colors.red),
-                  title: Text(l10n.remove_friend, style: TextStyle(color: Colors.red)),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _deleteFriend(character);
-                  },
-                ),
-              ListTile(
-                leading: const Icon(Icons.flag_outlined),
-                title:  Text(l10n.report_character),
-                onTap: () {
-                  Navigator.pop(context);
-                  _reportCharacter(character);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.block, color: Colors.orange),
-                title: Text(l10n.block_character, style: TextStyle(color: Colors.orange)),
-                onTap: () {
-                  Navigator.pop(context);
-                  _blockCharacter(character);
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   void _navigateToSearch() {
     Navigator.push(
       context,
@@ -699,18 +456,6 @@ class SelectChatPageState extends State<SelectChatPage> {
 
           final characters = snapshot.data ?? const <Character>[];
 
-          if (characters.isEmpty) {
-            return Center(
-              child: Text(
-                l10n.encounter_no_available_characters,
-                style: GoogleFonts.notoSerifTc(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
-                  fontSize: 14,
-                ),
-              ),
-            );
-          }
-
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!mounted) return;
             _precacheCharacterImages(context, characters);
@@ -718,10 +463,8 @@ class SelectChatPageState extends State<SelectChatPage> {
 
           return _DiscoveryHallView(
             allCharacters: characters,
-            friendIds: _friendIds,
             blockedCharacterIds: _blockedCharacterIds,
-            onAddFriend: _addFriend,
-            onShowOptions: _showMoreOptions,
+            blockedCreatorIds: _blockedCreatorIds,
             onRefresh: _refreshAllData,
           );
         },
@@ -786,33 +529,25 @@ Widget buildCachedCharacterAvatar(
 // ==========================================
 class _DiscoveryHallView extends StatelessWidget {
   final List<Character> allCharacters;
-  final Set<String> friendIds;
   final Future<void> Function() onRefresh;
   // ⭐ 新增
   final Set<String> blockedCharacterIds;
-
-  final Function(Character) onAddFriend;
-  final Function(Character, bool) onShowOptions;
+  final Set<String> blockedCreatorIds;
 
   const _DiscoveryHallView({
     required this.allCharacters,
-    required this.friendIds,
     required this.onRefresh,
     // ⭐ 新增
     required this.blockedCharacterIds,
-
-    required this.onAddFriend,
-    required this.onShowOptions,
+    required this.blockedCreatorIds,
   });
 
   @override
   Widget build(BuildContext context) {
     return _LatestTab(
       allCharacters: allCharacters,
-      friendIds: friendIds,
       blockedCharacterIds: blockedCharacterIds,
-      onAddFriend: onAddFriend,
-      onShowOptions: onShowOptions,
+      blockedCreatorIds: blockedCreatorIds,
       onRefresh: onRefresh,
     );
   }
@@ -821,23 +556,19 @@ class _DiscoveryHallView extends StatelessWidget {
 // 🌟 分頁一：最新推薦 (保持完美比例 + 呈現時尚的高低交錯感)
 class _LatestTab extends StatefulWidget {
   final List<Character> allCharacters;
-  final Set<String> friendIds;
   final Future<void> Function() onRefresh;
   // ⭐ 新增
   final Set<String> blockedCharacterIds;
+  final Set<String> blockedCreatorIds;
 
-  final Function(Character) onAddFriend;
-  final Function(Character, bool) onShowOptions;
 
   const _LatestTab({
     required this.allCharacters,
-    required this.friendIds,
     required this.onRefresh,
     // ⭐ 新增
     required this.blockedCharacterIds,
+    required this.blockedCreatorIds,
 
-    required this.onAddFriend,
-    required this.onShowOptions,
   });
 
   @override
@@ -847,6 +578,117 @@ class _LatestTab extends StatefulWidget {
 
 class _LatestTabState extends State<_LatestTab> {
   String _selectedCategory = '全部';
+  List<_DiscoveryWorld> _worlds = [];
+  List<_DiscoveryCategory> _dynamicCategories = [];
+  bool _worldsLoading = true;
+
+  // 世界與分類是兩個獨立的讀取來源：其中一個沒有權限，不應清掉另一個的結果。
+  // 此處不變更 Firestore Rules，也不嘗試繞過權限。
+  Future<void> _loadWorldsAndCategories() async {
+    final root = FirebaseFirestore.instance.collection('artifacts')
+        .doc(AppConfig.appId);
+
+    // 獨立查詢，分類被拒絕時公開世界仍能正常顯示。
+    Future<List<_DiscoveryWorld>> loadWorlds() async {
+      // 公開目錄由可信任後端投影，只提供展示必要欄位；
+      // 不直接列舉含內部 NPC / 完整劇情設定的 worlds 集合。
+      try {
+        final callable = FirebaseFunctions.instanceFor(region: 'asia-east1')
+            .httpsCallable('worldPublicCatalog',
+            options: HttpsCallableOptions(timeout: const Duration(seconds: 30)));
+        final response = await callable.call(<String, dynamic>{});
+        final payload = response.data;
+        final rawWorlds = payload is Map ? payload['worlds'] : null;
+        if (rawWorlds is! List) return <_DiscoveryWorld>[];
+
+        final worlds = <_DiscoveryWorld>[];
+        for (final item in rawWorlds) {
+          if (item is! Map) continue;
+          final data = Map<String, dynamic>.from(item);
+          final worldId = (data['id'] ?? '').toString();
+          if (worldId.isEmpty) continue;
+          final creatorId = (data['creatorId'] ?? '').toString();
+          if (widget.blockedCreatorIds.contains(creatorId)) continue;
+          worlds.add(_DiscoveryWorld(worldId, {
+            ...data,
+            'createdBy': creatorId,
+          }));
+        }
+        worlds.shuffle();
+        return worlds;
+      } on FirebaseFunctionsException catch (e) {
+        debugPrint('⚠️ 公開世界目錄 API 讀取失敗：${e.code} / ${e.message}');
+        return <_DiscoveryWorld>[];
+      } catch (e) {
+        debugPrint('⚠️ 公開世界目錄 API 讀取失敗：$e');
+        return <_DiscoveryWorld>[];
+      }
+    }
+
+    Future<List<_DiscoveryCategory>> loadCategories() async {
+      try {
+        final snapshot = await root.collection('discovery_categories').get();
+        final now = DateTime.now();
+        final cats = <_DiscoveryCategory>[];
+        for (final doc in snapshot.docs) {
+          final d = doc.data();
+          if (d['enabled'] != true) continue;
+          final begin = d['startAt'];
+          final end = d['endAt'];
+          if (begin is Timestamp && now.isBefore(begin.toDate())) continue;
+          if (end is Timestamp && !now.isBefore(end.toDate())) continue;
+          final label = (d['label'] ?? '').toString().trim();
+          if (label.isEmpty || doc.id == '全部' ||
+              doc.id == '開放世界' || label == '開放世界') continue;
+          cats.add(_DiscoveryCategory(doc.id, label,
+            isEvent: d['type'] == 'event',
+            scope: (d['scope'] ?? 'both').toString(),
+            order: (d['order'] as num?)?.toInt() ?? 100,
+            characterIds: (d['characterIds'] is List)
+                ? (d['characterIds'] as List)
+                .map((x) => x.toString()).toList() : [],
+            worldIds: (d['worldIds'] is List)
+                ? (d['worldIds'] as List)
+                .map((x) => x.toString()).toList() : [],
+          ));
+        }
+        return cats;
+      } on FirebaseException catch (e) {
+        // 舊分類已在本地提供；權限不足時繼續正常使用，不影響公開世界。
+        if (e.code != 'permission-denied') {
+          debugPrint('⚠️ 遠端分類讀取失敗：${e.code}，改用原有分類');
+        }
+        return <_DiscoveryCategory>[];
+      } catch (e) {
+        debugPrint('⚠️ 遠端分類讀取失敗：$e，改用原有分類');
+        return <_DiscoveryCategory>[];
+      }
+    }
+
+    final worldsFuture = loadWorlds();
+    final categoriesFuture = loadCategories();
+    final worlds = await worldsFuture;
+    final categories = await categoriesFuture;
+    if (!mounted) return;
+    setState(() {
+      _worlds = worlds;
+      _dynamicCategories = categories;
+      _worldsLoading = false;
+    });
+  }
+
+  List<_DiscoveryCategory> get _availableCategories {
+    final events = _dynamicCategories.where((x) => x.isEvent && x.id != '開放世界').toList()
+      ..sort((a,b) => a.order.compareTo(b.order));
+    final ordinary = _dynamicCategories.where((x) => !x.isEvent).toList()
+      ..sort((a,b) => a.order.compareTo(b.order));
+    final base = ordinary.isNotEmpty ? ordinary : _discoveryCategories
+        .where((x) => x != '全部' && x != '開放世界')
+        .map((x) => _DiscoveryCategory(x, x)).toList();
+    return [const _DiscoveryCategory('全部','全部'), ...events,
+      ...base.where((x) => x.id != '開放世界' && x.id != '全部')];
+  }
+
 
   // 邂逅首頁固定使用的大分類。
   // 「其他」一定放最後；首頁為單排橫向滑動。
@@ -1018,6 +860,7 @@ class _LatestTabState extends State<_LatestTab> {
     super.initState();
     _rebuildGridCharacters();
     _rebuildBannerCharacters();
+    _loadWorldsAndCategories();
   }
 
   @override
@@ -1034,6 +877,7 @@ class _LatestTabState extends State<_LatestTab> {
     if (!listEquals(oldIds, newIds)) {
       _rebuildGridCharacters();
       _rebuildBannerCharacters();
+      _loadWorldsAndCategories();
     }
   }
 
@@ -1050,6 +894,14 @@ class _LatestTabState extends State<_LatestTab> {
     // UI 顯示才交給 _categoryLabel() 翻譯，避免切換語言後「全部」失效，
     // 導致所有角色都被篩掉。
     if (category == '全部') return true;
+    if (category == '開放世界') return false;
+    for (final custom in _dynamicCategories) {
+      if (custom.id != category) continue;
+      if (custom.scope == 'world') return false;
+      if (custom.isEvent) return custom.characterIds.contains(character.id);
+      if (custom.characterIds.isNotEmpty) return custom.characterIds.contains(character.id);
+      return _matchesKeywords(character, custom.label);
+    }
 
     if (category == '其他') {
       return !_discoveryCategories
@@ -1057,6 +909,10 @@ class _LatestTabState extends State<_LatestTab> {
           .any((item) => _matchesCategory(character, item));
     }
 
+    return _matchesKeywords(character, category);
+  }
+
+  bool _matchesKeywords(Character character, String category) {
     final keywords = _categoryKeywords[category] ?? <String>[category];
 
     final searchableValues = <String>[
@@ -1089,6 +945,64 @@ class _LatestTabState extends State<_LatestTab> {
         .toList();
   }
 
+  List<Object> get _filteredEntries {
+    final characterItems = _filteredCharacters;
+    final worlds = _worlds.where((world) {
+      if (_selectedCategory == '全部' || _selectedCategory == '開放世界') return true;
+      for (final cat in _dynamicCategories) {
+        if (cat.id != _selectedCategory) continue;
+        if (cat.scope == 'character') return false;
+        if (cat.isEvent) return cat.worldIds.contains(world.id);
+        if (cat.worldIds.isNotEmpty) return cat.worldIds.contains(world.id);
+        return world.tags.contains(cat.label);
+      }
+      return world.tags.contains(_selectedCategory);
+    }).toList();
+    if (_selectedCategory == '開放世界') return worlds;
+    if (_selectedCategory != '全部') return [...characterItems, ...worlds];
+    final result = <Object>[...characterItems, ...worlds];
+    // 隨機混排，避免開放世界永遠擠在列表最後。
+    result.shuffle(Random(42));
+    return result;
+  }
+
+  Widget _buildEntryCard(BuildContext context, Object entry, {required bool isDesktop}) {
+    if (entry is Character) return _buildCharacterCard(context, entry, isDesktop:isDesktop);
+    final world = entry as _DiscoveryWorld;
+    final theme = Theme.of(context);
+    return GestureDetector(
+      onTap: () => Navigator.push(context, MaterialPageRoute(
+          builder: (_) => WorldDiscoveryPage(worldId:world.id))),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(isDesktop ? 18 : 16),
+        child: AspectRatio(aspectRatio: isDesktop ? 0.78 : 0.85, child: Stack(
+          fit: StackFit.expand, children: [
+          _buildEncounterCachedImage(context, imageUrl:world.cover,
+              fit:BoxFit.cover, alignment:Alignment.topCenter,
+              cacheWidth:isDesktop ? 900 : 720),
+          const DecoratedBox(decoration:BoxDecoration(gradient:LinearGradient(
+              begin:Alignment.topCenter,end:Alignment.bottomCenter,
+              colors:[Colors.transparent,Colors.black87], stops:[0.4,1]))),
+          _worldPlayBadge(world.data['playCount']),
+          Positioned(left:12,right:12,bottom:12,child:Column(
+              crossAxisAlignment:CrossAxisAlignment.start,mainAxisSize:MainAxisSize.min,
+              children:[Text(world.name,maxLines:2,overflow:TextOverflow.ellipsis,
+                  style:TextStyle(color:Colors.white,fontWeight:FontWeight.bold,
+                      fontSize:isDesktop?18:15)),
+                if (world.shortPitch.isNotEmpty) ...[
+                  const SizedBox(height:4),
+                  Text(world.shortPitch, maxLines:2,overflow:TextOverflow.ellipsis,
+                      style:const TextStyle(color:Colors.white, fontSize:12, height:1.25)),
+                ],
+                if (world.tags.isNotEmpty) Text(world.tags.take(3).join(' · '),
+                    maxLines:1,overflow:TextOverflow.ellipsis,
+                    style:const TextStyle(color:Colors.white70,fontSize:11))])),
+        ],
+        )),
+      ),
+    );
+  }
+
   Widget _buildCategoryStrip(
       BuildContext context,
       bool useDesktopLayout,
@@ -1100,22 +1014,22 @@ class _LatestTabState extends State<_LatestTab> {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
-        itemCount: _discoveryCategories.length,
+        itemCount: _availableCategories.length,
         separatorBuilder: (_, __) => SizedBox(
           width: useDesktopLayout ? 10 : 8,
         ),
         itemBuilder: (context, index) {
-          final category = _discoveryCategories[index];
-          final isSelected = category == _selectedCategory;
+          final category = _availableCategories[index];
+          final isSelected = category.id == _selectedCategory;
 
           return Material(
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(22),
               onTap: () {
-                if (category == _selectedCategory) return;
+                if (category.id == _selectedCategory) return;
                 setState(() {
-                  _selectedCategory = category;
+                  _selectedCategory = category.id;
                 });
               },
               child: AnimatedContainer(
@@ -1147,7 +1061,7 @@ class _LatestTabState extends State<_LatestTab> {
                 ),
                 child: Center(
                   child: Text(
-                    _categoryLabel(category, l10n),
+                    category.isEvent ? category.label : _categoryLabel(category.id, l10n),
                     style: GoogleFonts.notoSerifTc(
                       color: isSelected
                           ? theme.colorScheme.onPrimary
@@ -1195,7 +1109,7 @@ class _LatestTabState extends State<_LatestTab> {
     final double maxContentWidth = useDesktopLayout ? 1280 : double.infinity;
 
     final List<Character> bannerList = _shuffledBannerCharacters;
-    final List<Character> filteredCharacters = _filteredCharacters;
+    final List<Object> filteredEntries = _filteredEntries;
 
     return Align(
       alignment: Alignment.topCenter,
@@ -1230,24 +1144,113 @@ class _LatestTabState extends State<_LatestTab> {
               SizedBox(height: useDesktopLayout ? 18 : 14),
             ],
 
-            // 16 個大分類：單排、左右滑、點擊後直接更新下方角色。
+            // 「探索公開世界」是獨立的大型入口，不屬於下方主題分類。
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(20),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const PublicWorldsPage()),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: AspectRatio(
+                    aspectRatio: useDesktopLayout ? 4.5 : 2.6,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Image.asset(
+                          'assets/images/banners/open_world_banner.webp',
+                          fit: BoxFit.cover,
+                          alignment: Alignment.center,
+                        ),
+                        // 僅加淡淡左側遮罩，讓不同尺寸下的文字保持可讀。
+                        const DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                              colors: [
+                                Color(0x9CFFF5E9),
+                                Color(0x5CFFF5E9),
+                                Color(0x00FFF5E9),
+                              ],
+                              stops: [0.0, 0.53, 1.0],
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: useDesktopLayout ? 28 : 16,
+                            vertical: 12,
+                          ),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  l10n.public_worlds_explore_title1,
+                                  style: GoogleFonts.notoSerifTc(
+                                    fontSize: useDesktopLayout ? 27 : 19,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFF6B4539),
+                                    shadows: const [
+                                      Shadow(color: Color(0x99FFF7EC), blurRadius: 6),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xDDFBF1E7),
+                                    borderRadius: BorderRadius.circular(7),
+                                  ),
+                                  child: Text(
+                                    AppLocalizations.of(context)!.world_explore_subtitle1,
+                                    style: GoogleFonts.notoSerifTc(
+                                      fontSize: useDesktopLayout ? 16 : 12.5,
+                                      fontWeight: FontWeight.w600,
+                                      color: const Color(0xFF533629),
+                                      height: 1.3,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: useDesktopLayout ? 24 : 20),
+
+            // 邂逅主題列只保留角色／題材標籤，不包含「開放世界」。
             _buildCategoryStrip(
               context,
               useDesktopLayout,
             ),
             SizedBox(height: useDesktopLayout ? 26 : 20),
 
-            if (filteredCharacters.isEmpty)
+            if (filteredEntries.isEmpty)
               _buildEmptyCategory(context)
             else if (useDesktopLayout)
               _buildDesktopCharacterGrid(
                 context,
-                filteredCharacters,
+                filteredEntries,
               )
             else
               _buildMobileStaggeredGrid(
                 context,
-                filteredCharacters,
+                filteredEntries,
               ),
 
             SizedBox(height: useDesktopLayout ? 40 : 28),
@@ -1488,7 +1491,7 @@ class _LatestTabState extends State<_LatestTab> {
                         )
                       else
                         Image.asset(
-                          'assets/images/blank_avatar.png',
+                          'assets/images/blank_avatar.webp',
                           fit: BoxFit.cover,
                         ),
                       Container(
@@ -1805,7 +1808,7 @@ class _LatestTabState extends State<_LatestTab> {
       ) {
     if (bannerImg.isEmpty) {
       return Image.asset(
-        'assets/images/blank_avatar.png',
+        'assets/images/blank_avatar.webp',
         fit: BoxFit.cover,
       );
     }
@@ -1827,7 +1830,7 @@ class _LatestTabState extends State<_LatestTab> {
     if (bannerImg.isEmpty) {
       return [
         Image.asset(
-          'assets/images/blank_avatar.png',
+          'assets/images/blank_avatar.webp',
           fit: BoxFit.cover,
         ),
       ];
@@ -1869,7 +1872,7 @@ class _LatestTabState extends State<_LatestTab> {
           cacheWidth: 1400,
           placeholder: const SizedBox.shrink(),
           errorWidget: Image.asset(
-            'assets/images/blank_avatar.png',
+            'assets/images/blank_avatar.webp',
             fit: BoxFit.contain,
           ),
         ),
@@ -1881,10 +1884,10 @@ class _LatestTabState extends State<_LatestTab> {
   // =========================================================
   Widget _buildMobileStaggeredGrid(
       BuildContext context,
-      List<Character> sortedList,
+      List<Object> sortedList,
       ) {
-    final List<Character> leftCol = [];
-    final List<Character> rightCol = [];
+    final List<Object> leftCol = [];
+    final List<Object> rightCol = [];
 
     for (int i = 0; i < sortedList.length; i++) {
       if (i.isEven) {
@@ -1903,7 +1906,7 @@ class _LatestTabState extends State<_LatestTab> {
               return Padding(
                 padding:
                 const EdgeInsets.only(bottom: 12),
-                child: _buildCharacterCard(
+                child: _buildEntryCard(
                   context,
                   char,
                   isDesktop: false,
@@ -1922,7 +1925,7 @@ class _LatestTabState extends State<_LatestTab> {
                 return Padding(
                   padding:
                   const EdgeInsets.only(bottom: 12),
-                  child: _buildCharacterCard(
+                  child: _buildEntryCard(
                     context,
                     char,
                     isDesktop: false,
@@ -1941,7 +1944,7 @@ class _LatestTabState extends State<_LatestTab> {
   // =========================================================
   Widget _buildDesktopCharacterGrid(
       BuildContext context,
-      List<Character> sortedList,
+      List<Object> sortedList,
       ) {
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -1968,7 +1971,7 @@ class _LatestTabState extends State<_LatestTab> {
           children: sortedList.map((char) {
             return SizedBox(
               width: cardWidth,
-              child: _buildCharacterCard(
+              child: _buildEntryCard(
                 context,
                 char,
                 isDesktop: true,
@@ -1977,6 +1980,48 @@ class _LatestTabState extends State<_LatestTab> {
           }).toList(),
         );
       },
+    );
+  }
+
+  // 邂逅角色卡右上角遊玩次數：沿用角色既有 playCount，不新增查詢。
+  String _formatCharacterPlayCount(int value) {
+    if (value >= 1000000) {
+      final scaled = value / 1000000;
+      return '${scaled.toStringAsFixed(scaled >= 100 ? 0 : 1)}M';
+    }
+    if (value >= 1000) {
+      final scaled = value / 1000;
+      return '${scaled.toStringAsFixed(scaled >= 100 ? 0 : 1)}K';
+    }
+    return value.toString();
+  }
+
+  Widget _characterPlayBadge(int count, {required bool isDesktop}) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: isDesktop ? 11 : 9,
+        vertical: isDesktop ? 7 : 6,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.60),
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.chat_bubble_outline_rounded,
+              color: Colors.white, size: isDesktop ? 15 : 13),
+          const SizedBox(width: 5),
+          Text(
+            _formatCharacterPlayCount(count),
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: isDesktop ? 12 : 11,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -2031,7 +2076,7 @@ class _LatestTabState extends State<_LatestTab> {
                   )
                 else
                   Image.asset(
-                    'assets/images/blank_avatar.png',
+                    'assets/images/blank_avatar.webp',
                     fit: BoxFit.cover,
                   ),
 
@@ -2050,6 +2095,18 @@ class _LatestTabState extends State<_LatestTab> {
                         0.48,
                         1,
                       ],
+                    ),
+                  ),
+                ),
+
+                // 封面右上角遊玩數，保持原卡片點擊範圍不變。
+                Positioned(
+                  top: isDesktop ? 14 : 10,
+                  right: isDesktop ? 14 : 10,
+                  child: IgnorePointer(
+                    child: _characterPlayBadge(
+                      char.playCount,
+                      isDesktop: isDesktop,
                     ),
                   ),
                 ),
@@ -2362,7 +2419,7 @@ class _AllLatestCharactersPageState
                           )
                         else
                           Image.asset(
-                            'assets/images/blank_avatar.png',
+                            'assets/images/blank_avatar.webp',
                             fit: BoxFit
                                 .cover,
                           ),
@@ -2754,341 +2811,5 @@ class _TagFilteredCharactersPageState
         },
       ),
     );
-  }
-}
-
-// ✨✨✨ 全新的可翻譯角色卡片 ✨✨✨
-class CharacterCard extends StatefulWidget {
-  final Character character;
-  final bool isFriend;
-  final VoidCallback onAddFriend;
-  final Function(Character, bool) onShowOptions;
-
-  const CharacterCard({
-    super.key,
-    required this.character,
-    required this.isFriend,
-    required this.onAddFriend,
-    required this.onShowOptions,
-  });
-
-  @override
-  State<CharacterCard> createState() => _CharacterCardState();
-}
-
-class _CharacterCardState extends State<CharacterCard> {
-  bool _isTranslating = false;
-  String? _translatedSummary;
-  List<String>? _translatedTags;
-
-  Future<void> _translateSummary(String targetLang) async {
-    if (widget.character.storySummary.isEmpty && widget.character.personalityTags.isEmpty) return;
-
-    setState(() => _isTranslating = true);
-
-    try {
-      final tagsText = widget.character.personalityTags.join(" ; ");
-      final results = await Future.wait([
-        FirebaseFunctions.instanceFor(region: 'asia-east1')
-            .httpsCallable('translateText')
-            .call({'text': widget.character.storySummary, 'targetLanguage': targetLang}),
-        FirebaseFunctions.instanceFor(region: 'asia-east1')
-            .httpsCallable('translateText')
-            .call({'text': tagsText, 'targetLanguage': targetLang}),
-      ]);
-
-      final String newSummary = results[0].data['translatedText'];
-      final String newTagsRaw = results[1].data['translatedText'];
-      final List<String> newTags = newTagsRaw.split(RegExp(r'\s*;\s*'));
-
-      final charDocRef = FirebaseFirestore.instance
-          .collection('artifacts')
-          .doc(AppConfig.appId)
-          .collection('public_characters')
-          .doc(widget.character.id);
-
-      await charDocRef.set({
-        'translations': {
-          targetLang: {
-            'storySummary': newSummary,
-            'personalityTags': newTags,
-          }
-        }
-      }, SetOptions(merge: true));
-
-      if (mounted) {
-        setState(() {
-          _translatedSummary = newSummary;
-          _translatedTags = newTags;
-          _isTranslating = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) setState(() => _isTranslating = false);
-    }
-  }
-
-  Widget _buildFirstCharacterImage() {
-    final String imageUrl =
-    widget.character.galleryPaths.isNotEmpty
-        ? widget.character.galleryPaths.first
-        : '';
-
-    if (imageUrl.isEmpty) {
-      return Image.asset(
-        'assets/images/blank_avatar.png',
-        fit: BoxFit.cover,
-      );
-    }
-
-    return _buildEncounterCachedImage(
-      context,
-      imageUrl: imageUrl,
-      fit: BoxFit.cover,
-      alignment: Alignment.topCenter,
-      cacheWidth: 720,
-      placeholder: Container(
-        color: Theme.of(context)
-            .colorScheme
-            .surfaceContainerHighest,
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isDesktop = screenWidth > 600;
-    final primaryColor = theme.colorScheme.primary;
-    final String currentAppLang = Localizations.localeOf(context).languageCode;
-    final String contentLang = widget.character.contentLanguage ?? 'zh';
-    final sharedTranslation = widget.character.translations?[currentAppLang];
-    final l10n = AppLocalizations.of(context)!;
-
-    final displaySummary = _translatedSummary ?? (sharedTranslation?['storySummary'] as String?) ?? widget.character.storySummary;
-    final rawDisplayTags = _translatedTags ??
-        (sharedTranslation?['personalityTags'] as List?)?.cast<String>() ??
-        widget.character.personalityTags;
-
-    final seenTags = <String>{};
-
-    final displayTags = rawDisplayTags
-        .map((tag) => tag.trim().replaceAll(RegExp(r'^#+'), '').trim())
-        .where((tag) => tag.isNotEmpty)
-        .where((tag) => seenTags.add(tag))
-        .toList();
-
-    final String displayIdentities = (widget.character.identities != null && widget.character.identities!.isNotEmpty)
-        ? widget.character.identities!.join(' / ')
-        : (widget.character.occupation);
-    final bool showTranslateButton = (currentAppLang != contentLang) &&
-        (_translatedSummary == null && sharedTranslation == null);
-
-    Widget cardWidget = Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(25),
-      ),
-      elevation: 10,
-      clipBehavior: Clip.antiAlias,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          _buildFirstCharacterImage(),
-
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: 280,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withValues(
-                      alpha: 0.85,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            top: 12, right: 12,
-            child: IconButton(
-              icon: const Icon(Icons.more_vert, color: Colors.white),
-              style: IconButton.styleFrom(
-                  backgroundColor: Colors.black.withValues(alpha: 0.3)),
-              onPressed: () =>
-                  widget.onShowOptions(widget.character, widget.isFriend),
-            ),
-          ),
-          Positioned(
-            bottom: 25, left: 20, right: 20,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  widget.character.name,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              if (widget.character.createdBy == 'B71k2kyooubYsOtIO1nkiBwyBXt2') ...[
-                                const SizedBox(width: 8),
-                                const Icon(
-                                  Icons.wb_sunny_rounded,
-                                  color: Colors.white,
-                                  size: 26,
-                                ),
-                              ],
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            l10n.text_age_and_identities(
-                                widget.character.age.toString(),
-                                displayIdentities
-                            ),
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    widget.isFriend
-                        ? Chip(
-                      backgroundColor: primaryColor.withValues(alpha: 0.2),
-                      side: BorderSide(color: primaryColor.withValues(alpha: 0.5)),
-                      avatar: Icon(Icons.check, size: 16, color: primaryColor),
-                      label: Text(l10n.tab_friends, style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold)),
-                      visualDensity: VisualDensity.compact,
-                    )
-                        : ElevatedButton.icon(
-                      onPressed: widget.onAddFriend,
-                      icon: const Icon(Icons.add, size: 16),
-                      label: Text(l10n.tab_friends),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: primaryColor,
-                        foregroundColor: theme.colorScheme.onPrimary,
-                        visualDensity: VisualDensity.compact,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      displaySummary.isEmpty
-                          ? l10n.msg_mysterious_profile
-                          : displaySummary,
-                      style: const TextStyle(color: Colors.white, fontSize: 15, height: 1.5),
-                      maxLines: _translatedSummary != null ? 1 : 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (showTranslateButton)
-                      GestureDetector(
-                        onTap: () => _translateSummary(currentAppLang),
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 6),
-                          child: _isTranslating
-                              ? SizedBox(width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(
-                                  strokeWidth: 2, color: primaryColor))
-                              : Text(l10n.action_view_translation,
-                              style: TextStyle(
-                                  color: primaryColor.withValues(alpha: 0.9),
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold)),
-                        ),
-                      ),
-                    if (_translatedSummary != null) ...[
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.white12),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(children: [
-                              Icon(Icons.translate, size: 12,
-                                  color: primaryColor),
-                              const SizedBox(width: 6),
-                              Text(l10n.label_translation_result, style: const TextStyle(
-                                  color: Colors.white54, fontSize: 10))
-                            ]),
-                            const SizedBox(height: 4),
-                            Text(_translatedSummary!,
-                                style: const TextStyle(color: Colors.white,
-                                    fontSize: 14,
-                                    height: 1.4)),
-                          ],
-                        ),
-                      ),
-                    ]
-                  ],
-                ),
-                const SizedBox(height: 16),
-                if (widget.character.personalityTags.isNotEmpty)
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: displayTags
-                          .take(3)
-                          .map((tag) {
-                        return Container(
-                          margin: const EdgeInsets.only(right: 8),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 5),
-                          decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                  color: Colors.white24, width: 0.5)),
-                          child: Text('#$tag', style: const TextStyle(
-                              color: Colors.white, fontSize: 11)),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-    return isDesktop
-        ? Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 450), child: cardWidget))
-        : cardWidget;
   }
 }

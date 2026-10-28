@@ -167,36 +167,15 @@ class CharacterNavigator {
             borderRadius:
             BorderRadius.circular(20),
           ),
-          title: Row(
-            children: [
-              const Icon(
-                Icons.lock_outline_rounded,
-                color: Colors.grey,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                l10n.character_navigator_confidential_title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
+          title: Text(
+            l10n.character_navigator_confidential_title,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const CircleAvatar(
-                radius: 38,
-                backgroundColor:
-                Color(0xFFE0E0E0),
-                child: Icon(
-                  Icons.person_outline_rounded,
-                  size: 42,
-                  color: Colors.grey,
-                ),
-              ),
-              const SizedBox(height: 14),
-
               if (fallbackName != null &&
                   fallbackName.trim().isNotEmpty)
                 Text(

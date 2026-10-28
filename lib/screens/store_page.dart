@@ -12,7 +12,9 @@ import 'package:google_fonts/google_fonts.dart';
 // 🍎 蘋果審查專用總開關：送審前設為 true (會隱藏VIP頁籤)，審核通過上架後改回 false！
 const bool isAppleReviewMode = true;
 class StorePage extends StatefulWidget {
-  const StorePage({super.key});
+  /// 0：月卡、1：花花儲值、2：收支明細。一般入口預設仍為月卡。
+  final int initialTabIndex;
+  const StorePage({super.key, this.initialTabIndex = 0});
 
   @override
   State<StorePage> createState() => _StorePageState();
@@ -47,6 +49,7 @@ class _StorePageState extends State<StorePage> {
 
     return DefaultTabController(
       length: 3,
+      initialIndex: widget.initialTabIndex.clamp(0, 2).toInt(),
       child: Scaffold(
         backgroundColor: theme.colorScheme.surface,
         body: SafeArea(
@@ -530,12 +533,6 @@ class _StorePageState extends State<StorePage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.local_florist_outlined,
-              size: 48,
-              color: primary.withValues(alpha: 0.35),
-            ),
-            const SizedBox(height: 12),
             Text(
               l10n.shop_restocking,
               textAlign: TextAlign.center,
@@ -606,11 +603,11 @@ class _StorePageState extends State<StorePage> {
     if (totalSpent >= 10000) return 'assets/images/tree_star.png';        // 👑 10,000+: 星花
     if (totalSpent >= 3000) return 'assets/images/tree_full_flower.png';  // 🌸 3,000+: 滿花
     if (totalSpent >= 1314) return 'assets/images/tree_blooming.png';     // 🌷 1,314+: 開花
-    if (totalSpent >= 880) return 'assets/images/tree_large.png';         // 🌳 880+: 大樹
-    if (totalSpent >= 520) return 'assets/images/tree_small.png';         // 🌲 520+: 小樹
-    if (totalSpent >= 250) return 'assets/images/tree_sapling.png';       // 🌿 250+: 樹苗
-    if (totalSpent >= 30) return 'assets/images/tree_sprout.png';         // 🌱 30+: 發芽
-    return 'assets/images/tree_seed.png';                                 // 🌰 0: 種子
+    if (totalSpent >= 880) return 'assets/images/tree_large.webp';         // 🌳 880+: 大樹
+    if (totalSpent >= 520) return 'assets/images/tree_small.webp';         // 🌲 520+: 小樹
+    if (totalSpent >= 250) return 'assets/images/tree_sapling.webp';       // 🌿 250+: 樹苗
+    if (totalSpent >= 30) return 'assets/images/tree_sprout.webp';         // 🌱 30+: 發芽
+    return 'assets/images/tree_seed.webp';                                 // 🌰 0: 種子
   }
 
   // ✨ VIP 上方總覽卡片 (結合朋友畫的手繪成長樹)
@@ -657,7 +654,7 @@ class _StorePageState extends State<StorePage> {
             child: Image.asset(
               treeImage,
               fit: BoxFit.contain,
-              errorBuilder: (context, error, stackTrace) => const Icon(Icons.local_florist, size: 40, color: Colors.white),
+              errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
             ),
           ),
           const SizedBox(width: 16),
@@ -1352,7 +1349,7 @@ class ProductCard extends StatelessWidget {
     // 2400~4300  -> 豪華花束
     // 6400~10000 -> 頂級花束
     if (points <= 90) {
-      return 'assets/images/store/store_flower_single.png';
+      return 'assets/images/store/store_flower_single.webp';
     }
     if (points <= 370) {
       return 'assets/images/store/store_bouquet_small.png';
@@ -1721,11 +1718,6 @@ void _showMonthlyPassManual(BuildContext context) {
               ),
               Row(
                 children: [
-                  Icon(
-                    Icons.auto_awesome,
-                    color: primary,
-                  ),
-                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       l10n.passGuideTitle,
@@ -1741,14 +1733,12 @@ void _showMonthlyPassManual(BuildContext context) {
               const SizedBox(height: 20),
               _buildManualItem(
                 context: context,
-                icon: Icons.refresh,
                 title: l10n.passGuideRegenerateTitle,
                 content: l10n.passGuideRegenerateContent,
               ),
               const SizedBox(height: 16),
               _buildManualItem(
                 context: context,
-                icon: Icons.favorite,
                 title: l10n.passGuideAffectionTitle,
                 content: l10n.passGuideAffectionContent,
               ),
@@ -1791,7 +1781,6 @@ void _showMonthlyPassManual(BuildContext context) {
 
 Widget _buildManualItem({
   required BuildContext context,
-  required IconData icon,
   required String title,
   required String content,
 }) {
@@ -1815,21 +1804,6 @@ Widget _buildManualItem({
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          width: 34,
-          height: 34,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: primary.withValues(alpha: 0.08),
-          ),
-          child: Icon(
-            icon,
-            size: 19,
-            color: primary,
-          ),
-        ),
-        const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

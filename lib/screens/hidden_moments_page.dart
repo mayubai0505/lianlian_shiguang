@@ -10,7 +10,7 @@ class HiddenMomentsPage extends StatelessWidget {
   const HiddenMomentsPage({super.key});
 
   static const String _emptyIllustrationAsset =
-      'assets/images/echo/echo_hidden_empty_base.png';
+      'assets/images/echo/echo_hidden_empty_base.webp';
 
   Future<void> _unhideMoment(
       BuildContext context,
@@ -241,13 +241,6 @@ class HiddenMomentsPage extends StatelessWidget {
                           backgroundImage: authorAvatar.isNotEmpty
                               ? _getAvatarImageProvider(authorAvatar)
                               : null,
-                          child: authorAvatar.isEmpty
-                              ? Icon(
-                            Icons.person_outline_rounded,
-                            color: primary.withValues(alpha: 0.62),
-                            size: 21,
-                          )
-                              : null,
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -317,14 +310,8 @@ class HiddenMomentsPage extends StatelessWidget {
                           errorBuilder: (context, error, stackTrace) {
                             return Container(
                               height: 130,
-                              alignment: Alignment.center,
                               color:
                               onSurface.withValues(alpha: 0.035),
-                              child: Icon(
-                                Icons.broken_image_outlined,
-                                color:
-                                onSurface.withValues(alpha: 0.28),
-                              ),
                             );
                           },
                         ),

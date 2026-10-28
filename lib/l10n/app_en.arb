@@ -3715,7 +3715,7 @@
   "creator_profile_block_creator": "Block Creator",
   "creator_profile_report_login_required": "Please sign in before reporting a creator",
   "creator_profile_report_self_not_allowed": "You cannot report your own creator profile",
-  "creator_profile_report_reason_prompt": "Select a reason for reporting “{creatorName}”:",
+  "creator_profile_report_reason_prompt1": "Select a reason for reporting “{creatorName}”:",
   "@creator_profile_report_reason_prompt": {
     "placeholders": {
       "creatorName": {
@@ -4649,7 +4649,12 @@
   "notification_channel_chat_description": "Used to receive the latest replies from characters and game reminders.",
   "subscription_star_contract_name": "Lianlian Shiguang · Star Covenant",
   "moment_notification_comment_on_your_post": "{senderNickname} commented on your post: “{commentText}”",
-  "@moment_notification_comment_on_your_post": {"placeholders": {"commentText": {}, "senderNickname": {}}},
+  "@moment_notification_comment_on_your_post": {
+    "placeholders": {
+      "commentText": {},
+      "senderNickname": {}
+    }
+  },
   "moment_notification_new_reply_title": "New reply on your post! 💬",
   "moment_notification_character_popularity_title": "Character popularity is soaring! 🔥",
   "font_size_small": "Small",
@@ -4662,18 +4667,30 @@
   "font_size_title": "Font Size",
   "font_selection_tagline": "Write your story with the one you love, once again.",
   "font_selection_applied_message": "Applied “{value1}”",
-  "@font_selection_applied_message": {"placeholders": {"value1": {}}},
+  "@font_selection_applied_message": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "font_selection_local_storage_note": "Font and size are applied immediately and saved on this device. Restoring the default appearance will reset to “Shiguang Serif + Standard”.",
   "inbox_customer_service_report": "Customer Support Report",
   "inbox_content_text_message_player_title_send": "Title submitted by player",
   "inbox_content_text_message_player_content_send": "Content submitted by player",
   "avatar_frame_equipped_message": "Equipped “{value1}”",
-  "@avatar_frame_equipped_message": {"placeholders": {"value1": {}}},
+  "@avatar_frame_equipped_message": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "avatar_frame_unequip_frame_snackbar": "Avatar frame removed",
   "avatar_frame_unequip_frame_message_event": "Event Avatar Frame",
   "avatar_frame_message": "Avatar Frame",
   "avatar_frame_load_failed": "Failed to load avatar frames: {value1}",
-  "@avatar_frame_load_failed": {"placeholders": {"value1": {}}},
+  "@avatar_frame_load_failed": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "avatar_frame_parse_frames_message_select": "Choose the avatar frame you want to use",
   "avatar_frame_parse_frames_message_event": "Event avatar frames are kept permanently after obtaining them and can be changed or removed at any time.",
   "avatar_frame_parse_frames_title": "Do not use an avatar frame",
@@ -4689,9 +4706,17 @@
   "background_subtitle_event_shop_redeem_chat": "Chat backgrounds redeemed from event shops will appear here.",
   "background_is_limited_background_type_message_chat_event": "Limited Event Chat Background",
   "background_is_limited_background_type_message_current_chat": "Set “{value1}” as the background for the current chat?",
-  "@background_is_limited_background_type_message_current_chat": {"placeholders": {"value1": {}}},
+  "@background_is_limited_background_type_message_current_chat": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "character_edit_save_to_draft_message_current_character": "Current main character: [{value1}]\n",
-  "@character_edit_save_to_draft_message_current_character": {"placeholders": {"value1": {}}},
+  "@character_edit_save_to_draft_message_current_character": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "character_to_map_message_creator": "Mysterious Creator",
   "character_get_character_by_id_message_load_background_story": "Loading backstory...",
   "character_get_character_by_id_message_sync": "Syncing opening story...",
@@ -4721,24 +4746,49 @@
   "chat_empty_message_variant_b": "Favorites",
   "chat_send_sticker_message_current_unavailable_sticker": "This sticker is currently unavailable",
   "chat_message_theater": "—— Theater · {sceneTitle} ——",
-  "@chat_message_theater": {"placeholders": {"sceneTitle": {}}},
+  "@chat_message_theater": {
+    "placeholders": {
+      "sceneTitle": {}
+    }
+  },
   "chat_handle_regenerate_button_message_character_reply_again": "The character’s previous reply will be regenerated.",
   "creator_profile_reason_tile_message_report_select_reason": "Choose a reason for reporting “{creatorName}”:",
-  "@creator_profile_reason_tile_message_report_select_reason": {"placeholders": {"creatorName": {}}},
+  "@creator_profile_reason_tile_message_report_select_reason": {
+    "placeholders": {
+      "creatorName": {}
+    }
+  },
   "widget_key_message": "Status",
   "widget_key_message_variant_b": "Location",
   "widget_label_character": "No character status yet",
   "widget_format_post_time_label_moment_latest": "Latest Post",
   "widget_format_post_time_label_update_moment": "Just updated a post",
   "widget_format_post_time_label_minutes_ago_update_moment": "Updated a post {value1} minutes ago",
-  "@widget_format_post_time_label_minutes_ago_update_moment": {"placeholders": {"value1": {}}},
+  "@widget_format_post_time_label_minutes_ago_update_moment": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_format_post_time_label_hours_ago_update_moment": "Updated a post {value1} hours ago",
-  "@widget_format_post_time_label_hours_ago_update_moment": {"placeholders": {"value1": {}}},
+  "@widget_format_post_time_label_hours_ago_update_moment": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_format_post_time_label_update_moment_days": "Updated a post yesterday",
   "widget_format_post_time_label_update_moment_days_ago": "Updated a post {value1} days ago",
-  "@widget_format_post_time_label_update_moment_days_ago": {"placeholders": {"value1": {}}},
+  "@widget_format_post_time_label_update_moment_days_ago": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_format_post_time_label_update_moment_variant_b": "Updated a post on {value1}/{value2}",
-  "@widget_format_post_time_label_update_moment_variant_b": {"placeholders": {"value1": {}, "value2": {}}},
+  "@widget_format_post_time_label_update_moment_variant_b": {
+    "placeholders": {
+      "value1": {},
+      "value2": {}
+    }
+  },
   "widget_format_post_time_message_share_photo": "Shared a photo",
   "widget_format_post_time_message_update_moment": "Posted an update",
   "widget_format_post_time_message_current_character_moment": "No character posts yet",
@@ -4746,11 +4796,19 @@
   "widget_format_daily_quote_time_message_today": "No quote for today yet",
   "widget_load_period_care_state_message_today": "“Don’t push yourself too hard today. I’ll stay with you and take it slow.”",
   "widget_load_period_care_state_message_period_days": "Day {dayCount} of your period",
-  "@widget_load_period_care_state_message_period_days": {"placeholders": {"dayCount": {}}},
+  "@widget_load_period_care_state_message_period_days": {
+    "placeholders": {
+      "dayCount": {}
+    }
+  },
   "widget_load_period_care_state_message_days": "“Try to rest a little earlier these days. Don’t wear yourself out.”",
   "widget_load_period_care_state_message_today_start": "Expected to start today",
   "widget_load_period_care_state_message_days_variant_b": "Expected in {daysUntil} days",
-  "@widget_load_period_care_state_message_days_variant_b": {"placeholders": {"daysUntil": {}}},
+  "@widget_load_period_care_state_message_days_variant_b": {
+    "placeholders": {
+      "daysUntil": {}
+    }
+  },
   "widget_load_period_care_state_message_today_variant_b": "“You’ve worked hard. Take good care of yourself today.”",
   "widget_load_period_care_state_message_period_end": "Period just ended",
   "widget_load_period_care_state_message_today_variant_c": "“Remember to take good care of yourself today too.”",
@@ -4761,18 +4819,34 @@
   "widget_build_birthday_countdown_lines_message_character_birthday": "Character Birthday",
   "widget_build_birthday_countdown_lines_message_birthday_settings": "Birthday not set",
   "widget_build_birthday_countdown_lines_message_birthday_countdown": "Until his birthday · {birthdayLabel}",
-  "@widget_build_birthday_countdown_lines_message_birthday_countdown": {"placeholders": {"birthdayLabel": {}}},
+  "@widget_build_birthday_countdown_lines_message_birthday_countdown": {
+    "placeholders": {
+      "birthdayLabel": {}
+    }
+  },
   "widget_build_birthday_countdown_lines_message_today": "It’s today",
   "widget_build_birthday_countdown_lines_message_days": "{days} days left",
-  "@widget_build_birthday_countdown_lines_message_days": {"placeholders": {"days": {}}},
+  "@widget_build_birthday_countdown_lines_message_days": {
+    "placeholders": {
+      "days": {}
+    }
+  },
   "widget_build_birthday_countdown_lines_message": "Met him",
   "widget_build_birthday_countdown_lines_message_variant_b": "No meeting record yet",
   "widget_build_birthday_countdown_lines_message_days_variant_b": "{value1} days",
-  "@widget_build_birthday_countdown_lines_message_days_variant_b": {"placeholders": {"value1": {}}},
+  "@widget_build_birthday_countdown_lines_message_days_variant_b": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_build_birthday_countdown_lines_message_variant_c": "Important Day",
   "widget_build_birthday_countdown_lines_message_date_select": "No date selected",
   "widget_build_birthday_countdown_lines_message_elapsed_days": "{value1} days ago",
-  "@widget_build_birthday_countdown_lines_message_elapsed_days": {"placeholders": {"value1": {}}},
+  "@widget_build_birthday_countdown_lines_message_elapsed_days": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_settings_remove_title_character_latest": "Character’s Latest Post",
   "widget_settings_remove_subtitle_moment_latest": "See his latest update without opening the app.",
   "widget_settings_remove_title_period": "Period Care",
@@ -4789,7 +4863,12 @@
   "widget_settings_edit_saved_widget_message_character_reminder_again": "The old “Character To-do Reminder” has been merged into “Anniversaries / Reminders”. Please create it again.",
   "widget_settings_delete_saved_widget_title_delete_small": "Delete widget?",
   "widget_settings_delete_saved_widget_message_stop_display_long_press_home_after_delete": "Delete “{value1} · {value2}”?\n\nAfter deletion, this widget will stop showing character content and will prompt the player to long-press the home screen to remove it.",
-  "@widget_settings_delete_saved_widget_message_stop_display_long_press_home_after_delete": {"placeholders": {"value1": {}, "value2": {}}},
+  "@widget_settings_delete_saved_widget_message_stop_display_long_press_home_after_delete": {
+    "placeholders": {
+      "value1": {},
+      "value2": {}
+    }
+  },
   "widget_settings_delete_saved_widget_message_delete_settings_small": "Widget settings deleted. The corresponding home-screen widget has been disabled.",
   "widget_settings_message_desktop_widget": "Home Screen Widgets",
   "widget_settings_message_character_days": "Let your favorite character be part of every day.",
@@ -4797,7 +4876,11 @@
   "widget_settings_message_desktop_widget_variant_b": "No home-screen widgets yet",
   "widget_settings_message_character_reminder": "Choose a favorite character and show their reminders, posts, or status on your home screen.",
   "widget_settings_message_size": "{value1} size",
-  "@widget_settings_message_size": {"placeholders": {"value1": {}}},
+  "@widget_settings_message_size": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_settings_tooltip": "Add to Home Screen",
   "widget_settings_tooltip_small": "Edit Widget",
   "widget_settings_tooltip_delete_small": "Delete Widget",
@@ -4814,15 +4897,31 @@
   "widget_settings_message_character_photo_select": "Next · Choose Character Photo",
   "widget_settings_desktop_photo_selection_message_character_photo_select": "Choose Character Photo",
   "widget_settings_desktop_photo_selection_message_current_affection_unlocked_photo": "Current affection {value1} · Unlocked photos can be used directly.",
-  "@widget_settings_desktop_photo_selection_message_current_affection_unlocked_photo": {"placeholders": {"value1": {}}},
+  "@widget_settings_desktop_photo_selection_message_current_affection_unlocked_photo": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_settings_desktop_photo_selection_message_current_character_photo": "This character currently has no available photos.",
   "widget_settings_desktop_photo_selection_message_required_affection_unlock_photo": "Affection {value1} is required to unlock this photo.",
-  "@widget_settings_desktop_photo_selection_message_required_affection_unlock_photo": {"placeholders": {"value1": {}}},
+  "@widget_settings_desktop_photo_selection_message_required_affection_unlock_photo": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_settings_message_photo_public": "Public Photo",
   "widget_settings_message_unlock": "Unlock at Affection {value1}",
-  "@widget_settings_message_unlock": {"placeholders": {"value1": {}}},
+  "@widget_settings_message_unlock": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_settings_message_unlocked": "Unlocked · Affection {value1}",
-  "@widget_settings_message_unlocked": {"placeholders": {"value1": {}}},
+  "@widget_settings_message_unlocked": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_settings_message_content_settings": "Next · Set Display Content",
   "widget_settings_open_preview_message_player_select": "Please select an event / to-do created by a player first.",
   "widget_settings_pick_custom_memo_event_message_login_account": "Please log in first.",
@@ -4854,7 +4953,11 @@
   "widget_settings_title_player": "Player-created Event / To-do",
   "widget_settings_message_memo_character_select_reminder": "Choose an event or to-do from this character’s memos / reminders.",
   "widget_settings_message_selected": "Selected: {_selectedMemoContent}",
-  "@widget_settings_message_selected": {"placeholders": {"_selectedMemoContent": {}}},
+  "@widget_settings_message_selected": {
+    "placeholders": {
+      "_selectedMemoContent": {}
+    }
+  },
   "widget_settings_message_select": "Select up to 3 items",
   "widget_settings_message_character": "Character status can show up to 3 items.",
   "widget_settings_message_small_variant_c": "Preview Widget",
@@ -4892,7 +4995,11 @@
   "event_memory_character_center_message_public_character_character_friend_add": "Create your own character, or add a public character you like as a friend first.",
   "event_memory_character_message_character_select": "Please select a character first",
   "event_memory_character_message_continue": "Continue with {value1}",
-  "@event_memory_character_message_continue": {"placeholders": {"value1": {}}},
+  "@event_memory_character_message_continue": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_memory_character_card_message_private": "Mine · Private",
   "event_memory_character_error_label_load_again": "Reload",
   "event_memory_collection_show_collection_intro_if_needed_message_collection": "Shiguang Collection",
@@ -4912,11 +5019,19 @@
   "event_memory_collection_item_card_label": "Limited Item",
   "event_memory_collection_confirm_delete_owned_item_message_delete": "Delete limited item?",
   "event_memory_collection_confirm_delete_owned_item_message_after_delete_unavailable": "After deletion, you will no longer be able to use this {_itemTypeLabel},",
-  "@event_memory_collection_confirm_delete_owned_item_message_after_delete_unavailable": {"placeholders": {"_itemTypeLabel": {}}},
+  "@event_memory_collection_confirm_delete_owned_item_message_after_delete_unavailable": {
+    "placeholders": {
+      "_itemTypeLabel": {}
+    }
+  },
   "event_memory_collection_confirm_delete_owned_item_message_collection": "and it will no longer appear in “Shiguang Collection”.\n\n",
   "event_memory_collection_confirm_delete_owned_item_message_unavailable": "This means you will give up the limited item you obtained, and this action cannot be undone.\n\n",
   "event_memory_collection_confirm_delete_owned_item_message_delete_variant_b": "Are you sure you want to delete “{value1}”?",
-  "@event_memory_collection_confirm_delete_owned_item_message_delete_variant_b": {"placeholders": {"value1": {}}},
+  "@event_memory_collection_confirm_delete_owned_item_message_delete_variant_b": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_memory_collection_confirm_delete_owned_item_message_delete_variant_c": "Limited item deleted",
   "event_memory_collection_confirm_delete_owned_item_message_not_found_delete": "This limited item could not be found and may already have been deleted",
   "event_memory_collection_confirm_delete_owned_item_message_collection_current_delete": "This collection cannot be deleted right now",
@@ -4945,18 +5060,36 @@
   "event_memory_collection_collected_label_collection": "Just Collected",
   "event_memory_collection_collected_item_label_collection_date": "Collection date not recorded",
   "event_memory_collection_collected_item_label_collection": "Collected on {value1}/{month}/{day}",
-  "@event_memory_collection_collected_item_label_collection": {"placeholders": {"day": {}, "month": {}, "value1": {}}},
+  "@event_memory_collection_collected_item_label_collection": {
+    "placeholders": {
+      "day": {},
+      "month": {},
+      "value1": {}
+    }
+  },
   "event_memory_text_not_found_event": "Event data not found",
   "event_memory_message_limited_memory_failed_load": "Failed to load limited memories",
   "event_memory_as_map_label_unlocked": "Unlocked",
   "event_memory_as_map_label_unlock": "Accumulate {currencyIcon} {requiredValue} {currencyName} to unlock ({currentValue} / {requiredValue})",
-  "@event_memory_as_map_label_unlock": {"placeholders": {"currencyIcon": {}, "currencyName": {}, "currentValue": {}, "requiredValue": {}}},
+  "@event_memory_as_map_label_unlock": {
+    "placeholders": {
+      "currencyIcon": {},
+      "currencyName": {},
+      "currentValue": {},
+      "requiredValue": {}
+    }
+  },
   "event_memory_as_map_label_unlock_task_event_complete": "Unlock after completing the specified event task",
   "event_memory_as_map_label_redeem_unlock_event": "Unlock after redeeming the specified event item",
   "event_memory_as_map_label_unlock_variant_b": "Not Unlocked Yet",
   "event_memory_hero_message": "Keep a moment that belongs only to the two of you in this season.",
   "event_memory_hero_message_limited_memory": "Limited Memories  {unlockedCount} / {totalCount}",
-  "@event_memory_hero_message_limited_memory": {"placeholders": {"totalCount": {}, "unlockedCount": {}}},
+  "@event_memory_hero_message_limited_memory": {
+    "placeholders": {
+      "totalCount": {},
+      "unlockedCount": {}
+    }
+  },
   "event_memory_status_label_unlocked": "Unlocked · Not Viewed",
   "event_memory_status_label": "Viewed",
   "event_memory_status_label_collection": "Collected",
@@ -4982,21 +5115,44 @@
   "event_memory_profile_center_message_memory": "Who will you be in this memory?",
   "event_memory_profile_center_message_profile_character_start": "The Shiguang Profile you most recently used with this character has been selected first. You can change it before starting.",
   "event_memory_profile_center_message": "As “{value1}” with",
-  "@event_memory_profile_center_message": {"placeholders": {"value1": {}}},
+  "@event_memory_profile_center_message": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_memory_profile_center_message_memory_variant_b": "“{value1}” in this memory",
-  "@event_memory_profile_center_message_memory_variant_b": {"placeholders": {"value1": {}}},
+  "@event_memory_profile_center_message_memory_variant_b": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_memory_profile_center_label_memory_start": "Start Memory",
   "event_message_failed_load": "Failed to load event data",
   "event_message_not_found": "Event not found",
   "event_remaining_label": "Event in Progress",
   "event_remaining_label_days": "{value1} days left",
-  "@event_remaining_label_days": {"placeholders": {"value1": {}}},
+  "@event_remaining_label_days": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_remaining_label_hours": "{value1} hours left",
-  "@event_remaining_label_hours": {"placeholders": {"value1": {}}},
+  "@event_remaining_label_hours": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_remaining_label_end": "Ending Soon",
   "event_balance_pill_tooltip_back": "Back",
   "event_claim_task_message_claim_current": "Claimed {value1} {reward} {value2}. You now have {currency}",
-  "@event_claim_task_message_claim_current": {"placeholders": {"currency": {}, "reward": {}, "value1": {}, "value2": {}}},
+  "@event_claim_task_message_claim_current": {
+    "placeholders": {
+      "currency": {},
+      "reward": {},
+      "value1": {},
+      "value2": {}
+    }
+  },
   "event_claim_task_message_reward_claim": "Reward claimed",
   "event_claim_task_message_claim_failed": "Failed to claim",
   "event_claim_task_message_task_claim": "This task has already been claimed",
@@ -5007,42 +5163,101 @@
   "event_milestone_progress_label_reward_load": "Loading milestone rewards…",
   "event_milestone_progress_label_reward_current": "No milestone rewards right now",
   "event_build_with_total_message_current": "Current  {totalEarned}",
-  "@event_build_with_total_message_current": {"placeholders": {"totalEarned": {}}},
+  "@event_build_with_total_message_current": {
+    "placeholders": {
+      "totalEarned": {}
+    }
+  },
   "event_progress_ref_message_redeem_confirm": "Confirm Redemption",
   "event_progress_ref_message_redeem_flowers": "Use {value1} {price} to redeem “{itemName}”?\n\nYou will receive {rewardAmount} Flowers after redemption.",
-  "@event_progress_ref_message_redeem_flowers": {"placeholders": {"itemName": {}, "price": {}, "rewardAmount": {}, "value1": {}}},
+  "@event_progress_ref_message_redeem_flowers": {
+    "placeholders": {
+      "itemName": {},
+      "price": {},
+      "rewardAmount": {},
+      "value1": {}
+    }
+  },
   "event_progress_ref_message_redeem": "Use {value1} {price} to redeem “{itemName}”?",
-  "@event_progress_ref_message_redeem": {"placeholders": {"itemName": {}, "price": {}, "value1": {}}},
+  "@event_progress_ref_message_redeem": {
+    "placeholders": {
+      "itemName": {},
+      "price": {},
+      "value1": {}
+    }
+  },
   "event_progress_ref_message_redeem_success_flowers": "Redemption successful! Received {returnedReward} Flowers",
-  "@event_progress_ref_message_redeem_success_flowers": {"placeholders": {"returnedReward": {}}},
+  "@event_progress_ref_message_redeem_success_flowers": {
+    "placeholders": {
+      "returnedReward": {}
+    }
+  },
   "event_progress_ref_message_event_collection_redeem_success_add": "Redemption successful! “{itemName}” has been added to Event Collection",
-  "@event_progress_ref_message_event_collection_redeem_success_add": {"placeholders": {"itemName": {}}},
+  "@event_progress_ref_message_event_collection_redeem_success_add": {
+    "placeholders": {
+      "itemName": {}
+    }
+  },
   "event_progress_ref_message_redeem_failed": "Redemption failed",
   "event_progress_ref_message_redeem_variant_b": "This item has already been redeemed",
   "event_progress_ref_message_insufficient": "Not enough currency",
   "event_progress_ref_message_insufficient_variant_b": "Not enough {value1}",
-  "@event_progress_ref_message_insufficient_variant_b": {"placeholders": {"value1": {}}},
+  "@event_progress_ref_message_insufficient_variant_b": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_progress_ref_message_redeem_variant_c": "Redeem",
   "event_progress_ref_message_redeem_variant_d": "Redeemed",
   "event_message_redeem_flowers": "You will receive {rewardAmount} Flowers after redemption",
-  "@event_message_redeem_flowers": {"placeholders": {"rewardAmount": {}}},
+  "@event_message_redeem_flowers": {
+    "placeholders": {
+      "rewardAmount": {}
+    }
+  },
   "event_message_redeem": "Redeemed {redeemedCount} times",
-  "@event_message_redeem": {"placeholders": {"redeemedCount": {}}},
+  "@event_message_redeem": {
+    "placeholders": {
+      "redeemedCount": {}
+    }
+  },
   "event_message_event_shop_login": "Log in to use the event shop",
   "event_message_redeem_current": "No items available for redemption right now",
   "event_shop_item_card_message_flowers": "Receive {rewardAmount} Flowers",
-  "@event_shop_item_card_message_flowers": {"placeholders": {"rewardAmount": {}}},
+  "@event_shop_item_card_message_flowers": {
+    "placeholders": {
+      "rewardAmount": {}
+    }
+  },
   "event_message_insufficient": "Insufficient",
   "notification_message_player": "Image attached by player",
   "notification_message_qixi_letter": "Qixi letter from {value1}",
-  "@notification_message_qixi_letter": {"placeholders": {"value1": {}}},
+  "@notification_message_qixi_letter": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "recommendation_remaining_label_days": "{value1} days left",
-  "@recommendation_remaining_label_days": {"placeholders": {"value1": {}}},
+  "@recommendation_remaining_label_days": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "recommendation_remaining_label_hours": "{value1} hours left",
-  "@recommendation_remaining_label_hours": {"placeholders": {"value1": {}}},
+  "@recommendation_remaining_label_hours": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "settings_subtitle_character_days": "Let your favorite character be part of every day",
   "moment_notification_comment_on_character_post": "{senderNickname} left a comment for {authorName}: “{commentText}”",
-  "@moment_notification_comment_on_character_post": {"placeholders": {"authorName": {}, "commentText": {}, "senderNickname": {}}},
+  "@moment_notification_comment_on_character_post": {
+    "placeholders": {
+      "authorName": {},
+      "commentText": {},
+      "senderNickname": {}
+    }
+  },
   "inbox_content_text_message_customer_service_message_send": "Sent customer support messages",
   "character_edit_relationship_none_label": "None",
   "auth_cancel_account_deletion_failed": "Failed to cancel account deletion. Please try again later.",
@@ -5053,6 +5268,1691 @@
   "theme_font_system": "System Font",
   "theme_font_shiguang_serif_description": "Soft and literary, ideal for immersive reading",
   "theme_font_clean_sans_description": "Clear and crisp, comfortable for long reading sessions",
-  "theme_font_system_description": "Follow the device’s default system font"
-
+  "theme_font_system_description": "Follow the device’s default system font",
+  "font_selection_serif_name": "Noto Serif TC",
+  "font_selection_sans_name": "Noto Sans TC",
+  "font_selection_system_name": "System font",
+  "font_selection_serif_description": "Elegant serif typeface for immersive reading.",
+  "font_selection_sans_description": "Clear, gentle sans-serif typeface.",
+  "font_selection_system_description": "Use your device’s default font.",
+  "font_selection_preview_sentence": "Write another chapter of your story with the one you love.",
+  "avatar_frame_error_generic": "Error",
+  "avatar_frame_sign_in_required": "Please sign in first",
+  "avatar_frame_default_name": "Event avatar frame",
+  "background_exclusive_photos_tab": "Exclusive Photos",
+  "background_world_sign_in_chat": "Please sign in and enter a world chat",
+  "background_world_photo_load_error": "Error",
+  "background_world_no_photos": "No world photos available",
+  "background_world_cover": "World Cover",
+  "background_world_cover_confirm": "Set the world cover as this chat background?",
+  "background_world_default_limited": "Limited Background",
+  "background_world_default_character": "Character",
+  "background_world_no_character_photos": "No character photos available",
+  "background_world_unlock_required": "Requires {count} affection to unlock",
+  "background_world_character_confirm": "Set {name}’s photo as the world chat background?",
+  "background_world_affection_count": "{count} Affection",
+  "@background_world_unlock_required": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@background_world_affection_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@background_world_character_confirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reply_selection": "Reply options",
+  "chat_home_character_tab": "Character chats",
+  "chat_home_world_tab": "Open Worlds",
+  "chat_home_world_error_generic": "Error",
+  "chat_home_world_pinned": "World chat pinned",
+  "chat_home_world_deleted": "World chat and conversation history deleted",
+  "chat_home_world_action_done": "Done",
+  "chat_home_world_rename_title": "Name this memory",
+  "chat_home_world_delete_confirm": "Delete the chat history for “{name}”?\n\nThis permanently deletes conversations, story summaries, relationships, and memos. This cannot be undone. The creator’s published world will remain.",
+  "chat_home_world_empty_title": "No Open World chats yet",
+  "chat_home_world_empty_desc": "Start playing an Open World to see your chats here.",
+  "chat_home_world_unnamed": "Untitled world",
+  "chat_home_world_private_test": "Private test",
+  "chat_home_world_no_messages": "No messages yet",
+  "expand_features": "Expand features",
+  "chat_sticker_all": "All",
+  "chat_mode_short_daily": "Daily",
+  "chat_mode_short_story": "Story",
+  "chat_mode_short_immersive": "Immersive",
+  "chat_mode_short_resonance": "Resonance",
+  "chat_mode_short_gemini": "Chat",
+  "chat_theater_tool": "Theater",
+  "chat_regenerate_insufficient_flowers": "Not enough Flowers. Regenerating requires {cost} Flowers.",
+  "chat_regenerate_paid_title": "Paid regeneration",
+  "chat_regenerate_paid_confirm": "You have used all free regenerations today. This will cost {cost} Flowers in the current mode. Continue?",
+  "chat_generic_error": "Error",
+  "chat_regenerate_confirm": "Confirm",
+  "@chat_regenerate_insufficient_flowers": {
+    "placeholders": {
+      "cost": {
+        "type": "int"
+      }
+    }
+  },
+  "@chat_regenerate_paid_confirm": {
+    "placeholders": {
+      "cost": {
+        "type": "int"
+      }
+    }
+  },
+  "comment_add_photo": "Add photo",
+  "comment_error_generic": "Error",
+  "creator_profile_report_reason_prompt": "Select a reason for reporting “{creatorName}”:",
+  "creator_profile_open_worlds": "Open Worlds",
+  "creator_profile_generic_error": "Error",
+  "creator_profile_refresh": "Refresh",
+  "creator_profile_no_open_worlds": "This creator has not published any Open Worlds yet.",
+  "creator_profile_unnamed_world": "Unnamed World",
+  "creator_program_required_fields": "Please enter your creative direction and reason for applying.",
+  "creator_program_submitted": "Application submitted. Review takes about 1–3 days.",
+  "creator_program_error": "Error",
+  "creator_program_login_required": "Please sign in before applying to the Creator Program.",
+  "creator_program_title": "Creator Program",
+  "creator_program_headline": "Let more people discover your creations",
+  "creator_program_intro": "If you have public creations, you are welcome to join the 《戀戀拾光》 Creator Program. Applications are reviewed within 1–3 days.",
+  "creator_program_benefits_title": "Program benefits",
+  "creator_program_benefit_dashboard": "Creator dashboard: View followers, public characters, total likes, and new followers this month.",
+  "creator_program_benefit_fans": "Fan engagement: Send letters, manage fans, and reward them using your own flowers.",
+  "creator_program_benefit_exposure": "Official exposure: New characters may be featured on Instagram and in-game creator recommendations.",
+  "creator_program_benefit_monthly": "Monthly creation reward: Publish at least 3 brand-new characters in a month to receive 520 flowers the next month.",
+  "creator_program_benefit_merch": "Merchandise collaboration: If your characters join an official product or gift-box project, you may receive a cash creative reward under that project.",
+  "creator_program_last_review_note": "Previous review notes: {reason}",
+  "creator_program_apply_heading": "Apply to join",
+  "creator_program_direction_label": "Creative direction",
+  "creator_program_direction_hint": "e.g., contemporary romance, historical, fantasy, BL, GL…",
+  "creator_program_reason_label": "Why do you want to join?",
+  "creator_program_reason_hint": "Tell us how you plan to develop your characters and engage with fans.",
+  "creator_program_social_label": "Social link (optional)",
+  "creator_program_social_hint": "Instagram, Threads, personal website, etc.",
+  "creator_program_submit": "Submit application",
+  "creator_program_public_character_note": "Before submission, the system checks that your account has at least one public character.",
+  "creator_program_status_pending": "Application under review",
+  "creator_program_status_pending_desc": "Your application has been received. Review takes about 1–3 days. We will notify you through the in-game mailbox.",
+  "creator_program_status_approved": "Creator status approved 🎉",
+  "creator_program_status_approved_desc": "Welcome to the 《戀戀拾光》 Creator Program! The creator dashboard, fan tools, and recommendation banners will be linked to this status in upcoming features.",
+  "creator_program_status_suspended": "Creator status suspended",
+  "creator_program_status_suspended_desc": "Creator-only features are temporarily unavailable. Please check the official notice in your in-game mailbox.",
+  "creator_program_status_revoked": "Creator status revoked",
+  "creator_program_status_revoked_desc": "Creator-only features are unavailable. If you have questions, please contact support.",
+  "creator_program_status_title": "Creator status",
+  "creator_program_current_status": "Current status: {status}",
+  "creator_program_official_note": "Official note: {reason}",
+  "@creator_program_last_review_note": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "@creator_program_current_status": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "@creator_program_official_note": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "creator_dashboard_error": "Error",
+  "creator_dashboard_access_title": "Creator Dashboard",
+  "creator_dashboard_status_notice_title": "Creator Dashboard Access Notice",
+  "creator_dashboard_apply_title": "Apply for Creator Dashboard",
+  "creator_dashboard_access_subtitle": "Character play analytics · New and lost followers · Follower management",
+  "creator_dashboard_pending": "Application submitted · Under review",
+  "creator_dashboard_legacy_pending": "Application pending confirmation",
+  "creator_dashboard_syncing": "Syncing dashboard access. Please try again later.",
+  "creator_dashboard_suspended": "Dashboard access suspended. Contact support.",
+  "creator_dashboard_apply_subtitle": "Apply for access to character analytics and follower management",
+  "creator_dashboard_rejected": "Application declined · You may apply again",
+  "creator_dashboard_submitted": "Application submitted. Please wait for review.",
+  "creator_dashboard_benefits_title": "Creator Dashboard features",
+  "creator_dashboard_benefit_monthly": "🌸 Monthly creation reward: Publish 3 distinct new characters this month to claim 300 Flowers once.",
+  "creator_dashboard_benefit_analytics": "• View public-character play metrics, follower totals, and follow/unfollow activity",
+  "creator_dashboard_benefit_mail": "• Fan messages: private messages and announcements (daily limits apply)",
+  "creator_dashboard_benefit_gifts": "• Fan rewards: gift your own Flowers to followers",
+  "creator_dashboard_reward_note": "Approval required. Private characters, drafts, and republished older characters do not count toward the monthly reward.",
+  "creator_dashboard_apply_cta": "Learn more and request dashboard access",
+  "creator_dashboard_my_characters": "My characters",
+  "creator_dashboard_my_worlds": "My open worlds",
+  "creator_dashboard_create_world": "Create open world",
+  "creator_dashboard_public_worlds": "Published worlds",
+  "creator_dashboard_public_worlds_hint": "Other players can explore",
+  "creator_dashboard_private_worlds": "Private worlds",
+  "creator_dashboard_private_worlds_hint": "Only you can view and edit",
+  "creator_dashboard_world_drafts": "World drafts",
+  "creator_dashboard_world_drafts_hint": "Worlds not yet finished",
+  "creator_dashboard_no_drafts": "No drafts yet",
+  "creator_dashboard_no_worlds": "No worlds yet",
+  "creator_dashboard_unnamed_world": "Untitled world",
+  "creator_dashboard_delete_world_draft": "Delete world draft",
+  "creator_dashboard_private_test": "Private test",
+  "creator_dashboard_delete_world_confirm_title": "Delete world draft?",
+  "creator_dashboard_delete_world_confirm_body": "This cannot be undone. Uploaded images will not be deleted.",
+  "creator_dashboard_draft_deleted": "World draft deleted",
+  "creator_dashboard_validation": "Creative direction must be 2–100 characters and application reason 10–500 characters.",
+  "creator_dashboard_confirm_application_title": "Confirm dashboard application",
+  "creator_dashboard_confirm_application_body": "Your request will be reviewed. Approval grants dashboard access and does not constitute a partnership agreement.",
+  "creator_dashboard_confirm_send": "Submit application",
+  "creator_dashboard_form_heading": "Apply for the Lianlian Shiguang Creator Dashboard",
+  "creator_dashboard_form_description": "Tell us about your creative direction and how you plan to use character analytics and follower management. This is not a partnership contract.",
+  "creator_dashboard_direction_label": "Creative direction",
+  "creator_dashboard_direction_hint": "e.g., contemporary romance, historical, fantasy, BL, GL…",
+  "creator_dashboard_reason_label": "Reason for dashboard access",
+  "creator_dashboard_reason_hint": "Share your experience and which dashboard features you need",
+  "creator_dashboard_sending": "Submitting…",
+  "creator_dashboard_submit": "Apply for dashboard access",
+  "creator_dashboard_privacy_note": "Approval is not guaranteed. Do not enter identity numbers, banking details, or other sensitive information.",
+  "creator_dashboard_revoked_limit": "Dashboard application limit reached. Please contact support.",
+  "creator_dashboard_revoked_notice": "Your dashboard access was revoked. Check the page for available reapplication options.",
+  "creator_dashboard_error1": "Error",
+  "creator_dashboard_access_title1": "Creator Dashboard",
+  "creator_dashboard_status_notice_title1": "Creator Dashboard Access Notice",
+  "creator_dashboard_apply_title1": "Apply for Creator Dashboard",
+  "creator_dashboard_access_subtitle1": "Character play analytics · New and lost followers · Follower management",
+  "creator_dashboard_pending1": "Application submitted · Under review",
+  "creator_dashboard_legacy_pending1": "Application pending confirmation",
+  "creator_dashboard_syncing1": "Syncing dashboard access. Please try again later.",
+  "creator_dashboard_suspended1": "Dashboard access suspended. Contact support.",
+  "creator_dashboard_apply_subtitle1": "Apply for access to character analytics and follower management",
+  "creator_dashboard_rejected1": "Application declined · You may apply again",
+  "creator_dashboard_submitted1": "Application submitted. Please wait for review.",
+  "creator_dashboard_benefits_title1": "Creator Dashboard features",
+  "creator_dashboard_benefit_monthly1": "🌸 Monthly creation reward: Publish 3 distinct new characters this month to claim 300 Flowers once.",
+  "creator_dashboard_benefit_analytics1": "• View public-character play metrics, follower totals, and follow/unfollow activity",
+  "creator_dashboard_benefit_mail1": "• Fan messages: private messages and announcements (daily limits apply)",
+  "creator_dashboard_benefit_gifts1": "• Fan rewards: gift your own Flowers to followers",
+  "creator_dashboard_reward_note1": "Approval required. Private characters, drafts, and republished older characters do not count toward the monthly reward.",
+  "creator_dashboard_apply_cta1": "Learn more and request dashboard access",
+  "creator_dashboard_my_characters1": "My characters",
+  "creator_dashboard_my_worlds1": "My open worlds",
+  "creator_dashboard_create_world1": "Create open world",
+  "creator_dashboard_public_worlds1": "Published worlds",
+  "creator_dashboard_public_worlds_hint1": "Other players can explore",
+  "creator_dashboard_private_worlds1": "Private worlds",
+  "creator_dashboard_private_worlds_hint1": "Only you can view and edit",
+  "creator_dashboard_world_drafts1": "World drafts",
+  "creator_dashboard_world_drafts_hint1": "Worlds not yet finished",
+  "creator_dashboard_no_drafts1": "No drafts yet",
+  "creator_dashboard_no_worlds1": "No worlds yet",
+  "creator_dashboard_unnamed_world1": "Untitled world",
+  "creator_dashboard_delete_world_draft1": "Delete world draft",
+  "creator_dashboard_private_test1": "Private test",
+  "creator_dashboard_delete_world_confirm_title1": "Delete world draft?",
+  "creator_dashboard_delete_world_confirm_body1": "This cannot be undone. Uploaded images will not be deleted.",
+  "creator_dashboard_draft_deleted1": "World draft deleted",
+  "creator_dashboard_validation1": "Creative direction must be 2–100 characters and application reason 10–500 characters.",
+  "creator_dashboard_confirm_application_title1": "Confirm dashboard application",
+  "creator_dashboard_confirm_application_body1": "Your request will be reviewed. Approval grants dashboard access and does not constitute a partnership agreement.",
+  "creator_dashboard_confirm_send1": "Submit application",
+  "creator_dashboard_form_heading1": "Apply for the Lianlian Shiguang Creator Dashboard",
+  "creator_dashboard_form_description1": "Tell us about your creative direction and how you plan to use character analytics and follower management. This is not a partnership contract.",
+  "creator_dashboard_direction_label1": "Creative direction",
+  "creator_dashboard_direction_hint1": "e.g., contemporary romance, historical, fantasy, BL, GL…",
+  "creator_dashboard_reason_label1": "Reason for dashboard access",
+  "creator_dashboard_reason_hint1": "Share your experience and which dashboard features you need",
+  "creator_dashboard_sending1": "Submitting…",
+  "creator_dashboard_submit1": "Apply for dashboard access",
+  "creator_dashboard_privacy_note1": "Approval is not guaranteed. Do not enter identity numbers, banking details, or other sensitive information.",
+  "creator_dashboard_revoked_limit1": "Dashboard application limit reached. Please contact support.",
+  "creator_dashboard_revoked_notice1": "Your dashboard access was revoked. Check the page for available reapplication options.",
+  "creator_support_page_title1": "Support Center",
+  "creator_support_new_report1": "New Support Request",
+  "creator_support_error1": "Error",
+  "creator_support_no_cases1": "No support requests yet",
+  "creator_support_unread1": "Unread",
+  "creator_support_load_more1": "Load more",
+  "creator_support_category_label1": "Issue category",
+  "creator_support_character_optional1": "Related character (optional)",
+  "creator_support_no_character1": "No character selected",
+  "creator_support_report_title1": "Issue title",
+  "creator_support_report_description1": "Issue description",
+  "creator_support_select_images1": "Select screenshots ({count}/3, under 2 MB each)",
+  "@creator_support_select_images1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "creator_support_images_private1": "Screenshots are visible only to the creator and the official team.",
+  "creator_support_submitting1": "Submitting…",
+  "creator_support_submit1": "Submit request",
+  "creator_support_image_too_large1": "Image exceeds 2 MB. Choose another.",
+  "creator_support_fill_title_description1": "Enter a title and description.",
+  "creator_support_case_sent1": "Request submitted",
+  "creator_support_case_sent_partial1": "Request submitted, but {count} screenshots failed to upload",
+  "@creator_support_case_sent_partial1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "creator_support_detail_title1": "Request details",
+  "creator_support_image_max1": "Each screenshot must be under 2 MB",
+  "creator_support_jpg_png_only1": "JPG / PNG only",
+  "creator_support_reply_sent1": "Reply sent",
+  "creator_support_reply_sent_partial1": "Message sent, but {count} images failed to upload",
+  "@creator_support_reply_sent_partial1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "creator_support_empty_content1": "Content cannot be empty",
+  "creator_support_recall_message1": "Recall message",
+  "creator_support_delete_message1": "Delete message",
+  "creator_support_recall_warning1": "Both parties will see “This message was recalled”; attachments will be unavailable.",
+  "creator_support_delete_warning1": "Hide only from your view; the other party keeps the message.",
+  "creator_support_cancel1": "Cancel",
+  "creator_support_confirm1": "Confirm",
+  "creator_support_operation_success1": "Operation successful",
+  "creator_support_edit_message1": "Edit message",
+  "creator_support_recall_remaining1": "Recall message ({seconds}s left)",
+  "@creator_support_recall_remaining1": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "creator_support_recall_expired1": "Recall message (over 60s)",
+  "creator_support_case_updated1": "Request updated",
+  "creator_support_loading1": "Loading…",
+  "creator_support_creator_uid1": "Creator UID: {uid}",
+  "@creator_support_creator_uid1": {
+    "placeholders": {
+      "uid": {
+        "type": "String"
+      }
+    }
+  },
+  "creator_support_internal_note1": "Internal staff notes (hidden from creator)",
+  "creator_support_save_internal_note1": "Save internal notes",
+  "creator_support_case_images1": "Request screenshots",
+  "creator_support_official1": "Lianlian Shiguang Official",
+  "creator_support_creator1": "Creator",
+  "creator_support_recalled1": "This message was recalled",
+  "creator_support_edited1": "Edited",
+  "creator_support_reply_hint1": "Type a reply…",
+  "creator_support_attach_image1": "Attach screenshots (up to 3)",
+  "creator_support_send1": "Send",
+  "creator_support_admin_title1": "Creator Request Management",
+  "creator_support_new_reply1": "New reply",
+  "creator_support_load_more_cases1": "Load more requests",
+  "creator_support_image_load_error1": "Failed to load screenshot",
+  "creator_support_edit_hint1": "Edit message content",
+  "creator_support_save1": "Save",
+  "creator_support_status_pending1": "Pending",
+  "creator_support_status_progress1": "In progress",
+  "creator_support_status_waiting1": "Awaiting details",
+  "creator_support_status_resolved1": "Resolved",
+  "creator_support_cat_character1": "Character management",
+  "creator_support_cat_ai1": "AI character interaction issue",
+  "creator_support_cat_dashboard1": "Creator dashboard issue",
+  "creator_support_cat_cooperation1": "Collaboration and benefits",
+  "creator_support_cat_other1": "Other issue",
+  "desktop_widget_size_small1": "Small",
+  "desktop_widget_size_medium1": "Medium",
+  "desktop_widget_size_large1": "Large",
+  "desktop_widget_cancel1": "Cancel",
+  "desktop_widget_delete1": "Delete",
+  "desktop_widget_days_remaining1": "{days} days remaining",
+  "@desktop_widget_days_remaining1": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "desktop_widget_days_today1": "Today is the day",
+  "desktop_widget_days_elapsed1": "{days} days ago",
+  "@desktop_widget_days_elapsed1": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "desktop_widget_daily_quote1": "Daily quote",
+  "desktop_widget_update_daily1": "Update once daily",
+  "desktop_widget_character_birthday1": "Character birthday",
+  "desktop_widget_change1": "Change",
+  "desktop_widget_mood1": "Mood",
+  "desktop_widget_current_state1": "Current state",
+  "desktop_widget_location1": "Location",
+  "desktop_widget_relationship1": "Relationship",
+  "desktop_widget_outfit1": "Outfit",
+  "desktop_widget_weather1": "Weather",
+  "desktop_widget_thought1": "Thoughts",
+  "desktop_widget_action1": "Actions",
+  "desktop_widget_affinity1": "Affection",
+  "desktop_widget_character_status1": "Character status",
+  "desktop_widget_no_posts1": "No character posts yet",
+  "desktop_widget_crop_position1": "Adjust character position",
+  "desktop_widget_crop_action1": "Zoom / drag to adjust framing",
+  "desktop_widget_crop_hint1": "Use two fingers to zoom and one finger to drag without moving the whole page.",
+  "desktop_widget_crop_title1": "Adjust character framing",
+  "desktop_widget_reset1": "Reset",
+  "desktop_widget_crop_instructions1": "Drag with one finger to position; pinch with two fingers to resize. The frame shows what the home screen widget will display.",
+  "desktop_widget_crop_position_scale1": "Position: {x}% / {y}% · Zoom: {scale}×",
+  "@desktop_widget_crop_position_scale1": {
+    "placeholders": {
+      "x": {
+        "type": "int"
+      },
+      "y": {
+        "type": "int"
+      },
+      "scale": {
+        "type": "String"
+      }
+    }
+  },
+  "desktop_widget_apply1": "Apply",
+  "desktop_widget_just_posted1": "Just posted an update",
+  "desktop_widget_important_day1": "Special day",
+  "desktop_widget_no_date1": "No date selected",
+  "desktop_widget_first_met1": "The day we met",
+  "desktop_widget_error1": "Error",
+  "event_memory_select_character_title1": "Select a character",
+  "event_memory_my_characters1": "My characters",
+  "event_memory_friend_characters1": "Friend characters",
+  "event_memory_friend_badge1": "Friend",
+  "event_memory_unnamed_character1": "Unnamed character",
+  "event_memory_generic_error1": "Error",
+  "memory_collection_title1": "Memory Collection",
+  "memory_collection_avatar_frames1": "Avatar Frames",
+  "memory_collection_stickers1": "Stickers",
+  "memory_collection_memories1": "Memories",
+  "memory_collection_try_again1": "Please try again later.",
+  "memory_collection_error1": "Error",
+  "memory_collection_chat_background1": "Chat Backgrounds",
+  "memory_collection_got_it1": "Got it",
+  "memory_collection_not_now1": "Not now",
+  "memory_collection_confirm_delete1": "Confirm deletion",
+  "memory_collection_close1": "Close",
+  "memory_collection_delete1": "Delete",
+  "memory_collection_image_preparing1": "Preparing image",
+  "memory_collection_remove_favorite1": "Remove from collection",
+  "memory_collection_removed1": "Removed from collection",
+  "event_memory_performance_opening1": "Some moments remain,\neven after the story ends.",
+  "event_memory_performance_generic_error1": "Error",
+  "event_memory_performance_collected1": "Saved",
+  "event_memory_performance_saving1": "Saving…",
+  "event_memory_performance_save_gallery1": "Save to photo gallery",
+  "event_memory_performance_done1": "Done",
+  "event_memory_performance_uncollect_title1": "Remove from collection?",
+  "event_memory_performance_not_now1": "Not now",
+  "event_memory_performance_uncollect1": "Remove from collection",
+  "event_memory_performance_uncollected1": "Removed from collection",
+  "event_memory_performance_login_to_collect1": "Sign in to save this memory",
+  "event_memory_performance_web_gallery_unsupported1": "Saving directly to your phone gallery is not supported on the web",
+  "event_memory_performance_gallery_permission1": "Photo access is required to save this memory",
+  "event_memory_performance_image_not_ready1": "The memory image is not ready. Please try again",
+  "event_memory_performance_gallery_saved1": "Saved to your photo gallery",
+  "event_memory_performance_skip1": "Skip",
+  "event_memory_performance_memory_label1": "Memory",
+  "event_memory_performance_tap_continue1": "Tap to continue",
+  "event_memory_performance_tap_show_full1": "Tap to reveal all text",
+  "event_memory_performance_brand_limited_memory1": "Lianlian Shiguang · Limited Memory",
+  "event_ended1": "Event ended",
+  "event_default_name1": "Limited-time event",
+  "event_default_subtitle1": "Make special memories with him this season.",
+  "event_currency_default1": "Event currency",
+  "event_tasks_today1": "Today’s tasks",
+  "event_tasks_subtitle1": "Complete tasks, collect {currency}, and unlock more exclusive content.",
+  "@event_tasks_subtitle1": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "event_milestones_title1": "Milestone progress",
+  "event_milestones_subtitle1": "Accumulate {currency} to claim exclusive event rewards.",
+  "@event_milestones_subtitle1": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "event_memory_title1": "Exclusive memories",
+  "event_memory_subtitle1": "Keep an exclusive memory of this event.",
+  "event_shop_title1": "Event shop",
+  "event_shop_subtitle1": "Exchange {currency} for exclusive rewards.",
+  "@event_shop_subtitle1": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "event_info_title1": "Event details",
+  "event_info_default1": "Complete specified tasks during the event to earn event currency.\nRedeemed rewards will be delivered to your account according to event rules.\nUnused event currency will be handled according to event rules after the event ends.",
+  "event_generic_error1": "Error",
+  "event_task_default1": "Event task",
+  "event_claimed1": "Claimed",
+  "event_claim1": "Claim",
+  "event_in_progress1": "In progress",
+  "event_reward_default1": "Exclusive reward",
+  "event_product_default1": "Event item",
+  "event_cancel1": "Cancel",
+  "event_confirm_exchange1": "Confirm exchange",
+  "event_limited_product1": "Exclusive item",
+  "event_insufficient_currency1": "Not enough {currency}",
+  "@event_insufficient_currency1": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "event_close1": "Close",
+  "event_redeemed_count_limit1": "Redeemed {count} / {max} times",
+  "@event_redeemed_count_limit1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "event_redeemed_count1": "Redeemed {count} times",
+  "@event_redeemed_count1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "event_redeemed1": "Redeemed",
+  "event_exchange1": "Exchange",
+  "login_account_deletion_started1": "Account deletion in progress",
+  "login_account_deletion_expired_description1": "The three-day cancellation period has expired, and this account can no longer be restored. Please contact support if you need assistance.",
+  "login_account_deletion_confirm1": "OK",
+  "event_memory_limited_title1": "Limited Memory",
+  "moment_detail_add_photo1": "Add photo",
+  "moment_detail_error1": "Error",
+  "notification_claim_before_delete1": "Claim the flowers before deleting the gift message",
+  "notification_error1": "Error",
+  "notification_creator_gift_already_claimed1": "You have already claimed these flowers",
+  "notification_creator_gift_claim_success1": "Successfully claimed {amount} flowers!",
+  "notification_creator_gift_title1": "Creator Gift",
+  "notification_creator_gift_amount1": "{amount} flowers",
+  "notification_creator_gift_claimed1": "Claimed",
+  "notification_creator_gift_claiming1": "Claiming…",
+  "notification_creator_gift_claim_button1": "Claim Flowers",
+  "notification_support_subject1": "Title submitted by player",
+  "notification_support_content1": "Content submitted by player",
+  "notification_support_reported1": "Reported content",
+  "notification_support_reply1": "Support reply",
+  "notification_share_mail1": "Share message",
+  "notification_original_question1": "Your original question",
+  "@notification_creator_gift_claim_success1": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      }
+    }
+  },
+  "@notification_creator_gift_amount1": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      }
+    }
+  },
+  "notification_preferences_chat_title1": "Character chats",
+  "notification_preferences_chat_subtitle1": "Push notifications for character replies",
+  "notification_preferences_moments_title1": "New posts",
+  "notification_preferences_moments_subtitle1": "New posts from creators and characters you follow",
+  "notification_preferences_social_title1": "Social notifications",
+  "notification_preferences_social_subtitle1": "Likes, comments, follows, and character interactions",
+  "notification_preferences_announcements_title1": "Official announcements",
+  "notification_preferences_announcements_subtitle1": "General official announcement notifications",
+  "notification_preferences_events_title1": "Event reminders",
+  "notification_preferences_events_subtitle1": "Notifications when events are about to end",
+  "notification_preferences_save_failed1": "Could not save notification settings. Please try again later.",
+  "notification_preferences_page_title1": "Notification preferences",
+  "notification_preferences_login_required1": "Please sign in to your account",
+  "notification_preferences_load_failed1": "Could not load notification preferences. Please try again later.",
+  "notification_preferences_footer1": "These settings sync across all devices signed in to the same player account. System notification permissions must be configured separately on each device. Turning off push notifications does not delete your in-game mailbox or notifications you have already received.",
+  "private_label1": "Private",
+  "official_studio_text_0011": "Guide completed, but the viewed status could not sync and may appear again.",
+  "official_studio_text_0021": "Please sign in first",
+  "official_studio_text_0031": "Creator Partnership Studio",
+  "official_studio_text_0041": "Guide",
+  "official_studio_text_0051": "Unable to verify creator eligibility. Try again later.",
+  "official_studio_text_0061": "You do not currently have official creator access.\\nIf approved, contact support to verify activation.",
+  "official_studio_text_0071": "Verified Partner Creator",
+  "official_studio_text_0081": "Welcome back to the creator studio. More features are coming soon.",
+  "official_studio_text_0091": "Creator Tools",
+  "official_studio_text_0101": "Follower Management",
+  "official_studio_text_0111": "View and remove followers",
+  "official_studio_text_0121": "Creator Analytics",
+  "official_studio_text_0131": "Character popularity and total play count",
+  "official_studio_text_0141": "Fan Mail",
+  "official_studio_text_0151": "Send messages to your followers",
+  "official_studio_text_0161": "Fan Benefits",
+  "official_studio_text_0171": "Gift your own flowers to followers",
+  "official_studio_text_0181": "Monthly Creator Reward",
+  "official_studio_text_0191": "Publish 3 new characters to claim 300 flowers",
+  "official_studio_text_0201": "Creator Banner",
+  "official_studio_text_0211": "Set your public creator-page banner",
+  "official_studio_text_0221": "Partnership Info",
+  "official_studio_text_0231": "Partnership status, benefits and notices",
+  "official_studio_text_0241": "Support Center",
+  "official_studio_text_0251": "Report issues and track support replies",
+  "official_studio_text_0261": "Eligibility verification failed. Try again later.",
+  "official_studio_text_0271": "Official creator access is not available",
+  "official_studio_text_0281": "Unable to load public characters",
+  "official_studio_text_0291": "Creator Overview",
+  "official_studio_text_0301": "Total Plays",
+  "official_studio_text_0311": "Current Followers",
+  "official_studio_text_0321": "Unavailable",
+  "official_studio_text_0331": "Public Character Breakdown",
+  "official_studio_text_0341": "No public characters yet. They will appear here after publishing.",
+  "official_studio_text_0351": "Unnamed Character",
+  "official_studio_text_0361": "Total plays (playCount)",
+  "official_studio_text_0371": "Statistics reflect available database fields. Plays are not messages, unique players, or revenue.",
+  "official_studio_text_0381": "Unable to load followers",
+  "official_studio_text_0391": "No followers yet",
+  "official_studio_text_0401": "Follower List",
+  "official_studio_text_0411": "Up to 100 followers shown; only public nicknames and avatars are displayed.",
+  "official_studio_text_0421": "Remove Follower",
+  "official_studio_text_0431": "Cancel",
+  "official_studio_text_0441": "Confirm Removal",
+  "official_studio_text_0451": "Follower removed",
+  "official_studio_text_0461": "Removal failed. Please try again later.",
+  "official_studio_text_0471": "Player",
+  "official_studio_text_0481": "Unable to load public data",
+  "official_studio_text_0491": "This player",
+  "official_studio_text_0501": "Cropped image is still too large. Choose another.",
+  "official_studio_text_0511": "Banner updated",
+  "official_studio_text_0521": "Image processing failed. Choose another image.",
+  "official_studio_text_0531": "Banner removed",
+  "official_studio_text_0541": "Removal failed",
+  "official_studio_text_0551": "Please sign in",
+  "official_studio_text_0561": "Public Profile Banner",
+  "official_studio_text_0571": "Image failed to load",
+  "official_studio_text_0581": "No banner set",
+  "official_studio_text_0591": "Select a photo, position it within the white frame and confirm to upload.",
+  "official_studio_text_0601": "Processing…",
+  "official_studio_text_0611": "Select and Crop Image",
+  "official_studio_text_0621": "Remove Current Banner",
+  "official_studio_text_0631": "Cannot open this image",
+  "official_studio_text_0641": "Cropped file is too large. Choose another image.",
+  "official_studio_text_0651": "Cropping failed. Try again.",
+  "official_studio_text_0661": "Adjust Banner Crop",
+  "official_studio_text_0671": "Move the image to select the banner area",
+  "official_studio_text_0681": "Drag to move · Pinch or use slider to zoom",
+  "official_studio_text_0691": "The white frame shows the final banner (2.5:1)",
+  "official_studio_text_0701": "Zoom",
+  "official_studio_text_0711": "Reset Position",
+  "official_studio_text_0721": "Cropping…",
+  "official_studio_text_0731": "Crop and Upload",
+  "official_studio_text_0741": "Partnership Eligibility",
+  "official_studio_text_0751": "Verifying Eligibility",
+  "official_studio_text_0761": "Available Creator Tools",
+  "official_studio_text_0771": "Follower management, analytics, fan mail, flower gifts, monthly rewards and banners.",
+  "official_studio_text_0781": "Under current rules, create and first publish three eligible characters this month to claim 300 flowers. Final eligibility is verified by the server.",
+  "official_studio_text_0791": "Official Notices and Agreement",
+  "official_studio_text_0801": "Signed agreement terms and official notices take precedence. This page does not replace an agreement. Contact support for questions.",
+  "official_studio_text_0811": "Mail subject must contain 1–100 characters",
+  "official_studio_text_0821": "Mail body must contain 1–5000 characters",
+  "official_studio_text_0831": "Please select a follower",
+  "official_studio_text_0841": "Confirm Fan Mail",
+  "official_studio_text_0851": "Send to all current followers? This uses one broadcast credit.",
+  "official_studio_text_0861": "Send to this follower? This uses one private-message credit.",
+  "official_studio_text_0871": "Confirm Send",
+  "official_studio_text_0881": "Mail job created. Messages will be delivered gradually.",
+  "official_studio_text_0891": "Today’s Sending Quota",
+  "official_studio_text_0901": "Resets daily at 00:00 Taiwan time. A broadcast reaches all followers.",
+  "official_studio_text_0911": "All Followers",
+  "official_studio_text_0921": "One Follower",
+  "official_studio_text_0931": "Unable to get follower list",
+  "official_studio_text_0941": "No followers available for messaging",
+  "official_studio_text_0951": "Select a follower (first 100)",
+  "official_studio_text_0961": "Mail Subject",
+  "official_studio_text_0971": "Message",
+  "official_studio_text_0981": "Write a letter to your fans…",
+  "official_studio_text_0991": "Submitting…",
+  "official_studio_text_1001": "Confirm and Send",
+  "official_studio_text_1011": "Sending History",
+  "official_studio_text_1021": "No sending history yet",
+  "official_studio_text_1031": "Queued",
+  "official_studio_text_1041": "Delivering",
+  "official_studio_text_1051": "Completed",
+  "official_studio_text_1061": "Cancelled",
+  "official_studio_text_1071": "Delivery Failed",
+  "official_studio_text_1081": "Untitled Message",
+  "official_studio_text_1091": "Shows the latest 20 sending jobs. New and pending jobs stop when creator access is revoked.",
+  "official_studio_text_1101": "Player without a nickname",
+  "official_studio_text_1111": "Unable to load followers. Try again later.",
+  "official_studio_text_1121": "Insufficient Flowers",
+  "official_studio_text_1131": "Maybe Later",
+  "official_studio_text_1141": "Go to Shop",
+  "official_studio_text_1151": "You may gift 1–1000 flowers per follower",
+  "official_studio_text_1161": "Select 1–20 followers",
+  "official_studio_text_1171": "Maximum 5000 flowers per gift",
+  "official_studio_text_1181": "Gift message is limited to 300 characters",
+  "official_studio_text_1191": "Confirm Flower Gift",
+  "official_studio_text_1201": "Confirm Gift",
+  "official_studio_text_1211": "Gift already submitted; flowers were not deducted twice",
+  "official_studio_text_1221": "Fan Benefits · Flower Gifts",
+  "official_studio_text_1231": "Unable to load flower balance",
+  "official_studio_text_1241": "My Flower Balance",
+  "official_studio_text_1251": "Flowers are deducted from your own balance, not paid by the platform.",
+  "official_studio_text_1261": "Select followers (up to 20)",
+  "official_studio_text_1271": "Search by public nickname or UID; eligibility is verified by the server at submission.",
+  "official_studio_text_1281": "Search Followers",
+  "official_studio_text_1291": "Enter nickname or player UID",
+  "official_studio_text_1301": "Clear Search",
+  "official_studio_text_1311": "No eligible followers available",
+  "official_studio_text_1321": "No matching followers on this page. Continue searching.",
+  "official_studio_text_1331": "No matching followers found",
+  "official_studio_text_1341": "Select up to 20 followers",
+  "official_studio_text_1351": "Searching…",
+  "official_studio_text_1361": "Load More Followers",
+  "official_studio_text_1371": "Search More Followers",
+  "official_studio_text_1381": "Flowers per Follower",
+  "official_studio_text_1391": "e.g. 10",
+  "official_studio_text_1401": "Gift Message (Optional)",
+  "official_studio_text_1411": "Estimated Deduction",
+  "official_studio_text_1421": "Up to 20 followers and 5000 flowers per gift. Flowers are deducted on submission; recipients must claim them in their mailbox.",
+  "official_studio_text_1431": "Unable to load monthly tasks",
+  "official_studio_text_1441": "Unable to load progress. Try again later.",
+  "official_studio_text_1451": "Confirm Creator Reward",
+  "official_studio_text_1461": "Claim 300 flowers for this month? Each month can only be claimed once.",
+  "official_studio_text_1471": "Confirm Claim",
+  "official_studio_text_1481": "Monthly reward already claimed",
+  "official_studio_text_1491": "Successfully claimed 300 flowers!",
+  "official_studio_text_1501": "Claim failed. Try again later.",
+  "official_studio_text_1511": "Unable to verify claim. Refresh your history.",
+  "official_studio_text_1521": "This month",
+  "official_studio_text_1531": "Create and first publish three different characters each month, then claim 300 flowers.",
+  "official_studio_text_1541": "Rules: Only signed and verified partner creators are eligible. Counted characters must be created and first published this month and remain public. Private, draft and republished older characters do not count. Resets monthly in Taiwan time, once per month.",
+  "official_studio_text_1551": "Duplicate, empty or rule-violating characters may lead to review or partnership suspension under the agreement.",
+  "official_studio_text_1561": "Welcome to the Partner Creator Program",
+  "official_studio_text_1571": "Track your work and stay connected",
+  "official_studio_text_1581": "Share flowers and earn creator rewards",
+  "official_studio_text_1591": "Build your page and get support",
+  "official_studio_text_1601": "Your own creative space",
+  "official_studio_text_1611": "Followers · Analytics · Fan Mail",
+  "official_studio_text_1621": "Fan Benefits · Monthly Rewards",
+  "official_studio_text_1631": "Banners · Partnership Info · Support",
+  "official_studio_text_1641": "Welcome to the official creator studio of Lianlian Shiguang, combining creator tools, fan engagement, benefits and partnership information.",
+  "official_studio_text_1651": "View and manage followers, track plays and character performance, and send messages to one follower or your entire audience.",
+  "official_studio_text_1661": "Gift flowers from your balance to fans. You may also earn monthly rewards for newly created and first-published eligible characters.",
+  "official_studio_text_1671": "Upload your personal creator banner. Review partnership rules and benefits in Partnership Info, or contact the Support Center.",
+  "official_studio_text_1681": "Only officially eligible partner creators can use these features.",
+  "official_studio_text_1691": "Fan mail has daily sending limits. Check your quota before sending.",
+  "official_studio_text_1701": "Flower gifts deduct your balance. Monthly rewards follow current rules and server verification.",
+  "official_studio_text_1711": "New creator-exclusive features will be added here over time.",
+  "official_studio_text_1721": "Creator Studio Guide",
+  "official_studio_text_1731": "Skip",
+  "official_studio_text_1741": "Back",
+  "official_studio_text_1751": "Done",
+  "official_studio_text_1761": "Next",
+  "official_studio_text_1771": "Confirm removal of {name}? They will unfollow you but can follow again.",
+  "official_studio_text_1781": "Private messages: {count} / 30",
+  "official_studio_text_1791": "Broadcasts: {count} / 5",
+  "official_studio_text_1801": "Gift sent! {count} flowers are waiting in your followers’ mailboxes.",
+  "official_studio_text_1811": "{count} flowers 🌸",
+  "official_studio_text_1821": "{count} followers",
+  "official_studio_text_1831": "{count} flowers",
+  "official_studio_text_1841": "{month} creator reward",
+  "official_studio_text_1851": "This month: {count} / 3",
+  "official_studio_text_1861": "{count} public characters remaining",
+  "official_studio_text_1871": "Insufficient flowers: need {count} more",
+  "official_studio_text_1881": "Unable to load sending quota",
+  "official_studio_text_1891": "Sending is not confirmed. Check your history before retrying.",
+  "official_studio_text_1901": "Connection failed. Check your history before trying again.",
+  "official_studio_text_1911": "Gift status unconfirmed. Check history before retrying.",
+  "official_studio_text_1921": "Balance: {balance}\\nRequired: {total}\\nMissing: {missing}\\n\\nVisit the shop to get more flowers.",
+  "official_studio_text_1931": "Send {followers} flowers gifts of {amount} each, deducting {total} flowers.\\nGifts cannot be revoked.",
+  "official_studio_text_1941": "{mode} · {status} · Delivered to {count}",
+  "official_studio_text_1951": "Public characters",
+  "official_studio_text_1961": "Loading…",
+  "official_studio_text_1971": "Select followers",
+  "official_studio_text_1981": "Claimed this month",
+  "official_studio_text_188": "Unable to load message quota. Please try again later.",
+  "official_studio_text_189": "Delivery not confirmed. Check your records before retrying.",
+  "official_studio_text_190": "Connection failed. Check the records and try again.",
+  "official_studio_text_191": "Gift not confirmed. Check your records before retrying.",
+  "@official_studio_text_1771": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@official_studio_text_1781": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1791": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1801": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1811": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1821": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1831": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1841": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "@official_studio_text_1851": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1861": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1871": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1921": {
+    "placeholders": {
+      "balance": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "missing": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1931": {
+    "placeholders": {
+      "followers": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1941": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "preference_selection_title1": "Choose your favorite character types",
+  "preference_selection_description1": "Pick 3–5 tags you like so we can recommend characters that suit your tastes.",
+  "preference_selection_recommendation_note1": "These preferences help personalize recommendations. You can still explore every type of character.",
+  "preference_selection_selected1": "Selected",
+  "preference_selection_start1": "Start exploring",
+  "preference_selection_max_error1": "You can select up to {count} tags.",
+  "preference_selection_save_failed1": "Could not save your preferences. Please try again later.",
+  "preference_group_personality1": "Personality",
+  "preference_group_relationship_age1": "Relationship & age dynamic",
+  "preference_group_story1": "Story setting",
+  "preference_tag_gentle1": "Gentle",
+  "preference_tag_cold1": "Cool and aloof",
+  "preference_tag_scheming1": "Cunning",
+  "preference_tag_tsundere1": "Tsundere",
+  "preference_tag_loyal1": "Devoted",
+  "preference_tag_yandere1": "Yandere",
+  "preference_tag_mysterious1": "Mysterious",
+  "preference_tag_healing1": "Comforting",
+  "preference_tag_gap_moe1": "Unexpected contrast",
+  "preference_tag_older1": "Older",
+  "preference_tag_younger1": "Younger",
+  "preference_tag_ceo1": "Powerful CEO",
+  "preference_tag_school1": "School life",
+  "preference_tag_workplace1": "Workplace",
+  "preference_tag_ancient1": "Historical",
+  "preference_tag_nonhuman1": "Non-human",
+  "@preference_selection_max_error1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profile_page_world_tab1": "Open Worlds",
+  "profile_page_login_required1": "Please sign in",
+  "profile_page_world_load_failed1": "Could not load worlds. Please try again later.",
+  "profile_page_my_worlds1": "My Open Worlds",
+  "profile_page_create_world1": "Create World",
+  "profile_page_worlds_empty1": "No open worlds yet",
+  "profile_page_worlds_empty_hint1": "Create your first world",
+  "profile_page_world_untitled1": "Untitled World",
+  "profile_page_world_public1": "Public",
+  "profile_page_world_private1": "Private",
+  "profile_page_world_character_count1": "{count} characters",
+  "@profile_page_world_character_count1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profile_page_world_enter_chat1": "Enter Chat",
+  "profile_page_world_edit1": "Edit",
+  "profile_page_create_character1": "Create Character",
+  "profile_page_event_frame_default1": "Event Avatar Frame",
+  "public_worlds_explore_title1": "Explore Public Worlds",
+  "public_worlds_search_tooltip1": "Search Open Worlds",
+  "public_worlds_load_failed1": "Public worlds are temporarily unavailable",
+  "public_worlds_refresh1": "Refresh",
+  "public_worlds_empty1": "Public worlds are being prepared. Stay tuned!",
+  "public_worlds_unnamed1": "Untitled World",
+  "world_explore_subtitle1": "Step into different worlds and discover unique journeys",
+  "settings_notification_preferences_title1": "Notification preferences",
+  "settings_notification_preferences_subtitle1": "Choose which notifications to receive; sync across devices",
+  "settings_admin_section1": "Administration",
+  "settings_admin_dashboard1": "Admin dashboard",
+  "settings_admin_tools_subtitle1": "Internal management tools",
+  "world_chat_back1": "Back",
+  "world_chat_mode_tooltip1": "Reply mode (AI and flower deductions not connected yet)",
+  "world_chat_menu1": "World menu",
+  "world_chat_mode_story1": "Story",
+  "world_chat_mode_immersive1": "Immersive",
+  "world_chat_mode_resonance1": "Resonance",
+  "world_chat_mode_interaction1": "Interaction",
+  "world_chat_mode_cost1": "{mode} · {cost} flowers",
+  "@world_chat_mode_cost1": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
+      "cost": {
+        "type": "int"
+      }
+    }
+  },
+  "world_memo_read_failed1": "Failed to load memos: {error}",
+  "@world_memo_read_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_memo_sync_failed1": "Sync temporarily failed. Showing your previously loaded memos.",
+  "world_memo_server_no_id1": "Server did not return a memo ID",
+  "world_memo_save_failed1": "Failed to save: {error}",
+  "@world_memo_save_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_memo_delete_title1": "Delete memo?",
+  "world_memo_delete_warning1": "This cannot be undone.",
+  "world_memo_cancel1": "Cancel",
+  "world_memo_delete1": "Delete",
+  "world_memo_cancel_reminder_failed1": "Memo deleted, but failed to cancel the reminder on the old device: {error}",
+  "@world_memo_cancel_reminder_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_memo_delete_failed1": "Failed to delete: {error}",
+  "@world_memo_delete_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_memo_title1": "Memos",
+  "world_memo_world_personal1": "{worldName} | Personal memos",
+  "@world_memo_world_personal1": {
+    "placeholders": {
+      "worldName": {
+        "type": "String"
+      }
+    }
+  },
+  "world_memo_sync_notice1": "Reminder times sync across devices. Push notifications are sent to signed-in devices with notifications enabled.",
+  "world_memo_loading1": "Loading…",
+  "world_memo_empty1": "No memos yet. Tap + below to add one.",
+  "world_memo_reminder_date1": "Reminder: {date}",
+  "@world_memo_reminder_date1": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "world_memo_reminder_future1": "Reminder time must be in the future",
+  "world_memo_content_required1": "Enter memo content first",
+  "world_memo_edit_title1": "Edit memo",
+  "world_memo_add_title1": "New memo",
+  "world_memo_content_label1": "Memo content",
+  "world_memo_content_hint1": "Write something you want to remember…",
+  "world_memo_reminder_settings1": "Reminder settings",
+  "world_memo_no_reminder1": "No reminder set",
+  "world_memo_reminder_choose1": "Choose a date and time for cloud-synced reminders",
+  "world_memo_clear_reminder1": "Clear reminder date",
+  "world_memo_save1": "Save memo",
+  "world_chat_open_world1": "Open World",
+  "world_chat_flower_sync1": "Unable to sync flower balance right now",
+  "world_chat_web_store_unavailable1": "Flower purchases are not available on the web",
+  "world_chat_sync_unavailable1": "Live sync is unavailable. Reopen the chat to load your history.",
+  "world_chat_stopped1": "Generation stopped. No flowers charged.",
+  "world_chat_cannot_stop1": "The reply may already be complete and cannot be stopped. Check your chat and flowers.",
+  "world_chat_stop_retry1": "Unable to stop right now. Please try again.",
+  "world_chat_connection_failed1": "Connection failed",
+  "world_chat_network_failed1": "Network temporarily unavailable",
+  "world_chat_no_regenerate1": "No reply available to regenerate",
+  "world_chat_paid_regenerate1": "Paid regeneration",
+  "world_chat_cancel1": "Cancel",
+  "world_chat_confirm1": "Confirm",
+  "world_chat_no_continue1": "No story available to continue",
+  "world_chat_no_save1": "No conversations to save yet",
+  "world_chat_loading1": "Chat is still loading",
+  "world_chat_unnamed_character1": "Unnamed character",
+  "world_chat_bg_wait1": "You can change the background once the chat loads",
+  "world_chat_sign_in1": "Please sign in first",
+  "world_chat_choose_mode1": "Choose a world mode",
+  "world_chat_mode_charge_expl1": "Flowers are charged per successful reply by mode; failures are free.",
+  "world_chat_photo_selected1": "Photo selected",
+  "world_chat_got_it1": "Got it",
+  "world_chat_status_settings1": "World status display settings",
+  "world_chat_save_settings1": "Save settings",
+  "world_chat_status_saved1": "Status display preferences saved for this world",
+  "world_chat_not_ready1": "World chat is not ready yet",
+  "world_chat_enter_first1": "Enter the world chat first",
+  "world_chat_photo1": "Photo",
+  "world_chat_profile1": "Profile",
+  "world_chat_interaction1": "Interactions",
+  "world_chat_theater1": "Theater",
+  "world_chat_status1": "Status",
+  "world_chat_secret1": "Secret Chapters",
+  "world_chat_mood1": "Mood",
+  "world_chat_outfit1": "Outfit",
+  "world_chat_relationship1": "Relationship",
+  "world_chat_thought1": "Thoughts",
+  "world_chat_weather1": "Weather",
+  "world_chat_current_state1": "Current state",
+  "world_chat_action1": "Action",
+  "world_chat_affinity1": "Affinity",
+  "world_chat_generating1": "The world is quietly unfolding…",
+  "world_chat_screenshot1": "Share screenshot",
+  "world_chat_copy1": "Copy content",
+  "world_chat_copied1": "Copied",
+  "world_chat_edit1": "Edit",
+  "world_chat_delete1": "Delete",
+  "world_chat_report1": "Report conversation",
+  "world_chat_feedback1": "Send feedback",
+  "world_chat_edit_segment1": "Edit character passage",
+  "world_chat_save1": "Save",
+  "world_chat_updated1": "Message updated",
+  "world_chat_delete_segment1": "Delete passage",
+  "world_chat_deleted_segment1": "Passage deleted",
+  "world_chat_edit_message1": "Edit message",
+  "world_chat_edit_hint1": "Edit your text",
+  "world_chat_delete_conversation1": "Delete conversation",
+  "world_chat_no_chat1": "No conversations yet",
+  "world_chat_cancel_select1": "Cancel selection",
+  "world_chat_input_hint1": "Write your story…",
+  "world_chat_screenshot_done1": "Your special moment is ready",
+  "world_chat_screenshot_style1": "Change screenshot colors",
+  "world_chat_reselect1": "Select again",
+  "world_chat_download_share1": "Download and share",
+  "world_records_summary_title1": "Story Summary",
+  "world_records_loaded_count1": "Loaded {count} chat messages, arranged in story order.",
+  "@world_records_loaded_count1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "world_records_auto_summary_pending1": "This review covers loaded conversations only; AI-generated summaries are not available yet.",
+  "world_records_empty_story1": "No story events to review yet",
+  "world_records_narrator_name1": "World Narrator",
+  "world_records_relationships_title1": "Character Relationships",
+  "world_records_affinity_note1": "Affection is tracked separately for each official character; temporary NPCs do not receive scores.",
+  "world_records_empty_characters1": "No official character data yet",
+  "world_records_affinity_score_with_next1": "Affection {score} / {next}",
+  "@world_records_affinity_score_with_next1": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "next": {
+        "type": "int"
+      }
+    }
+  },
+  "world_records_affinity_score_only1": "Affection {score}",
+  "@world_records_affinity_score_only1": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "world_records_relationship_stage1": "Relationship stage {stage}",
+  "@world_records_relationship_stage1": {
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      }
+    }
+  },
+  "world_records_local_memo_read_failed1": "Could not load the local memo",
+  "world_records_memo_saved_local1": "Memo saved on this device",
+  "world_records_memo_save_failed1": "Could not save the memo",
+  "world_records_memo_unsaved1": "Unsaved memo",
+  "world_records_memo_save_before_exit1": "Save before leaving?",
+  "world_records_continue_editing1": "Continue editing",
+  "world_records_save_and_exit1": "Save and leave",
+  "world_records_world_memo_title1": "Memo for this world",
+  "world_records_save1": "Save",
+  "world_records_memo_local_disclaimer1": "Private memo | This version saves only on this device. It is not sent to AI or synced across devices.",
+  "world_records_memo_hint1": "Write down clues, plans, or anything you want to tell a character…",
+  "world_records_narrator_short1": "Narrator",
+  "world_records_summary_service_missing1": "The story summary service (worldStoryMemory) is not deployed. Deploy it and reopen this page.",
+  "world_records_summary_load_failed1": "Could not load the story summary. Please try again later.",
+  "world_records_summary_intro1": "Every encounter and choice becomes part of your story. Important experiences and relationships are recorded here as your journey unfolds.",
+  "world_records_summary_empty1": "Your story continues. Memorable chapters will appear here soon.",
+  "world_search_title1": "Search Conversations",
+  "world_search_hint1": "Search characters, dialogue, or narration",
+  "world_search_clear1": "Clear search",
+  "world_search_start1": "Enter a keyword to start searching",
+  "world_search_results1": "Found {count} results",
+  "world_search_empty_prompt1": "Search players, characters, and narration",
+  "world_search_no_results1": "No matching conversations",
+  "world_search_unknown_speaker1": "Unknown character",
+  "world_search_collapse1": "Collapse",
+  "world_search_expand1": "Expand",
+  "world_search_scope1": "Search scope: the most recent 200 messages loaded in this chat",
+  "@world_search_results1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "world_menu_subtitle1": "Open World · Features coming gradually",
+  "world_menu_chat_section1": "Chat",
+  "world_menu_search1": "Search conversations",
+  "world_menu_save_transcript1": "Save chat history",
+  "world_menu_memories_background1": "Memories & backgrounds",
+  "world_menu_relations_section1": "World relationships",
+  "world_menu_story_summary1": "Story summary",
+  "world_menu_relationships1": "Character relationships",
+  "world_menu_memos1": "Memos",
+  "world_menu_memory_section1": "Memory management",
+  "world_menu_reset_progress1": "Reset world progress",
+  "world_chat_book_confirm1": "OK",
+  "world_custom_scene_title_required1": "Please enter a scene title.",
+  "world_custom_scene_description_required1": "Please enter a scene description.",
+  "world_custom_scene_save_failed1": "Could not save. Please try again later.",
+  "world_custom_scene_edit_title1": "Edit Scene",
+  "world_custom_scene_add_title1": "Add Scene",
+  "world_discovery_share_desc1": "Step into a creator’s open world and begin your own story.",
+  "world_discovery_share_text1": "Lianlian Shiguang · Open World Invitation\n\n“{title}”\n\n{description}\n\nExplore now: {link}",
+  "@world_discovery_share_text1": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "description": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "world_discovery_brand1": "Lianlian Shiguang",
+  "world_discovery_invite1": "Open World Invitation",
+  "world_discovery_scan1": "Scan to download",
+  "world_discovery_cancel1": "Cancel",
+  "world_discovery_share_button1": "Share invitation card",
+  "world_discovery_share_missing_card1": "Open world invitation card not found",
+  "world_discovery_share_image_failed1": "Unable to generate sharing image",
+  "world_discovery_share_failed1": "Could not share the invitation card. Please try again.",
+  "world_discovery_story_open1": "Story opening",
+  "world_discovery_story_unset1": "No story opening yet",
+  "world_discovery_first_unset1": "No opening line yet",
+  "world_discovery_background_title1": "World setting and description",
+  "world_discovery_era1": "Setting: {era}",
+  "@world_discovery_era1": {
+    "placeholders": {
+      "era": {
+        "type": "String"
+      }
+    }
+  },
+  "world_discovery_background_unset1": "No world setting yet",
+  "world_discovery_background_full1": "Full world lore",
+  "world_discovery_people_unset1": "No characters yet",
+  "world_discovery_people_intro1": "Character introductions",
+  "world_discovery_appearance_unset1": "Appearance not provided",
+  "world_discovery_creator_unset1": "No creator information",
+  "world_discovery_creator1": "Creator",
+  "world_discovery_creator_load_failed1": "Unable to load creator information",
+  "world_discovery_world_load_failed1": "Failed to load open world: {error}",
+  "@world_discovery_world_load_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_discovery_unpublished1": "This world is not public",
+  "world_discovery_open_world1": "Open World",
+  "world_discovery_share_tooltip1": "Share open world",
+  "world_discovery_world_background1": "World Background",
+  "world_discovery_not_playable1": "This open world is not yet available to play.",
+  "world_discovery_enter1": "Enter World",
+  "world_edit_login_required1": "Please sign in first",
+  "world_edit_no_edit_permission1": "You do not have permission to edit this world",
+  "world_edit_secret_permission_error1": "Unable to access secret chapters. Check the deployed Firestore rules. Saving is paused to protect existing data.",
+  "world_edit_secret_read_error_code1": "Could not load secret chapters ({code}). Saving is paused to protect existing data.",
+  "@world_edit_secret_read_error_code1": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_secret_read_error1": "Could not load secret chapters. Saving is paused to protect existing data.",
+  "world_edit_world_read_error1": "Could not load world: {error}",
+  "@world_edit_world_read_error1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_image_max1": "A world can have up to {count} images",
+  "@world_edit_image_max1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "world_edit_image_read_error1": "Could not load images: {error}",
+  "@world_edit_image_read_error1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_tag_heading1": "Theme tags (up to 5)",
+  "world_edit_tag_max1": "Select up to 5 tags",
+  "world_edit_tag_custom1": "Tags (customizable; separate with commas)",
+  "world_edit_secret_not_ready1": "Secret chapters have not loaded. Publishing is paused to protect your content. Check permissions and reopen this page.",
+  "world_edit_required_publish1": "Enter a world name, at least one image, world background, story opening, and first line",
+  "world_edit_max_tags_save1": "Only 5 theme tags are allowed. Remove extras before saving",
+  "world_edit_secret_validation1": "Each chapter needs a title, unlock condition, and secret content (up to 12 chapters)",
+  "world_edit_draft_saved1": "World draft and secret chapters saved",
+  "world_edit_publish_unconfirmed1": "The server has not confirmed public eligibility. Please try publishing again later.",
+  "world_edit_publish_backend_error1": "World data was saved, but public activation failed ({code}): {message}. Fix the issue and select “Publish open world” again.",
+  "@world_edit_publish_backend_error1": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      },
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_publish_service_missing1": "Verify that worldPublish is deployed",
+  "world_edit_public_published1": "Public open world published",
+  "world_edit_private_saved1": "Private open world saved",
+  "world_edit_save_publish_failed1": "Save or publish failed: {error}",
+  "@world_edit_save_publish_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_save_draft_question1": "Save as draft?",
+  "world_edit_save_draft_explain1": "Save this world before leaving? Unsaved changes will be lost.",
+  "world_edit_discard1": "Don't save",
+  "world_edit_cancel1": "Cancel",
+  "world_edit_save_draft1": "Save draft",
+  "world_edit_world_name1": "Open world name *",
+  "world_edit_world_images1": "World images (up to 6; first image is the cover)",
+  "world_edit_cover1": "Cover",
+  "world_edit_set_cover1": "Set as cover",
+  "world_edit_short_pitch1": "One-line card description (optional, up to 60 characters)",
+  "world_edit_public_summary1": "Public world description (no spoilers)",
+  "world_edit_era1": "Time period (e.g. fictional present day, Republican era)",
+  "world_edit_world_rules1": "World background and rules *",
+  "world_edit_full_lore1": "Full world lore, events and locations (for AI)",
+  "world_edit_npc_intro1": "Set names, appearances, birthdays, relationships, and photos for main characters and NPCs. Each player remains the protagonist of their own story.",
+  "world_edit_main_characters1": "Main characters",
+  "world_edit_main_subtitle1": "Important characters who appear frequently in this world",
+  "world_edit_npc_subtitle1": "Other characters who may become interaction partners as the story unfolds",
+  "world_edit_people_count1": "{count} characters",
+  "@world_edit_people_count1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "world_edit_role_unset1": "Role / occupation not set",
+  "world_edit_remove_person1": "Remove character",
+  "world_edit_add_person1": "Add {type}",
+  "@world_edit_add_person1": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_add_secret1": "Add secret chapter",
+  "world_edit_edit_secret1": "Edit secret chapter",
+  "world_edit_chapter_title1": "Chapter title *",
+  "world_edit_unlock_condition1": "Unlock condition (description for server evaluation) *",
+  "world_edit_secret_content1": "Secret content *",
+  "world_edit_confirm1": "Confirm",
+  "world_edit_story_opening1": "Story opening *",
+  "world_edit_first_line1": "First line of the story *",
+  "world_edit_secret_chapters1": "Secret chapters",
+  "world_edit_secret_explain1": "Secret chapters are stored privately. Publishing the world does not reveal them; players must meet story conditions to unlock them.",
+  "world_edit_add_secret_max1": "Add secret chapter (up to 12)",
+  "world_edit_publish_settings1": "Publishing settings",
+  "world_edit_private_world1": "Private open world",
+  "world_edit_private_world_desc1": "Only you can play and test; other players cannot enter",
+  "world_edit_public_world1": "Public open world",
+  "world_edit_public_world_desc1": "Other players can enter, each with independent story progress",
+  "world_edit_create_world1": "Create open world",
+  "world_edit_basic_tab1": "Basic settings",
+  "world_edit_characters_tab1": "World characters",
+  "world_edit_story_tab1": "Story settings",
+  "world_edit_publish_world1": "Publish open world",
+  "world_edit_name_required1": "Enter a character name first",
+  "world_edit_edit_person1": "Edit {type}",
+  "@world_edit_edit_person1": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_upload_photo1": "Upload character photo (optional)",
+  "world_edit_allow_photo1": "Allow generating other images from this character's photo",
+  "world_edit_allow_photo_explain1": "Use this character's photo as a reference only when appropriate for the story. Chatting and ordinary gifts still work if disabled. Set separately for each character.",
+  "world_edit_name1": "Name *",
+  "world_edit_gender1": "Gender / gender identity",
+  "world_edit_birthday1": "Birthday (e.g. May 16)",
+  "world_edit_age1": "Age",
+  "world_edit_role1": "Role / occupation",
+  "world_edit_appearance1": "Appearance",
+  "world_edit_personality1": "Personality and character details",
+  "world_edit_background1": "Backstory",
+  "world_edit_relationships1": "Relationships with other characters",
+  "world_edit_speech_style1": "Speaking style / tone",
+  "world_edit_dialogue_examples1": "Dialogue examples (help AI understand the tone)",
+  "world_edit_save_person1": "Save character settings",
+  "world_edit_tag_mystery1": "Suspense",
+  "world_edit_tag_horror1": "Horror",
+  "world_edit_tag_romance1": "Romance",
+  "world_edit_tag_modern_fantasy1": "Urban fantasy",
+  "world_edit_tag_school1": "School",
+  "world_edit_tag_ensemble1": "Ensemble cast",
+  "world_edit_tag_adventure1": "Adventure",
+  "world_edit_tag_daily1": "Slice of life",
+  "world_edit_tag_detective1": "Mystery",
+  "world_edit_tag_otherworld1": "Another world",
+  "chooseNpc1": "Choose an NPC",
+  "chooseInteractionTarget1": "Choose interaction partner",
+  "unnamedCharacter1": "Unnamed character",
+  "chooseTargetFirst1": "Please select an interaction partner first",
+  "confirmGift1": "Confirm gift",
+  "giftConfirmDetail1": "Send to {target}: {gift}. Costs {cost} flowers. Points are only deducted after AI responds successfully.",
+  "@giftConfirmDetail1": {
+    "placeholders": {
+      "target": {
+        "type": "String"
+      },
+      "gift": {
+        "type": "String"
+      },
+      "cost": {
+        "type": "int"
+      }
+    }
+  },
+  "cancel1": "Cancel",
+  "send1": "Send",
+  "sendLocationTitle1": "Send location (3 flowers)",
+  "customLocation1": "Custom location",
+  "confirm1": "Confirm",
+  "cafe1": "Café",
+  "park1": "Park",
+  "restaurant1": "Restaurant",
+  "street1": "Street",
+  "giftHeart1": "Heart",
+  "giftFlower1": "Flower",
+  "giftSun1": "Sun",
+  "giftConfetti1": "Confetti",
+  "giftCoffee1": "Coffee",
+  "giftCake1": "Cake",
+  "interactionPlayTitle1": "Interactions",
+  "interactionTargetLabel1": "Interaction partner: {target}",
+  "@interactionTargetLabel1": {
+    "placeholders": {
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "intimateInteraction1": "Close interactions",
+  "poke1": "Poke",
+  "hug1": "Hug",
+  "holdHands1": "Hold hands",
+  "gifts1": "Gifts",
+  "funActivities1": "Fun activities",
+  "sendLocation1": "Send location",
+  "diceDuel1": "Dice duel",
+  "world_profile_name_too_long1": "World character name must be 40 characters or fewer. Shorten it before saving.",
+  "world_profile_identity_too_long1": "World character details exceed 2,000 characters. Shorten them before saving.",
+  "world_relationship_live_title1": "Character Relationships",
+  "world_relationship_live_load_failed1": "Unable to load relationship data. Check Firestore permissions.",
+  "world_relationship_live_no_people1": "No characters have been created in this world yet.",
+  "world_relationship_live_not_met1": "Current relationship: Not yet met",
+  "world_relationship_live_first_meeting1": "First meeting",
+  "world_relationship_live_current_relation1": "Current relationship: {relation}",
+  "@world_relationship_live_current_relation1": {
+    "placeholders": {
+      "relation": {
+        "type": "String"
+      }
+    }
+  },
+  "world_relationship_live_thought_title1": "Current thoughts about the player",
+  "world_relationship_live_thought_pending1": "An impression will develop through future interactions.",
+  "world_scene_full_load_error1": "Failed to load scenes: {error}",
+  "@world_scene_full_load_error1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_full_delete_title1": "Delete scene",
+  "world_scene_full_delete_confirm1": "Delete “{title}”?",
+  "@world_scene_full_delete_confirm1": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_full_cancel1": "Cancel",
+  "world_scene_full_delete1": "Delete",
+  "world_scene_full_delete_error1": "Failed to delete scene: {error}",
+  "@world_scene_full_delete_error1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_full_missing_fields1": "Please provide a title and scene description first.",
+  "world_scene_full_activate_error1": "Failed to activate scene: {error}",
+  "@world_scene_full_activate_error1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_full_end_title1": "End scene",
+  "world_scene_full_end_confirm1": "End the current scene?",
+  "world_scene_full_end_error1": "Failed to end scene: {error}",
+  "@world_scene_full_end_error1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_full_unnamed1": "Untitled scene",
+  "world_scene_full_opening1": "Opening: {opening}",
+  "@world_scene_full_opening1": {
+    "placeholders": {
+      "opening": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_full_edit1": "Edit",
+  "world_scene_full_start1": "Start scene",
+  "world_scene_full_creator_empty1": "No creator scenes yet",
+  "world_scene_full_custom_empty1": "You have not created any scenes yet",
+  "world_scene_full_add1": "New scene",
+  "world_scene_full_page_title1": "Scenes",
+  "world_scene_full_creator_tab1": "Creator scenes",
+  "world_scene_full_custom_tab1": "My scenes",
+  "world_scene_full_active1": "Active scene: {title}",
+  "@world_scene_full_active1": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_required1": "Please enter a scene title and description",
+  "world_scene_title1": "Scenes",
+  "world_scene_beta_notice1": "World scene beta: scenes use the world chat AI. Scene-specific saves and the official scene-start API are not yet available.",
+  "world_scene_creator_scenes1": "Creator scenes",
+  "world_scene_no_creator_scenes1": "No creator scenes are currently available for this world",
+  "world_scene_custom_scenes1": "Create your own scene",
+  "world_scene_name1": "Scene title",
+  "world_scene_setup1": "Background, location, characters, and opening situation",
+  "world_scene_start1": "Start scene",
+  "worldSearchTitle1": "Search Open Worlds",
+  "worldSearchHint1": "Search worlds, creators, or tags",
+  "worldSearchClear1": "Clear search",
+  "worldSearchEmpty1": "No matching open worlds found",
+  "worldSearchTrending1": "Popular worlds",
+  "worldSearchResults1": "Search results",
+  "worldSearchUnnamed1": "Untitled world",
+  "worldSearchCreator1": "Creator: {creator}",
+  "@worldSearchCreator1": {
+    "placeholders": {
+      "creator": {
+        "type": "String"
+      }
+    }
+  },
+  "world_secret_chapters_title1": "Secret Chapters",
+  "world_secret_chapters_close1": "Close",
+  "world_secret_chapters_read_failed1": "Unable to read this secret chapter right now",
+  "world_secret_chapters_retry1": "Failed to load. Tap to retry",
+  "world_secret_chapters_empty1": "The creator has not added any secret chapters yet",
+  "world_secret_chapters_locked_chapter1": "Chapter {number} · ???",
+  "@world_secret_chapters_locked_chapter1": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "world_secret_chapters_unlocked1": "Unlocked · Tap to read",
+  "world_secret_chapters_locked1": "Locked · Keep exploring the story",
+  "world_timeline_load_failed1": "Failed to load story summary: {error}",
+  "@world_timeline_load_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_timeline_edit_summary1": "Edit story summary",
+  "world_timeline_cancel1": "Cancel",
+  "world_timeline_save1": "Save",
+  "world_timeline_save_failed1": "Failed to save: {error}",
+  "@world_timeline_save_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_timeline_delete_summary1": "Delete summary",
+  "world_timeline_delete_confirm1": "Delete this story entry?",
+  "world_timeline_delete1": "Delete",
+  "world_timeline_delete_failed1": "Failed to delete: {error}",
+  "@world_timeline_delete_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_timeline_our_story1": "Our Story",
+  "world_timeline_retry1": "Retry",
+  "world_timeline_empty1": "Your story is still unfolding. New entries will appear as the story progresses.",
+  "world_timeline_recent1": "Recent entry",
+  "world_timeline_edit1": "Edit",
+  "echo_login_to_post1": "Sign in to leave a time echo",
+  "echo_limit1": "Each player can leave up to 3 echoes in the same open world",
+  "echo_count_fail1": "Unable to check the number of echoes. Try again later.",
+  "echo_compose_title1": "Leave a Time Echo",
+  "echo_compose_desc1": "Choose a card design and write something you want to leave behind.",
+  "echo_compose_hint1": "What would you like to say in this world?",
+  "echo_send1": "Post Echo",
+  "echo_player1": "Player",
+  "echo_sent1": "Your time echo has been posted",
+  "echo_post_fail1": "Could not post. Check your connection and permissions.",
+  "echo_login1": "Please sign in",
+  "echo_like_fail1": "Failed to like",
+  "echo_delete_title1": "Delete this time echo?",
+  "echo_delete_warning1": "This cannot be undone.",
+  "echo_cancel1": "Cancel",
+  "echo_delete1": "Delete",
+  "echo_deleted1": "Time echo deleted",
+  "echo_delete_fail1": "Failed to delete",
+  "echo_reason_inappropriate1": "Inappropriate content",
+  "echo_reason_harassment1": "Harassment or abuse",
+  "echo_reason_spam1": "Spam",
+  "echo_reason_other1": "Other",
+  "echo_report_title1": "Report Time Echo",
+  "echo_already_reported1": "You have already reported this echo",
+  "echo_report_received1": "Report received",
+  "echo_report_fail1": "Failed to report",
+  "echo_options1": "Echo options",
+  "echo_delete_option1": "Delete echo",
+  "echo_report_option1": "Report echo",
+  "echo_wall_title1": "Time Echoes",
+  "echo_add1": "Leave an echo",
+  "echo_load_fail1": "Unable to load time echoes. Check Firestore permissions.",
+  "echo_empty1": "No time echoes yet. Leave the first story.",
+  "store_pack_30_name1": "First Encounter Pack",
+  "store_pack_70_name1": "Sweet Attraction Pack",
+  "store_pack_120_name1": "Heartflutter Pack",
+  "store_pack_190_name1": "Passionate Love Pack",
+  "store_pack_250_name1": "Soulmate Pack",
+  "store_pack_330_name1": "Devotion Pack",
+  "store_pack_450_name1": "Trust Pack",
+  "store_pack_520_name1": "I Love You Pack",
+  "store_pack_690_name1": "Honeymoon Pack",
+  "store_pack_720_name1": "Promise Pack",
+  "store_pack_750_name1": "Together Pack",
+  "store_pack_830_name1": "Deep Love Pack",
+  "store_pack_990_name1": "Everlasting Pack",
+  "store_pack_1050_name1": "The One Pack",
+  "store_pack_1290_name1": "True Love Pack",
+  "store_pack_1314_name1": "Forever and Always Pack",
+  "store_pack_1930_name1": "Vow Pack",
+  "store_pack_2990_name1": "Eternal Lovers Pack"
 }

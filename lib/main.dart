@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lianlian_shiguang/page/inbox_page.dart';
+import 'package:lianlian_shiguang/screens/moment_detail_page.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,6 +13,7 @@ import 'screens/main_page.dart';
 import 'screens/chat_page.dart';
 import 'page/announcement_page.dart';
 import 'services/theme_notifier.dart';
+import 'services/account_preferences_sync.dart';
 import 'firebase_options.dart';
 import 'services/locale_notifier.dart';
 import 'package:flutter/foundation.dart';
@@ -25,9 +26,64 @@ import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'services/reminder_notification_service.dart';
 import 'package:home_widget/home_widget.dart';
+import 'screens/notification_list_page.dart';
+import 'screens/world_chat_memos_page.dart';
 
 String? globalActiveCharacterId;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+// Pending world memo navigation is held until auth and Navigator are ready.
+Map<String, String>? _pendingWorldMemo;
+String? _lastWorldMemoTapKey;
+bool _worldMemoOpening = false;
+
+void _queueWorldMemoNotification(RemoteMessage message) {
+  final worldId = (message.data['worldId'] ?? '').toString().trim();
+  final memoId = (message.data['memoId'] ?? '').toString().trim();
+  if (!RegExp(r'^[A-Za-z0-9_-]{1,160}$').hasMatch(worldId) ||
+      !RegExp(r'^[A-Za-z0-9]{1,100}$').hasMatch(memoId)) {
+    debugPrint('⚠️ 世界備忘錄通知參數不正確');
+    return;
+  }
+  final key = message.messageId ?? '${worldId}_${memoId}_${message.sentTime?.millisecondsSinceEpoch ?? 0}';
+  if (_lastWorldMemoTapKey == key) return;
+  _lastWorldMemoTapKey = key;
+  _pendingWorldMemo = {'worldId': worldId, 'memoId': memoId};
+  _tryOpenPendingWorldMemo();
+}
+
+void _tryOpenPendingWorldMemo() {
+  if (_worldMemoOpening || _pendingWorldMemo == null) return;
+  if (FirebaseAuth.instance.currentUser == null) return;
+  if (navigatorKey.currentState == null) return;
+  _worldMemoOpening = true;
+  WidgetsBinding.instance.addPostFrameCallback((_) async {
+    final nav = navigatorKey.currentState;
+    final target = _pendingWorldMemo;
+    _pendingWorldMemo = null;
+    if (nav == null || target == null || FirebaseAuth.instance.currentUser == null) {
+      _pendingWorldMemo ??= target;
+      _worldMemoOpening = false;
+      return;
+    }
+    try {
+      // The callable on this page checks the current player's world access.
+      // Open the memo list only; keep the app's root page for Back navigation.
+      // Remove intermediate chat/world routes if notification was tapped in-app.
+      await nav.pushAndRemoveUntil(
+        MaterialPageRoute<void>(builder: (_) => WorldChatMemosPage(
+          worldId: target['worldId']!, worldName: '世界觀',
+        )),
+            (route) => route.isFirst,
+      );
+    } catch (error) {
+      debugPrint('⚠️ 世界備忘錄跳轉失敗：$error');
+    } finally {
+      _worldMemoOpening = false;
+      if (_pendingWorldMemo != null) _tryOpenPendingWorldMemo();
+    }
+  });
+}
+
 
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
   'high_importance_channel',
@@ -281,6 +337,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   String? _lastHomeWidgetLaunchUri;
   DateTime? _lastHomeWidgetLaunchAt;
   String? _lastSyncedNotificationLocale;
+  AccountPreferencesSync? _accountSync;
+  StreamSubscription<User?>? _accountAuthSubscription;
+  bool _accountSyncInitialized = false;
 
   String _notificationLocaleCode(Locale locale) {
     if (locale.languageCode == 'zh') {
@@ -318,6 +377,28 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_accountSyncInitialized) return;
+    _accountSyncInitialized = true;
+    // Delay account sync until Navigator has mounted its initial route.
+    // Remote theme/locale updates can otherwise rebuild MaterialApp during startup.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _accountSync != null) return;
+      _accountSync = AccountPreferencesSync(
+        context.read<ThemeNotifier>(),
+        context.read<LocaleNotifier>(),
+      );
+      _accountAuthSubscription = FirebaseAuth.instance.authStateChanges().listen(
+            (user) {
+          _accountSync?.bindAccount(user?.uid);
+          if (user != null) _tryOpenPendingWorldMemo();
+        },
+      );
+    });
+  }
+
+  @override
   void initState() {
     super.initState();
 
@@ -343,6 +424,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    _accountAuthSubscription?.cancel();
+    _accountSync?.dispose();
     _homeWidgetClickSubscription?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
@@ -595,7 +678,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
             return MediaQuery(
               data: mediaQuery.copyWith(
-                textScaler: TextScaler.linear(themeNotifier.fontScale),
+                // 桌面網頁加大字級；手機 / 平板保持原有玩家設定。
+                textScaler: TextScaler.linear(themeNotifier.fontScale *
+                    (kIsWeb && mediaQuery.size.width >= 900 ? 1.18 : 1.0)),
               ),
               child: child ?? const SizedBox.shrink(),
             );
@@ -641,10 +726,27 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
 
           // 🏠 把 FutureBuilder 換成這個完美放權版！
-          home: FirebaseAuth.instance.currentUser != null
-              ? const MainPage()
-              : const LoginPage(),
+          // Keep the root route widget stable during theme/locale sync.
+          home: const _AuthLandingPage(),
         );
+      },
+    );
+  }
+}
+
+// Stable home route: login changes update its contents, not MaterialApp.home.
+class _AuthLandingPage extends StatelessWidget {
+  const _AuthLandingPage();
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      initialData: FirebaseAuth.instance.currentUser,
+      builder: (context, snapshot) {
+        return snapshot.data == null
+            ? const LoginPage()
+            : const MainPage();
       },
     );
   }
@@ -723,47 +825,69 @@ class _ChatLoaderWrapperState extends State<ChatLoaderWrapper> {
 // ==========================================
 void _handleNotificationClick(RemoteMessage message) {
   final data = message.data;
-  debugPrint("🚨 收到推播的 Data 內容: $data");
+  final type = (data['type'] ?? '').toString().trim();
+  // 相容較早版本的貼文通知欄位；以實際保存的 postId 為優先。
+  final postId = [
+    data['postId'],
+    data['momentId'],
+    data['targetPostId'],
+  ].map((value) => value?.toString().trim() ?? '')
+      .firstWhere((value) => value.isNotEmpty, orElse: () => '');
+  debugPrint('🚨 收到推播點擊：type=$type, postId=$postId');
 
-  // 🌍 路線一：如果是聊天訊息，維持原本的邏輯，去對應的聊天室
-  if (data['type'] == 'chat') {
-    final String charId = data['characterId']?.toString() ?? '';
-    final String sessionId = data['sessionId']?.toString() ?? '';
+  if (type == 'world_memo_reminder') {
+    _queueWorldMemoNotification(message);
+    return;
+  }
 
+  // 聊天推播保留原本聊天室跳轉。
+  if (type == 'chat') {
+    final charId = (data['characterId'] ?? '').toString().trim();
+    final sessionId = (data['sessionId'] ?? '').toString().trim();
     if (charId.isEmpty) {
-      debugPrint("❌ 嚴重錯誤：找不到有效的 characterId");
+      debugPrint('❌ 聊天推播缺少 characterId');
       return;
     }
-
     navigatorKey.currentState?.pushNamedAndRemoveUntil(
       '/chat',
           (route) => route.isFirst,
-      arguments: {
-        'characterId': charId,
-        'sessionId': sessionId,
-      },
+      arguments: {'characterId': charId, 'sessionId': sessionId},
     );
+    return;
   }
-  // 路線二：社交互動 / 關注更新 → 私密信箱
-  else if (data['type'] == 'like' ||
-      data['type'] == 'comment' ||
-      data['type'] == 'follow' ||
-      data['type'] == 'creator_moment' ||
-      data['type'] == 'character_moment') {
-    debugPrint("📫 玩家點擊了社交通知，準備導向私密信箱頁面");
 
-    navigatorKey.currentState?.push(
-      MaterialPageRoute(builder: (context) => const InboxPage()),
-    );
-  }
-  // 路線三：官方公告 → 公告列表
-  else if (data['type'] == 'global_announcement') {
+  // 官方公告仍前往公告清單，不誤導至信箱。
+  if (type == 'global_announcement') {
     navigatorKey.currentState?.push(
       MaterialPageRoute(
         builder: (context) => const AnnouncementListPage(),
       ),
     );
+    return;
   }
+
+  // 按讚、留言、追蹤創作者／角色的貼文通知：
+  // 後端 sendMailboxNotification 已帶 postId，直接進入對應貼文。
+  const postTypes = <String>{
+    'like', 'comment', 'new_post', 'creator_moment',
+    'character_moment', 'character_auto_like', 'character_auto_reply',
+  };
+  if (postId.isNotEmpty && postTypes.contains(type)) {
+    debugPrint('📝 社交通知直接開啟貼文：$postId');
+    navigatorKey.currentState?.push(
+      MaterialPageRoute(
+        builder: (context) => MomentDetailPage(postId: postId),
+      ),
+    );
+    return;
+  }
+
+  // 郵件、客服、關注等非貼文通知，統一開啟新版通知列表。
+  // 舊的通知若沒有 postId，也回信箱而不是打開空白貼文。
+  debugPrint('📫 非貼文通知或缺少 postId，開啟新版信箱：$type');
+  navigatorKey.currentState?.push(
+    MaterialPageRoute(builder: (context) => const NotificationListPage()),
+  );
 }
 
 Future<void> _saveFcmTokenForCurrentUser(String token) async {

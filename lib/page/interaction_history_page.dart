@@ -40,20 +40,8 @@ class _InteractionHistoryPageState extends State<InteractionHistoryPage> {
           centerTitle: true,
           bottom: TabBar(
             tabs: [
-              Tab(
-                icon: Icon(
-                  Icons.eco_rounded,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                text: l10n.liked_content,
-              ),
-              Tab(
-                icon: Icon(
-                  Icons.park_rounded,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                text: l10n.my_favorites,
-              ),
+              Tab(text: l10n.liked_content),
+              Tab(text: l10n.my_favorites),
             ],
           ),
         ),
@@ -100,14 +88,6 @@ class _InteractionHistoryPageState extends State<InteractionHistoryPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  filterField == 'likedBy'
-                      ? Icons.eco_outlined
-                      : Icons.park_outlined,
-                  size: 64,
-                  color: Colors.grey[400],
-                ),
-                const SizedBox(height: 16),
                 Text(
                   filterField == 'likedBy'
                       ? l10n.no_likes_yet

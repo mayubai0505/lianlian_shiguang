@@ -1,3 +1,4 @@
+import '../services/tutorial_seen_sync.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
@@ -411,7 +412,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
 
   Future<void> _checkEchoTutorial() async {
     final prefs = await SharedPreferences.getInstance();
-    bool hasSeen = prefs.getBool('seen_profile_echo_tip') ?? false;
+    bool hasSeen = await TutorialSeenSync.hasSeen('seen_profile_echo_tip');
 
     if (!hasSeen) {
       if (mounted) {
@@ -420,7 +421,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
         });
       }
       // ✍️ 寫下紀錄，這輩子只彈這一次！
-      await prefs.setBool('seen_profile_echo_tip', true);
+      await TutorialSeenSync.markSeen('seen_profile_echo_tip');
     }
   }
 
@@ -636,7 +637,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
       ToastUtils.showCenterToast(
         context,
         l10n.follow_own_warning,
-        customIcon: Icons.front_hand_rounded,
       );
       return;
     }
@@ -702,9 +702,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
     ToastUtils.showCenterToast(
       context,
       wasFollowing ? l10n.creatorProfileUnfollowed : l10n.creatorProfileFollowedCreator(resolvedCreatorName),
-      customIcon: wasFollowing
-          ? Icons.person_remove_outlined
-          : Icons.person_add_alt_1_rounded,
     );
 
     // 第二階段：通知失敗不能影響追蹤結果
@@ -841,13 +838,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                           ],
                         ),
                       ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.auto_awesome,
-                          size: 72,
-                          color: Colors.white54,
-                        ),
-                      ),
                     );
                   },
                 )
@@ -895,12 +885,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                 right: 24,
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.auto_awesome,
-                      color: Color(0xFFE9CFF3),
-                      size: 18,
-                    ),
-                    SizedBox(width: 7),
                     Text(
                       l10n.app_name,
                       style: TextStyle(
@@ -963,9 +947,9 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 30,
+                              fontSize: 26,
                               height: 1.1,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w400,
                               letterSpacing: 2,
                               shadows: [
                                 Shadow(
@@ -1000,12 +984,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                           if (hasCreatorName)
                             Row(
                               children: [
-                                const Icon(
-                                  Icons.edit_outlined,
-                                  color: Colors.white70,
-                                  size: 13,
-                                ),
-                                const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
                                     l10n.characterProfileCardCreator(creatorName),
@@ -1384,7 +1362,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
               context,
               l10n.snackbar_friend_removed(
                   widget.character.name), // 確保妳的 l10n 檔案裡有定義這個 Key
-              customIcon: Icons.person_remove_rounded,
             );
           }
         } catch (e) {
@@ -1410,7 +1387,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
           ToastUtils.showCenterToast(
             context,
             l10n.snackbar_friend_added(widget.character.name),
-            customIcon: Icons.person_add_alt_1_rounded,
           );
         }
       }
@@ -1539,7 +1515,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
       ToastUtils.showCenterToast(
         context,
         l10n.like_own_char_warning,
-        customIcon: Icons.front_hand_rounded,
       );
       return;
     }
@@ -1633,7 +1608,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
       ToastUtils.showCenterToast(
         context,
         nowLiked ? l10n.like_success_msg : l10n.unlike_success_msg,
-        customIcon: nowLiked ? Icons.favorite : Icons.favorite_border,
       );
     } catch (e) {
       if (mounted) {
@@ -1694,8 +1668,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
       ToastUtils.showCenterToast(
         context,
         l10n.followed_creator_msg(widget.character.creatorName),
-        customIcon:
-        Icons.person_add_alt_1_rounded, // 💡 用帶有「+」號的人物圖示，完美傳達「加入追蹤」的意象！
       );
     }
   }
@@ -1712,9 +1684,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           // 💡 注意：這裡的 const 被我拆到裡面的 Icon 和 SizedBox 去了
           title: Row(children: [
-            const Icon(Icons.sentiment_very_dissatisfied,
-                color: Colors.blueGrey),
-            const SizedBox(width: 8),
             Text(l10n.dislike_dialog_title) // ✨ 替換：不太喜歡這個角色？
           ]),
           content: Column(
@@ -1750,8 +1719,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                   ToastUtils.showCenterToast(
                     context,
                     l10n.dislike_thanks,
-                    customIcon: Icons
-                        .feedback_outlined, // 💡 總裁細節：用「意見回饋」的圖示，比直接放一個倒讚 (thumb_down) 讓人感覺更舒服且被尊重！
                   );
                 }
                 await FirebaseFirestore.instance
@@ -1874,7 +1841,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
         ToastUtils.showCenterToast(
           context,
           l10n.report_success,
-          customIcon: Icons.shield_outlined, // 💡 總裁細節：使用「安全盾牌」圖示，傳遞滿滿的保護與安心感！
         );
       }
     } catch (e) {
@@ -1935,8 +1901,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
         ToastUtils.showCenterToast(
           context,
           l10n.lore_delete_success,
-          customIcon:
-          Icons.auto_delete_outlined, // 💡 使用帶有科技感或魔法感的刪除圖示，非常符合「清除記憶」的意境！
         );
       }
     } catch (e) {
@@ -2046,7 +2010,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                   ToastUtils.showCenterToast(
                     context,
                     l10n.lore_add_success,
-                    customIcon: Icons.library_add_check_rounded,
                   );
                   Navigator.of(context).pop();
                 } catch (e) {
@@ -2087,7 +2050,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                         child: Opacity(
                           opacity: 0.07,
                           child: Image.asset(
-                            'assets/images/language/language_top_right_botanical.png',
+                            'assets/images/language/language_top_right_botanical.webp',
                             width: 160,
                             fit: BoxFit.contain,
                             errorBuilder: (_, __, ___) =>
@@ -2270,8 +2233,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
         ToastUtils.showCenterToast(
           context,
           l10n.echo_clear_success,
-          customIcon: Icons
-              .delete_sweep_rounded, // 💡 總裁細節：用「輕輕掃去」的圖示，比生硬的垃圾桶更符合 Echo 消散的詩意！
         );
       }
     } catch (e) {
@@ -2326,19 +2287,19 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
     const echoCards = <Map<String, String>>[
       {
         'id': 'butterfly',
-        'asset': 'assets/images/echo/echo_card_butterfly.png',
+        'asset': 'assets/images/echo/echo_card_butterfly.webp',
       },
       {
         'id': 'flower',
-        'asset': 'assets/images/echo/echo_card_flower.png',
+        'asset': 'assets/images/echo/echo_card_flower.webp',
       },
       {
         'id': 'starry',
-        'asset': 'assets/images/echo/echo_card_starry.png',
+        'asset': 'assets/images/echo/echo_card_starry.webp',
       },
       {
         'id': 'planet',
-        'asset': 'assets/images/echo/echo_card_planet.png',
+        'asset': 'assets/images/echo/echo_card_planet.webp',
       },
     ];
 
@@ -2543,15 +2504,15 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
     switch (rawStyle) {
       case 'flower':
       case 'sprout':
-        return 'assets/images/echo/echo_card_flower.png';
+        return 'assets/images/echo/echo_card_flower.webp';
       case 'starry':
       case 'star':
-        return 'assets/images/echo/echo_card_starry.png';
+        return 'assets/images/echo/echo_card_starry.webp';
       case 'planet':
-        return 'assets/images/echo/echo_card_planet.png';
+        return 'assets/images/echo/echo_card_planet.webp';
       case 'butterfly':
       default:
-        return 'assets/images/echo/echo_card_butterfly.png';
+        return 'assets/images/echo/echo_card_butterfly.webp';
     }
   }
 
@@ -2634,11 +2595,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                             color: Colors.white70,
                           ),
                         ),
-                        errorWidget: (_, __, ___) => const Icon(
-                          Icons.broken_image_outlined,
-                          size: 54,
-                          color: Colors.white54,
-                        ),
+                        errorWidget: (_, __, ___) => const SizedBox.shrink(),
                       ),
                     ),
                   ),
@@ -2816,13 +2773,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
           ) {
         return const ColoredBox(
           color: Colors.black,
-          child: Center(
-            child: Icon(
-              Icons.broken_image_outlined,
-              size: 80,
-              color: Colors.grey,
-            ),
-          ),
         );
       },
     );
@@ -3181,15 +3131,12 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                     ),
                     tabs: [
                       Tab(
-                        icon: const Icon(Icons.person_outline_rounded, size: 23),
                         text: l10n.tab_private_profile,
                       ),
                       Tab(
-                        icon: const Icon(Icons.auto_stories_outlined, size: 23),
                         text: l10n.characterProfileCharacterIntro,
                       ),
                       Tab(
-                        icon: const Icon(Icons.public_rounded, size: 23),
                         text: l10n.tab_time_echoes,
                       ),
                     ],
@@ -3354,7 +3301,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
             child: Opacity(
               opacity: 0.08,
               child: Image.asset(
-                'assets/images/profile/about_botanical.png',
+                'assets/images/profile/about_botanical.webp',
                 width: 74,
                 fit: BoxFit.contain,
                 errorBuilder: (_, __, ___) => const SizedBox.shrink(),
@@ -3365,25 +3312,53 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
         ListView(
           padding: const EdgeInsets.fromLTRB(24, 28, 24, 150),
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Flexible(
-                  child: Text(
-                    widget.character.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.notoSerifTc(
-                      color: textColor,
-                      fontSize: 36,
-                      fontWeight: FontWeight.w700,
-                      height: 1.05,
-                      letterSpacing: 1.0,
+            // 角色名稱：24px 起，單行可逐步縮至 16px；仍放不下則以 16px 換成兩行。
+            // 後續「世界觀故事標題」上線時，也可共用此排版邏輯。
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final title = widget.character.name.trim();
+                final availableWidth = constraints.maxWidth;
+                final textScaler = MediaQuery.textScalerOf(context);
+                final textDirection = Directionality.of(context);
+
+                double fontSize = 24;
+                bool fitsSingleLine(double size) {
+                  final painter = TextPainter(
+                    text: TextSpan(
+                      text: title,
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: size,
+                        fontWeight: FontWeight.w400,
+                        height: 1.1,
+                        letterSpacing: 0.3,
+                      ),
                     ),
+                    maxLines: 1,
+                    textDirection: textDirection,
+                    textScaler: textScaler,
+                  )..layout(maxWidth: availableWidth);
+                  return !painter.didExceedMaxLines;
+                }
+
+                while (fontSize > 16 && !fitsSingleLine(fontSize)) {
+                  fontSize -= 1;
+                }
+                final singleLine = fitsSingleLine(fontSize);
+
+                return Text(
+                  title,
+                  maxLines: singleLine ? 1 : 2,
+                  softWrap: !singleLine,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.notoSerifTc(
+                    color: textColor,
+                    fontSize: fontSize,
+                    fontWeight: FontWeight.w400,
+                    height: 1.25,
+                    letterSpacing: 0.3,
                   ),
-                ),
-                const SizedBox(width: 8),
-              ],
+                );
+              },
             ),
             const SizedBox(height: 10),
             Text(
@@ -3577,12 +3552,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
               Row(
                 children: [
                   if (widget.character.birthday.isNotEmpty) ...[
-                    Icon(
-                      Icons.calendar_month_outlined,
-                      size: 17,
-                      color: textColor.withValues(alpha: 0.38),
-                    ),
-                    const SizedBox(width: 6),
                     Text(
                       '${l10n.charBirthdayLabel}  ${widget.character.birthday}',
                       style: GoogleFonts.notoSerifTc(
@@ -3602,12 +3571,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                     const SizedBox(width: 14),
                   ],
                   if (widget.character.height.isNotEmpty) ...[
-                    Icon(
-                      Icons.straighten_rounded,
-                      size: 17,
-                      color: textColor.withValues(alpha: 0.38),
-                    ),
-                    const SizedBox(width: 6),
                     Flexible(
                       child: Text(
                         '${l10n.charHeightLabel}  ${widget.character.height}',
@@ -3643,7 +3606,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                     if (displayLikes.isNotEmpty)
                       _buildLiteraryPreferenceLine(
                         theme: theme,
-                        icon: Icons.favorite_border_rounded,
                         titleAndContent: l10n.char_likes(displayLikes),
                         accent: theme.colorScheme.primary,
                       ),
@@ -3658,7 +3620,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                     if (displayDislikes.isNotEmpty)
                       _buildLiteraryPreferenceLine(
                         theme: theme,
-                        icon: Icons.heart_broken_outlined,
                         titleAndContent: l10n.char_dislikes(displayDislikes),
                         accent: textColor.withValues(alpha: 0.58),
                       ),
@@ -3671,17 +3632,13 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
             Row(
               children: [
                 Image.asset(
-                  'assets/images/profile/about_botanical.png',
+                  'assets/images/profile/about_botanical.webp',
                   width: 34,
                   height: 34,
                   fit: BoxFit.contain,
                   color: theme.colorScheme.primary.withValues(alpha: 0.68),
                   colorBlendMode: BlendMode.srcIn,
-                  errorBuilder: (_, __, ___) => Icon(
-                    Icons.auto_stories_outlined,
-                    color: theme.colorScheme.primary,
-                    size: 24,
-                  ),
+                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -3707,6 +3664,64 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                 letterSpacing: 0.2,
               ),
             ),
+            const SizedBox(height: 22),
+
+            // 角色第一句話：沿用現有 Character.firstLine，不額外查詢資料。
+            if (widget.character.firstLine.trim().isNotEmpty)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: SizedBox(
+                      width: 62,
+                      height: 62,
+                      child: widget.character.avatarPath.trim().isEmpty
+                          ? ColoredBox(
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        child: Icon(
+                          Icons.person_outline,
+                          color: textColor.withValues(alpha: 0.55),
+                        ),
+                      )
+                          : widget.character.avatarPath.startsWith('http')
+                          ? CachedNetworkImage(
+                        imageUrl: widget.character.avatarPath,
+                        fit: BoxFit.cover,
+                        errorWidget: (_, __, ___) =>
+                        const Icon(Icons.person_outline),
+                      )
+                          : Image.asset(
+                        widget.character.avatarPath,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) =>
+                        const Icon(Icons.person_outline),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary.withValues(alpha: 0.07),
+                        border: Border.all(
+                          color: theme.colorScheme.primary.withValues(alpha: 0.15),
+                        ),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: SelectableText(
+                        _translatedText('firstLine', widget.character.firstLine).trim(),
+                        style: GoogleFonts.notoSerifTc(
+                          color: textColor.withValues(alpha: 0.9),
+                          fontSize: 14,
+                          height: 1.7,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             const SizedBox(height: 32),
 
             // 原本相簿 / 好感度功能保留。
@@ -3745,27 +3760,12 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
 
   Widget _buildLiteraryPreferenceLine({
     required ThemeData theme,
-    required IconData icon,
     required String titleAndContent,
     required Color accent,
   }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          width: 34,
-          height: 34,
-          decoration: BoxDecoration(
-            color: accent.withValues(alpha: 0.08),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            icon,
-            size: 18,
-            color: accent,
-          ),
-        ),
-        const SizedBox(width: 10),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.only(top: 5),
@@ -4074,7 +4074,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                   ToastUtils.showCenterToast(
                     context,
                     l10n.lore_edit_success,
-                    customIcon: Icons.task_alt_rounded,
                   );
                   Navigator.of(context).pop();
                 } catch (e) {
@@ -4116,7 +4115,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                         child: Opacity(
                           opacity: 0.07,
                           child: Image.asset(
-                            'assets/images/language/language_top_right_botanical.png',
+                            'assets/images/language/language_top_right_botanical.webp',
                             width: 160,
                             fit: BoxFit.contain,
                             errorBuilder: (_, __, ___) =>
@@ -4404,7 +4403,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                           child: Row(
                             children: [
                               Image.asset(
-                                'assets/images/chat/chat_msg_edit_mask.png',
+                                'assets/images/chat/chat_msg_edit_mask.webp',
                                 width: 20,
                                 height: 20,
                                 color: theme.colorScheme.primary,
@@ -4420,7 +4419,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                           child: Row(
                             children: [
                               Image.asset(
-                                'assets/images/chat/chat_msg_delete_mask.png',
+                                'assets/images/chat/chat_msg_delete_mask.webp',
                                 width: 20,
                                 height: 20,
                                 color: Colors.redAccent,
@@ -4448,7 +4447,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                         : () => ToastUtils.showCenterToast(
                       context,
                       l10n.lore_not_open_msg,
-                      customIcon: Icons.lock_outline_rounded,
                     ),
                   ),
                 );
@@ -4592,21 +4590,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Container(
-                                  width: 48,
-                                  height: 48,
-                                  decoration: BoxDecoration(
-                                    color:
-                                    pageTheme.colorScheme.primaryContainer,
-                                    borderRadius: BorderRadius.circular(14),
-                                  ),
-                                  child: Icon(
-                                    Icons.mail_outline_rounded,
-                                    color: pageTheme
-                                        .colorScheme.onPrimaryContainer,
-                                  ),
-                                ),
-                                const SizedBox(width: 14),
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
@@ -4673,9 +4656,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
       child: Center(
         child: Column(
           children: [
-            Icon(Icons.mail_outline,
-                size: 60, color: Colors.grey.withValues(alpha: 0.5)),
-            SizedBox(height: 16),
             Text(
                 _isCreator
                     ? l10n.lore_write_first(_pronoun)
@@ -4715,7 +4695,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                 child: Opacity(
                   opacity: 0.085,
                   child: Image.asset(
-                    'assets/images/language/language_top_right_botanical.png',
+                    'assets/images/language/language_top_right_botanical.webp',
                     width: 185,
                     fit: BoxFit.contain,
                     errorBuilder: (_, __, ___) => const SizedBox.shrink(),
@@ -4730,7 +4710,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                 child: Opacity(
                   opacity: 0.06,
                   child: Image.asset(
-                    'assets/images/profile/about_botanical.png',
+                    'assets/images/profile/about_botanical.webp',
                     width: 105,
                     fit: BoxFit.contain,
                     errorBuilder: (_, __, ___) => const SizedBox.shrink(),
@@ -4766,6 +4746,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                                 widget.character.creatorName;
                             String? photoUrl;
                             String? avatarPath;
+                            bool isVerifiedCreator = false;
 
                             if (userSnapshot.hasData &&
                                 userSnapshot.data!.exists) {
@@ -4775,6 +4756,11 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                                   userData['nickname'] ?? displayCreatorName;
                               photoUrl = userData['photoURL'] as String?;
                               avatarPath = userData['avatarPath'] as String?;
+                              // Only verify the creator account itself, never a character.
+                              isVerifiedCreator =
+                                  userData['creatorStatus'] == 'approved' &&
+                                      userData['creatorVerified'] == true &&
+                                      userData['creatorDashboardEnabled'] == true;
                             }
 
                             ImageProvider? imageProvider;
@@ -4824,15 +4810,31 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                                         ),
                                       ),
                                       const SizedBox(height: 2),
-                                      Text(
-                                        displayCreatorName,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: GoogleFonts.notoSerifTc(
-                                          fontSize: 14.5,
-                                          fontWeight: FontWeight.w600,
-                                          color: theme.colorScheme.onSurface,
-                                        ),
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Flexible(
+                                            child: Text(
+                                              displayCreatorName,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: GoogleFonts.notoSerifTc(
+                                                fontSize: 14.5,
+                                                fontWeight: FontWeight.w600,
+                                                color: theme.colorScheme.onSurface,
+                                              ),
+                                            ),
+                                          ),
+                                          if (isVerifiedCreator) ...[
+                                            const SizedBox(width: 5),
+                                            Image.asset(
+                                              'assets/images/creator/creator_verified_badge.png',
+                                              width: 18,
+                                              height: 18,
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ],
+                                        ],
                                       ),
                                     ],
                                   ),
@@ -4940,7 +4942,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                             Opacity(
                               opacity: 0.12,
                               child: Image.asset(
-                                'assets/images/profile/about_botanical.png',
+                                'assets/images/profile/about_botanical.webp',
                                 width: 135,
                                 fit: BoxFit.contain,
                                 errorBuilder: (_, __, ___) =>
@@ -5142,7 +5144,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                                       child: Row(
                                         children: [
                                           Image.asset(
-                                            'assets/images/chat/chat_msg_delete_mask.png',
+                                            'assets/images/chat/chat_msg_delete_mask.webp',
                                             width: 18,
                                             height: 18,
                                             color: Colors.redAccent,
@@ -5443,8 +5445,6 @@ class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
                           ToastUtils.showCenterToast(
                             context,
                             l10n.gallery_reset_bg,
-                            customIcon: Icons
-                                .refresh_rounded, // 💡 用「重置/刷新」圖示，與「重置背景」的語意完美對應
                           );
                         } else {
                           // ✨ 情況 B：玩家按了「還沒選中」的照片 ➡️ 執行設定！
@@ -5517,7 +5517,6 @@ class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
               // 萬一網址掛掉顯示的錯誤圖
               errorWidget: (context, url, error) => Container(
                 color: Colors.grey.shade300,
-                child: const Icon(Icons.broken_image, color: Colors.grey),
               ),
             ),
 
@@ -5561,7 +5560,6 @@ class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
     ToastUtils.showCenterToast(
       context,
       l10n.gallery_unlocked_msg(desc),
-      customIcon: Icons.lock_open_rounded, // 💡 用「解鎖」的圖示，呼應解鎖成功的情境，絕妙！
     );
   }
 
@@ -5572,7 +5570,6 @@ class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
     ToastUtils.showCenterToast(
       context,
       l10n.gallery_lock_msg(req.toString()),
-      customIcon: Icons.lock_outline_rounded, // 💡 使用相同的鎖頭圖示，與系統的「鎖定」狀態語彙完全一致
     );
   }
 

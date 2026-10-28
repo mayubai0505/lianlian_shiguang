@@ -450,7 +450,10 @@ class _FeedbackPageState
               ? 'moment'
               : 'contact_us',
 
+          // 客服進度：pending 已寄出、processing 處理中、resolved 已回覆。
+          // 顯示名稱由新版信箱根據實際 reports.status 決定。
           'status': 'pending',
+          'statusUpdatedAt': FieldValue.serverTimestamp(),
 
           // 玩家填寫內容
           'content':
@@ -542,8 +545,16 @@ class _FeedbackPageState
           'reportId':
           reportRef.id,
 
+          // 保存送出當時的內容：舊案件或 reports 權限讀取失敗時，
+          // 玩家仍可在信箱查看自己提交的問題。
+          'originalTitle': _categoryLabel(_selectedCategory),
+          'originalReason': _selectedReason,
+          'originalBody': feedbackText,
+
           'isRead':
           false,
+          // 相容舊版 badge 已讀計算。
+          'read': false,
 
           'createdAt':
           FieldValue.serverTimestamp(),
@@ -583,8 +594,6 @@ class _FeedbackPageState
       ToastUtils.showCenterToast(
         context,
         l10n.feedback_submit_success,
-        customIcon:
-        Icons.mark_email_read_rounded,
       );
     } catch (error, stackTrace) {
       debugPrint(
@@ -658,7 +667,7 @@ class _FeedbackPageState
                         width: topRightBotanicalWidth,
                         child: _tintedContactAsset(
                           theme,
-                          'assets/images/contact/contact_top_right_botanical.png',
+                          'assets/images/contact/contact_top_right_botanical.webp',
                           opacity: isDarkMode ? 0.11 : 0.25,
                         ),
                       ),
@@ -668,7 +677,7 @@ class _FeedbackPageState
                         width: floatingPetalsWidth,
                         child: _tintedContactAsset(
                           theme,
-                          'assets/images/contact/contact_floating_petals.png',
+                          'assets/images/contact/contact_floating_petals.webp',
                           opacity: isDarkMode ? 0.045 : 0.09,
                         ),
                       ),
@@ -678,7 +687,7 @@ class _FeedbackPageState
                         width: bottomLeftBotanicalWidth,
                         child: _tintedContactAsset(
                           theme,
-                          'assets/images/contact/contact_bottom_left_botanical.png',
+                          'assets/images/contact/contact_bottom_left_botanical.webp',
                           opacity: isDarkMode ? 0.08 : 0.17,
                         ),
                       ),
@@ -688,7 +697,7 @@ class _FeedbackPageState
                         width: bottomRightBotanicalWidth,
                         child: _tintedContactAsset(
                           theme,
-                          'assets/images/contact/contact_bottom_right_botanical.png',
+                          'assets/images/contact/contact_bottom_right_botanical.webp',
                           opacity: isDarkMode ? 0.08 : 0.17,
                         ),
                       ),
@@ -745,13 +754,9 @@ class _FeedbackPageState
                                 child: Opacity(
                                   opacity: 0.82,
                                   child: Image.asset(
-                                    'assets/images/contact/contact_section_flower.png',
+                                    'assets/images/contact/contact_section_flower.webp',
                                     fit: BoxFit.contain,
-                                    errorBuilder: (_, __, ___) => Icon(
-                                      Icons.local_florist_outlined,
-                                      color: primary.withValues(alpha: 0.78),
-                                      size: 24,
-                                    ),
+                                    errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                                   ),
                                 ),
                               ),
@@ -784,7 +789,7 @@ class _FeedbackPageState
                           _buildContactSectionTitle(
                             theme,
                             l10n.feedback_category_section_title,
-                            'assets/images/contact/contact_section_leaves.png',
+                            'assets/images/contact/contact_section_leaves.webp',
                           ),
                           const SizedBox(height: 10),
                           if (widget.lockCategory)
@@ -797,11 +802,6 @@ class _FeedbackPageState
                               decoration: _contactFieldBox(theme),
                               child: Row(
                                 children: [
-                                  Icon(
-                                    Icons.support_agent_rounded,
-                                    color: primary,
-                                  ),
-                                  const SizedBox(width: 11),
                                   Text(
                                     _categoryLabel(_selectedCategory),
                                     style: GoogleFonts.notoSerifTc(
@@ -917,7 +917,7 @@ class _FeedbackPageState
                                 child: IgnorePointer(
                                   child: _tintedContactAsset(
                                     theme,
-                                    'assets/images/contact/contact_input_sprig.png',
+                                    'assets/images/contact/contact_input_sprig.webp',
                                     opacity: isDarkMode ? 0.12 : 0.31,
                                   ),
                                 ),
@@ -927,12 +927,6 @@ class _FeedbackPageState
                           const SizedBox(height: 28),
                           Row(
                             children: [
-                              Icon(
-                                Icons.add_photo_alternate_outlined,
-                                color: primary,
-                                size: 27,
-                              ),
-                              const SizedBox(width: 9),
                               Expanded(
                                 child: Text(
                                   _requiresScreenshot
@@ -971,12 +965,6 @@ class _FeedbackPageState
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(
-                                  Icons.verified_user_outlined,
-                                  size: 14,
-                                  color: primary.withValues(alpha: 0.55),
-                                ),
-                                const SizedBox(width: 4),
                                 Text(
                                   l10n.feedback_footer_message,
                                   style: GoogleFonts.notoSerifTc(
@@ -1254,7 +1242,7 @@ class _FeedbackPageState
                           BlendMode.srcIn,
                         ),
                         child: Image.asset(
-                          'assets/images/contact/contact_section_leaves.png',
+                          'assets/images/contact/contact_section_leaves.webp',
 
                           // 原本是 48 × 30
                           width: 38,
@@ -1279,7 +1267,7 @@ class _FeedbackPageState
                             BlendMode.srcIn,
                           ),
                           child: Image.asset(
-                            'assets/images/contact/contact_section_leaves.png',
+                            'assets/images/contact/contact_section_leaves.webp',
                             width: 38,
                             height: 22,
                             fit: BoxFit.contain,

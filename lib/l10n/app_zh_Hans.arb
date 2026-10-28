@@ -3750,7 +3750,7 @@
   "creator_profile_block_creator": "封锁创作者",
   "creator_profile_report_login_required": "请先登录后再举报创作者",
   "creator_profile_report_self_not_allowed": "无法举报自己的创作者页面",
-  "creator_profile_report_reason_prompt": "请选择举报“{creatorName}”的原因：",
+  "creator_profile_report_reason_prompt1": "请选择举报“{creatorName}”的原因：",
   "@creator_profile_report_reason_prompt": {
     "placeholders": {
       "creatorName": {
@@ -4684,7 +4684,12 @@
   "notification_channel_chat_description": "用于接收角色的最新回复与游戏提醒。",
   "subscription_star_contract_name": "恋恋拾光．星之契约",
   "moment_notification_comment_on_your_post": "{senderNickname}在你的动态下留言：「{commentText}」",
-  "@moment_notification_comment_on_your_post": {"placeholders": {"commentText": {}, "senderNickname": {}}},
+  "@moment_notification_comment_on_your_post": {
+    "placeholders": {
+      "commentText": {},
+      "senderNickname": {}
+    }
+  },
   "moment_notification_new_reply_title": "动态有新回应！💬",
   "moment_notification_character_popularity_title": "角色人气爆发！🔥",
   "font_size_small": "小",
@@ -4697,18 +4702,30 @@
   "font_size_title": "字体大小",
   "font_selection_tagline": "与你喜欢的他，再次写下属于你们的故事。",
   "font_selection_applied_message": "已套用「{value1}」",
-  "@font_selection_applied_message": {"placeholders": {"value1": {}}},
+  "@font_selection_applied_message": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "font_selection_local_storage_note": "字体与字级会立即套用并保存在这台装置；恢复预设外观时会回到「拾光宋体＋标准大小」。",
   "inbox_customer_service_report": "客服回报",
   "inbox_content_text_message_player_title_send": "玩家送出的标题",
   "inbox_content_text_message_player_content_send": "玩家送出的内容",
   "avatar_frame_equipped_message": "已装备「{value1}」",
-  "@avatar_frame_equipped_message": {"placeholders": {"value1": {}}},
+  "@avatar_frame_equipped_message": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "avatar_frame_unequip_frame_snackbar": "已卸下头像框",
   "avatar_frame_unequip_frame_message_event": "活动头像框",
   "avatar_frame_message": "头像框",
   "avatar_frame_load_failed": "读取头像框失败：{value1}",
-  "@avatar_frame_load_failed": {"placeholders": {"value1": {}}},
+  "@avatar_frame_load_failed": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "avatar_frame_parse_frames_message_select": "选择你想使用的头像框",
   "avatar_frame_parse_frames_message_event": "活动取得后永久保留，可随时更换或卸下。",
   "avatar_frame_parse_frames_title": "不使用头像框",
@@ -4724,9 +4741,17 @@
   "background_subtitle_event_shop_redeem_chat": "活动商店兑换的聊天室背景，之后会出现在这里。",
   "background_is_limited_background_type_message_chat_event": "活动限定聊天室背景",
   "background_is_limited_background_type_message_current_chat": "要将「{value1}」设为目前聊天室的背景吗？",
-  "@background_is_limited_background_type_message_current_chat": {"placeholders": {"value1": {}}},
+  "@background_is_limited_background_type_message_current_chat": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "character_edit_save_to_draft_message_current_character": "目前主要角色：【{value1}】\n",
-  "@character_edit_save_to_draft_message_current_character": {"placeholders": {"value1": {}}},
+  "@character_edit_save_to_draft_message_current_character": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "character_to_map_message_creator": "神秘创作者",
   "character_get_character_by_id_message_load_background_story": "背景故事加载中...",
   "character_get_character_by_id_message_sync": "初始剧情同步中...",
@@ -4756,24 +4781,49 @@
   "chat_empty_message_variant_b": "喜爱",
   "chat_send_sticker_message_current_unavailable_sticker": "这张贴纸目前无法使用",
   "chat_message_theater": "—— 剧场・{sceneTitle} ——",
-  "@chat_message_theater": {"placeholders": {"sceneTitle": {}}},
+  "@chat_message_theater": {
+    "placeholders": {
+      "sceneTitle": {}
+    }
+  },
   "chat_handle_regenerate_button_message_character_reply_again": "将重新产生角色上一则回复。",
   "creator_profile_reason_tile_message_report_select_reason": "请选择检举「{creatorName}」的原因：",
-  "@creator_profile_reason_tile_message_report_select_reason": {"placeholders": {"creatorName": {}}},
+  "@creator_profile_reason_tile_message_report_select_reason": {
+    "placeholders": {
+      "creatorName": {}
+    }
+  },
   "widget_key_message": "状态",
   "widget_key_message_variant_b": "地点",
   "widget_label_character": "尚未有角色状态",
   "widget_format_post_time_label_moment_latest": "最新动态",
   "widget_format_post_time_label_update_moment": "刚刚更新了动态",
   "widget_format_post_time_label_minutes_ago_update_moment": "{value1} 分钟前更新了动态",
-  "@widget_format_post_time_label_minutes_ago_update_moment": {"placeholders": {"value1": {}}},
+  "@widget_format_post_time_label_minutes_ago_update_moment": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_format_post_time_label_hours_ago_update_moment": "{value1} 小时前更新了动态",
-  "@widget_format_post_time_label_hours_ago_update_moment": {"placeholders": {"value1": {}}},
+  "@widget_format_post_time_label_hours_ago_update_moment": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_format_post_time_label_update_moment_days": "昨天更新了动态",
   "widget_format_post_time_label_update_moment_days_ago": "{value1} 天前更新了动态",
-  "@widget_format_post_time_label_update_moment_days_ago": {"placeholders": {"value1": {}}},
+  "@widget_format_post_time_label_update_moment_days_ago": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_format_post_time_label_update_moment_variant_b": "{value1}/{value2} 更新了动态",
-  "@widget_format_post_time_label_update_moment_variant_b": {"placeholders": {"value1": {}, "value2": {}}},
+  "@widget_format_post_time_label_update_moment_variant_b": {
+    "placeholders": {
+      "value1": {},
+      "value2": {}
+    }
+  },
   "widget_format_post_time_message_share_photo": "分享了一张照片",
   "widget_format_post_time_message_update_moment": "更新了一则动态",
   "widget_format_post_time_message_current_character_moment": "目前还没有角色动态",
@@ -4781,11 +4831,19 @@
   "widget_format_daily_quote_time_message_today": "还没有留下今天的一句话",
   "widget_load_period_care_state_message_today": "「今天别太勉强自己，我陪你慢慢来。」",
   "widget_load_period_care_state_message_period_days": "生理期第 {dayCount} 天",
-  "@widget_load_period_care_state_message_period_days": {"placeholders": {"dayCount": {}}},
+  "@widget_load_period_care_state_message_period_days": {
+    "placeholders": {
+      "dayCount": {}
+    }
+  },
   "widget_load_period_care_state_message_days": "「这几天记得早点休息，别把自己累坏。」",
   "widget_load_period_care_state_message_today_start": "预计今天开始",
   "widget_load_period_care_state_message_days_variant_b": "预计还有 {daysUntil} 天",
-  "@widget_load_period_care_state_message_days_variant_b": {"placeholders": {"daysUntil": {}}},
+  "@widget_load_period_care_state_message_days_variant_b": {
+    "placeholders": {
+      "daysUntil": {}
+    }
+  },
   "widget_load_period_care_state_message_today_variant_b": "「辛苦了，今天也要好好照顾自己。」",
   "widget_load_period_care_state_message_period_end": "生理期刚结束",
   "widget_load_period_care_state_message_today_variant_c": "「今天也记得好好照顾自己。」",
@@ -4796,18 +4854,34 @@
   "widget_build_birthday_countdown_lines_message_character_birthday": "角色生日",
   "widget_build_birthday_countdown_lines_message_birthday_settings": "尚未设定生日",
   "widget_build_birthday_countdown_lines_message_birthday_countdown": "距离他的生日・{birthdayLabel}",
-  "@widget_build_birthday_countdown_lines_message_birthday_countdown": {"placeholders": {"birthdayLabel": {}}},
+  "@widget_build_birthday_countdown_lines_message_birthday_countdown": {
+    "placeholders": {
+      "birthdayLabel": {}
+    }
+  },
   "widget_build_birthday_countdown_lines_message_today": "就是今天",
   "widget_build_birthday_countdown_lines_message_days": "还有 {days} 天",
-  "@widget_build_birthday_countdown_lines_message_days": {"placeholders": {"days": {}}},
+  "@widget_build_birthday_countdown_lines_message_days": {
+    "placeholders": {
+      "days": {}
+    }
+  },
   "widget_build_birthday_countdown_lines_message": "和他相遇",
   "widget_build_birthday_countdown_lines_message_variant_b": "尚未有相遇纪录",
   "widget_build_birthday_countdown_lines_message_days_variant_b": "{value1} 天",
-  "@widget_build_birthday_countdown_lines_message_days_variant_b": {"placeholders": {"value1": {}}},
+  "@widget_build_birthday_countdown_lines_message_days_variant_b": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_build_birthday_countdown_lines_message_variant_c": "重要的日子",
   "widget_build_birthday_countdown_lines_message_date_select": "尚未选择日期",
   "widget_build_birthday_countdown_lines_message_elapsed_days": "已过 {value1} 天",
-  "@widget_build_birthday_countdown_lines_message_elapsed_days": {"placeholders": {"value1": {}}},
+  "@widget_build_birthday_countdown_lines_message_elapsed_days": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_settings_remove_title_character_latest": "角色最新帖子",
   "widget_settings_remove_subtitle_moment_latest": "不用打开 App，也能看到他的最新动态。",
   "widget_settings_remove_title_period": "生理期陪伴",
@@ -4824,7 +4898,12 @@
   "widget_settings_edit_saved_widget_message_character_reminder_again": "旧版「角色待办提醒」已并入「纪念日／提醒」，请重新建立。",
   "widget_settings_delete_saved_widget_title_delete_small": "删除小组件？",
   "widget_settings_delete_saved_widget_message_stop_display_long_press_home_after_delete": "确定要删除「{value1}・{value2}」吗？\n\n删除后，桌面上的这颗小组件会停止显示角色内容，并提示玩家长按桌面移除。",
-  "@widget_settings_delete_saved_widget_message_stop_display_long_press_home_after_delete": {"placeholders": {"value1": {}, "value2": {}}},
+  "@widget_settings_delete_saved_widget_message_stop_display_long_press_home_after_delete": {
+    "placeholders": {
+      "value1": {},
+      "value2": {}
+    }
+  },
   "widget_settings_delete_saved_widget_message_delete_settings_small": "已删除小组件设定；桌面上的对应小组件已停用。",
   "widget_settings_message_desktop_widget": "桌面小组件",
   "widget_settings_message_character_days": "让喜欢的角色陪你出现在每一天。",
@@ -4832,7 +4911,11 @@
   "widget_settings_message_desktop_widget_variant_b": "还没有桌面小组件",
   "widget_settings_message_character_reminder": "选一个喜欢的角色，让他的提醒、帖子或状态出现在桌面上。",
   "widget_settings_message_size": "{value1}尺寸",
-  "@widget_settings_message_size": {"placeholders": {"value1": {}}},
+  "@widget_settings_message_size": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_settings_tooltip": "新增到桌面",
   "widget_settings_tooltip_small": "编辑小组件",
   "widget_settings_tooltip_delete_small": "删除小组件",
@@ -4849,15 +4932,31 @@
   "widget_settings_message_character_photo_select": "下一步・选择角色照片",
   "widget_settings_desktop_photo_selection_message_character_photo_select": "选择角色照片",
   "widget_settings_desktop_photo_selection_message_current_affection_unlocked_photo": "目前好感度 {value1}・已解锁的照片可以直接使用。",
-  "@widget_settings_desktop_photo_selection_message_current_affection_unlocked_photo": {"placeholders": {"value1": {}}},
+  "@widget_settings_desktop_photo_selection_message_current_affection_unlocked_photo": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_settings_desktop_photo_selection_message_current_character_photo": "这个角色目前没有可用照片。",
   "widget_settings_desktop_photo_selection_message_required_affection_unlock_photo": "需要好感度 {value1} 才能解锁这张照片。",
-  "@widget_settings_desktop_photo_selection_message_required_affection_unlock_photo": {"placeholders": {"value1": {}}},
+  "@widget_settings_desktop_photo_selection_message_required_affection_unlock_photo": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_settings_message_photo_public": "公开照片",
   "widget_settings_message_unlock": "好感 {value1} 解锁",
-  "@widget_settings_message_unlock": {"placeholders": {"value1": {}}},
+  "@widget_settings_message_unlock": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_settings_message_unlocked": "已解锁・好感 {value1}",
-  "@widget_settings_message_unlocked": {"placeholders": {"value1": {}}},
+  "@widget_settings_message_unlocked": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "widget_settings_message_content_settings": "下一步・设定显示内容",
   "widget_settings_open_preview_message_player_select": "请先选择一个玩家建立的事件／待办。",
   "widget_settings_pick_custom_memo_event_message_login_account": "请先登入帐号。",
@@ -4889,7 +4988,11 @@
   "widget_settings_title_player": "玩家建立的事件／待办",
   "widget_settings_message_memo_character_select_reminder": "从这个角色的备忘录／提醒中选择一个事件或待办。",
   "widget_settings_message_selected": "已选：{_selectedMemoContent}",
-  "@widget_settings_message_selected": {"placeholders": {"_selectedMemoContent": {}}},
+  "@widget_settings_message_selected": {
+    "placeholders": {
+      "_selectedMemoContent": {}
+    }
+  },
   "widget_settings_message_select": "最多选择 3 项",
   "widget_settings_message_character": "角色状态最多显示 3 项。",
   "widget_settings_message_small_variant_c": "预览小组件",
@@ -4927,7 +5030,11 @@
   "event_memory_character_center_message_public_character_character_friend_add": "建立自己的角色，或先将喜欢的公开角色加入好友。",
   "event_memory_character_message_character_select": "请先选择角色",
   "event_memory_character_message_continue": "与 {value1} 继续",
-  "@event_memory_character_message_continue": {"placeholders": {"value1": {}}},
+  "@event_memory_character_message_continue": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_memory_character_card_message_private": "我的・私人",
   "event_memory_character_error_label_load_again": "重新读取",
   "event_memory_collection_show_collection_intro_if_needed_message_collection": "拾光收藏",
@@ -4947,11 +5054,19 @@
   "event_memory_collection_item_card_label": "限定物品",
   "event_memory_collection_confirm_delete_owned_item_message_delete": "删除限定物品？",
   "event_memory_collection_confirm_delete_owned_item_message_after_delete_unavailable": "删除后将无法再使用这个{_itemTypeLabel}，",
-  "@event_memory_collection_confirm_delete_owned_item_message_after_delete_unavailable": {"placeholders": {"_itemTypeLabel": {}}},
+  "@event_memory_collection_confirm_delete_owned_item_message_after_delete_unavailable": {
+    "placeholders": {
+      "_itemTypeLabel": {}
+    }
+  },
   "event_memory_collection_confirm_delete_owned_item_message_collection": "也不会再出现在「拾光收藏」中。\n\n",
   "event_memory_collection_confirm_delete_owned_item_message_unavailable": "这代表你将放弃这次取得的限定物品，且此操作无法复原。\n\n",
   "event_memory_collection_confirm_delete_owned_item_message_delete_variant_b": "确定要删除「{value1}」吗？",
-  "@event_memory_collection_confirm_delete_owned_item_message_delete_variant_b": {"placeholders": {"value1": {}}},
+  "@event_memory_collection_confirm_delete_owned_item_message_delete_variant_b": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_memory_collection_confirm_delete_owned_item_message_delete_variant_c": "已删除限定物品",
   "event_memory_collection_confirm_delete_owned_item_message_not_found_delete": "找不到这个限定物品，可能已经删除了",
   "event_memory_collection_confirm_delete_owned_item_message_collection_current_delete": "这个收藏目前不能删除",
@@ -4980,18 +5095,36 @@
   "event_memory_collection_collected_label_collection": "刚刚收藏",
   "event_memory_collection_collected_item_label_collection_date": "收藏日期未记录",
   "event_memory_collection_collected_item_label_collection": "收藏于 {value1}/{month}/{day}",
-  "@event_memory_collection_collected_item_label_collection": {"placeholders": {"day": {}, "month": {}, "value1": {}}},
+  "@event_memory_collection_collected_item_label_collection": {
+    "placeholders": {
+      "day": {},
+      "month": {},
+      "value1": {}
+    }
+  },
   "event_memory_text_not_found_event": "找不到活动资料",
   "event_memory_message_limited_memory_failed_load": "限定回忆读取失败",
   "event_memory_as_map_label_unlocked": "已解锁",
   "event_memory_as_map_label_unlock": "累积 {currencyIcon} {requiredValue} {currencyName} 解锁（{currentValue} / {requiredValue}）",
-  "@event_memory_as_map_label_unlock": {"placeholders": {"currencyIcon": {}, "currencyName": {}, "currentValue": {}, "requiredValue": {}}},
+  "@event_memory_as_map_label_unlock": {
+    "placeholders": {
+      "currencyIcon": {},
+      "currencyName": {},
+      "currentValue": {},
+      "requiredValue": {}
+    }
+  },
   "event_memory_as_map_label_unlock_task_event_complete": "完成指定活动任务后解锁",
   "event_memory_as_map_label_redeem_unlock_event": "兑换指定活动商品后解锁",
   "event_memory_as_map_label_unlock_variant_b": "尚未解锁",
   "event_memory_hero_message": "把只属于你们的片段，留在这个季节里。",
   "event_memory_hero_message_limited_memory": "限定回忆  {unlockedCount} / {totalCount}",
-  "@event_memory_hero_message_limited_memory": {"placeholders": {"totalCount": {}, "unlockedCount": {}}},
+  "@event_memory_hero_message_limited_memory": {
+    "placeholders": {
+      "totalCount": {},
+      "unlockedCount": {}
+    }
+  },
   "event_memory_status_label_unlocked": "已解锁・尚未观看",
   "event_memory_status_label": "已观看",
   "event_memory_status_label_collection": "已收藏",
@@ -5017,21 +5150,44 @@
   "event_memory_profile_center_message_memory": "这段回忆，会以谁的身分留下？",
   "event_memory_profile_center_message_profile_character_start": "已优先使用你与这个角色最近使用的拾光档案，也可以在开始前更换。",
   "event_memory_profile_center_message": "将以「{value1}」与",
-  "@event_memory_profile_center_message": {"placeholders": {"value1": {}}},
+  "@event_memory_profile_center_message": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_memory_profile_center_message_memory_variant_b": "「{value1}」留下这段回忆",
-  "@event_memory_profile_center_message_memory_variant_b": {"placeholders": {"value1": {}}},
+  "@event_memory_profile_center_message_memory_variant_b": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_memory_profile_center_label_memory_start": "开始回忆",
   "event_message_failed_load": "活动资料读取失败",
   "event_message_not_found": "找不到这个活动",
   "event_remaining_label": "活动进行中",
   "event_remaining_label_days": "剩余 {value1} 天",
-  "@event_remaining_label_days": {"placeholders": {"value1": {}}},
+  "@event_remaining_label_days": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_remaining_label_hours": "剩余 {value1} 小时",
-  "@event_remaining_label_hours": {"placeholders": {"value1": {}}},
+  "@event_remaining_label_hours": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_remaining_label_end": "即将结束",
   "event_balance_pill_tooltip_back": "返回",
   "event_claim_task_message_claim_current": "已领取 {value1} {reward} {value2}，目前共有 {currency}",
-  "@event_claim_task_message_claim_current": {"placeholders": {"currency": {}, "reward": {}, "value1": {}, "value2": {}}},
+  "@event_claim_task_message_claim_current": {
+    "placeholders": {
+      "currency": {},
+      "reward": {},
+      "value1": {},
+      "value2": {}
+    }
+  },
   "event_claim_task_message_reward_claim": "奖励已领取",
   "event_claim_task_message_claim_failed": "领取失败",
   "event_claim_task_message_task_claim": "这个任务已经领取过了",
@@ -5042,42 +5198,101 @@
   "event_milestone_progress_label_reward_load": "读取累积奖励中…",
   "event_milestone_progress_label_reward_current": "目前没有累积奖励",
   "event_build_with_total_message_current": "目前  {totalEarned}",
-  "@event_build_with_total_message_current": {"placeholders": {"totalEarned": {}}},
+  "@event_build_with_total_message_current": {
+    "placeholders": {
+      "totalEarned": {}
+    }
+  },
   "event_progress_ref_message_redeem_confirm": "确认兑换",
   "event_progress_ref_message_redeem_flowers": "要使用 {value1} {price} 兑换「{itemName}」吗？\n\n兑换后可获得 {rewardAmount} 花花。",
-  "@event_progress_ref_message_redeem_flowers": {"placeholders": {"itemName": {}, "price": {}, "rewardAmount": {}, "value1": {}}},
+  "@event_progress_ref_message_redeem_flowers": {
+    "placeholders": {
+      "itemName": {},
+      "price": {},
+      "rewardAmount": {},
+      "value1": {}
+    }
+  },
   "event_progress_ref_message_redeem": "要使用 {value1} {price} 兑换「{itemName}」吗？",
-  "@event_progress_ref_message_redeem": {"placeholders": {"itemName": {}, "price": {}, "value1": {}}},
+  "@event_progress_ref_message_redeem": {
+    "placeholders": {
+      "itemName": {},
+      "price": {},
+      "value1": {}
+    }
+  },
   "event_progress_ref_message_redeem_success_flowers": "兑换成功！获得 {returnedReward} 花花",
-  "@event_progress_ref_message_redeem_success_flowers": {"placeholders": {"returnedReward": {}}},
+  "@event_progress_ref_message_redeem_success_flowers": {
+    "placeholders": {
+      "returnedReward": {}
+    }
+  },
   "event_progress_ref_message_event_collection_redeem_success_add": "兑换成功！「{itemName}」已加入活动收藏",
-  "@event_progress_ref_message_event_collection_redeem_success_add": {"placeholders": {"itemName": {}}},
+  "@event_progress_ref_message_event_collection_redeem_success_add": {
+    "placeholders": {
+      "itemName": {}
+    }
+  },
   "event_progress_ref_message_redeem_failed": "兑换失败",
   "event_progress_ref_message_redeem_variant_b": "这个商品已经兑换过了",
   "event_progress_ref_message_insufficient": "货币不足",
   "event_progress_ref_message_insufficient_variant_b": "{value1}不足",
-  "@event_progress_ref_message_insufficient_variant_b": {"placeholders": {"value1": {}}},
+  "@event_progress_ref_message_insufficient_variant_b": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "event_progress_ref_message_redeem_variant_c": "兑换",
   "event_progress_ref_message_redeem_variant_d": "已兑换",
   "event_message_redeem_flowers": "兑换后可获得 {rewardAmount} 花花",
-  "@event_message_redeem_flowers": {"placeholders": {"rewardAmount": {}}},
+  "@event_message_redeem_flowers": {
+    "placeholders": {
+      "rewardAmount": {}
+    }
+  },
   "event_message_redeem": "已兑换 {redeemedCount} 次",
-  "@event_message_redeem": {"placeholders": {"redeemedCount": {}}},
+  "@event_message_redeem": {
+    "placeholders": {
+      "redeemedCount": {}
+    }
+  },
   "event_message_event_shop_login": "登入后即可使用活动商店",
   "event_message_redeem_current": "目前没有可兑换商品",
   "event_shop_item_card_message_flowers": "可获得 {rewardAmount} 花花",
-  "@event_shop_item_card_message_flowers": {"placeholders": {"rewardAmount": {}}},
+  "@event_shop_item_card_message_flowers": {
+    "placeholders": {
+      "rewardAmount": {}
+    }
+  },
   "event_message_insufficient": "不足",
   "notification_message_player": "玩家附加图片",
   "notification_message_qixi_letter": "来自 {value1} 的七夕信",
-  "@notification_message_qixi_letter": {"placeholders": {"value1": {}}},
+  "@notification_message_qixi_letter": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "recommendation_remaining_label_days": "剩 {value1} 天",
-  "@recommendation_remaining_label_days": {"placeholders": {"value1": {}}},
+  "@recommendation_remaining_label_days": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "recommendation_remaining_label_hours": "剩 {value1} 小时",
-  "@recommendation_remaining_label_hours": {"placeholders": {"value1": {}}},
+  "@recommendation_remaining_label_hours": {
+    "placeholders": {
+      "value1": {}
+    }
+  },
   "settings_subtitle_character_days": "让喜欢的角色陪你出现在每一天",
   "moment_notification_comment_on_character_post": "{senderNickname}给{authorName}留了话：「{commentText}」",
-  "@moment_notification_comment_on_character_post": {"placeholders": {"authorName": {}, "commentText": {}, "senderNickname": {}}},
+  "@moment_notification_comment_on_character_post": {
+    "placeholders": {
+      "authorName": {},
+      "commentText": {},
+      "senderNickname": {}
+    }
+  },
   "inbox_content_text_message_customer_service_message_send": "已送出的客服信件",
   "character_edit_relationship_none_label": "无",
   "auth_cancel_account_deletion_failed": "取消删除帐号失败，请稍后再试",
@@ -5088,6 +5303,1506 @@
   "theme_font_system": "系统字体",
   "theme_font_shiguang_serif_description": "文青柔和，适合沉浸阅读",
   "theme_font_clean_sans_description": "清楚俐落，长时间阅读较轻松",
-  "theme_font_system_description": "跟随手机系统预设字体"
-
+  "theme_font_system_description": "跟随手机系统预设字体",
+  "font_selection_serif_name": "思源宋体",
+  "font_selection_sans_name": "思源黑体",
+  "font_selection_system_name": "系统字体",
+  "font_selection_serif_description": "典雅的衬线字体，适合沉浸阅读。",
+  "font_selection_sans_description": "清晰柔和的无衬线字体。",
+  "font_selection_system_description": "使用设备默认字体。",
+  "font_selection_preview_sentence": "与你喜欢的他，再次写下属于你们的故事。",
+  "avatar_frame_error_generic": "错误",
+  "avatar_frame_sign_in_required": "请先登录",
+  "avatar_frame_default_name": "活动头像框",
+  "background_exclusive_photos_tab": "专属照片",
+  "background_world_sign_in_chat": "请先登录并进入世界聊天室",
+  "background_world_photo_load_error": "错误",
+  "background_world_no_photos": "目前没有可选择的世界照片",
+  "background_world_cover": "世界观封面",
+  "background_world_cover_confirm": "要将世界观封面设为这个聊天室的背景吗？",
+  "background_world_default_limited": "限定背景",
+  "background_world_default_character": "角色",
+  "background_world_no_character_photos": "暂无可使用的角色照片",
+  "background_world_unlock_required": "需要 {count} 好感度才能解锁",
+  "background_world_character_confirm": "要将“{name}”的照片设为世界聊天室背景吗？",
+  "background_world_affection_count": "{count} 好感度",
+  "@background_world_unlock_required": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@background_world_affection_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@background_world_character_confirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reply_selection": "回复选项",
+  "chat_home_character_tab": "角色聊天",
+  "chat_home_world_tab": "开放世界",
+  "chat_home_world_error_generic": "错误",
+  "chat_home_world_pinned": "已置顶世界聊天",
+  "chat_home_world_deleted": "开放世界聊天室及聊天记录已删除",
+  "chat_home_world_action_done": "操作完成",
+  "chat_home_world_rename_title": "为这段回忆命名",
+  "chat_home_world_delete_confirm": "确定删除“{name}”的开放世界聊天记录？\n\n这将永久删除对话、剧情摘要、人物关系和备忘录，无法恢复。创作者发布的世界设定不受影响。",
+  "chat_home_world_empty_title": "还没有开放世界聊天记录",
+  "chat_home_world_empty_desc": "进入开放世界并开始游玩后，聊天记录就会显示在这里。",
+  "chat_home_world_unnamed": "未命名世界",
+  "chat_home_world_private_test": "私人试玩",
+  "chat_home_world_no_messages": "暂无消息",
+  "expand_features": "展开功能",
+  "chat_sticker_all": "全部",
+  "chat_mode_short_daily": "日常",
+  "chat_mode_short_story": "剧情",
+  "chat_mode_short_immersive": "沉浸",
+  "chat_mode_short_resonance": "共鸣",
+  "chat_mode_short_gemini": "闲聊",
+  "chat_theater_tool": "剧场",
+  "chat_regenerate_insufficient_flowers": "花花不足，重新生成需要 {cost} 朵",
+  "chat_regenerate_paid_title": "付费重新生成",
+  "chat_regenerate_paid_confirm": "今日免费次数已用完，本次依当前模式收取 {cost} 朵花花。是否继续？",
+  "chat_generic_error": "错误",
+  "chat_regenerate_confirm": "确认",
+  "@chat_regenerate_insufficient_flowers": {
+    "placeholders": {
+      "cost": {
+        "type": "int"
+      }
+    }
+  },
+  "@chat_regenerate_paid_confirm": {
+    "placeholders": {
+      "cost": {
+        "type": "int"
+      }
+    }
+  },
+  "comment_add_photo": "添加照片",
+  "comment_error_generic": "错误",
+  "creator_profile_report_reason_prompt": "请选择举报“{creatorName}”的原因：",
+  "creator_profile_open_worlds": "开放世界",
+  "creator_profile_generic_error": "错误",
+  "creator_profile_refresh": "重新加载",
+  "creator_profile_no_open_worlds": "这位创作者尚未发布开放世界",
+  "creator_profile_unnamed_world": "未命名世界",
+  "creator_program_required_fields": "请填写创作方向与申请原因。",
+  "creator_program_submitted": "申请已送出，审核约需 1～3 天。",
+  "creator_program_error": "错误",
+  "creator_program_login_required": "请先登录后再申请创作者计划。",
+  "creator_program_title": "创作者计划",
+  "creator_program_headline": "让更多人看见你的创作",
+  "creator_program_intro": "只要你有公开创作，就欢迎申请加入《恋恋拾光》创作者计划。申请送出后，官方会在 1～3 天内完成审核。",
+  "creator_program_benefits_title": "计划福利",
+  "creator_program_benefit_dashboard": "创作者后台：查看粉丝数、公开角色数、总爱心与本月新增粉丝。",
+  "creator_program_benefit_fans": "粉丝经营：可寄信、管理粉丝，并用自己的花花赠送粉丝福利。",
+  "creator_program_benefit_exposure": "官方曝光：新角色有机会优先登上 IG 与游戏内创作者推荐。",
+  "creator_program_benefit_monthly": "每月创作奖励：当月新增并公开至少 3 个全新角色，次月可获 520 朵花花。",
+  "creator_program_benefit_merch": "实体合作：旗下角色若进入官方实体商品／礼盒合作，可依合作企划获得现金创作奖励。",
+  "creator_program_last_review_note": "上次审核说明：{reason}",
+  "creator_program_apply_heading": "申请加入",
+  "creator_program_direction_label": "创作方向",
+  "creator_program_direction_hint": "例如：现代恋爱、古风、奇幻、BL、GL…",
+  "creator_program_reason_label": "想加入创作者计划的原因",
+  "creator_program_reason_hint": "和我们说说你想怎么经营自己的角色与粉丝。",
+  "creator_program_social_label": "社群链接（选填）",
+  "creator_program_social_hint": "IG、Threads、个人网站等",
+  "creator_program_submit": "送出申请",
+  "creator_program_public_character_note": "送出前系统会确认账号目前至少有 1 个公开角色。",
+  "creator_program_status_pending": "申请审核中",
+  "creator_program_status_pending_desc": "申请已送达，审核约需 1～3 天。完成后会通过恋恋信箱通知你。",
+  "creator_program_status_approved": "创作者资格已通过 🎉",
+  "creator_program_status_approved_desc": "恭喜加入《恋恋拾光》创作者计划！创作者后台、粉丝管理与推荐横幅会在接下来的功能中与这个资格连动。",
+  "creator_program_status_suspended": "创作者资格暂停",
+  "creator_program_status_suspended_desc": "目前暂时无法使用创作者专属功能。请查看恋恋信箱中的官方通知。",
+  "creator_program_status_revoked": "创作者资格已取消",
+  "creator_program_status_revoked_desc": "目前无法使用创作者专属功能。若有疑问，可通过客服联系官方。",
+  "creator_program_status_title": "创作者资格状态",
+  "creator_program_current_status": "目前状态：{status}",
+  "creator_program_official_note": "官方说明：{reason}",
+  "@creator_program_last_review_note": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "@creator_program_current_status": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "@creator_program_official_note": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "creator_dashboard_error1": "错误",
+  "creator_dashboard_access_title1": "创作者后台",
+  "creator_dashboard_status_notice_title1": "创作者后台资格通知",
+  "creator_dashboard_apply_title1": "申请创作者后台",
+  "creator_dashboard_access_subtitle1": "角色游玩数据・粉丝新增与移除・粉丝管理",
+  "creator_dashboard_pending1": "申请已送出・官方审核中",
+  "creator_dashboard_legacy_pending1": "申请资料待官方确认",
+  "creator_dashboard_syncing1": "后台权限同步中，请稍后再試",
+  "creator_dashboard_suspended1": "后台使用权限已暂停，请联繫官方",
+  "creator_dashboard_apply_subtitle1": "申请开通角色数据与粉丝管理工具",
+  "creator_dashboard_rejected1": "申请未通过・可重新申请",
+  "creator_dashboard_submitted1": "申请已送出，请等待官方审核",
+  "creator_dashboard_benefits_title1": "创作者后台提供的功能",
+  "creator_dashboard_benefit_monthly1": "🌸 每月创作奖励：當月新建並公开 3 位不同角色，可手动領取 300 朵花花（每月限一次）。",
+  "creator_dashboard_benefit_analytics1": "• 查看公开角色游玩数据、粉丝總数及粉丝新增／移除紀录",
+  "creator_dashboard_benefit_mail1": "• 粉丝信件：单人私信与全体公告（依每日額度）",
+  "creator_dashboard_benefit_gifts1": "• 粉丝福利：使用自己的花花贈送追蹤者",
+  "creator_dashboard_reward_note1": "須经官方审核通过；私人角色、草稿、舊角色重新公开皆不列入每月奖励。",
+  "creator_dashboard_apply_cta1": "點此了解並申请后台权限",
+  "creator_dashboard_my_characters1": "我的角色",
+  "creator_dashboard_my_worlds1": "我的开放世界",
+  "creator_dashboard_create_world1": "创建开放世界",
+  "creator_dashboard_public_worlds1": "已公开世界",
+  "creator_dashboard_public_worlds_hint1": "其他玩家可以探索",
+  "creator_dashboard_private_worlds1": "私人世界",
+  "creator_dashboard_private_worlds_hint1": "只有自己可以查看与編輯",
+  "creator_dashboard_world_drafts1": "世界观草稿",
+  "creator_dashboard_world_drafts_hint1": "尚未建立完成的世界",
+  "creator_dashboard_no_drafts1": "目前沒有草稿",
+  "creator_dashboard_no_worlds1": "目前沒有世界观",
+  "creator_dashboard_unnamed_world1": "未命名世界观",
+  "creator_dashboard_delete_world_draft1": "删除世界观草稿",
+  "creator_dashboard_private_test1": "私人试玩",
+  "creator_dashboard_delete_world_confirm_title1": "删除世界观草稿？",
+  "creator_dashboard_delete_world_confirm_body1": "删除后无法恢复。已上傳的图片不会一併删除。",
+  "creator_dashboard_draft_deleted1": "世界观草稿已删除",
+  "creator_dashboard_validation1": "创作方向須为 2～100 字，申请原因須为 10～500 字",
+  "creator_dashboard_confirm_application_title1": "确认申请创作者后台",
+  "creator_dashboard_confirm_application_body1": "申请送出后将由官方审核；通过后即可使用创作者后台。申请后台不代表簽訂合作契約。",
+  "creator_dashboard_confirm_send1": "确认提交",
+  "creator_dashboard_form_heading1": "申请开通戀戀拾光创作者后台",
+  "creator_dashboard_form_description1": "请简单介紹你的创作方向，以及希望如何使用角色数据与粉丝管理功能。审核通过后即可使用创作者后台；此申请不是合作簽約。",
+  "creator_dashboard_direction_label1": "创作方向",
+  "creator_dashboard_direction_hint1": "例如：现代恋爱、古风、奇幻、BL、GL…",
+  "creator_dashboard_reason_label1": "申请后台的原因",
+  "creator_dashboard_reason_hint1": "请介紹创作经驗，以及希望使用哪些后台功能",
+  "creator_dashboard_sending1": "提交中…",
+  "creator_dashboard_submit1": "提交后台申请",
+  "creator_dashboard_privacy_note1": "提醒：申请不保证通过，请勿在欄位内填写身分证字号、银行账号或其他敏感个资。",
+  "creator_dashboard_revoked_limit1": "后台申请资格已達上限。如有疑問，请联繫官方。",
+  "creator_dashboard_revoked_notice1": "创作者后台使用资格已取消。若需重新申请，请依頁面目前的开放状态操作。",
+  "creator_support_page_title1": "问题反馈中心",
+  "creator_support_new_report1": "新增问题反馈",
+  "creator_support_error1": "错误",
+  "creator_support_no_cases1": "目前没有反馈记录",
+  "creator_support_unread1": "未读",
+  "creator_support_load_more1": "加载更多",
+  "creator_support_category_label1": "问题分类",
+  "creator_support_character_optional1": "相关角色（选填）",
+  "creator_support_no_character1": "未指定角色",
+  "creator_support_report_title1": "问题标题",
+  "creator_support_report_description1": "问题描述",
+  "creator_support_select_images1": "选择截图（{count}/3，单张小于 2MB）",
+  "@creator_support_select_images1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "creator_support_images_private1": "截图仅限案件创作者及官方查看。",
+  "creator_support_submitting1": "提交中…",
+  "creator_support_submit1": "确认提交",
+  "creator_support_image_too_large1": "图片超过 2MB，请更换。",
+  "creator_support_fill_title_description1": "请填写标题和内容",
+  "creator_support_case_sent1": "案件已提交",
+  "creator_support_case_sent_partial1": "案件已提交，但 {count} 张截图上传失败",
+  "@creator_support_case_sent_partial1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "creator_support_detail_title1": "案件详情",
+  "creator_support_image_max1": "单张截图不得超过 2MB",
+  "creator_support_jpg_png_only1": "仅支持 JPG / PNG",
+  "creator_support_reply_sent1": "回复已发送",
+  "creator_support_reply_sent_partial1": "文字已发送，但 {count} 张图片上传失败",
+  "@creator_support_reply_sent_partial1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "creator_support_empty_content1": "内容不能为空",
+  "creator_support_recall_message1": "撤回消息",
+  "creator_support_delete_message1": "删除消息",
+  "creator_support_recall_warning1": "双方都会看到“此消息已撤回”，附件将无法查看。",
+  "creator_support_delete_warning1": "仅从自己的界面隐藏，对方仍保留消息。",
+  "creator_support_cancel1": "取消",
+  "creator_support_confirm1": "确定",
+  "creator_support_operation_success1": "操作成功",
+  "creator_support_edit_message1": "编辑消息",
+  "creator_support_recall_remaining1": "撤回消息（剩余 {seconds} 秒）",
+  "@creator_support_recall_remaining1": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "creator_support_recall_expired1": "撤回消息（已超过 60 秒）",
+  "creator_support_case_updated1": "案件已更新",
+  "creator_support_loading1": "加载中…",
+  "creator_support_creator_uid1": "创作者 UID：{uid}",
+  "@creator_support_creator_uid1": {
+    "placeholders": {
+      "uid": {
+        "type": "String"
+      }
+    }
+  },
+  "creator_support_internal_note1": "官方内部备注（创作者不可见）",
+  "creator_support_save_internal_note1": "保存内部备注",
+  "creator_support_case_images1": "案件截图",
+  "creator_support_official1": "恋恋拾光官方",
+  "creator_support_creator1": "创作者",
+  "creator_support_recalled1": "此消息已撤回",
+  "creator_support_edited1": "已编辑",
+  "creator_support_reply_hint1": "输入回复……",
+  "creator_support_attach_image1": "添加截图（最多 3 张）",
+  "creator_support_send1": "发送",
+  "creator_support_admin_title1": "创作者案件管理",
+  "creator_support_new_reply1": "新回复",
+  "creator_support_load_more_cases1": "加载更多案件",
+  "creator_support_image_load_error1": "截图加载失败",
+  "creator_support_edit_hint1": "修改消息内容",
+  "creator_support_save1": "保存",
+  "creator_support_status_pending1": "待处理",
+  "creator_support_status_progress1": "处理中",
+  "creator_support_status_waiting1": "等待补充",
+  "creator_support_status_resolved1": "已结案",
+  "creator_support_cat_character1": "角色管理问题",
+  "creator_support_cat_ai1": "AI 角色互动异常",
+  "creator_support_cat_dashboard1": "创作者后台问题",
+  "creator_support_cat_cooperation1": "合作与权益问题",
+  "creator_support_cat_other1": "其他问题",
+  "desktop_widget_size_small1": "小",
+  "desktop_widget_size_medium1": "中",
+  "desktop_widget_size_large1": "大",
+  "desktop_widget_cancel1": "取消",
+  "desktop_widget_delete1": "删除",
+  "desktop_widget_days_remaining1": "还有 {days} 天",
+  "@desktop_widget_days_remaining1": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "desktop_widget_days_today1": "就是今天",
+  "desktop_widget_days_elapsed1": "已过 {days} 天",
+  "@desktop_widget_days_elapsed1": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "desktop_widget_daily_quote1": "今日一句",
+  "desktop_widget_update_daily1": "每天更新一次",
+  "desktop_widget_character_birthday1": "角色生日",
+  "desktop_widget_change1": "更换",
+  "desktop_widget_mood1": "心情",
+  "desktop_widget_current_state1": "当前状态",
+  "desktop_widget_location1": "地点",
+  "desktop_widget_relationship1": "关系",
+  "desktop_widget_outfit1": "衣着",
+  "desktop_widget_weather1": "天气",
+  "desktop_widget_thought1": "想法",
+  "desktop_widget_action1": "动作",
+  "desktop_widget_affinity1": "好感度",
+  "desktop_widget_character_status1": "角色状态",
+  "desktop_widget_no_posts1": "目前还没有角色动态",
+  "desktop_widget_crop_position1": "调整角色位置",
+  "desktop_widget_crop_action1": "放大／拖动调整取景",
+  "desktop_widget_crop_hint1": "进入调整画面后可双指缩放、单指拖动，不会再带着整个页面一起上下移动。",
+  "desktop_widget_crop_title1": "调整角色取景",
+  "desktop_widget_reset1": "重置",
+  "desktop_widget_crop_instructions1": "单指拖动调整上下左右位置；双指缩放调整大小。框内看到的，就是桌面小工具会显示的范围。",
+  "desktop_widget_crop_position_scale1": "位置：{x}% / {y}%　缩放：{scale}×",
+  "@desktop_widget_crop_position_scale1": {
+    "placeholders": {
+      "x": {
+        "type": "int"
+      },
+      "y": {
+        "type": "int"
+      },
+      "scale": {
+        "type": "String"
+      }
+    }
+  },
+  "desktop_widget_apply1": "应用",
+  "desktop_widget_just_posted1": "刚刚更新了动态",
+  "desktop_widget_important_day1": "重要的日子",
+  "desktop_widget_no_date1": "尚未选择日期",
+  "desktop_widget_first_met1": "和他相遇",
+  "desktop_widget_error1": "错误",
+  "event_memory_select_character_title1": "选择角色",
+  "event_memory_my_characters1": "我的角色",
+  "event_memory_friend_characters1": "好友角色",
+  "event_memory_friend_badge1": "好友",
+  "event_memory_unnamed_character1": "未命名角色",
+  "event_memory_generic_error1": "错误",
+  "memory_collection_title1": "拾光收藏",
+  "memory_collection_avatar_frames1": "头像框",
+  "memory_collection_stickers1": "贴纸",
+  "memory_collection_memories1": "回忆",
+  "memory_collection_try_again1": "请稍后再试一次。",
+  "memory_collection_error1": "错误",
+  "memory_collection_chat_background1": "聊天背景",
+  "memory_collection_got_it1": "知道了",
+  "memory_collection_not_now1": "先不要",
+  "memory_collection_confirm_delete1": "确认删除",
+  "memory_collection_close1": "关闭",
+  "memory_collection_delete1": "删除",
+  "memory_collection_image_preparing1": "图片准备中",
+  "memory_collection_remove_favorite1": "取消收藏",
+  "memory_collection_removed1": "已取消收藏",
+  "event_memory_performance_opening1": "有些瞬间，\n并不会因为故事结束而消失。",
+  "event_memory_performance_generic_error1": "错误",
+  "event_memory_performance_collected1": "已收藏",
+  "event_memory_performance_saving1": "正在保存…",
+  "event_memory_performance_save_gallery1": "保存到手机相册",
+  "event_memory_performance_done1": "完成",
+  "event_memory_performance_uncollect_title1": "取消收藏？",
+  "event_memory_performance_not_now1": "先不要",
+  "event_memory_performance_uncollect1": "取消收藏",
+  "event_memory_performance_uncollected1": "已取消收藏",
+  "event_memory_performance_login_to_collect1": "请先登录后再收藏这段回忆",
+  "event_memory_performance_web_gallery_unsupported1": "网页版目前不支持直接保存到手机相册",
+  "event_memory_performance_gallery_permission1": "需要相册权限才能保存这段回忆",
+  "event_memory_performance_image_not_ready1": "回忆图片尚未准备好，请重试",
+  "event_memory_performance_gallery_saved1": "已保存到手机相册",
+  "event_memory_performance_skip1": "跳过",
+  "event_memory_performance_memory_label1": "回忆",
+  "event_memory_performance_tap_continue1": "点击继续",
+  "event_memory_performance_tap_show_full1": "点击显示全文",
+  "event_memory_performance_brand_limited_memory1": "恋恋拾光・限定回忆",
+  "event_ended1": "活动已结束",
+  "event_default_name1": "限时活动",
+  "event_default_subtitle1": "与他一起留下这个季节的特别回忆。",
+  "event_currency_default1": "活动货币",
+  "event_tasks_today1": "今日任务",
+  "event_tasks_subtitle1": "完成任务，收集{currency}，解锁更多限定内容。",
+  "@event_tasks_subtitle1": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "event_milestones_title1": "累计进度",
+  "event_milestones_subtitle1": "累计{currency}，领取活动限定奖励。",
+  "@event_milestones_subtitle1": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "event_memory_title1": "限定回忆",
+  "event_memory_subtitle1": "留下这次活动的专属回忆。",
+  "event_shop_title1": "活动商店",
+  "event_shop_subtitle1": "使用{currency}兑换限定奖励。",
+  "@event_shop_subtitle1": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "event_info_title1": "活动说明",
+  "event_info_default1": "活动期间完成指定任务即可获得活动货币。\n兑换的奖励将按照活动规则发放至账号。\n活动结束后，未使用的活动货币将按活动规则处理。",
+  "event_generic_error1": "错误",
+  "event_task_default1": "活动任务",
+  "event_claimed1": "已领取",
+  "event_claim1": "领取",
+  "event_in_progress1": "进行中",
+  "event_reward_default1": "限定奖励",
+  "event_product_default1": "活动商品",
+  "event_cancel1": "取消",
+  "event_confirm_exchange1": "确认兑换",
+  "event_limited_product1": "限定商品",
+  "event_insufficient_currency1": "{currency}不足",
+  "@event_insufficient_currency1": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "event_close1": "关闭",
+  "event_redeemed_count_limit1": "已兑换 {count} / {max} 次",
+  "@event_redeemed_count_limit1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "event_redeemed_count1": "已兑换 {count} 次",
+  "@event_redeemed_count1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "event_redeemed1": "已兑换",
+  "event_exchange1": "兑换",
+  "login_account_deletion_started1": "账号已进入删除程序",
+  "login_account_deletion_expired_description1": "此账号已超过三天取消期限，无法再恢复使用。如需协助，请联系客服。",
+  "login_account_deletion_confirm1": "确定",
+  "event_memory_limited_title1": "限定回忆",
+  "moment_detail_add_photo1": "添加照片",
+  "moment_detail_error1": "错误",
+  "notification_claim_before_delete1": "请先领取花花，再删除礼物信件",
+  "notification_error1": "错误",
+  "notification_creator_gift_already_claimed1": "这份花花已经领取过",
+  "notification_creator_gift_claim_success1": "成功领取 {amount} 朵花花！",
+  "notification_creator_gift_title1": "创作者赠礼",
+  "notification_creator_gift_amount1": "{amount} 朵花花",
+  "notification_creator_gift_claimed1": "已领取",
+  "notification_creator_gift_claiming1": "领取中…",
+  "notification_creator_gift_claim_button1": "领取花花",
+  "notification_support_subject1": "玩家提交的标题",
+  "notification_support_content1": "玩家提交的内容",
+  "notification_support_reported1": "被举报的内容",
+  "notification_support_reply1": "客服回复",
+  "notification_share_mail1": "分享信件",
+  "notification_original_question1": "你之前询问",
+  "@notification_creator_gift_claim_success1": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      }
+    }
+  },
+  "@notification_creator_gift_amount1": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      }
+    }
+  },
+  "notification_preferences_chat_title1": "角色聊天",
+  "notification_preferences_chat_subtitle1": "角色回复消息的推送通知",
+  "notification_preferences_moments_title1": "新动态",
+  "notification_preferences_moments_subtitle1": "关注的创作者及角色发布新帖子",
+  "notification_preferences_social_title1": "社交通知",
+  "notification_preferences_social_subtitle1": "点赞、评论、关注与角色互动",
+  "notification_preferences_announcements_title1": "官方公告",
+  "notification_preferences_announcements_subtitle1": "一般官方公告推送",
+  "notification_preferences_events_title1": "活动提醒",
+  "notification_preferences_events_subtitle1": "活动即将结束的推送通知",
+  "notification_preferences_save_failed1": "通知设置保存失败，请稍后重试",
+  "notification_preferences_page_title1": "通知偏好",
+  "notification_preferences_login_required1": "请先登录账号",
+  "notification_preferences_load_failed1": "无法读取通知偏好，请稍后再试",
+  "notification_preferences_footer1": "此处的设置会同步至同一玩家账号的所有设备。手机系统通知权限须在每台设备上分别设置。关闭推送不会删除游戏内邮箱或已收到的通知。",
+  "official_studio_text_0011": "导览已结束，但同步观看纪录失败，之后可能再次显示",
+  "official_studio_text_0021": "请先登入帐号",
+  "official_studio_text_0031": "合作创作者专区",
+  "official_studio_text_0041": "说明",
+  "official_studio_text_0051": "无法验证合作创作者资格，请稍后再试",
+  "official_studio_text_0061": "目前没有官方合作创作者权限。\n如已审核通过，请联系官方确认开通状态。",
+  "official_studio_text_0071": "已认证合作创作者",
+  "official_studio_text_0081": "欢迎回到恋恋拾光创作者专区。专属功能将陆续开放。",
+  "official_studio_text_0091": "专属工具",
+  "official_studio_text_0101": "粉丝管理",
+  "official_studio_text_0111": "查看追踪者、移除粉丝",
+  "official_studio_text_0121": "创作数据",
+  "official_studio_text_0131": "角色人气与累计游玩次数",
+  "official_studio_text_0141": "粉丝信件",
+  "official_studio_text_0151": "寄送讯息给追踪者",
+  "official_studio_text_0161": "粉丝福利",
+  "official_studio_text_0171": "赠送自己的花花给追踪者",
+  "official_studio_text_0181": "每月创作奖励",
+  "official_studio_text_0191": "新建并公开 3 位角色，可领取 300 花花",
+  "official_studio_text_0201": "专属横幅",
+  "official_studio_text_0211": "设定创作者公开页面的横幅图片",
+  "official_studio_text_0221": "合作资讯",
+  "official_studio_text_0231": "合作状态、权益与公告",
+  "official_studio_text_0241": "问题回报中心",
+  "official_studio_text_0251": "提出问题、查看官方回覆与处理进度",
+  "official_studio_text_0261": "资格验证失败，请稍后重试",
+  "official_studio_text_0271": "目前没有官方合作创作者权限",
+  "official_studio_text_0281": "公开角色资料载入失败",
+  "official_studio_text_0291": "创作总览",
+  "official_studio_text_0301": "累计游玩次数",
+  "official_studio_text_0311": "目前追踪者",
+  "official_studio_text_0321": "暂无法取得",
+  "official_studio_text_0331": "各公开角色",
+  "official_studio_text_0341": "还没有公开角色，发布后就会显示在这里。",
+  "official_studio_text_0351": "未命名角色",
+  "official_studio_text_0361": "累计游玩次数（playCount）",
+  "official_studio_text_0371": "数据以资料库现有栏位为准；累计游玩次数不等于聊天讯息数、独立玩家数或收入。",
+  "official_studio_text_0381": "追踪者资料载入失败",
+  "official_studio_text_0391": "目前还没有追踪者",
+  "official_studio_text_0401": "追踪者名单",
+  "official_studio_text_0411": "目前显示最多 100 位追踪者；仅显示公开昵称与头像。",
+  "official_studio_text_0421": "移除粉丝",
+  "official_studio_text_0431": "取消",
+  "official_studio_text_0441": "确认移除",
+  "official_studio_text_0451": "已移除粉丝",
+  "official_studio_text_0461": "移除失败，请稍后重试",
+  "official_studio_text_0471": "玩家",
+  "official_studio_text_0481": "无法载入公开资料",
+  "official_studio_text_0491": "这位玩家",
+  "official_studio_text_0501": "裁切后图片仍过大，请使用其他图片",
+  "official_studio_text_0511": "横幅已更新",
+  "official_studio_text_0521": "图片处理失败，请重新选择图片",
+  "official_studio_text_0531": "已移除横幅",
+  "official_studio_text_0541": "移除失败",
+  "official_studio_text_0551": "请先登入",
+  "official_studio_text_0561": "公开页横幅",
+  "official_studio_text_0571": "图片读取失败",
+  "official_studio_text_0581": "尚未设定横幅",
+  "official_studio_text_0591": "选择照片后可在白色取景框内调整位置、缩放，确认后才上传。",
+  "official_studio_text_0601": "处理中…",
+  "official_studio_text_0611": "选择图片并裁切",
+  "official_studio_text_0621": "移除目前横幅",
+  "official_studio_text_0631": "无法开启这张图片",
+  "official_studio_text_0641": "裁切后档案过大，请更换照片",
+  "official_studio_text_0651": "裁切失败，请再试一次",
+  "official_studio_text_0661": "调整横幅取景",
+  "official_studio_text_0671": "移动照片，选择横幅要显示的范围",
+  "official_studio_text_0681": "单指拖曳位置・双指缩放・也可以用下方滑杆",
+  "official_studio_text_0691": "白框内的画面，就是上传后的横幅（2.5：1）",
+  "official_studio_text_0701": "缩放",
+  "official_studio_text_0711": "重设位置",
+  "official_studio_text_0721": "裁切中…",
+  "official_studio_text_0731": "确认裁切并上传",
+  "official_studio_text_0741": "合作资格",
+  "official_studio_text_0751": "资格确认中",
+  "official_studio_text_0761": "目前可使用的专属工具",
+  "official_studio_text_0771": "粉丝管理、创作数据、粉丝信件、花花福利、每月创作奖励及专属横幅。",
+  "official_studio_text_0781": "依目前系统规则，当月新建且首次公开 3 位符合资格的角色，可申请领取 300 朵花花。实际资格与核发以后端审核结果为准。",
+  "official_studio_text_0791": "官方公告与合约",
+  "official_studio_text_0801": "合作条款以双方实际签署的版本与官方正式通知为准；此页不取代合作契约。若有资格或权益相关疑问，请联系官方。",
+  "official_studio_text_0811": "信件标题须在 1～100 字之间",
+  "official_studio_text_0821": "信件内容须在 1～5000 字之间",
+  "official_studio_text_0831": "请选择一位追踪者",
+  "official_studio_text_0841": "确认寄送粉丝信件",
+  "official_studio_text_0851": "确定寄送给目前的全部追踪者吗？这次将使用 1 次群发额度。",
+  "official_studio_text_0861": "确定寄送给这位粉丝吗？这次将使用 1 次单人私信额度。",
+  "official_studio_text_0871": "确认寄出",
+  "official_studio_text_0881": "已建立寄送工作；信件将由系统陆续投递。",
+  "official_studio_text_0891": "今日寄送额度",
+  "official_studio_text_0901": "台湾时间每天 00:00 重置；群发一次可寄送给所有追踪者。",
+  "official_studio_text_0911": "全体粉丝",
+  "official_studio_text_0921": "单一粉丝",
+  "official_studio_text_0931": "无法取得粉丝名单",
+  "official_studio_text_0941": "目前没有可以寄信的粉丝",
+  "official_studio_text_0951": "选择追踪者（前 100 位）",
+  "official_studio_text_1921": "目前余额：{balance} 朵\n本次需要：{total} 朵\n尚缺少：{missing} 朵\n\n可以前往商店补充花花。",
+  "official_studio_text_1931": "即将赠送给 {followers} 位粉丝，每人 {amount} 朵，共扣除 {total} 朵花花。\n赠送完成后无法自行撤回。",
+  "official_studio_text_1941": "{mode} · {status} · 已投递 {count} 人",
+  "official_studio_text_1951": "公开角色",
+  "official_studio_text_1961": "读取中…",
+  "official_studio_text_1971": "选择粉丝",
+  "official_studio_text_1981": "本月已领取",
+  "@official_studio_text_1771": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@official_studio_text_1781": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1791": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1801": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1811": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1821": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1831": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1841": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "@official_studio_text_1851": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1861": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1871": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1921": {
+    "placeholders": {
+      "balance": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "missing": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1931": {
+    "placeholders": {
+      "followers": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "@official_studio_text_1941": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "preference_selection_title1": "选择你喜欢的角色类型",
+  "preference_selection_description1": "挑选 3～5 个你感兴趣的标签，让我们推荐更合你心意的角色。",
+  "preference_selection_recommendation_note1": "这些偏好仅用于改善推荐，你之后仍可以探索其他类型的角色。",
+  "preference_selection_selected1": "已选择",
+  "preference_selection_start1": "开始探索",
+  "preference_selection_max_error1": "最多只能选择 {count} 个标签",
+  "preference_selection_save_failed1": "保存偏好失败，请稍后再试",
+  "preference_group_personality1": "性格气质",
+  "preference_group_relationship_age1": "关系・年龄感",
+  "preference_group_story1": "故事氛围",
+  "preference_tag_gentle1": "温柔",
+  "preference_tag_cold1": "高冷",
+  "preference_tag_scheming1": "腹黑",
+  "preference_tag_tsundere1": "傲娇",
+  "preference_tag_loyal1": "忠犬",
+  "preference_tag_yandere1": "病娇",
+  "preference_tag_mysterious1": "神秘",
+  "preference_tag_healing1": "治愈",
+  "preference_tag_gap_moe1": "反差感",
+  "preference_tag_older1": "年上",
+  "preference_tag_younger1": "年下",
+  "preference_tag_ceo1": "霸总",
+  "preference_tag_school1": "校园",
+  "preference_tag_workplace1": "职场",
+  "preference_tag_ancient1": "古风",
+  "preference_tag_nonhuman1": "非人",
+  "@preference_selection_max_error1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "private_label1": "私密",
+  "profile_page_world_tab1": "开放世界",
+  "profile_page_login_required1": "请先登录",
+  "profile_page_world_load_failed1": "读取世界观失败，请稍后再试",
+  "profile_page_my_worlds1": "我的开放世界",
+  "profile_page_create_world1": "创建世界观",
+  "profile_page_worlds_empty1": "还没有创建开放世界",
+  "profile_page_worlds_empty_hint1": "创建你的第一个世界观吧",
+  "profile_page_world_untitled1": "未命名世界观",
+  "profile_page_world_public1": "公开",
+  "profile_page_world_private1": "私人",
+  "profile_page_world_character_count1": "{count} 位人物",
+  "@profile_page_world_character_count1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profile_page_world_enter_chat1": "进入聊天",
+  "profile_page_world_edit1": "编辑",
+  "profile_page_create_character1": "创建角色",
+  "profile_page_event_frame_default1": "活动头像框",
+  "public_worlds_explore_title1": "探索公开世界",
+  "public_worlds_search_tooltip1": "搜索开放世界",
+  "public_worlds_load_failed1": "公开世界暂时无法加载",
+  "public_worlds_refresh1": "重新加载",
+  "public_worlds_empty1": "公开世界正在准备中，敬请期待",
+  "public_worlds_unnamed1": "未命名世界",
+  "world_explore_subtitle1": "走进不同的世界，探索不一样的旅程",
+  "settings_notification_preferences_title1": "通知偏好",
+  "settings_notification_preferences_subtitle1": "设置想收到的通知类型，跨设备同步",
+  "settings_admin_section1": "管理",
+  "settings_admin_dashboard1": "管理后台",
+  "settings_admin_tools_subtitle1": "拾光内部管理工具",
+  "world_chat_back1": "返回",
+  "world_chat_mode_tooltip1": "回复模式（AI 与扣花尚未连接）",
+  "world_chat_menu1": "世界观菜单",
+  "world_chat_mode_story1": "剧情",
+  "world_chat_mode_immersive1": "沉浸",
+  "world_chat_mode_resonance1": "共鸣",
+  "world_chat_mode_interaction1": "互动",
+  "world_chat_mode_cost1": "{mode} · {cost} 朵花花",
+  "@world_chat_mode_cost1": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
+      "cost": {
+        "type": "int"
+      }
+    }
+  },
+  "world_memo_read_failed1": "备忘录读取失败：{error}",
+  "@world_memo_read_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_memo_sync_failed1": "同步暂时失败，目前显示上次读取的备忘录。",
+  "world_memo_server_no_id1": "服务器未返回备忘录 ID",
+  "world_memo_save_failed1": "保存失败：{error}",
+  "@world_memo_save_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_memo_delete_title1": "删除备忘录？",
+  "world_memo_delete_warning1": "删除后无法恢复。",
+  "world_memo_cancel1": "取消",
+  "world_memo_delete1": "删除",
+  "world_memo_cancel_reminder_failed1": "备忘录已删除，但取消旧设备提醒失败：{error}",
+  "@world_memo_cancel_reminder_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_memo_delete_failed1": "删除失败：{error}",
+  "@world_memo_delete_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_memo_title1": "备忘录",
+  "world_memo_world_personal1": "{worldName}｜个人备忘录",
+  "@world_memo_world_personal1": {
+    "placeholders": {
+      "worldName": {
+        "type": "String"
+      }
+    }
+  },
+  "world_memo_sync_notice1": "提醒时间会跨设备同步，并通过推送通知已登录且允许通知的设备。",
+  "world_memo_loading1": "正在读取…",
+  "world_memo_empty1": "暂无备忘录，点击右下角＋新增",
+  "world_memo_reminder_date1": "提醒日期：{date}",
+  "@world_memo_reminder_date1": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "world_memo_reminder_future1": "提醒时间必须晚于现在",
+  "world_memo_content_required1": "请先输入备忘录内容",
+  "world_memo_edit_title1": "编辑备忘录",
+  "world_memo_add_title1": "新增备忘录",
+  "world_memo_content_label1": "备忘录内容",
+  "world_memo_content_hint1": "写下想记住的事情…",
+  "world_memo_reminder_settings1": "提醒设置",
+  "world_memo_no_reminder1": "未设置提醒",
+  "world_memo_reminder_choose1": "选择日期和时间，使用云端跨设备提醒",
+  "world_memo_clear_reminder1": "清除提醒日期",
+  "world_memo_save1": "保存备忘录",
+  "world_chat_open_world1": "开放世界",
+  "world_chat_flower_sync1": "花花余额暂时无法同步",
+  "world_chat_web_store_unavailable1": "网页版暂不支持购买花花",
+  "world_chat_sync_unavailable1": "即时同步暂时不可用，仍可重新进入读取记录",
+  "world_chat_stopped1": "已停止生成，本次不扣花花",
+  "world_chat_cannot_stop1": "回复可能已完成，无法再停止；请确认聊天记录与花花",
+  "world_chat_stop_retry1": "停止请求暂时失败，请再试一次",
+  "world_chat_connection_failed1": "连接失败",
+  "world_chat_network_failed1": "网络暂时无法连接",
+  "world_chat_no_regenerate1": "尚无可重新生成的回复",
+  "world_chat_paid_regenerate1": "付费重新生成",
+  "world_chat_cancel1": "取消",
+  "world_chat_confirm1": "确认",
+  "world_chat_no_continue1": "尚无可接续的剧情",
+  "world_chat_no_save1": "目前还没有可以保存的对话",
+  "world_chat_loading1": "聊天室仍在加载中",
+  "world_chat_unnamed_character1": "未命名角色",
+  "world_chat_bg_wait1": "聊天室加载完成后即可更换背景",
+  "world_chat_sign_in1": "请先登录账号",
+  "world_chat_choose_mode1": "选择世界观模式",
+  "world_chat_mode_charge_expl1": "每条成功回复按模式扣花花；失败不收费",
+  "world_chat_photo_selected1": "已选取照片",
+  "world_chat_got_it1": "知道了",
+  "world_chat_status_settings1": "世界观状态栏设置",
+  "world_chat_save_settings1": "保存设置",
+  "world_chat_status_saved1": "已保存此世界的状态栏显示偏好",
+  "world_chat_not_ready1": "世界观聊天室尚未就绪",
+  "world_chat_enter_first1": "请先进入世界观聊天室",
+  "world_chat_photo1": "照片",
+  "world_chat_profile1": "拾光档案",
+  "world_chat_interaction1": "互动玩法",
+  "world_chat_theater1": "剧场",
+  "world_chat_status1": "状态栏",
+  "world_chat_secret1": "秘密篇章",
+  "world_chat_mood1": "心情",
+  "world_chat_outfit1": "服装",
+  "world_chat_relationship1": "关系",
+  "world_chat_thought1": "想法",
+  "world_chat_weather1": "天气",
+  "world_chat_current_state1": "目前状态",
+  "world_chat_action1": "动作",
+  "world_chat_affinity1": "好感度",
+  "world_chat_generating1": "世界正在悄悄运转…",
+  "world_chat_screenshot1": "截图分享",
+  "world_chat_copy1": "复制内容",
+  "world_chat_copied1": "已复制",
+  "world_chat_edit1": "编辑",
+  "world_chat_delete1": "删除",
+  "world_chat_report1": "举报此对话",
+  "world_chat_feedback1": "提建议",
+  "world_chat_edit_segment1": "编辑角色段落",
+  "world_chat_save1": "保存",
+  "world_chat_updated1": "消息已更新",
+  "world_chat_delete_segment1": "删除单个段落",
+  "world_chat_deleted_segment1": "已删除这一段",
+  "world_chat_edit_message1": "编辑消息",
+  "world_chat_edit_hint1": "修改你的文字",
+  "world_chat_delete_conversation1": "删除对话",
+  "world_chat_no_chat1": "尚无对话",
+  "world_chat_cancel_select1": "取消选择",
+  "world_chat_input_hint1": "书写你们的故事…",
+  "world_chat_screenshot_done1": "专属时光已生成",
+  "world_chat_screenshot_style1": "切换截图配色",
+  "world_chat_reselect1": "重新选择",
+  "world_chat_download_share1": "下载并分享",
+  "world_records_relationship_stage1": "关系阶段 {stage}",
+  "@world_records_relationship_stage1": {
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      }
+    }
+  },
+  "world_records_local_memo_read_failed1": "本地备忘录读取失败",
+  "world_records_memo_saved_local1": "备忘录已保存在此设备",
+  "world_records_memo_save_failed1": "备忘录保存失败",
+  "world_records_memo_unsaved1": "备忘录尚未保存",
+  "world_records_memo_save_before_exit1": "要先保存再离开吗？",
+  "world_records_continue_editing1": "继续编辑",
+  "world_records_save_and_exit1": "保存并离开",
+  "world_records_world_memo_title1": "给世界的备忘录",
+  "world_records_save1": "保存",
+  "world_records_memo_local_disclaimer1": "私人备忘录｜此版本仅保存在当前设备，不会发送给 AI，也不会跨设备同步。",
+  "world_records_memo_hint1": "记下世界里发现的线索、想完成的事，或想对角色说的话…",
+  "world_records_narrator_short1": "旁白",
+  "world_records_summary_service_missing1": "剧情摘要服务尚未部署（worldStoryMemory）。请部署后重新进入。",
+  "world_records_summary_load_failed1": "暂时无法读取剧情摘要，请稍后重试。",
+  "world_records_summary_intro1": "每段相遇与抉择，都将成为故事的一部分。重要经历与人物关系会在此留下记录，陪伴故事继续向前。",
+  "world_records_summary_empty1": "故事仍在继续，精彩篇章即将收录于此。",
+  "world_search_title1": "搜索对话",
+  "world_search_hint1": "搜索人物、对白或世界旁白",
+  "world_search_clear1": "清除搜索",
+  "world_search_start1": "输入关键词开始搜索",
+  "world_search_results1": "找到 {count} 条结果",
+  "world_search_empty_prompt1": "搜索玩家、人物及世界旁白",
+  "world_search_no_results1": "没有符合的对话",
+  "world_search_unknown_speaker1": "未知人物",
+  "world_search_collapse1": "收起",
+  "world_search_expand1": "展开",
+  "world_search_scope1": "当前搜索范围：聊天室已加载的最近 200 条消息",
+  "@world_search_results1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "world_menu_subtitle1": "开放世界 · 功能逐步开放",
+  "world_menu_chat_section1": "聊天",
+  "world_menu_search1": "搜索对话",
+  "world_menu_save_transcript1": "保存对话记录",
+  "world_menu_memories_background1": "专属回忆与背景",
+  "world_menu_relations_section1": "世界关系",
+  "world_menu_story_summary1": "剧情摘要",
+  "world_menu_relationships1": "人物关系",
+  "world_menu_memos1": "备忘录",
+  "world_menu_memory_section1": "记忆管理",
+  "world_menu_reset_progress1": "重置世界进度",
+  "world_chat_book_confirm1": "确定",
+  "world_custom_scene_title_required1": "请先填写剧场标题。",
+  "world_custom_scene_description_required1": "请先填写场景说明。",
+  "world_custom_scene_save_failed1": "保存失败，请稍后重试。",
+  "world_custom_scene_edit_title1": "编辑剧场",
+  "world_custom_scene_add_title1": "新增剧场",
+  "world_discovery_share_desc1": "走进创作者的开放世界，展开属于你的故事。",
+  "world_discovery_share_text1": "恋恋拾光・开放世界邀请\n\n「{title}」\n\n{description}\n\n立即探索：{link}",
+  "@world_discovery_share_text1": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "description": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "world_discovery_brand1": "恋恋拾光",
+  "world_discovery_invite1": "开放世界邀请",
+  "world_discovery_scan1": "扫码下载",
+  "world_discovery_cancel1": "取消",
+  "world_discovery_share_button1": "分享邀请卡",
+  "world_discovery_share_missing_card1": "找不到开放世界邀请卡",
+  "world_discovery_share_image_failed1": "无法生成分享图片",
+  "world_discovery_share_failed1": "分享邀请卡失败，请再试一次",
+  "world_discovery_story_open1": "故事开场",
+  "world_discovery_story_unset1": "尚未设置故事开场",
+  "world_discovery_first_unset1": "尚未设置第一句话",
+  "world_discovery_background_title1": "世界观背景与说明",
+  "world_discovery_era1": "时空背景：{era}",
+  "@world_discovery_era1": {
+    "placeholders": {
+      "era": {
+        "type": "String"
+      }
+    }
+  },
+  "world_discovery_background_unset1": "尚未设置世界观背景",
+  "world_discovery_background_full1": "完整世界背景",
+  "world_discovery_people_unset1": "尚未设置人物",
+  "world_discovery_people_intro1": "人物介绍",
+  "world_discovery_appearance_unset1": "未提供外貌特征",
+  "world_discovery_creator_unset1": "暂无创作者资料",
+  "world_discovery_creator1": "创作者",
+  "world_discovery_creator_load_failed1": "暂时无法读取创作者资料",
+  "world_discovery_world_load_failed1": "开放世界读取失败：{error}",
+  "@world_discovery_world_load_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_discovery_unpublished1": "此世界观未公开",
+  "world_discovery_open_world1": "开放世界",
+  "world_discovery_share_tooltip1": "分享开放世界",
+  "world_discovery_world_background1": "世界背景",
+  "world_discovery_not_playable1": "这个开放世界尚未开放游玩。",
+  "world_discovery_enter1": "进入世界",
+  "world_edit_login_required1": "请先登入",
+  "world_edit_no_edit_permission1": "无权编辑此世界观",
+  "world_edit_secret_permission_error1": "秘密篇章读取权限不足，请确认 Firestore Rules 已部署。已暂停储存以保护原资料。",
+  "world_edit_secret_read_error_code1": "秘密篇章读取失败（{code}），已暂停储存以保护原资料。",
+  "@world_edit_secret_read_error_code1": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_secret_read_error1": "秘密篇章读取失败，已暂停储存以保护原资料。",
+  "world_edit_world_read_error1": "读取世界观失败：{error}",
+  "@world_edit_world_read_error1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_image_max1": "世界观最多只能放 {count} 张图片",
+  "@world_edit_image_max1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "world_edit_image_read_error1": "读取图片失败：{error}",
+  "@world_edit_image_read_error1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_tag_heading1": "主题标签（最多 5 个）",
+  "world_edit_tag_max1": "最多选择 5 个标签",
+  "world_edit_tag_custom1": "标签（可自订，以顿号分隔）",
+  "world_edit_secret_not_ready1": "秘密篇章尚未成功读取，为保护既有内容暂时无法发布。请确认权限并重新开启页面。",
+  "world_edit_required_publish1": "请完成世界名称、至少一张图片、世界背景、故事开场与第一句话",
+  "world_edit_max_tags_save1": "主题标签最多 5 个，请删减后再储存",
+  "world_edit_secret_validation1": "每章请填写标题、解锁条件与秘密内容，最多 12 章",
+  "world_edit_draft_saved1": "开放世界草稿与秘密篇章已储存",
+  "world_edit_publish_unconfirmed1": "后端尚未确认公开资格，请稍后再次发布。",
+  "world_edit_publish_backend_error1": "开放世界资料已储存，但公开启用失败（{code}）：{message}。修正后可再次按「发布开放世界」。",
+  "@world_edit_publish_backend_error1": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      },
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_publish_service_missing1": "请确认 worldPublish 已部署",
+  "world_edit_public_published1": "公开开放世界已发布",
+  "world_edit_private_saved1": "私人开放世界已储存",
+  "world_edit_save_publish_failed1": "储存／发布失败：{error}",
+  "@world_edit_save_publish_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_save_draft_question1": "是否储存草稿？",
+  "world_edit_save_draft_explain1": "离开前要储存目前的世界观吗？未储存的内容将会遗失。",
+  "world_edit_discard1": "不储存",
+  "world_edit_cancel1": "取消",
+  "world_edit_save_draft1": "储存草稿",
+  "world_edit_world_name1": "开放世界名称 *",
+  "world_edit_world_images1": "世界观图片（最多 6 张，第一张为主要封面）",
+  "world_edit_cover1": "封面",
+  "world_edit_set_cover1": "设为封面",
+  "world_edit_short_pitch1": "卡片一句话介绍（选填，最多 60 字）",
+  "world_edit_public_summary1": "世界观公开简介（不含剧透）",
+  "world_edit_era1": "时空背景（例：架空现代、民国时期）",
+  "world_edit_world_rules1": "世界观背景与规则 *",
+  "world_edit_full_lore1": "完整世界背景／事件与地点（给 AI 的设定）",
+  "world_edit_npc_intro1": "主要角色与 NPC 都能设定姓名、外貌、生日、人物关系与照片。玩家仍是自己故事的主角。",
+  "world_edit_main_characters1": "主要角色",
+  "world_edit_main_subtitle1": "在世界观中较常登场的重要人物",
+  "world_edit_npc_subtitle1": "其他登场人物，也能随剧情成为互动焦点",
+  "world_edit_people_count1": "{count} 位",
+  "@world_edit_people_count1": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "world_edit_role_unset1": "尚未设定身分／职业",
+  "world_edit_remove_person1": "移除人物",
+  "world_edit_add_person1": "新增{type}",
+  "@world_edit_add_person1": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_add_secret1": "新增秘密篇章",
+  "world_edit_edit_secret1": "编辑秘密篇章",
+  "world_edit_chapter_title1": "篇章标题 *",
+  "world_edit_unlock_condition1": "解锁条件（给后端判定的描述）*",
+  "world_edit_secret_content1": "秘密内容 *",
+  "world_edit_confirm1": "确认",
+  "world_edit_story_opening1": "故事开场 *",
+  "world_edit_first_line1": "故事第一句话 *",
+  "world_edit_secret_chapters1": "秘密篇章",
+  "world_edit_secret_explain1": "秘密篇章只储存在私密资料区。正式公开不会直接公开内容；玩家需在游玩中达成剧情条件才可解锁。",
+  "world_edit_add_secret_max1": "新增秘密篇章（最多 12 章）",
+  "world_edit_publish_settings1": "发布设定",
+  "world_edit_private_world1": "私人开放世界",
+  "world_edit_private_world_desc1": "仅自己可以游玩及测试，其他玩家无法进入",
+  "world_edit_public_world1": "公开开放世界",
+  "world_edit_public_world_desc1": "其他玩家可进入游玩，每位玩家有独立剧情进度",
+  "world_edit_create_world1": "创立开放世界",
+  "world_edit_basic_tab1": "基本设定",
+  "world_edit_characters_tab1": "世界观人物",
+  "world_edit_story_tab1": "故事设定",
+  "world_edit_publish_world1": "发布开放世界",
+  "world_edit_name_required1": "请先填写人物姓名",
+  "world_edit_edit_person1": "编辑{type}",
+  "@world_edit_edit_person1": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "world_edit_upload_photo1": "上传人物照片（选填）",
+  "world_edit_allow_photo1": "允许使用此人物照片生成其他照片",
+  "world_edit_allow_photo_explain1": "仅在剧情适合时可将此人物的图片作为生成参考。不勾选仍可正常聊天及赠送一般礼物；每位人物独立设定。",
+  "world_edit_name1": "姓名 *",
+  "world_edit_gender1": "性别／性别设定",
+  "world_edit_birthday1": "生日（例：5月16日）",
+  "world_edit_age1": "年龄",
+  "world_edit_role1": "身分／职业",
+  "world_edit_appearance1": "外貌特征",
+  "world_edit_personality1": "个性与人物设定",
+  "world_edit_background1": "过去经历",
+  "world_edit_relationships1": "与其他人物的关系",
+  "world_edit_speech_style1": "说话方式／口吻",
+  "world_edit_dialogue_examples1": "对话范例（帮助 AI 理解语气）",
+  "world_edit_save_person1": "储存人物设定",
+  "world_edit_tag_mystery1": "悬疑",
+  "world_edit_tag_horror1": "恐怖",
+  "world_edit_tag_romance1": "恋爱",
+  "world_edit_tag_modern_fantasy1": "现代奇幻",
+  "world_edit_tag_school1": "校园",
+  "world_edit_tag_ensemble1": "群像",
+  "world_edit_tag_adventure1": "冒险",
+  "world_edit_tag_daily1": "日常",
+  "world_edit_tag_detective1": "推理",
+  "world_edit_tag_otherworld1": "异世界",
+  "chooseNpc1": "请选择 NPC",
+  "chooseInteractionTarget1": "选择互动对象",
+  "unnamedCharacter1": "未命名角色",
+  "chooseTargetFirst1": "请先选择互动对象",
+  "confirmGift1": "确认送礼",
+  "giftConfirmDetail1": "送给 {target}：{gift}，消耗 {cost} 朵花花。只有 AI 成功回复后才正式扣点。",
+  "@giftConfirmDetail1": {
+    "placeholders": {
+      "target": {
+        "type": "String"
+      },
+      "gift": {
+        "type": "String"
+      },
+      "cost": {
+        "type": "int"
+      }
+    }
+  },
+  "cancel1": "取消",
+  "send1": "送出",
+  "sendLocationTitle1": "发送地点（3 朵）",
+  "customLocation1": "自定义地点",
+  "confirm1": "确认",
+  "cafe1": "咖啡厅",
+  "park1": "公园",
+  "restaurant1": "餐厅",
+  "street1": "街道",
+  "giftHeart1": "爱心",
+  "giftFlower1": "花朵",
+  "giftSun1": "太阳",
+  "giftConfetti1": "彩带",
+  "giftCoffee1": "咖啡",
+  "giftCake1": "蛋糕",
+  "interactionPlayTitle1": "互动玩法",
+  "interactionTargetLabel1": "互动对象：{target}",
+  "@interactionTargetLabel1": {
+    "placeholders": {
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "intimateInteraction1": "亲密互动",
+  "poke1": "戳一戳",
+  "hug1": "拥抱",
+  "holdHands1": "牵手",
+  "gifts1": "送礼",
+  "funActivities1": "趣味玩法",
+  "sendLocation1": "发送地点",
+  "diceDuel1": "骰子对决",
+  "world_profile_name_too_long1": "世界观角色称呼最多 40 字，请缩短后再保存",
+  "world_profile_identity_too_long1": "世界观人物资料超过 2000 字，请缩短后再保存",
+  "world_relationship_live_title1": "人物关系",
+  "world_relationship_live_load_failed1": "关系数据读取失败，请检查 Firestore 权限",
+  "world_relationship_live_no_people1": "这个世界尚未建立人物",
+  "world_relationship_live_not_met1": "当前关系：尚未相遇",
+  "world_relationship_live_first_meeting1": "初次相遇",
+  "world_relationship_live_current_relation1": "当前关系：{relation}",
+  "@world_relationship_live_current_relation1": {
+    "placeholders": {
+      "relation": {
+        "type": "String"
+      }
+    }
+  },
+  "world_relationship_live_thought_title1": "目前对玩家的想法",
+  "world_relationship_live_thought_pending1": "仍需通过后续互动逐渐形成印象",
+  "world_scene_full_load_error1": "读取剧场失败：{error}",
+  "@world_scene_full_load_error1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_full_delete_title1": "删除剧场",
+  "world_scene_full_delete_confirm1": "确定删除「{title}」吗？",
+  "@world_scene_full_delete_confirm1": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_full_cancel1": "取消",
+  "world_scene_full_delete1": "删除",
+  "world_scene_full_delete_error1": "删除剧场失败：{error}",
+  "@world_scene_full_delete_error1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_full_missing_fields1": "剧场内容不足，请先补齐标题与场景说明",
+  "world_scene_full_activate_error1": "启用剧场失败：{error}",
+  "@world_scene_full_activate_error1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_full_end_title1": "结束剧场",
+  "world_scene_full_end_confirm1": "确定结束目前进行中的剧场吗？",
+  "world_scene_full_end_error1": "结束剧场失败：{error}",
+  "@world_scene_full_end_error1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_full_unnamed1": "未命名剧场",
+  "world_scene_full_opening1": "开场：{opening}",
+  "@world_scene_full_opening1": {
+    "placeholders": {
+      "opening": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_full_edit1": "编辑",
+  "world_scene_full_start1": "开始剧场",
+  "world_scene_full_creator_empty1": "目前尚无创作者剧场",
+  "world_scene_full_custom_empty1": "还没有自行创建的剧场",
+  "world_scene_full_add1": "新增剧场",
+  "world_scene_full_page_title1": "剧场",
+  "world_scene_full_creator_tab1": "创作者剧场",
+  "world_scene_full_custom_tab1": "自行创建剧场",
+  "world_scene_full_active1": "进行中的剧场：{title}",
+  "@world_scene_full_active1": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "world_scene_required1": "请填写场景标题与内容",
+  "world_scene_title1": "剧场",
+  "world_scene_beta_notice1": "世界观剧场测试版：沿用世界观聊天 AI 开启场景；剧场专属存档及正式开场 API 尚未接入。",
+  "world_scene_creator_scenes1": "创作者剧场",
+  "world_scene_no_creator_scenes1": "这个世界目前没有可读取的创作者剧场设置",
+  "world_scene_custom_scenes1": "自行创建剧场",
+  "world_scene_name1": "场景名称",
+  "world_scene_setup1": "背景、地点、角色及开场情境",
+  "world_scene_start1": "开始剧场",
+  "worldSearchTitle1": "搜索开放世界",
+  "worldSearchHint1": "搜索世界名称、创作者、标签",
+  "worldSearchClear1": "清除搜索",
+  "worldSearchEmpty1": "找不到符合的开放世界",
+  "worldSearchTrending1": "热门探索",
+  "worldSearchResults1": "搜索结果",
+  "worldSearchUnnamed1": "未命名世界",
+  "worldSearchCreator1": "创作者：{creator}",
+  "@worldSearchCreator1": {
+    "placeholders": {
+      "creator": {
+        "type": "String"
+      }
+    }
+  },
+  "world_secret_chapters_title1": "秘密篇章",
+  "world_secret_chapters_close1": "关闭",
+  "world_secret_chapters_read_failed1": "秘密篇章暂时无法读取",
+  "world_secret_chapters_retry1": "读取失败，点击重试",
+  "world_secret_chapters_empty1": "创作者尚未设置秘密篇章",
+  "world_secret_chapters_locked_chapter1": "第 {number} 章 · ？？？",
+  "@world_secret_chapters_locked_chapter1": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "world_secret_chapters_unlocked1": "已解锁，点击阅读",
+  "world_secret_chapters_locked1": "尚未解锁 · 继续探索剧情",
+  "world_timeline_load_failed1": "剧情摘要读取失败：{error}",
+  "@world_timeline_load_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_timeline_edit_summary1": "编辑剧情摘要",
+  "world_timeline_cancel1": "取消",
+  "world_timeline_save1": "保存",
+  "world_timeline_save_failed1": "保存失败：{error}",
+  "@world_timeline_save_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_timeline_delete_summary1": "删除摘要",
+  "world_timeline_delete_confirm1": "确定删除这段故事记录吗？",
+  "world_timeline_delete1": "删除",
+  "world_timeline_delete_failed1": "删除失败：{error}",
+  "@world_timeline_delete_failed1": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "world_timeline_our_story1": "我们的故事",
+  "world_timeline_retry1": "重试",
+  "world_timeline_empty1": "故事仍在展开，积累一些剧情后就会有新的记录。",
+  "world_timeline_recent1": "近期记录",
+  "world_timeline_edit1": "编辑",
+  "echo_login_to_post1": "请先登录后再留下时空回音",
+  "echo_limit1": "每位玩家在同一个开放世界最多留下 3 则时空回音",
+  "echo_count_fail1": "无法确认回音数量，请稍后再试",
+  "echo_compose_title1": "留下时空回音",
+  "echo_compose_desc1": "选择喜欢的卡面，再写下一段想留下的话。",
+  "echo_compose_hint1": "在这个世界里，你想留下什么话？",
+  "echo_send1": "发送回音",
+  "echo_player1": "玩家",
+  "echo_sent1": "时空回音已留下",
+  "echo_post_fail1": "留言失败，请检查权限与网络",
+  "echo_login1": "请先登录",
+  "echo_like_fail1": "点赞失败",
+  "echo_delete_title1": "删除时空回音？",
+  "echo_delete_warning1": "删除后将无法恢复。",
+  "echo_cancel1": "取消",
+  "echo_delete1": "删除",
+  "echo_deleted1": "时空回音已删除",
+  "echo_delete_fail1": "删除失败",
+  "echo_reason_inappropriate1": "不当内容",
+  "echo_reason_harassment1": "骚扰或攻击",
+  "echo_reason_spam1": "垃圾信息",
+  "echo_reason_other1": "其他",
+  "echo_report_title1": "举报时空回音",
+  "echo_already_reported1": "这则回音已举报过",
+  "echo_report_received1": "已收到举报",
+  "echo_report_fail1": "举报失败",
+  "echo_options1": "回音选项",
+  "echo_delete_option1": "删除回音",
+  "echo_report_option1": "举报回音",
+  "echo_wall_title1": "时空回音",
+  "echo_add1": "留下回音",
+  "echo_load_fail1": "时空回音读取失败，请检查 Firestore 权限设置",
+  "echo_empty1": "还没有时空回音，留下第一段故事吧。",
+  "store_pack_30_name1": "初见礼包",
+  "store_pack_70_name1": "暧昧礼包",
+  "store_pack_120_name1": "心动礼包",
+  "store_pack_190_name1": "热恋礼包",
+  "store_pack_250_name1": "知己礼包",
+  "store_pack_330_name1": "守候礼包",
+  "store_pack_450_name1": "信赖礼包",
+  "store_pack_520_name1": "我爱你礼包",
+  "store_pack_690_name1": "蜜月礼包",
+  "store_pack_720_name1": "承诺礼包",
+  "store_pack_750_name1": "相伴礼包",
+  "store_pack_830_name1": "深爱礼包",
+  "store_pack_990_name1": "长久礼包",
+  "store_pack_1050_name1": "唯一礼包",
+  "store_pack_1290_name1": "挚爱礼包",
+  "store_pack_1314_name1": "一生一世礼包",
+  "store_pack_1930_name1": "誓约礼包",
+  "store_pack_2990_name1": "永恒恋人礼包"
 }

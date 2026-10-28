@@ -245,7 +245,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
               child: Opacity(
                 opacity: 0.10,
                 child: Image.asset(
-                  'assets/images/contact/contact_bottom_left_botanical.png',
+                  'assets/images/contact/contact_bottom_left_botanical.webp',
                   width: 175,
                   fit: BoxFit.contain,
                   errorBuilder: (_, __, ___) =>
@@ -279,12 +279,6 @@ class _AboutUsPageState extends State<AboutUsPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.menu_book_outlined,
-              size: 62,
-              color: primary.withValues(alpha: 0.20),
-            ),
-            const SizedBox(height: 16),
             Text(
               l10n.about_us_empty_hint,
               textAlign: TextAlign.center,
@@ -510,7 +504,7 @@ class _SharedMemoryDetailPageState extends State<_SharedMemoryDetailPage> {
             tooltip: l10n.about_us_edit_title,
             onPressed: _openEditPage,
             icon: Image.asset(
-              'assets/images/chat/chat_msg_edit_mask.png',
+              'assets/images/chat/chat_msg_edit_mask.webp',
               width: 30,
               height: 30,
               color: primary,
@@ -521,7 +515,7 @@ class _SharedMemoryDetailPageState extends State<_SharedMemoryDetailPage> {
             tooltip: l10n.about_us_delete_tooltip,
             onPressed: _confirmDelete,
             icon: Image.asset(
-              'assets/images/chat/chat_msg_delete_mask.png',
+              'assets/images/chat/chat_msg_delete_mask.webp',
               width: 30,
               height: 30,
               color: Colors.redAccent,
@@ -540,7 +534,7 @@ class _SharedMemoryDetailPageState extends State<_SharedMemoryDetailPage> {
               child: Opacity(
                 opacity: 0.08,
                 child: Image.asset(
-                  'assets/images/contact/contact_bottom_left_botanical.png',
+                  'assets/images/contact/contact_bottom_left_botanical.webp',
                   width: 175,
                   fit: BoxFit.contain,
                   errorBuilder: (_, __, ___) =>

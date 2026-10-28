@@ -72,7 +72,7 @@ class _UserAvatarWithFrameState extends State<UserAvatarWithFrame> {
       // 若未來 equippedAvatarFrame 直接保存 imageUrl，可直接使用，
       // 同時保留目前 event_progress 的既有結構。
       final directImageUrl =
-          (equipped['imageUrl'] ?? '').toString().trim();
+      (equipped['imageUrl'] ?? '').toString().trim();
       if (directImageUrl.isNotEmpty) return directImageUrl;
 
       final progressDoc = await db
@@ -88,7 +88,7 @@ class _UserAvatarWithFrameState extends State<UserAvatarWithFrame> {
       if (rawOwned is! Map || rawOwned[itemId] is! Map) return '';
 
       final ownedItem =
-          Map<String, dynamic>.from(rawOwned[itemId] as Map);
+      Map<String, dynamic>.from(rawOwned[itemId] as Map);
 
       if ((ownedItem['itemType'] ?? '').toString() != 'avatar_frame') {
         return '';
@@ -109,14 +109,7 @@ class _UserAvatarWithFrameState extends State<UserAvatarWithFrame> {
           Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
       backgroundImage: widget.avatarImage,
       child: widget.avatarImage == null
-          ? (widget.fallbackChild ??
-              Icon(
-                Icons.person_rounded,
-                color: Theme.of(context)
-                    .colorScheme
-                    .primary
-                    .withValues(alpha: 0.45),
-              ))
+          ? widget.fallbackChild
           : null,
     );
 
@@ -141,7 +134,7 @@ class _UserAvatarWithFrameState extends State<UserAvatarWithFrame> {
                     fit: widget.frameFit,
                     filterQuality: FilterQuality.high,
                     errorBuilder: (_, __, ___) =>
-                        const SizedBox.shrink(),
+                    const SizedBox.shrink(),
                   ),
                 ),
               );

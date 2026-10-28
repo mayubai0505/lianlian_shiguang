@@ -265,15 +265,17 @@ class _ChatPageState extends State<ChatPage> {
   // ✨ 煞車系統專用變數，必須放在類別最上方
   http.Client? _httpClient;
   static const List<FlowerStage> _flowerStages = [
-    FlowerStage(threshold: 0, imagePath: 'assets/images/flower_stage_1.png'),
-    FlowerStage(threshold: 60, imagePath: 'assets/images/flower_stage_2.png'),
-    FlowerStage(threshold: 150, imagePath: 'assets/images/flower_stage_3.png'),
-    FlowerStage(threshold: 550, imagePath: 'assets/images/flower_stage_4.png'),
-    FlowerStage(threshold: 1720, imagePath: 'assets/images/flower_stage_5.png'),
-    FlowerStage(threshold: 2430, imagePath: 'assets/images/flower_stage_6.png'),
-    FlowerStage(threshold: 5000, imagePath: 'assets/images/flower_stage_6.png'),
+    FlowerStage(threshold: 0, imagePath: 'assets/images/flower_stage_1.webp'),
+    FlowerStage(threshold: 60, imagePath: 'assets/images/flower_stage_2.webp'),
+    FlowerStage(threshold: 150, imagePath: 'assets/images/flower_stage_3.webp'),
+    FlowerStage(threshold: 550, imagePath: 'assets/images/flower_stage_4.webp'),
+    FlowerStage(threshold: 1720, imagePath: 'assets/images/flower_stage_5.webp'),
+    FlowerStage(threshold: 2430, imagePath: 'assets/images/flower_stage_6.webp'),
+    FlowerStage(threshold: 5000, imagePath: 'assets/images/flower_stage_6.webp'),
   ];
   String? _activeAiRequestId;
+  // 已停止的請求即使晚到，也不能重新出現在目前聊天室。
+  final Set<String> _cancelledAiRequestIds = <String>{};
   String _createAiRequestId() {
     final userId = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous';
 
@@ -523,11 +525,7 @@ class _ChatPageState extends State<ChatPage> {
                     height: 28,
                     fit: BoxFit.contain,
                     errorBuilder: (context, error, stackTrace) {
-                      return const Icon(
-                        Icons.favorite_rounded,
-                        size: 24,
-                        color: Color(0xFFE87AA5),
-                      );
+                      return const SizedBox(width: 28, height: 28);
                     },
                   ),
                   const SizedBox(width: 8),
@@ -623,8 +621,8 @@ class _ChatPageState extends State<ChatPage> {
                           ),
                           child: Image.asset(
                             isCompleted
-                                ? 'assets/images/qixi_progress_on.png'
-                                : 'assets/images/qixi_progress_off.png',
+                                ? 'assets/images/qixi_progress_on.webp'
+                                : 'assets/images/qixi_progress_off.webp',
                             key: ValueKey(
                               'qixi_${index}_$isCompleted',
                             ),
@@ -636,15 +634,7 @@ class _ChatPageState extends State<ChatPage> {
                                 error,
                                 stackTrace,
                                 ) {
-                              return Icon(
-                                isCompleted
-                                    ? Icons.favorite_rounded
-                                    : Icons.favorite_border_rounded,
-                                size: 32,
-                                color: isCompleted
-                                    ? const Color(0xFFE87AA5)
-                                    : const Color(0xFF9A8EA2),
-                              );
+                              return const SizedBox(width: 46, height: 46);
                             },
                           ),
                         ),
@@ -934,6 +924,9 @@ class _ChatPageState extends State<ChatPage> {
 
       // 2 = 聊天分頁
       await prefs.setInt(mainTabKey, 2);
+      // 最後進入一般角色聊天室時，覆蓋世界觀的「最後聊天室類型」。
+      // 保留原本角色／房間的記錄格式，讓舊玩家資料繼續相容。
+      await prefs.setString('last_chat_type_${FirebaseAuth.instance.currentUser!.uid}', 'character');
       await prefs.setString(characterKey, safeCharacterId);
       await prefs.setString(sessionKey, safeSessionId);
 
@@ -965,9 +958,11 @@ class _ChatPageState extends State<ChatPage> {
       // 避免其他導頁流程誤刪新紀錄。
       if (currentSessionId.isNotEmpty &&
           savedSessionId.isNotEmpty &&
-          savedSessionId == currentSessionId) {
+          savedSessionId == currentSessionId &&
+          prefs.getString('last_chat_type_${FirebaseAuth.instance.currentUser!.uid}') != 'world') {
         await prefs.remove(characterKey);
         await prefs.remove(sessionKey);
+        await prefs.remove('last_chat_type_${FirebaseAuth.instance.currentUser!.uid}');
 
         // 離開聊天室後，玩家仍停在「聊天」主分頁。
         await prefs.setInt(mainTabKey, 2);
@@ -1234,24 +1229,8 @@ class _ChatPageState extends State<ChatPage> {
       final lastDate = data['lastRegenerateDate'] as String?;
       int currentCount = data['regenerateCount'] as int? ?? maxCount;
 
-      // 🌟🌟🌟 總裁霸氣補發：如果今天是同一天，且妳有月卡，但次數竟然可憐到 <= 3，代表妳是今天剛買的！
-      if (hasPass && lastDate == todayStr && currentCount <= 3) {
-        currentCount = maxCount; // 霸氣直接幫妳把次數灌滿到 20！
-
-        // 順便把滿血的次數寫回雲端，以免下次進來又被扣
-        await docRef.set({
-          'regenerateCount': maxCount,
-        }, SetOptions(merge: true));
-      }
-
-      if (currentCount > maxCount) {
-        currentCount = maxCount;
-
-        // 順便把校正後的次數寫回雲端，確保資料庫乾淨
-        await docRef.set({
-          'regenerateCount': maxCount,
-        }, SetOptions(merge: true));
-      }
+      // 額度只能由後端成功交易扣減／跨日判定，前端不可補發或覆寫。
+      currentCount = currentCount.clamp(0, maxCount).toInt();
 
       // 3. 判斷是否需要重置
       if (lastDate != todayStr) {
@@ -1264,11 +1243,7 @@ class _ChatPageState extends State<ChatPage> {
           });
         }
 
-        // 這時候才執行寫入
-        await docRef.set({
-          'regenerateCount': maxCount,
-          'lastRegenerateDate': todayStr,
-        }, SetOptions(merge: true));
+        // 不寫入 Firestore；後端才是免費額度的唯一權威來源。
       } else {
         // 🕰️ 同一天：讀取雲端現有的次數 (已經經過上面的 VIP 霸氣補發了！)
         if (mounted) {
@@ -1299,8 +1274,6 @@ class _ChatPageState extends State<ChatPage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
-            const Icon(Icons.stars, color: Colors.pinkAccent),
-            const SizedBox(width: 8),
             Text(l10n.starlightContractTitle),
           ],
         ),
@@ -1376,9 +1349,6 @@ class _ChatPageState extends State<ChatPage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
-            const Icon(Icons.card_membership_rounded,
-                color: Colors.amber, size: 28),
-            const SizedBox(width: 8),
             Text(l10n.referral_success_title), // 🌟 換成翻譯變數
           ],
         ),
@@ -2497,11 +2467,6 @@ class _ChatPageState extends State<ChatPage> {
         ),
         title: Row(
           children: [
-            Icon(
-              Icons.local_florist_rounded,
-              color: theme.colorScheme.primary,
-            ),
-            const SizedBox(width: 8),
             Expanded(
               child: Text(appL10n.chat_text),
             ),
@@ -2513,7 +2478,7 @@ class _ChatPageState extends State<ChatPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('取消'),
+            child: Text(AppLocalizations.of(dialogContext)!.cancelButton),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -3477,7 +3442,7 @@ class _ChatPageState extends State<ChatPage> {
                           ),
 
                           buildTab(
-                            '全部',
+                            AppLocalizations.of(context)!.chat_sticker_all,
                             2,
                           ),
                         ],
@@ -3886,8 +3851,9 @@ class _ChatPageState extends State<ChatPage> {
         'chatMode': _currentMode?.name ?? 'daily',
         'statusBarFields': statusBarFields,
         'persistentInstructions': _persistentInstructions,
-// 明確告訴後端這是免費重新生成，不能扣聊天花花。
+// 告訴後端這是重新生成；免費或按模式扣點由後端判斷。
         'isRegenerate': true,
+        'regeneratePaidConfirmed': _freeRegenerateCount <= 0,
         'isBirthdayFreebie': false,
         'overrideSystemPrompt': '',
         'sessionId': _sessionId,
@@ -4471,9 +4437,6 @@ class _ChatPageState extends State<ChatPage> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.mail_outline,
-                      color: Colors.pinkAccent, size: 40),
-                  const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -4590,7 +4553,58 @@ class _ChatPageState extends State<ChatPage> {
   }
 
 // --- 處理通話按鈕點擊 ---
+  // 聊天室所有通話入口統一檢查：沒有聲音不能進入確認頁或扣花花。
+  bool get _characterHasCallVoice =>
+      (widget.character.voiceId ?? '').trim().isNotEmpty;
+
+  void _showMissingCallVoiceDialog() {
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Flexible(child: Text(l10n.no_voice_available)),
+          ],
+        ),
+        content: Text(l10n.chat_no_voice_msg(widget.character.name)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.cancelButton),
+          ),
+          FilledButton.icon(
+            icon: const Icon(Icons.touch_app_rounded),
+            label: Text(l10n.chat_poke_btn),
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+              try {
+                await _sendPoke(
+                  widget.character.id,
+                  widget.character.createdBy,
+                  widget.character.name,
+                );
+                if (mounted) ToastUtils.success(context, l10n.chat_poke_success);
+              } catch (error) {
+                debugPrint('❌ 聲音邀請寄送失敗：$error');
+                if (mounted) {
+                  ToastUtils.error(context, AppLocalizations.of(context)!.chat_generic_error);
+                }
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _handleCallPress(BuildContext context) async {
+    if (!_characterHasCallVoice) {
+      _showMissingCallVoiceDialog();
+      return;
+    }
     final l10n = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
 
@@ -4603,8 +4617,6 @@ class _ChatPageState extends State<ChatPage> {
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Row(
             children: [
-              const Icon(Icons.lock_person_outlined, color: Colors.blueAccent),
-              const SizedBox(width: 8),
               // 替換：需要登入
               Text(l10n.call_login_title,
                   style: TextStyle(
@@ -5158,6 +5170,10 @@ class _ChatPageState extends State<ChatPage> {
 
   // 🚀 執行通話導航與扣款 (ChatPage 專用版)
   void _executeCallSequence(String selectedLanguage, bool shouldSave) async {
+    if (!_characterHasCallVoice) {
+      _showMissingCallVoiceDialog();
+      return;
+    }
     final l10n = AppLocalizations.of(context)!;
     if (_isCalling) return;
     String? customBgUrl;
@@ -5481,11 +5497,6 @@ class _ChatPageState extends State<ChatPage> {
                 ),
                 title: Row(
                   children: [
-                    const Icon(
-                      Icons.local_florist,
-                      color: Colors.pinkAccent,
-                    ),
-                    const SizedBox(width: 8),
                     Text(
                       l10n.chat_points_not_enough_title,
                       style: TextStyle(
@@ -5605,11 +5616,17 @@ class _ChatPageState extends State<ChatPage> {
           try {
             final response = await http.get(Uri.parse(audioPath));
             final audioBytes = response.bodyBytes;
-            final storageRef = FirebaseStorage.instance
-                .ref()
-                .child('artifacts/lianlianshiguang/chat_audios')
-                .child(
-                'web_audio_${DateTime.now().millisecondsSinceEpoch}.webm');
+            // 網頁錄音依玩家 UID 與聊天室分開，與其他聊天附件一致。
+            final currentUid = FirebaseAuth.instance.currentUser?.uid;
+            final currentSessionId = _sessionId;
+            if (currentUid == null || currentSessionId == null ||
+                currentSessionId.isEmpty) {
+              throw StateError('錄音上傳失敗：尚未登入或聊天室未建立');
+            }
+            final storageRef = FirebaseStorage.instance.ref().child(
+              'user_uploads/$currentUid/$currentSessionId/'
+                  'audio-${DateTime.now().millisecondsSinceEpoch}.webm',
+            );
             final uploadTask = await storageRef.putData(
                 audioBytes, SettableMetadata(contentType: 'audio/webm'));
             storagePath = await uploadTask.ref.getDownloadURL();
@@ -6727,6 +6744,9 @@ class _ChatPageState extends State<ChatPage> {
 
     // 先讓畫面立刻恢復，不必等待取消 API。
     _activeAiRequestId = null;
+    if (requestId != null && requestId.isNotEmpty) {
+      _cancelledAiRequestIds.add(requestId);
+    }
 
     _httpClient?.close();
     _httpClient = null;
@@ -7110,7 +7130,7 @@ class _ChatPageState extends State<ChatPage> {
               // 截圖分享
               ListTile(
                 leading: Image.asset(
-                  'assets/images/chat/chat_msg_screenshot_mask.png',
+                  'assets/images/chat/chat_msg_screenshot_mask.webp',
                   width: 36,
                   height: 36,
                   color: theme.colorScheme.primary,
@@ -7137,7 +7157,7 @@ class _ChatPageState extends State<ChatPage> {
               // 複製內容
               ListTile(
                 leading: Image.asset(
-                  'assets/images/chat/chat_msg_copy_mask.png',
+                  'assets/images/chat/chat_msg_copy_mask.webp',
                   width: 36,
                   height: 36,
                   color: theme.colorScheme.primary,
@@ -7161,7 +7181,7 @@ class _ChatPageState extends State<ChatPage> {
               if (message.type == 'text')
                 ListTile(
                   leading: Image.asset(
-                    'assets/images/chat/chat_msg_edit_mask.png',
+                    'assets/images/chat/chat_msg_edit_mask.webp',
                     width: 36,
                     height: 36,
                     color: theme.colorScheme.primary,
@@ -7177,7 +7197,7 @@ class _ChatPageState extends State<ChatPage> {
               // 刪除
               ListTile(
                 leading: Image.asset(
-                  'assets/images/chat/chat_msg_delete_mask.png',
+                  'assets/images/chat/chat_msg_delete_mask.webp',
                   width: 36,
                   height: 36,
                   color: Colors.redAccent,
@@ -7207,7 +7227,7 @@ class _ChatPageState extends State<ChatPage> {
               // 舉報
               ListTile(
                 leading: Image.asset(
-                  'assets/images/chat/chat_msg_report_mask.png',
+                  'assets/images/chat/chat_msg_report_mask.webp',
                   width: 40,
                   height: 40,
                   color: theme.colorScheme.primary,
@@ -7226,7 +7246,7 @@ class _ChatPageState extends State<ChatPage> {
               // 給建議
               ListTile(
                 leading: Image.asset(
-                  'assets/images/chat/chat_msg_feedback_mask.png',
+                  'assets/images/chat/chat_msg_feedback_mask.webp',
                   width: 36,
                   height: 36,
                   color: theme.colorScheme.primary,
@@ -7415,8 +7435,6 @@ class _ChatPageState extends State<ChatPage> {
       builder: (BuildContext context) => AlertDialog(
         title: Row(
           children: [
-            Icon(Icons.restart_alt_rounded, color: Colors.red),
-            SizedBox(width: 8),
             Text(l10n.chat_reset_title),
           ],
         ),
@@ -7494,7 +7512,7 @@ class _ChatPageState extends State<ChatPage> {
     } catch (e) {
       if (mounted) {
         // ✨ 總裁級：重置失敗的輕量錯誤提示，帶上小紅驚嘆號！
-        _showCenterToast(l10n.common_reset_failed(e.toString()), isError: true);
+        _showCenterToast(l10n.chat_generic_error, isError: true);
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -7575,48 +7593,28 @@ class _ChatPageState extends State<ChatPage> {
       } catch (e) {
         if (mounted) {
           // ✨ 總裁級：編輯失敗的輕量錯誤提示，為聊天室淨化行動完美收尾！
-          _showCenterToast(l10n.common_edit_failed(e.toString()),
+          _showCenterToast(l10n.chat_generic_error,
               isError: true);
         }
       }
     }
   }
 
+  // 使用後端驗證收件者、角色歸屬並確保同一玩家同一角色只寄送一次。
   Future<void> _sendPoke(
       String characterId, String creatorId, String characterName) async {
-    final l10n = AppLocalizations.of(context)!;
-    final currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser == null) return;
-    // 取得玩家名稱，若無則顯示「神秘玩家」
-    final String playerName =
-        currentUser.displayName ?? l10n.chat_mysterious_player;
-
-    try {
-      // 🌟 在通知集合中新增一筆「聲線請求」
-      await FirebaseFirestore.instance.collection('mailbox').add({
-        'type': 'voice_request',
-        'fromUserId': currentUser.uid,
-        'fromUserName': playerName,
-        'toUserId': creatorId, // 接收者：角色的創作者
-        'characterId': characterId,
-        'characterName': characterName,
-        'message': l10n.chat_poke_message(playerName, characterName),
-        'createdAt': FieldValue.serverTimestamp(),
-        'isRead': false, // 預設為未讀，之後可用來控制小紅點
-      });
-
-      // 🌟 同時更新角色的「被期待次數」，方便創作者統計人氣
-      await FirebaseFirestore.instance
-          .collection('artifacts')
-          .doc(_appId) // 請確保這裡有妳的 appId
-          .collection('public_characters')
-          .doc(characterId)
-          .update({
-        'poke_count': FieldValue.increment(1),
-      });
-    } catch (e) {
-      debugPrint("發送戳戳失敗: $e");
-      rethrow;
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) throw StateError('請先登入');
+    final result = await FirebaseFunctions.instanceFor(region: 'asia-east1')
+        .httpsCallable('requestCharacterVoice',
+        options: HttpsCallableOptions(timeout: const Duration(seconds: 30)))
+        .call({'characterId': characterId});
+    final data = result.data;
+    final already = data is Map && data['alreadyRequested'] == true;
+    if (already) {
+      debugPrint('ℹ️ 玩家已提出過角色聲音邀請：$characterId');
+    } else {
+      debugPrint('✅ 角色聲音邀請已送至創作者信箱：$characterId');
     }
   }
 
@@ -7700,7 +7698,7 @@ class _ChatPageState extends State<ChatPage> {
 
       ToastUtils.showCenterToast(
         context,
-        l10n.chatPageAudioPlaybackFailed(e.toString()),
+        l10n.chat_generic_error,
         isError: true,
       );
     }
@@ -7742,7 +7740,7 @@ class _ChatPageState extends State<ChatPage> {
 
       ToastUtils.showCenterToast(
         context,
-        l10n.chatPageSelectPhotoFailed(e.toString()),
+        l10n.chat_generic_error,
         isError: true,
       );
     }
@@ -7974,11 +7972,7 @@ class _ChatPageState extends State<ChatPage> {
       height: 180,
       color: theme.colorScheme.secondaryContainer,
       alignment: Alignment.center,
-      child: Icon(
-        Icons.broken_image_outlined,
-        size: 36,
-        color: theme.colorScheme.onSecondaryContainer,
-      ),
+      child: const SizedBox.shrink(),
     );
   }
 
@@ -7988,15 +7982,15 @@ class _ChatPageState extends State<ChatPage> {
     // 下拉選單仍可維持原本完整翻譯名稱。
     switch (mode) {
       case ChatMode.daily:
-        return '日常';
+        return AppLocalizations.of(context)!.chat_mode_short_daily;
       case ChatMode.story:
-        return '劇情';
+        return AppLocalizations.of(context)!.chat_mode_short_story;
       case ChatMode.immersive:
-        return '沉浸';
+        return AppLocalizations.of(context)!.chat_mode_short_immersive;
       case ChatMode.resonance:
-        return '共鳴';
+        return AppLocalizations.of(context)!.chat_mode_short_resonance;
       case ChatMode.gemini:
-        return '閒聊';
+        return AppLocalizations.of(context)!.chat_mode_short_gemini;
     }
   }
 
@@ -8182,7 +8176,7 @@ class _ChatPageState extends State<ChatPage> {
 
                 ToastUtils.showCenterToast(
                   context,
-                  l10n.chatPageRecordingFailed(e.toString()),
+                  l10n.chat_generic_error,
                   isError: true,
                 );
               }
@@ -8441,7 +8435,7 @@ class _ChatPageState extends State<ChatPage> {
                           )
                               : IconButton(
                             icon: Image.asset(
-                              'assets/images/chat/chat_send_plane_mask.png',
+                              'assets/images/chat/chat_send_plane_mask.webp',
                               width: 32,
                               height: 32,
                               color: Theme.of(context).colorScheme.primary,
@@ -8700,7 +8694,7 @@ class _ChatPageState extends State<ChatPage> {
 
                               // 4. 錄音
                               _buildToolItem(
-                                'assets/images/chat/chat_tool_record_mask.png',
+                                'assets/images/chat/chat_tool_record_mask.webp',
                                 l10n.chat_tool_record,
                                     () {
                                   sheetSetState(() => showRecordingUI = true);
@@ -8753,7 +8747,7 @@ class _ChatPageState extends State<ChatPage> {
                               // 7. 劇場
                               _buildToolItem(
                                 'assets/images/chat/chat_tool_scene_mask.png',
-                                '劇場',
+                                l10n.chat_theater_tool,
                                     () async {
                                   final String? currentSessionId =
                                   _sessionId != null &&
@@ -8830,7 +8824,7 @@ class _ChatPageState extends State<ChatPage> {
 
                               // 8. 狀態欄
                               _buildToolItem(
-                                'assets/images/chat/chat_status_bar_mask.png',
+                                'assets/images/chat/chat_status_bar_mask.webp',
                                 l10n.chatStatusBarTitle,
                                     () {
                                   Navigator.pop(context);
@@ -8840,7 +8834,7 @@ class _ChatPageState extends State<ChatPage> {
 
                               // 9. 聊天偏好／持續指令
                               _buildToolItem(
-                                'assets/images/chat/chat_preference_mask.png',
+                                'assets/images/chat/chat_preference_mask.webp',
                                 l10n.chatPreferenceTitle,
                                     () {
                                   Navigator.pop(context);
@@ -9490,7 +9484,7 @@ class _ChatPageState extends State<ChatPage> {
 
     if (path.isEmpty) {
       return const AssetImage(
-        'assets/images/avatar1.png',
+        'assets/images/avatar1.webp',
       );
     }
 
@@ -9513,7 +9507,7 @@ class _ChatPageState extends State<ChatPage> {
       provider = FileImage(File(path));
     } else {
       provider = const AssetImage(
-        'assets/images/avatar1.png',
+        'assets/images/avatar1.webp',
       );
     }
 
@@ -9608,11 +9602,7 @@ class _ChatPageState extends State<ChatPage> {
       final data = doc.data();
 
       if (data == null || data['lastRegenerateDate'] != todayStr) {
-        // 新的一天，重置回滿
-        await docRef.set({
-          'regenerateCount': _maxRegenerateCount,
-          'lastRegenerateDate': todayStr,
-        }, SetOptions(merge: true));
+        // 僅更新顯示：後端會在成功交易時依日期處理當天額度。
 
         if (!mounted) return;
 
@@ -9629,8 +9619,7 @@ class _ChatPageState extends State<ChatPage> {
       // 🔥 核心修正：如果資料庫存的次數「大於」現在的上限（代表月卡剛過期），強制壓回上限
       if (currentCount > _maxRegenerateCount) {
         currentCount = _maxRegenerateCount;
-        // 可選：順便把正確的數字寫回 Firebase，保持資料庫乾淨
-        docRef.set({'regenerateCount': currentCount}, SetOptions(merge: true));
+        // 不寫回；避免月卡狀態／跨裝置競態造成額度錯誤。
       }
 
       if (!mounted) return;
@@ -9780,7 +9769,7 @@ class _ChatPageState extends State<ChatPage> {
         'title': l10n.chat_mode_resonance,
         'cost': l10n.chat_mode_resonance_cost,
         'desc': l10n.chat_mode_resonance_desc,
-        'asset': 'assets/images/chat/chat_mode_resonance_mask.png',
+        'asset': 'assets/images/chat/chat_mode_resonance_mask.webp',
         'color': Colors.purple.shade200,
       },
     ];
@@ -9902,72 +9891,8 @@ class _ChatPageState extends State<ChatPage> {
               onPressed: () {
                 // 🌟 1. 先關閉對話框選單
                 Navigator.pop(context);
-                // 🌟 2. 判斷是否有聲線 ID
-                if (widget.character.voiceId == null ||
-                    widget.character.voiceId!.isEmpty) {
-                  // 🎭 3. 跳出第一個 SnackBar：提示目前沒聲音 + 「戳一下」按鈕
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext dialogContext) => AlertDialog(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)),
-                      title: Row(
-                        children: [
-                          const Icon(Icons.volume_mute_rounded,
-                              color: Colors.orangeAccent, size: 28),
-                          const SizedBox(width: 8),
-                          Text(l10n.no_voice_available,
-                              style: TextStyle(
-                                  color:
-                                  Theme.of(context).colorScheme.onSurface)),
-                        ],
-                      ),
-                      // 這裡放入你原本的沒語音提示文字
-                      content: Text(
-                          l10n.chat_no_voice_msg(widget.character.name),
-                          style: const TextStyle(fontSize: 16)),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(dialogContext),
-                          child: Text(l10n.cancelButton ?? '取消',
-                              style: const TextStyle(color: Colors.grey)),
-                        ),
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.pinkAccent,
-                            foregroundColor: Colors.white,
-                            shape: const StadiumBorder(),
-                          ),
-                          icon: const Icon(Icons.touch_app,
-                              size: 18), // 加個可愛的點擊圖示
-                          label: Text(l10n.chat_poke_btn), // 你的「戳一下」按鈕
-                          onPressed: () async {
-                            // 1. 玩家按下戳戳後，先關閉這個催更彈窗
-                            Navigator.pop(dialogContext);
-
-                            // 2. 執行你的雲端戳戳邏輯
-                            try {
-                              await _sendPoke(
-                                  widget.character.id,
-                                  widget.character.createdBy,
-                                  widget.character.name);
-
-                              // 🌟 3. 成功後，華麗呼叫你的自動消失小彈窗！
-                              if (mounted) {
-                                _showCenterToast(l10n.chat_poke_success);
-                              }
-                            } catch (e) {
-                              debugPrint("戳戳失敗: $e");
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                  );
-                } else {
-                  // ✅ 6. 如果有聲線 ID，直接進入打電話流程
-                  _handleCallPress(context);
-                }
+                // 全部通話入口統一由 _handleCallPress 做聲線驗證。
+                _handleCallPress(context);
               },
               child: Container(
                 padding: const EdgeInsets.all(12),
@@ -10120,8 +10045,6 @@ class _ChatPageState extends State<ChatPage> {
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Row(
             children: [
-              const Icon(Icons.local_florist, color: Colors.pinkAccent), // 花朵圖示
-              const SizedBox(width: 8),
               // ✨ 替換：心意不足
               Text(l10n.gift_insufficient_title,
                   style: TextStyle(
@@ -10431,7 +10354,7 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                   trailing:
                   Image.asset(
-                    'assets/images/chat/chat_send_plane_mask.png',
+                    'assets/images/chat/chat_send_plane_mask.webp',
                     width: 18,
                     height: 18,
                     color: Theme.of(context).colorScheme.primary,
@@ -11620,8 +11543,29 @@ class _ChatPageState extends State<ChatPage> {
 
     try {
       if (_freeRegenerateCount <= 0) {
-        _showSubscriptionDialog();
-        return;
+        final cost = switch (_currentMode?.name ?? 'story') {
+          'story' => 5,
+          'immersive' => 7,
+          'resonance' => 10,
+          'gemini' || 'daily' => 1,
+          _ => 5,
+        };
+        if (_flowerPoints < cost) {
+          _showCenterToast(l10n.chat_regenerate_insufficient_flowers(cost), isError: true);
+          return;
+        }
+        final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (c) => AlertDialog(
+            title: Text(l10n.chat_regenerate_paid_title),
+            content: Text(l10n.chat_regenerate_paid_confirm(cost)),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(c, false), child: Text(l10n.cancelButton)),
+              TextButton(onPressed: () => Navigator.pop(c, true), child: Text(l10n.chat_regenerate_confirm)),
+            ],
+          ),
+        );
+        if (confirmed != true || !mounted) return;
       }
 
       if (_messagesCollection == null) {
@@ -11635,7 +11579,7 @@ class _ChatPageState extends State<ChatPage> {
       final prefs = await SharedPreferences.getInstance();
       final skipWarning = prefs.getBool('hide_regenerate_warning') ?? false;
 
-      if (!skipWarning) {
+      if (!skipWarning && _freeRegenerateCount > 0) {
         bool dontShowAgain = false;
         final confirmed = await showDialog<bool>(
           context: context,
@@ -11750,13 +11694,8 @@ class _ChatPageState extends State<ChatPage> {
 
       if (!regenerateSucceeded) return;
 
-      final consumed = await _consumeRegenerateCount();
-      if (!consumed) {
-        await _loadRegenerateCount();
-        debugPrint(
-          '⚠️ 重新生成成功，但扣除重新生成次數失敗',
-        );
-      }
+      // 免費次數已由後端 AI 成功交易扣除，避免前端重複扣次數。
+      await _loadRegenerateCount();
     } catch (e, stackTrace) {
       debugPrint('❌ 重新生成按鈕流程失敗：$e');
       debugPrint('$stackTrace');
@@ -11882,7 +11821,7 @@ class _ChatPageState extends State<ChatPage> {
                     id: ChatMode.resonance.name,
                     label:
                     '${l10n.chat_mode_resonance} · ${l10n.chat_mode_resonance_cost}',
-                    asset: 'assets/images/chat/chat_mode_resonance_mask.png',
+                    asset: 'assets/images/chat/chat_mode_resonance_mask.webp',
                     fallbackIcon: Icons.favorite_rounded,
                   ),
                 ],
@@ -11954,9 +11893,16 @@ class _ChatPageState extends State<ChatPage> {
                                     snapshot.error
                                         .toString())));
 
+                      // Firestore 監聽不經過 HTTP 回覆的取消檢查。
+                      // 用後端寫入的 clientRequestId 過濾已停止的晚到訊息。
                       final messages = snapshot.data!.docs
-                          .map((doc) =>
-                          ChatMessage.fromFirestore(doc))
+                          .where((doc) {
+                        final data = doc.data() as Map<String, dynamic>;
+                        final requestId =
+                        (data['clientRequestId'] ?? '').toString();
+                        return !_cancelledAiRequestIds.contains(requestId);
+                      })
+                          .map((doc) => ChatMessage.fromFirestore(doc))
                           .toList();
                       _localMessages = messages;
 
@@ -12218,13 +12164,20 @@ class _ChatPageState extends State<ChatPage> {
     return Consumer<ThemeNotifier>(
       child: chatScaffold,
       builder: (context, themeNotifier, child) {
-        final bool hasPhotoBackground = !_useDefaultBackgroundForNewRoom &&
-            (themeNotifier.activeCharacterBackground != null ||
+        // 雲端聊天室背景可能在本機設定載入後才到達。
+        // 不可只依賴 _useDefaultBackgroundForNewRoom 的舊值，
+        // 否則 B 裝置會收到背景卻仍畫出預設底色。
+        final hasRoomBackground =
+            (themeNotifier.activeCharacterBackground ?? '').trim().isNotEmpty;
+        final useDefaultBackground =
+            _useDefaultBackgroundForNewRoom && !hasRoomBackground;
+        final bool hasPhotoBackground = !useDefaultBackground &&
+            (hasRoomBackground ||
                 (themeNotifier.currentThemeEnum == AppTheme.custom &&
                     themeNotifier.backgroundImagePath != null));
 
         return Container(
-          decoration: _useDefaultBackgroundForNewRoom
+          decoration: useDefaultBackground
               ? themeNotifier.chatDefaultBackground
               : themeNotifier.characterChatBackground,
           child: Stack(
@@ -12527,14 +12480,21 @@ class _ChatPageState extends State<ChatPage> {
             // 玩家改成「淡主題色泡泡＋深色文字」，
             // AI 則保留白/淡 surface，對話文字使用主題色。
             // 對話固定黑色；旁白／動作跟著聊天室主題色。
-            final normalStyle = const TextStyle(
-              color: Colors.black,
+            // 深色主題時玩家訊息使用高對比文字；淺色主題維持原配色。
+            // 不修改 AI 文字與聊天室其他顏色。
+            final bool isDarkChatTheme = theme.brightness == Brightness.dark;
+            final normalStyle = TextStyle(
+              color: isUserMessage && isDarkChatTheme
+                  ? theme.colorScheme.onSurface
+                  : Colors.black,
               fontSize: 15,
               height: 1.62,
             );
 
             final actionStyle = TextStyle(
-              color: primary,
+              color: isUserMessage && isDarkChatTheme
+                  ? theme.colorScheme.onSurface.withValues(alpha: 0.86)
+                  : primary,
               fontSize: 15,
               height: 1.62,
             );
@@ -12642,13 +12602,7 @@ class _ChatPageState extends State<ChatPage> {
                     ),
                   ),
                 ),
-                errorWidget: (_, __, ___) => Center(
-                  child: Icon(
-                    Icons.broken_image_outlined,
-                    size: 34,
-                    color: onSurface.withValues(alpha: 0.36),
-                  ),
-                ),
+                errorWidget: (_, __, ___) => const SizedBox.expand(),
               ),
             );
           } else if (type == 'image') {

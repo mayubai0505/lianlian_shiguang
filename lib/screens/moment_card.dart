@@ -1,3 +1,4 @@
+import '../services/tutorial_seen_sync.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -21,6 +22,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../utils/image_utils.dart';
 import '../utils/character_navigator.dart';
+import '../widgets/creator_verified_badge.dart';
 
 class MomentCard extends StatefulWidget {
   final Moment moment;
@@ -61,6 +63,7 @@ class _MomentCardState extends State<MomentCard> {
   bool _isBookmarked = false;
   bool _isOpeningMomentAction = false;
   String _resolvedAuthorAvatar = '';
+  int _avatarRequestVersion = 0;
   // 🔑 宣告 5 把氣泡追蹤鑰匙 (新增在這裡)
   final GlobalKey _likeKey = GlobalKey();
   final GlobalKey _bookmarkKey = GlobalKey();
@@ -84,7 +87,8 @@ class _MomentCardState extends State<MomentCard> {
   void initState() {
     super.initState();
     _likeCount = widget.moment.likeCount;
-    _resolvedAuthorAvatar = '';
+    // 先顯示貼文已儲存的頭像，避免等待最新資料時閃出預設頭像。
+    _resolvedAuthorAvatar = widget.moment.authorAvatar.trim();
     _checkIfLiked();
     _checkIfBookmarked();
     _refreshLatestAuthorAvatar();
@@ -105,7 +109,7 @@ class _MomentCardState extends State<MomentCard> {
     if (oldWidget.moment.id != widget.moment.id ||
         oldWidget.moment.authorId != widget.moment.authorId ||
         oldWidget.moment.authorAvatar != widget.moment.authorAvatar) {
-      _resolvedAuthorAvatar = '';
+      _resolvedAuthorAvatar = widget.moment.authorAvatar.trim();
       _refreshLatestAuthorAvatar();
     }
   }
@@ -121,14 +125,14 @@ class _MomentCardState extends State<MomentCard> {
 
     final prefs = await SharedPreferences.getInstance();
 
-    bool hasSeen = prefs.getBool('seen_moment_card_tips') ?? false;
+    bool hasSeen = await TutorialSeenSync.hasSeen('seen_moment_card_tips');
 
     // 4. 真正發射氣泡！(因為已經延遲過了，不需要再用 addPostFrameCallback，直接射！)
     if (!hasSeen) {
       try {
         ShowCaseWidget.of(context).startShowCase([_likeKey, _bookmarkKey]);
         // 寫下紀錄
-        await prefs.setBool('seen_moment_card_tips', true);
+        await TutorialSeenSync.markSeen('seen_moment_card_tips');
       } catch (e) {
         print("⚠️ 找不到 ShowCaseWidget: $e");
       }
@@ -137,6 +141,9 @@ class _MomentCardState extends State<MomentCard> {
 
 
   Future<void> _refreshLatestAuthorAvatar() async {
+    // 防止重用卡片後，上一筆非同步請求覆蓋新貼文的頭像。
+    final requestVersion = ++_avatarRequestVersion;
+    final momentId = widget.moment.id;
     try {
       String latestAvatar = '';
 
@@ -190,7 +197,10 @@ class _MomentCardState extends State<MomentCard> {
         }
       }
 
-      if (!mounted || latestAvatar.isEmpty) return;
+      if (!mounted ||
+          requestVersion != _avatarRequestVersion ||
+          widget.moment.id != momentId ||
+          latestAvatar.isEmpty) return;
 
       if (_resolvedAuthorAvatar != latestAvatar) {
         setState(() {
@@ -634,12 +644,10 @@ class _MomentCardState extends State<MomentCard> {
 
                                   if (mounted) {
                                     ToastUtils.showCenterToast(
-                                      this.context,
-                                      l10n.moment_forward_success(
-                                        char.name,
-                                      ),
-                                      customIcon:
-                                      Icons.send_rounded,
+                                        this.context,
+                                        l10n.moment_forward_success(
+                                          char.name,
+                                        )
                                     );
                                   }
 
@@ -850,7 +858,6 @@ class _MomentCardState extends State<MomentCard> {
   Future<void> _showMoreOptions() async {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final primary = theme.colorScheme.primary;
     final onSurface = theme.colorScheme.onSurface;
 
     await showModalBottomSheet(
@@ -864,33 +871,14 @@ class _MomentCardState extends State<MomentCard> {
       ),
       builder: (context) {
         Widget actionTile({
-          required IconData icon,
           required String title,
           required VoidCallback onTap,
           bool destructive = false,
         }) {
-          final color = destructive
-              ? theme.colorScheme.error
-              : primary.withValues(alpha: 0.82);
-
           return ListTile(
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 24,
               vertical: 2,
-            ),
-            leading: Container(
-              width: 36,
-              height: 36,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.075),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                icon,
-                size: 20,
-                color: color,
-              ),
             ),
             title: Text(
               title,
@@ -914,7 +902,6 @@ class _MomentCardState extends State<MomentCard> {
               children: [
                 if (widget.moment.createdBy == widget.currentUserId) ...[
                   actionTile(
-                    icon: Icons.edit_note_rounded,
                     title: l10n.moment_edit_title,
                     onTap: () {
                       Navigator.pop(context);
@@ -922,7 +909,6 @@ class _MomentCardState extends State<MomentCard> {
                     },
                   ),
                   actionTile(
-                    icon: Icons.delete_outline_rounded,
                     title: l10n.moment_action_delete,
                     destructive: true,
                     onTap: () {
@@ -932,7 +918,6 @@ class _MomentCardState extends State<MomentCard> {
                   ),
                 ] else ...[
                   actionTile(
-                    icon: Icons.flag_outlined,
                     title: l10n.moment_action_report,
                     onTap: () {
                       Navigator.pop(context);
@@ -940,7 +925,6 @@ class _MomentCardState extends State<MomentCard> {
                     },
                   ),
                   actionTile(
-                    icon: Icons.visibility_off_outlined,
                     title: l10n.hide_moment_title,
                     onTap: () {
                       Navigator.pop(context);
@@ -948,7 +932,6 @@ class _MomentCardState extends State<MomentCard> {
                     },
                   ),
                   actionTile(
-                    icon: Icons.block_rounded,
                     title: l10n.block_char,
                     destructive: true,
                     onTap: () {
@@ -1024,8 +1007,6 @@ class _MomentCardState extends State<MomentCard> {
       ToastUtils.showCenterToast(
         context,
         l10n.momentReportSubmitted,
-        customIcon:
-        Icons.flag_outlined,
       );
     }
   }
@@ -1072,12 +1053,13 @@ class _MomentCardState extends State<MomentCard> {
 
               // 第一個按鈕：App 內轉發 / 私訊
               ListTile(
-                leading: Icon(
-                  Icons.send_outlined,
-                  color: Theme.of(context)
-                      .colorScheme
-                      .primary
-                      .withValues(alpha: 0.82),
+                leading: Image.asset(
+                  'assets/images/chat/chat_send_plane_mask.webp',
+                  width: 24,
+                  height: 24,
+                  fit: BoxFit.contain,
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.82),
+                  colorBlendMode: BlendMode.srcIn,
                 ),
                 title: Text(
                   l10n.moment_forward_hint,
@@ -1339,9 +1321,9 @@ class _MomentCardState extends State<MomentCard> {
                     },
                     child: CircleAvatar(
                       radius: 24,
-                      backgroundImage: getAvatarImageProvider(
-                        _resolvedAuthorAvatar,
-                      ),
+                      backgroundImage: _resolvedAuthorAvatar.isNotEmpty
+                          ? getAvatarImageProvider(_resolvedAuthorAvatar)
+                          : null,
                       backgroundColor: primary.withValues(alpha: 0.08),
                     ),
                   ),
@@ -1350,17 +1332,33 @@ class _MomentCardState extends State<MomentCard> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          widget.moment.authorName,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.notoSerifTc(
-                            color: onSurface,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            height: 1.35,
-                            letterSpacing: 0.4,
-                          ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                widget.moment.authorName,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.notoSerifTc(
+                                  color: onSurface,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.35,
+                                  letterSpacing: 0.4,
+                                ),
+                              ),
+                            ),
+                            // 只有創作者本人發文才可顯示認證，角色發文不顯示。
+                            if (widget.moment.isCreatorPost &&
+                                widget.moment.createdBy.trim().isNotEmpty) ...[
+                              const SizedBox(width: 5),
+                              CreatorVerifiedBadge(
+                                userId: widget.moment.createdBy,
+                                size: 18,
+                              ),
+                            ],
+                          ],
                         ),
                         const SizedBox(height: 2),
                         Text(
@@ -1440,10 +1438,7 @@ class _MomentCardState extends State<MomentCard> {
                           height: 200,
                           alignment: Alignment.center,
                           color: onSurface.withValues(alpha: 0.025),
-                          child: Icon(
-                            Icons.broken_image_outlined,
-                            color: onSurface.withValues(alpha: 0.28),
-                          ),
+                          child: const SizedBox.shrink(),
                         );
                       },
                     ),
@@ -1461,13 +1456,14 @@ class _MomentCardState extends State<MomentCard> {
                         key: _likeKey,
                         description: l10n.tip_post_like,
                         child: IconButton(
-                          visualDensity: VisualDensity.compact,
-                          icon: Icon(
-                            _isLiked
-                                ? Icons.eco_rounded
-                                : Icons.eco_outlined,
-                            size: 21,
+                          visualDensity: VisualDensity.standard,
+                          icon: Image.asset(
+                            'assets/images/chat/chat_gift_flower.png',
+                            width: 26,
+                            height: 26,
+                            fit: BoxFit.contain,
                             color: _isLiked ? primary : actionColor,
+                            colorBlendMode: BlendMode.srcIn,
                           ),
                           onPressed: () {
                             _hideTipsThenRun(
@@ -1478,13 +1474,14 @@ class _MomentCardState extends State<MomentCard> {
                       )
                     else
                       IconButton(
-                        visualDensity: VisualDensity.compact,
-                        icon: Icon(
-                          _isLiked
-                              ? Icons.eco_rounded
-                              : Icons.eco_outlined,
-                          size: 21,
+                        visualDensity: VisualDensity.standard,
+                        icon: Image.asset(
+                          'assets/images/chat/chat_gift_flower.png',
+                          width: 26,
+                          height: 26,
+                          fit: BoxFit.contain,
                           color: _isLiked ? primary : actionColor,
+                          colorBlendMode: BlendMode.srcIn,
                         ),
                         onPressed: () {
                           _hideTipsThenRun(
@@ -1493,11 +1490,14 @@ class _MomentCardState extends State<MomentCard> {
                         },
                       ),
                     IconButton(
-                      visualDensity: VisualDensity.compact,
-                      icon: Icon(
-                        Icons.chat_bubble_outline_rounded,
-                        size: 20,
+                      visualDensity: VisualDensity.standard,
+                      icon: Image.asset(
+                        'assets/images/chat/chat_mode_daily_mask.png',
+                        width: 26,
+                        height: 26,
+                        fit: BoxFit.contain,
                         color: actionColor,
+                        colorBlendMode: BlendMode.srcIn,
                       ),
                       onPressed: () {
                         _hideTipsThenRun(() async {
@@ -1517,11 +1517,14 @@ class _MomentCardState extends State<MomentCard> {
                     ),
                     const SizedBox(width: 2),
                     IconButton(
-                      visualDensity: VisualDensity.compact,
-                      icon: Icon(
-                        Icons.send_outlined,
-                        size: 21,
+                      visualDensity: VisualDensity.standard,
+                      icon: Image.asset(
+                        'assets/images/chat/chat_send_plane_mask.webp',
+                        width: 26,
+                        height: 26,
+                        fit: BoxFit.contain,
                         color: actionColor,
+                        colorBlendMode: BlendMode.srcIn,
                       ),
                       onPressed: () {
                         _hideTipsThenRun(() => _onSharePressed());
@@ -1533,15 +1536,14 @@ class _MomentCardState extends State<MomentCard> {
                         key: _bookmarkKey,
                         description: l10n.tip_post_bookmark,
                         child: IconButton(
-                          visualDensity: VisualDensity.compact,
-                          icon: Icon(
-                            _isBookmarked
-                                ? Icons.park_rounded
-                                : Icons.park_outlined,
-                            size: 22,
-                            color: _isBookmarked
-                                ? primary
-                                : actionColor,
+                          visualDensity: VisualDensity.standard,
+                          icon: Image.asset(
+                            'assets/images/chat/chat_pin_bookmark.webp',
+                            width: 32,
+                            height: 32,
+                            fit: BoxFit.contain,
+                            color: _isBookmarked ? primary : actionColor,
+                            colorBlendMode: BlendMode.srcIn,
                           ),
                           onPressed: () {
                             _hideTipsThenRun(
@@ -1552,15 +1554,14 @@ class _MomentCardState extends State<MomentCard> {
                       )
                     else
                       IconButton(
-                        visualDensity: VisualDensity.compact,
-                        icon: Icon(
-                          _isBookmarked
-                              ? Icons.park_rounded
-                              : Icons.park_outlined,
-                          size: 22,
-                          color: _isBookmarked
-                              ? primary
-                              : actionColor,
+                        visualDensity: VisualDensity.standard,
+                        icon: Image.asset(
+                          'assets/images/chat/chat_pin_bookmark.webp',
+                          width: 32,
+                          height: 32,
+                          fit: BoxFit.contain,
+                          color: _isBookmarked ? primary : actionColor,
+                          colorBlendMode: BlendMode.srcIn,
                         ),
                         onPressed: () {
                           _hideTipsThenRun(

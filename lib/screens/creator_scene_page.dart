@@ -366,7 +366,7 @@ class _CreatorScenePageState extends State<CreatorScenePage> {
         foregroundColor: theme.colorScheme.onPrimary,
         elevation: 1,
         label: Text(
-          '新增劇場',
+          l10n.creator_scene_edit_title_add,
           style: GoogleFonts.notoSerifTc(fontWeight: FontWeight.w700),
         ),
       ),

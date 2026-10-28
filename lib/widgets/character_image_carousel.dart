@@ -38,7 +38,7 @@ class _CharacterImageCarouselState
     }
 
     return const AssetImage(
-      'assets/images/blank_avatar.png',
+      'assets/images/blank_avatar.webp',
     );
   }
 
@@ -87,13 +87,6 @@ class _CharacterImageCarouselState
     if (publicImages.isEmpty) {
       return Container(
         color: Colors.grey[300],
-        child: const Center(
-          child: Icon(
-            Icons.hide_image_outlined,
-            size: 50,
-            color: Colors.grey,
-          ),
-        ),
       );
     }
 
@@ -141,7 +134,7 @@ class _CharacterImageCarouselState
                   stackTrace,
                   ) {
                 return Image.asset(
-                  'assets/images/blank_avatar.png',
+                  'assets/images/blank_avatar.webp',
                   width: double.infinity,
                   height: double.infinity,
                   fit: BoxFit.cover,

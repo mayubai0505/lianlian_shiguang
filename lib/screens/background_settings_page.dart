@@ -16,14 +16,16 @@ import 'dart:ui';
 import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 
 class BackgroundSettingsPage extends StatefulWidget {
-  final Character character;
+  final Character? character;
   final String characterId;
+  final String? worldId;
   final String sessionId;
 
   const BackgroundSettingsPage({
     super.key,
-    required this.character,
-    required this.characterId,
+    this.character,
+    this.characterId = '',
+    this.worldId,
     this.sessionId = '',
   });
 
@@ -34,6 +36,10 @@ class BackgroundSettingsPage extends StatefulWidget {
 
 class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
     with SingleTickerProviderStateMixin {
+  String get _backgroundKey => widget.worldId == null
+      ? widget.sessionId
+      : ThemeNotifier.worldBackgroundKey(widget.worldId!);
+
   static const String _topRightFloralAsset =
       'assets/images/theme/theme_card_starlight1.png';
 
@@ -160,7 +166,7 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
                       fontWeight: FontWeight.w500,
                     ),
                     tabs: [
-                      Tab(text: '專屬照片'),
+                      Tab(text: appL10n.background_exclusive_photos_tab),
                       Tab(text: appL10n.background_settings_message),
                     ],
                   ),
@@ -170,7 +176,7 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
                 child: TabBarView(
                   controller: _tabController,
                   children: [
-                    _buildExclusivePhotosTab(
+                    widget.worldId != null ? _buildWorldPhotosTab(context, currentUserId: currentUserId) : _buildExclusivePhotosTab(
                       context,
                       currentUserId: currentUserId,
                       primary: primary,
@@ -244,7 +250,6 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
             if (cgList.isEmpty) {
               return _buildEmptyLimitedState(
                 context,
-                icon: Icons.photo_library_outlined,
                 title: appL10n.background_title_exclusive_photo_current,
                 subtitle: appL10n.background_subtitle_unlock_character_photo,
               );
@@ -293,6 +298,94 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
     );
   }
 
+  /// 世界模式：照片依各角色獨立好感度決定是否可以用作背景。
+  /// 限定背景仍沿用原有 event_progress/ownedEventItems 清單。
+  Widget _buildWorldPhotosTab(BuildContext context, {required String? currentUserId}) {
+    if (currentUserId == null || widget.sessionId.isEmpty) {
+      return Center(child: Text(appL10n.background_world_sign_in_chat));
+    }
+    final app = FirebaseFirestore.instance.collection('artifacts').doc(
+        const String.fromEnvironment('APP_ID', defaultValue: 'lianlianshiguang'));
+    return FutureBuilder<DocumentSnapshot<Map<String,dynamic>>>(
+      future: app.collection('worlds').doc(widget.worldId!).get(),
+      builder: (context, worldSnapshot) {
+        if (!worldSnapshot.hasData) {
+          if (worldSnapshot.hasError) return Center(child: Text(appL10n.background_world_photo_load_error));
+          return const Center(child: CircularProgressIndicator());
+        }
+        final world = worldSnapshot.data?.data() ?? <String,dynamic>{};
+        final roster = (world['npcCharacters'] as List? ?? const [])
+            .whereType<Map>().map((m) => Map<String,dynamic>.from(m)).where(
+                (m) => (m['id'] ?? '').toString().isNotEmpty).toList();
+        final coverUrl = (world['coverImage'] ?? '').toString().trim();
+        // The displayed world cover is creator-configured world artwork, not a
+        // character CG; no character-affection threshold applies to it.
+        if (roster.isEmpty && coverUrl.isEmpty) {
+          return Center(child: Text(appL10n.background_world_no_photos));
+        }
+        return StreamBuilder<QuerySnapshot<Map<String,dynamic>>>(
+          stream: app.collection('world_chat_sessions').doc(widget.sessionId)
+              .collection('character_affinities').snapshots(),
+          builder: (context, affinitySnapshot) {
+            final scores = <String,int>{};
+            for (final d in affinitySnapshot.data?.docs ?? <QueryDocumentSnapshot<Map<String,dynamic>>>[]) {
+              scores[d.id] = (d.data()['score'] as num?)?.toInt() ?? 0;
+            }
+            return ListView(
+              padding: const EdgeInsets.fromLTRB(18, 12, 18, 24),
+              children: [
+                if (coverUrl.isNotEmpty) ...[
+                  Text(appL10n.background_world_cover, style: GoogleFonts.notoSerifTc(
+                      fontSize: 16, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 10),
+                  InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () async {
+                      final selected = await showDialog<bool>(
+                        context: context,
+                        builder: (dialogContext) => AlertDialog(
+                          title: Text(AppLocalizations.of(dialogContext)!.change_chat_bg),
+                          content: Text(appL10n.background_world_cover_confirm),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.pop(dialogContext, false),
+                                child: Text(AppLocalizations.of(dialogContext)!.cancelButton)),
+                            FilledButton(onPressed: () => Navigator.pop(dialogContext, true),
+                                child: Text(AppLocalizations.of(dialogContext)!.confirm_change)),
+                          ],
+                        ),
+                      );
+                      if (selected != true || !context.mounted) return;
+                      await context.read<ThemeNotifier>().setChatRoomBackground(
+                          _backgroundKey, coverUrl);
+                      if (context.mounted) Navigator.pop(context);
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: SizedBox(height: 180, width: double.infinity,
+                          child: coverUrl.startsWith('http')
+                              ? CachedNetworkImage(imageUrl: coverUrl, fit: BoxFit.cover)
+                              : coverUrl.startsWith('assets/')
+                              ? Image.asset(coverUrl, fit: BoxFit.cover)
+                              : _buildCachedImage(coverUrl)),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+                for (final character in roster)
+                  _WorldCharacterPhotos(
+                    key: ValueKey(character['id']),
+                    character: character,
+                    score: scores[(character['id'] ?? '').toString()] ?? 0,
+                    sessionId: _backgroundKey,
+                  ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   Widget _buildLimitedBackgroundsTab(
       BuildContext context, {
         required String? currentUserId,
@@ -301,7 +394,6 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
     if (currentUserId == null) {
       return _buildEmptyLimitedState(
         context,
-        icon: Icons.lock_outline_rounded,
         title: appL10n.background_title_login,
         subtitle: appL10n.background_subtitle_redeem_chat_event,
       );
@@ -363,7 +455,7 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
                 (item['eventId'] ?? eventDoc.id).toString(),
                 itemId:
                 (item['itemId'] ?? entry.key).toString(),
-                name: (item['name'] ?? '限定背景').toString(),
+                name: (item['name'] ?? appL10n.background_world_default_limited).toString(),
                 description:
                 (item['description'] ?? '').toString(),
                 imageUrl: imageUrl,
@@ -375,7 +467,6 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
         if (items.isEmpty) {
           return _buildEmptyLimitedState(
             context,
-            icon: Icons.wallpaper_outlined,
             title: appL10n.background_title,
             subtitle: appL10n.background_subtitle_event_shop_redeem_chat,
           );
@@ -492,7 +583,6 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
 
   Widget _buildEmptyLimitedState(
       BuildContext context, {
-        required IconData icon,
         required String title,
         required String subtitle,
       }) {
@@ -504,12 +594,6 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              size: 46,
-              color: theme.colorScheme.primary.withValues(alpha: 0.52),
-            ),
-            const SizedBox(height: 12),
             Text(
               title,
               textAlign: TextAlign.center,
@@ -603,18 +687,18 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
           .toList();
     }
 
-    if (widget.character.gallery != null &&
-        widget.character.gallery!.isNotEmpty) {
-      return List<CharacterPhoto>.from(widget.character.gallery!);
+    if (widget.character!.gallery != null &&
+        widget.character!.gallery!.isNotEmpty) {
+      return List<CharacterPhoto>.from(widget.character!.gallery!);
     }
 
-    if (widget.character.avatarPath.trim().isEmpty) {
+    if (widget.character!.avatarPath.trim().isEmpty) {
       return <CharacterPhoto>[];
     }
 
     return [
       CharacterPhoto(
-        imageUrl: widget.character.avatarPath,
+        imageUrl: widget.character!.avatarPath,
         requiredAffection: 0,
         description: l10n.first_encounter,
       ),
@@ -683,7 +767,6 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
                                 l10n.affection_required_to_unlock(
                                   cg.requiredAffection,
                                 ),
-                                customIcon: Icons.lock_person_rounded,
                               );
                             }
                           },
@@ -881,11 +964,7 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
     return Container(
       color: Colors.grey.shade200,
       alignment: Alignment.center,
-      child: const Icon(
-        Icons.broken_image_outlined,
-        color: Colors.grey,
-        size: 46,
-      ),
+      child: const SizedBox.shrink(),
     );
   }
 
@@ -982,7 +1061,7 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
               await Provider.of<ThemeNotifier>(
                 pageContext,
                 listen: false,
-              ).resetChatRoomBackground(widget.sessionId);
+              ).resetChatRoomBackground(_backgroundKey);
 
               if (!dialogContext.mounted) return;
               Navigator.pop(dialogContext);
@@ -990,7 +1069,6 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
               ToastUtils.showCenterToast(
                 pageContext,
                 l10n.reset_bg_success,
-                customIcon: Icons.wallpaper_rounded,
               );
             },
             child: Text(
@@ -1019,7 +1097,7 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
         content: Text(
           l10n.confirm_change_chat_bg(
             cg.description,
-            widget.character.name,
+            widget.character!.name,
           ),
           style: GoogleFonts.notoSerifTc(),
         ),
@@ -1037,7 +1115,7 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
                 pageContext,
                 listen: false,
               ).setChatRoomBackground(
-                widget.sessionId,
+                _backgroundKey,
                 cg.imageUrl,
               );
 
@@ -1055,6 +1133,86 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage>
           ),
         ],
       ),
+    );
+  }
+}
+
+class _WorldCharacterPhotos extends StatelessWidget {
+  const _WorldCharacterPhotos({super.key, required this.character, required this.score, required this.sessionId});
+  final Map<String,dynamic> character;
+  final int score;
+  final String sessionId;
+
+  @override
+  Widget build(BuildContext context) {
+    final id = (character['id'] ?? '').toString();
+    final name = (character['name'] ?? appL10n.background_world_default_character).toString();
+    final fallback = (character['avatarUrl'] ?? '').toString().trim();
+    final app = FirebaseFirestore.instance.collection('artifacts').doc(
+        const String.fromEnvironment('APP_ID', defaultValue: 'lianlianshiguang'));
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 18),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Padding(padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Text(name, style: GoogleFonts.notoSerifTc(fontWeight: FontWeight.w600,fontSize:16))),
+        FutureBuilder<QuerySnapshot<Map<String,dynamic>>>(
+          future: app.collection('public_characters').doc(id)
+              .collection('photos').orderBy('requiredAffection').get(),
+          builder: (context, photoSnapshot) {
+            final photos = <Map<String,dynamic>>[];
+            if (photoSnapshot.hasData) {
+              for (final d in photoSnapshot.data!.docs) {
+                final data=d.data();
+                final url=(data['imageUrl'] ?? '').toString();
+                if (url.isNotEmpty) photos.add(data);
+              }
+            }
+            // 未配置公共角色照片時，只展示世界正式角色的預設圖。
+            if (photos.isEmpty && fallback.isNotEmpty) {
+              photos.add({'imageUrl': fallback, 'requiredAffection': 0});
+            }
+            if (photos.isEmpty) {
+              return Text(appL10n.background_world_no_character_photos);
+            }
+            return SizedBox(height: 185, child: ListView.separated(
+              scrollDirection: Axis.horizontal, itemCount: photos.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 10),
+              itemBuilder: (context, index) {
+                final photo=photos[index];
+                final requiredScore=(photo['requiredAffection'] as num?)?.toInt() ?? 0;
+                final unlocked=score>=requiredScore;
+                final url=(photo['imageUrl'] ?? '').toString();
+                return InkWell(
+                  onTap: () async {
+                    if (!unlocked) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(appL10n.background_world_unlock_required(requiredScore))));
+                      return;
+                    }
+                    final ok=await showDialog<bool>(context:context,builder:(c)=>AlertDialog(
+                        title: Text(AppLocalizations.of(c)!.change_chat_bg),
+                        content:Text(appL10n.background_world_character_confirm(name)),
+                        actions:[TextButton(onPressed:()=>Navigator.pop(c,false),child:const Text('取消')),
+                          FilledButton(onPressed:()=>Navigator.pop(c,true),child:const Text('確定'))]));
+                    if (ok != true || !context.mounted) return;
+                    await context.read<ThemeNotifier>().setChatRoomBackground(sessionId,url);
+                    if (context.mounted) Navigator.pop(context);
+                  },
+                  child: ClipRRect(borderRadius:BorderRadius.circular(14),child:SizedBox(
+                      width:130,child:Stack(fit:StackFit.expand,children:[
+                    if (url.startsWith('http')) CachedNetworkImage(imageUrl:url,fit:BoxFit.cover)
+                    else if (url.startsWith('assets/')) Image.asset(url,fit:BoxFit.cover)
+                    else const ColoredBox(color:Colors.black12),
+                    if (!unlocked) Container(color:Colors.black54,alignment:Alignment.center,
+                        child:Column(mainAxisSize:MainAxisSize.min,children:[
+                          const Icon(Icons.lock_outline,color:Colors.white),
+                          Text(appL10n.background_world_affection_count(requiredScore),style:const TextStyle(color:Colors.white))])),
+                  ]))),
+                );
+              },
+            ));
+          },
+        ),
+      ]),
     );
   }
 }

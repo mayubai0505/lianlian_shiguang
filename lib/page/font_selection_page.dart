@@ -34,6 +34,28 @@ class FontSelectionPage extends StatelessWidget {
     return appL10n.font_size_extra_large;
   }
 
+  String _localizedFontLabel(AppFont font) {
+    switch (font) {
+      case AppFont.notoSerifTc:
+        return appL10n.font_selection_serif_name;
+      case AppFont.notoSansTc:
+        return appL10n.font_selection_sans_name;
+      case AppFont.system:
+        return appL10n.font_selection_system_name;
+    }
+  }
+
+  String _localizedFontDescription(AppFont font) {
+    switch (font) {
+      case AppFont.notoSerifTc:
+        return appL10n.font_selection_serif_description;
+      case AppFont.notoSansTc:
+        return appL10n.font_selection_sans_description;
+      case AppFont.system:
+        return appL10n.font_selection_system_description;
+    }
+  }
+
   int _fontScaleIndex(double scale) {
     const values = <double>[0.9, 1.0, 1.1, 1.2, 1.35];
 
@@ -95,8 +117,6 @@ class FontSelectionPage extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.format_size_rounded),
-                        const SizedBox(width: 9),
                         Expanded(
                           child: Text(
                             appL10n.font_size_title,
@@ -136,12 +156,12 @@ class FontSelectionPage extends StatelessWidget {
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Text('小'),
-                        Text('標準'),
-                        Text('稍大'),
-                        Text('大'),
-                        Text('特大'),
+                      children: [
+                        Text(appL10n.font_size_small),
+                        Text(appL10n.font_size_standard),
+                        Text(appL10n.font_size_slightly_large),
+                        Text(appL10n.font_size_large),
+                        Text(appL10n.font_size_extra_large),
                       ],
                     ),
                   ],
@@ -167,8 +187,7 @@ class FontSelectionPage extends StatelessWidget {
 
                         ToastUtils.showCenterToast(
                           context,
-                          appL10n.font_selection_applied_message(font.label),
-                          customIcon: Icons.text_fields_rounded,
+                          appL10n.font_selection_applied_message(_localizedFontLabel(font)),
                         );
                       },
                       child: Container(
@@ -188,7 +207,7 @@ class FontSelectionPage extends StatelessWidget {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    font.label,
+                                    _localizedFontLabel(font),
                                     style: theme.textTheme.titleMedium?.copyWith(
                                       fontWeight: FontWeight.w700,
                                     ),
@@ -203,7 +222,7 @@ class FontSelectionPage extends StatelessWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              font.description,
+                              _localizedFontDescription(font),
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.onSurface
                                     .withValues(alpha: 0.58),
@@ -211,7 +230,7 @@ class FontSelectionPage extends StatelessWidget {
                             ),
                             const SizedBox(height: 14),
                             Text(
-                              '與你喜歡的他，再次寫下屬於你們的故事。',
+                              appL10n.font_selection_preview_sentence,
                               style: _previewStyle(font, theme),
                             ),
                           ],

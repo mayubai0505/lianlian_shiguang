@@ -136,7 +136,7 @@ class _StorageTestPageState extends State<StorageTestPage> {
                   borderRadius: BorderRadius.circular(15),
                   child: Image.memory(_imageBytes!, fit: BoxFit.cover),
                 )
-                    : Icon(Icons.image, size: 80, color: colorScheme.outline),
+                    : const SizedBox.shrink(),
               ),
               const SizedBox(height: 20),
               // 📊 狀態顯示：使用主題的 PrimaryContainer
@@ -151,8 +151,6 @@ class _StorageTestPageState extends State<StorageTestPage> {
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   child: Row(
                     children: [
-                      Icon(Icons.info_outline, size: 20, color: colorScheme.primary),
-                      const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           _status,

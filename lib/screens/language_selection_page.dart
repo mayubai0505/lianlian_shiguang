@@ -86,7 +86,7 @@ class LanguageSelectionPage extends StatelessWidget {
                       BlendMode.srcIn,
                     ),
                     child: Image.asset(
-                      'assets/images/language/language_top_right_botanical.png',
+                      'assets/images/language/language_top_right_botanical.webp',
                       fit: BoxFit.contain,
                       errorBuilder: (_, __, ___) =>
                       const SizedBox.shrink(),
@@ -270,14 +270,10 @@ class LanguageSelectionPage extends StatelessWidget {
                                               BlendMode.srcIn,
                                             ),
                                             child: Image.asset(
-                                              'assets/images/language/language_item_leaf.png',
+                                              'assets/images/language/language_item_leaf.webp',
                                               fit: BoxFit.contain,
                                               errorBuilder: (_, __, ___) =>
-                                                  Icon(
-                                                    Icons.eco_outlined,
-                                                    color: primary,
-                                                    size: 25,
-                                                  ),
+                                              const SizedBox.shrink(),
                                             ),
                                           ),
                                         ),

@@ -97,7 +97,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
         _currentAuthorName =
         nickname.isNotEmpty ? nickname : l10n.chat_mysterious_player;
         _currentAuthorAvatar =
-        avatarPath.isNotEmpty ? avatarPath : 'assets/images/avatar1.png';
+        avatarPath.isNotEmpty ? avatarPath : 'assets/images/avatar1.webp';
       });
 
       final prefs = await SharedPreferences.getInstance();
@@ -184,7 +184,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
         prefs.getString('nickname') ?? l10n.chat_mysterious_player;
 
     final playerAvatar =
-        prefs.getString('avatarPath') ?? 'assets/images/avatar1.png';
+        prefs.getString('avatarPath') ?? 'assets/images/avatar1.webp';
 
     if (!mounted) return;
 
@@ -333,7 +333,6 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
       ToastUtils.showCenterToast(
         context,
         l10n.moment_like_success,
-        customIcon: Icons.eco_rounded,
       );
     } catch (e) {
       debugPrint("按讚失敗: $e");
@@ -413,7 +412,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
       if (!mounted) return;
       ToastUtils.showCenterToast(
         context,
-        '讀取照片失敗：$error',
+        AppLocalizations.of(context)!.moment_detail_error1,
         isError: true,
       );
     }
@@ -486,11 +485,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
                 child: Image.network(
                   imageUrl,
                   fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) => const Icon(
-                    Icons.broken_image_outlined,
-                    color: Colors.white,
-                    size: 48,
-                  ),
+                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                 ),
               ),
             ),
@@ -550,7 +545,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
     final String safeAuthorAvatar =
     _currentAuthorAvatar.isNotEmpty
         ? _currentAuthorAvatar
-        : 'assets/images/avatar1.png';
+        : 'assets/images/avatar1.webp';
 
     setState(() {
       _isPostingComment = true;
@@ -664,9 +659,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
 
       ToastUtils.showCenterToast(
         context,
-        l10n.comment_post_failed(
-          error.toString(),
-        ),
+        l10n.moment_detail_error1,
         isError: true,
       );
     } finally {
@@ -843,7 +836,6 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
       ToastUtils.showCenterToast(
         context,
         l10n.comment_report_success,
-        customIcon: Icons.verified_user_rounded,
       );
     } catch (error, stackTrace) {
       debugPrint('❌ 詳細頁檢舉留言失敗：$error');
@@ -1179,7 +1171,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
                                       .isNotEmpty ==
                                       true
                                       ? data['authorAvatar'].toString().trim()
-                                      : 'assets/images/avatar1.png',
+                                      : 'assets/images/avatar1.webp',
                                 ),
                               ),
                               title: Wrap(
@@ -1242,8 +1234,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
                                               width: isReply ? 150 : 190,
                                               height: 90,
                                               color: theme.colorScheme.surfaceContainerHighest,
-                                              alignment: Alignment.center,
-                                              child: const Icon(Icons.broken_image_outlined),
+
                                             ),
                                           ),
                                         ),
@@ -1435,9 +1426,6 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
                       horizontal: 16, vertical: 8),
                   child: Row(
                     children: [
-                      const Icon(Icons.reply,
-                          size: 16, color: Colors.grey),
-                      const SizedBox(width: 8),
                       Text(
                         l10n.moment_replying_to(
                             _replyTarget!['authorName']),
@@ -1528,7 +1516,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
                                 backgroundImage: getAvatarImageProvider(
                                   _currentAuthorAvatar.isNotEmpty
                                       ? _currentAuthorAvatar
-                                      : 'assets/images/avatar1.png',
+                                      : 'assets/images/avatar1.webp',
                                 ),
                               ),
                               Positioned(
@@ -1558,7 +1546,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
                       ),
                       const SizedBox(width: 8),
                       IconButton(
-                        tooltip: '加入照片',
+                        tooltip: l10n.moment_detail_add_photo1,
                         onPressed: _isPostingComment ? null : _pickCommentImage,
                         icon: ImageIcon(
                           const AssetImage(
@@ -1619,7 +1607,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
                         )
                             : ImageIcon(
                           const AssetImage(
-                            'assets/images/chat/chat_send_plane_mask.png',
+                            'assets/images/chat/chat_send_plane_mask.webp',
                           ),
                           size: 26,
                           color: theme.colorScheme.primary,

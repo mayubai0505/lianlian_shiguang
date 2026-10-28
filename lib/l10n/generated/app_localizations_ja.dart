@@ -6357,7 +6357,7 @@ class AppLocalizationsJa extends AppLocalizations {
       '自分のクリエイターページを通報することはできません';
 
   @override
-  String creator_profile_report_reason_prompt(String creatorName) {
+  String creator_profile_report_reason_prompt1(String creatorName) {
     return '「$creatorName」を通報する理由を選択してください：';
   }
 
@@ -9487,4 +9487,3410 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get theme_font_system_description => '端末の標準システムフォントに従う';
+
+  @override
+  String get font_selection_serif_name => 'Noto Serif TC';
+
+  @override
+  String get font_selection_sans_name => 'Noto Sans TC';
+
+  @override
+  String get font_selection_system_name => 'システムフォント';
+
+  @override
+  String get font_selection_serif_description => '物語に浸る読書に適した、上品なセリフ体。';
+
+  @override
+  String get font_selection_sans_description => 'すっきりと柔らかな印象のサンセリフ体。';
+
+  @override
+  String get font_selection_system_description => '端末の標準フォントを使用します。';
+
+  @override
+  String get font_selection_preview_sentence => '大好きなあの人と、二人だけの物語をもう一度紡ごう。';
+
+  @override
+  String get avatar_frame_error_generic => 'エラー';
+
+  @override
+  String get avatar_frame_sign_in_required => '先にログインしてください';
+
+  @override
+  String get avatar_frame_default_name => 'イベントアバターフレーム';
+
+  @override
+  String get background_exclusive_photos_tab => '限定写真';
+
+  @override
+  String get background_world_sign_in_chat => 'ログインしてワールドチャットに入ってください';
+
+  @override
+  String get background_world_photo_load_error => 'エラー';
+
+  @override
+  String get background_world_no_photos => '選択できるワールド写真がありません';
+
+  @override
+  String get background_world_cover => 'ワールドのカバー';
+
+  @override
+  String get background_world_cover_confirm => 'ワールドのカバーをこのチャットの背景に設定しますか？';
+
+  @override
+  String get background_world_default_limited => '限定背景';
+
+  @override
+  String get background_world_default_character => 'キャラクター';
+
+  @override
+  String get background_world_no_character_photos => '使用できるキャラクター写真がありません';
+
+  @override
+  String background_world_unlock_required(int count) {
+    return '解放には好感度 $count が必要です';
+  }
+
+  @override
+  String background_world_character_confirm(String name) {
+    return '「$name」の写真をワールドチャットの背景に設定しますか？';
+  }
+
+  @override
+  String background_world_affection_count(int count) {
+    return '好感度 $count';
+  }
+
+  @override
+  String get reply_selection => '返信オプション';
+
+  @override
+  String get chat_home_character_tab => 'キャラクターチャット';
+
+  @override
+  String get chat_home_world_tab => 'オープンワールド';
+
+  @override
+  String get chat_home_world_error_generic => 'エラー';
+
+  @override
+  String get chat_home_world_pinned => 'ワールドチャットを固定しました';
+
+  @override
+  String get chat_home_world_deleted => 'ワールドチャットと会話履歴を削除しました';
+
+  @override
+  String get chat_home_world_action_done => '完了しました';
+
+  @override
+  String get chat_home_world_rename_title => 'この思い出に名前をつける';
+
+  @override
+  String chat_home_world_delete_confirm(String name) {
+    return '「$name」のチャット履歴を削除しますか？\n\n会話、ストーリーの要約、人物関係、メモが完全に削除され、復元できません。クリエイターが公開した世界設定は残ります。';
+  }
+
+  @override
+  String get chat_home_world_empty_title => 'オープンワールドのチャット履歴はまだありません';
+
+  @override
+  String get chat_home_world_empty_desc => 'オープンワールドで遊び始めると、ここにチャットが表示されます。';
+
+  @override
+  String get chat_home_world_unnamed => '名前のない世界';
+
+  @override
+  String get chat_home_world_private_test => 'プライベートテスト';
+
+  @override
+  String get chat_home_world_no_messages => 'メッセージはまだありません';
+
+  @override
+  String get expand_features => '機能を展開';
+
+  @override
+  String get chat_sticker_all => 'すべて';
+
+  @override
+  String get chat_mode_short_daily => '日常';
+
+  @override
+  String get chat_mode_short_story => '物語';
+
+  @override
+  String get chat_mode_short_immersive => '没入';
+
+  @override
+  String get chat_mode_short_resonance => '共鳴';
+
+  @override
+  String get chat_mode_short_gemini => '雑談';
+
+  @override
+  String get chat_theater_tool => '劇場';
+
+  @override
+  String chat_regenerate_insufficient_flowers(int cost) {
+    return '花が足りません。再生成には花が$cost個必要です。';
+  }
+
+  @override
+  String get chat_regenerate_paid_title => '有料で再生成';
+
+  @override
+  String chat_regenerate_paid_confirm(int cost) {
+    return '本日の無料再生成回数を使い切りました。現在のモードでは花を$cost個消費します。続行しますか？';
+  }
+
+  @override
+  String get chat_generic_error => 'エラー';
+
+  @override
+  String get chat_regenerate_confirm => '確認';
+
+  @override
+  String get comment_add_photo => '写真を追加';
+
+  @override
+  String get comment_error_generic => 'エラー';
+
+  @override
+  String creator_profile_report_reason_prompt(String creatorName) {
+    return '「$creatorName」を通報する理由を選択してください：';
+  }
+
+  @override
+  String get creator_profile_open_worlds => 'オープンワールド';
+
+  @override
+  String get creator_profile_generic_error => 'エラー';
+
+  @override
+  String get creator_profile_refresh => '更新';
+
+  @override
+  String get creator_profile_no_open_worlds => 'このクリエイターはまだオープンワールドを公開していません。';
+
+  @override
+  String get creator_profile_unnamed_world => '名前のない世界';
+
+  @override
+  String get creator_program_required_fields => '創作方針と応募理由を入力してください。';
+
+  @override
+  String get creator_program_submitted => '申請を送信しました。審査には約1～3日かかります。';
+
+  @override
+  String get creator_program_error => 'エラー';
+
+  @override
+  String get creator_program_login_required => 'クリエイタープログラムへの応募前にログインしてください。';
+
+  @override
+  String get creator_program_title => 'クリエイタープログラム';
+
+  @override
+  String get creator_program_headline => 'あなたの作品をもっと多くの人へ';
+
+  @override
+  String get creator_program_intro =>
+      '公開作品があれば、《戀戀拾光》クリエイタープログラムに応募できます。応募後1～3日以内に審査します。';
+
+  @override
+  String get creator_program_benefits_title => 'プログラム特典';
+
+  @override
+  String get creator_program_benefit_dashboard =>
+      'クリエイターダッシュボード：ファン数、公開キャラ数、総いいね数、今月の新規ファン数を確認できます。';
+
+  @override
+  String get creator_program_benefit_fans =>
+      'ファン交流：手紙の送信、ファン管理、自分の花を使った特典の贈呈ができます。';
+
+  @override
+  String get creator_program_benefit_exposure =>
+      '公式紹介：新キャラがInstagramやゲーム内のクリエイターおすすめに優先掲載される可能性があります。';
+
+  @override
+  String get creator_program_benefit_monthly =>
+      '月間創作報酬：月内に新規キャラを3人以上公開すると、翌月に花を520個受け取れます。';
+
+  @override
+  String get creator_program_benefit_merch =>
+      'グッズ企画：キャラが公式グッズ・ギフト企画に参加した場合、企画内容に応じて現金の創作報酬を受け取れます。';
+
+  @override
+  String creator_program_last_review_note(String reason) {
+    return '前回の審査コメント：$reason';
+  }
+
+  @override
+  String get creator_program_apply_heading => '参加申請';
+
+  @override
+  String get creator_program_direction_label => '創作ジャンル';
+
+  @override
+  String get creator_program_direction_hint => '例：現代恋愛、時代物、ファンタジー、BL、GL…';
+
+  @override
+  String get creator_program_reason_label => '応募理由';
+
+  @override
+  String get creator_program_reason_hint => 'キャラクターの創作やファンとの交流について教えてください。';
+
+  @override
+  String get creator_program_social_label => 'SNSリンク（任意）';
+
+  @override
+  String get creator_program_social_hint => 'Instagram、Threads、個人サイトなど';
+
+  @override
+  String get creator_program_submit => '申請を送信';
+
+  @override
+  String get creator_program_public_character_note =>
+      '送信前に、公開キャラが1人以上いることを確認します。';
+
+  @override
+  String get creator_program_status_pending => '申請審査中';
+
+  @override
+  String get creator_program_status_pending_desc =>
+      '申請を受け付けました。審査は約1～3日です。結果はゲーム内メールでお知らせします。';
+
+  @override
+  String get creator_program_status_approved => 'クリエイター資格が承認されました 🎉';
+
+  @override
+  String get creator_program_status_approved_desc =>
+      '《戀戀拾光》クリエイタープログラムへようこそ！ダッシュボード、ファン管理、おすすめバナーは今後この資格と連動する予定です。';
+
+  @override
+  String get creator_program_status_suspended => 'クリエイター資格停止中';
+
+  @override
+  String get creator_program_status_suspended_desc =>
+      '現在クリエイター専用機能は利用できません。ゲーム内メールの公式通知をご確認ください。';
+
+  @override
+  String get creator_program_status_revoked => 'クリエイター資格取り消し';
+
+  @override
+  String get creator_program_status_revoked_desc =>
+      'クリエイター専用機能は利用できません。ご不明な点はサポートにお問い合わせください。';
+
+  @override
+  String get creator_program_status_title => 'クリエイター資格状況';
+
+  @override
+  String creator_program_current_status(String status) {
+    return '現在の状態：$status';
+  }
+
+  @override
+  String creator_program_official_note(String reason) {
+    return '公式からの説明：$reason';
+  }
+
+  @override
+  String get creator_dashboard_error1 => 'エラー';
+
+  @override
+  String get creator_dashboard_access_title1 => 'クリエイターダッシュボード';
+
+  @override
+  String get creator_dashboard_status_notice_title1 =>
+      'Creator Dashboard Access Notice';
+
+  @override
+  String get creator_dashboard_apply_title1 => 'クリエイターダッシュボードを申請';
+
+  @override
+  String get creator_dashboard_access_subtitle1 =>
+      'キャラクターのプレイ状況・フォロワーの増減・フォロワー管理';
+
+  @override
+  String get creator_dashboard_pending1 =>
+      'Application submitted · Under review';
+
+  @override
+  String get creator_dashboard_legacy_pending1 =>
+      'Application pending confirmation';
+
+  @override
+  String get creator_dashboard_syncing1 =>
+      'Syncing dashboard access. Please try again later.';
+
+  @override
+  String get creator_dashboard_suspended1 =>
+      'Dashboard access suspended. Contact support.';
+
+  @override
+  String get creator_dashboard_apply_subtitle1 =>
+      'Apply for access to character analytics and follower management';
+
+  @override
+  String get creator_dashboard_rejected1 =>
+      'Application declined · You may apply again';
+
+  @override
+  String get creator_dashboard_submitted1 =>
+      'Application submitted. Please wait for review.';
+
+  @override
+  String get creator_dashboard_benefits_title1 => 'Creator Dashboard features';
+
+  @override
+  String get creator_dashboard_benefit_monthly1 =>
+      '🌸 Monthly creation reward: Publish 3 distinct new characters this month to claim 300 Flowers once.';
+
+  @override
+  String get creator_dashboard_benefit_analytics1 =>
+      '• View public-character play metrics, follower totals, and follow/unfollow activity';
+
+  @override
+  String get creator_dashboard_benefit_mail1 =>
+      '• Fan messages: private messages and announcements (daily limits apply)';
+
+  @override
+  String get creator_dashboard_benefit_gifts1 =>
+      '• Fan rewards: gift your own Flowers to followers';
+
+  @override
+  String get creator_dashboard_reward_note1 =>
+      'Approval required. Private characters, drafts, and republished older characters do not count toward the monthly reward.';
+
+  @override
+  String get creator_dashboard_apply_cta1 =>
+      'Learn more and request dashboard access';
+
+  @override
+  String get creator_dashboard_my_characters1 => 'マイキャラクター';
+
+  @override
+  String get creator_dashboard_my_worlds1 => 'マイオープンワールド';
+
+  @override
+  String get creator_dashboard_create_world1 => 'オープンワールドを作成';
+
+  @override
+  String get creator_dashboard_public_worlds1 => '公開済みワールド';
+
+  @override
+  String get creator_dashboard_public_worlds_hint1 =>
+      'Other players can explore';
+
+  @override
+  String get creator_dashboard_private_worlds1 => '非公開ワールド';
+
+  @override
+  String get creator_dashboard_private_worlds_hint1 =>
+      'Only you can view and edit';
+
+  @override
+  String get creator_dashboard_world_drafts1 => 'ワールドの下書き';
+
+  @override
+  String get creator_dashboard_world_drafts_hint1 => 'Worlds not yet finished';
+
+  @override
+  String get creator_dashboard_no_drafts1 => 'No drafts yet';
+
+  @override
+  String get creator_dashboard_no_worlds1 => 'No worlds yet';
+
+  @override
+  String get creator_dashboard_unnamed_world1 => '無題のワールド';
+
+  @override
+  String get creator_dashboard_delete_world_draft1 => 'Delete world draft';
+
+  @override
+  String get creator_dashboard_private_test1 => 'プライベートテスト';
+
+  @override
+  String get creator_dashboard_delete_world_confirm_title1 =>
+      'Delete world draft?';
+
+  @override
+  String get creator_dashboard_delete_world_confirm_body1 =>
+      'This cannot be undone. Uploaded images will not be deleted.';
+
+  @override
+  String get creator_dashboard_draft_deleted1 => 'World draft deleted';
+
+  @override
+  String get creator_dashboard_validation1 =>
+      'Creative direction must be 2–100 characters and application reason 10–500 characters.';
+
+  @override
+  String get creator_dashboard_confirm_application_title1 =>
+      'Confirm dashboard application';
+
+  @override
+  String get creator_dashboard_confirm_application_body1 =>
+      'Your request will be reviewed. Approval grants dashboard access and does not constitute a partnership agreement.';
+
+  @override
+  String get creator_dashboard_confirm_send1 => '送信する';
+
+  @override
+  String get creator_dashboard_form_heading1 =>
+      'Apply for the Lianlian Shiguang Creator Dashboard';
+
+  @override
+  String get creator_dashboard_form_description1 =>
+      'Tell us about your creative direction and how you plan to use character analytics and follower management. This is not a partnership contract.';
+
+  @override
+  String get creator_dashboard_direction_label1 => '創作の方向性';
+
+  @override
+  String get creator_dashboard_direction_hint1 => '例：現代恋愛、時代物、ファンタジー、BL、GL…';
+
+  @override
+  String get creator_dashboard_reason_label1 => 'ダッシュボード申請理由';
+
+  @override
+  String get creator_dashboard_reason_hint1 =>
+      'Share your experience and which dashboard features you need';
+
+  @override
+  String get creator_dashboard_sending1 => '送信中…';
+
+  @override
+  String get creator_dashboard_submit1 => 'ダッシュボードを申請';
+
+  @override
+  String get creator_dashboard_privacy_note1 =>
+      'Approval is not guaranteed. Do not enter identity numbers, banking details, or other sensitive information.';
+
+  @override
+  String get creator_dashboard_revoked_limit1 =>
+      'Dashboard application limit reached. Please contact support.';
+
+  @override
+  String get creator_dashboard_revoked_notice1 =>
+      'Your dashboard access was revoked. Check the page for available reapplication options.';
+
+  @override
+  String get creator_support_page_title1 => 'お問い合わせセンター';
+
+  @override
+  String get creator_support_new_report1 => '新しいお問い合わせ';
+
+  @override
+  String get creator_support_error1 => 'エラー';
+
+  @override
+  String get creator_support_no_cases1 => 'お問い合わせはありません';
+
+  @override
+  String get creator_support_unread1 => '未読';
+
+  @override
+  String get creator_support_load_more1 => 'さらに読み込む';
+
+  @override
+  String get creator_support_category_label1 => 'お問い合わせの分類';
+
+  @override
+  String get creator_support_character_optional1 => '関連キャラクター（任意）';
+
+  @override
+  String get creator_support_no_character1 => '指定なし';
+
+  @override
+  String get creator_support_report_title1 => '件名';
+
+  @override
+  String get creator_support_report_description1 => '内容';
+
+  @override
+  String creator_support_select_images1(int count) {
+    return 'スクリーンショットを選択（$count/3、各2MB未満）';
+  }
+
+  @override
+  String get creator_support_images_private1 => '画像は投稿者と運営のみ閲覧できます。';
+
+  @override
+  String get creator_support_submitting1 => '送信中…';
+
+  @override
+  String get creator_support_submit1 => '送信を確定';
+
+  @override
+  String get creator_support_image_too_large1 => '画像が2MBを超えています。別の画像を選択してください。';
+
+  @override
+  String get creator_support_fill_title_description1 => '件名と内容を入力してください';
+
+  @override
+  String get creator_support_case_sent1 => 'お問い合わせを送信しました';
+
+  @override
+  String creator_support_case_sent_partial1(int count) {
+    return '送信しましたが、画像$count枚のアップロードに失敗しました';
+  }
+
+  @override
+  String get creator_support_detail_title1 => 'お問い合わせ詳細';
+
+  @override
+  String get creator_support_image_max1 => '画像は1枚2MB未満にしてください';
+
+  @override
+  String get creator_support_jpg_png_only1 => 'JPG / PNGのみ対応';
+
+  @override
+  String get creator_support_reply_sent1 => '返信を送信しました';
+
+  @override
+  String creator_support_reply_sent_partial1(int count) {
+    return '文章は送信しましたが、画像$count枚のアップロードに失敗しました';
+  }
+
+  @override
+  String get creator_support_empty_content1 => '内容を入力してください';
+
+  @override
+  String get creator_support_recall_message1 => 'メッセージを取り消す';
+
+  @override
+  String get creator_support_delete_message1 => 'メッセージを削除';
+
+  @override
+  String get creator_support_recall_warning1 =>
+      '双方に「このメッセージは取り消されました」と表示され、添付ファイルは閲覧できません。';
+
+  @override
+  String get creator_support_delete_warning1 => '自分の画面のみ非表示にします。相手には残ります。';
+
+  @override
+  String get creator_support_cancel1 => 'キャンセル';
+
+  @override
+  String get creator_support_confirm1 => '確認';
+
+  @override
+  String get creator_support_operation_success1 => '操作が完了しました';
+
+  @override
+  String get creator_support_edit_message1 => 'メッセージを編集';
+
+  @override
+  String creator_support_recall_remaining1(int seconds) {
+    return '取り消す（残り$seconds秒）';
+  }
+
+  @override
+  String get creator_support_recall_expired1 => '取り消す（60秒経過）';
+
+  @override
+  String get creator_support_case_updated1 => 'お問い合わせを更新しました';
+
+  @override
+  String get creator_support_loading1 => '読み込み中…';
+
+  @override
+  String creator_support_creator_uid1(String uid) {
+    return 'クリエイターUID：$uid';
+  }
+
+  @override
+  String get creator_support_internal_note1 => '運営内部メモ（クリエイターには非表示）';
+
+  @override
+  String get creator_support_save_internal_note1 => '内部メモを保存';
+
+  @override
+  String get creator_support_case_images1 => '添付画像';
+
+  @override
+  String get creator_support_official1 => '恋恋拾光運営';
+
+  @override
+  String get creator_support_creator1 => 'クリエイター';
+
+  @override
+  String get creator_support_recalled1 => 'このメッセージは取り消されました';
+
+  @override
+  String get creator_support_edited1 => '編集済み';
+
+  @override
+  String get creator_support_reply_hint1 => '返信を入力…';
+
+  @override
+  String get creator_support_attach_image1 => '画像を添付（最大3枚）';
+
+  @override
+  String get creator_support_send1 => '送信';
+
+  @override
+  String get creator_support_admin_title1 => 'クリエイターお問い合わせ管理';
+
+  @override
+  String get creator_support_new_reply1 => '新しい返信';
+
+  @override
+  String get creator_support_load_more_cases1 => 'さらに読み込む';
+
+  @override
+  String get creator_support_image_load_error1 => '画像を読み込めませんでした';
+
+  @override
+  String get creator_support_edit_hint1 => 'メッセージを編集';
+
+  @override
+  String get creator_support_save1 => '保存';
+
+  @override
+  String get creator_support_status_pending1 => '対応待ち';
+
+  @override
+  String get creator_support_status_progress1 => '対応中';
+
+  @override
+  String get creator_support_status_waiting1 => '追加情報待ち';
+
+  @override
+  String get creator_support_status_resolved1 => '解決済み';
+
+  @override
+  String get creator_support_cat_character1 => 'キャラクター管理';
+
+  @override
+  String get creator_support_cat_ai1 => 'AIキャラクターの会話異常';
+
+  @override
+  String get creator_support_cat_dashboard1 => 'クリエイター管理画面';
+
+  @override
+  String get creator_support_cat_cooperation1 => '提携と特典';
+
+  @override
+  String get creator_support_cat_other1 => 'その他';
+
+  @override
+  String get desktop_widget_size_small1 => '小';
+
+  @override
+  String get desktop_widget_size_medium1 => '中';
+
+  @override
+  String get desktop_widget_size_large1 => '大';
+
+  @override
+  String get desktop_widget_cancel1 => 'キャンセル';
+
+  @override
+  String get desktop_widget_delete1 => '削除';
+
+  @override
+  String desktop_widget_days_remaining1(int days) {
+    return 'あと$days日';
+  }
+
+  @override
+  String get desktop_widget_days_today1 => '今日がその日';
+
+  @override
+  String desktop_widget_days_elapsed1(int days) {
+    return '$days日前';
+  }
+
+  @override
+  String get desktop_widget_daily_quote1 => '今日のひと言';
+
+  @override
+  String get desktop_widget_update_daily1 => '毎日1回更新';
+
+  @override
+  String get desktop_widget_character_birthday1 => 'キャラクターの誕生日';
+
+  @override
+  String get desktop_widget_change1 => '変更';
+
+  @override
+  String get desktop_widget_mood1 => '気分';
+
+  @override
+  String get desktop_widget_current_state1 => '現在の状態';
+
+  @override
+  String get desktop_widget_location1 => '場所';
+
+  @override
+  String get desktop_widget_relationship1 => '関係';
+
+  @override
+  String get desktop_widget_outfit1 => '服装';
+
+  @override
+  String get desktop_widget_weather1 => '天気';
+
+  @override
+  String get desktop_widget_thought1 => '考え';
+
+  @override
+  String get desktop_widget_action1 => '動作';
+
+  @override
+  String get desktop_widget_affinity1 => '好感度';
+
+  @override
+  String get desktop_widget_character_status1 => 'キャラクターの状態';
+
+  @override
+  String get desktop_widget_no_posts1 => 'キャラクターの投稿はまだありません';
+
+  @override
+  String get desktop_widget_crop_position1 => 'キャラクターの位置を調整';
+
+  @override
+  String get desktop_widget_crop_action1 => '拡大／ドラッグで構図を調整';
+
+  @override
+  String get desktop_widget_crop_hint1 => '調整画面では2本指で拡大縮小、1本指でドラッグできます。';
+
+  @override
+  String get desktop_widget_crop_title1 => 'キャラクターの構図を調整';
+
+  @override
+  String get desktop_widget_reset1 => 'リセット';
+
+  @override
+  String get desktop_widget_crop_instructions1 =>
+      '1本指で位置を調整し、2本指で拡大縮小します。枠内がウィジェットの表示範囲です。';
+
+  @override
+  String desktop_widget_crop_position_scale1(int x, int y, String scale) {
+    return '位置：$x% / $y%・倍率：$scale×';
+  }
+
+  @override
+  String get desktop_widget_apply1 => '適用';
+
+  @override
+  String get desktop_widget_just_posted1 => 'たった今投稿しました';
+
+  @override
+  String get desktop_widget_important_day1 => '大切な日';
+
+  @override
+  String get desktop_widget_no_date1 => '日付が未選択です';
+
+  @override
+  String get desktop_widget_first_met1 => '彼と出会った日';
+
+  @override
+  String get desktop_widget_error1 => 'エラー';
+
+  @override
+  String get event_memory_select_character_title1 => 'キャラクターを選択';
+
+  @override
+  String get event_memory_my_characters1 => '自分のキャラクター';
+
+  @override
+  String get event_memory_friend_characters1 => '友達のキャラクター';
+
+  @override
+  String get event_memory_friend_badge1 => '友達';
+
+  @override
+  String get event_memory_unnamed_character1 => '名前のないキャラクター';
+
+  @override
+  String get event_memory_generic_error1 => 'エラー';
+
+  @override
+  String get memory_collection_title1 => '思い出コレクション';
+
+  @override
+  String get memory_collection_avatar_frames1 => 'アイコンフレーム';
+
+  @override
+  String get memory_collection_stickers1 => 'ステッカー';
+
+  @override
+  String get memory_collection_memories1 => '思い出';
+
+  @override
+  String get memory_collection_try_again1 => 'しばらくしてからもう一度お試しください。';
+
+  @override
+  String get memory_collection_error1 => 'エラー';
+
+  @override
+  String get memory_collection_chat_background1 => 'チャット背景';
+
+  @override
+  String get memory_collection_got_it1 => 'わかりました';
+
+  @override
+  String get memory_collection_not_now1 => '今はしない';
+
+  @override
+  String get memory_collection_confirm_delete1 => '削除を確定';
+
+  @override
+  String get memory_collection_close1 => '閉じる';
+
+  @override
+  String get memory_collection_delete1 => '削除';
+
+  @override
+  String get memory_collection_image_preparing1 => '画像を準備中';
+
+  @override
+  String get memory_collection_remove_favorite1 => 'コレクションから削除';
+
+  @override
+  String get memory_collection_removed1 => 'コレクションから削除しました';
+
+  @override
+  String get event_memory_performance_opening1 => '物語が終わっても、\n消えない瞬間がある。';
+
+  @override
+  String get event_memory_performance_generic_error1 => 'エラー';
+
+  @override
+  String get event_memory_performance_collected1 => '保存済み';
+
+  @override
+  String get event_memory_performance_saving1 => '保存中…';
+
+  @override
+  String get event_memory_performance_save_gallery1 => '写真ライブラリに保存';
+
+  @override
+  String get event_memory_performance_done1 => '完了';
+
+  @override
+  String get event_memory_performance_uncollect_title1 => 'コレクションから削除しますか？';
+
+  @override
+  String get event_memory_performance_not_now1 => '今はしない';
+
+  @override
+  String get event_memory_performance_uncollect1 => 'コレクションから削除';
+
+  @override
+  String get event_memory_performance_uncollected1 => 'コレクションから削除しました';
+
+  @override
+  String get event_memory_performance_login_to_collect1 =>
+      'この思い出を保存するにはログインしてください';
+
+  @override
+  String get event_memory_performance_web_gallery_unsupported1 =>
+      'Web版では端末の写真ライブラリに直接保存できません';
+
+  @override
+  String get event_memory_performance_gallery_permission1 =>
+      '保存するには写真へのアクセス許可が必要です';
+
+  @override
+  String get event_memory_performance_image_not_ready1 =>
+      '思い出の画像を準備中です。もう一度お試しください';
+
+  @override
+  String get event_memory_performance_gallery_saved1 => '写真ライブラリに保存しました';
+
+  @override
+  String get event_memory_performance_skip1 => 'スキップ';
+
+  @override
+  String get event_memory_performance_memory_label1 => '思い出';
+
+  @override
+  String get event_memory_performance_tap_continue1 => 'タップして続ける';
+
+  @override
+  String get event_memory_performance_tap_show_full1 => 'タップして全文を表示';
+
+  @override
+  String get event_memory_performance_brand_limited_memory1 => '恋恋拾光・限定の思い出';
+
+  @override
+  String get event_ended1 => 'イベントは終了しました';
+
+  @override
+  String get event_default_name1 => '期間限定イベント';
+
+  @override
+  String get event_default_subtitle1 => '彼と一緒に、この季節だけの特別な思い出を。';
+
+  @override
+  String get event_currency_default1 => 'イベント通貨';
+
+  @override
+  String get event_tasks_today1 => '今日のミッション';
+
+  @override
+  String event_tasks_subtitle1(String currency) {
+    return 'ミッションを達成し、$currencyを集めて限定コンテンツを解放しよう。';
+  }
+
+  @override
+  String get event_milestones_title1 => '累計進捗';
+
+  @override
+  String event_milestones_subtitle1(String currency) {
+    return '$currencyを貯めてイベント限定報酬を受け取ろう。';
+  }
+
+  @override
+  String get event_memory_title1 => '限定の思い出';
+
+  @override
+  String get event_memory_subtitle1 => 'このイベントだけの思い出を残そう。';
+
+  @override
+  String get event_shop_title1 => 'イベントショップ';
+
+  @override
+  String event_shop_subtitle1(String currency) {
+    return '$currencyを使って限定報酬と交換しよう。';
+  }
+
+  @override
+  String get event_info_title1 => 'イベント詳細';
+
+  @override
+  String get event_info_default1 =>
+      '期間中の指定ミッションを達成するとイベント通貨を獲得できます。\n交換した報酬はイベント規則に従ってアカウントに配布されます。\n終了後の未使用通貨はイベント規則に従って処理されます。';
+
+  @override
+  String get event_generic_error1 => 'エラー';
+
+  @override
+  String get event_task_default1 => 'イベントミッション';
+
+  @override
+  String get event_claimed1 => '受取済み';
+
+  @override
+  String get event_claim1 => '受け取る';
+
+  @override
+  String get event_in_progress1 => '進行中';
+
+  @override
+  String get event_reward_default1 => '限定報酬';
+
+  @override
+  String get event_product_default1 => 'イベント商品';
+
+  @override
+  String get event_cancel1 => 'キャンセル';
+
+  @override
+  String get event_confirm_exchange1 => '交換を確定';
+
+  @override
+  String get event_limited_product1 => '限定商品';
+
+  @override
+  String event_insufficient_currency1(String currency) {
+    return '$currencyが不足しています';
+  }
+
+  @override
+  String get event_close1 => '閉じる';
+
+  @override
+  String event_redeemed_count_limit1(int count, int max) {
+    return '交換済み $count / $max 回';
+  }
+
+  @override
+  String event_redeemed_count1(int count) {
+    return '交換済み $count 回';
+  }
+
+  @override
+  String get event_redeemed1 => '交換済み';
+
+  @override
+  String get event_exchange1 => '交換';
+
+  @override
+  String get login_account_deletion_started1 => 'アカウントの削除手続きが開始されました';
+
+  @override
+  String get login_account_deletion_expired_description1 =>
+      '削除の取り消し期限である3日間を過ぎたため、このアカウントは復元できません。サポートが必要な場合はお問い合わせください。';
+
+  @override
+  String get login_account_deletion_confirm1 => '確認';
+
+  @override
+  String get event_memory_limited_title1 => '限定の思い出';
+
+  @override
+  String get moment_detail_add_photo1 => '写真を追加';
+
+  @override
+  String get moment_detail_error1 => 'エラー';
+
+  @override
+  String get notification_claim_before_delete1 => 'ギフトメッセージを削除する前に花を受け取ってください';
+
+  @override
+  String get notification_error1 => 'エラー';
+
+  @override
+  String get notification_creator_gift_already_claimed1 => 'この花はすでに受け取り済みです';
+
+  @override
+  String notification_creator_gift_claim_success1(Object amount) {
+    return '花を$amount個受け取りました！';
+  }
+
+  @override
+  String get notification_creator_gift_title1 => 'クリエイターからのギフト';
+
+  @override
+  String notification_creator_gift_amount1(Object amount) {
+    return '花 $amount個';
+  }
+
+  @override
+  String get notification_creator_gift_claimed1 => '受取済み';
+
+  @override
+  String get notification_creator_gift_claiming1 => '受取中…';
+
+  @override
+  String get notification_creator_gift_claim_button1 => '花を受け取る';
+
+  @override
+  String get notification_support_subject1 => 'プレイヤーが送信した件名';
+
+  @override
+  String get notification_support_content1 => 'プレイヤーが送信した内容';
+
+  @override
+  String get notification_support_reported1 => '通報された内容';
+
+  @override
+  String get notification_support_reply1 => 'サポートからの返信';
+
+  @override
+  String get notification_share_mail1 => 'メッセージを共有';
+
+  @override
+  String get notification_original_question1 => '以前のお問い合わせ';
+
+  @override
+  String get notification_preferences_chat_title1 => 'キャラクターとのチャット';
+
+  @override
+  String get notification_preferences_chat_subtitle1 => 'キャラクターからの返信のプッシュ通知';
+
+  @override
+  String get notification_preferences_moments_title1 => '新しい投稿';
+
+  @override
+  String get notification_preferences_moments_subtitle1 =>
+      'フォロー中のクリエイターやキャラクターの新規投稿';
+
+  @override
+  String get notification_preferences_social_title1 => 'ソーシャル通知';
+
+  @override
+  String get notification_preferences_social_subtitle1 =>
+      'いいね、コメント、フォロー、キャラクターとの交流';
+
+  @override
+  String get notification_preferences_announcements_title1 => '公式のお知らせ';
+
+  @override
+  String get notification_preferences_announcements_subtitle1 =>
+      '公式からの一般的なお知らせ通知';
+
+  @override
+  String get notification_preferences_events_title1 => 'イベントのリマインダー';
+
+  @override
+  String get notification_preferences_events_subtitle1 => 'イベント終了間近のお知らせ';
+
+  @override
+  String get notification_preferences_save_failed1 =>
+      '通知設定を保存できませんでした。後でもう一度お試しください。';
+
+  @override
+  String get notification_preferences_page_title1 => '通知設定';
+
+  @override
+  String get notification_preferences_login_required1 => '先にログインしてください';
+
+  @override
+  String get notification_preferences_load_failed1 =>
+      '通知設定を読み込めませんでした。後でもう一度お試しください。';
+
+  @override
+  String get notification_preferences_footer1 =>
+      'ここでの設定は同じプレイヤーアカウントのすべての端末に同期されます。端末の通知許可は各端末で個別に設定してください。プッシュ通知をオフにしても、ゲーム内メールや受信済みの通知は削除されません。';
+
+  @override
+  String get official_studio_text_0011 =>
+      'Guide completed, but the viewed status could not sync and may appear again.';
+
+  @override
+  String get official_studio_text_0021 => 'ログインしてください';
+
+  @override
+  String get official_studio_text_0031 => 'Creator Partnership Studio';
+
+  @override
+  String get official_studio_text_0041 => 'Guide';
+
+  @override
+  String get official_studio_text_0051 =>
+      'Unable to verify creator eligibility. Try again later.';
+
+  @override
+  String get official_studio_text_0061 =>
+      'You do not currently have official creator access.\\nIf approved, contact support to verify activation.';
+
+  @override
+  String get official_studio_text_0071 => 'Verified Partner Creator';
+
+  @override
+  String get official_studio_text_0081 =>
+      'Welcome back to the creator studio. More features are coming soon.';
+
+  @override
+  String get official_studio_text_0091 => 'Creator Tools';
+
+  @override
+  String get official_studio_text_0101 => 'フォロワー管理';
+
+  @override
+  String get official_studio_text_0111 => 'View and remove followers';
+
+  @override
+  String get official_studio_text_0121 => 'クリエイター分析';
+
+  @override
+  String get official_studio_text_0131 =>
+      'Character popularity and total play count';
+
+  @override
+  String get official_studio_text_0141 => 'ファンレター';
+
+  @override
+  String get official_studio_text_0151 => 'Send messages to your followers';
+
+  @override
+  String get official_studio_text_0161 => 'Fan Benefits';
+
+  @override
+  String get official_studio_text_0171 => 'Gift your own flowers to followers';
+
+  @override
+  String get official_studio_text_0181 => '月間クリエイター報酬';
+
+  @override
+  String get official_studio_text_0191 =>
+      'Publish 3 new characters to claim 300 flowers';
+
+  @override
+  String get official_studio_text_0201 => 'クリエイターバナー';
+
+  @override
+  String get official_studio_text_0211 => 'Set your public creator-page banner';
+
+  @override
+  String get official_studio_text_0221 => 'パートナー情報';
+
+  @override
+  String get official_studio_text_0231 =>
+      'Partnership status, benefits and notices';
+
+  @override
+  String get official_studio_text_0241 => 'Support Center';
+
+  @override
+  String get official_studio_text_0251 =>
+      'Report issues and track support replies';
+
+  @override
+  String get official_studio_text_0261 =>
+      'Eligibility verification failed. Try again later.';
+
+  @override
+  String get official_studio_text_0271 =>
+      'Official creator access is not available';
+
+  @override
+  String get official_studio_text_0281 => 'Unable to load public characters';
+
+  @override
+  String get official_studio_text_0291 => 'Creator Overview';
+
+  @override
+  String get official_studio_text_0301 => 'Total Plays';
+
+  @override
+  String get official_studio_text_0311 => 'Current Followers';
+
+  @override
+  String get official_studio_text_0321 => 'Unavailable';
+
+  @override
+  String get official_studio_text_0331 => 'Public Character Breakdown';
+
+  @override
+  String get official_studio_text_0341 =>
+      'No public characters yet. They will appear here after publishing.';
+
+  @override
+  String get official_studio_text_0351 => 'Unnamed Character';
+
+  @override
+  String get official_studio_text_0361 => 'Total plays (playCount)';
+
+  @override
+  String get official_studio_text_0371 =>
+      'Statistics reflect available database fields. Plays are not messages, unique players, or revenue.';
+
+  @override
+  String get official_studio_text_0381 => 'Unable to load followers';
+
+  @override
+  String get official_studio_text_0391 => 'No followers yet';
+
+  @override
+  String get official_studio_text_0401 => 'Follower List';
+
+  @override
+  String get official_studio_text_0411 =>
+      'Up to 100 followers shown; only public nicknames and avatars are displayed.';
+
+  @override
+  String get official_studio_text_0421 => 'Remove Follower';
+
+  @override
+  String get official_studio_text_0431 => 'キャンセル';
+
+  @override
+  String get official_studio_text_0441 => 'Confirm Removal';
+
+  @override
+  String get official_studio_text_0451 => 'Follower removed';
+
+  @override
+  String get official_studio_text_0461 =>
+      'Removal failed. Please try again later.';
+
+  @override
+  String get official_studio_text_0471 => 'Player';
+
+  @override
+  String get official_studio_text_0481 => 'Unable to load public data';
+
+  @override
+  String get official_studio_text_0491 => 'This player';
+
+  @override
+  String get official_studio_text_0501 =>
+      'Cropped image is still too large. Choose another.';
+
+  @override
+  String get official_studio_text_0511 => 'Banner updated';
+
+  @override
+  String get official_studio_text_0521 =>
+      'Image processing failed. Choose another image.';
+
+  @override
+  String get official_studio_text_0531 => 'Banner removed';
+
+  @override
+  String get official_studio_text_0541 => 'Removal failed';
+
+  @override
+  String get official_studio_text_0551 => 'Please sign in';
+
+  @override
+  String get official_studio_text_0561 => 'Public Profile Banner';
+
+  @override
+  String get official_studio_text_0571 => 'Image failed to load';
+
+  @override
+  String get official_studio_text_0581 => 'No banner set';
+
+  @override
+  String get official_studio_text_0591 =>
+      'Select a photo, position it within the white frame and confirm to upload.';
+
+  @override
+  String get official_studio_text_0601 => 'Processing…';
+
+  @override
+  String get official_studio_text_0611 => 'Select and Crop Image';
+
+  @override
+  String get official_studio_text_0621 => 'Remove Current Banner';
+
+  @override
+  String get official_studio_text_0631 => 'Cannot open this image';
+
+  @override
+  String get official_studio_text_0641 =>
+      'Cropped file is too large. Choose another image.';
+
+  @override
+  String get official_studio_text_0651 => 'Cropping failed. Try again.';
+
+  @override
+  String get official_studio_text_0661 => 'Adjust Banner Crop';
+
+  @override
+  String get official_studio_text_0671 =>
+      'Move the image to select the banner area';
+
+  @override
+  String get official_studio_text_0681 =>
+      'Drag to move · Pinch or use slider to zoom';
+
+  @override
+  String get official_studio_text_0691 =>
+      'The white frame shows the final banner (2.5:1)';
+
+  @override
+  String get official_studio_text_0701 => 'Zoom';
+
+  @override
+  String get official_studio_text_0711 => 'Reset Position';
+
+  @override
+  String get official_studio_text_0721 => 'Cropping…';
+
+  @override
+  String get official_studio_text_0731 => 'Crop and Upload';
+
+  @override
+  String get official_studio_text_0741 => 'Partnership Eligibility';
+
+  @override
+  String get official_studio_text_0751 => 'Verifying Eligibility';
+
+  @override
+  String get official_studio_text_0761 => 'Available Creator Tools';
+
+  @override
+  String get official_studio_text_0771 =>
+      'Follower management, analytics, fan mail, flower gifts, monthly rewards and banners.';
+
+  @override
+  String get official_studio_text_0781 =>
+      'Under current rules, create and first publish three eligible characters this month to claim 300 flowers. Final eligibility is verified by the server.';
+
+  @override
+  String get official_studio_text_0791 => 'Official Notices and Agreement';
+
+  @override
+  String get official_studio_text_0801 =>
+      'Signed agreement terms and official notices take precedence. This page does not replace an agreement. Contact support for questions.';
+
+  @override
+  String get official_studio_text_0811 =>
+      'Mail subject must contain 1–100 characters';
+
+  @override
+  String get official_studio_text_0821 =>
+      'Mail body must contain 1–5000 characters';
+
+  @override
+  String get official_studio_text_0831 => 'Please select a follower';
+
+  @override
+  String get official_studio_text_0841 => 'Confirm Fan Mail';
+
+  @override
+  String get official_studio_text_0851 =>
+      'Send to all current followers? This uses one broadcast credit.';
+
+  @override
+  String get official_studio_text_0861 =>
+      'Send to this follower? This uses one private-message credit.';
+
+  @override
+  String get official_studio_text_0871 => 'Confirm Send';
+
+  @override
+  String get official_studio_text_0881 =>
+      'Mail job created. Messages will be delivered gradually.';
+
+  @override
+  String get official_studio_text_0891 => 'Today’s Sending Quota';
+
+  @override
+  String get official_studio_text_0901 =>
+      'Resets daily at 00:00 Taiwan time. A broadcast reaches all followers.';
+
+  @override
+  String get official_studio_text_0911 => 'All Followers';
+
+  @override
+  String get official_studio_text_0921 => 'One Follower';
+
+  @override
+  String get official_studio_text_0931 => 'Unable to get follower list';
+
+  @override
+  String get official_studio_text_0941 =>
+      'No followers available for messaging';
+
+  @override
+  String get official_studio_text_0951 => 'Select a follower (first 100)';
+
+  @override
+  String get official_studio_text_0961 => 'Mail Subject';
+
+  @override
+  String get official_studio_text_0971 => 'Message';
+
+  @override
+  String get official_studio_text_0981 => 'Write a letter to your fans…';
+
+  @override
+  String get official_studio_text_0991 => 'Submitting…';
+
+  @override
+  String get official_studio_text_1001 => 'Confirm and Send';
+
+  @override
+  String get official_studio_text_1011 => 'Sending History';
+
+  @override
+  String get official_studio_text_1021 => 'No sending history yet';
+
+  @override
+  String get official_studio_text_1031 => 'Queued';
+
+  @override
+  String get official_studio_text_1041 => 'Delivering';
+
+  @override
+  String get official_studio_text_1051 => 'Completed';
+
+  @override
+  String get official_studio_text_1061 => 'Cancelled';
+
+  @override
+  String get official_studio_text_1071 => 'Delivery Failed';
+
+  @override
+  String get official_studio_text_1081 => 'Untitled Message';
+
+  @override
+  String get official_studio_text_1091 =>
+      'Shows the latest 20 sending jobs. New and pending jobs stop when creator access is revoked.';
+
+  @override
+  String get official_studio_text_1101 => 'Player without a nickname';
+
+  @override
+  String get official_studio_text_1111 =>
+      'Unable to load followers. Try again later.';
+
+  @override
+  String get official_studio_text_1121 => 'Insufficient Flowers';
+
+  @override
+  String get official_studio_text_1131 => 'Maybe Later';
+
+  @override
+  String get official_studio_text_1141 => 'ショップへ';
+
+  @override
+  String get official_studio_text_1151 =>
+      'You may gift 1–1000 flowers per follower';
+
+  @override
+  String get official_studio_text_1161 => 'Select 1–20 followers';
+
+  @override
+  String get official_studio_text_1171 => 'Maximum 5000 flowers per gift';
+
+  @override
+  String get official_studio_text_1181 =>
+      'Gift message is limited to 300 characters';
+
+  @override
+  String get official_studio_text_1191 => 'Confirm Flower Gift';
+
+  @override
+  String get official_studio_text_1201 => 'Confirm Gift';
+
+  @override
+  String get official_studio_text_1211 =>
+      'Gift already submitted; flowers were not deducted twice';
+
+  @override
+  String get official_studio_text_1221 => 'Fan Benefits · Flower Gifts';
+
+  @override
+  String get official_studio_text_1231 => 'Unable to load flower balance';
+
+  @override
+  String get official_studio_text_1241 => 'My Flower Balance';
+
+  @override
+  String get official_studio_text_1251 =>
+      'Flowers are deducted from your own balance, not paid by the platform.';
+
+  @override
+  String get official_studio_text_1261 => 'Select followers (up to 20)';
+
+  @override
+  String get official_studio_text_1271 =>
+      'Search by public nickname or UID; eligibility is verified by the server at submission.';
+
+  @override
+  String get official_studio_text_1281 => 'フォロワーを検索';
+
+  @override
+  String get official_studio_text_1291 => 'Enter nickname or player UID';
+
+  @override
+  String get official_studio_text_1301 => 'Clear Search';
+
+  @override
+  String get official_studio_text_1311 => 'No eligible followers available';
+
+  @override
+  String get official_studio_text_1321 =>
+      'No matching followers on this page. Continue searching.';
+
+  @override
+  String get official_studio_text_1331 => 'No matching followers found';
+
+  @override
+  String get official_studio_text_1341 => 'Select up to 20 followers';
+
+  @override
+  String get official_studio_text_1351 => 'Searching…';
+
+  @override
+  String get official_studio_text_1361 => 'Load More Followers';
+
+  @override
+  String get official_studio_text_1371 => 'Search More Followers';
+
+  @override
+  String get official_studio_text_1381 => 'Flowers per Follower';
+
+  @override
+  String get official_studio_text_1391 => 'e.g. 10';
+
+  @override
+  String get official_studio_text_1401 => 'Gift Message (Optional)';
+
+  @override
+  String get official_studio_text_1411 => 'Estimated Deduction';
+
+  @override
+  String get official_studio_text_1421 =>
+      'Up to 20 followers and 5000 flowers per gift. Flowers are deducted on submission; recipients must claim them in their mailbox.';
+
+  @override
+  String get official_studio_text_1431 => 'Unable to load monthly tasks';
+
+  @override
+  String get official_studio_text_1441 =>
+      'Unable to load progress. Try again later.';
+
+  @override
+  String get official_studio_text_1451 => 'Confirm Creator Reward';
+
+  @override
+  String get official_studio_text_1461 =>
+      'Claim 300 flowers for this month? Each month can only be claimed once.';
+
+  @override
+  String get official_studio_text_1471 => 'Confirm Claim';
+
+  @override
+  String get official_studio_text_1481 => 'Monthly reward already claimed';
+
+  @override
+  String get official_studio_text_1491 => 'Successfully claimed 300 flowers!';
+
+  @override
+  String get official_studio_text_1501 => 'Claim failed. Try again later.';
+
+  @override
+  String get official_studio_text_1511 =>
+      'Unable to verify claim. Refresh your history.';
+
+  @override
+  String get official_studio_text_1521 => 'This month';
+
+  @override
+  String get official_studio_text_1531 =>
+      'Create and first publish three different characters each month, then claim 300 flowers.';
+
+  @override
+  String get official_studio_text_1541 =>
+      'Rules: Only signed and verified partner creators are eligible. Counted characters must be created and first published this month and remain public. Private, draft and republished older characters do not count. Resets monthly in Taiwan time, once per month.';
+
+  @override
+  String get official_studio_text_1551 =>
+      'Duplicate, empty or rule-violating characters may lead to review or partnership suspension under the agreement.';
+
+  @override
+  String get official_studio_text_1561 =>
+      'Welcome to the Partner Creator Program';
+
+  @override
+  String get official_studio_text_1571 => 'Track your work and stay connected';
+
+  @override
+  String get official_studio_text_1581 =>
+      'Share flowers and earn creator rewards';
+
+  @override
+  String get official_studio_text_1591 => 'Build your page and get support';
+
+  @override
+  String get official_studio_text_1601 => 'Your own creative space';
+
+  @override
+  String get official_studio_text_1611 => 'Followers · Analytics · Fan Mail';
+
+  @override
+  String get official_studio_text_1621 => 'Fan Benefits · Monthly Rewards';
+
+  @override
+  String get official_studio_text_1631 =>
+      'Banners · Partnership Info · Support';
+
+  @override
+  String get official_studio_text_1641 =>
+      'Welcome to the official creator studio of Lianlian Shiguang, combining creator tools, fan engagement, benefits and partnership information.';
+
+  @override
+  String get official_studio_text_1651 =>
+      'View and manage followers, track plays and character performance, and send messages to one follower or your entire audience.';
+
+  @override
+  String get official_studio_text_1661 =>
+      'Gift flowers from your balance to fans. You may also earn monthly rewards for newly created and first-published eligible characters.';
+
+  @override
+  String get official_studio_text_1671 =>
+      'Upload your personal creator banner. Review partnership rules and benefits in Partnership Info, or contact the Support Center.';
+
+  @override
+  String get official_studio_text_1681 =>
+      'Only officially eligible partner creators can use these features.';
+
+  @override
+  String get official_studio_text_1691 =>
+      'Fan mail has daily sending limits. Check your quota before sending.';
+
+  @override
+  String get official_studio_text_1701 =>
+      'Flower gifts deduct your balance. Monthly rewards follow current rules and server verification.';
+
+  @override
+  String get official_studio_text_1711 =>
+      'New creator-exclusive features will be added here over time.';
+
+  @override
+  String get official_studio_text_1721 => 'Creator Studio Guide';
+
+  @override
+  String get official_studio_text_1731 => 'スキップ';
+
+  @override
+  String get official_studio_text_1741 => '戻る';
+
+  @override
+  String get official_studio_text_1751 => '完了';
+
+  @override
+  String get official_studio_text_1761 => '次へ';
+
+  @override
+  String official_studio_text_1771(String name) {
+    return 'Confirm removal of $name? They will unfollow you but can follow again.';
+  }
+
+  @override
+  String official_studio_text_1781(int count) {
+    return 'Private messages: $count / 30';
+  }
+
+  @override
+  String official_studio_text_1791(int count) {
+    return 'Broadcasts: $count / 5';
+  }
+
+  @override
+  String official_studio_text_1801(int count) {
+    return 'Gift sent! $count flowers are waiting in your followers’ mailboxes.';
+  }
+
+  @override
+  String official_studio_text_1811(int count) {
+    return '$count flowers 🌸';
+  }
+
+  @override
+  String official_studio_text_1821(int count) {
+    return '$count followers';
+  }
+
+  @override
+  String official_studio_text_1831(int count) {
+    return '$count flowers';
+  }
+
+  @override
+  String official_studio_text_1841(String month) {
+    return '$month creator reward';
+  }
+
+  @override
+  String official_studio_text_1851(int count) {
+    return 'This month: $count / 3';
+  }
+
+  @override
+  String official_studio_text_1861(int count) {
+    return '$count public characters remaining';
+  }
+
+  @override
+  String official_studio_text_1871(int count) {
+    return 'Insufficient flowers: need $count more';
+  }
+
+  @override
+  String get official_studio_text_1881 => 'Unable to load sending quota';
+
+  @override
+  String get official_studio_text_1891 =>
+      'Sending is not confirmed. Check your history before retrying.';
+
+  @override
+  String get official_studio_text_1901 =>
+      'Connection failed. Check your history before trying again.';
+
+  @override
+  String get official_studio_text_1911 =>
+      'Gift status unconfirmed. Check history before retrying.';
+
+  @override
+  String official_studio_text_1921(int balance, int total, int missing) {
+    return 'Balance: $balance\\nRequired: $total\\nMissing: $missing\\n\\nVisit the shop to get more flowers.';
+  }
+
+  @override
+  String official_studio_text_1931(int followers, int amount, int total) {
+    return 'Send $followers flowers gifts of $amount each, deducting $total flowers.\\nGifts cannot be revoked.';
+  }
+
+  @override
+  String official_studio_text_1941(String mode, String status, int count) {
+    return '$mode · $status · Delivered to $count';
+  }
+
+  @override
+  String get official_studio_text_1951 => 'Public characters';
+
+  @override
+  String get official_studio_text_1961 => 'Loading…';
+
+  @override
+  String get official_studio_text_1971 => 'Select followers';
+
+  @override
+  String get official_studio_text_1981 => 'Claimed this month';
+
+  @override
+  String get preference_selection_title1 => '好きなキャラクターのタイプを選ぼう';
+
+  @override
+  String get preference_selection_description1 =>
+      '気になるタグを3～5個選ぶと、好みに合うキャラクターをおすすめできます。';
+
+  @override
+  String get preference_selection_recommendation_note1 =>
+      'この設定はおすすめの改善にのみ使用されます。ほかのタイプのキャラクターも自由に楽しめます。';
+
+  @override
+  String get preference_selection_selected1 => '選択済み';
+
+  @override
+  String get preference_selection_start1 => '探索を始める';
+
+  @override
+  String preference_selection_max_error1(int count) {
+    return 'タグは最大$count個まで選択できます。';
+  }
+
+  @override
+  String get preference_selection_save_failed1 =>
+      '好みを保存できませんでした。後でもう一度お試しください。';
+
+  @override
+  String get preference_group_personality1 => '性格・雰囲気';
+
+  @override
+  String get preference_group_relationship_age1 => '関係性・年齢差';
+
+  @override
+  String get preference_group_story1 => '物語の世界観';
+
+  @override
+  String get preference_tag_gentle1 => '優しい';
+
+  @override
+  String get preference_tag_cold1 => 'クール';
+
+  @override
+  String get preference_tag_scheming1 => '腹黒';
+
+  @override
+  String get preference_tag_tsundere1 => 'ツンデレ';
+
+  @override
+  String get preference_tag_loyal1 => '忠犬系';
+
+  @override
+  String get preference_tag_yandere1 => 'ヤンデレ';
+
+  @override
+  String get preference_tag_mysterious1 => 'ミステリアス';
+
+  @override
+  String get preference_tag_healing1 => '癒やし系';
+
+  @override
+  String get preference_tag_gap_moe1 => 'ギャップ萌え';
+
+  @override
+  String get preference_tag_older1 => '年上';
+
+  @override
+  String get preference_tag_younger1 => '年下';
+
+  @override
+  String get preference_tag_ceo1 => '俺様社長';
+
+  @override
+  String get preference_tag_school1 => '学園';
+
+  @override
+  String get preference_tag_workplace1 => '職場';
+
+  @override
+  String get preference_tag_ancient1 => '時代劇風';
+
+  @override
+  String get preference_tag_nonhuman1 => '人外';
+
+  @override
+  String get private_label1 => '非公開';
+
+  @override
+  String get profile_page_world_tab1 => 'オープンワールド';
+
+  @override
+  String get profile_page_login_required1 => 'ログインしてください';
+
+  @override
+  String get profile_page_world_load_failed1 =>
+      'ワールドを読み込めませんでした。後でもう一度お試しください。';
+
+  @override
+  String get profile_page_my_worlds1 => 'マイワールド';
+
+  @override
+  String get profile_page_create_world1 => 'ワールドを作成';
+
+  @override
+  String get profile_page_worlds_empty1 => 'まだワールドがありません';
+
+  @override
+  String get profile_page_worlds_empty_hint1 => '最初のワールドを作成しましょう';
+
+  @override
+  String get profile_page_world_untitled1 => '名前のないワールド';
+
+  @override
+  String get profile_page_world_public1 => '公開';
+
+  @override
+  String get profile_page_world_private1 => '非公開';
+
+  @override
+  String profile_page_world_character_count1(int count) {
+    return 'キャラクター $count 人';
+  }
+
+  @override
+  String get profile_page_world_enter_chat1 => 'チャットに入る';
+
+  @override
+  String get profile_page_world_edit1 => '編集';
+
+  @override
+  String get profile_page_create_character1 => 'キャラクターを作成';
+
+  @override
+  String get profile_page_event_frame_default1 => 'イベントアバターフレーム';
+
+  @override
+  String get public_worlds_explore_title1 => '公開ワールドを探す';
+
+  @override
+  String get public_worlds_search_tooltip1 => 'オープンワールドを検索';
+
+  @override
+  String get public_worlds_load_failed1 => '公開ワールドを読み込めません';
+
+  @override
+  String get public_worlds_refresh1 => '再読み込み';
+
+  @override
+  String get public_worlds_empty1 => '公開ワールドは準備中です。お楽しみに！';
+
+  @override
+  String get public_worlds_unnamed1 => '名前のないワールド';
+
+  @override
+  String get world_explore_subtitle1 => 'さまざまな世界に足を踏み入れ、新しい旅を楽しもう';
+
+  @override
+  String get settings_notification_preferences_title1 => '通知設定';
+
+  @override
+  String get settings_notification_preferences_subtitle1 =>
+      '受け取る通知の種類を設定し、デバイス間で同期します';
+
+  @override
+  String get settings_admin_section1 => '管理';
+
+  @override
+  String get settings_admin_dashboard1 => '管理ダッシュボード';
+
+  @override
+  String get settings_admin_tools_subtitle1 => '拾光の内部管理ツール';
+
+  @override
+  String get world_chat_back1 => '戻る';
+
+  @override
+  String get world_chat_mode_tooltip1 => '返信モード（AIと花の消費は未連携）';
+
+  @override
+  String get world_chat_menu1 => '世界観メニュー';
+
+  @override
+  String get world_chat_mode_story1 => 'ストーリー';
+
+  @override
+  String get world_chat_mode_immersive1 => '没入';
+
+  @override
+  String get world_chat_mode_resonance1 => '共鳴';
+
+  @override
+  String get world_chat_mode_interaction1 => '交流';
+
+  @override
+  String world_chat_mode_cost1(String mode, int cost) {
+    return '$mode · 花 $cost 個';
+  }
+
+  @override
+  String world_memo_read_failed1(String error) {
+    return 'メモの読み込みに失敗しました：$error';
+  }
+
+  @override
+  String get world_memo_sync_failed1 => '同期に一時的に失敗しました。前回読み込んだメモを表示しています。';
+
+  @override
+  String get world_memo_server_no_id1 => 'サーバーからメモ ID が返されませんでした';
+
+  @override
+  String world_memo_save_failed1(String error) {
+    return '保存に失敗しました：$error';
+  }
+
+  @override
+  String get world_memo_delete_title1 => 'メモを削除しますか？';
+
+  @override
+  String get world_memo_delete_warning1 => '削除すると元に戻せません。';
+
+  @override
+  String get world_memo_cancel1 => 'キャンセル';
+
+  @override
+  String get world_memo_delete1 => '削除';
+
+  @override
+  String world_memo_cancel_reminder_failed1(String error) {
+    return 'メモは削除されましたが、以前の端末の通知を解除できませんでした：$error';
+  }
+
+  @override
+  String world_memo_delete_failed1(String error) {
+    return '削除に失敗しました：$error';
+  }
+
+  @override
+  String get world_memo_title1 => 'メモ';
+
+  @override
+  String world_memo_world_personal1(String worldName) {
+    return '$worldName｜個人メモ';
+  }
+
+  @override
+  String get world_memo_sync_notice1 =>
+      '通知時刻は端末間で同期され、ログイン済みで通知を許可した端末にプッシュ通知が届きます。';
+
+  @override
+  String get world_memo_loading1 => '読み込み中…';
+
+  @override
+  String get world_memo_empty1 => 'メモはまだありません。右下の＋から追加できます。';
+
+  @override
+  String world_memo_reminder_date1(String date) {
+    return '通知日時：$date';
+  }
+
+  @override
+  String get world_memo_reminder_future1 => '通知時刻は現在より後に設定してください';
+
+  @override
+  String get world_memo_content_required1 => 'メモの内容を入力してください';
+
+  @override
+  String get world_memo_edit_title1 => 'メモを編集';
+
+  @override
+  String get world_memo_add_title1 => 'メモを追加';
+
+  @override
+  String get world_memo_content_label1 => 'メモの内容';
+
+  @override
+  String get world_memo_content_hint1 => '覚えておきたいことを書きましょう…';
+
+  @override
+  String get world_memo_reminder_settings1 => '通知設定';
+
+  @override
+  String get world_memo_no_reminder1 => '通知未設定';
+
+  @override
+  String get world_memo_reminder_choose1 => '日時を選んでクラウド同期の通知を設定';
+
+  @override
+  String get world_memo_clear_reminder1 => '通知日時を消去';
+
+  @override
+  String get world_memo_save1 => 'メモを保存';
+
+  @override
+  String get world_chat_open_world1 => 'オープンワールド';
+
+  @override
+  String get world_chat_flower_sync1 => '花の残高を同期できません';
+
+  @override
+  String get world_chat_web_store_unavailable1 => 'Web版では花を購入できません';
+
+  @override
+  String get world_chat_sync_unavailable1 =>
+      'リアルタイム同期が利用できません。チャットを開き直して履歴を読み込めます';
+
+  @override
+  String get world_chat_stopped1 => '生成を停止しました。花は消費されません';
+
+  @override
+  String get world_chat_cannot_stop1 => '返信が完了した可能性があります。チャット履歴と花の残高をご確認ください';
+
+  @override
+  String get world_chat_stop_retry1 => '停止できませんでした。もう一度お試しください';
+
+  @override
+  String get world_chat_connection_failed1 => '接続に失敗しました';
+
+  @override
+  String get world_chat_network_failed1 => 'ネットワークに接続できません';
+
+  @override
+  String get world_chat_no_regenerate1 => '再生成できる返信がありません';
+
+  @override
+  String get world_chat_paid_regenerate1 => '有料で再生成';
+
+  @override
+  String get world_chat_cancel1 => 'キャンセル';
+
+  @override
+  String get world_chat_confirm1 => '確認';
+
+  @override
+  String get world_chat_no_continue1 => '続けられるストーリーがありません';
+
+  @override
+  String get world_chat_no_save1 => '保存できる会話がありません';
+
+  @override
+  String get world_chat_loading1 => 'チャットを読み込み中です';
+
+  @override
+  String get world_chat_unnamed_character1 => '名前のないキャラクター';
+
+  @override
+  String get world_chat_bg_wait1 => '読み込み完了後に背景を変更できます';
+
+  @override
+  String get world_chat_sign_in1 => '先にログインしてください';
+
+  @override
+  String get world_chat_choose_mode1 => 'ワールドモードを選択';
+
+  @override
+  String get world_chat_mode_charge_expl1 => '返信成功時のみモード別に花を消費します。失敗時は無料です';
+
+  @override
+  String get world_chat_photo_selected1 => '写真を選択しました';
+
+  @override
+  String get world_chat_got_it1 => 'わかりました';
+
+  @override
+  String get world_chat_status_settings1 => 'ワールド状態表示設定';
+
+  @override
+  String get world_chat_save_settings1 => '設定を保存';
+
+  @override
+  String get world_chat_status_saved1 => 'この世界の状態表示設定を保存しました';
+
+  @override
+  String get world_chat_not_ready1 => 'ワールドチャットの準備ができていません';
+
+  @override
+  String get world_chat_enter_first1 => '先にワールドチャットに入ってください';
+
+  @override
+  String get world_chat_photo1 => '写真';
+
+  @override
+  String get world_chat_profile1 => 'プロフィール';
+
+  @override
+  String get world_chat_interaction1 => 'インタラクション';
+
+  @override
+  String get world_chat_theater1 => 'シアター';
+
+  @override
+  String get world_chat_status1 => 'ステータス';
+
+  @override
+  String get world_chat_secret1 => '秘密の章';
+
+  @override
+  String get world_chat_mood1 => '気分';
+
+  @override
+  String get world_chat_outfit1 => '服装';
+
+  @override
+  String get world_chat_relationship1 => '関係';
+
+  @override
+  String get world_chat_thought1 => '考え';
+
+  @override
+  String get world_chat_weather1 => '天気';
+
+  @override
+  String get world_chat_current_state1 => '現在の状態';
+
+  @override
+  String get world_chat_action1 => '動作';
+
+  @override
+  String get world_chat_affinity1 => '好感度';
+
+  @override
+  String get world_chat_generating1 => '世界は静かに動いています…';
+
+  @override
+  String get world_chat_screenshot1 => 'スクリーンショットを共有';
+
+  @override
+  String get world_chat_copy1 => '内容をコピー';
+
+  @override
+  String get world_chat_copied1 => 'コピーしました';
+
+  @override
+  String get world_chat_edit1 => '編集';
+
+  @override
+  String get world_chat_delete1 => '削除';
+
+  @override
+  String get world_chat_report1 => 'この会話を通報';
+
+  @override
+  String get world_chat_feedback1 => '意見を送る';
+
+  @override
+  String get world_chat_edit_segment1 => 'キャラクターの段落を編集';
+
+  @override
+  String get world_chat_save1 => '保存';
+
+  @override
+  String get world_chat_updated1 => 'メッセージを更新しました';
+
+  @override
+  String get world_chat_delete_segment1 => '段落を削除';
+
+  @override
+  String get world_chat_deleted_segment1 => '段落を削除しました';
+
+  @override
+  String get world_chat_edit_message1 => 'メッセージを編集';
+
+  @override
+  String get world_chat_edit_hint1 => '文章を編集';
+
+  @override
+  String get world_chat_delete_conversation1 => '会話を削除';
+
+  @override
+  String get world_chat_no_chat1 => 'まだ会話がありません';
+
+  @override
+  String get world_chat_cancel_select1 => '選択を解除';
+
+  @override
+  String get world_chat_input_hint1 => 'あなたたちの物語を書こう…';
+
+  @override
+  String get world_chat_screenshot_done1 => '特別なひとときが完成しました';
+
+  @override
+  String get world_chat_screenshot_style1 => 'スクショの配色を変更';
+
+  @override
+  String get world_chat_reselect1 => '選び直す';
+
+  @override
+  String get world_chat_download_share1 => 'ダウンロードして共有';
+
+  @override
+  String get world_records_summary_title1 => 'ストーリーのあらすじ';
+
+  @override
+  String world_records_loaded_count1(int count) {
+    return 'チャットメッセージ $count 件を読み込み、物語の順に整理しました。';
+  }
+
+  @override
+  String get world_records_auto_summary_pending1 =>
+      '読み込んだ会話の振り返りです。AI による自動要約はまだ利用できません。';
+
+  @override
+  String get world_records_empty_story1 => '振り返るストーリーはまだありません';
+
+  @override
+  String get world_records_narrator_name1 => '世界の語り手';
+
+  @override
+  String get world_records_relationships_title1 => '人物関係';
+
+  @override
+  String get world_records_affinity_note1 =>
+      '好感度は正式なキャラクターごとに個別に計算され、一時的なNPCは対象外です。';
+
+  @override
+  String get world_records_empty_characters1 => '正式なキャラクターのデータはまだありません';
+
+  @override
+  String world_records_affinity_score_with_next1(int score, int next) {
+    return '好感度 $score / $next';
+  }
+
+  @override
+  String world_records_affinity_score_only1(int score) {
+    return '好感度 $score';
+  }
+
+  @override
+  String world_records_relationship_stage1(int stage) {
+    return '関係ステージ $stage';
+  }
+
+  @override
+  String get world_records_local_memo_read_failed1 => '端末のメモを読み込めませんでした';
+
+  @override
+  String get world_records_memo_saved_local1 => 'この端末にメモを保存しました';
+
+  @override
+  String get world_records_memo_save_failed1 => 'メモを保存できませんでした';
+
+  @override
+  String get world_records_memo_unsaved1 => '未保存のメモ';
+
+  @override
+  String get world_records_memo_save_before_exit1 => '保存してから終了しますか？';
+
+  @override
+  String get world_records_continue_editing1 => '編集を続ける';
+
+  @override
+  String get world_records_save_and_exit1 => '保存して終了';
+
+  @override
+  String get world_records_world_memo_title1 => '世界へのメモ';
+
+  @override
+  String get world_records_save1 => '保存';
+
+  @override
+  String get world_records_memo_local_disclaimer1 =>
+      '個人メモ｜このバージョンでは端末内のみに保存され、AIへの送信や端末間同期は行われません。';
+
+  @override
+  String get world_records_memo_hint1 =>
+      '世界で見つけた手がかりや、やりたいこと、キャラクターに伝えたいことを記録…';
+
+  @override
+  String get world_records_narrator_short1 => '語り手';
+
+  @override
+  String get world_records_summary_service_missing1 =>
+      'ストーリー要約サービス（worldStoryMemory）が未デプロイです。デプロイ後に開き直してください。';
+
+  @override
+  String get world_records_summary_load_failed1 =>
+      'ストーリーのあらすじを読み込めません。後でもう一度お試しください。';
+
+  @override
+  String get world_records_summary_intro1 =>
+      '出会いも選択も物語の一部になります。大切な経験や人物との関係をここに記録し、物語を紡いでいきましょう。';
+
+  @override
+  String get world_records_summary_empty1 => '物語は続いています。印象的な章はまもなくここに記録されます。';
+
+  @override
+  String get world_search_title1 => '会話を検索';
+
+  @override
+  String get world_search_hint1 => '登場人物、セリフ、ナレーションを検索';
+
+  @override
+  String get world_search_clear1 => '検索をクリア';
+
+  @override
+  String get world_search_start1 => 'キーワードを入力して検索';
+
+  @override
+  String world_search_results1(int count) {
+    return '$count 件の結果が見つかりました';
+  }
+
+  @override
+  String get world_search_empty_prompt1 => 'プレイヤー、登場人物、ナレーションを検索';
+
+  @override
+  String get world_search_no_results1 => '一致する会話がありません';
+
+  @override
+  String get world_search_unknown_speaker1 => '不明な人物';
+
+  @override
+  String get world_search_collapse1 => '閉じる';
+
+  @override
+  String get world_search_expand1 => '展開';
+
+  @override
+  String get world_search_scope1 => '検索対象：読み込み済みの最新200件のメッセージ';
+
+  @override
+  String get world_menu_subtitle1 => 'オープンワールド・機能は順次公開';
+
+  @override
+  String get world_menu_chat_section1 => 'チャット';
+
+  @override
+  String get world_menu_search1 => '会話を検索';
+
+  @override
+  String get world_menu_save_transcript1 => '会話履歴を保存';
+
+  @override
+  String get world_menu_memories_background1 => '思い出と背景';
+
+  @override
+  String get world_menu_relations_section1 => '世界の関係';
+
+  @override
+  String get world_menu_story_summary1 => 'ストーリーの要約';
+
+  @override
+  String get world_menu_relationships1 => '人物関係';
+
+  @override
+  String get world_menu_memos1 => 'メモ';
+
+  @override
+  String get world_menu_memory_section1 => '記憶の管理';
+
+  @override
+  String get world_menu_reset_progress1 => '世界の進行状況をリセット';
+
+  @override
+  String get world_chat_book_confirm1 => '確認';
+
+  @override
+  String get world_custom_scene_title_required1 => '劇場のタイトルを入力してください。';
+
+  @override
+  String get world_custom_scene_description_required1 => 'シーンの説明を入力してください。';
+
+  @override
+  String get world_custom_scene_save_failed1 =>
+      '保存に失敗しました。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get world_custom_scene_edit_title1 => '劇場を編集';
+
+  @override
+  String get world_custom_scene_add_title1 => '劇場を追加';
+
+  @override
+  String get world_discovery_share_desc1 => 'クリエイターのオープンワールドに入り、あなただけの物語を始めよう。';
+
+  @override
+  String world_discovery_share_text1(
+      String title, String description, String link) {
+    return '恋恋拾光・オープンワールドへの招待\n\n「$title」\n\n$description\n\n今すぐ探索：$link';
+  }
+
+  @override
+  String get world_discovery_brand1 => '恋恋拾光';
+
+  @override
+  String get world_discovery_invite1 => 'オープンワールドへの招待';
+
+  @override
+  String get world_discovery_scan1 => 'スキャンしてダウンロード';
+
+  @override
+  String get world_discovery_cancel1 => 'キャンセル';
+
+  @override
+  String get world_discovery_share_button1 => '招待カードを共有';
+
+  @override
+  String get world_discovery_share_missing_card1 => '招待カードが見つかりません';
+
+  @override
+  String get world_discovery_share_image_failed1 => '共有画像を作成できません';
+
+  @override
+  String get world_discovery_share_failed1 => '招待カードを共有できませんでした。もう一度お試しください。';
+
+  @override
+  String get world_discovery_story_open1 => '物語の始まり';
+
+  @override
+  String get world_discovery_story_unset1 => '物語の始まりは未設定です';
+
+  @override
+  String get world_discovery_first_unset1 => '最初のセリフは未設定です';
+
+  @override
+  String get world_discovery_background_title1 => '世界観の背景と説明';
+
+  @override
+  String world_discovery_era1(String era) {
+    return '時代・舞台：$era';
+  }
+
+  @override
+  String get world_discovery_background_unset1 => '世界観の背景は未設定です';
+
+  @override
+  String get world_discovery_background_full1 => '世界観の詳細';
+
+  @override
+  String get world_discovery_people_unset1 => '登場人物は未設定です';
+
+  @override
+  String get world_discovery_people_intro1 => '登場人物の紹介';
+
+  @override
+  String get world_discovery_appearance_unset1 => '外見の設定はありません';
+
+  @override
+  String get world_discovery_creator_unset1 => 'クリエイター情報がありません';
+
+  @override
+  String get world_discovery_creator1 => 'クリエイター';
+
+  @override
+  String get world_discovery_creator_load_failed1 => 'クリエイター情報を読み込めません';
+
+  @override
+  String world_discovery_world_load_failed1(String error) {
+    return 'オープンワールドの読み込みに失敗：$error';
+  }
+
+  @override
+  String get world_discovery_unpublished1 => 'この世界は非公開です';
+
+  @override
+  String get world_discovery_open_world1 => 'オープンワールド';
+
+  @override
+  String get world_discovery_share_tooltip1 => 'オープンワールドを共有';
+
+  @override
+  String get world_discovery_world_background1 => '世界の背景';
+
+  @override
+  String get world_discovery_not_playable1 => 'この世界はまだプレイできません。';
+
+  @override
+  String get world_discovery_enter1 => '世界に入る';
+
+  @override
+  String get world_edit_login_required1 => '先にログインしてください';
+
+  @override
+  String get world_edit_no_edit_permission1 => 'この世界を編集する権限がありません';
+
+  @override
+  String get world_edit_secret_permission_error1 =>
+      'Unable to access secret chapters. Check the deployed Firestore rules. Saving is paused to protect existing data.';
+
+  @override
+  String world_edit_secret_read_error_code1(String code) {
+    return 'Could not load secret chapters ($code). Saving is paused to protect existing data.';
+  }
+
+  @override
+  String get world_edit_secret_read_error1 =>
+      'Could not load secret chapters. Saving is paused to protect existing data.';
+
+  @override
+  String world_edit_world_read_error1(String error) {
+    return 'Could not load world: $error';
+  }
+
+  @override
+  String world_edit_image_max1(int count) {
+    return 'A world can have up to $count images';
+  }
+
+  @override
+  String world_edit_image_read_error1(String error) {
+    return 'Could not load images: $error';
+  }
+
+  @override
+  String get world_edit_tag_heading1 => 'Theme tags (up to 5)';
+
+  @override
+  String get world_edit_tag_max1 => 'Select up to 5 tags';
+
+  @override
+  String get world_edit_tag_custom1 =>
+      'Tags (customizable; separate with commas)';
+
+  @override
+  String get world_edit_secret_not_ready1 =>
+      'Secret chapters have not loaded. Publishing is paused to protect your content. Check permissions and reopen this page.';
+
+  @override
+  String get world_edit_required_publish1 =>
+      'Enter a world name, at least one image, world background, story opening, and first line';
+
+  @override
+  String get world_edit_max_tags_save1 =>
+      'Only 5 theme tags are allowed. Remove extras before saving';
+
+  @override
+  String get world_edit_secret_validation1 =>
+      'Each chapter needs a title, unlock condition, and secret content (up to 12 chapters)';
+
+  @override
+  String get world_edit_draft_saved1 => 'World draft and secret chapters saved';
+
+  @override
+  String get world_edit_publish_unconfirmed1 =>
+      'The server has not confirmed public eligibility. Please try publishing again later.';
+
+  @override
+  String world_edit_publish_backend_error1(String code, String message) {
+    return 'World data was saved, but public activation failed ($code): $message. Fix the issue and select “Publish open world” again.';
+  }
+
+  @override
+  String get world_edit_publish_service_missing1 =>
+      'Verify that worldPublish is deployed';
+
+  @override
+  String get world_edit_public_published1 => 'Public open world published';
+
+  @override
+  String get world_edit_private_saved1 => 'Private open world saved';
+
+  @override
+  String world_edit_save_publish_failed1(String error) {
+    return 'Save or publish failed: $error';
+  }
+
+  @override
+  String get world_edit_save_draft_question1 => '下書きを保存しますか？';
+
+  @override
+  String get world_edit_save_draft_explain1 =>
+      '退出する前にこの世界を保存しますか？未保存の変更は失われます。';
+
+  @override
+  String get world_edit_discard1 => '保存しない';
+
+  @override
+  String get world_edit_cancel1 => 'キャンセル';
+
+  @override
+  String get world_edit_save_draft1 => '下書きを保存';
+
+  @override
+  String get world_edit_world_name1 => 'オープンワールド名 *';
+
+  @override
+  String get world_edit_world_images1 => '世界の画像（最大6枚、最初の画像が表紙）';
+
+  @override
+  String get world_edit_cover1 => '表紙';
+
+  @override
+  String get world_edit_set_cover1 => '表紙に設定';
+
+  @override
+  String get world_edit_short_pitch1 =>
+      'One-line card description (optional, up to 60 characters)';
+
+  @override
+  String get world_edit_public_summary1 => '公開用の世界紹介（ネタバレなし）';
+
+  @override
+  String get world_edit_era1 =>
+      'Time period (e.g. fictional present day, Republican era)';
+
+  @override
+  String get world_edit_world_rules1 => '世界の背景とルール *';
+
+  @override
+  String get world_edit_full_lore1 => '世界の詳細設定・出来事・場所（AI用）';
+
+  @override
+  String get world_edit_npc_intro1 =>
+      '主要キャラクターやNPCの名前、容姿、誕生日、関係、写真を設定できます。プレイヤーは自分の物語の主人公です。';
+
+  @override
+  String get world_edit_main_characters1 => '主要キャラクター';
+
+  @override
+  String get world_edit_main_subtitle1 =>
+      'Important characters who appear frequently in this world';
+
+  @override
+  String get world_edit_npc_subtitle1 =>
+      'Other characters who may become interaction partners as the story unfolds';
+
+  @override
+  String world_edit_people_count1(int count) {
+    return '$count人';
+  }
+
+  @override
+  String get world_edit_role_unset1 => 'Role / occupation not set';
+
+  @override
+  String get world_edit_remove_person1 => 'Remove character';
+
+  @override
+  String world_edit_add_person1(String type) {
+    return '$typeを追加';
+  }
+
+  @override
+  String get world_edit_add_secret1 => '秘密の章を追加';
+
+  @override
+  String get world_edit_edit_secret1 => '秘密の章を編集';
+
+  @override
+  String get world_edit_chapter_title1 => '章のタイトル *';
+
+  @override
+  String get world_edit_unlock_condition1 =>
+      'Unlock condition (description for server evaluation) *';
+
+  @override
+  String get world_edit_secret_content1 => '秘密の内容 *';
+
+  @override
+  String get world_edit_confirm1 => '確認';
+
+  @override
+  String get world_edit_story_opening1 => '物語の始まり *';
+
+  @override
+  String get world_edit_first_line1 => '物語の最初の一言 *';
+
+  @override
+  String get world_edit_secret_chapters1 => '秘密の章';
+
+  @override
+  String get world_edit_secret_explain1 =>
+      'Secret chapters are stored privately. Publishing the world does not reveal them; players must meet story conditions to unlock them.';
+
+  @override
+  String get world_edit_add_secret_max1 => 'Add secret chapter (up to 12)';
+
+  @override
+  String get world_edit_publish_settings1 => '公開設定';
+
+  @override
+  String get world_edit_private_world1 => '非公開ワールド';
+
+  @override
+  String get world_edit_private_world_desc1 => '自分だけがプレイ・テストでき、他のプレイヤーは入れません';
+
+  @override
+  String get world_edit_public_world1 => '公開ワールド';
+
+  @override
+  String get world_edit_public_world_desc1 => '他のプレイヤーも参加でき、それぞれ独立した物語を進めます';
+
+  @override
+  String get world_edit_create_world1 => 'オープンワールドを作成';
+
+  @override
+  String get world_edit_basic_tab1 => '基本設定';
+
+  @override
+  String get world_edit_characters_tab1 => '登場人物';
+
+  @override
+  String get world_edit_story_tab1 => '物語設定';
+
+  @override
+  String get world_edit_publish_world1 => 'オープンワールドを公開';
+
+  @override
+  String get world_edit_name_required1 => '人物の名前を入力してください';
+
+  @override
+  String world_edit_edit_person1(String type) {
+    return '$typeを編集';
+  }
+
+  @override
+  String get world_edit_upload_photo1 => '人物の写真をアップロード（任意）';
+
+  @override
+  String get world_edit_allow_photo1 =>
+      'Allow generating other images from this character\'s photo';
+
+  @override
+  String get world_edit_allow_photo_explain1 =>
+      'Use this character\'s photo as a reference only when appropriate for the story. Chatting and ordinary gifts still work if disabled. Set separately for each character.';
+
+  @override
+  String get world_edit_name1 => '名前 *';
+
+  @override
+  String get world_edit_gender1 => '性別／ジェンダー';
+
+  @override
+  String get world_edit_birthday1 => '誕生日（例：5月16日）';
+
+  @override
+  String get world_edit_age1 => '年齢';
+
+  @override
+  String get world_edit_role1 => '役割／職業';
+
+  @override
+  String get world_edit_appearance1 => '外見';
+
+  @override
+  String get world_edit_personality1 => '性格と人物設定';
+
+  @override
+  String get world_edit_background1 => '過去の経歴';
+
+  @override
+  String get world_edit_relationships1 => '他の人物との関係';
+
+  @override
+  String get world_edit_speech_style1 => '話し方／口調';
+
+  @override
+  String get world_edit_dialogue_examples1 => '会話例（AIが口調を理解するため）';
+
+  @override
+  String get world_edit_save_person1 => '人物設定を保存';
+
+  @override
+  String get world_edit_tag_mystery1 => 'サスペンス';
+
+  @override
+  String get world_edit_tag_horror1 => 'ホラー';
+
+  @override
+  String get world_edit_tag_romance1 => '恋愛';
+
+  @override
+  String get world_edit_tag_modern_fantasy1 => '現代ファンタジー';
+
+  @override
+  String get world_edit_tag_school1 => '学園';
+
+  @override
+  String get world_edit_tag_ensemble1 => '群像劇';
+
+  @override
+  String get world_edit_tag_adventure1 => '冒険';
+
+  @override
+  String get world_edit_tag_daily1 => '日常';
+
+  @override
+  String get world_edit_tag_detective1 => '推理';
+
+  @override
+  String get world_edit_tag_otherworld1 => '異世界';
+
+  @override
+  String get chooseNpc1 => 'NPCを選択';
+
+  @override
+  String get chooseInteractionTarget1 => '交流相手を選択';
+
+  @override
+  String get unnamedCharacter1 => '名前のないキャラクター';
+
+  @override
+  String get chooseTargetFirst1 => '先に交流相手を選択してください';
+
+  @override
+  String get confirmGift1 => 'ギフトを確認';
+
+  @override
+  String giftConfirmDetail1(String target, String gift, int cost) {
+    return '$targetに$giftを贈ります。花を$cost個消費します。AIの返信成功後にのみ引き落とされます。';
+  }
+
+  @override
+  String get cancel1 => 'キャンセル';
+
+  @override
+  String get send1 => '送信';
+
+  @override
+  String get sendLocationTitle1 => '場所を送信（花3個）';
+
+  @override
+  String get customLocation1 => '場所を入力';
+
+  @override
+  String get confirm1 => '確認';
+
+  @override
+  String get cafe1 => 'カフェ';
+
+  @override
+  String get park1 => '公園';
+
+  @override
+  String get restaurant1 => 'レストラン';
+
+  @override
+  String get street1 => '通り';
+
+  @override
+  String get giftHeart1 => 'ハート';
+
+  @override
+  String get giftFlower1 => '花';
+
+  @override
+  String get giftSun1 => '太陽';
+
+  @override
+  String get giftConfetti1 => '紙吹雪';
+
+  @override
+  String get giftCoffee1 => 'コーヒー';
+
+  @override
+  String get giftCake1 => 'ケーキ';
+
+  @override
+  String get interactionPlayTitle1 => '交流アクション';
+
+  @override
+  String interactionTargetLabel1(String target) {
+    return '交流相手：$target';
+  }
+
+  @override
+  String get intimateInteraction1 => '親密な交流';
+
+  @override
+  String get poke1 => 'つつく';
+
+  @override
+  String get hug1 => 'ハグ';
+
+  @override
+  String get holdHands1 => '手をつなぐ';
+
+  @override
+  String get gifts1 => 'ギフト';
+
+  @override
+  String get funActivities1 => 'お楽しみ';
+
+  @override
+  String get sendLocation1 => '場所を送信';
+
+  @override
+  String get diceDuel1 => 'サイコロ対決';
+
+  @override
+  String get world_profile_name_too_long1 =>
+      'ワールド内のキャラクター名は40文字以内にしてください。短くしてから保存してください。';
+
+  @override
+  String get world_profile_identity_too_long1 =>
+      'ワールド内の人物情報が2,000文字を超えています。短くしてから保存してください。';
+
+  @override
+  String get world_relationship_live_title1 => '人物関係';
+
+  @override
+  String get world_relationship_live_load_failed1 =>
+      '関係データを読み込めません。Firestore の権限を確認してください。';
+
+  @override
+  String get world_relationship_live_no_people1 => 'この世界にはまだ人物が登録されていません。';
+
+  @override
+  String get world_relationship_live_not_met1 => '現在の関係：まだ出会っていない';
+
+  @override
+  String get world_relationship_live_first_meeting1 => '初対面';
+
+  @override
+  String world_relationship_live_current_relation1(String relation) {
+    return '現在の関係：$relation';
+  }
+
+  @override
+  String get world_relationship_live_thought_title1 => 'プレイヤーへの現在の思い';
+
+  @override
+  String get world_relationship_live_thought_pending1 =>
+      '今後の交流を通して少しずつ印象が形作られます。';
+
+  @override
+  String world_scene_full_load_error1(String error) {
+    return '劇場の読み込みに失敗しました：$error';
+  }
+
+  @override
+  String get world_scene_full_delete_title1 => '劇場を削除';
+
+  @override
+  String world_scene_full_delete_confirm1(String title) {
+    return '「$title」を削除しますか？';
+  }
+
+  @override
+  String get world_scene_full_cancel1 => 'キャンセル';
+
+  @override
+  String get world_scene_full_delete1 => '削除';
+
+  @override
+  String world_scene_full_delete_error1(String error) {
+    return '劇場の削除に失敗しました：$error';
+  }
+
+  @override
+  String get world_scene_full_missing_fields1 => 'タイトルとシーンの説明を入力してください。';
+
+  @override
+  String world_scene_full_activate_error1(String error) {
+    return '劇場の開始に失敗しました：$error';
+  }
+
+  @override
+  String get world_scene_full_end_title1 => '劇場を終了';
+
+  @override
+  String get world_scene_full_end_confirm1 => '現在の劇場を終了しますか？';
+
+  @override
+  String world_scene_full_end_error1(String error) {
+    return '劇場の終了に失敗しました：$error';
+  }
+
+  @override
+  String get world_scene_full_unnamed1 => '無題の劇場';
+
+  @override
+  String world_scene_full_opening1(String opening) {
+    return '導入：$opening';
+  }
+
+  @override
+  String get world_scene_full_edit1 => '編集';
+
+  @override
+  String get world_scene_full_start1 => '劇場を開始';
+
+  @override
+  String get world_scene_full_creator_empty1 => 'クリエイターの劇場はまだありません';
+
+  @override
+  String get world_scene_full_custom_empty1 => '作成した劇場はまだありません';
+
+  @override
+  String get world_scene_full_add1 => '劇場を追加';
+
+  @override
+  String get world_scene_full_page_title1 => '劇場';
+
+  @override
+  String get world_scene_full_creator_tab1 => 'クリエイター劇場';
+
+  @override
+  String get world_scene_full_custom_tab1 => '自作劇場';
+
+  @override
+  String world_scene_full_active1(String title) {
+    return '進行中の劇場：$title';
+  }
+
+  @override
+  String get world_scene_required1 => 'シーンのタイトルと内容を入力してください';
+
+  @override
+  String get world_scene_title1 => 'シーン';
+
+  @override
+  String get world_scene_beta_notice1 =>
+      'ワールドシーンのテスト版：ワールドチャットAIでシーンを開始します。専用セーブと正式な開始APIはまだ未対応です。';
+
+  @override
+  String get world_scene_creator_scenes1 => 'クリエイターのシーン';
+
+  @override
+  String get world_scene_no_creator_scenes1 =>
+      'この世界には現在、利用できるクリエイターのシーン設定がありません';
+
+  @override
+  String get world_scene_custom_scenes1 => 'シーンを自作する';
+
+  @override
+  String get world_scene_name1 => 'シーン名';
+
+  @override
+  String get world_scene_setup1 => '背景、場所、登場人物、導入状況';
+
+  @override
+  String get world_scene_start1 => 'シーンを開始';
+
+  @override
+  String get worldSearchTitle1 => 'オープンワールドを検索';
+
+  @override
+  String get worldSearchHint1 => 'ワールド名、クリエイター、タグを検索';
+
+  @override
+  String get worldSearchClear1 => '検索をクリア';
+
+  @override
+  String get worldSearchEmpty1 => '一致するオープンワールドが見つかりません';
+
+  @override
+  String get worldSearchTrending1 => '人気のワールド';
+
+  @override
+  String get worldSearchResults1 => '検索結果';
+
+  @override
+  String get worldSearchUnnamed1 => '名前のないワールド';
+
+  @override
+  String worldSearchCreator1(String creator) {
+    return 'クリエイター：$creator';
+  }
+
+  @override
+  String get world_secret_chapters_title1 => '秘密の章';
+
+  @override
+  String get world_secret_chapters_close1 => '閉じる';
+
+  @override
+  String get world_secret_chapters_read_failed1 => '秘密の章を現在読み込めません';
+
+  @override
+  String get world_secret_chapters_retry1 => '読み込みに失敗しました。タップして再試行';
+
+  @override
+  String get world_secret_chapters_empty1 => 'クリエイターはまだ秘密の章を設定していません';
+
+  @override
+  String world_secret_chapters_locked_chapter1(String number) {
+    return '第$number章 · ？？？';
+  }
+
+  @override
+  String get world_secret_chapters_unlocked1 => '解放済み · タップして読む';
+
+  @override
+  String get world_secret_chapters_locked1 => '未解放 · 物語を探索しよう';
+
+  @override
+  String world_timeline_load_failed1(String error) {
+    return 'ストーリーの要約を読み込めませんでした：$error';
+  }
+
+  @override
+  String get world_timeline_edit_summary1 => 'ストーリーの要約を編集';
+
+  @override
+  String get world_timeline_cancel1 => 'キャンセル';
+
+  @override
+  String get world_timeline_save1 => '保存';
+
+  @override
+  String world_timeline_save_failed1(String error) {
+    return '保存に失敗しました：$error';
+  }
+
+  @override
+  String get world_timeline_delete_summary1 => '要約を削除';
+
+  @override
+  String get world_timeline_delete_confirm1 => 'このストーリーの記録を削除しますか？';
+
+  @override
+  String get world_timeline_delete1 => '削除';
+
+  @override
+  String world_timeline_delete_failed1(String error) {
+    return '削除に失敗しました：$error';
+  }
+
+  @override
+  String get world_timeline_our_story1 => '私たちの物語';
+
+  @override
+  String get world_timeline_retry1 => '再試行';
+
+  @override
+  String get world_timeline_empty1 => '物語はまだ続いています。物語が進むと新しい記録が追加されます。';
+
+  @override
+  String get world_timeline_recent1 => '最近の記録';
+
+  @override
+  String get world_timeline_edit1 => '編集';
+
+  @override
+  String get echo_login_to_post1 => 'ログインしてから時空のこだまを残してください';
+
+  @override
+  String get echo_limit1 => '同じオープンワールドに残せるこだまは1人3件までです';
+
+  @override
+  String get echo_count_fail1 => 'こだまの件数を確認できません。後でもう一度お試しください';
+
+  @override
+  String get echo_compose_title1 => '時空のこだまを残す';
+
+  @override
+  String get echo_compose_desc1 => '好きなカードを選び、残したい言葉を書いてください。';
+
+  @override
+  String get echo_compose_hint1 => 'この世界にどんな言葉を残しますか？';
+
+  @override
+  String get echo_send1 => 'こだまを投稿';
+
+  @override
+  String get echo_player1 => 'プレイヤー';
+
+  @override
+  String get echo_sent1 => '時空のこだまを投稿しました';
+
+  @override
+  String get echo_post_fail1 => '投稿に失敗しました。権限と通信状況をご確認ください';
+
+  @override
+  String get echo_login1 => 'ログインしてください';
+
+  @override
+  String get echo_like_fail1 => 'いいねに失敗しました';
+
+  @override
+  String get echo_delete_title1 => 'このこだまを削除しますか？';
+
+  @override
+  String get echo_delete_warning1 => '削除すると元に戻せません。';
+
+  @override
+  String get echo_cancel1 => 'キャンセル';
+
+  @override
+  String get echo_delete1 => '削除';
+
+  @override
+  String get echo_deleted1 => 'こだまを削除しました';
+
+  @override
+  String get echo_delete_fail1 => '削除に失敗しました';
+
+  @override
+  String get echo_reason_inappropriate1 => '不適切な内容';
+
+  @override
+  String get echo_reason_harassment1 => '嫌がらせ・攻撃';
+
+  @override
+  String get echo_reason_spam1 => 'スパム';
+
+  @override
+  String get echo_reason_other1 => 'その他';
+
+  @override
+  String get echo_report_title1 => '時空のこだまを通報';
+
+  @override
+  String get echo_already_reported1 => 'このこだまは通報済みです';
+
+  @override
+  String get echo_report_received1 => '通報を受け付けました';
+
+  @override
+  String get echo_report_fail1 => '通報に失敗しました';
+
+  @override
+  String get echo_options1 => 'こだまのオプション';
+
+  @override
+  String get echo_delete_option1 => 'こだまを削除';
+
+  @override
+  String get echo_report_option1 => 'こだまを通報';
+
+  @override
+  String get echo_wall_title1 => '時空のこだま';
+
+  @override
+  String get echo_add1 => 'こだまを残す';
+
+  @override
+  String get echo_load_fail1 => '時空のこだまを読み込めません。Firestoreの権限をご確認ください';
+
+  @override
+  String get echo_empty1 => 'まだこだまがありません。最初の物語を残しましょう。';
+
+  @override
+  String get store_pack_30_name1 => '出会いパック';
+
+  @override
+  String get store_pack_70_name1 => 'ときめきの予感パック';
+
+  @override
+  String get store_pack_120_name1 => '胸キュンパック';
+
+  @override
+  String get store_pack_190_name1 => '熱愛パック';
+
+  @override
+  String get store_pack_250_name1 => '親友パック';
+
+  @override
+  String get store_pack_330_name1 => '見守りパック';
+
+  @override
+  String get store_pack_450_name1 => '信頼パック';
+
+  @override
+  String get store_pack_520_name1 => '愛してるパック';
+
+  @override
+  String get store_pack_690_name1 => 'ハネムーンパック';
+
+  @override
+  String get store_pack_720_name1 => '約束パック';
+
+  @override
+  String get store_pack_750_name1 => '寄り添いパック';
+
+  @override
+  String get store_pack_830_name1 => '深愛パック';
+
+  @override
+  String get store_pack_990_name1 => '末永くパック';
+
+  @override
+  String get store_pack_1050_name1 => 'かけがえのない人パック';
+
+  @override
+  String get store_pack_1290_name1 => '最愛パック';
+
+  @override
+  String get store_pack_1314_name1 => '一生一緒パック';
+
+  @override
+  String get store_pack_1930_name1 => '誓いパック';
+
+  @override
+  String get store_pack_2990_name1 => '永遠の恋人パック';
 }

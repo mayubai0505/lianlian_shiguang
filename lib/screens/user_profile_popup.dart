@@ -114,10 +114,11 @@ class _UserProfilePageState extends State<_UserProfilePage> {
         // 舊版單一名片相容：轉入全帳號共用 profiles。
         final oldProfile = Map<String, dynamic>.from(data['profile'] ?? {});
         final defaultId = DateTime.now().millisecondsSinceEpoch.toString();
+        final l10n = AppLocalizations.of(context)!;
         loadedProfiles = [
           {
             'id': defaultId,
-            'profileName': '預設檔案',
+            'profileName':l10n.defaultProfileName,
             'name': data['nickname'] ?? '',
             'height': oldProfile['height'] ?? '',
             'appearance': oldProfile['appearance'] ?? '',
@@ -415,7 +416,7 @@ class _UserProfilePageState extends State<_UserProfilePage> {
                 child: Opacity(
                   opacity: 0.10,
                   child: Image.asset(
-                    'assets/images/contact/contact_top_right_botanical.png',
+                    'assets/images/contact/contact_top_right_botanical.webp',
                     width: 190,
                     fit: BoxFit.contain,
                   ),
@@ -603,24 +604,6 @@ class _UserProfilePageState extends State<_UserProfilePage> {
                             ),
                           ),
                         ),
-                        if (isSelected) ...[
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 9,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: primary.withValues(alpha: 0.09),
-                              borderRadius: BorderRadius.circular(999),
-                            ),
-                            child: Icon(
-                              Icons.check_rounded,
-                              size: 13,
-                              color: primary,
-                            ),
-                          ),
-                        ],
                       ],
                     ),
                     if (name.isNotEmpty || occupation.isNotEmpty) ...[

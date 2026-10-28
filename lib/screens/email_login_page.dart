@@ -130,7 +130,6 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                       ToastUtils.showCenterToast(
                         dialogContext,
                         l10n.email_policy_open_failed(title),
-                        customIcon: Icons.link_off_rounded,
                         isError: true,
                       );
                     }
@@ -150,23 +149,12 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                       borderRadius:
                       BorderRadius.circular(20),
                     ),
-                    title: Row(
-                      children: [
-                        const Icon(
-                          Icons.description_outlined,
-                          color: Color(0xFF7B1FA2),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            title,
-                            style: GoogleFonts.notoSerifTc(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ],
+                    title: Text(
+                      title,
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                     content: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -398,7 +386,6 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
         ToastUtils.showCenterToast(
           context,
           l10n.email_policy_status_check_failed,
-          customIcon: Icons.error_outline,
           isError: true,
         );
       }
@@ -492,8 +479,6 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
       ToastUtils.showCenterToast(
         context,
         l10n.forgot_password_email_sent,
-        customIcon:
-        Icons.mark_email_read_rounded,
       );
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
@@ -710,15 +695,6 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                   children: [
                     const SizedBox(height: 40),
 
-                    Icon(
-                      Icons
-                          .mark_email_unread_outlined,
-                      size: 80,
-                      color: const Color(0xFF9C27B0)
-                          .withValues(alpha: 0.8),
-                    ),
-
-                    const SizedBox(height: 24),
 
                     Text(
                       _isLoginMode
@@ -757,10 +733,6 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                         labelStyle:
                         GoogleFonts.notoSerifTc(
                           color: const Color(0xFF7B1FA2),
-                        ),
-                        prefixIcon: const Icon(
-                          Icons.email_outlined,
-                          color: Color(0xFF9C27B0),
                         ),
                         filled: true,
                         fillColor: Colors.white
@@ -811,10 +783,6 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                         labelStyle:
                         GoogleFonts.notoSerifTc(
                           color: const Color(0xFF7B1FA2),
-                        ),
-                        prefixIcon: const Icon(
-                          Icons.lock_outline,
-                          color: Color(0xFF9C27B0),
                         ),
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -1082,12 +1050,6 @@ class _EmailPolicyWebViewPageState
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.error_outline_rounded,
-                      size: 58,
-                      color: theme.colorScheme.primary,
-                    ),
-                    const SizedBox(height: 18),
                     Text(
                       l10n.email_policy_page_load_failed,
                       style: GoogleFonts.notoSerifTc(

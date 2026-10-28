@@ -6729,7 +6729,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Bạn không thể báo cáo trang nhà sáng tạo của chính mình';
 
   @override
-  String creator_profile_report_reason_prompt(String creatorName) {
+  String creator_profile_report_reason_prompt1(String creatorName) {
     return 'Vui lòng chọn lý do báo cáo “$creatorName”:';
   }
 
@@ -10047,4 +10047,3508 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get theme_font_system_description =>
       'Dùng phông hệ thống mặc định của thiết bị';
+
+  @override
+  String get font_selection_serif_name => 'Noto Serif TC';
+
+  @override
+  String get font_selection_sans_name => 'Noto Sans TC';
+
+  @override
+  String get font_selection_system_name => 'Phông chữ hệ thống';
+
+  @override
+  String get font_selection_serif_description =>
+      'Phông chữ có chân thanh lịch, phù hợp để đọc nhập tâm.';
+
+  @override
+  String get font_selection_sans_description =>
+      'Phông chữ không chân rõ ràng, dịu mắt.';
+
+  @override
+  String get font_selection_system_description =>
+      'Sử dụng phông chữ mặc định của thiết bị.';
+
+  @override
+  String get font_selection_preview_sentence =>
+      'Viết tiếp một chương câu chuyện của riêng hai người cùng người bạn yêu mến.';
+
+  @override
+  String get avatar_frame_error_generic => 'Lỗi';
+
+  @override
+  String get avatar_frame_sign_in_required => 'Vui lòng đăng nhập trước';
+
+  @override
+  String get avatar_frame_default_name => 'Khung ảnh đại diện sự kiện';
+
+  @override
+  String get background_exclusive_photos_tab => 'Ảnh độc quyền';
+
+  @override
+  String get background_world_sign_in_chat =>
+      'Vui lòng đăng nhập và vào cuộc trò chuyện thế giới';
+
+  @override
+  String get background_world_photo_load_error => 'Lỗi';
+
+  @override
+  String get background_world_no_photos => 'Không có ảnh thế giới để chọn';
+
+  @override
+  String get background_world_cover => 'Ảnh bìa thế giới';
+
+  @override
+  String get background_world_cover_confirm =>
+      'Đặt ảnh bìa thế giới làm hình nền cho cuộc trò chuyện này?';
+
+  @override
+  String get background_world_default_limited => 'Hình nền giới hạn';
+
+  @override
+  String get background_world_default_character => 'Nhân vật';
+
+  @override
+  String get background_world_no_character_photos =>
+      'Không có ảnh nhân vật khả dụng';
+
+  @override
+  String background_world_unlock_required(int count) {
+    return 'Cần $count điểm thiện cảm để mở khóa';
+  }
+
+  @override
+  String background_world_character_confirm(String name) {
+    return 'Đặt ảnh của $name làm hình nền cuộc trò chuyện thế giới?';
+  }
+
+  @override
+  String background_world_affection_count(int count) {
+    return '$count thiện cảm';
+  }
+
+  @override
+  String get reply_selection => 'Tùy chọn trả lời';
+
+  @override
+  String get chat_home_character_tab => 'Trò chuyện với nhân vật';
+
+  @override
+  String get chat_home_world_tab => 'Thế giới mở';
+
+  @override
+  String get chat_home_world_error_generic => 'Lỗi';
+
+  @override
+  String get chat_home_world_pinned => 'Đã ghim cuộc trò chuyện thế giới';
+
+  @override
+  String get chat_home_world_deleted =>
+      'Đã xóa cuộc trò chuyện và lịch sử của thế giới';
+
+  @override
+  String get chat_home_world_action_done => 'Hoàn tất';
+
+  @override
+  String get chat_home_world_rename_title => 'Đặt tên cho ký ức này';
+
+  @override
+  String chat_home_world_delete_confirm(String name) {
+    return 'Xóa lịch sử trò chuyện của “$name”?\n\nHội thoại, tóm tắt truyện, các mối quan hệ và ghi chú sẽ bị xóa vĩnh viễn, không thể khôi phục. Thế giới đã công bố của tác giả vẫn được giữ nguyên.';
+  }
+
+  @override
+  String get chat_home_world_empty_title =>
+      'Chưa có cuộc trò chuyện Thế giới mở';
+
+  @override
+  String get chat_home_world_empty_desc =>
+      'Bắt đầu chơi trong Thế giới mở để xem cuộc trò chuyện tại đây.';
+
+  @override
+  String get chat_home_world_unnamed => 'Thế giới chưa đặt tên';
+
+  @override
+  String get chat_home_world_private_test => 'Chơi thử riêng tư';
+
+  @override
+  String get chat_home_world_no_messages => 'Chưa có tin nhắn';
+
+  @override
+  String get expand_features => 'Hiển thị thêm tính năng';
+
+  @override
+  String get chat_sticker_all => 'Tất cả';
+
+  @override
+  String get chat_mode_short_daily => 'Hằng ngày';
+
+  @override
+  String get chat_mode_short_story => 'Cốt truyện';
+
+  @override
+  String get chat_mode_short_immersive => 'Nhập vai';
+
+  @override
+  String get chat_mode_short_resonance => 'Cộng hưởng';
+
+  @override
+  String get chat_mode_short_gemini => 'Trò chuyện';
+
+  @override
+  String get chat_theater_tool => 'Nhà hát';
+
+  @override
+  String chat_regenerate_insufficient_flowers(int cost) {
+    return 'Không đủ Hoa. Tạo lại cần $cost Hoa.';
+  }
+
+  @override
+  String get chat_regenerate_paid_title => 'Tạo lại có phí';
+
+  @override
+  String chat_regenerate_paid_confirm(int cost) {
+    return 'Bạn đã dùng hết lượt tạo lại miễn phí hôm nay. Ở chế độ hiện tại, lần này tốn $cost Hoa. Tiếp tục?';
+  }
+
+  @override
+  String get chat_generic_error => 'Lỗi';
+
+  @override
+  String get chat_regenerate_confirm => 'Xác nhận';
+
+  @override
+  String get comment_add_photo => 'Thêm ảnh';
+
+  @override
+  String get comment_error_generic => 'Lỗi';
+
+  @override
+  String creator_profile_report_reason_prompt(String creatorName) {
+    return 'Chọn lý do báo cáo “$creatorName”:';
+  }
+
+  @override
+  String get creator_profile_open_worlds => 'Thế giới mở';
+
+  @override
+  String get creator_profile_generic_error => 'Lỗi';
+
+  @override
+  String get creator_profile_refresh => 'Làm mới';
+
+  @override
+  String get creator_profile_no_open_worlds =>
+      'Nhà sáng tạo này chưa xuất bản thế giới mở nào.';
+
+  @override
+  String get creator_profile_unnamed_world => 'Thế giới chưa có tên';
+
+  @override
+  String get creator_program_required_fields =>
+      'Vui lòng nhập định hướng sáng tác và lý do đăng ký.';
+
+  @override
+  String get creator_program_submitted =>
+      'Đã gửi đơn đăng ký. Thời gian xét duyệt khoảng 1–3 ngày.';
+
+  @override
+  String get creator_program_error => 'Lỗi';
+
+  @override
+  String get creator_program_login_required =>
+      'Vui lòng đăng nhập trước khi đăng ký chương trình nhà sáng tạo.';
+
+  @override
+  String get creator_program_title => 'Chương trình nhà sáng tạo';
+
+  @override
+  String get creator_program_headline =>
+      'Để nhiều người biết đến tác phẩm của bạn hơn';
+
+  @override
+  String get creator_program_intro =>
+      'Nếu có tác phẩm công khai, bạn có thể đăng ký tham gia chương trình nhà sáng tạo 《戀戀拾光》. Đơn sẽ được xét duyệt trong 1–3 ngày.';
+
+  @override
+  String get creator_program_benefits_title => 'Quyền lợi chương trình';
+
+  @override
+  String get creator_program_benefit_dashboard =>
+      'Bảng điều khiển nhà sáng tạo: xem số người theo dõi, nhân vật công khai, tổng lượt thích và người theo dõi mới trong tháng.';
+
+  @override
+  String get creator_program_benefit_fans =>
+      'Quản lý người hâm mộ: gửi thư, quản lý fan và tặng phúc lợi bằng hoa của bạn.';
+
+  @override
+  String get creator_program_benefit_exposure =>
+      'Quảng bá chính thức: nhân vật mới có cơ hội được giới thiệu trên Instagram và trong đề xuất của trò chơi.';
+
+  @override
+  String get creator_program_benefit_monthly =>
+      'Thưởng sáng tác hằng tháng: công khai ít nhất 3 nhân vật mới trong tháng để nhận 520 hoa vào tháng sau.';
+
+  @override
+  String get creator_program_benefit_merch =>
+      'Hợp tác sản phẩm: nếu nhân vật của bạn tham gia dự án sản phẩm hoặc hộp quà chính thức, bạn có thể nhận thưởng tiền mặt theo từng dự án.';
+
+  @override
+  String creator_program_last_review_note(String reason) {
+    return 'Ghi chú xét duyệt lần trước: $reason';
+  }
+
+  @override
+  String get creator_program_apply_heading => 'Đăng ký tham gia';
+
+  @override
+  String get creator_program_direction_label => 'Định hướng sáng tác';
+
+  @override
+  String get creator_program_direction_hint =>
+      'Ví dụ: tình cảm hiện đại, cổ trang, kỳ ảo, BL, GL…';
+
+  @override
+  String get creator_program_reason_label => 'Lý do muốn tham gia';
+
+  @override
+  String get creator_program_reason_hint =>
+      'Hãy chia sẻ cách bạn muốn phát triển nhân vật và kết nối với người hâm mộ.';
+
+  @override
+  String get creator_program_social_label =>
+      'Liên kết mạng xã hội (không bắt buộc)';
+
+  @override
+  String get creator_program_social_hint =>
+      'Instagram, Threads, trang web cá nhân, v.v.';
+
+  @override
+  String get creator_program_submit => 'Gửi đơn đăng ký';
+
+  @override
+  String get creator_program_public_character_note =>
+      'Trước khi gửi, hệ thống sẽ kiểm tra tài khoản có ít nhất 1 nhân vật công khai.';
+
+  @override
+  String get creator_program_status_pending => 'Đang xét duyệt đơn';
+
+  @override
+  String get creator_program_status_pending_desc =>
+      'Đã nhận đơn. Xét duyệt khoảng 1–3 ngày. Kết quả sẽ được thông báo qua hộp thư trong trò chơi.';
+
+  @override
+  String get creator_program_status_approved =>
+      'Đã duyệt tư cách nhà sáng tạo 🎉';
+
+  @override
+  String get creator_program_status_approved_desc =>
+      'Chúc mừng bạn tham gia chương trình nhà sáng tạo 《戀戀拾光》! Bảng điều khiển, quản lý fan và biểu ngữ đề xuất sẽ liên kết với trạng thái này trong các tính năng sắp tới.';
+
+  @override
+  String get creator_program_status_suspended =>
+      'Tạm đình chỉ tư cách nhà sáng tạo';
+
+  @override
+  String get creator_program_status_suspended_desc =>
+      'Các tính năng dành riêng cho nhà sáng tạo tạm thời không khả dụng. Hãy xem thông báo chính thức trong hộp thư trò chơi.';
+
+  @override
+  String get creator_program_status_revoked =>
+      'Đã thu hồi tư cách nhà sáng tạo';
+
+  @override
+  String get creator_program_status_revoked_desc =>
+      'Các tính năng riêng cho nhà sáng tạo không còn khả dụng. Nếu có thắc mắc, hãy liên hệ hỗ trợ.';
+
+  @override
+  String get creator_program_status_title => 'Trạng thái nhà sáng tạo';
+
+  @override
+  String creator_program_current_status(String status) {
+    return 'Trạng thái hiện tại: $status';
+  }
+
+  @override
+  String creator_program_official_note(String reason) {
+    return 'Ghi chú chính thức: $reason';
+  }
+
+  @override
+  String get creator_dashboard_error1 => 'Lỗi';
+
+  @override
+  String get creator_dashboard_access_title1 => 'Bảng điều khiển nhà sáng tạo';
+
+  @override
+  String get creator_dashboard_status_notice_title1 =>
+      'Creator Dashboard Access Notice';
+
+  @override
+  String get creator_dashboard_apply_title1 =>
+      'Đăng ký bảng điều khiển nhà sáng tạo';
+
+  @override
+  String get creator_dashboard_access_subtitle1 =>
+      'Thống kê lượt chơi nhân vật · Người theo dõi tăng/giảm · Quản lý người theo dõi';
+
+  @override
+  String get creator_dashboard_pending1 =>
+      'Application submitted · Under review';
+
+  @override
+  String get creator_dashboard_legacy_pending1 =>
+      'Application pending confirmation';
+
+  @override
+  String get creator_dashboard_syncing1 =>
+      'Syncing dashboard access. Please try again later.';
+
+  @override
+  String get creator_dashboard_suspended1 =>
+      'Dashboard access suspended. Contact support.';
+
+  @override
+  String get creator_dashboard_apply_subtitle1 =>
+      'Apply for access to character analytics and follower management';
+
+  @override
+  String get creator_dashboard_rejected1 =>
+      'Application declined · You may apply again';
+
+  @override
+  String get creator_dashboard_submitted1 =>
+      'Application submitted. Please wait for review.';
+
+  @override
+  String get creator_dashboard_benefits_title1 => 'Creator Dashboard features';
+
+  @override
+  String get creator_dashboard_benefit_monthly1 =>
+      '🌸 Monthly creation reward: Publish 3 distinct new characters this month to claim 300 Flowers once.';
+
+  @override
+  String get creator_dashboard_benefit_analytics1 =>
+      '• View public-character play metrics, follower totals, and follow/unfollow activity';
+
+  @override
+  String get creator_dashboard_benefit_mail1 =>
+      '• Fan messages: private messages and announcements (daily limits apply)';
+
+  @override
+  String get creator_dashboard_benefit_gifts1 =>
+      '• Fan rewards: gift your own Flowers to followers';
+
+  @override
+  String get creator_dashboard_reward_note1 =>
+      'Approval required. Private characters, drafts, and republished older characters do not count toward the monthly reward.';
+
+  @override
+  String get creator_dashboard_apply_cta1 =>
+      'Learn more and request dashboard access';
+
+  @override
+  String get creator_dashboard_my_characters1 => 'Nhân vật của tôi';
+
+  @override
+  String get creator_dashboard_my_worlds1 => 'Thế giới mở của tôi';
+
+  @override
+  String get creator_dashboard_create_world1 => 'Tạo thế giới mở';
+
+  @override
+  String get creator_dashboard_public_worlds1 => 'Thế giới đã công khai';
+
+  @override
+  String get creator_dashboard_public_worlds_hint1 =>
+      'Other players can explore';
+
+  @override
+  String get creator_dashboard_private_worlds1 => 'Thế giới riêng tư';
+
+  @override
+  String get creator_dashboard_private_worlds_hint1 =>
+      'Only you can view and edit';
+
+  @override
+  String get creator_dashboard_world_drafts1 => 'Bản nháp thế giới';
+
+  @override
+  String get creator_dashboard_world_drafts_hint1 => 'Worlds not yet finished';
+
+  @override
+  String get creator_dashboard_no_drafts1 => 'No drafts yet';
+
+  @override
+  String get creator_dashboard_no_worlds1 => 'No worlds yet';
+
+  @override
+  String get creator_dashboard_unnamed_world1 => 'Thế giới chưa đặt tên';
+
+  @override
+  String get creator_dashboard_delete_world_draft1 => 'Delete world draft';
+
+  @override
+  String get creator_dashboard_private_test1 => 'Thử nghiệm riêng tư';
+
+  @override
+  String get creator_dashboard_delete_world_confirm_title1 =>
+      'Delete world draft?';
+
+  @override
+  String get creator_dashboard_delete_world_confirm_body1 =>
+      'This cannot be undone. Uploaded images will not be deleted.';
+
+  @override
+  String get creator_dashboard_draft_deleted1 => 'World draft deleted';
+
+  @override
+  String get creator_dashboard_validation1 =>
+      'Creative direction must be 2–100 characters and application reason 10–500 characters.';
+
+  @override
+  String get creator_dashboard_confirm_application_title1 =>
+      'Confirm dashboard application';
+
+  @override
+  String get creator_dashboard_confirm_application_body1 =>
+      'Your request will be reviewed. Approval grants dashboard access and does not constitute a partnership agreement.';
+
+  @override
+  String get creator_dashboard_confirm_send1 => 'Xác nhận gửi';
+
+  @override
+  String get creator_dashboard_form_heading1 =>
+      'Apply for the Lianlian Shiguang Creator Dashboard';
+
+  @override
+  String get creator_dashboard_form_description1 =>
+      'Tell us about your creative direction and how you plan to use character analytics and follower management. This is not a partnership contract.';
+
+  @override
+  String get creator_dashboard_direction_label1 => 'Định hướng sáng tác';
+
+  @override
+  String get creator_dashboard_direction_hint1 =>
+      'Ví dụ: tình cảm hiện đại, cổ trang, kỳ ảo, BL, GL…';
+
+  @override
+  String get creator_dashboard_reason_label1 => 'Lý do đăng ký bảng điều khiển';
+
+  @override
+  String get creator_dashboard_reason_hint1 =>
+      'Share your experience and which dashboard features you need';
+
+  @override
+  String get creator_dashboard_sending1 => 'Đang gửi…';
+
+  @override
+  String get creator_dashboard_submit1 =>
+      'Gửi yêu cầu truy cập bảng điều khiển';
+
+  @override
+  String get creator_dashboard_privacy_note1 =>
+      'Approval is not guaranteed. Do not enter identity numbers, banking details, or other sensitive information.';
+
+  @override
+  String get creator_dashboard_revoked_limit1 =>
+      'Dashboard application limit reached. Please contact support.';
+
+  @override
+  String get creator_dashboard_revoked_notice1 =>
+      'Your dashboard access was revoked. Check the page for available reapplication options.';
+
+  @override
+  String get creator_support_page_title1 => 'Trung tâm hỗ trợ';
+
+  @override
+  String get creator_support_new_report1 => 'Gửi báo cáo mới';
+
+  @override
+  String get creator_support_error1 => 'Lỗi';
+
+  @override
+  String get creator_support_no_cases1 => 'Chưa có báo cáo nào';
+
+  @override
+  String get creator_support_unread1 => 'Chưa đọc';
+
+  @override
+  String get creator_support_load_more1 => 'Tải thêm';
+
+  @override
+  String get creator_support_category_label1 => 'Loại vấn đề';
+
+  @override
+  String get creator_support_character_optional1 =>
+      'Nhân vật liên quan (tùy chọn)';
+
+  @override
+  String get creator_support_no_character1 => 'Không chọn nhân vật';
+
+  @override
+  String get creator_support_report_title1 => 'Tiêu đề vấn đề';
+
+  @override
+  String get creator_support_report_description1 => 'Mô tả vấn đề';
+
+  @override
+  String creator_support_select_images1(int count) {
+    return 'Chọn ảnh chụp ($count/3, dưới 2 MB mỗi ảnh)';
+  }
+
+  @override
+  String get creator_support_images_private1 =>
+      'Chỉ nhà sáng tạo và đội ngũ chính thức xem được ảnh.';
+
+  @override
+  String get creator_support_submitting1 => 'Đang gửi…';
+
+  @override
+  String get creator_support_submit1 => 'Xác nhận gửi';
+
+  @override
+  String get creator_support_image_too_large1 =>
+      'Ảnh vượt quá 2 MB. Hãy chọn ảnh khác.';
+
+  @override
+  String get creator_support_fill_title_description1 =>
+      'Vui lòng nhập tiêu đề và nội dung.';
+
+  @override
+  String get creator_support_case_sent1 => 'Đã gửi báo cáo';
+
+  @override
+  String creator_support_case_sent_partial1(int count) {
+    return 'Đã gửi báo cáo nhưng tải lên thất bại $count ảnh';
+  }
+
+  @override
+  String get creator_support_detail_title1 => 'Chi tiết báo cáo';
+
+  @override
+  String get creator_support_image_max1 => 'Mỗi ảnh phải dưới 2 MB';
+
+  @override
+  String get creator_support_jpg_png_only1 => 'Chỉ hỗ trợ JPG / PNG';
+
+  @override
+  String get creator_support_reply_sent1 => 'Đã gửi trả lời';
+
+  @override
+  String creator_support_reply_sent_partial1(int count) {
+    return 'Đã gửi nội dung nhưng tải lên thất bại $count ảnh';
+  }
+
+  @override
+  String get creator_support_empty_content1 => 'Nội dung không được để trống';
+
+  @override
+  String get creator_support_recall_message1 => 'Thu hồi tin nhắn';
+
+  @override
+  String get creator_support_delete_message1 => 'Xóa tin nhắn';
+
+  @override
+  String get creator_support_recall_warning1 =>
+      'Cả hai bên sẽ thấy “Tin nhắn đã được thu hồi”; tệp đính kèm không thể xem.';
+
+  @override
+  String get creator_support_delete_warning1 =>
+      'Chỉ ẩn trên màn hình của bạn; bên kia vẫn giữ tin nhắn.';
+
+  @override
+  String get creator_support_cancel1 => 'Hủy';
+
+  @override
+  String get creator_support_confirm1 => 'Xác nhận';
+
+  @override
+  String get creator_support_operation_success1 => 'Thao tác thành công';
+
+  @override
+  String get creator_support_edit_message1 => 'Chỉnh sửa tin nhắn';
+
+  @override
+  String creator_support_recall_remaining1(int seconds) {
+    return 'Thu hồi tin nhắn (còn $seconds giây)';
+  }
+
+  @override
+  String get creator_support_recall_expired1 =>
+      'Thu hồi tin nhắn (quá 60 giây)';
+
+  @override
+  String get creator_support_case_updated1 => 'Đã cập nhật báo cáo';
+
+  @override
+  String get creator_support_loading1 => 'Đang tải…';
+
+  @override
+  String creator_support_creator_uid1(String uid) {
+    return 'UID nhà sáng tạo: $uid';
+  }
+
+  @override
+  String get creator_support_internal_note1 =>
+      'Ghi chú nội bộ (ẩn với nhà sáng tạo)';
+
+  @override
+  String get creator_support_save_internal_note1 => 'Lưu ghi chú nội bộ';
+
+  @override
+  String get creator_support_case_images1 => 'Ảnh chụp báo cáo';
+
+  @override
+  String get creator_support_official1 =>
+      'Đội ngũ chính thức Lianlian Shiguang';
+
+  @override
+  String get creator_support_creator1 => 'Nhà sáng tạo';
+
+  @override
+  String get creator_support_recalled1 => 'Tin nhắn đã được thu hồi';
+
+  @override
+  String get creator_support_edited1 => 'Đã chỉnh sửa';
+
+  @override
+  String get creator_support_reply_hint1 => 'Nhập trả lời…';
+
+  @override
+  String get creator_support_attach_image1 => 'Đính kèm ảnh (tối đa 3)';
+
+  @override
+  String get creator_support_send1 => 'Gửi';
+
+  @override
+  String get creator_support_admin_title1 => 'Quản lý báo cáo nhà sáng tạo';
+
+  @override
+  String get creator_support_new_reply1 => 'Trả lời mới';
+
+  @override
+  String get creator_support_load_more_cases1 => 'Tải thêm báo cáo';
+
+  @override
+  String get creator_support_image_load_error1 => 'Không tải được ảnh chụp';
+
+  @override
+  String get creator_support_edit_hint1 => 'Chỉnh sửa nội dung tin nhắn';
+
+  @override
+  String get creator_support_save1 => 'Lưu';
+
+  @override
+  String get creator_support_status_pending1 => 'Chờ xử lý';
+
+  @override
+  String get creator_support_status_progress1 => 'Đang xử lý';
+
+  @override
+  String get creator_support_status_waiting1 => 'Chờ bổ sung';
+
+  @override
+  String get creator_support_status_resolved1 => 'Đã giải quyết';
+
+  @override
+  String get creator_support_cat_character1 => 'Quản lý nhân vật';
+
+  @override
+  String get creator_support_cat_ai1 => 'Lỗi tương tác nhân vật AI';
+
+  @override
+  String get creator_support_cat_dashboard1 => 'Bảng điều khiển nhà sáng tạo';
+
+  @override
+  String get creator_support_cat_cooperation1 => 'Hợp tác và quyền lợi';
+
+  @override
+  String get creator_support_cat_other1 => 'Vấn đề khác';
+
+  @override
+  String get desktop_widget_size_small1 => 'Nhỏ';
+
+  @override
+  String get desktop_widget_size_medium1 => 'Vừa';
+
+  @override
+  String get desktop_widget_size_large1 => 'Lớn';
+
+  @override
+  String get desktop_widget_cancel1 => 'Hủy';
+
+  @override
+  String get desktop_widget_delete1 => 'Xóa';
+
+  @override
+  String desktop_widget_days_remaining1(int days) {
+    return 'Còn $days ngày';
+  }
+
+  @override
+  String get desktop_widget_days_today1 => 'Chính là hôm nay';
+
+  @override
+  String desktop_widget_days_elapsed1(int days) {
+    return 'Đã qua $days ngày';
+  }
+
+  @override
+  String get desktop_widget_daily_quote1 => 'Câu nói hôm nay';
+
+  @override
+  String get desktop_widget_update_daily1 => 'Cập nhật mỗi ngày một lần';
+
+  @override
+  String get desktop_widget_character_birthday1 => 'Sinh nhật nhân vật';
+
+  @override
+  String get desktop_widget_change1 => 'Thay đổi';
+
+  @override
+  String get desktop_widget_mood1 => 'Tâm trạng';
+
+  @override
+  String get desktop_widget_current_state1 => 'Trạng thái hiện tại';
+
+  @override
+  String get desktop_widget_location1 => 'Địa điểm';
+
+  @override
+  String get desktop_widget_relationship1 => 'Mối quan hệ';
+
+  @override
+  String get desktop_widget_outfit1 => 'Trang phục';
+
+  @override
+  String get desktop_widget_weather1 => 'Thời tiết';
+
+  @override
+  String get desktop_widget_thought1 => 'Suy nghĩ';
+
+  @override
+  String get desktop_widget_action1 => 'Hành động';
+
+  @override
+  String get desktop_widget_affinity1 => 'Độ thiện cảm';
+
+  @override
+  String get desktop_widget_character_status1 => 'Trạng thái nhân vật';
+
+  @override
+  String get desktop_widget_no_posts1 => 'Chưa có bài đăng của nhân vật';
+
+  @override
+  String get desktop_widget_crop_position1 => 'Điều chỉnh vị trí nhân vật';
+
+  @override
+  String get desktop_widget_crop_action1 => 'Phóng to / kéo để căn khung';
+
+  @override
+  String get desktop_widget_crop_hint1 =>
+      'Dùng hai ngón để thu phóng và một ngón để kéo, không làm cuộn cả trang.';
+
+  @override
+  String get desktop_widget_crop_title1 => 'Điều chỉnh khung hình nhân vật';
+
+  @override
+  String get desktop_widget_reset1 => 'Đặt lại';
+
+  @override
+  String get desktop_widget_crop_instructions1 =>
+      'Kéo một ngón để di chuyển và dùng hai ngón để đổi kích thước. Khung hiển thị vùng sẽ xuất hiện trên tiện ích.';
+
+  @override
+  String desktop_widget_crop_position_scale1(int x, int y, String scale) {
+    return 'Vị trí: $x% / $y% · Thu phóng: $scale×';
+  }
+
+  @override
+  String get desktop_widget_apply1 => 'Áp dụng';
+
+  @override
+  String get desktop_widget_just_posted1 => 'Vừa cập nhật bài đăng';
+
+  @override
+  String get desktop_widget_important_day1 => 'Ngày quan trọng';
+
+  @override
+  String get desktop_widget_no_date1 => 'Chưa chọn ngày';
+
+  @override
+  String get desktop_widget_first_met1 => 'Ngày gặp anh ấy';
+
+  @override
+  String get desktop_widget_error1 => 'Lỗi';
+
+  @override
+  String get event_memory_select_character_title1 => 'Chọn nhân vật';
+
+  @override
+  String get event_memory_my_characters1 => 'Nhân vật của tôi';
+
+  @override
+  String get event_memory_friend_characters1 => 'Nhân vật bạn bè';
+
+  @override
+  String get event_memory_friend_badge1 => 'Bạn bè';
+
+  @override
+  String get event_memory_unnamed_character1 => 'Nhân vật chưa đặt tên';
+
+  @override
+  String get event_memory_generic_error1 => 'Lỗi';
+
+  @override
+  String get memory_collection_title1 => 'Bộ sưu tập ký ức';
+
+  @override
+  String get memory_collection_avatar_frames1 => 'Khung ảnh đại diện';
+
+  @override
+  String get memory_collection_stickers1 => 'Nhãn dán';
+
+  @override
+  String get memory_collection_memories1 => 'Ký ức';
+
+  @override
+  String get memory_collection_try_again1 => 'Vui lòng thử lại sau.';
+
+  @override
+  String get memory_collection_error1 => 'Lỗi';
+
+  @override
+  String get memory_collection_chat_background1 => 'Hình nền trò chuyện';
+
+  @override
+  String get memory_collection_got_it1 => 'Đã hiểu';
+
+  @override
+  String get memory_collection_not_now1 => 'Để sau';
+
+  @override
+  String get memory_collection_confirm_delete1 => 'Xác nhận xóa';
+
+  @override
+  String get memory_collection_close1 => 'Đóng';
+
+  @override
+  String get memory_collection_delete1 => 'Xóa';
+
+  @override
+  String get memory_collection_image_preparing1 => 'Đang chuẩn bị ảnh';
+
+  @override
+  String get memory_collection_remove_favorite1 => 'Xóa khỏi bộ sưu tập';
+
+  @override
+  String get memory_collection_removed1 => 'Đã xóa khỏi bộ sưu tập';
+
+  @override
+  String get event_memory_performance_opening1 =>
+      'Có những khoảnh khắc vẫn còn mãi,\ndù câu chuyện đã khép lại.';
+
+  @override
+  String get event_memory_performance_generic_error1 => 'Lỗi';
+
+  @override
+  String get event_memory_performance_collected1 => 'Đã lưu';
+
+  @override
+  String get event_memory_performance_saving1 => 'Đang lưu…';
+
+  @override
+  String get event_memory_performance_save_gallery1 => 'Lưu vào thư viện ảnh';
+
+  @override
+  String get event_memory_performance_done1 => 'Hoàn tất';
+
+  @override
+  String get event_memory_performance_uncollect_title1 => 'Bỏ khỏi bộ sưu tập?';
+
+  @override
+  String get event_memory_performance_not_now1 => 'Để sau';
+
+  @override
+  String get event_memory_performance_uncollect1 => 'Bỏ khỏi bộ sưu tập';
+
+  @override
+  String get event_memory_performance_uncollected1 => 'Đã bỏ khỏi bộ sưu tập';
+
+  @override
+  String get event_memory_performance_login_to_collect1 =>
+      'Đăng nhập để lưu kỷ niệm này';
+
+  @override
+  String get event_memory_performance_web_gallery_unsupported1 =>
+      'Bản web chưa hỗ trợ lưu trực tiếp vào thư viện ảnh điện thoại';
+
+  @override
+  String get event_memory_performance_gallery_permission1 =>
+      'Cần quyền truy cập ảnh để lưu kỷ niệm này';
+
+  @override
+  String get event_memory_performance_image_not_ready1 =>
+      'Ảnh kỷ niệm chưa sẵn sàng. Vui lòng thử lại';
+
+  @override
+  String get event_memory_performance_gallery_saved1 =>
+      'Đã lưu vào thư viện ảnh';
+
+  @override
+  String get event_memory_performance_skip1 => 'Bỏ qua';
+
+  @override
+  String get event_memory_performance_memory_label1 => 'Kỷ niệm';
+
+  @override
+  String get event_memory_performance_tap_continue1 => 'Chạm để tiếp tục';
+
+  @override
+  String get event_memory_performance_tap_show_full1 =>
+      'Chạm để xem toàn bộ nội dung';
+
+  @override
+  String get event_memory_performance_brand_limited_memory1 =>
+      'Lianlian Shiguang · Kỷ niệm giới hạn';
+
+  @override
+  String get event_ended1 => 'Sự kiện đã kết thúc';
+
+  @override
+  String get event_default_name1 => 'Sự kiện giới hạn thời gian';
+
+  @override
+  String get event_default_subtitle1 =>
+      'Cùng anh ấy tạo những kỷ niệm đặc biệt mùa này.';
+
+  @override
+  String get event_currency_default1 => 'Tiền sự kiện';
+
+  @override
+  String get event_tasks_today1 => 'Nhiệm vụ hôm nay';
+
+  @override
+  String event_tasks_subtitle1(String currency) {
+    return 'Hoàn thành nhiệm vụ, thu thập $currency và mở khóa nội dung độc quyền.';
+  }
+
+  @override
+  String get event_milestones_title1 => 'Tiến độ tích lũy';
+
+  @override
+  String event_milestones_subtitle1(String currency) {
+    return 'Tích lũy $currency để nhận thưởng độc quyền.';
+  }
+
+  @override
+  String get event_memory_title1 => 'Kỷ niệm độc quyền';
+
+  @override
+  String get event_memory_subtitle1 => 'Lưu giữ kỷ niệm riêng của sự kiện.';
+
+  @override
+  String get event_shop_title1 => 'Cửa hàng sự kiện';
+
+  @override
+  String event_shop_subtitle1(String currency) {
+    return 'Dùng $currency đổi phần thưởng độc quyền.';
+  }
+
+  @override
+  String get event_info_title1 => 'Thông tin sự kiện';
+
+  @override
+  String get event_info_default1 =>
+      'Hoàn thành nhiệm vụ chỉ định để nhận tiền sự kiện.\nPhần thưởng đổi sẽ được gửi theo quy định.\nTiền chưa sử dụng sẽ được xử lý theo quy định khi sự kiện kết thúc.';
+
+  @override
+  String get event_generic_error1 => 'Lỗi';
+
+  @override
+  String get event_task_default1 => 'Nhiệm vụ sự kiện';
+
+  @override
+  String get event_claimed1 => 'Đã nhận';
+
+  @override
+  String get event_claim1 => 'Nhận';
+
+  @override
+  String get event_in_progress1 => 'Đang tiến hành';
+
+  @override
+  String get event_reward_default1 => 'Phần thưởng độc quyền';
+
+  @override
+  String get event_product_default1 => 'Vật phẩm sự kiện';
+
+  @override
+  String get event_cancel1 => 'Hủy';
+
+  @override
+  String get event_confirm_exchange1 => 'Xác nhận đổi';
+
+  @override
+  String get event_limited_product1 => 'Vật phẩm độc quyền';
+
+  @override
+  String event_insufficient_currency1(String currency) {
+    return 'Không đủ $currency';
+  }
+
+  @override
+  String get event_close1 => 'Đóng';
+
+  @override
+  String event_redeemed_count_limit1(int count, int max) {
+    return 'Đã đổi $count / $max lần';
+  }
+
+  @override
+  String event_redeemed_count1(int count) {
+    return 'Đã đổi $count lần';
+  }
+
+  @override
+  String get event_redeemed1 => 'Đã đổi';
+
+  @override
+  String get event_exchange1 => 'Đổi';
+
+  @override
+  String get login_account_deletion_started1 => 'Tài khoản đang được xóa';
+
+  @override
+  String get login_account_deletion_expired_description1 =>
+      'Đã hết thời hạn ba ngày để hủy xóa tài khoản. Không thể khôi phục tài khoản này nữa. Vui lòng liên hệ bộ phận hỗ trợ nếu cần trợ giúp.';
+
+  @override
+  String get login_account_deletion_confirm1 => 'Đồng ý';
+
+  @override
+  String get event_memory_limited_title1 => 'Kỷ niệm độc quyền';
+
+  @override
+  String get moment_detail_add_photo1 => 'Thêm ảnh';
+
+  @override
+  String get moment_detail_error1 => 'Lỗi';
+
+  @override
+  String get notification_claim_before_delete1 =>
+      'Nhận hoa trước khi xóa thư quà tặng';
+
+  @override
+  String get notification_error1 => 'Lỗi';
+
+  @override
+  String get notification_creator_gift_already_claimed1 =>
+      'Bạn đã nhận số hoa này rồi';
+
+  @override
+  String notification_creator_gift_claim_success1(Object amount) {
+    return 'Đã nhận thành công $amount bông hoa!';
+  }
+
+  @override
+  String get notification_creator_gift_title1 => 'Quà tặng từ nhà sáng tạo';
+
+  @override
+  String notification_creator_gift_amount1(Object amount) {
+    return '$amount bông hoa';
+  }
+
+  @override
+  String get notification_creator_gift_claimed1 => 'Đã nhận';
+
+  @override
+  String get notification_creator_gift_claiming1 => 'Đang nhận…';
+
+  @override
+  String get notification_creator_gift_claim_button1 => 'Nhận hoa';
+
+  @override
+  String get notification_support_subject1 => 'Tiêu đề người chơi gửi';
+
+  @override
+  String get notification_support_content1 => 'Nội dung người chơi gửi';
+
+  @override
+  String get notification_support_reported1 => 'Nội dung bị báo cáo';
+
+  @override
+  String get notification_support_reply1 => 'Phản hồi hỗ trợ';
+
+  @override
+  String get notification_share_mail1 => 'Chia sẻ thư';
+
+  @override
+  String get notification_original_question1 => 'Câu hỏi ban đầu của bạn';
+
+  @override
+  String get notification_preferences_chat_title1 => 'Trò chuyện với nhân vật';
+
+  @override
+  String get notification_preferences_chat_subtitle1 =>
+      'Thông báo đẩy khi nhân vật trả lời';
+
+  @override
+  String get notification_preferences_moments_title1 => 'Bài đăng mới';
+
+  @override
+  String get notification_preferences_moments_subtitle1 =>
+      'Bài đăng mới từ nhà sáng tạo và nhân vật bạn theo dõi';
+
+  @override
+  String get notification_preferences_social_title1 => 'Thông báo xã hội';
+
+  @override
+  String get notification_preferences_social_subtitle1 =>
+      'Lượt thích, bình luận, theo dõi và tương tác với nhân vật';
+
+  @override
+  String get notification_preferences_announcements_title1 =>
+      'Thông báo chính thức';
+
+  @override
+  String get notification_preferences_announcements_subtitle1 =>
+      'Thông báo đẩy về các thông báo chính thức';
+
+  @override
+  String get notification_preferences_events_title1 => 'Nhắc nhở sự kiện';
+
+  @override
+  String get notification_preferences_events_subtitle1 =>
+      'Thông báo khi sự kiện sắp kết thúc';
+
+  @override
+  String get notification_preferences_save_failed1 =>
+      'Không thể lưu cài đặt thông báo. Vui lòng thử lại sau.';
+
+  @override
+  String get notification_preferences_page_title1 => 'Tùy chọn thông báo';
+
+  @override
+  String get notification_preferences_login_required1 =>
+      'Vui lòng đăng nhập vào tài khoản trước';
+
+  @override
+  String get notification_preferences_load_failed1 =>
+      'Không thể tải tùy chọn thông báo. Vui lòng thử lại sau.';
+
+  @override
+  String get notification_preferences_footer1 =>
+      'Các cài đặt này được đồng bộ trên mọi thiết bị dùng cùng tài khoản người chơi. Quyền thông báo của hệ thống phải được thiết lập riêng trên từng thiết bị. Tắt thông báo đẩy sẽ không xóa hộp thư trong trò chơi hoặc những thông báo đã nhận.';
+
+  @override
+  String get official_studio_text_0011 =>
+      'Guide completed, but the viewed status could not sync and may appear again.';
+
+  @override
+  String get official_studio_text_0021 => 'Vui lòng đăng nhập trước';
+
+  @override
+  String get official_studio_text_0031 => 'Creator Partnership Studio';
+
+  @override
+  String get official_studio_text_0041 => 'Guide';
+
+  @override
+  String get official_studio_text_0051 =>
+      'Unable to verify creator eligibility. Try again later.';
+
+  @override
+  String get official_studio_text_0061 =>
+      'You do not currently have official creator access.\\nIf approved, contact support to verify activation.';
+
+  @override
+  String get official_studio_text_0071 => 'Verified Partner Creator';
+
+  @override
+  String get official_studio_text_0081 =>
+      'Welcome back to the creator studio. More features are coming soon.';
+
+  @override
+  String get official_studio_text_0091 => 'Creator Tools';
+
+  @override
+  String get official_studio_text_0101 => 'Quản lý người theo dõi';
+
+  @override
+  String get official_studio_text_0111 => 'View and remove followers';
+
+  @override
+  String get official_studio_text_0121 => 'Thống kê nhà sáng tạo';
+
+  @override
+  String get official_studio_text_0131 =>
+      'Character popularity and total play count';
+
+  @override
+  String get official_studio_text_0141 => 'Thư người hâm mộ';
+
+  @override
+  String get official_studio_text_0151 => 'Send messages to your followers';
+
+  @override
+  String get official_studio_text_0161 => 'Fan Benefits';
+
+  @override
+  String get official_studio_text_0171 => 'Gift your own flowers to followers';
+
+  @override
+  String get official_studio_text_0181 => 'Thưởng sáng tạo hàng tháng';
+
+  @override
+  String get official_studio_text_0191 =>
+      'Publish 3 new characters to claim 300 flowers';
+
+  @override
+  String get official_studio_text_0201 => 'Ảnh bìa nhà sáng tạo';
+
+  @override
+  String get official_studio_text_0211 => 'Set your public creator-page banner';
+
+  @override
+  String get official_studio_text_0221 => 'Thông tin hợp tác';
+
+  @override
+  String get official_studio_text_0231 =>
+      'Partnership status, benefits and notices';
+
+  @override
+  String get official_studio_text_0241 => 'Support Center';
+
+  @override
+  String get official_studio_text_0251 =>
+      'Report issues and track support replies';
+
+  @override
+  String get official_studio_text_0261 =>
+      'Eligibility verification failed. Try again later.';
+
+  @override
+  String get official_studio_text_0271 =>
+      'Official creator access is not available';
+
+  @override
+  String get official_studio_text_0281 => 'Unable to load public characters';
+
+  @override
+  String get official_studio_text_0291 => 'Creator Overview';
+
+  @override
+  String get official_studio_text_0301 => 'Total Plays';
+
+  @override
+  String get official_studio_text_0311 => 'Current Followers';
+
+  @override
+  String get official_studio_text_0321 => 'Unavailable';
+
+  @override
+  String get official_studio_text_0331 => 'Public Character Breakdown';
+
+  @override
+  String get official_studio_text_0341 =>
+      'No public characters yet. They will appear here after publishing.';
+
+  @override
+  String get official_studio_text_0351 => 'Unnamed Character';
+
+  @override
+  String get official_studio_text_0361 => 'Total plays (playCount)';
+
+  @override
+  String get official_studio_text_0371 =>
+      'Statistics reflect available database fields. Plays are not messages, unique players, or revenue.';
+
+  @override
+  String get official_studio_text_0381 => 'Unable to load followers';
+
+  @override
+  String get official_studio_text_0391 => 'No followers yet';
+
+  @override
+  String get official_studio_text_0401 => 'Follower List';
+
+  @override
+  String get official_studio_text_0411 =>
+      'Up to 100 followers shown; only public nicknames and avatars are displayed.';
+
+  @override
+  String get official_studio_text_0421 => 'Remove Follower';
+
+  @override
+  String get official_studio_text_0431 => 'Hủy';
+
+  @override
+  String get official_studio_text_0441 => 'Confirm Removal';
+
+  @override
+  String get official_studio_text_0451 => 'Follower removed';
+
+  @override
+  String get official_studio_text_0461 =>
+      'Removal failed. Please try again later.';
+
+  @override
+  String get official_studio_text_0471 => 'Player';
+
+  @override
+  String get official_studio_text_0481 => 'Unable to load public data';
+
+  @override
+  String get official_studio_text_0491 => 'This player';
+
+  @override
+  String get official_studio_text_0501 =>
+      'Cropped image is still too large. Choose another.';
+
+  @override
+  String get official_studio_text_0511 => 'Banner updated';
+
+  @override
+  String get official_studio_text_0521 =>
+      'Image processing failed. Choose another image.';
+
+  @override
+  String get official_studio_text_0531 => 'Banner removed';
+
+  @override
+  String get official_studio_text_0541 => 'Removal failed';
+
+  @override
+  String get official_studio_text_0551 => 'Please sign in';
+
+  @override
+  String get official_studio_text_0561 => 'Public Profile Banner';
+
+  @override
+  String get official_studio_text_0571 => 'Image failed to load';
+
+  @override
+  String get official_studio_text_0581 => 'No banner set';
+
+  @override
+  String get official_studio_text_0591 =>
+      'Select a photo, position it within the white frame and confirm to upload.';
+
+  @override
+  String get official_studio_text_0601 => 'Processing…';
+
+  @override
+  String get official_studio_text_0611 => 'Select and Crop Image';
+
+  @override
+  String get official_studio_text_0621 => 'Remove Current Banner';
+
+  @override
+  String get official_studio_text_0631 => 'Cannot open this image';
+
+  @override
+  String get official_studio_text_0641 =>
+      'Cropped file is too large. Choose another image.';
+
+  @override
+  String get official_studio_text_0651 => 'Cropping failed. Try again.';
+
+  @override
+  String get official_studio_text_0661 => 'Adjust Banner Crop';
+
+  @override
+  String get official_studio_text_0671 =>
+      'Move the image to select the banner area';
+
+  @override
+  String get official_studio_text_0681 =>
+      'Drag to move · Pinch or use slider to zoom';
+
+  @override
+  String get official_studio_text_0691 =>
+      'The white frame shows the final banner (2.5:1)';
+
+  @override
+  String get official_studio_text_0701 => 'Zoom';
+
+  @override
+  String get official_studio_text_0711 => 'Reset Position';
+
+  @override
+  String get official_studio_text_0721 => 'Cropping…';
+
+  @override
+  String get official_studio_text_0731 => 'Crop and Upload';
+
+  @override
+  String get official_studio_text_0741 => 'Partnership Eligibility';
+
+  @override
+  String get official_studio_text_0751 => 'Verifying Eligibility';
+
+  @override
+  String get official_studio_text_0761 => 'Available Creator Tools';
+
+  @override
+  String get official_studio_text_0771 =>
+      'Follower management, analytics, fan mail, flower gifts, monthly rewards and banners.';
+
+  @override
+  String get official_studio_text_0781 =>
+      'Under current rules, create and first publish three eligible characters this month to claim 300 flowers. Final eligibility is verified by the server.';
+
+  @override
+  String get official_studio_text_0791 => 'Official Notices and Agreement';
+
+  @override
+  String get official_studio_text_0801 =>
+      'Signed agreement terms and official notices take precedence. This page does not replace an agreement. Contact support for questions.';
+
+  @override
+  String get official_studio_text_0811 =>
+      'Mail subject must contain 1–100 characters';
+
+  @override
+  String get official_studio_text_0821 =>
+      'Mail body must contain 1–5000 characters';
+
+  @override
+  String get official_studio_text_0831 => 'Please select a follower';
+
+  @override
+  String get official_studio_text_0841 => 'Confirm Fan Mail';
+
+  @override
+  String get official_studio_text_0851 =>
+      'Send to all current followers? This uses one broadcast credit.';
+
+  @override
+  String get official_studio_text_0861 =>
+      'Send to this follower? This uses one private-message credit.';
+
+  @override
+  String get official_studio_text_0871 => 'Confirm Send';
+
+  @override
+  String get official_studio_text_0881 =>
+      'Mail job created. Messages will be delivered gradually.';
+
+  @override
+  String get official_studio_text_0891 => 'Today’s Sending Quota';
+
+  @override
+  String get official_studio_text_0901 =>
+      'Resets daily at 00:00 Taiwan time. A broadcast reaches all followers.';
+
+  @override
+  String get official_studio_text_0911 => 'All Followers';
+
+  @override
+  String get official_studio_text_0921 => 'One Follower';
+
+  @override
+  String get official_studio_text_0931 => 'Unable to get follower list';
+
+  @override
+  String get official_studio_text_0941 =>
+      'No followers available for messaging';
+
+  @override
+  String get official_studio_text_0951 => 'Select a follower (first 100)';
+
+  @override
+  String get official_studio_text_0961 => 'Mail Subject';
+
+  @override
+  String get official_studio_text_0971 => 'Message';
+
+  @override
+  String get official_studio_text_0981 => 'Write a letter to your fans…';
+
+  @override
+  String get official_studio_text_0991 => 'Submitting…';
+
+  @override
+  String get official_studio_text_1001 => 'Confirm and Send';
+
+  @override
+  String get official_studio_text_1011 => 'Sending History';
+
+  @override
+  String get official_studio_text_1021 => 'No sending history yet';
+
+  @override
+  String get official_studio_text_1031 => 'Queued';
+
+  @override
+  String get official_studio_text_1041 => 'Delivering';
+
+  @override
+  String get official_studio_text_1051 => 'Completed';
+
+  @override
+  String get official_studio_text_1061 => 'Cancelled';
+
+  @override
+  String get official_studio_text_1071 => 'Delivery Failed';
+
+  @override
+  String get official_studio_text_1081 => 'Untitled Message';
+
+  @override
+  String get official_studio_text_1091 =>
+      'Shows the latest 20 sending jobs. New and pending jobs stop when creator access is revoked.';
+
+  @override
+  String get official_studio_text_1101 => 'Player without a nickname';
+
+  @override
+  String get official_studio_text_1111 =>
+      'Unable to load followers. Try again later.';
+
+  @override
+  String get official_studio_text_1121 => 'Insufficient Flowers';
+
+  @override
+  String get official_studio_text_1131 => 'Maybe Later';
+
+  @override
+  String get official_studio_text_1141 => 'Đến cửa hàng';
+
+  @override
+  String get official_studio_text_1151 =>
+      'You may gift 1–1000 flowers per follower';
+
+  @override
+  String get official_studio_text_1161 => 'Select 1–20 followers';
+
+  @override
+  String get official_studio_text_1171 => 'Maximum 5000 flowers per gift';
+
+  @override
+  String get official_studio_text_1181 =>
+      'Gift message is limited to 300 characters';
+
+  @override
+  String get official_studio_text_1191 => 'Confirm Flower Gift';
+
+  @override
+  String get official_studio_text_1201 => 'Confirm Gift';
+
+  @override
+  String get official_studio_text_1211 =>
+      'Gift already submitted; flowers were not deducted twice';
+
+  @override
+  String get official_studio_text_1221 => 'Fan Benefits · Flower Gifts';
+
+  @override
+  String get official_studio_text_1231 => 'Unable to load flower balance';
+
+  @override
+  String get official_studio_text_1241 => 'My Flower Balance';
+
+  @override
+  String get official_studio_text_1251 =>
+      'Flowers are deducted from your own balance, not paid by the platform.';
+
+  @override
+  String get official_studio_text_1261 => 'Select followers (up to 20)';
+
+  @override
+  String get official_studio_text_1271 =>
+      'Search by public nickname or UID; eligibility is verified by the server at submission.';
+
+  @override
+  String get official_studio_text_1281 => 'Tìm người theo dõi';
+
+  @override
+  String get official_studio_text_1291 => 'Enter nickname or player UID';
+
+  @override
+  String get official_studio_text_1301 => 'Clear Search';
+
+  @override
+  String get official_studio_text_1311 => 'No eligible followers available';
+
+  @override
+  String get official_studio_text_1321 =>
+      'No matching followers on this page. Continue searching.';
+
+  @override
+  String get official_studio_text_1331 => 'No matching followers found';
+
+  @override
+  String get official_studio_text_1341 => 'Select up to 20 followers';
+
+  @override
+  String get official_studio_text_1351 => 'Searching…';
+
+  @override
+  String get official_studio_text_1361 => 'Load More Followers';
+
+  @override
+  String get official_studio_text_1371 => 'Search More Followers';
+
+  @override
+  String get official_studio_text_1381 => 'Flowers per Follower';
+
+  @override
+  String get official_studio_text_1391 => 'e.g. 10';
+
+  @override
+  String get official_studio_text_1401 => 'Gift Message (Optional)';
+
+  @override
+  String get official_studio_text_1411 => 'Estimated Deduction';
+
+  @override
+  String get official_studio_text_1421 =>
+      'Up to 20 followers and 5000 flowers per gift. Flowers are deducted on submission; recipients must claim them in their mailbox.';
+
+  @override
+  String get official_studio_text_1431 => 'Unable to load monthly tasks';
+
+  @override
+  String get official_studio_text_1441 =>
+      'Unable to load progress. Try again later.';
+
+  @override
+  String get official_studio_text_1451 => 'Confirm Creator Reward';
+
+  @override
+  String get official_studio_text_1461 =>
+      'Claim 300 flowers for this month? Each month can only be claimed once.';
+
+  @override
+  String get official_studio_text_1471 => 'Confirm Claim';
+
+  @override
+  String get official_studio_text_1481 => 'Monthly reward already claimed';
+
+  @override
+  String get official_studio_text_1491 => 'Successfully claimed 300 flowers!';
+
+  @override
+  String get official_studio_text_1501 => 'Claim failed. Try again later.';
+
+  @override
+  String get official_studio_text_1511 =>
+      'Unable to verify claim. Refresh your history.';
+
+  @override
+  String get official_studio_text_1521 => 'This month';
+
+  @override
+  String get official_studio_text_1531 =>
+      'Create and first publish three different characters each month, then claim 300 flowers.';
+
+  @override
+  String get official_studio_text_1541 =>
+      'Rules: Only signed and verified partner creators are eligible. Counted characters must be created and first published this month and remain public. Private, draft and republished older characters do not count. Resets monthly in Taiwan time, once per month.';
+
+  @override
+  String get official_studio_text_1551 =>
+      'Duplicate, empty or rule-violating characters may lead to review or partnership suspension under the agreement.';
+
+  @override
+  String get official_studio_text_1561 =>
+      'Welcome to the Partner Creator Program';
+
+  @override
+  String get official_studio_text_1571 => 'Track your work and stay connected';
+
+  @override
+  String get official_studio_text_1581 =>
+      'Share flowers and earn creator rewards';
+
+  @override
+  String get official_studio_text_1591 => 'Build your page and get support';
+
+  @override
+  String get official_studio_text_1601 => 'Your own creative space';
+
+  @override
+  String get official_studio_text_1611 => 'Followers · Analytics · Fan Mail';
+
+  @override
+  String get official_studio_text_1621 => 'Fan Benefits · Monthly Rewards';
+
+  @override
+  String get official_studio_text_1631 =>
+      'Banners · Partnership Info · Support';
+
+  @override
+  String get official_studio_text_1641 =>
+      'Welcome to the official creator studio of Lianlian Shiguang, combining creator tools, fan engagement, benefits and partnership information.';
+
+  @override
+  String get official_studio_text_1651 =>
+      'View and manage followers, track plays and character performance, and send messages to one follower or your entire audience.';
+
+  @override
+  String get official_studio_text_1661 =>
+      'Gift flowers from your balance to fans. You may also earn monthly rewards for newly created and first-published eligible characters.';
+
+  @override
+  String get official_studio_text_1671 =>
+      'Upload your personal creator banner. Review partnership rules and benefits in Partnership Info, or contact the Support Center.';
+
+  @override
+  String get official_studio_text_1681 =>
+      'Only officially eligible partner creators can use these features.';
+
+  @override
+  String get official_studio_text_1691 =>
+      'Fan mail has daily sending limits. Check your quota before sending.';
+
+  @override
+  String get official_studio_text_1701 =>
+      'Flower gifts deduct your balance. Monthly rewards follow current rules and server verification.';
+
+  @override
+  String get official_studio_text_1711 =>
+      'New creator-exclusive features will be added here over time.';
+
+  @override
+  String get official_studio_text_1721 => 'Creator Studio Guide';
+
+  @override
+  String get official_studio_text_1731 => 'Bỏ qua';
+
+  @override
+  String get official_studio_text_1741 => 'Trước';
+
+  @override
+  String get official_studio_text_1751 => 'Hoàn tất';
+
+  @override
+  String get official_studio_text_1761 => 'Tiếp theo';
+
+  @override
+  String official_studio_text_1771(String name) {
+    return 'Confirm removal of $name? They will unfollow you but can follow again.';
+  }
+
+  @override
+  String official_studio_text_1781(int count) {
+    return 'Private messages: $count / 30';
+  }
+
+  @override
+  String official_studio_text_1791(int count) {
+    return 'Broadcasts: $count / 5';
+  }
+
+  @override
+  String official_studio_text_1801(int count) {
+    return 'Gift sent! $count flowers are waiting in your followers’ mailboxes.';
+  }
+
+  @override
+  String official_studio_text_1811(int count) {
+    return '$count flowers 🌸';
+  }
+
+  @override
+  String official_studio_text_1821(int count) {
+    return '$count followers';
+  }
+
+  @override
+  String official_studio_text_1831(int count) {
+    return '$count flowers';
+  }
+
+  @override
+  String official_studio_text_1841(String month) {
+    return '$month creator reward';
+  }
+
+  @override
+  String official_studio_text_1851(int count) {
+    return 'This month: $count / 3';
+  }
+
+  @override
+  String official_studio_text_1861(int count) {
+    return '$count public characters remaining';
+  }
+
+  @override
+  String official_studio_text_1871(int count) {
+    return 'Insufficient flowers: need $count more';
+  }
+
+  @override
+  String get official_studio_text_1881 => 'Unable to load sending quota';
+
+  @override
+  String get official_studio_text_1891 =>
+      'Sending is not confirmed. Check your history before retrying.';
+
+  @override
+  String get official_studio_text_1901 =>
+      'Connection failed. Check your history before trying again.';
+
+  @override
+  String get official_studio_text_1911 =>
+      'Gift status unconfirmed. Check history before retrying.';
+
+  @override
+  String official_studio_text_1921(int balance, int total, int missing) {
+    return 'Balance: $balance\\nRequired: $total\\nMissing: $missing\\n\\nVisit the shop to get more flowers.';
+  }
+
+  @override
+  String official_studio_text_1931(int followers, int amount, int total) {
+    return 'Send $followers flowers gifts of $amount each, deducting $total flowers.\\nGifts cannot be revoked.';
+  }
+
+  @override
+  String official_studio_text_1941(String mode, String status, int count) {
+    return '$mode · $status · Delivered to $count';
+  }
+
+  @override
+  String get official_studio_text_1951 => 'Public characters';
+
+  @override
+  String get official_studio_text_1961 => 'Loading…';
+
+  @override
+  String get official_studio_text_1971 => 'Select followers';
+
+  @override
+  String get official_studio_text_1981 => 'Claimed this month';
+
+  @override
+  String get preference_selection_title1 => 'Chọn kiểu nhân vật bạn yêu thích';
+
+  @override
+  String get preference_selection_description1 =>
+      'Chọn 3–5 thẻ bạn thích để nhận gợi ý nhân vật hợp gu hơn.';
+
+  @override
+  String get preference_selection_recommendation_note1 =>
+      'Các sở thích này chỉ giúp cải thiện đề xuất. Bạn vẫn có thể khám phá những kiểu nhân vật khác.';
+
+  @override
+  String get preference_selection_selected1 => 'Đã chọn';
+
+  @override
+  String get preference_selection_start1 => 'Bắt đầu khám phá';
+
+  @override
+  String preference_selection_max_error1(int count) {
+    return 'Bạn chỉ có thể chọn tối đa $count thẻ.';
+  }
+
+  @override
+  String get preference_selection_save_failed1 =>
+      'Không thể lưu sở thích. Vui lòng thử lại sau.';
+
+  @override
+  String get preference_group_personality1 => 'Tính cách';
+
+  @override
+  String get preference_group_relationship_age1 =>
+      'Mối quan hệ và chênh lệch tuổi';
+
+  @override
+  String get preference_group_story1 => 'Bối cảnh câu chuyện';
+
+  @override
+  String get preference_tag_gentle1 => 'Dịu dàng';
+
+  @override
+  String get preference_tag_cold1 => 'Lạnh lùng';
+
+  @override
+  String get preference_tag_scheming1 => 'Thâm hiểm';
+
+  @override
+  String get preference_tag_tsundere1 => 'Tsundere';
+
+  @override
+  String get preference_tag_loyal1 => 'Trung thành';
+
+  @override
+  String get preference_tag_yandere1 => 'Yandere';
+
+  @override
+  String get preference_tag_mysterious1 => 'Bí ẩn';
+
+  @override
+  String get preference_tag_healing1 => 'Chữa lành';
+
+  @override
+  String get preference_tag_gap_moe1 => 'Tương phản bất ngờ';
+
+  @override
+  String get preference_tag_older1 => 'Lớn tuổi hơn';
+
+  @override
+  String get preference_tag_younger1 => 'Nhỏ tuổi hơn';
+
+  @override
+  String get preference_tag_ceo1 => 'Tổng tài bá đạo';
+
+  @override
+  String get preference_tag_school1 => 'Học đường';
+
+  @override
+  String get preference_tag_workplace1 => 'Công sở';
+
+  @override
+  String get preference_tag_ancient1 => 'Cổ trang';
+
+  @override
+  String get preference_tag_nonhuman1 => 'Phi nhân loại';
+
+  @override
+  String get private_label1 => 'ส่วนตัว';
+
+  @override
+  String get profile_page_world_tab1 => 'Thế giới mở';
+
+  @override
+  String get profile_page_login_required1 => 'Vui lòng đăng nhập trước';
+
+  @override
+  String get profile_page_world_load_failed1 =>
+      'Không thể tải thế giới. Vui lòng thử lại sau.';
+
+  @override
+  String get profile_page_my_worlds1 => 'Thế giới mở của tôi';
+
+  @override
+  String get profile_page_create_world1 => 'Tạo thế giới';
+
+  @override
+  String get profile_page_worlds_empty1 => 'Chưa có thế giới nào được tạo';
+
+  @override
+  String get profile_page_worlds_empty_hint1 =>
+      'Hãy tạo thế giới đầu tiên của bạn';
+
+  @override
+  String get profile_page_world_untitled1 => 'Thế giới chưa đặt tên';
+
+  @override
+  String get profile_page_world_public1 => 'Công khai';
+
+  @override
+  String get profile_page_world_private1 => 'Riêng tư';
+
+  @override
+  String profile_page_world_character_count1(int count) {
+    return '$count nhân vật';
+  }
+
+  @override
+  String get profile_page_world_enter_chat1 => 'Vào trò chuyện';
+
+  @override
+  String get profile_page_world_edit1 => 'Chỉnh sửa';
+
+  @override
+  String get profile_page_create_character1 => 'Tạo nhân vật';
+
+  @override
+  String get profile_page_event_frame_default1 => 'Khung ảnh đại diện sự kiện';
+
+  @override
+  String get public_worlds_explore_title1 => 'Khám phá thế giới công khai';
+
+  @override
+  String get public_worlds_search_tooltip1 => 'Tìm kiếm thế giới mở';
+
+  @override
+  String get public_worlds_load_failed1 =>
+      'Tạm thời không thể tải thế giới công khai';
+
+  @override
+  String get public_worlds_refresh1 => 'Làm mới';
+
+  @override
+  String get public_worlds_empty1 =>
+      'Thế giới công khai đang được chuẩn bị. Hãy đón chờ!';
+
+  @override
+  String get public_worlds_unnamed1 => 'Thế giới chưa đặt tên';
+
+  @override
+  String get world_explore_subtitle1 =>
+      'Bước vào những thế giới khác nhau và khám phá những hành trình độc đáo';
+
+  @override
+  String get settings_notification_preferences_title1 => 'Tùy chọn thông báo';
+
+  @override
+  String get settings_notification_preferences_subtitle1 =>
+      'Chọn loại thông báo muốn nhận và đồng bộ cài đặt giữa các thiết bị';
+
+  @override
+  String get settings_admin_section1 => 'Quản trị';
+
+  @override
+  String get settings_admin_dashboard1 => 'Bảng điều khiển quản trị';
+
+  @override
+  String get settings_admin_tools_subtitle1 => 'Công cụ quản lý nội bộ';
+
+  @override
+  String get world_chat_back1 => 'Quay lại';
+
+  @override
+  String get world_chat_mode_tooltip1 =>
+      'Chế độ phản hồi (AI và trừ hoa chưa được kết nối)';
+
+  @override
+  String get world_chat_menu1 => 'Menu thế giới';
+
+  @override
+  String get world_chat_mode_story1 => 'Cốt truyện';
+
+  @override
+  String get world_chat_mode_immersive1 => 'Nhập vai';
+
+  @override
+  String get world_chat_mode_resonance1 => 'Cộng hưởng';
+
+  @override
+  String get world_chat_mode_interaction1 => 'Tương tác';
+
+  @override
+  String world_chat_mode_cost1(String mode, int cost) {
+    return '$mode · $cost hoa';
+  }
+
+  @override
+  String world_memo_read_failed1(String error) {
+    return 'Không thể tải ghi chú: $error';
+  }
+
+  @override
+  String get world_memo_sync_failed1 =>
+      'Đồng bộ tạm thời thất bại. Đang hiển thị ghi chú đã tải trước đó.';
+
+  @override
+  String get world_memo_server_no_id1 => 'Máy chủ không trả về ID ghi chú';
+
+  @override
+  String world_memo_save_failed1(String error) {
+    return 'Lưu thất bại: $error';
+  }
+
+  @override
+  String get world_memo_delete_title1 => 'Xóa ghi chú?';
+
+  @override
+  String get world_memo_delete_warning1 => 'Không thể hoàn tác sau khi xóa.';
+
+  @override
+  String get world_memo_cancel1 => 'Hủy';
+
+  @override
+  String get world_memo_delete1 => 'Xóa';
+
+  @override
+  String world_memo_cancel_reminder_failed1(String error) {
+    return 'Đã xóa ghi chú nhưng không thể hủy nhắc nhở trên thiết bị cũ: $error';
+  }
+
+  @override
+  String world_memo_delete_failed1(String error) {
+    return 'Xóa thất bại: $error';
+  }
+
+  @override
+  String get world_memo_title1 => 'Ghi chú';
+
+  @override
+  String world_memo_world_personal1(String worldName) {
+    return '$worldName | Ghi chú cá nhân';
+  }
+
+  @override
+  String get world_memo_sync_notice1 =>
+      'Thời gian nhắc nhở được đồng bộ giữa các thiết bị. Thông báo đẩy được gửi đến các thiết bị đã đăng nhập và cho phép thông báo.';
+
+  @override
+  String get world_memo_loading1 => 'Đang tải…';
+
+  @override
+  String get world_memo_empty1 => 'Chưa có ghi chú. Nhấn + để thêm mới.';
+
+  @override
+  String world_memo_reminder_date1(String date) {
+    return 'Nhắc nhở: $date';
+  }
+
+  @override
+  String get world_memo_reminder_future1 =>
+      'Thời gian nhắc nhở phải ở tương lai';
+
+  @override
+  String get world_memo_content_required1 => 'Hãy nhập nội dung ghi chú trước';
+
+  @override
+  String get world_memo_edit_title1 => 'Sửa ghi chú';
+
+  @override
+  String get world_memo_add_title1 => 'Ghi chú mới';
+
+  @override
+  String get world_memo_content_label1 => 'Nội dung ghi chú';
+
+  @override
+  String get world_memo_content_hint1 => 'Viết điều bạn muốn ghi nhớ…';
+
+  @override
+  String get world_memo_reminder_settings1 => 'Cài đặt nhắc nhở';
+
+  @override
+  String get world_memo_no_reminder1 => 'Chưa đặt nhắc nhở';
+
+  @override
+  String get world_memo_reminder_choose1 =>
+      'Chọn ngày giờ để đồng bộ nhắc nhở qua đám mây';
+
+  @override
+  String get world_memo_clear_reminder1 => 'Xóa ngày nhắc nhở';
+
+  @override
+  String get world_memo_save1 => 'Lưu ghi chú';
+
+  @override
+  String get world_chat_open_world1 => 'Thế giới mở';
+
+  @override
+  String get world_chat_flower_sync1 => 'Tạm thời không thể đồng bộ số hoa';
+
+  @override
+  String get world_chat_web_store_unavailable1 => 'Bản web chưa hỗ trợ mua hoa';
+
+  @override
+  String get world_chat_sync_unavailable1 =>
+      'Không thể đồng bộ thời gian thực. Hãy mở lại cuộc trò chuyện để tải lịch sử.';
+
+  @override
+  String get world_chat_stopped1 => 'Đã dừng tạo phản hồi, không trừ hoa.';
+
+  @override
+  String get world_chat_cannot_stop1 =>
+      'Phản hồi có thể đã hoàn tất, không thể dừng. Hãy kiểm tra trò chuyện và số hoa.';
+
+  @override
+  String get world_chat_stop_retry1 =>
+      'Không thể dừng lúc này. Vui lòng thử lại.';
+
+  @override
+  String get world_chat_connection_failed1 => 'Kết nối thất bại';
+
+  @override
+  String get world_chat_network_failed1 => 'Mạng tạm thời không khả dụng';
+
+  @override
+  String get world_chat_no_regenerate1 => 'Chưa có phản hồi nào để tạo lại';
+
+  @override
+  String get world_chat_paid_regenerate1 => 'Tạo lại có tính phí';
+
+  @override
+  String get world_chat_cancel1 => 'Hủy';
+
+  @override
+  String get world_chat_confirm1 => 'Xác nhận';
+
+  @override
+  String get world_chat_no_continue1 => 'Chưa có cốt truyện để tiếp tục';
+
+  @override
+  String get world_chat_no_save1 => 'Chưa có cuộc trò chuyện nào để lưu';
+
+  @override
+  String get world_chat_loading1 => 'Cuộc trò chuyện đang tải';
+
+  @override
+  String get world_chat_unnamed_character1 => 'Nhân vật chưa đặt tên';
+
+  @override
+  String get world_chat_bg_wait1 =>
+      'Có thể đổi hình nền sau khi tải xong trò chuyện';
+
+  @override
+  String get world_chat_sign_in1 => 'Vui lòng đăng nhập trước';
+
+  @override
+  String get world_chat_choose_mode1 => 'Chọn chế độ thế giới';
+
+  @override
+  String get world_chat_mode_charge_expl1 =>
+      'Mỗi phản hồi thành công sẽ trừ hoa theo chế độ; thất bại không tính phí.';
+
+  @override
+  String get world_chat_photo_selected1 => 'Đã chọn ảnh';
+
+  @override
+  String get world_chat_got_it1 => 'Đã hiểu';
+
+  @override
+  String get world_chat_status_settings1 =>
+      'Cài đặt hiển thị trạng thái thế giới';
+
+  @override
+  String get world_chat_save_settings1 => 'Lưu cài đặt';
+
+  @override
+  String get world_chat_status_saved1 =>
+      'Đã lưu tùy chọn hiển thị trạng thái của thế giới này';
+
+  @override
+  String get world_chat_not_ready1 => 'Trò chuyện thế giới chưa sẵn sàng';
+
+  @override
+  String get world_chat_enter_first1 => 'Hãy vào trò chuyện thế giới trước';
+
+  @override
+  String get world_chat_photo1 => 'Ảnh';
+
+  @override
+  String get world_chat_profile1 => 'Hồ sơ';
+
+  @override
+  String get world_chat_interaction1 => 'Tương tác';
+
+  @override
+  String get world_chat_theater1 => 'Sân khấu';
+
+  @override
+  String get world_chat_status1 => 'Trạng thái';
+
+  @override
+  String get world_chat_secret1 => 'Chương bí mật';
+
+  @override
+  String get world_chat_mood1 => 'Tâm trạng';
+
+  @override
+  String get world_chat_outfit1 => 'Trang phục';
+
+  @override
+  String get world_chat_relationship1 => 'Mối quan hệ';
+
+  @override
+  String get world_chat_thought1 => 'Suy nghĩ';
+
+  @override
+  String get world_chat_weather1 => 'Thời tiết';
+
+  @override
+  String get world_chat_current_state1 => 'Trạng thái hiện tại';
+
+  @override
+  String get world_chat_action1 => 'Hành động';
+
+  @override
+  String get world_chat_affinity1 => 'Độ thiện cảm';
+
+  @override
+  String get world_chat_generating1 => 'Thế giới đang lặng lẽ chuyển mình…';
+
+  @override
+  String get world_chat_screenshot1 => 'Chia sẻ ảnh chụp màn hình';
+
+  @override
+  String get world_chat_copy1 => 'Sao chép nội dung';
+
+  @override
+  String get world_chat_copied1 => 'Đã sao chép';
+
+  @override
+  String get world_chat_edit1 => 'Chỉnh sửa';
+
+  @override
+  String get world_chat_delete1 => 'Xóa';
+
+  @override
+  String get world_chat_report1 => 'Báo cáo cuộc trò chuyện';
+
+  @override
+  String get world_chat_feedback1 => 'Góp ý';
+
+  @override
+  String get world_chat_edit_segment1 => 'Chỉnh sửa đoạn của nhân vật';
+
+  @override
+  String get world_chat_save1 => 'Lưu';
+
+  @override
+  String get world_chat_updated1 => 'Đã cập nhật tin nhắn';
+
+  @override
+  String get world_chat_delete_segment1 => 'Xóa đoạn';
+
+  @override
+  String get world_chat_deleted_segment1 => 'Đã xóa đoạn';
+
+  @override
+  String get world_chat_edit_message1 => 'Chỉnh sửa tin nhắn';
+
+  @override
+  String get world_chat_edit_hint1 => 'Sửa nội dung của bạn';
+
+  @override
+  String get world_chat_delete_conversation1 => 'Xóa cuộc trò chuyện';
+
+  @override
+  String get world_chat_no_chat1 => 'Chưa có cuộc trò chuyện nào';
+
+  @override
+  String get world_chat_cancel_select1 => 'Hủy chọn';
+
+  @override
+  String get world_chat_input_hint1 => 'Viết nên câu chuyện của hai người…';
+
+  @override
+  String get world_chat_screenshot_done1 => 'Khoảnh khắc riêng đã sẵn sàng';
+
+  @override
+  String get world_chat_screenshot_style1 => 'Đổi màu ảnh chụp màn hình';
+
+  @override
+  String get world_chat_reselect1 => 'Chọn lại';
+
+  @override
+  String get world_chat_download_share1 => 'Tải xuống và chia sẻ';
+
+  @override
+  String get world_records_summary_title1 => 'Tóm tắt cốt truyện';
+
+  @override
+  String world_records_loaded_count1(int count) {
+    return 'Đã tải $count tin nhắn và sắp xếp theo trình tự câu chuyện.';
+  }
+
+  @override
+  String get world_records_auto_summary_pending1 =>
+      'Hiện chỉ xem lại được những cuộc trò chuyện đã tải; tính năng AI tự động tóm tắt chưa khả dụng.';
+
+  @override
+  String get world_records_empty_story1 => 'Chưa có cốt truyện để xem lại';
+
+  @override
+  String get world_records_narrator_name1 => 'Người dẫn chuyện';
+
+  @override
+  String get world_records_relationships_title1 => 'Quan hệ nhân vật';
+
+  @override
+  String get world_records_affinity_note1 =>
+      'Điểm tình cảm được tính riêng cho từng nhân vật chính thức; NPC tạm thời không được tính điểm.';
+
+  @override
+  String get world_records_empty_characters1 =>
+      'Chưa có dữ liệu nhân vật chính thức';
+
+  @override
+  String world_records_affinity_score_with_next1(int score, int next) {
+    return 'Tình cảm $score / $next';
+  }
+
+  @override
+  String world_records_affinity_score_only1(int score) {
+    return 'Tình cảm $score';
+  }
+
+  @override
+  String world_records_relationship_stage1(int stage) {
+    return 'Giai đoạn quan hệ $stage';
+  }
+
+  @override
+  String get world_records_local_memo_read_failed1 =>
+      'Không thể tải ghi chú trên thiết bị';
+
+  @override
+  String get world_records_memo_saved_local1 =>
+      'Đã lưu ghi chú trên thiết bị này';
+
+  @override
+  String get world_records_memo_save_failed1 => 'Không thể lưu ghi chú';
+
+  @override
+  String get world_records_memo_unsaved1 => 'Ghi chú chưa lưu';
+
+  @override
+  String get world_records_memo_save_before_exit1 => 'Lưu trước khi thoát?';
+
+  @override
+  String get world_records_continue_editing1 => 'Tiếp tục chỉnh sửa';
+
+  @override
+  String get world_records_save_and_exit1 => 'Lưu và thoát';
+
+  @override
+  String get world_records_world_memo_title1 => 'Ghi chú cho thế giới này';
+
+  @override
+  String get world_records_save1 => 'Lưu';
+
+  @override
+  String get world_records_memo_local_disclaimer1 =>
+      'Ghi chú riêng tư | Phiên bản này chỉ lưu trên thiết bị hiện tại, không gửi cho AI và không đồng bộ giữa các thiết bị.';
+
+  @override
+  String get world_records_memo_hint1 =>
+      'Ghi lại manh mối, dự định hoặc những điều muốn nói với nhân vật…';
+
+  @override
+  String get world_records_narrator_short1 => 'Lời dẫn';
+
+  @override
+  String get world_records_summary_service_missing1 =>
+      'Dịch vụ tóm tắt cốt truyện (worldStoryMemory) chưa được triển khai. Hãy triển khai rồi mở lại.';
+
+  @override
+  String get world_records_summary_load_failed1 =>
+      'Tạm thời không thể tải tóm tắt cốt truyện. Vui lòng thử lại sau.';
+
+  @override
+  String get world_records_summary_intro1 =>
+      'Mỗi cuộc gặp gỡ và lựa chọn đều trở thành một phần câu chuyện. Những trải nghiệm và mối quan hệ quan trọng sẽ được lưu lại tại đây.';
+
+  @override
+  String get world_records_summary_empty1 =>
+      'Câu chuyện vẫn tiếp diễn. Những chương đáng nhớ sẽ sớm xuất hiện ở đây.';
+
+  @override
+  String get world_search_title1 => 'Tìm kiếm hội thoại';
+
+  @override
+  String get world_search_hint1 => 'Tìm nhân vật, lời thoại hoặc lời dẫn';
+
+  @override
+  String get world_search_clear1 => 'Xóa tìm kiếm';
+
+  @override
+  String get world_search_start1 => 'Nhập từ khóa để bắt đầu tìm kiếm';
+
+  @override
+  String world_search_results1(int count) {
+    return 'Tìm thấy $count kết quả';
+  }
+
+  @override
+  String get world_search_empty_prompt1 =>
+      'Tìm người chơi, nhân vật và lời dẫn';
+
+  @override
+  String get world_search_no_results1 => 'Không có hội thoại phù hợp';
+
+  @override
+  String get world_search_unknown_speaker1 => 'Nhân vật không xác định';
+
+  @override
+  String get world_search_collapse1 => 'Thu gọn';
+
+  @override
+  String get world_search_expand1 => 'Mở rộng';
+
+  @override
+  String get world_search_scope1 =>
+      'Phạm vi tìm kiếm: 200 tin nhắn gần nhất đã tải trong cuộc trò chuyện';
+
+  @override
+  String get world_menu_subtitle1 =>
+      'Thế giới mở · Các tính năng sẽ được mở dần';
+
+  @override
+  String get world_menu_chat_section1 => 'Trò chuyện';
+
+  @override
+  String get world_menu_search1 => 'Tìm kiếm hội thoại';
+
+  @override
+  String get world_menu_save_transcript1 => 'Lưu lịch sử trò chuyện';
+
+  @override
+  String get world_menu_memories_background1 => 'Kỷ niệm và hình nền';
+
+  @override
+  String get world_menu_relations_section1 => 'Mối quan hệ trong thế giới';
+
+  @override
+  String get world_menu_story_summary1 => 'Tóm tắt cốt truyện';
+
+  @override
+  String get world_menu_relationships1 => 'Quan hệ nhân vật';
+
+  @override
+  String get world_menu_memos1 => 'Ghi chú';
+
+  @override
+  String get world_menu_memory_section1 => 'Quản lý ký ức';
+
+  @override
+  String get world_menu_reset_progress1 => 'Đặt lại tiến trình thế giới';
+
+  @override
+  String get world_chat_book_confirm1 => 'Xác nhận';
+
+  @override
+  String get world_custom_scene_title_required1 =>
+      'Vui lòng nhập tiêu đề cảnh.';
+
+  @override
+  String get world_custom_scene_description_required1 =>
+      'Vui lòng nhập mô tả cảnh.';
+
+  @override
+  String get world_custom_scene_save_failed1 =>
+      'Lưu thất bại. Vui lòng thử lại sau.';
+
+  @override
+  String get world_custom_scene_edit_title1 => 'Chỉnh sửa cảnh';
+
+  @override
+  String get world_custom_scene_add_title1 => 'Thêm cảnh';
+
+  @override
+  String get world_discovery_share_desc1 =>
+      'Bước vào thế giới mở của nhà sáng tạo và bắt đầu câu chuyện của riêng bạn.';
+
+  @override
+  String world_discovery_share_text1(
+      String title, String description, String link) {
+    return 'Lianlian Shiguang · Lời mời vào thế giới mở\n\n“$title”\n\n$description\n\nKhám phá ngay: $link';
+  }
+
+  @override
+  String get world_discovery_brand1 => 'Lianlian Shiguang';
+
+  @override
+  String get world_discovery_invite1 => 'Lời mời vào thế giới mở';
+
+  @override
+  String get world_discovery_scan1 => 'Quét để tải xuống';
+
+  @override
+  String get world_discovery_cancel1 => 'Hủy';
+
+  @override
+  String get world_discovery_share_button1 => 'Chia sẻ thiệp mời';
+
+  @override
+  String get world_discovery_share_missing_card1 =>
+      'Không tìm thấy thiệp mời thế giới mở';
+
+  @override
+  String get world_discovery_share_image_failed1 => 'Không thể tạo ảnh chia sẻ';
+
+  @override
+  String get world_discovery_share_failed1 =>
+      'Không thể chia sẻ thiệp mời. Vui lòng thử lại.';
+
+  @override
+  String get world_discovery_story_open1 => 'Mở đầu câu chuyện';
+
+  @override
+  String get world_discovery_story_unset1 => 'Chưa thiết lập phần mở đầu';
+
+  @override
+  String get world_discovery_first_unset1 =>
+      'Chưa thiết lập câu thoại đầu tiên';
+
+  @override
+  String get world_discovery_background_title1 => 'Bối cảnh và mô tả thế giới';
+
+  @override
+  String world_discovery_era1(String era) {
+    return 'Bối cảnh thời gian: $era';
+  }
+
+  @override
+  String get world_discovery_background_unset1 =>
+      'Chưa thiết lập bối cảnh thế giới';
+
+  @override
+  String get world_discovery_background_full1 => 'Bối cảnh thế giới đầy đủ';
+
+  @override
+  String get world_discovery_people_unset1 => 'Chưa có nhân vật';
+
+  @override
+  String get world_discovery_people_intro1 => 'Giới thiệu nhân vật';
+
+  @override
+  String get world_discovery_appearance_unset1 => 'Chưa có mô tả ngoại hình';
+
+  @override
+  String get world_discovery_creator_unset1 =>
+      'Chưa có thông tin người sáng tạo';
+
+  @override
+  String get world_discovery_creator1 => 'Người sáng tạo';
+
+  @override
+  String get world_discovery_creator_load_failed1 =>
+      'Không thể tải thông tin người sáng tạo';
+
+  @override
+  String world_discovery_world_load_failed1(String error) {
+    return 'Không thể tải thế giới mở: $error';
+  }
+
+  @override
+  String get world_discovery_unpublished1 => 'Thế giới này chưa được công khai';
+
+  @override
+  String get world_discovery_open_world1 => 'Thế giới mở';
+
+  @override
+  String get world_discovery_share_tooltip1 => 'Chia sẻ thế giới mở';
+
+  @override
+  String get world_discovery_world_background1 => 'Bối cảnh thế giới';
+
+  @override
+  String get world_discovery_not_playable1 => 'Thế giới mở này chưa thể chơi.';
+
+  @override
+  String get world_discovery_enter1 => 'Vào thế giới';
+
+  @override
+  String get world_edit_login_required1 => 'Vui lòng đăng nhập trước';
+
+  @override
+  String get world_edit_no_edit_permission1 =>
+      'You do not have permission to edit this world';
+
+  @override
+  String get world_edit_secret_permission_error1 =>
+      'Unable to access secret chapters. Check the deployed Firestore rules. Saving is paused to protect existing data.';
+
+  @override
+  String world_edit_secret_read_error_code1(String code) {
+    return 'Could not load secret chapters ($code). Saving is paused to protect existing data.';
+  }
+
+  @override
+  String get world_edit_secret_read_error1 =>
+      'Could not load secret chapters. Saving is paused to protect existing data.';
+
+  @override
+  String world_edit_world_read_error1(String error) {
+    return 'Could not load world: $error';
+  }
+
+  @override
+  String world_edit_image_max1(int count) {
+    return 'A world can have up to $count images';
+  }
+
+  @override
+  String world_edit_image_read_error1(String error) {
+    return 'Could not load images: $error';
+  }
+
+  @override
+  String get world_edit_tag_heading1 => 'Theme tags (up to 5)';
+
+  @override
+  String get world_edit_tag_max1 => 'Select up to 5 tags';
+
+  @override
+  String get world_edit_tag_custom1 =>
+      'Tags (customizable; separate with commas)';
+
+  @override
+  String get world_edit_secret_not_ready1 =>
+      'Secret chapters have not loaded. Publishing is paused to protect your content. Check permissions and reopen this page.';
+
+  @override
+  String get world_edit_required_publish1 =>
+      'Enter a world name, at least one image, world background, story opening, and first line';
+
+  @override
+  String get world_edit_max_tags_save1 =>
+      'Only 5 theme tags are allowed. Remove extras before saving';
+
+  @override
+  String get world_edit_secret_validation1 =>
+      'Each chapter needs a title, unlock condition, and secret content (up to 12 chapters)';
+
+  @override
+  String get world_edit_draft_saved1 => 'World draft and secret chapters saved';
+
+  @override
+  String get world_edit_publish_unconfirmed1 =>
+      'The server has not confirmed public eligibility. Please try publishing again later.';
+
+  @override
+  String world_edit_publish_backend_error1(String code, String message) {
+    return 'World data was saved, but public activation failed ($code): $message. Fix the issue and select “Publish open world” again.';
+  }
+
+  @override
+  String get world_edit_publish_service_missing1 =>
+      'Verify that worldPublish is deployed';
+
+  @override
+  String get world_edit_public_published1 => 'Public open world published';
+
+  @override
+  String get world_edit_private_saved1 => 'Private open world saved';
+
+  @override
+  String world_edit_save_publish_failed1(String error) {
+    return 'Save or publish failed: $error';
+  }
+
+  @override
+  String get world_edit_save_draft_question1 => 'Lưu bản nháp?';
+
+  @override
+  String get world_edit_save_draft_explain1 =>
+      'Lưu thế giới này trước khi thoát? Các thay đổi chưa lưu sẽ bị mất.';
+
+  @override
+  String get world_edit_discard1 => 'Không lưu';
+
+  @override
+  String get world_edit_cancel1 => 'Hủy';
+
+  @override
+  String get world_edit_save_draft1 => 'Lưu bản nháp';
+
+  @override
+  String get world_edit_world_name1 => 'Tên thế giới mở *';
+
+  @override
+  String get world_edit_world_images1 =>
+      'World images (up to 6; first image is the cover)';
+
+  @override
+  String get world_edit_cover1 => 'Ảnh bìa';
+
+  @override
+  String get world_edit_set_cover1 => 'Đặt làm ảnh bìa';
+
+  @override
+  String get world_edit_short_pitch1 =>
+      'One-line card description (optional, up to 60 characters)';
+
+  @override
+  String get world_edit_public_summary1 =>
+      'Public world description (no spoilers)';
+
+  @override
+  String get world_edit_era1 =>
+      'Time period (e.g. fictional present day, Republican era)';
+
+  @override
+  String get world_edit_world_rules1 => 'World background and rules *';
+
+  @override
+  String get world_edit_full_lore1 =>
+      'Full world lore, events and locations (for AI)';
+
+  @override
+  String get world_edit_npc_intro1 =>
+      'Set names, appearances, birthdays, relationships, and photos for main characters and NPCs. Each player remains the protagonist of their own story.';
+
+  @override
+  String get world_edit_main_characters1 => 'Nhân vật chính';
+
+  @override
+  String get world_edit_main_subtitle1 =>
+      'Important characters who appear frequently in this world';
+
+  @override
+  String get world_edit_npc_subtitle1 =>
+      'Other characters who may become interaction partners as the story unfolds';
+
+  @override
+  String world_edit_people_count1(int count) {
+    return '$count nhân vật';
+  }
+
+  @override
+  String get world_edit_role_unset1 => 'Role / occupation not set';
+
+  @override
+  String get world_edit_remove_person1 => 'Remove character';
+
+  @override
+  String world_edit_add_person1(String type) {
+    return 'Thêm $type';
+  }
+
+  @override
+  String get world_edit_add_secret1 => 'Thêm chương bí mật';
+
+  @override
+  String get world_edit_edit_secret1 => 'Sửa chương bí mật';
+
+  @override
+  String get world_edit_chapter_title1 => 'Tiêu đề chương *';
+
+  @override
+  String get world_edit_unlock_condition1 =>
+      'Unlock condition (description for server evaluation) *';
+
+  @override
+  String get world_edit_secret_content1 => 'Nội dung bí mật *';
+
+  @override
+  String get world_edit_confirm1 => 'Xác nhận';
+
+  @override
+  String get world_edit_story_opening1 => 'Mở đầu câu chuyện *';
+
+  @override
+  String get world_edit_first_line1 => 'Câu thoại đầu tiên *';
+
+  @override
+  String get world_edit_secret_chapters1 => 'Chương bí mật';
+
+  @override
+  String get world_edit_secret_explain1 =>
+      'Secret chapters are stored privately. Publishing the world does not reveal them; players must meet story conditions to unlock them.';
+
+  @override
+  String get world_edit_add_secret_max1 => 'Add secret chapter (up to 12)';
+
+  @override
+  String get world_edit_publish_settings1 => 'Cài đặt xuất bản';
+
+  @override
+  String get world_edit_private_world1 => 'Thế giới riêng tư';
+
+  @override
+  String get world_edit_private_world_desc1 =>
+      'Chỉ bạn có thể chơi và thử nghiệm; người khác không thể vào';
+
+  @override
+  String get world_edit_public_world1 => 'Thế giới công khai';
+
+  @override
+  String get world_edit_public_world_desc1 =>
+      'Người chơi khác có thể vào và mỗi người có tiến trình riêng';
+
+  @override
+  String get world_edit_create_world1 => 'Tạo thế giới mở';
+
+  @override
+  String get world_edit_basic_tab1 => 'Cài đặt cơ bản';
+
+  @override
+  String get world_edit_characters_tab1 => 'Nhân vật thế giới';
+
+  @override
+  String get world_edit_story_tab1 => 'Cài đặt câu chuyện';
+
+  @override
+  String get world_edit_publish_world1 => 'Đăng thế giới mở';
+
+  @override
+  String get world_edit_name_required1 => 'Vui lòng nhập tên nhân vật';
+
+  @override
+  String world_edit_edit_person1(String type) {
+    return 'Sửa $type';
+  }
+
+  @override
+  String get world_edit_upload_photo1 => 'Tải ảnh nhân vật lên (tùy chọn)';
+
+  @override
+  String get world_edit_allow_photo1 =>
+      'Allow generating other images from this character\'s photo';
+
+  @override
+  String get world_edit_allow_photo_explain1 =>
+      'Use this character\'s photo as a reference only when appropriate for the story. Chatting and ordinary gifts still work if disabled. Set separately for each character.';
+
+  @override
+  String get world_edit_name1 => 'Tên *';
+
+  @override
+  String get world_edit_gender1 => 'Giới tính / bản dạng giới';
+
+  @override
+  String get world_edit_birthday1 => 'Sinh nhật (VD: 16 tháng 5)';
+
+  @override
+  String get world_edit_age1 => 'Tuổi';
+
+  @override
+  String get world_edit_role1 => 'Vai trò / nghề nghiệp';
+
+  @override
+  String get world_edit_appearance1 => 'Ngoại hình';
+
+  @override
+  String get world_edit_personality1 => 'Tính cách và thiết lập';
+
+  @override
+  String get world_edit_background1 => 'Quá khứ';
+
+  @override
+  String get world_edit_relationships1 => 'Quan hệ với nhân vật khác';
+
+  @override
+  String get world_edit_speech_style1 => 'Cách nói / giọng điệu';
+
+  @override
+  String get world_edit_dialogue_examples1 => 'Ví dụ hội thoại (cho AI)';
+
+  @override
+  String get world_edit_save_person1 => 'Lưu thiết lập nhân vật';
+
+  @override
+  String get world_edit_tag_mystery1 => 'Hồi hộp';
+
+  @override
+  String get world_edit_tag_horror1 => 'Kinh dị';
+
+  @override
+  String get world_edit_tag_romance1 => 'Lãng mạn';
+
+  @override
+  String get world_edit_tag_modern_fantasy1 => 'Kỳ ảo đô thị';
+
+  @override
+  String get world_edit_tag_school1 => 'Học đường';
+
+  @override
+  String get world_edit_tag_ensemble1 => 'Quần tượng';
+
+  @override
+  String get world_edit_tag_adventure1 => 'Phiêu lưu';
+
+  @override
+  String get world_edit_tag_daily1 => 'Đời thường';
+
+  @override
+  String get world_edit_tag_detective1 => 'Trinh thám';
+
+  @override
+  String get world_edit_tag_otherworld1 => 'Dị giới';
+
+  @override
+  String get chooseNpc1 => 'Chọn NPC';
+
+  @override
+  String get chooseInteractionTarget1 => 'Chọn người tương tác';
+
+  @override
+  String get unnamedCharacter1 => 'Nhân vật chưa đặt tên';
+
+  @override
+  String get chooseTargetFirst1 => 'Hãy chọn người tương tác trước';
+
+  @override
+  String get confirmGift1 => 'Xác nhận tặng quà';
+
+  @override
+  String giftConfirmDetail1(String target, String gift, int cost) {
+    return 'Gửi $gift cho $target tốn $cost hoa. Chỉ trừ điểm sau khi AI phản hồi thành công.';
+  }
+
+  @override
+  String get cancel1 => 'Hủy';
+
+  @override
+  String get send1 => 'Gửi';
+
+  @override
+  String get sendLocationTitle1 => 'Gửi địa điểm (3 hoa)';
+
+  @override
+  String get customLocation1 => 'Địa điểm tùy chỉnh';
+
+  @override
+  String get confirm1 => 'Xác nhận';
+
+  @override
+  String get cafe1 => 'Quán cà phê';
+
+  @override
+  String get park1 => 'Công viên';
+
+  @override
+  String get restaurant1 => 'Nhà hàng';
+
+  @override
+  String get street1 => 'Đường phố';
+
+  @override
+  String get giftHeart1 => 'Trái tim';
+
+  @override
+  String get giftFlower1 => 'Hoa';
+
+  @override
+  String get giftSun1 => 'Mặt trời';
+
+  @override
+  String get giftConfetti1 => 'Pháo giấy';
+
+  @override
+  String get giftCoffee1 => 'Cà phê';
+
+  @override
+  String get giftCake1 => 'Bánh kem';
+
+  @override
+  String get interactionPlayTitle1 => 'Tương tác';
+
+  @override
+  String interactionTargetLabel1(String target) {
+    return 'Người tương tác: $target';
+  }
+
+  @override
+  String get intimateInteraction1 => 'Tương tác thân mật';
+
+  @override
+  String get poke1 => 'Chọc nhẹ';
+
+  @override
+  String get hug1 => 'Ôm';
+
+  @override
+  String get holdHands1 => 'Nắm tay';
+
+  @override
+  String get gifts1 => 'Quà tặng';
+
+  @override
+  String get funActivities1 => 'Trò chơi vui';
+
+  @override
+  String get sendLocation1 => 'Gửi địa điểm';
+
+  @override
+  String get diceDuel1 => 'Đấu xúc xắc';
+
+  @override
+  String get world_profile_name_too_long1 =>
+      'Tên nhân vật trong thế giới không được vượt quá 40 ký tự. Hãy rút ngắn trước khi lưu.';
+
+  @override
+  String get world_profile_identity_too_long1 =>
+      'Thông tin nhân vật trong thế giới vượt quá 2.000 ký tự. Hãy rút ngắn trước khi lưu.';
+
+  @override
+  String get world_relationship_live_title1 => 'Mối quan hệ nhân vật';
+
+  @override
+  String get world_relationship_live_load_failed1 =>
+      'Không thể tải dữ liệu quan hệ. Hãy kiểm tra quyền Firestore.';
+
+  @override
+  String get world_relationship_live_no_people1 =>
+      'Thế giới này chưa có nhân vật nào.';
+
+  @override
+  String get world_relationship_live_not_met1 =>
+      'Quan hệ hiện tại: Chưa gặp nhau';
+
+  @override
+  String get world_relationship_live_first_meeting1 => 'Lần đầu gặp gỡ';
+
+  @override
+  String world_relationship_live_current_relation1(String relation) {
+    return 'Quan hệ hiện tại: $relation';
+  }
+
+  @override
+  String get world_relationship_live_thought_title1 =>
+      'Suy nghĩ hiện tại về người chơi';
+
+  @override
+  String get world_relationship_live_thought_pending1 =>
+      'Ấn tượng sẽ dần hình thành qua những lần tương tác tiếp theo.';
+
+  @override
+  String world_scene_full_load_error1(String error) {
+    return 'Không thể tải cảnh: $error';
+  }
+
+  @override
+  String get world_scene_full_delete_title1 => 'Xóa cảnh';
+
+  @override
+  String world_scene_full_delete_confirm1(String title) {
+    return 'Xóa “$title”?';
+  }
+
+  @override
+  String get world_scene_full_cancel1 => 'Hủy';
+
+  @override
+  String get world_scene_full_delete1 => 'Xóa';
+
+  @override
+  String world_scene_full_delete_error1(String error) {
+    return 'Không thể xóa cảnh: $error';
+  }
+
+  @override
+  String get world_scene_full_missing_fields1 =>
+      'Vui lòng nhập tiêu đề và mô tả cảnh.';
+
+  @override
+  String world_scene_full_activate_error1(String error) {
+    return 'Không thể bắt đầu cảnh: $error';
+  }
+
+  @override
+  String get world_scene_full_end_title1 => 'Kết thúc cảnh';
+
+  @override
+  String get world_scene_full_end_confirm1 => 'Kết thúc cảnh hiện tại?';
+
+  @override
+  String world_scene_full_end_error1(String error) {
+    return 'Không thể kết thúc cảnh: $error';
+  }
+
+  @override
+  String get world_scene_full_unnamed1 => 'Cảnh chưa đặt tên';
+
+  @override
+  String world_scene_full_opening1(String opening) {
+    return 'Mở đầu: $opening';
+  }
+
+  @override
+  String get world_scene_full_edit1 => 'Chỉnh sửa';
+
+  @override
+  String get world_scene_full_start1 => 'Bắt đầu cảnh';
+
+  @override
+  String get world_scene_full_creator_empty1 => 'Chưa có cảnh của nhà sáng tạo';
+
+  @override
+  String get world_scene_full_custom_empty1 => 'Bạn chưa tạo cảnh nào';
+
+  @override
+  String get world_scene_full_add1 => 'Cảnh mới';
+
+  @override
+  String get world_scene_full_page_title1 => 'Cảnh';
+
+  @override
+  String get world_scene_full_creator_tab1 => 'Cảnh của nhà sáng tạo';
+
+  @override
+  String get world_scene_full_custom_tab1 => 'Cảnh tự tạo';
+
+  @override
+  String world_scene_full_active1(String title) {
+    return 'Cảnh đang diễn ra: $title';
+  }
+
+  @override
+  String get world_scene_required1 => 'Vui lòng nhập tiêu đề và nội dung cảnh';
+
+  @override
+  String get world_scene_title1 => 'Cảnh';
+
+  @override
+  String get world_scene_beta_notice1 =>
+      'Bản thử nghiệm cảnh thế giới: cảnh được mở bằng AI trò chuyện thế giới. Chức năng lưu riêng và API bắt đầu chính thức chưa được tích hợp.';
+
+  @override
+  String get world_scene_creator_scenes1 => 'Cảnh của nhà sáng tạo';
+
+  @override
+  String get world_scene_no_creator_scenes1 =>
+      'Thế giới này hiện chưa có cảnh của nhà sáng tạo khả dụng';
+
+  @override
+  String get world_scene_custom_scenes1 => 'Tự tạo cảnh';
+
+  @override
+  String get world_scene_name1 => 'Tên cảnh';
+
+  @override
+  String get world_scene_setup1 =>
+      'Bối cảnh, địa điểm, nhân vật và tình huống mở đầu';
+
+  @override
+  String get world_scene_start1 => 'Bắt đầu cảnh';
+
+  @override
+  String get worldSearchTitle1 => 'Tìm thế giới mở';
+
+  @override
+  String get worldSearchHint1 => 'Tìm tên thế giới, nhà sáng tạo hoặc thẻ';
+
+  @override
+  String get worldSearchClear1 => 'Xóa tìm kiếm';
+
+  @override
+  String get worldSearchEmpty1 => 'Không tìm thấy thế giới mở phù hợp';
+
+  @override
+  String get worldSearchTrending1 => 'Thế giới phổ biến';
+
+  @override
+  String get worldSearchResults1 => 'Kết quả tìm kiếm';
+
+  @override
+  String get worldSearchUnnamed1 => 'Thế giới chưa đặt tên';
+
+  @override
+  String worldSearchCreator1(String creator) {
+    return 'Người sáng tạo: $creator';
+  }
+
+  @override
+  String get world_secret_chapters_title1 => 'Chương bí mật';
+
+  @override
+  String get world_secret_chapters_close1 => 'Đóng';
+
+  @override
+  String get world_secret_chapters_read_failed1 =>
+      'Hiện không thể đọc chương bí mật này';
+
+  @override
+  String get world_secret_chapters_retry1 => 'Tải thất bại. Nhấn để thử lại';
+
+  @override
+  String get world_secret_chapters_empty1 =>
+      'Nhà sáng tạo chưa thêm chương bí mật nào';
+
+  @override
+  String world_secret_chapters_locked_chapter1(String number) {
+    return 'Chương $number · ???';
+  }
+
+  @override
+  String get world_secret_chapters_unlocked1 => 'Đã mở khóa · Nhấn để đọc';
+
+  @override
+  String get world_secret_chapters_locked1 =>
+      'Chưa mở khóa · Tiếp tục khám phá câu chuyện';
+
+  @override
+  String world_timeline_load_failed1(String error) {
+    return 'Không thể tải tóm tắt câu chuyện: $error';
+  }
+
+  @override
+  String get world_timeline_edit_summary1 => 'Chỉnh sửa tóm tắt truyện';
+
+  @override
+  String get world_timeline_cancel1 => 'Hủy';
+
+  @override
+  String get world_timeline_save1 => 'Lưu';
+
+  @override
+  String world_timeline_save_failed1(String error) {
+    return 'Lưu thất bại: $error';
+  }
+
+  @override
+  String get world_timeline_delete_summary1 => 'Xóa tóm tắt';
+
+  @override
+  String get world_timeline_delete_confirm1 =>
+      'Xóa mục ghi chép câu chuyện này?';
+
+  @override
+  String get world_timeline_delete1 => 'Xóa';
+
+  @override
+  String world_timeline_delete_failed1(String error) {
+    return 'Xóa thất bại: $error';
+  }
+
+  @override
+  String get world_timeline_our_story1 => 'Câu chuyện của chúng ta';
+
+  @override
+  String get world_timeline_retry1 => 'Thử lại';
+
+  @override
+  String get world_timeline_empty1 =>
+      'Câu chuyện vẫn đang tiếp diễn. Những ghi chép mới sẽ xuất hiện khi câu chuyện tiến triển.';
+
+  @override
+  String get world_timeline_recent1 => 'Ghi chép gần đây';
+
+  @override
+  String get world_timeline_edit1 => 'Chỉnh sửa';
+
+  @override
+  String get echo_login_to_post1 => 'Đăng nhập để để lại tiếng vọng thời gian';
+
+  @override
+  String get echo_limit1 =>
+      'Mỗi người chơi chỉ có thể để lại tối đa 3 tiếng vọng trong cùng một thế giới mở';
+
+  @override
+  String get echo_count_fail1 =>
+      'Không thể kiểm tra số tiếng vọng. Vui lòng thử lại sau.';
+
+  @override
+  String get echo_compose_title1 => 'Để lại tiếng vọng thời gian';
+
+  @override
+  String get echo_compose_desc1 =>
+      'Chọn mẫu thẻ yêu thích rồi viết điều bạn muốn lưu lại.';
+
+  @override
+  String get echo_compose_hint1 => 'Bạn muốn để lại lời gì trong thế giới này?';
+
+  @override
+  String get echo_send1 => 'Gửi tiếng vọng';
+
+  @override
+  String get echo_player1 => 'Người chơi';
+
+  @override
+  String get echo_sent1 => 'Đã đăng tiếng vọng thời gian';
+
+  @override
+  String get echo_post_fail1 =>
+      'Không thể đăng. Hãy kiểm tra quyền và kết nối mạng.';
+
+  @override
+  String get echo_login1 => 'Vui lòng đăng nhập';
+
+  @override
+  String get echo_like_fail1 => 'Không thể thích';
+
+  @override
+  String get echo_delete_title1 => 'Xóa tiếng vọng này?';
+
+  @override
+  String get echo_delete_warning1 => 'Không thể hoàn tác sau khi xóa.';
+
+  @override
+  String get echo_cancel1 => 'Hủy';
+
+  @override
+  String get echo_delete1 => 'Xóa';
+
+  @override
+  String get echo_deleted1 => 'Đã xóa tiếng vọng';
+
+  @override
+  String get echo_delete_fail1 => 'Xóa thất bại';
+
+  @override
+  String get echo_reason_inappropriate1 => 'Nội dung không phù hợp';
+
+  @override
+  String get echo_reason_harassment1 => 'Quấy rối hoặc công kích';
+
+  @override
+  String get echo_reason_spam1 => 'Tin rác';
+
+  @override
+  String get echo_reason_other1 => 'Khác';
+
+  @override
+  String get echo_report_title1 => 'Báo cáo tiếng vọng';
+
+  @override
+  String get echo_already_reported1 => 'Bạn đã báo cáo tiếng vọng này';
+
+  @override
+  String get echo_report_received1 => 'Đã nhận báo cáo';
+
+  @override
+  String get echo_report_fail1 => 'Báo cáo thất bại';
+
+  @override
+  String get echo_options1 => 'Tùy chọn tiếng vọng';
+
+  @override
+  String get echo_delete_option1 => 'Xóa tiếng vọng';
+
+  @override
+  String get echo_report_option1 => 'Báo cáo tiếng vọng';
+
+  @override
+  String get echo_wall_title1 => 'Tiếng vọng thời gian';
+
+  @override
+  String get echo_add1 => 'Để lại tiếng vọng';
+
+  @override
+  String get echo_load_fail1 =>
+      'Không thể tải tiếng vọng. Hãy kiểm tra quyền Firestore.';
+
+  @override
+  String get echo_empty1 =>
+      'Chưa có tiếng vọng nào. Hãy để lại câu chuyện đầu tiên.';
+
+  @override
+  String get store_pack_30_name1 => 'Gói Gặp Gỡ Đầu Tiên';
+
+  @override
+  String get store_pack_70_name1 => 'Gói Rung Động';
+
+  @override
+  String get store_pack_120_name1 => 'Gói Tim Đập Rộn Ràng';
+
+  @override
+  String get store_pack_190_name1 => 'Gói Tình Yêu Nồng Cháy';
+
+  @override
+  String get store_pack_250_name1 => 'Gói Tri Kỷ';
+
+  @override
+  String get store_pack_330_name1 => 'Gói Chờ Đợi';
+
+  @override
+  String get store_pack_450_name1 => 'Gói Tin Tưởng';
+
+  @override
+  String get store_pack_520_name1 => 'Gói Anh Yêu Em';
+
+  @override
+  String get store_pack_690_name1 => 'Gói Tuần Trăng Mật';
+
+  @override
+  String get store_pack_720_name1 => 'Gói Lời Hứa';
+
+  @override
+  String get store_pack_750_name1 => 'Gói Bên Nhau';
+
+  @override
+  String get store_pack_830_name1 => 'Gói Tình Yêu Sâu Đậm';
+
+  @override
+  String get store_pack_990_name1 => 'Gói Bền Lâu';
+
+  @override
+  String get store_pack_1050_name1 => 'Gói Duy Nhất';
+
+  @override
+  String get store_pack_1290_name1 => 'Gói Chân Ái';
+
+  @override
+  String get store_pack_1314_name1 => 'Gói Trọn Đời';
+
+  @override
+  String get store_pack_1930_name1 => 'Gói Thề Ước';
+
+  @override
+  String get store_pack_2990_name1 => 'Gói Tình Nhân Vĩnh Cửu';
 }

@@ -168,7 +168,7 @@ class _HelpPageState extends State<HelpPage> {
         child: Opacity(
           opacity: .20,
           child: Image.asset(
-            'assets/images/studio/studio_top_right.png',
+            'assets/images/studio/studio_top_right.webp',
           ),
         ),
       ),
@@ -179,7 +179,7 @@ class _HelpPageState extends State<HelpPage> {
         child: Opacity(
           opacity: .17,
           child: Image.asset(
-            'assets/images/studio/studio_bottom_left.png',
+            'assets/images/studio/studio_bottom_left.webp',
           ),
         ),
       ),
@@ -206,14 +206,7 @@ class _HelpPageState extends State<HelpPage> {
           const SizedBox(height: 6),
           Row(mainAxisSize: MainAxisSize.min, children: [
             _line(theme, 48),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 7),
-              child: Icon(
-                Icons.view_comfy_alt_rounded,
-                size: 10,
-                color: theme.colorScheme.primary.withValues(alpha: .55),
-              ),
-            ),
+            const SizedBox(width: 14),
             _line(theme, 48),
           ]),
         ]),
@@ -377,7 +370,7 @@ class _HelpPageState extends State<HelpPage> {
       (
       id: null,
       label: l10n.help_all_categories,
-      asset: 'assets/images/guide/guide_category_moments.png',
+      asset: 'assets/images/guide/guide_category_moments.webp',
       ),
       ...categories.map(
             (item) => (
@@ -487,7 +480,7 @@ class _HelpPageState extends State<HelpPage> {
     }
     const fallback = [
       'assets/images/guide/guide_category_character.png',
-      'assets/images/guide/guide_category_moments.png',
+      'assets/images/guide/guide_category_moments.webp',
       'assets/images/guide/guide_category_chat.png',
     ];
     return fallback[index % fallback.length];
@@ -607,12 +600,6 @@ class _HelpPageState extends State<HelpPage> {
     child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
       _line(theme, 48),
       const SizedBox(width: 10),
-      Icon(
-        Icons.grass_rounded,
-        size: 18,
-        color: theme.colorScheme.primary.withValues(alpha: .52),
-      ),
-      const SizedBox(width: 5),
       Text(
         'Loving Dovey',
         style: GoogleFonts.cormorantGaramond(
@@ -630,12 +617,6 @@ class _HelpPageState extends State<HelpPage> {
     child: Padding(
       padding: const EdgeInsets.all(32),
       child: Column(mainAxisSize: MainAxisSize.min, children: [
-        Icon(
-          Icons.search_off_rounded,
-          size: 58,
-          color: theme.colorScheme.primary.withValues(alpha: .4),
-        ),
-        const SizedBox(height: 14),
         Text(
           content.noResultsTitle,
           style: _serif(size: 17, weight: FontWeight.w600),

@@ -95,7 +95,7 @@ class _ChatSearchPageState extends State<ChatSearchPage> {
     if (!mounted) return;
 
     final ImageProvider avatarProvider = getAvatarImageProvider(
-      avatarPath.isNotEmpty ? avatarPath : 'assets/images/avatar1.png',
+      avatarPath.isNotEmpty ? avatarPath : 'assets/images/avatar1.webp',
     );
 
     setState(() {

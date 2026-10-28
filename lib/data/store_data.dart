@@ -1,4 +1,6 @@
 import 'package:lianlian_shiguang/l10n/app_l10n.dart';
+import 'package:flutter/material.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 class GameProduct {
   final String id;
   final String name;
@@ -38,3 +40,40 @@ Map<String, GameProduct> get storeProducts => {
   // 月卡 (訂閱商品)
   'monthly_subscription_star_contract': GameProduct(id: 'monthly_subscription_star_contract', name: appL10n.subscription_star_contract_name, points: 250),
 };
+
+/// 多語系商品清單：商店 UI 應改用此函式，依 App 目前語言顯示名稱。
+/// 保留 storeProducts getter 供既有程式使用，避免直接破壞其他引用。
+/// 商品 ID、點數、優惠標籤及月卡既有翻譯均不改動。
+Map<String, GameProduct> localizedStoreProducts(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
+  final original = storeProducts;
+  final names = <String, String>{
+    'points_package_30': l10n.store_pack_30_name1,
+    'points_package_70': l10n.store_pack_70_name1,
+    'points_package_120': l10n.store_pack_120_name1,
+    'points_package_190': l10n.store_pack_190_name1,
+    'points_package_250': l10n.store_pack_250_name1,
+    'points_package_330': l10n.store_pack_330_name1,
+    'points_package_450': l10n.store_pack_450_name1,
+    'points_package_520': l10n.store_pack_520_name1,
+    'points_package_690': l10n.store_pack_690_name1,
+    'points_package_720': l10n.store_pack_720_name1,
+    'points_package_750': l10n.store_pack_750_name1,
+    'points_package_830': l10n.store_pack_830_name1,
+    'points_package_990': l10n.store_pack_990_name1,
+    'points_package_1050': l10n.store_pack_1050_name1,
+    'points_package_1290': l10n.store_pack_1290_name1,
+    'points_package_1314': l10n.store_pack_1314_name1,
+    'points_package_1930': l10n.store_pack_1930_name1,
+    'points_package_2990': l10n.store_pack_2990_name1,
+  };
+  return original.map((id, product) => MapEntry(
+    id,
+    GameProduct(
+      id: product.id,
+      name: names[id] ?? product.name,
+      points: product.points,
+      bonusTag: product.bonusTag,
+    ),
+  ));
+}

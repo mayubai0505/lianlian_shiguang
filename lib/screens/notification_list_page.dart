@@ -146,11 +146,6 @@ class _NotificationListPageState extends State<NotificationListPage> {
             return AlertDialog(
               title:  Row(
                 children: [
-                  Icon(
-                    Icons.delete_outline_rounded,
-                    color: Colors.redAccent,
-                  ),
-                  SizedBox(width: 8),
                   Text(l10n.mailDeleteTitle),
                 ],
               ),
@@ -194,6 +189,14 @@ class _NotificationListPageState extends State<NotificationListPage> {
       final db =
           FirebaseFirestore.instance;
 
+      // 未領取的創作者禮物必須保留信件入口，避免玩家失去領取管道。
+      final pendingChecks = await Future.wait(_selectedMailIds.map((mailId) =>
+          db.collection('users').doc(userId).collection('mailbox').doc(mailId).get()));
+      if (pendingChecks.any((mail) => mail.data()?['type'] == 'creator_flower_gift' &&
+          mail.data()?['claimStatus'] == 'pending')) {
+        if (mounted) ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.notification_claim_before_delete1, isError: true);
+        return;
+      }
       final batch = db.batch();
 
       for (final mailId
@@ -225,8 +228,6 @@ class _NotificationListPageState extends State<NotificationListPage> {
       ToastUtils.showCenterToast(
         context,
         l10n.mailDeleteSuccess(deleteCount),
-        customIcon:
-        Icons.delete_outline_rounded,
       );
     } catch (e, stackTrace) {
       debugPrint(
@@ -431,11 +432,6 @@ class _NotificationListPageState extends State<NotificationListPage> {
                 .primary
                 .withValues(alpha: 0.08),
           ),
-          child: Icon(
-            Icons.notifications_none_rounded,
-            size: 21,
-            color: Theme.of(context).colorScheme.primary,
-          ),
         ),
       ),
     );
@@ -525,7 +521,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
                   child: Row(
                     children: [
                       Image.asset(
-                        'assets/images/chat/chat_msg_delete_mask.png',
+                        'assets/images/chat/chat_msg_delete_mask.webp',
                         width: 22,
                         height: 22,
                         color: Colors.redAccent,
@@ -566,7 +562,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
             ),
             onPressed: () => _deleteSelectedMails(userId),
             icon: Image.asset(
-              'assets/images/chat/chat_msg_delete_mask.png',
+              'assets/images/chat/chat_msg_delete_mask.webp',
               width: 21,
               height: 21,
               color: Colors.redAccent,
@@ -673,12 +669,6 @@ class _NotificationListPageState extends State<NotificationListPage> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          Icons.bookmark_border_rounded,
-                          size: 52,
-                          color: theme.colorScheme.primary.withValues(alpha: 0.45),
-                        ),
-                        const SizedBox(height: 12),
                         Text(
                           l10n.mailCollectedEmptyTitle,
                           style: TextStyle(
@@ -775,14 +765,9 @@ class _NotificationListPageState extends State<NotificationListPage> {
                           ),
                         ),
                         child: Image.asset(
-                          'assets/images/love.png',
+                          'assets/images/love.webp',
                           fit: BoxFit.contain,
-                          errorBuilder: (_, __, ___) {
-                            return const Icon(
-                              Icons.favorite_rounded,
-                              color: Color(0xFFE1779E),
-                            );
-                          },
+                          errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                         ),
                       );
                     } else if (type == 'like') {
@@ -1031,6 +1016,23 @@ class _NotificationListPageState extends State<NotificationListPage> {
                             return;
                           }
 
+                          if (type == 'creator_flower_gift' &&
+                              data['claimStatus'] == 'pending') {
+                            if (!isRead) await _markAsRead(userId, doc.id);
+                            if (!context.mounted) return;
+                            await Navigator.push(context, MaterialPageRoute(
+                              builder: (_) => _CreatorGiftClaimDetailPage(
+                                giftId: data['giftId']?.toString() ?? '',
+                                title: title,
+                                body: body,
+                                amount: (data['flowerAmount'] as num?)?.toInt() ?? 0,
+                                userId: userId,
+                                mailId: doc.id,
+                              ),
+                            ));
+                            return;
+                          }
+
                           if (type == 'reward_campaign') {
                             await _openRewardCampaignDetail(
                               userId: userId,
@@ -1182,6 +1184,69 @@ class _NotificationListPageState extends State<NotificationListPage> {
   }
 }
 
+// 創作者贈禮專用：僅「新版待領取信件」會進入此頁。
+class _CreatorGiftClaimDetailPage extends StatefulWidget {
+  final String giftId;
+  final String title;
+  final String body;
+  final int amount;
+  final String userId;
+  final String mailId;
+  const _CreatorGiftClaimDetailPage({
+    required this.giftId, required this.title, required this.body,
+    required this.amount, required this.userId, required this.mailId,
+  });
+  @override
+  State<_CreatorGiftClaimDetailPage> createState() => _CreatorGiftClaimDetailPageState();
+}
+
+class _CreatorGiftClaimDetailPageState extends State<_CreatorGiftClaimDetailPage> {
+  bool _busy = false;
+  Future<void> _claim() async {
+    if (_busy || widget.giftId.isEmpty) return;
+    setState(() => _busy = true);
+    try {
+      final result = await FirebaseFunctions.instanceFor(region: 'asia-east1')
+          .httpsCallable('claimCreatorFlowerGift').call({'giftId': widget.giftId});
+      final data = result.data is Map ? Map<String, dynamic>.from(result.data as Map) : <String, dynamic>{};
+      if (!mounted) return;
+      ToastUtils.showCenterToast(context,
+        data['alreadyClaimed'] == true ? AppLocalizations.of(context)!.notification_creator_gift_already_claimed1 : AppLocalizations.of(context)!.notification_creator_gift_claim_success1(data['amount'] ?? widget.amount),
+      );
+    } on FirebaseFunctionsException catch (e) {
+      if (mounted) ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.notification_error1, isError: true);
+    } catch (e) {
+      if (mounted) ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.notification_error1, isError: true);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+  @override
+  Widget build(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
+    return Scaffold(
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.notification_creator_gift_title1)),
+      body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+        stream: FirebaseFirestore.instance.collection('users').doc(widget.userId)
+            .collection('mailbox').doc(widget.mailId).snapshots(),
+        builder: (context, snapshot) {
+          final claimed = snapshot.data?.data()?['claimStatus'] == 'claimed';
+          return ListView(padding: const EdgeInsets.all(24), children: [
+            Text(widget.title, style: GoogleFonts.notoSerifTc(fontSize: 21, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 18),
+            Text(widget.body, style: GoogleFonts.notoSerifTc(fontSize: 15, height: 1.7)),
+            const SizedBox(height: 24),
+            Text(AppLocalizations.of(context)!.notification_creator_gift_amount1(widget.amount), style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: primary)),
+            const SizedBox(height: 20),
+            FilledButton(onPressed: claimed || _busy ? null : _claim,
+                child: Text(claimed ? AppLocalizations.of(context)!.notification_creator_gift_claimed1 : _busy ? AppLocalizations.of(context)!.notification_creator_gift_claiming1 : AppLocalizations.of(context)!.notification_creator_gift_claim_button1)),
+          ]);
+        },
+      ),
+    );
+  }
+}
+
 class _RewardCampaignDetailPage extends StatefulWidget {
   final String campaignId;
   final String title;
@@ -1266,7 +1331,6 @@ class _RewardCampaignDetailPageState
       ToastUtils.showCenterToast(
         context,
         l10n.rewardCampaignClaimSuccess(receivedAmount),
-        customIcon: Icons.local_florist_rounded,
       );
     } on FirebaseFunctionsException catch (error) {
       debugPrint(
@@ -1285,14 +1349,13 @@ class _RewardCampaignDetailPageState
         ToastUtils.showCenterToast(
           context,
           l10n.rewardCampaignAlreadyClaimed,
-          customIcon: Icons.check_circle_outline_rounded,
         );
         return;
       }
 
       ToastUtils.showCenterToast(
         context,
-        error.message ?? l10n.rewardCampaignClaimFailed,
+        l10n.rewardCampaignClaimFailed,
         isError: true,
       );
     } catch (error, stackTrace) {
@@ -1331,22 +1394,6 @@ class _RewardCampaignDetailPageState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Center(
-                child: Container(
-                  width: 78,
-                  height: 78,
-                  decoration: BoxDecoration(
-                    color: Colors.pink.shade50,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.redeem_rounded,
-                    size: 42,
-                    color: Colors.pinkAccent,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 22),
               Text(
                 widget.title,
                 style: GoogleFonts.notoSerifTc(
@@ -1399,11 +1446,6 @@ class _RewardCampaignDetailPageState
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(
-                          Icons.local_florist_rounded,
-                          color: Colors.pinkAccent,
-                        ),
-                        const SizedBox(width: 7),
                         Text(
                           l10n.rewardCampaignFlowerAmount(
                             widget.rewardAmount,
@@ -1572,7 +1614,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
           children: [
             if (isQixi) ...[
               Image.asset(
-                'assets/images/love.png',
+                'assets/images/love.webp',
                 width: 82,
                 height: 82,
                 fit: BoxFit.contain,
@@ -1598,8 +1640,8 @@ class _MailDetailPageState extends State<_MailDetailPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 7),
                     child: Image.asset(
                       completed
-                          ? 'assets/images/qixi_progress_on.png'
-                          : 'assets/images/qixi_progress_off.png',
+                          ? 'assets/images/qixi_progress_on.webp'
+                          : 'assets/images/qixi_progress_off.webp',
                       width: 38,
                       height: 38,
                       fit: BoxFit.contain,
@@ -1755,7 +1797,6 @@ class _MailDetailPageState extends State<_MailDetailPage> {
 
       _showMailCenterToast(
         l10n.mailShareGenerating,
-        icon: Icons.auto_awesome_rounded,
       );
 
       final Uint8List imageBytes =
@@ -2147,7 +2188,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
 
               _buildSupportSection(
                 theme: theme,
-                label: '玩家送出的標題',
+                label: AppLocalizations.of(context)!.notification_support_subject1,
                 content: widget.supportSubject,
               ),
 
@@ -2155,7 +2196,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
                 const SizedBox(height: 14),
                 _buildSupportSection(
                   theme: theme,
-                  label: '玩家送出的內容',
+                  label: AppLocalizations.of(context)!.notification_support_content1,
                   content: widget.supportContent,
                 ),
               ],
@@ -2164,7 +2205,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
                 const SizedBox(height: 14),
                 _buildSupportSection(
                   theme: theme,
-                  label: '被回報的內容',
+                  label: AppLocalizations.of(context)!.notification_support_reported1,
                   content: widget.supportReportedContent,
                 ),
               ],
@@ -2198,7 +2239,6 @@ class _MailDetailPageState extends State<_MailDetailPage> {
                       alignment: Alignment.center,
                       color: theme.colorScheme.primary
                           .withValues(alpha: 0.04),
-                      child: const Icon(Icons.broken_image_outlined),
                     ),
                   ),
                 ),
@@ -2213,7 +2253,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
                 const SizedBox(height: 18),
                 _buildSupportSection(
                   theme: theme,
-                  label: '客服回覆',
+                  label: AppLocalizations.of(context)!.notification_support_reply1,
                   content: widget.supportReply,
                 ),
               ],
@@ -2240,7 +2280,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
         elevation: 0,
         actions: [
           IconButton(
-            tooltip: '分享信件',
+            tooltip: AppLocalizations.of(context)!.notification_share_mail1,
             onPressed: _shareMailAsImage,
             icon: Transform.flip(
               flipX: true,
@@ -2270,12 +2310,6 @@ class _MailDetailPageState extends State<_MailDetailPage> {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    Icon(
-                      Icons.verified_rounded,
-                      size: 17,
-                      color: theme.colorScheme.primary,
-                    ),
-                    const SizedBox(width: 6),
                     Expanded(
                       child: Text(
                         l10n.mailSender(widget.fromName),
@@ -2321,7 +2355,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '你原本詢問',
+                        AppLocalizations.of(context)!.notification_original_question1,
                         style: GoogleFonts.notoSerifTc(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -2374,22 +2408,12 @@ class _MailDetailPageState extends State<_MailDetailPage> {
             children: [
               Image.asset(
                 isCompleted
-                    ? 'assets/images/qixi_progress_on.png'
-                    : 'assets/images/qixi_progress_off.png',
+                    ? 'assets/images/qixi_progress_on.webp'
+                    : 'assets/images/qixi_progress_off.webp',
                 width: 42,
                 height: 42,
                 fit: BoxFit.contain,
-                errorBuilder: (_, __, ___) {
-                  return Icon(
-                    isCompleted
-                        ? Icons.favorite_rounded
-                        : Icons.favorite_border_rounded,
-                    color: isCompleted
-                        ? const Color(0xFFE777A2)
-                        : const Color(0xFF96899C),
-                    size: 30,
-                  );
-                },
+                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
               ),
               const SizedBox(height: 2),
               Text(
@@ -2467,13 +2491,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
                   width: 68,
                   height: 68,
                   fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) {
-                    return const Icon(
-                      Icons.nightlight_round,
-                      color: Color(0xFFE078A0),
-                      size: 52,
-                    );
-                  },
+                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -2561,11 +2579,6 @@ class _MailDetailPageState extends State<_MailDetailPage> {
                                     return Container(
                                       color: const Color(0xFFF4EAF1),
                                       alignment: Alignment.center,
-                                      child: const Icon(
-                                        Icons.person_rounded,
-                                        color: Color(0xFF9B7D91),
-                                        size: 32,
-                                      ),
                                     );
                                   },
                                 ),
@@ -2588,12 +2601,6 @@ class _MailDetailPageState extends State<_MailDetailPage> {
                         const SizedBox(height: 12),
                         Row(
                           children: [
-                            const Icon(
-                              Icons.auto_awesome_rounded,
-                              size: 16,
-                              color: Color(0xFFD76A94),
-                            ),
-                            const SizedBox(width: 6),
                             Expanded(
                               child: Text(
                                 appL10n.notification_message_qixi_letter(widget.fromName),

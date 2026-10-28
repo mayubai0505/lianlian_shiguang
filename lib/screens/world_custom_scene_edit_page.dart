@@ -1,0 +1,273 @@
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+
+//玩家自己的新增／編輯劇場頁
+class WorldCustomSceneEditPage extends StatefulWidget {
+  final String worldId;
+  final String worldName;
+  final Map<String, dynamic>? sceneDoc;
+
+  const WorldCustomSceneEditPage({
+    super.key,
+    required this.worldId,
+    required this.worldName,
+    this.sceneDoc,
+  });
+
+  bool get isEditing => sceneDoc != null;
+
+  @override
+  State<WorldCustomSceneEditPage> createState() => _WorldCustomSceneEditPageState();
+}
+
+class _WorldCustomSceneEditPageState extends State<WorldCustomSceneEditPage> {
+  late final TextEditingController _titleController;
+  late final TextEditingController _descriptionController;
+  bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final data = widget.sceneDoc ?? const <String, dynamic>{};
+    _titleController = TextEditingController(
+      text: (data['title'] ?? '').toString(),
+    );
+    _descriptionController = TextEditingController(
+      text: (data['description'] ?? '').toString(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message, style: GoogleFonts.notoSerifTc()),
+        ),
+      );
+  }
+
+  Future<void> _save() async {
+    if (_isSaving) return;
+
+    final l10n = AppLocalizations.of(context)!;
+    final title = _titleController.text.trim();
+    final description = _descriptionController.text.trim();
+
+    if (title.isEmpty) {
+      _showMessage(l10n.world_custom_scene_title_required1);
+      return;
+    }
+    if (description.isEmpty) {
+      _showMessage(l10n.world_custom_scene_description_required1);
+      return;
+    }
+
+    FocusScope.of(context).unfocus();
+    setState(() => _isSaving = true);
+
+    try {
+      await FirebaseFunctions.instanceFor(region: 'asia-east1')
+          .httpsCallable('worldPrivateTest').call({
+        'action': 'saveCustomScene',
+        'worldId': widget.worldId,
+        if (widget.isEditing) 'sceneId': widget.sceneDoc!['id'],
+        'title': title,
+        'description': description,
+      });
+
+      if (!mounted) return;
+      Navigator.pop(context);
+    } catch (_) {
+      if (!mounted) return;
+      _showMessage(l10n.world_custom_scene_save_failed1);
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  InputDecoration _inputDecoration({
+    required ThemeData theme,
+    required String hintText,
+  }) {
+    final primary = theme.colorScheme.primary;
+
+    return InputDecoration(
+      hintText: hintText,
+      hintStyle: GoogleFonts.notoSerifTc(
+        fontSize: 13,
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.34),
+      ),
+      filled: true,
+      fillColor: theme.colorScheme.surface.withValues(alpha: 0.98),
+      contentPadding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(
+          color: primary.withValues(alpha: 0.15),
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(
+          color: primary.withValues(alpha: 0.48),
+          width: 1.2,
+        ),
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    final l10n = AppLocalizations.of(context)!;
+
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        foregroundColor: theme.colorScheme.onSurface,
+        title: Text(
+          widget.isEditing ? l10n.world_custom_scene_edit_title1 : l10n.world_custom_scene_add_title1,
+          style: GoogleFonts.notoSerifTc(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+      body: SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 44),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.worldName,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 13,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.48),
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                widget.isEditing
+                    ? l10n.custom_scene_edit_heading_edit
+                    : l10n.custom_scene_edit_heading_add,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 21,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 26),
+              Text(
+                l10n.creator_scene_edit_scene_title_label,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 9),
+              TextField(
+                controller: _titleController,
+                maxLength: 30,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 14,
+                  height: 1.6,
+                ),
+                decoration: _inputDecoration(
+                  theme: theme,
+                  hintText: l10n.creator_scene_edit_scene_title_hint,
+                ),
+              ),
+              const SizedBox(height: 18),
+              Text(
+                l10n.creator_scene_edit_description_label,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 9),
+              TextField(
+                controller: _descriptionController,
+                minLines: 7,
+                maxLines: 12,
+                maxLength: 1200,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 14,
+                  height: 1.6,
+                ),
+                decoration: _inputDecoration(
+                  theme: theme,
+                  hintText: l10n.custom_scene_edit_description_hint,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                decoration: BoxDecoration(
+                  color: primary.withValues(alpha: 0.055),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Text(
+                  l10n.custom_scene_edit_note,
+                  style: GoogleFonts.notoSerifTc(
+                    fontSize: 12,
+                    height: 1.6,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.56),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 28),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: _isSaving ? null : _save,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: primary,
+                    foregroundColor: theme.colorScheme.onPrimary,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                  ),
+                  child: _isSaving
+                      ? SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: theme.colorScheme.onPrimary,
+                    ),
+                  )
+                      : Text(
+                    widget.isEditing ? l10n.creator_scene_edit_save_changes : l10n.creator_scene_edit_save_scene,
+                    style: GoogleFonts.notoSerifTc(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

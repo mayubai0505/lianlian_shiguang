@@ -24,6 +24,8 @@ import 'all_friends_page.dart';
 import 'character_model.dart';
 import 'settings_page.dart';
 import 'character_edit_page.dart';
+import 'world_edit_page.dart';
+import 'world_chat_page.dart';
 import 'store_page.dart';
 import '../page/announcement_page.dart';
 import '../services/app_constants.dart';
@@ -41,6 +43,7 @@ import 'moment_card.dart';
 import 'edit_moment_page.dart';
 import 'create_moment_page.dart';
 import '../services/daily_task_service.dart';
+import '../widgets/creator_verified_badge.dart';
 //個人主頁
 
 class ProfilePage extends StatefulWidget {
@@ -53,7 +56,7 @@ class _ProfilePageState extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
   // --- 狀態變數 ---
   String _nickname = '';
-  String _avatarPath = 'assets/images/avatar1.png';
+  String _avatarPath = 'assets/images/avatar1.webp';
   String _equippedAvatarFrameImageUrl = '';
   String _equippedAvatarFrameName = '';
   String _equippedAvatarFrameKey = '';
@@ -106,6 +109,7 @@ class _ProfilePageState extends State<ProfilePage>
   bool _isLikeClaimed = false;
   bool _isClaimingCheckIn = false;
   bool _isBirthdayToday = false; // ✨ 新進一個狀態變數來記錄今天是否生日
+  bool _isVerifiedCreator = false; // 官方合作創作者認證徽章
   bool _hasActiveMonthlyCard = false;   // 是否持有有效月卡
   bool _isMonthlyRewardClaimed = false; // 今日月卡任務是否已領取
   bool _isDefaultTheme(BuildContext context) {
@@ -121,7 +125,7 @@ class _ProfilePageState extends State<ProfilePage>
   void initState() {
     super.initState();
     _profileTabController = TabController(
-      length: 3,
+      length: 4,
       vsync: this,
     );
 
@@ -169,6 +173,7 @@ class _ProfilePageState extends State<ProfilePage>
           _cachedProfileMoments = <Moment>[];
           _profileMomentsLoaded = false;
           _profileMomentsError = null;
+          _isVerifiedCreator = false;
         });
       }
     });
@@ -316,25 +321,24 @@ class _ProfilePageState extends State<ProfilePage>
   Future<void> _loadUserPIDData() async {
     if (_userId == null) return;
 
-    // ✨ 1. 統一產生保底 ID (抽到最上面，不用重複寫)
-    final fallbackID = _userId!.length >= 8 ? _userId!.substring(0, 8) : _userId!;
+    final uid = _userId!;
 
     try {
       final doc = await FirebaseFirestore.instance.collection('users').doc(_userId).get();
 
       // ✨ 2. 預設給予保底值
-      String finalID = fallbackID;
+      String finalID = '';
       bool isChanged = false;
 
       // ✨ 3. 如果雲端有資料，再進行覆蓋
       if (doc.exists) {
         final data = doc.data() ?? {};
         final cloudID = (data['playerID']?.toString() ?? "").trim();
-        finalID = cloudID.isNotEmpty ? cloudID : fallbackID;
+        finalID = cloudID;
         isChanged = data['hasChangedID'] ?? false;
       }
 
-      if (!mounted) return;
+      if (!mounted || FirebaseAuth.instance.currentUser?.uid != uid) return;
 
       // ✨ 4. 統一更新畫面狀態
       setState(() {
@@ -345,7 +349,7 @@ class _ProfilePageState extends State<ProfilePage>
 
       // ✨ 5. 統一寫入本地暫存
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('playerID', finalID);
+      await prefs.setString(_profileCacheKey(uid, 'playerID'), finalID);
       await prefs.setBool('hasChangedID', isChanged);
 
       print("✅ 玩家 ID 載入同步成功：$finalID, 鎖定狀態：$isChanged");
@@ -356,8 +360,8 @@ class _ProfilePageState extends State<ProfilePage>
       // 🛡️ 斷網或報錯時的保底機制
       if (mounted) {
         setState(() {
-          _oldIDFromDB = fallbackID;
-          _playerIDController.text = fallbackID;
+          // 讀取失敗時不將 UID 片段偽裝成公開 ID。
+          // 保留上一個成功取得的值，避免誤導玩家。
         });
       }
     }
@@ -397,6 +401,7 @@ class _ProfilePageState extends State<ProfilePage>
         _avatarPath = data['avatarPath'] ?? _avatarPath;
         _flowerPoints = data['flowerPoints'] ?? 0;
         _bio = data['bio']?.toString().trim() ?? '';
+        _isVerifiedCreator = CreatorVerifiedBadge.isVerifiedCreator(data);
 
         // 個人連結：直接使用玩家儲存在 users/{uid} 的 profileLinks。
         final rawProfileLinks = data['profileLinks'];
@@ -423,7 +428,7 @@ class _ProfilePageState extends State<ProfilePage>
       });
 
       // ✨ 同步回本地快取，下次打開 App 速度會更快
-      _updateLocalCache(data);
+      _updateLocalCache(data, _userId!);
     });
   }
 
@@ -484,7 +489,7 @@ class _ProfilePageState extends State<ProfilePage>
           ? (ownedItem!['imageUrl'] ?? '').toString().trim()
           : '';
       final resolvedName = valid
-          ? (ownedItem!['name'] ?? '活動頭像框').toString()
+          ? (ownedItem!['name'] ?? AppLocalizations.of(context)!.profile_page_event_frame_default1).toString()
           : '';
 
       setState(() {
@@ -515,19 +520,30 @@ class _ProfilePageState extends State<ProfilePage>
   }
 
   // ✨ 輔助小工具：把雲端抓到的最新資料順手存進本地快取
-  Future<void> _updateLocalCache(Map<String, dynamic> data) async {
-    final prefs = await SharedPreferences.getInstance();
-    if (data.containsKey('nickname')) await prefs.setString(
-        'nickname', data['nickname']);
-    if (data.containsKey('bio')) {
-      await prefs.setString(
-        'bio',
-        data['bio']?.toString() ?? '',
-      );
-    }
-    if (data.containsKey('avatarPath')) await prefs.setString(
-        'avatarPath', data['avatarPath']);
+  // 帳號專屬快取：只作載入加速。Firestore 仍是個人資料唯一來源。
+  String _profileCacheKey(String uid, String field) =>
+      'playerProfile_${uid}_$field';
 
+  Future<void> _updateLocalCache(Map<String, dynamic> data, String uid) async {
+    if (FirebaseAuth.instance.currentUser?.uid != uid) return;
+    final prefs = await SharedPreferences.getInstance();
+    if (FirebaseAuth.instance.currentUser?.uid != uid) return;
+    if (data.containsKey('nickname')) {
+      await prefs.setString(_profileCacheKey(uid, 'nickname'),
+          data['nickname']?.toString() ?? '');
+    }
+    if (data.containsKey('bio')) {
+      await prefs.setString(_profileCacheKey(uid, 'bio'),
+          data['bio']?.toString() ?? '');
+    }
+    if (data.containsKey('avatarPath')) {
+      await prefs.setString(_profileCacheKey(uid, 'avatarPath'),
+          data['avatarPath']?.toString() ?? 'assets/images/avatar1.webp');
+    }
+    if (data.containsKey('playerID')) {
+      await prefs.setString(_profileCacheKey(uid, 'playerID'),
+          data['playerID']?.toString() ?? '');
+    }
     if (data.containsKey('profileLinks') && data['profileLinks'] is List) {
       final encoded = (data['profileLinks'] as List)
           .map((item) {
@@ -538,7 +554,7 @@ class _ProfilePageState extends State<ProfilePage>
       })
           .where((item) => item.isNotEmpty)
           .join('\n');
-      await prefs.setString('profileLinksDisplayCache', encoded);
+      await prefs.setString(_profileCacheKey(uid, 'profileLinks'), encoded);
     }
   }
 
@@ -623,7 +639,7 @@ class _ProfilePageState extends State<ProfilePage>
               children: [
                 const SizedBox(height: 16),
                 Image.asset(
-                  'assets/images/flower_gift.png',
+                  'assets/images/flower_gift.webp',
                   height: 80,
                   width: 80,
                 ),
@@ -838,7 +854,6 @@ class _ProfilePageState extends State<ProfilePage>
       ToastUtils.showCenterToast(
         context,
         l10n.task_reward_claimed(taskName, rewardAmount.toString()),
-        customIcon: Icons.emoji_events_rounded,
       );
     } catch (e) {
       if (!mounted) return;
@@ -1102,17 +1117,19 @@ class _ProfilePageState extends State<ProfilePage>
   Future<void> _loadProfileFromCache() async {
     final prefs = await SharedPreferences.getInstance();
     final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null || currentUser.uid != _userId) return;
+    final uid = currentUser.uid;
     final l10n = AppLocalizations.of(context)!;
 
-    if (mounted) {
+    if (mounted && FirebaseAuth.instance.currentUser?.uid == uid) {
       setState(() {
-        // 優先序：本地緩存 > Firebase 帳號名稱 > 溫柔的預設值
-        _nickname = prefs.getString('nickname') ?? (currentUser?.displayName ?? l10n.title_time_travel);
-        _bio = prefs.getString('bio') ?? '';
-        _avatarPath = prefs.getString('avatarPath') ?? (currentUser?.photoURL ?? 'assets/images/avatar1.png');
-        _playerID = prefs.getString('playerID') ?? '';
+        // 僅使用目前登入帳號的本機快取，避免換帳號時顯示其他玩家資料。
+        _nickname = prefs.getString(_profileCacheKey(uid, 'nickname')) ?? (currentUser.displayName ?? l10n.title_time_travel);
+        _bio = prefs.getString(_profileCacheKey(uid, 'bio')) ?? '';
+        _avatarPath = prefs.getString(_profileCacheKey(uid, 'avatarPath')) ?? (currentUser.photoURL ?? 'assets/images/avatar1.webp');
+        _playerID = prefs.getString(_profileCacheKey(uid, 'playerID')) ?? '';
 
-        final cachedLinks = prefs.getString('profileLinksDisplayCache') ?? '';
+        final cachedLinks = prefs.getString(_profileCacheKey(uid, 'profileLinks')) ?? '';
         _profileLinks = cachedLinks
             .split('\n')
             .where((line) => line.trim().isNotEmpty)
@@ -1145,7 +1162,7 @@ class _ProfilePageState extends State<ProfilePage>
                 Navigator.pop(context, 'gemini');
               },
               child: ListTile(
-                leading: Icon(Icons.chat_bubble_outline),
+
                 title: Text(l10n.mode_chat), // 順便在字面上讓玩家知道這是免費的
                 subtitle: Text(l10n.mode_daily_desc),
               ),
@@ -1155,7 +1172,7 @@ class _ProfilePageState extends State<ProfilePage>
                 Navigator.pop(context, 'story'); // 返回 'story'
               },
               child:ListTile(
-                leading: Icon(Icons.book_outlined),
+
                 title: Text(l10n.chatModeStory),
                 subtitle: Text(l10n.mode_story_desc),
               ),
@@ -1344,8 +1361,6 @@ class _ProfilePageState extends State<ProfilePage>
       ToastUtils.showCenterToast(
         context,
         l10n.profile_referral_success,
-        customIcon:
-        Icons.handshake_rounded,
       );
 
       _inviteCodeController.clear();
@@ -1480,20 +1495,6 @@ class _ProfilePageState extends State<ProfilePage>
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: Colors.green.withValues(alpha: 0.12),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.check_circle_rounded,
-                      color: Colors.green,
-                      size: 20,
-                    ),
-                  ),
-
                   const SizedBox(width: 10),
 
                   Expanded(
@@ -1562,13 +1563,7 @@ class _ProfilePageState extends State<ProfilePage>
                 children: [
                   Row(
                     children: [
-                      const Icon(
-                        Icons.mark_chat_read_outlined,
-                        color: Colors.amber,
-                        size: 17,
-                      ),
 
-                      const SizedBox(width: 8),
 
                       Expanded(
                         child: Text(
@@ -1738,11 +1733,6 @@ class _ProfilePageState extends State<ProfilePage>
                           ),
                           title: Row(
                             children: [
-                              const Icon(
-                                Icons.info_outline,
-                                color: Colors.pinkAccent,
-                              ),
-                              const SizedBox(width: 8),
                               Text(
                                 l10n.profile_referral_rule_title,
                                 style: const TextStyle(
@@ -1811,8 +1801,6 @@ class _ProfilePageState extends State<ProfilePage>
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Row(
             children: [
-              Icon(Icons.backpack_outlined, color: Colors.pink),
-              SizedBox(width: 8),
               Text(l10n.profile_backpack_title),
             ],
           ),
@@ -1855,11 +1843,6 @@ class _ProfilePageState extends State<ProfilePage>
                       children: [
                         Row(
                           children: [
-                            Icon(
-                              totalSpent >= 10000 ? Icons.card_giftcard : Icons.lock_outline,
-                              color: totalSpent >= 10000 ? primaryColor : Colors.grey,
-                            ),
-                            const SizedBox(width: 8),
                             Text(
                               l10n.profile_backpack_vip_gift_title,
                               style: TextStyle(
@@ -1940,8 +1923,6 @@ class _ProfilePageState extends State<ProfilePage>
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               title: Row(
                 children: [
-                  Icon(Icons.card_giftcard, color: Colors.pink),
-                  SizedBox(width: 8),
                   Text(l10n.profile_physical_gift_title),
                 ],
               ),
@@ -2068,7 +2049,7 @@ class _ProfilePageState extends State<ProfilePage>
                   BlendMode.srcIn,
                 ),
                 child: Image.asset(
-                  'assets/images/profile/about_botanical_mask.png',
+                  'assets/images/profile/about_botanical_mask.webp',
                   fit: BoxFit.contain,
                   alignment: Alignment.bottomRight,
                   filterQuality: FilterQuality.high,
@@ -2206,53 +2187,53 @@ class _ProfilePageState extends State<ProfilePage>
                   backgroundColor:
                   Theme.of(context).scaffoldBackgroundColor,
                   forceElevated: innerBoxIsScrolled,
-                  actions: [
-                    IconButton(
-                      tooltip: l10n.profile_tooltip_announcement,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const AnnouncementListPage(),
-                          ),
-                        );
-                      },
-                      icon: Transform.translate(
-                        offset: const Offset(30, -3),
-                        child: _buildTintedProfileAsset(
-                          maskAsset:
-                          'assets/images/profile/announcement_mask.png',
-                          size: 40,
-                          color: theme.colorScheme.primary,
-                          opacity: 0.62,
+                  // 公告獨立放在左上角，避免與右側的收藏按鈕混淆。
+                  automaticallyImplyLeading: false,
+                  leadingWidth: 62,
+                  leading: IconButton(
+                    tooltip: l10n.profile_tooltip_announcement,
+                    constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                    padding: const EdgeInsets.all(5),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const AnnouncementListPage(),
                         ),
-                      ),
+                      );
+                    },
+                    icon: _buildTintedProfileAsset(
+                      maskAsset: 'assets/images/profile/announcement_mask.webp',
+                      size: 42,
+                      color: theme.colorScheme.primary,
+                      opacity: 0.62,
                     ),
+                  ),
+                  actions: [
+                    // 收藏靠近右側設定；維持獨立點擊範圍。
                     IconButton(
                       tooltip: l10n.event_memory_collection_show_collection_intro_if_needed_message_collection,
+                      constraints: const BoxConstraints(minWidth: 50, minHeight: 48),
+                      padding: const EdgeInsets.all(4),
                       onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) =>
-                            const EventMemoryCollectionPage(),
+                            builder: (_) => const EventMemoryCollectionPage(),
                           ),
                         );
                       },
-                      icon: Transform.translate(
-                        offset: const Offset(15, -2),
-                        child: _buildTintedProfileAsset(
-                          maskAsset:
-                          'assets/icons/icon_profile_collection.png',
-                          size: 40,
-                          color: theme.colorScheme.primary,
-                          opacity: 0.62,
-                        ),
+                      icon: _buildTintedProfileAsset(
+                        maskAsset: 'assets/icons/icon_profile_collection.png',
+                        size: 42,
+                        color: theme.colorScheme.primary,
+                        opacity: 0.62,
                       ),
                     ),
-
                     IconButton(
                       tooltip: l10n.profile_tooltip_settings,
+                      constraints: const BoxConstraints(minWidth: 54, minHeight: 48),
+                      padding: const EdgeInsets.all(5),
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -2262,14 +2243,12 @@ class _ProfilePageState extends State<ProfilePage>
                         );
                       },
                       icon: _buildTintedProfileAsset(
-                        maskAsset:
-                        'assets/images/profile/top_settings_mask.png',
-                        size: 40,
+                        maskAsset: 'assets/images/profile/top_settings_mask.webp',
+                        size: 42,
                         color: theme.colorScheme.primary,
                         opacity: 0.62,
                       ),
                     ),
-
                   ],
                 ),
 
@@ -2313,6 +2292,7 @@ class _ProfilePageState extends State<ProfilePage>
 
                       tabs: [
                         Tab(height: 48, text: l10n.profilePageTabCharacters),
+                        Tab(height: 48, text: l10n.profile_page_world_tab1),
                         Tab(height: 48, text: l10n.profilePageTabMoments),
                         Tab(
                           height: 48,
@@ -2334,6 +2314,7 @@ class _ProfilePageState extends State<ProfilePage>
               _profileTabController,
               children: [
                 _buildCharactersTab(),
+                _buildWorldsTab(),
                 _buildMomentsTab(),
                 _buildAboutMeTab(),
               ],
@@ -2379,49 +2360,6 @@ class _ProfilePageState extends State<ProfilePage>
       debugPrint('讀取背包失敗: $e');
     }
   }
-
-  void _showProfileUtilityMenu({
-    required User? currentUser,
-  }) {
-    final l10n = AppLocalizations.of(context)!;
-    showModalBottomSheet(
-      context: context,
-      showDragHandle: true,
-      builder: (sheetContext) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (!isAppleReviewMode)
-                ListTile(
-                  leading: const Icon(Icons.card_giftcard_outlined),
-                  title: Text(l10n.profile_tooltip_backpack),
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    _openProfileBackpack(currentUser);
-                  },
-                ),
-              ListTile(
-                leading: const Icon(Icons.mail_outline_rounded),
-                title: Text(l10n.title_time_letters),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const AnnouncementListPage(),
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 8),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
 
   Color _darkenProfileIconColor(
       Color color, {
@@ -2699,7 +2637,7 @@ class _ProfilePageState extends State<ProfilePage>
                             BlendMode.srcIn,
                           ),
                           child: Image.asset(
-                            'assets/images/profile/botanical_left_mask.png',
+                            'assets/images/profile/botanical_left_mask.webp',
                             fit: BoxFit.contain,
                             alignment: Alignment.centerLeft,
                             filterQuality: FilterQuality.high,
@@ -2720,7 +2658,7 @@ class _ProfilePageState extends State<ProfilePage>
                             BlendMode.srcIn,
                           ),
                           child: Image.asset(
-                            'assets/images/profile/botanical_right_mask.png',
+                            'assets/images/profile/botanical_right_mask.webp',
                             fit: BoxFit.contain,
                             alignment: Alignment.centerRight,
                             filterQuality: FilterQuality.high,
@@ -2803,6 +2741,10 @@ class _ProfilePageState extends State<ProfilePage>
                       ),
                     ),
                   ),
+                  if (_isVerifiedCreator) ...[
+                    const SizedBox(width: 7),
+                    const CreatorVerifiedBadge(verified: true, size: 20),
+                  ],
                   if (_isBirthdayToday) ...[
                     const SizedBox(width: 7),
                     Icon(
@@ -2840,7 +2782,6 @@ class _ProfilePageState extends State<ProfilePage>
                           ToastUtils.showCenterToast(
                             context,
                             l10n.toast_id_copied,
-                            customIcon: Icons.copy_rounded,
                           );
                         },
                         borderRadius: BorderRadius.circular(20),
@@ -2888,7 +2829,7 @@ class _ProfilePageState extends State<ProfilePage>
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   _buildTintedProfileAsset(
-                                    maskAsset: 'assets/images/profile/profile_quill_mask.png',
+                                    maskAsset: 'assets/images/profile/profile_quill_mask.webp',
                                     size: 22,
                                     color: theme.colorScheme.primary,
                                     opacity: 0.78,
@@ -2926,8 +2867,8 @@ class _ProfilePageState extends State<ProfilePage>
                                 children: [
                                   Image.asset(
                                     isDarkMode
-                                        ? 'assets/images/flower_gift_dark.png'
-                                        : 'assets/images/flower_gift.png',
+                                        ? 'assets/images/flower_gift_dark.webp'
+                                        : 'assets/images/flower_gift.webp',
                                     width: 17,
                                     height: 17,
                                   ),
@@ -2986,7 +2927,7 @@ class _ProfilePageState extends State<ProfilePage>
                     child: _buildProfileStatItem(
                       value: _cachedProfileMoments.length,
                       label: l10n.profilePageTabMoments,
-                      onTap: () => _profileTabController.animateTo(1),
+                      onTap: () => _profileTabController.animateTo(2),
                     ),
                   ),
                   Expanded(
@@ -3016,7 +2957,7 @@ class _ProfilePageState extends State<ProfilePage>
                       )
                           : _buildTintedProfileAsset(
                         maskAsset:
-                        'assets/images/profile/calendar_base_mask.png',
+                        'assets/images/profile/calendar_base_mask.webp',
                         overlayMaskAsset: _hasCheckedInToday
                             ? 'assets/images/profile/calendar_check_mask.png'
                             : null,
@@ -3043,7 +2984,7 @@ class _ProfilePageState extends State<ProfilePage>
                       onTap: _showHeartbeatDiary,
                       icon: _buildTintedProfileAsset(
                         maskAsset:
-                        'assets/images/profile/heart_diary_mask.png',
+                        'assets/images/profile/heart_diary_mask.webp',
                         size: 82,
                         opacity: 0.92,
                       ),
@@ -3418,12 +3359,7 @@ class _ProfilePageState extends State<ProfilePage>
                               ),
                             ),
                           ),
-                          const SizedBox(width: 5),
-                          Icon(
-                            Icons.open_in_new_rounded,
-                            size: 13,
-                            color: theme.colorScheme.primary.withValues(alpha: 0.58),
-                          ),
+
                         ],
                       ),
                     ),
@@ -3527,13 +3463,7 @@ class _ProfilePageState extends State<ProfilePage>
         padding: const EdgeInsets.symmetric(vertical: 18),
         child: Column(
           children: [
-            Icon(
-              Icons.edit_note_rounded,
-              size: 36,
-              color: theme.colorScheme.primary
-                  .withValues(alpha: 0.65),
-            ),
-            const SizedBox(height: 8),
+
             Text(
               l10n.profilePageNoBio,
               style: GoogleFonts.notoSerifTc(
@@ -3556,6 +3486,119 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
+  // 個人主頁「開放世界」：只查詢目前登入者建立的作品，避免私人世界曝光。
+  Widget _buildWorldsTab() {
+    final theme = Theme.of(context);
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return Center(child: Text(AppLocalizations.of(context)!.profile_page_login_required1));
+    final worlds = _db.collection('artifacts').doc(_appId).collection('worlds');
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: worlds.where('createdBy', isEqualTo: uid).snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text(AppLocalizations.of(context)!.profile_page_world_load_failed1),
+          ));
+        }
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final docs = snapshot.data!.docs.toList()
+          ..sort((a, b) {
+            final at = a.data()['updatedAt'];
+            final bt = b.data()['updatedAt'];
+            final ad = at is Timestamp ? at.millisecondsSinceEpoch : 0;
+            final bd = bt is Timestamp ? bt.millisecondsSinceEpoch : 0;
+            return bd.compareTo(ad);
+          });
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(18, 14, 18, 60),
+          children: [
+            Row(children: [
+              Expanded(child: Text(AppLocalizations.of(context)!.profile_page_my_worlds1,
+                  style: GoogleFonts.notoSerifTc(fontSize: 18,
+                      fontWeight: FontWeight.w600))),
+              TextButton.icon(
+                onPressed: _createWorld,
+                icon: const Icon(Icons.add_rounded, size: 18),
+                label: Text(AppLocalizations.of(context)!.profile_page_create_world1),
+              ),
+            ]),
+            const SizedBox(height: 12),
+            if (docs.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 90),
+                child: Column(children: [
+                  Text(AppLocalizations.of(context)!.profile_page_worlds_empty1),
+                  const SizedBox(height: 5),
+                  Text(AppLocalizations.of(context)!.profile_page_worlds_empty_hint1),
+                ]),
+              ),
+            for (final doc in docs) _buildMyWorldCard(doc, theme),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildMyWorldCard(
+      QueryDocumentSnapshot<Map<String, dynamic>> doc, ThemeData theme) {
+    final data = doc.data();
+    final name = (data['name'] ?? AppLocalizations.of(context)!.profile_page_world_untitled1).toString();
+    final cover = (data['coverImage'] ?? '').toString();
+    final isPublic = data['status'] == 'public' || data['isPublic'] == true;
+    final count = data['npcCharacters'] is List
+        ? (data['npcCharacters'] as List).length : 0;
+    return Card(
+      elevation: 0,
+      margin: const EdgeInsets.only(bottom: 12),
+      shape: RoundedRectangleBorder(
+          side: BorderSide(color: theme.colorScheme.primary.withValues(alpha: .16)),
+          borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Row(children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: SizedBox(width: 72, height: 82,
+                child: cover.startsWith('https://')
+                    ? Image.network(cover, fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) =>
+                    const Icon(Icons.auto_stories_outlined))
+                    : const Icon(Icons.auto_stories_outlined, size: 32)),
+          ),
+          const SizedBox(width: 12),
+          Expanded(child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(name, maxLines: 2, overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.notoSerifTc(fontSize: 15,
+                      fontWeight: FontWeight.w600)),
+              const SizedBox(height: 5),
+              Text("${isPublic ? AppLocalizations.of(context)!.profile_page_world_public1 : AppLocalizations.of(context)!.profile_page_world_private1} · ${AppLocalizations.of(context)!.profile_page_world_character_count1(count)}",
+                  style: TextStyle(fontSize: 12,
+                      color: theme.colorScheme.onSurfaceVariant)),
+              const SizedBox(height: 4),
+              Wrap(spacing: 4, children: [
+                TextButton(
+                    onPressed: () => Navigator.push(context,
+                        MaterialPageRoute(builder: (_) =>
+                            WorldChatPage(worldId: doc.id))),
+                    child: Text(AppLocalizations.of(context)!.profile_page_world_enter_chat1)),
+                TextButton(
+                    onPressed: () => Navigator.push(context,
+                        MaterialPageRoute(builder: (_) =>
+                            WorldEditPage(worldId: doc.id))),
+                    child: Text(AppLocalizations.of(context)!.profile_page_world_edit1)),
+              ]),
+            ],
+          )),
+        ]),
+      ),
+    );
+  }
+
   Widget _buildCharactersTab() {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
@@ -3569,7 +3612,7 @@ class _ProfilePageState extends State<ProfilePage>
             child: Padding(
               padding: const EdgeInsets.fromLTRB(18, 12, 12, 4),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   TextButton.icon(
                     onPressed: () async {
@@ -3601,15 +3644,23 @@ class _ProfilePageState extends State<ProfilePage>
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                     ),
                   ),
-                  const SizedBox(width: 2),
-                  IconButton(
-                    tooltip: l10n.profilePageCreateCharacter,
+                  TextButton.icon(
                     onPressed: _createCharacter,
-                    visualDensity: VisualDensity.compact,
                     icon: Icon(
                       Icons.add_rounded,
-                      size: 24,
+                      size: 22,
                       color: theme.colorScheme.primary,
+                    ),
+                    label: Text(
+                      l10n.profile_page_create_character1,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                    style: TextButton.styleFrom(
+                      visualDensity: VisualDensity.compact,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
                     ),
                   ),
                 ],
@@ -3624,12 +3675,7 @@ class _ProfilePageState extends State<ProfilePage>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.person_add_alt_1_rounded,
-                      size: 56,
-                      color: theme.colorScheme.primary.withValues(alpha: 0.38),
-                    ),
-                    const SizedBox(height: 14),
+
                     Text(
                       l10n.profilePageNoCharacters,
                       textAlign: TextAlign.center,
@@ -3702,7 +3748,6 @@ class _ProfilePageState extends State<ProfilePage>
         ToastUtils.showCenterToast(
           context,
           message,
-          customIcon: Icons.person_remove_rounded,
         );
       }
       return;
@@ -3716,7 +3761,6 @@ class _ProfilePageState extends State<ProfilePage>
         ToastUtils.showCenterToast(
           context,
           message,
-          customIcon: Icons.manage_accounts_rounded,
         );
       }
     }
@@ -3726,7 +3770,7 @@ class _ProfilePageState extends State<ProfilePage>
     final theme = Theme.of(context);
     final imagePath = character.avatarPath.trim().isNotEmpty
         ? character.avatarPath
-        : 'assets/images/avatar1.png';
+        : 'assets/images/avatar1.webp';
 
     return InkWell(
       onTap: () => _openMyCharacterEditor(character),
@@ -3737,17 +3781,13 @@ class _ProfilePageState extends State<ProfilePage>
           fit: StackFit.expand,
           children: [
             Image(
-              image: getAvatarImageProvider(imagePath),
-              fit: BoxFit.cover,
-              filterQuality: FilterQuality.high,
-              errorBuilder: (_, __, ___) => Container(
-                color: theme.colorScheme.primary.withValues(alpha: 0.07),
-                child: Icon(
-                  Icons.person_outline_rounded,
-                  size: 52,
-                  color: theme.colorScheme.primary.withValues(alpha: 0.32),
-                ),
-              ),
+                image: getAvatarImageProvider(imagePath),
+                fit: BoxFit.cover,
+                filterQuality: FilterQuality.high,
+                errorBuilder: (_, __, ___) => Container(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.07),
+                  child: const SizedBox.shrink(),
+                )
             ),
             Positioned.fill(
               child: DecoratedBox(
@@ -3865,7 +3905,7 @@ class _ProfilePageState extends State<ProfilePage>
     final String imagePath =
     character.avatarPath.trim().isNotEmpty
         ? character.avatarPath
-        : 'assets/images/avatar1.png';
+        : 'assets/images/avatar1.webp';
 
     final int playCount = character.playCount;
     final int likesCount = character.likesCount;
@@ -3923,8 +3963,6 @@ class _ProfilePageState extends State<ProfilePage>
             ToastUtils.showCenterToast(
               context,
               message,
-              customIcon:
-              Icons.person_remove_rounded,
             );
           }
 
@@ -3948,8 +3986,6 @@ class _ProfilePageState extends State<ProfilePage>
             ToastUtils.showCenterToast(
               context,
               message,
-              customIcon:
-              Icons.manage_accounts_rounded,
             );
           }
         }
@@ -3997,14 +4033,7 @@ class _ProfilePageState extends State<ProfilePage>
                             .withValues(
                           alpha: 0.08,
                         ),
-                        child: Icon(
-                          Icons.person_rounded,
-                          size: 56,
-                          color: primaryColor
-                              .withValues(
-                            alpha: 0.4,
-                          ),
-                        ),
+                        child: const SizedBox.shrink(),
                       );
                     },
                   ),
@@ -4132,16 +4161,7 @@ class _ProfilePageState extends State<ProfilePage>
 
                   Row(
                     children: [
-                      Icon(
-                        Icons
-                            .play_circle_outline_rounded,
-                        size: 15,
-                        color: theme
-                            .colorScheme.onSurface
-                            .withValues(
-                          alpha: 0.5,
-                        ),
-                      ),
+
                       const SizedBox(width: 4),
                       Text(
                         _formatPoints(playCount),
@@ -4157,16 +4177,7 @@ class _ProfilePageState extends State<ProfilePage>
 
                       const Spacer(),
 
-                      Icon(
-                        Icons.favorite_border_rounded,
-                        size: 15,
-                        color: theme
-                            .colorScheme.onSurface
-                            .withValues(
-                          alpha: 0.5,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
+
                       Text(
                         _formatPoints(likesCount),
                         style: TextStyle(
@@ -4363,7 +4374,7 @@ class _ProfilePageState extends State<ProfilePage>
                 child: TextButton.icon(
                   onPressed: _showProfileAuthorSelectionSheet,
                   icon: _buildTintedProfileAsset(
-                    maskAsset: 'assets/images/profile/profile_quill_mask.png',
+                    maskAsset: 'assets/images/profile/profile_quill_mask.webp',
                     size: 22,
                     color: theme.colorScheme.primary,
                     opacity: 0.72,
@@ -4445,13 +4456,7 @@ class _ProfilePageState extends State<ProfilePage>
                       padding: const EdgeInsets.all(24),
                       children: [
                         const SizedBox(height: 60),
-                        Icon(
-                          Icons.error_outline_rounded,
-                          size: 56,
-                          color: theme.colorScheme.error
-                              .withValues(alpha: 0.6),
-                        ),
-                        const SizedBox(height: 16),
+
                         Text(
                           l10n.profilePageMomentsLoadFailed,
                           textAlign: TextAlign.center,
@@ -4517,13 +4522,7 @@ class _ProfilePageState extends State<ProfilePage>
                       padding: const EdgeInsets.all(24),
                       children: [
                         const SizedBox(height: 40),
-                        Icon(
-                          Icons.dynamic_feed_outlined,
-                          size: 56,
-                          color: theme.colorScheme.primary
-                              .withValues(alpha: 0.4),
-                        ),
-                        const SizedBox(height: 16),
+
                         Text(
                           emptyTitle,
                           textAlign: TextAlign.center,
@@ -4745,8 +4744,6 @@ class _ProfilePageState extends State<ProfilePage>
       ToastUtils.showCenterToast(
         context,
         l10n.profilePageMomentDeleted,
-        customIcon:
-        Icons.delete_outline_rounded,
       );
     } catch (e) {
       debugPrint('❌ 刪除動態失敗：$e');
@@ -4792,7 +4789,6 @@ class _ProfilePageState extends State<ProfilePage>
         ToastUtils.showCenterToast(
           context,
           l10n.task_social_tour_complete,
-          customIcon: Icons.tour_rounded,
         );
       }
     } catch (e) {
@@ -4856,27 +4852,28 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
+  // 個人主頁僅讀取既有 Player ID，絕不在登入或畫面初始化時產生並覆蓋 ID。
+  // 新帳號的 ID 配發必須由建立帳號流程負責，並同步維護 playerIDs 對照表。
   Future<void> _initializePlayerID() async {
-    if (_userId == null) return;
-    final prefs = await SharedPreferences.getInstance();
+    final uid = _userId;
+    if (uid == null) return;
 
-    final userDoc = await _db.collection('users').doc(_userId).get();
-    String? cloudID = userDoc.data()?['playerID'];
-
-    if (cloudID != null && cloudID.isNotEmpty) {
-      setState(() => _playerID = cloudID);
-      await prefs.setString('playerID', cloudID);
-    } else {
-      String newID = _generateRandomID(8);
-      try {
-        await _db.collection('users').doc(_userId).update({
-          'playerID': newID,
-        });
-        setState(() => _playerID = newID);
-        await prefs.setString('playerID', newID);
-      } catch (e) {
-        print("產生 PlayerID 失敗: $e");
+    try {
+      final userDoc = await _db.collection('users').doc(uid).get();
+      if (!userDoc.exists) return;
+      final cloudID = (userDoc.data()?['playerID'] ?? '').toString().trim();
+      if (cloudID.isEmpty) {
+        debugPrint('⚠️ 玩家 ID 尚未建立，個人主頁不會自動覆蓋：$uid');
+        return;
       }
+      if (!mounted || FirebaseAuth.instance.currentUser?.uid != uid) return;
+      setState(() => _playerID = cloudID);
+      final prefs = await SharedPreferences.getInstance();
+      if (FirebaseAuth.instance.currentUser?.uid == uid) {
+        await prefs.setString(_profileCacheKey(uid, 'playerID'), cloudID);
+      }
+    } catch (e) {
+      debugPrint('⚠️ 玩家 ID 讀取失敗，保留現有顯示且不寫入雲端：$e');
     }
   }
 
@@ -5190,6 +5187,20 @@ class _ProfilePageState extends State<ProfilePage>
     }
   }
 
+  Future<void> _createWorld() async {
+    final result = await Navigator.push<Map<String, dynamic>>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const WorldEditPage(),
+      ),
+    );
+
+    if (!mounted || result == null) return;
+    if (result['changed'] == true) {
+      await _refreshData();
+    }
+  }
+
   Widget _buildSectionTitle(String title) {
     return Text(title,
         style: GoogleFonts.notoSerifTc(
@@ -5456,8 +5467,6 @@ class _ProfilePageState extends State<ProfilePage>
               ToastUtils.showCenterToast(
                 context,
                 message,
-                customIcon:
-                Icons.person_remove_rounded,
               );
             }
 
@@ -5474,8 +5483,6 @@ class _ProfilePageState extends State<ProfilePage>
               ToastUtils.showCenterToast(
                 context,
                 message,
-                customIcon:
-                Icons.manage_accounts_rounded,
               );
             }
           }
@@ -5529,8 +5536,6 @@ class _ProfilePageState extends State<ProfilePage>
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.lock, color: Colors.amber),
-                  SizedBox(width: 8),
                   Text(l10n.chat_secret_file_title, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                 ],
               ),
@@ -5541,13 +5546,7 @@ class _ProfilePageState extends State<ProfilePage>
                 backgroundImage: avatarPath.isNotEmpty
                     ? getAvatarImageProvider(avatarPath)
                     : null,
-                child: avatarPath.isEmpty
-                    ? const Icon(
-                  Icons.person,
-                  color: Colors.grey,
-                  size: 40,
-                )
-                    : null,
+                child: null,
               ),
               const SizedBox(height: 16),
               Text(

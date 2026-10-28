@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:showcaseview/showcaseview.dart';
-
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 class ChatHeaderModeOption {
   final String id;
   final String label;
@@ -57,26 +57,26 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
 
   String _affectionStageAsset(int score) {
     if (score < 60) return 'assets/images/affection/affection_stage_1.png';
-    if (score < 150) return 'assets/images/affection/affection_stage_2.png';
-    if (score < 550) return 'assets/images/affection/affection_stage_3.png';
-    if (score < 1720) return 'assets/images/affection/affection_stage_4.png';
-    if (score < 2430) return 'assets/images/affection/affection_stage_5.png';
-    return 'assets/images/affection/affection_stage_6.png';
+    if (score < 150) return 'assets/images/affection/affection_stage_2.webp';
+    if (score < 550) return 'assets/images/affection/affection_stage_3.webp';
+    if (score < 1720) return 'assets/images/affection/affection_stage_4.webp';
+    if (score < 2430) return 'assets/images/affection/affection_stage_5.webp';
+    return 'assets/images/affection/affection_stage_6.webp';
   }
 
   String _legacyFlowerAsset(int score) {
-    if (score < 60) return 'assets/images/flower_stage_1.png';
-    if (score < 150) return 'assets/images/flower_stage_2.png';
-    if (score < 550) return 'assets/images/flower_stage_3.png';
-    if (score < 1720) return 'assets/images/flower_stage_4.png';
-    if (score < 2430) return 'assets/images/flower_stage_5.png';
-    return 'assets/images/flower_stage_6.png';
+    if (score < 60) return 'assets/images/flower_stage_1.webp';
+    if (score < 150) return 'assets/images/flower_stage_2.webp';
+    if (score < 550) return 'assets/images/flower_stage_3.webp';
+    if (score < 1720) return 'assets/images/flower_stage_4.webp';
+    if (score < 2430) return 'assets/images/flower_stage_5.webp';
+    return 'assets/images/flower_stage_6.webp';
   }
 
   String _giftFlowerAsset(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark
-        ? 'assets/images/flower_gift_dark.png'
-        : 'assets/images/flower_gift.png';
+        ? 'assets/images/flower_gift_dark.webp'
+        : 'assets/images/flower_gift.webp';
   }
 
   @override
@@ -85,7 +85,7 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
     final primary = theme.colorScheme.primary;
     final onSurface = theme.colorScheme.onSurface;
     final safeNextThreshold = nextThreshold <= 0 ? 1 : nextThreshold;
-
+    final l10n = AppLocalizations.of(context)!;
     return Material(
       color: theme.colorScheme.surface.withValues(alpha: 0.96),
       child: SafeArea(
@@ -152,11 +152,7 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
                           return Image.asset(
                             _legacyFlowerAsset(friendship),
                             fit: BoxFit.contain,
-                            errorBuilder: (_, __, ___) => Icon(
-                              Icons.eco_outlined,
-                              size: 14,
-                              color: primary.withValues(alpha: 0.72),
-                            ),
+                            errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                           );
                         },
                       ),
@@ -192,11 +188,7 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
                               child: Image.asset(
                                 _giftFlowerAsset(context),
                                 fit: BoxFit.contain,
-                                errorBuilder: (_, __, ___) => Icon(
-                                  Icons.local_florist_rounded,
-                                  size: 16,
-                                  color: primary.withValues(alpha: 0.82),
-                                ),
+                                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                               ),
                             ),
                             const SizedBox(width: 3),
@@ -223,8 +215,7 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
                     // 回覆模型：花花右側顯示目前模式；
                     // 展開後保留模式圖片，並把通話放在最下方。
                     PopupMenuButton<String>(
-                      tooltip: '回覆模型',
-                      initialValue: currentModeId,
+                      tooltip: l10n.reply_selection,                      initialValue: currentModeId,
                       onSelected: (value) {
                         if (value == '__call__') {
                           onCall();
@@ -257,21 +248,13 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
                                     width: 30,
                                     height: 30,
                                     child: option.asset == null
-                                        ? Icon(
-                                      option.fallbackIcon,
-                                      size: 21,
-                                      color: primary.withValues(alpha: 0.78),
-                                    )
+                                        ? const SizedBox.shrink()
                                         : Image.asset(
                                       option.asset!,
                                       fit: BoxFit.contain,
                                       color: primary,
                                       colorBlendMode: BlendMode.srcIn,
-                                      errorBuilder: (_, __, ___) => Icon(
-                                        option.fallbackIcon,
-                                        size: 21,
-                                        color: primary.withValues(alpha: 0.78),
-                                      ),
+                                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                                     ),
                                   ),
                                   const SizedBox(width: 10),
@@ -315,11 +298,7 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
                                     fit: BoxFit.contain,
                                     color: primary,
                                     colorBlendMode: BlendMode.srcIn,
-                                    errorBuilder: (_, __, ___) => Icon(
-                                      Icons.call_outlined,
-                                      size: 21,
-                                      color: primary.withValues(alpha: 0.78),
-                                    ),
+                                    errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                                   ),
                                 ),
                                 const SizedBox(width: 10),

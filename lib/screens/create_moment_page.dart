@@ -92,9 +92,6 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
       ToastUtils.showCenterToast(
         context,
         l10n.moment_create_error_empty,
-        customIcon: Icons.edit_note_rounded, // 💡 總裁精選：用「筆記/編輯」圖示，提醒玩家「輸入一點內容吧！」
-        // 💡 總裁秘技：若你想更強調「照片」的重要性，
-        // 使用 Icons.add_photo_alternate_rounded 也會非常有引導性喔！
       );
       return;
     }
@@ -264,7 +261,6 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
       ToastUtils.showCenterToast(
         context,
         l10n.moment_create_no_mentionable_characters,
-        customIcon: Icons.person_search_rounded,
       );
       return;
     }
@@ -291,25 +287,13 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
                     20,
                     14,
                   ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.alternate_email_rounded,
-                        color: Theme.of(sheetContext)
-                            .colorScheme
-                            .primary
-                            .withValues(alpha: 0.82),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        l10n.moment_create_mention_my_characters,
-                        style: GoogleFonts.notoSerifTc(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.8,
-                        ),
-                      ),
-                    ],
+                  child: Text(
+                    l10n.moment_create_mention_my_characters,
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.8,
+                    ),
                   ),
                 ),
 
@@ -871,10 +855,6 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
                 ),
               ),
             ),
-            trailing: const Icon(
-              Icons.alternate_email,
-              size: 18,
-            ),
             onTap: () {
               _selectMentionCharacter(
                 character,
@@ -950,7 +930,7 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
 
   // 終極防呆讀取器
   ImageProvider _getAvatarProvider(String path) {
-    if (path.isEmpty) return const AssetImage('assets/images/blank_avatar.png');
+    if (path.isEmpty) return const AssetImage('assets/images/blank_avatar.webp');
     if (path.startsWith('http')) return NetworkImage(path);
     if (path.startsWith('assets/')) return AssetImage(path);
 
@@ -958,7 +938,7 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
     if (file.existsSync()) {
       return FileImage(file);
     } else {
-      return const AssetImage('assets/images/avatar1.png');
+      return const AssetImage('assets/images/avatar1.webp');
     }
   }
 
@@ -1061,38 +1041,12 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
                       children: [
                         Row(
                           children: [
-                            Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                CircleAvatar(
-                                  radius: 28,
-                                  backgroundImage:
-                                  _getAvatarProvider(widget.authorAvatar),
-                                  backgroundColor:
-                                  primary.withValues(alpha: 0.08),
-                                ),
-                                Positioned(
-                                  right: -2,
-                                  bottom: -2,
-                                  child: Container(
-                                    width: 20,
-                                    height: 20,
-                                    decoration: BoxDecoration(
-                                      color: primary,
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: theme.scaffoldBackgroundColor,
-                                        width: 2,
-                                      ),
-                                    ),
-                                    child: const Icon(
-                                      Icons.edit_rounded,
-                                      size: 11,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                            CircleAvatar(
+                              radius: 28,
+                              backgroundImage:
+                              _getAvatarProvider(widget.authorAvatar),
+                              backgroundColor:
+                              primary.withValues(alpha: 0.08),
                             ),
                             const SizedBox(width: 14),
                             Expanded(
@@ -1114,15 +1068,6 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
                                   const SizedBox(height: 4),
                                   Row(
                                     children: [
-                                      Icon(
-                                        _isPublic
-                                            ? Icons.public_rounded
-                                            : Icons.lock_outline_rounded,
-                                        size: 14,
-                                        color:
-                                        primary.withValues(alpha: 0.62),
-                                      ),
-                                      const SizedBox(width: 5),
                                       Flexible(
                                         child: Text(
                                           _isPublic

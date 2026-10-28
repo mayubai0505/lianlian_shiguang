@@ -89,7 +89,6 @@ class RecommendationPageState extends State<RecommendationPage> {
   List<_RecommendationItem> _featuredItems = <_RecommendationItem>[];
   List<_RecommendationItem> _matchedItems = <_RecommendationItem>[];
   List<_RecommendationItem> _exploreItems = <_RecommendationItem>[];
-  final Set<String> _preloadedImageKeys = <String>{};
 
   _RecommendationPhaseInfo _phase = const _RecommendationPhaseInfo();
 
@@ -278,18 +277,8 @@ class RecommendationPageState extends State<RecommendationPage> {
         _errorMessage = null;
       });
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-
-        _precacheRecommendationImages(
-          context,
-          <_RecommendationItem>[
-            ...featured,
-            ...matchedPool,
-            ...exploreItems,
-          ],
-        );
-      });
+      // 首屏卡片由 Flutter 依可視範圍自行載入圖片。
+      // 不再同時預載所有推薦圖片，避免冷啟動時與首屏爭搶網路和解碼資源。
 
       loadStopwatch.stop();
       debugPrint(
@@ -301,7 +290,7 @@ class RecommendationPageState extends State<RecommendationPage> {
       if (!full && !_didScheduleFullRefresh) {
         _didScheduleFullRefresh = true;
 
-        Future<void>.delayed(const Duration(milliseconds: 350), () async {
+        Future<void>.delayed(const Duration(seconds: 3), () async {
           if (!mounted) return;
 
           try {
@@ -573,32 +562,6 @@ class RecommendationPageState extends State<RecommendationPage> {
     return character.avatarPath.trim();
   }
 
-  void _precacheRecommendationImages(
-      BuildContext context,
-      Iterable<_RecommendationItem> items,
-      ) {
-    for (final item in items) {
-      final imageUrl = _imageUrl(item.character).trim();
-      if (imageUrl.isEmpty) continue;
-
-      const cacheWidth = 720;
-      final cacheKey = '$cacheWidth::$imageUrl';
-      if (_preloadedImageKeys.contains(cacheKey)) continue;
-
-      _preloadedImageKeys.add(cacheKey);
-
-      final provider = _recommendationImageProvider(
-        imageUrl,
-        cacheWidth: cacheWidth,
-      );
-
-      precacheImage(provider, context).catchError((error) {
-        _preloadedImageKeys.remove(cacheKey);
-        debugPrint('預載推薦頁角色圖片失敗：$error');
-      });
-    }
-  }
-
   Future<void> _openCharacter(Character character) async {
     await _recordBehaviorInteraction(character);
 
@@ -692,12 +655,6 @@ class RecommendationPageState extends State<RecommendationPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.auto_awesome_outlined,
-                size: 52,
-                color: colors.primary.withValues(alpha: 0.55),
-              ),
-              const SizedBox(height: 16),
               Text(
                 _errorMessage!,
                 textAlign: TextAlign.center,
@@ -729,12 +686,6 @@ class RecommendationPageState extends State<RecommendationPage> {
           physics: const AlwaysScrollableScrollPhysics(),
           padding: EdgeInsets.fromLTRB(24, topInset + 48, 24, 40),
           children: [
-            Icon(
-              Icons.spa_outlined,
-              size: 48,
-              color: colors.primary.withValues(alpha: 0.30),
-            ),
-            const SizedBox(height: 16),
             Text(
               l10n.recommendation_empty,
               textAlign: TextAlign.center,
@@ -1114,7 +1065,7 @@ class _ActiveEventEntry extends StatelessWidget {
                                     spacing: 8,
                                     runSpacing: 4,
                                     children: [
-                                      _EventMiniPill(icon: Icons.schedule_rounded, label: _remaining(endAt)),
+                                      _EventMiniPill(label: _remaining(endAt)),
                                       _EventMiniPill(textIcon: currencyIcon, label: currencyName),
                                     ],
                                   ),
@@ -1149,11 +1100,10 @@ class _ActiveEventEntry extends StatelessWidget {
 }
 
 class _EventMiniPill extends StatelessWidget {
-  final IconData? icon;
   final String? textIcon;
   final String label;
 
-  const _EventMiniPill({this.icon, this.textIcon, required this.label});
+  const _EventMiniPill({this.textIcon, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -1167,10 +1117,7 @@ class _EventMiniPill extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (icon != null) ...[
-            Icon(icon, size: 13, color: colors.primary),
-            const SizedBox(width: 4),
-          ] else if ((textIcon ?? '').isNotEmpty) ...[
+          if ((textIcon ?? '').isNotEmpty) ...[
             Text(textIcon!, style: const TextStyle(fontSize: 12)),
             const SizedBox(width: 4),
           ],
@@ -1781,12 +1728,6 @@ class _ImageFallback {
     final colors = Theme.of(context).colorScheme;
     return Container(
       color: colors.primary.withValues(alpha: 0.05),
-      alignment: Alignment.center,
-      child: Icon(
-        Icons.person_outline_rounded,
-        size: 48,
-        color: colors.primary.withValues(alpha: 0.26),
-      ),
     );
   }
 
@@ -1794,12 +1735,6 @@ class _ImageFallback {
     final colors = Theme.of(context).colorScheme;
     return Container(
       color: colors.primary.withValues(alpha: 0.05),
-      alignment: Alignment.center,
-      child: Icon(
-        Icons.person_outline_rounded,
-        size: 38,
-        color: colors.primary.withValues(alpha: 0.26),
-      ),
     );
   }
 }

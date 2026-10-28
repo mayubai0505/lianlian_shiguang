@@ -164,8 +164,6 @@ class _MemoPageState extends State<MemoPage> {
       notificationGranted
           ? l10n.memo_saved_with_reminder(reminderCharacter.name)
           : l10n.memo_saved_without_notification,
-      customIcon:
-      Icons.notifications_active_outlined,
     );
     final pending =
     await ReminderNotificationService
@@ -362,8 +360,6 @@ class _MemoPageState extends State<MemoPage> {
       permissionGranted
           ? l10n.memo_updated_with_reminder(reminderCharacter.name)
           : l10n.memo_updated_without_notification,
-      customIcon:
-      Icons.notifications_active_outlined,
     );
   }
 
@@ -572,11 +568,7 @@ class _MemoPageState extends State<MemoPage> {
                 fit: BoxFit.contain,
                 color: primary,
                 colorBlendMode: BlendMode.srcIn,
-                errorBuilder: (_, __, ___) => Icon(
-                  Icons.menu_book_outlined,
-                  size: 82,
-                  color: primary,
-                ),
+                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
               ),
             ),
             const SizedBox(height: 26),
@@ -643,12 +635,6 @@ class _MemoPageState extends State<MemoPage> {
               const SizedBox(height: 14),
               Row(
                 children: [
-                  Icon(
-                    Icons.notifications_none_rounded,
-                    size: 16,
-                    color: primary.withValues(alpha: 0.68),
-                  ),
-                  const SizedBox(width: 6),
                   Expanded(
                     child: Text(
                       l10n.memo_reminder_date_display(
@@ -667,7 +653,7 @@ class _MemoPageState extends State<MemoPage> {
                       existingMemo: memo,
                     ),
                     icon: Image.asset(
-                      'assets/images/chat/chat_msg_edit_mask.png',
+                      'assets/images/chat/chat_msg_edit_mask.webp',
                       width: 28,
                       height: 28,
                       color: primary,
@@ -678,7 +664,7 @@ class _MemoPageState extends State<MemoPage> {
                     tooltip: l10n.delete_btn,
                     onPressed: () => _deleteMemo(memo.id),
                     icon: Image.asset(
-                      'assets/images/chat/chat_msg_delete_mask.png',
+                      'assets/images/chat/chat_msg_delete_mask.webp',
                       width: 28,
                       height: 28,
                       color: theme.colorScheme.error,

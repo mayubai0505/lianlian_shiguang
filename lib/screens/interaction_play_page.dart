@@ -21,12 +21,12 @@ class InteractionPlayPage extends StatelessWidget {
   });
 
   static const List<String> _giftAssets = [
-    'assets/images/chat/chat_gift_heart.png',
+    'assets/images/chat/chat_gift_heart.webp',
     'assets/images/chat/chat_gift_flower.png',
-    'assets/images/chat/chat_gift_sun.png',
-    'assets/images/chat/chat_gift_confetti.png',
-    'assets/images/chat/chat_menu_model_mask.png', // 咖啡：沿用既有素材
-    'assets/images/chat/chat_gift_cake.png',
+    'assets/images/chat/chat_gift_sun.webp',
+    'assets/images/chat/chat_gift_confetti.webp',
+    'assets/images/chat/chat_menu_model_mask.webp', // 咖啡：沿用既有素材
+    'assets/images/chat/chat_gift_cake.webp',
   ];
 
   @override
@@ -64,7 +64,7 @@ class InteractionPlayPage extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               _FeatureTile(
-                assetPath: 'assets/images/chat/chat_interaction_poke_cheek.png',
+                assetPath: 'assets/images/chat/chat_interaction_poke_cheek.webp',
                 title: l10n.chat_action_poke,
                 cost: '3',
                 primary: primary,
@@ -77,7 +77,7 @@ class InteractionPlayPage extends StatelessWidget {
               const SizedBox(height: 12),
 
               _FeatureTile(
-                assetPath: 'assets/images/chat/chat_interaction_hug.png',
+                assetPath: 'assets/images/chat/chat_interaction_hug.webp',
                 title: l10n.chat_action_hug,
                 cost: '3',
                 primary: primary,
@@ -90,7 +90,7 @@ class InteractionPlayPage extends StatelessWidget {
               const SizedBox(height: 12),
 
               _FeatureTile(
-                assetPath: 'assets/images/chat/chat_interaction_hold_hands.png',
+                assetPath: 'assets/images/chat/chat_interaction_hold_hands.webp',
                 title: l10n.chat_action_hand,
                 cost: '3',
                 primary: primary,
@@ -119,7 +119,7 @@ class InteractionPlayPage extends StatelessWidget {
                   final gift = gifts[index];
                   final asset = index < _giftAssets.length
                       ? _giftAssets[index]
-                      : 'assets/images/chat/chat_gift_heart.png';
+                      : 'assets/images/chat/chat_gift_heart.webp';
 
                   return _GiftCard(
                     assetPath: asset,
@@ -142,7 +142,7 @@ class InteractionPlayPage extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               _FeatureTile(
-                assetPath: 'assets/images/chat/chat_fun_location.png',
+                assetPath: 'assets/images/chat/chat_fun_location.webp',
                 title: l10n.chat_menu_send_location,
                 cost: '3',
                 primary: primary,
@@ -150,7 +150,7 @@ class InteractionPlayPage extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               _FeatureTile(
-                assetPath: 'assets/images/chat/chat_fun_dice.png',
+                assetPath: 'assets/images/chat/chat_fun_dice.webp',
                 title: l10n.chat_dice_btn,
                 cost: '3',
                 primary: primary,

@@ -1,3 +1,4 @@
+import '../services/tutorial_seen_sync.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,6 +8,7 @@ import 'package:provider/provider.dart'; // ✨ 引入 Provider
 import '../services/theme_notifier.dart'; // ✨ 引入主題背景
 import '../services/toast_utils.dart';
 import 'chat_page.dart';
+import 'world_chat_page.dart';
 import 'character_model.dart';
 import 'dart:async';
 import 'notification_list_page.dart'; // 記得根據妳的資料夾路徑調整
@@ -16,7 +18,7 @@ import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:showcaseview/showcaseview.dart'; // 🌟 記得加這行
 import 'package:shared_preferences/shared_preferences.dart';
-import '../services/reminder_notification_service.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 //聊天室的名稱更改
 class ChatHomePage extends StatefulWidget {
   const ChatHomePage({super.key});
@@ -28,6 +30,8 @@ class ChatHomePage extends StatefulWidget {
 class _ChatHomePageState extends State<ChatHomePage> {
   final User? _currentUser = FirebaseAuth.instance.currentUser;
   Stream<QuerySnapshot>? _sessionsStream;
+  Stream<QuerySnapshot>? _worldSessionsStream;
+  int _selectedChatCategory = 0; // 0：角色聊天，1：開放世界
   bool _isNavigatingToChat = false;
   bool _isOpeningTopAction = false;
   final String _appId = AppConfig.appId;
@@ -64,6 +68,15 @@ class _ChatHomePageState extends State<ChatHomePage> {
         'lastActivity',
         descending: true,
       )
+          .snapshots();
+
+      // 世界觀聊天室使用獨立資料集合，不混入既有角色聊天紀錄。
+      // 待 world_chat_page.dart / 後端正式建立房間後，這裡即會顯示紀錄。
+      _worldSessionsStream = FirebaseFirestore.instance
+          .collection('artifacts')
+          .doc(_appId)
+          .collection('world_chat_sessions')
+          .where('userId', isEqualTo: _currentUser.uid)
           .snapshots();
     }
 
@@ -236,7 +249,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
   Future<void> _checkChatHomeTutorial() async {
     final prefs = await SharedPreferences.getInstance();
     // 注意這裡的鑰匙名字不一樣喔！叫做 'seen_chat_home_tips'
-    bool hasSeen = prefs.getBool('seen_chat_home_tips') ?? false;
+    bool hasSeen = await TutorialSeenSync.hasSeen('seen_chat_home_tips');
 
     if (!hasSeen) {
       if (mounted) {
@@ -245,7 +258,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
         });
       }
       // ✍️ 寫下紀錄，下次不再打擾
-      await prefs.setBool('seen_chat_home_tips', true);
+      await TutorialSeenSync.markSeen('seen_chat_home_tips');
     }
   }
 
@@ -293,13 +306,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: Row(
-            children: [
-              const Icon(Icons.edit_note, color: Colors.blueGrey),
-              const SizedBox(width: 8),
-              Text(l10n.rename_chat_title),
-            ],
-          ),
+          title: Text(l10n.rename_chat_title),
           content: TextField(
             controller: nameController,
             autofocus: true,
@@ -342,7 +349,6 @@ class _ChatHomePageState extends State<ChatHomePage> {
           ToastUtils.showCenterToast(
             context,
             l10n.room_name_updated,
-            customIcon: Icons.drive_file_rename_outline_rounded, // 💡 總裁精選：對應「修改名稱」的畫筆圖示
           );
         }
       } catch (e) {
@@ -350,7 +356,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
         if (mounted) {
           ToastUtils.showCenterToast(
             context,
-            l10n.update_failed(e.toString()),
+            l10n.chat_home_world_error_generic,
             isError: true, // 💡 使用統一的紅驚嘆號，清楚標示錯誤
           );
         }
@@ -402,14 +408,13 @@ class _ChatHomePageState extends State<ChatHomePage> {
       ToastUtils.showCenterToast(
         context,
         l10n.delete_success,
-        customIcon: Icons.delete_outline_rounded,
       );
     } catch (e) {
       if (!mounted) return;
 
       ToastUtils.showCenterToast(
         context,
-        l10n.update_failed(e.toString()),
+        l10n.chat_home_world_error_generic,
         isError: true,
       );
     }
@@ -501,7 +506,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
       if (!mounted) return;
       ToastUtils.showCenterToast(
         context,
-        l10n.chat_home_pin_update_failed(e.toString()),
+        l10n.chat_home_world_error_generic,
         isError: true,
       );
     }
@@ -567,7 +572,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
                 ListTile(
                   minLeadingWidth: 34,
                   leading: optionIcon(
-                    'assets/images/chat/chat_pin_bookmark.png',
+                    'assets/images/chat/chat_pin_bookmark.webp',
                     color: primary,
                   ),
                   title: Text(
@@ -585,7 +590,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
                 ListTile(
                   minLeadingWidth: 34,
                   leading: optionIcon(
-                    'assets/images/profile/profile_quill.png',
+                    'assets/images/profile/profile_quill.webp',
                     color: primary,
                   ),
                   title: Text(
@@ -600,7 +605,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
                 ListTile(
                   minLeadingWidth: 34,
                   leading: optionIcon(
-                    'assets/images/chat/chat_msg_delete_mask.png',
+                    'assets/images/chat/chat_msg_delete_mask.webp',
                     color: Colors.redAccent,
                   ),
                   title: Text(
@@ -822,6 +827,314 @@ class _ChatHomePageState extends State<ChatHomePage> {
   }
 
 
+  // ── 世界觀聊天室卡片長按操作（由後端驗證房間所屬玩家） ──
+  Future<void> _manageWorldRoom(String worldId, String sessionId, String action, {
+    String? name,
+    bool? pinned,
+  }) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      if (worldId.trim().isEmpty) throw StateError('世界觀 ID 不正確');
+      await FirebaseFunctions.instanceFor(region: 'asia-east1')
+          .httpsCallable('worldPrivateTest',
+          options: HttpsCallableOptions(timeout: const Duration(seconds: 90)))
+          .call(<String, dynamic>{
+        'worldId': worldId,
+        'sessionId': sessionId,
+        'action': action,
+        if (name != null) 'roomName': name,
+        if (pinned != null) 'pinned': pinned,
+      });
+      if (!mounted) return;
+      final message = switch (action) {
+        'renameRoom' => l10n.room_name_updated,
+        'pinRoom' => pinned == true ? l10n.chat_home_world_pinned : l10n.chat_home_unpinned_success,
+        'deleteRoom' => l10n.chat_home_world_deleted,
+        _ => l10n.chat_home_world_action_done,
+      };
+      ToastUtils.showCenterToast(context, message);
+    } on FirebaseFunctionsException catch (e) {
+      debugPrint('世界聊天室操作失敗：${e.code} ${e.message}');
+      if (mounted) ToastUtils.showCenterToast(context,
+          l10n.chat_home_world_error_generic, isError: true);
+    } catch (e) {
+      debugPrint('世界聊天室操作失敗：$e');
+      if (mounted) ToastUtils.showCenterToast(context,
+          l10n.chat_home_world_error_generic, isError: true);
+    }
+  }
+
+  Future<void> _renameWorldRoom(String worldId, String sessionId, String currentName) async {
+    final l10n = AppLocalizations.of(context)!;
+    final controller = TextEditingController(text: currentName);
+    try {
+      final name = await showDialog<String>(context: context, builder: (ctx) =>
+          AlertDialog(
+            title: Text(l10n.chat_home_world_rename_title),
+            content: TextField(controller: controller, autofocus: true,
+                maxLength: 20,
+                decoration: InputDecoration(hintText: l10n.rename_chat_hint)),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(ctx),
+                  child: Text(l10n.cancelButton)),
+              FilledButton(onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+                  child: Text(l10n.save_tag_btn)),
+            ],
+          ));
+      if (name == null || name.isEmpty || name == currentName) return;
+      await _manageWorldRoom(worldId, sessionId, 'renameRoom', name: name);
+    } finally {
+      controller.dispose();
+    }
+  }
+
+  Future<void> _deleteWorldRoom(String worldId, String sessionId, String displayName) async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(l10n.confirm_delete_title),
+          content: Text(l10n.chat_home_world_delete_confirm(displayName)),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx, false),
+                child: Text(l10n.cancelButton)),
+            TextButton(onPressed: () => Navigator.pop(ctx, true),
+                child: Text(l10n.delete_btn, style: const TextStyle(color: Colors.red))),
+          ],
+        ));
+    if (confirmed == true) await _manageWorldRoom(worldId, sessionId, 'deleteRoom');
+  }
+
+  Future<void> _showWorldRoomOptions({
+    required String worldId,
+    required String sessionId,
+    required String displayRoomName,
+    required bool isPinned,
+  }) async {
+    if (worldId.isEmpty) return;
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: theme.scaffoldBackgroundColor,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(26))),
+      builder: (sheetContext) => SafeArea(child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 12, 10, 18),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Container(width: 42, height: 4,
+              margin: const EdgeInsets.only(bottom: 12),
+              decoration: BoxDecoration(
+                  color: theme.colorScheme.onSurface.withValues(alpha: .14),
+                  borderRadius: BorderRadius.circular(99))),
+          ListTile(
+            minLeadingWidth: 34,
+            leading: Image.asset('assets/images/chat/chat_pin_bookmark.webp',
+                width: 32, height: 32, color: primary),
+            title: Text(isPinned ? l10n.chat_home_unpin : l10n.chat_home_pin,
+                style: GoogleFonts.notoSerifTc(fontSize: 16, color: primary)),
+            onTap: () { Navigator.pop(sheetContext);
+            _manageWorldRoom(worldId, sessionId, 'pinRoom', pinned: !isPinned); },
+          ),
+          ListTile(
+            minLeadingWidth: 34,
+            leading: Image.asset('assets/images/profile/profile_quill.webp',
+                width: 32, height: 32, color: primary),
+            title: Text(l10n.chat_home_world_rename_title,
+                style: GoogleFonts.notoSerifTc(fontSize: 16)),
+            onTap: () { Navigator.pop(sheetContext);
+            _renameWorldRoom(worldId, sessionId, displayRoomName); },
+          ),
+          ListTile(
+            minLeadingWidth: 34,
+            leading: Image.asset('assets/images/chat/chat_msg_delete_mask.webp',
+                width: 32, height: 32, color: Colors.redAccent),
+            title: Text(l10n.delete_btn, style: GoogleFonts.notoSerifTc(
+                fontSize: 16, color: Colors.redAccent)),
+            onTap: () { Navigator.pop(sheetContext);
+            _deleteWorldRoom(worldId, sessionId, displayRoomName); },
+          ),
+        ]),
+      )),
+    );
+  }
+
+  // ── 開放世界聊天：獨立列表 ──
+  // 不直接呼叫 ChatPage：ChatPage 必須接收 Character，無法正確承載多 NPC 世界。
+  Widget _buildWorldSessionsSliver(ThemeData theme) {
+    final l10n = AppLocalizations.of(context)!;
+    return StreamBuilder<QuerySnapshot>(
+      stream: _worldSessionsStream,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SliverFillRemaining(
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+        if (snapshot.hasError) {
+          return SliverFillRemaining(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(l10n.chat_home_world_error_generic,
+                    textAlign: TextAlign.center),
+              ),
+            ),
+          );
+        }
+
+        final docs = List<QueryDocumentSnapshot>.from(
+          snapshot.data?.docs ?? <QueryDocumentSnapshot>[],
+        );
+        docs.sort((a, b) {
+          final aData = a.data() as Map<String, dynamic>;
+          final bData = b.data() as Map<String, dynamic>;
+          final ap = aData['isPinned'] == true;
+          final bp = bData['isPinned'] == true;
+          if (ap != bp) return ap ? -1 : 1;
+          final aTime = aData['lastActivity'] as Timestamp?;
+          final bTime = bData['lastActivity'] as Timestamp?;
+          if (aTime == null && bTime == null) return 0;
+          if (aTime == null) return 1;
+          if (bTime == null) return -1;
+          return bTime.compareTo(aTime);
+        });
+
+        if (docs.isEmpty) {
+          return SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.public_rounded, size: 58,
+                        color: theme.colorScheme.primary.withValues(alpha: 0.38)),
+                    const SizedBox(height: 14),
+                    Text(l10n.chat_home_world_empty_title,
+                        style: GoogleFonts.notoSerifTc(fontSize: 17,
+                            color: theme.colorScheme.onSurface)),
+                    const SizedBox(height: 8),
+                    Text(l10n.chat_home_world_empty_desc,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 12,
+                            color: theme.colorScheme.onSurfaceVariant)),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+
+        return SliverPadding(
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
+          sliver: SliverList(
+            delegate: SliverChildBuilderDelegate((context, index) {
+              final data = docs[index].data() as Map<String, dynamic>;
+              final name = (data['customRoomName'] ?? data['worldName'] ?? l10n.chat_home_world_unnamed)
+                  .toString();
+              final cover = (data['coverImage'] ?? data['worldCoverImage'] ?? '')
+                  .toString().trim();
+              final preview = (data['lastMessage'] ?? '').toString();
+              final isTest = data['entrySource'] == 'public'
+                  ? false
+                  : (data['entrySource'] == 'private' ||
+                  data['isTestMode'] == true || data['isPrivateTest'] == true);
+              final worldId = (data['worldId'] ?? '').toString();
+              final worldPinned = data['isPinned'] == true;
+              return Card(
+                margin: const EdgeInsets.only(bottom: 12),
+                color: theme.cardColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  side: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.13)),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onLongPress: () => _showWorldRoomOptions(
+                      worldId: worldId, sessionId: docs[index].id,
+                      displayRoomName: name, isPinned: worldPinned),
+                  onTap: () {
+                    final worldId = (data['worldId'] ?? '').toString();
+                    if (worldId.isEmpty) return;
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (_) => WorldChatPage(worldId: worldId, sessionId: docs[index].id),
+                    ));
+                  },
+                  child: Stack(
+                      children: [
+                        if (worldPinned)
+                          Positioned(
+                            left: 10,
+                            top: 0,
+                            child: Image.asset(
+                              'assets/images/chat/chat_pin_bookmark.webp',
+                              width: 28,
+                              height: 36,
+                              fit: BoxFit.contain,
+                              color: theme.colorScheme.primary.withValues(alpha: 0.82),
+                              colorBlendMode: BlendMode.srcIn,
+                            ),
+                          ),
+                        Padding(
+                          padding: const EdgeInsets.all(14),
+                          child: Row(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(14),
+                                child: SizedBox(
+                                  width: 60,
+                                  height: 60,
+                                  child: cover.startsWith('https://') || cover.startsWith('http://')
+                                      ? CachedNetworkImage(
+                                    imageUrl: cover,
+                                    fit: BoxFit.cover,
+                                    errorWidget: (_, __, ___) => Icon(Icons.public_rounded,
+                                        color: theme.colorScheme.primary),
+                                  )
+                                      : ColoredBox(
+                                    color: theme.colorScheme.primary.withValues(alpha: 0.09),
+                                    child: Icon(Icons.public_rounded,
+                                        color: theme.colorScheme.primary),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(name, maxLines: 1, overflow: TextOverflow.ellipsis,
+                                        style: GoogleFonts.notoSerifTc(fontSize: 16,
+                                            fontWeight: FontWeight.w600)),
+                                    const SizedBox(height: 4),
+                                    Text(isTest ? l10n.chat_home_world_private_test : l10n.chat_home_world_tab,
+                                        style: TextStyle(fontSize: 11,
+                                            color: theme.colorScheme.primary)),
+                                    const SizedBox(height: 5),
+                                    Text(preview.isEmpty ? l10n.chat_home_world_no_messages : preview,
+                                        maxLines: 1, overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(fontSize: 12,
+                                            color: theme.colorScheme.onSurfaceVariant)),
+                                  ],
+                                ),
+                              ),
+                              Icon(Icons.chevron_right_rounded,
+                                  color: theme.colorScheme.onSurfaceVariant),
+                            ],
+                          ),
+                        ),
+                      ]),
+                ),
+              );
+            }, childCount: docs.length),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -914,7 +1227,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
                                   child: Transform.scale(
                                     scale: 1.0,
                                     child: Image.asset(
-                                      'assets/images/chat/chat_header_paper_plane.png',
+                                      'assets/images/chat/chat_header_paper_plane.webp',
                                       width: 36,
                                       height: 36,
                                       color: theme.colorScheme.primary,
@@ -931,12 +1244,38 @@ class _ChatHomePageState extends State<ChatHomePage> {
                       ],
                     ),
 
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: SegmentedButton<int>(
+                                showSelectedIcon: false,
+                                segments: [
+                                  ButtonSegment(value: 0, label: Text(l10n.chat_home_character_tab)),
+                                  ButtonSegment(value: 1, label: Text(l10n.chat_home_world_tab)),
+                                ],
+                                selected: <int>{_selectedChatCategory},
+                                onSelectionChanged: (selection) {
+                                  if (selection.isNotEmpty) {
+                                    setState(() => _selectedChatCategory = selection.first);
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                     // ✨ 4. 處理聊天列表與各種狀態
                     _currentUser == null
                     // 在 Sliver 裡面，要置中畫面必須用 SliverFillRemaining 包起來
                         ? SliverFillRemaining(
                       child: Center(child: Text(l10n.login_to_view_chat)),
                     )
+                        : _selectedChatCategory == 1
+                        ? _buildWorldSessionsSliver(theme)
                         : StreamBuilder<QuerySnapshot>(
                       stream: _sessionsStream,
                       builder: (context, snapshot) {
@@ -947,7 +1286,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
                         }
                         if (snapshot.hasError) {
                           return SliverFillRemaining(
-                            child: Center(child: Text(l10n.load_chat_failed(snapshot.error.toString()))),
+                            child: Center(child: Text(l10n.chat_home_world_error_generic)),
                           );
                         }
                         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
@@ -1088,7 +1427,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
                                               left: 10,
                                               top: 0,
                                               child: Image.asset(
-                                                'assets/images/chat/chat_pin_bookmark.png',
+                                                'assets/images/chat/chat_pin_bookmark.webp',
                                                 width: 28,
                                                 height: 36,
                                                 fit: BoxFit.contain,

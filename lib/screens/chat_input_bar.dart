@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:showcaseview/showcaseview.dart';
 import 'package:lianlian_shiguang/l10n/app_l10n.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+
 
 class ChatInputBar extends StatefulWidget {
   final TextEditingController controller;
@@ -112,6 +114,7 @@ class _ChatInputBarState extends State<ChatInputBar>
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
     final disabled = widget.isGenerating || widget.isLoading;
+    final l10n = AppLocalizations.of(context)!;
 
     final bool showFullToolButtons =
         !widget.focusNode.hasFocus || _toolsExpandedWhileFocused;
@@ -146,7 +149,7 @@ class _ChatInputBarState extends State<ChatInputBar>
                     _BareIconButton(
                       tooltip: 'Tools',
                       asset:
-                      'assets/images/chat/chat_more_cloud_mask.png',
+                      'assets/images/chat/chat_more_cloud_mask.webp',
                       assetSize: 30,
                       onPressed:
                       disabled ? null : widget.onToolbox,
@@ -183,7 +186,7 @@ class _ChatInputBarState extends State<ChatInputBar>
                       child: _BareIconButton(
                         tooltip: widget.continueTooltip,
                         asset:
-                        'assets/images/chat/chat_continue_vine_mask.png',
+                        'assets/images/chat/chat_continue_vine_mask.webp',
                         assetSize: 30,
                         onPressed:
                         disabled ? null : widget.onContinue,
@@ -192,7 +195,7 @@ class _ChatInputBarState extends State<ChatInputBar>
                         : _BareIconButton(
                       tooltip: widget.continueTooltip,
                       asset:
-                      'assets/images/chat/chat_continue_vine_mask.png',
+                      'assets/images/chat/chat_continue_vine_mask.webp',
                       assetSize: 30,
                       onPressed:
                       disabled ? null : widget.onContinue,
@@ -201,8 +204,7 @@ class _ChatInputBarState extends State<ChatInputBar>
                 )
                     : _BareIconButton(
                   key: const ValueKey('expand-chat-tools'),
-                  tooltip: '展開功能',
-                  icon: Icons.chevron_right_rounded,
+                  tooltip: l10n.expand_features,                  icon: Icons.chevron_right_rounded,
                   iconSize: 29,
                   onPressed: disabled ? null : _expandTools,
                 ),
@@ -303,7 +305,7 @@ class _ChatInputBarState extends State<ChatInputBar>
                     ? null
                     : (widget.focusNode.hasFocus &&
                     !_toolsExpandedWhileFocused)
-                    ? 'assets/images/chat/chat_send_plane_mask.png'
+                    ? 'assets/images/chat/chat_send_plane_mask.webp'
                     : 'assets/icons/icon_chat_sticker.png',
                 assetSize: 30,
                 iconSize: widget.isGenerating ? 25 : 27,

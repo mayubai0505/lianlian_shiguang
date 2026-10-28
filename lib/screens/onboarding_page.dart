@@ -32,11 +32,7 @@ class OnboardingPage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // ✨ 1. 增加一點神祕感的頂部裝飾
-                  Icon(Icons.auto_awesome, color: primaryColor.withOpacity(0.6), size: 40),
-                  const SizedBox(height: 18),
-
-                  // ✨ 2. 像邀請函一樣的卡片設計
+                  // ✨ 像邀請函一樣的卡片設計
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
@@ -94,7 +90,7 @@ class OnboardingPage extends StatelessWidget {
                                 color: primaryColor.withOpacity(0.1),
                               ),
                             ),
-                            Image.asset('assets/images/flower_gift.png', height: 100),
+                            Image.asset('assets/images/flower_gift.webp', height: 100),
                           ],
                         ),
 

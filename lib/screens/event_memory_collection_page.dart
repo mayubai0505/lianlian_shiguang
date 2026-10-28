@@ -17,6 +17,7 @@ import '../services/app_constants.dart';
 import '../services/toast_utils.dart';
 import '../utils/image_utils.dart';
 import 'package:lianlian_shiguang/l10n/app_l10n.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 //拾光檔案
 
@@ -109,7 +110,7 @@ class _EventMemoryCollectionPageState
             actions: [
               FilledButton(
                 onPressed: () => Navigator.of(dialogContext).pop(),
-                child: const Text('知道了'),
+                child: Text(AppLocalizations.of(dialogContext)!.memory_collection_got_it1),
               ),
             ],
           );
@@ -167,7 +168,7 @@ class _EventMemoryCollectionPageState
 
     if (user == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('拾光收藏')),
+        appBar: AppBar(title: Text(AppLocalizations.of(context)!.memory_collection_title1)),
         body: Center(child: Text(appL10n.event_memory_collection_text_collection_login)),
       );
     }
@@ -177,7 +178,7 @@ class _EventMemoryCollectionPageState
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            '拾光收藏',
+            AppLocalizations.of(context)!.memory_collection_title1,
             style: GoogleFonts.notoSerifTc(fontWeight: FontWeight.w700),
           ),
           bottom: TabBar(
@@ -193,8 +194,8 @@ class _EventMemoryCollectionPageState
             indicatorSize: TabBarIndicatorSize.label,
             tabs: [
               Tab(text: appL10n.event_memory_collection_message_memory),
-              Tab(text: '頭像框'),
-              Tab(text: '貼紙'),
+              Tab(text: AppLocalizations.of(context)!.memory_collection_avatar_frames1),
+              Tab(text: AppLocalizations.of(context)!.memory_collection_stickers1),
               Tab(text: appL10n.event_memory_collection_message_chat_background),
             ],
           ),
@@ -251,7 +252,7 @@ class _MemoryCollectionTab extends StatelessWidget {
         if (snapshot.hasError) {
           return _CollectionState(
             title: appL10n.event_memory_collection_tab_title_collection_temporary,
-            subtitle: '請稍後再試一次。',
+            subtitle: AppLocalizations.of(context)!.memory_collection_try_again1,
           );
         }
 
@@ -282,7 +283,7 @@ class _MemoryCollectionTab extends StatelessWidget {
                 child: Row(
                   children: [
                     Text(
-                      '回憶',
+                      AppLocalizations.of(context)!.memory_collection_memories1,
                       style: GoogleFonts.notoSerifTc(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
@@ -360,9 +361,9 @@ class _EventItemCollectionTab extends StatelessWidget {
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return const _CollectionState(
-            title: '暫時讀不到收藏',
-            subtitle: '請稍後再試一次。',
+          return _CollectionState(
+            title: AppLocalizations.of(context)!.memory_collection_error1,
+            subtitle: AppLocalizations.of(context)!.memory_collection_try_again1,
           );
         }
 
@@ -457,11 +458,11 @@ class _EventItemCardState extends State<_EventItemCard> {
           item.itemType == 'scene_background';
 
   String get _itemTypeLabel {
-    if (item.itemType == 'avatar_frame') return '頭像框';
+    if (item.itemType == 'avatar_frame') return AppLocalizations.of(context)!.memory_collection_avatar_frames1;
     if (item.itemType == 'background' ||
         item.itemType == 'chat_background' ||
         item.itemType == 'scene_background') {
-      return '聊天室背景';
+      return AppLocalizations.of(context)!.memory_collection_chat_background1;
     }
     return appL10n.event_memory_collection_item_card_label;
   }
@@ -499,11 +500,11 @@ class _EventItemCardState extends State<_EventItemCard> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('先不要'),
+              child: Text(AppLocalizations.of(dialogContext)!.memory_collection_not_now1),
             ),
             FilledButton(
               onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: const Text('確定刪除'),
+              child: Text(AppLocalizations.of(dialogContext)!.memory_collection_confirm_delete1),
             ),
           ],
         );
@@ -552,7 +553,6 @@ class _EventItemCardState extends State<_EventItemCard> {
       ToastUtils.showCenterToast(
         context,
         appL10n.event_memory_collection_confirm_delete_owned_item_message_delete_variant_c,
-        customIcon: Icons.delete_outline_rounded,
       );
     } on FirebaseFunctionsException catch (e) {
       debugPrint(
@@ -561,12 +561,12 @@ class _EventItemCardState extends State<_EventItemCard> {
 
       if (!mounted) return;
 
-      String message = e.message ?? '刪除失敗，請稍後再試';
+      String message = AppLocalizations.of(context)!.memory_collection_error1;
 
       if (e.code == 'not-found') {
-        message = appL10n.event_memory_collection_confirm_delete_owned_item_message_not_found_delete;
+        message = AppLocalizations.of(context)!.memory_collection_error1;
       } else if (e.code == 'failed-precondition') {
-        message = e.message ?? appL10n.event_memory_collection_confirm_delete_owned_item_message_collection_current_delete;
+        message = AppLocalizations.of(context)!.memory_collection_error1;
       }
 
       ToastUtils.showCenterToast(
@@ -581,7 +581,7 @@ class _EventItemCardState extends State<_EventItemCard> {
 
       ToastUtils.showCenterToast(
         context,
-        '刪除失敗，請稍後再試',
+        AppLocalizations.of(context)!.memory_collection_error1,
         isError: true,
       );
     } finally {
@@ -621,7 +621,7 @@ class _EventItemCardState extends State<_EventItemCard> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: IconButton(
-                      tooltip: '關閉',
+                      tooltip: AppLocalizations.of(dialogContext)!.memory_collection_close1,
                       onPressed: () => Navigator.of(dialogContext).pop(),
                       icon: const Icon(Icons.close_rounded),
                     ),
@@ -716,7 +716,7 @@ class _EventItemCardState extends State<_EventItemCard> {
                         ),
                       )
                           : const Icon(Icons.delete_outline_rounded),
-                      label: const Text('刪除'),
+                      label: Text(AppLocalizations.of(dialogContext)!.memory_collection_delete1),
                       style: TextButton.styleFrom(
                         foregroundColor: theme.colorScheme.error,
                       ),
@@ -765,7 +765,7 @@ class _EventItemCardState extends State<_EventItemCard> {
                   child: provider == null
                       ? Center(
                     child: Text(
-                      '圖片準備中',
+                      AppLocalizations.of(context)!.memory_collection_image_preparing1,
                       style: GoogleFonts.notoSerifTc(
                         fontSize: 11,
                         color: theme.colorScheme.onSurface
@@ -778,7 +778,7 @@ class _EventItemCardState extends State<_EventItemCard> {
                     fit: BoxFit.contain,
                     errorBuilder: (_, __, ___) => Center(
                       child: Text(
-                        '圖片載入失敗',
+                        AppLocalizations.of(context)!.memory_collection_error1,
                         style: GoogleFonts.notoSerifTc(
                           fontSize: 11,
                           color: theme.colorScheme.onSurface
@@ -1050,7 +1050,6 @@ class _EventMemoryCollectionDetailPageState
       ToastUtils.showCenterToast(
         context,
         appL10n.event_memory_collection_save_to_gallery_message_save,
-        customIcon: Icons.photo_library_rounded,
       );
     } on GalException catch (e) {
       debugPrint('❌ 收藏回憶儲存失敗：${e.type}');
@@ -1065,7 +1064,7 @@ class _EventMemoryCollectionDetailPageState
       if (!mounted) return;
       ToastUtils.showCenterToast(
         context,
-        '儲存失敗，請稍後再試',
+        AppLocalizations.of(context)!.memory_collection_error1,
         isError: true,
       );
     } finally {
@@ -1091,11 +1090,11 @@ class _EventMemoryCollectionDetailPageState
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('先不要'),
+              child: Text(AppLocalizations.of(dialogContext)!.memory_collection_not_now1),
             ),
             FilledButton(
               onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: const Text('取消收藏'),
+              child: Text(AppLocalizations.of(dialogContext)!.memory_collection_remove_favorite1),
             ),
           ],
         );
@@ -1112,8 +1111,7 @@ class _EventMemoryCollectionDetailPageState
       if (!mounted) return;
       ToastUtils.showCenterToast(
         context,
-        '已取消收藏',
-        customIcon: Icons.bookmark_remove_rounded,
+        AppLocalizations.of(context)!.memory_collection_removed1,
       );
       Navigator.of(context).pop();
     } catch (e) {
@@ -1199,7 +1197,7 @@ class _EventMemoryCollectionDetailPageState
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
                   : const Icon(Icons.bookmark_remove_outlined),
-              label: const Text('取消收藏'),
+              label: Text(AppLocalizations.of(context)!.memory_collection_remove_favorite1),
               style: TextButton.styleFrom(
                 foregroundColor: theme.colorScheme.error,
                 minimumSize: const Size.fromHeight(46),
@@ -1671,22 +1669,12 @@ class _CollectedMemoryReplayPageState extends State<_CollectedMemoryReplayPage>
                             const SizedBox(height: 8),
                           ],
                           if (scene.type == 'ending') ...[
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.auto_awesome_rounded,
-                                  color: Colors.white70,
-                                  size: 16,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  '回憶',
-                                  style: GoogleFonts.notoSerifTc(
-                                    color: Colors.white70,
-                                    fontSize: 11,
-                                  ),
-                                ),
-                              ],
+                            Text(
+                              AppLocalizations.of(context)!.memory_collection_memories1,
+                              style: GoogleFonts.notoSerifTc(
+                                color: Colors.white70,
+                                fontSize: 11,
+                              ),
                             ),
                             const SizedBox(height: 8),
                           ],

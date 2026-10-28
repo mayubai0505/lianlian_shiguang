@@ -32,7 +32,7 @@ class _SplashLoadingScreenState extends State<SplashLoadingScreen> {
       // 1. 下令 Flutter：先把這兩張圖給我解碼，放進記憶體等著！
       await Future.wait([
         precacheImage(const AssetImage('assets/images/splash_bg_only.png'), context),
-        precacheImage(const AssetImage('assets/images/butterfly_transparent.png'), context),
+        precacheImage(const AssetImage('assets/images/butterfly_transparent.webp'), context),
       ]);
     } catch (e) {
       debugPrint("圖片預載失敗: $e");
@@ -67,7 +67,7 @@ class _SplashLoadingScreenState extends State<SplashLoadingScreen> {
             // 🦋 第一層：絕對置中的蝴蝶
             Center(
               child: Image.asset(
-                'assets/images/butterfly_transparent.png',
+                'assets/images/butterfly_transparent.webp',
                 // 這裡的數字可以微調，讓它跟原生畫面的蝴蝶大小一模一樣
                 width: 250,
               ),

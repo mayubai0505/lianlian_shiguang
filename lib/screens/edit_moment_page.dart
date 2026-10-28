@@ -67,7 +67,6 @@ class _EditMomentPageState extends State<EditMomentPage> {
       ToastUtils.showCenterToast(
         context,
         l10n.common_no_changes,
-        customIcon: Icons.history_edu_rounded,
       );
 
       if (!mounted) return;

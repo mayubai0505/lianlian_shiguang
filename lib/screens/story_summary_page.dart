@@ -94,9 +94,6 @@ class _StorySummaryPageState extends State<StorySummaryPage> {
       ToastUtils.showCenterToast(
         context,
         AppLocalizations.of(context)!.story_summary_deleted_toast,
-        // 💡 總裁精選：使用 Icons.delete_outline_rounded，帶有「整理與刪除」的意象
-        // 若想強調故事的「文稿」屬性，Icons.description_rounded 配上刪除意象也很有質感
-        customIcon: Icons.delete_outline_rounded,
       );
     }
   }
@@ -136,9 +133,6 @@ class _StorySummaryPageState extends State<StorySummaryPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.auto_stories_outlined, size: 80,
-                        color: colorScheme.outline.withValues(alpha:0.5)),
-                    SizedBox(height: 16),
                     Text(l10n.story_summary_empty_list(widget.character.name),
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodyMedium?.copyWith(
@@ -356,7 +350,7 @@ class _StorySummaryPageState extends State<StorySummaryPage> {
                             ),
                             PopupMenuButton<String>(
                               icon: Image.asset(
-                                'assets/images/chat/chat_msg_edit_mask.png',
+                                'assets/images/chat/chat_msg_edit_mask.webp',
                                 width: 24,
                                 height: 24,
                                 fit: BoxFit.contain,
@@ -376,7 +370,7 @@ class _StorySummaryPageState extends State<StorySummaryPage> {
                                   child: Row(
                                     children: [
                                       Image.asset(
-                                        'assets/images/chat/chat_msg_edit_mask.png',
+                                        'assets/images/chat/chat_msg_edit_mask.webp',
                                         width: 20,
                                         height: 20,
                                         fit: BoxFit.contain,
@@ -393,7 +387,7 @@ class _StorySummaryPageState extends State<StorySummaryPage> {
                                   child: Row(
                                     children: [
                                       Image.asset(
-                                        'assets/images/chat/chat_msg_delete_mask.png',
+                                        'assets/images/chat/chat_msg_delete_mask.webp',
                                         width: 20,
                                         height: 20,
                                         fit: BoxFit.contain,

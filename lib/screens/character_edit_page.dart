@@ -31,7 +31,8 @@ import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 class CharacterEditPage extends StatefulWidget {
   final DocumentSnapshot? draftDoc;
   final Character? character;
-  const CharacterEditPage({super.key, this.character,this.draftDoc});
+  final bool openVoiceTab;
+  const CharacterEditPage({super.key, this.character,this.draftDoc, this.openVoiceTab = false});
 
   @override
   _CharacterEditPageState createState() => _CharacterEditPageState();
@@ -361,6 +362,22 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       List<Map<String, dynamic>>.from(
         data['npcCharacters'] ?? [],
       );
+      // 保留草稿的進階設定，跨裝置重新開啟也能完整還原。
+      _customOutputFormatController.text =
+          data['customOutputFormat']?.toString() ?? '';
+      _likesController.text = data['likes']?.toString() ?? '';
+      _dislikesController.text = data['dislikes']?.toString() ?? '';
+      _secretsController.text = data['secrets']?.toString() ?? '';
+      _dialogueExamplesController.text =
+          data['dialogueExamples']?.toString() ?? '';
+      _stageStrangerController.text = data['stageStranger']?.toString() ?? '';
+      _stageAcquaintanceController.text =
+          data['stageAcquaintance']?.toString() ?? '';
+      _stageIntimateController.text = data['stageIntimate']?.toString() ?? '';
+      _socialInteractionController.text =
+          data['socialInteraction']?.toString() ?? '';
+      _playerIdentityController.text =
+          data['playerIdentity']?.toString() ?? '';
 
       // 4. 【專屬語音】(修正為資料庫的下底線格式：voice_id)
       _generatedVoiceId = data['voice_id'];
@@ -640,27 +657,28 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
           ? _customRelationshipController.text.trim()
           : (_selectedRelationship == 'relationship_none' ? '' : (_selectedRelationship ?? ''));
 
-      // 🌟 2. 確保在草稿模式下，如果還沒上傳，優先抓取本機路徑 (localFile.path)
-      _galleryPhotos.sort((a, b) => a.requiredAffection.compareTo(b.requiredAffection));
-      List<String> galleryPathsOnly = _galleryPhotos
-          .map((p) {
-        if (p.imageUrl.isNotEmpty) return p.imageUrl;
-        if (p.localFile != null) return p.localFile!.path;
-        return '';
-      })
-          .where((path) => path.isNotEmpty)
+      // 圖片先上傳至 Storage，Firestore 草稿不可儲存只在 A 手機有效的路徑。
+      // 已有雲端網址的圖片不重複上傳。
+      for (final photo in _galleryPhotos) {
+        if (photo.imageUrl.trim().isEmpty && photo.localFile != null) {
+          photo.imageUrl = await _uploadImageFile(photo.localFile!);
+          photo.localFile = null;
+        }
+      }
+      _galleryPhotos.sort(
+            (a, b) => a.requiredAffection.compareTo(b.requiredAffection),
+      );
+      final galleryPathsOnly = _galleryPhotos
+          .map((p) => p.imageUrl.trim())
+          .where((url) => url.isNotEmpty)
           .toList();
-
-// ✨ 修正 1：確保本機的圖片路徑也有被存進草稿裡
-      final galleryData = _galleryPhotos.map((p) {
-        return {
-          'url': p.imageUrl.isNotEmpty ? p.imageUrl : (p.localFile?.path ?? ''),
-          'req': p.requiredAffection,
-          'desc': p.description,
-        };
+      final galleryData = _galleryPhotos.map((p) => <String, dynamic>{
+        'url': p.imageUrl,
+        'req': p.requiredAffection,
+        'desc': p.description,
       }).toList();
       // 🌟 3. 大頭貼防護罩：從剛才整理好的 galleryPathsOnly 拿第一張，絕對不會拿到空字串
-      String currentAvatarPath = widget.character?.avatarPath ?? 'assets/images/blank_avatar.png';
+      String currentAvatarPath = widget.character?.avatarPath ?? 'assets/images/blank_avatar.webp';
       if (galleryPathsOnly.isNotEmpty) {
         currentAvatarPath = galleryPathsOnly.first;
       }
@@ -710,7 +728,9 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       final String draftBannerPath;
 
       if (_bannerLocalFile != null) {
-        draftBannerPath = _bannerLocalFile!.path;
+        draftBannerPath = await _uploadImageFile(_bannerLocalFile!);
+        _bannerImagePath = draftBannerPath;
+        _bannerLocalFile = null;
       } else if (_isRemovingBanner) {
         draftBannerPath = '';
       } else {
@@ -797,7 +817,11 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       debugPrint('🟣 準備寫入草稿：currentDraftId=$_currentDraftId');
 
       if (_currentDraftId != null) {
-
+        final existing = await _db.collection('draft_characters')
+            .doc(_currentDraftId).get();
+        if (existing.exists && existing.data()?['createdBy'] != user.uid) {
+          throw StateError('草稿所屬帳號不符，已停止儲存');
+        }
         await _db
             .collection('draft_characters')
             .doc(_currentDraftId)
@@ -818,7 +842,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         ToastUtils.showCenterToast(
           context,
           l10n.draft_saved_success,
-          customIcon: Icons.save_rounded, // 💡 用「磁碟片/儲存」或是 Icons.edit_document，給予滿滿的安心感
+
         );
       }
     } catch (e) {
@@ -1493,7 +1517,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       // 相容舊版，還是把 galleryData 存在主資料夾一份
       final galleryData = _galleryPhotos.map((p) => p.toMap()).toList();
       Map<String, dynamic> characterData = {
-        'avatarPath': galleryPathsOnly.isNotEmpty ? galleryPathsOnly.first : 'assets/images/blank_avatar.png',
+        'avatarPath': galleryPathsOnly.isNotEmpty ? galleryPathsOnly.first : 'assets/images/blank_avatar.webp',
         'bannerImagePath': finalBannerImagePath,
         'galleryPaths': galleryPathsOnly,
         'gallery': galleryData,
@@ -1612,7 +1636,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       try {
         final String newAvatarUrl = galleryPathsOnly.isNotEmpty
             ? galleryPathsOnly.first
-            : 'assets/images/blank_avatar.png';
+            : 'assets/images/blank_avatar.webp';
         final String newName = _nameController.text.trim();
         final chatSessionsQuery = await db
             .collection('artifacts')
@@ -1715,7 +1739,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       }
       return FileImage(File(imageSource.path));
     }
-    return const AssetImage('assets/images/blank_avatar.png');
+    return const AssetImage('assets/images/blank_avatar.webp');
   }
 
   void _openEasterEggEditor({EasterEgg? egg, int? index}) {
@@ -2501,7 +2525,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       ToastUtils.showCenterToast(
         context,
         l10n.voice_bind_first,
-        customIcon: Icons.mic_external_off_rounded,
+
       );
       return;
     }
@@ -2690,7 +2714,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
           l10n.voice_bind_success(
             widget.character!.name,
           ),
-          customIcon: Icons.cloud_done_rounded,
+
         );
       } else {
         if (!mounted) return;
@@ -2698,7 +2722,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         ToastUtils.showCenterToast(
           context,
           l10n.voice_bind_success_draft,
-          customIcon: Icons.edit_note_rounded,
+
         );
       }
     } on FirebaseException catch (
@@ -2759,7 +2783,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 
     final String previewAvatarPath = previewGalleryPaths.isNotEmpty
         ? previewGalleryPaths.first
-        : 'assets/images/blank_avatar.png';
+        : 'assets/images/blank_avatar.webp';
 
     final String previewId =
         widget.character?.id ?? 'preview_${DateTime.now().millisecondsSinceEpoch}';
@@ -2836,7 +2860,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     ToastUtils.showCenterToast(
       context,
       l10n.test_mode_notice,
-      customIcon: Icons.chat_bubble_outline_rounded,
+
     );
 
     Navigator.push(
@@ -3094,6 +3118,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         },
         child: DefaultTabController(
           length: 4,
+          initialIndex: widget.openVoiceTab ? 1 : 0,
           child: Scaffold(
             backgroundColor: theme.scaffoldBackgroundColor,
             appBar: AppBar(
@@ -4138,13 +4163,6 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                       ? Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.panorama_outlined,
-                        size: 42,
-                        color: theme.colorScheme.primary
-                            .withValues(alpha: 0.65),
-                      ),
-                      const SizedBox(height: 10),
                       Text(
                         l10n.characterBannerSelect,
                         style: theme.textTheme.bodyMedium?.copyWith(
@@ -4379,12 +4397,6 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.add_photo_alternate_outlined,
-                    size: 42,
-                    color: theme.colorScheme.primary.withValues(alpha: 0.65),
-                  ),
-                  const SizedBox(height: 8),
                   Text(
                     l10n.characterEditCharacterImage,
                     style: theme.textTheme.bodyMedium?.copyWith(
@@ -4501,9 +4513,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                               fit: BoxFit.cover,
                               errorBuilder:
                                   (context, error, stackTrace) =>
-                              const Icon(
-                                Icons.broken_image_outlined,
-                              ),
+                                  Container(color: Colors.grey.shade200),
                             ),
                           ),
                         ),
@@ -4581,7 +4591,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       ToastUtils.showCenterToast(
         context,
         l10n.gallery_upload_limit,
-        customIcon: Icons.photo_library_rounded, // 💡 總裁精選：用「相簿/畫廊」圖示，直覺告知容量已滿
+
         // 💡 總裁秘技：如果想稍微帶點提醒意味，也可以用 Icons.filter_9_plus_rounded (代表超過9個)
       );
       return;
