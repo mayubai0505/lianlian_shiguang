@@ -28,14 +28,29 @@ class WorldDiscoveryPage extends StatefulWidget {
 class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
     with SingleTickerProviderStateMixin {
   late final TabController _tabs;
-  late final Future<DocumentSnapshot<Map<String, dynamic>>> _worldFuture;
+  late Future<DocumentSnapshot<Map<String, dynamic>>> _worldFuture;
   @override
   void initState() {
     super.initState();
     _tabs = TabController(length: 4, vsync: this);
-    _worldFuture = FirebaseFirestore.instance.collection('artifacts')
-        .doc(AppConfig.appId).collection('worlds').doc(widget.worldId).get();
+    _worldFuture = _fetchWorld();
   }
+  Future<DocumentSnapshot<Map<String, dynamic>>> _fetchWorld() =>
+      FirebaseFirestore.instance.collection('artifacts')
+          .doc(AppConfig.appId).collection('worlds').doc(widget.worldId).get();
+
+  void _retryWorldLoad() {
+    setState(() => _worldFuture = _fetchWorld());
+  }
+
+  @override
+  void didUpdateWidget(covariant WorldDiscoveryPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.worldId != widget.worldId) {
+      _retryWorldLoad();
+    }
+  }
+
   @override
   void dispose() { _tabs.dispose(); super.dispose(); }
 
@@ -310,7 +325,27 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
   @override
   Widget build(BuildContext context) => FutureBuilder<DocumentSnapshot<Map<String,dynamic>>>(
     future:_worldFuture,builder:(context,snapshot){
-    if(snapshot.hasError)return Scaffold(appBar:AppBar(),body:Center(child:Text(AppLocalizations.of(context)!.world_discovery_world_load_failed1(snapshot.error.toString()))));
+    if(snapshot.hasError) {
+      debugPrint('公開世界介紹資料載入失敗 worldId=${widget.worldId}: ${snapshot.error}');
+      return Scaffold(
+        appBar: AppBar(),
+        body: Center(child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Text(
+              AppLocalizations.of(context)!.world_discovery_world_load_failed1(snapshot.error.toString()),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            FilledButton.icon(
+              onPressed: _retryWorldLoad,
+              icon: const Icon(Icons.refresh_rounded),
+              label: const Text('重新整理'),
+            ),
+          ]),
+        )),
+      );
+    }
     if(!snapshot.hasData)return const Scaffold(body:Center(child:CircularProgressIndicator()));
     final d=snapshot.data?.data();
     if(d==null || d['isPublic']!=true || d['status']!='public') {
