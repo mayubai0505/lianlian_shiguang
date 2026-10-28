@@ -110,8 +110,8 @@ class _WorldEditPageState extends State<WorldEditPage>
                     _secretChapters.add({
                       'id': (item['id'] ?? '').toString(),
                       'title': (item['title'] ?? '').toString(),
-                      'condition': (item['condition'] ?? '').toString(),
                       'content': (item['content'] ?? '').toString(),
+                      'condition': (item['condition'] ?? '').toString(),
                     });
                   }
                 }
@@ -309,7 +309,6 @@ class _WorldEditPageState extends State<WorldEditPage>
     }
     if (_secretChapters.length > 12 || _secretChapters.any((c) =>
     (c['title'] ?? '').trim().isEmpty ||
-        (c['condition'] ?? '').trim().isEmpty ||
         (c['content'] ?? '').trim().isEmpty)) {
       _notice(AppLocalizations.of(context)!.world_edit_secret_validation1);
       return false;
@@ -373,7 +372,12 @@ class _WorldEditPageState extends State<WorldEditPage>
       final secretsRef = _db.collection('world_secrets').doc(worldId);
       batch.set(secretsRef, {
         'createdBy': user.uid,
-        'chapters': _secretChapters.map((c) => Map<String, String>.from(c)).toList(),
+        'chapters': _secretChapters.map((c) => <String, String>{
+          'id': c['id'] ?? '',
+          'title': c['title'] ?? '',
+          'content': c['content'] ?? '',
+          'condition': c['condition'] ?? '',
+        }).toList(),
         'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
       if (asDraft) {
@@ -616,8 +620,9 @@ class _WorldEditPageState extends State<WorldEditPage>
       const SizedBox(height: 10),
       for (var i = 0; i < _secretChapters.length; i++)
         Card(child: ListTile(
-          title: Text(_secretChapters[i]['title'] ?? ''),
-          subtitle: Text(_secretChapters[i]['condition'] ?? ''),
+          title: Text('第${['一','二','三','四','五','六','七','八','九','十','十一','十二'][i]}篇章　${_secretChapters[i]['title'] ?? ''}'),
+          subtitle: Text((_secretChapters[i]['condition'] ?? '').trim().isEmpty
+              ? '依劇情正文自動判斷' : '已設定備援解鎖條件'),
           onTap: _busy ? null : () => _editSecret(index: i),
           trailing: IconButton(icon: const Icon(Icons.delete_outline),
               onPressed: _busy ? null : () => setState(() => _secretChapters.removeAt(i))),

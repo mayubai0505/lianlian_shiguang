@@ -90,7 +90,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
   // Local-only bubble while the server is generating; never written to Firestore by client.
   bool _pendingFailed = false;
   bool _pendingVisible = false;
-  String get _draftKey => 'world_chat_draft_${FirebaseAuth.instance.currentUser?.uid ?? 'anon'}_${widget.worldId}';
+  String get _draftKey => 'world_chat_draft_${FirebaseAuth.instance.currentUser?.uid ?? 'anon'}_${widget.worldId}_${widget.sessionId ?? 'legacy'}';
   static const _modes = <String, int>{'story': 5, 'immersive': 7, 'resonance': 10, 'interaction': 12};
   List<dynamic> _messages = [];
   Map<String,String> _npcs = {};
@@ -197,7 +197,8 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     if (uid == null) return;
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getString('last_chat_type_$uid') != 'world' ||
-        prefs.getString('last_chat_world_$uid') != widget.worldId) return;
+        prefs.getString('last_chat_world_$uid') != widget.worldId ||
+        prefs.getString('last_chat_world_session_$uid') != _sessionId) return;
     await prefs.remove('last_chat_type_$uid');
     await prefs.remove('last_chat_world_$uid');
     await prefs.remove('last_chat_world_session_$uid');
@@ -426,6 +427,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     } catch (e) {
       debugPrint('世界聊天室背景預載略過：$e');
     }
+    if (!mounted) return;
     _initialBackgroundPath = background;
     final sources = <String>{
       if (cover.isNotEmpty) cover,
@@ -465,6 +467,10 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
   }
 
   void _listenMessages(String sessionId) {
+    if (widget.sessionId != null && widget.sessionId!.isNotEmpty && sessionId != widget.sessionId) {
+      debugPrint('拒絕監聽其他世界觀房間: expected=${widget.sessionId}, requested=$sessionId');
+      return;
+    }
     if (_sessionId == sessionId && _messageSubscription != null) return;
     _messageSubscription?.cancel();
     _sessionId = sessionId;
@@ -497,6 +503,13 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
         if (_pendingRequestId != null && next.any((m) => m['id'] == _pendingRequestId)) {
           _pendingVisible = false;
         }
+        // The matching AI reply is already committed to Firestore.
+        // Stop showing the generating indicator even if the callable response
+        // is still fetching the room summary.
+        if (_sending && _pendingRequestId != null &&
+            next.any((m) => m['id'] == 'ai_$_pendingRequestId' && m['sender'] == 'ai')) {
+          _sending = false;
+        }
       });
       _cacheCurrentRoom();
       _scrollToLatest();
@@ -506,11 +519,18 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     });
   }
 
+  bool _needsInitialScroll = true;
+
   void _scrollToLatest() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && _scroll.hasClients) {
-        _scroll.animateTo(_scroll.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 220), curve: Curves.easeOut);
+      if (!mounted || !_scroll.hasClients) return;
+      final end = _scroll.position.maxScrollExtent;
+      if (_needsInitialScroll) {
+        _scroll.jumpTo(end); // No upward/downward animation during first entry.
+        _needsInitialScroll = false;
+      } else {
+        _scroll.animateTo(end,
+            duration: const Duration(milliseconds: 180), curve: Curves.easeOut);
       }
     });
   }
@@ -661,6 +681,23 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       });
       final data=Map<String,dynamic>.from(result.data as Map);
       if (!mounted || (requestIdAtStart != null && _cancelledLocalRequests.contains(requestIdAtStart))) return;
+      // Explicitly opened rooms MUST never silently fall back to the legacy world room.
+      // Reject the response before preloading images, applying messages or switching listeners.
+      final expectedRoomId = widget.sessionId?.trim() ?? '';
+      final returnedRoomId = (data['sessionId'] ?? '').toString().trim();
+      if (expectedRoomId.isNotEmpty && returnedRoomId != expectedRoomId) {
+        _messageSubscription?.cancel();
+        _affinitySubscription?.cancel();
+        if (mounted) setState(() {
+          _loading = false;
+          _sending = false;
+          _messages = [];
+          _hasStreamData = false;
+          _error = '房間資料不一致，為避免顯示其他劇情，已停止載入。請確認世界觀後端已更新。';
+        });
+        debugPrint('世界觀房間不一致: expected=$expectedRoomId, returned=$returnedRoomId, action=$action');
+        return;
+      }
       final npcs = <String,String>{};
       final names = <String,String>{};
       for(final raw in (data['npcs'] as List? ?? [])) {
@@ -671,12 +708,12 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       }
       // 不展示快取的半套畫面；快取僅用於減少再次進入的記憶體準備成本。
       if (action == 'load' && !_initialVisualsReady && _loading) {
-        await _preloadWorldImages(
+        // Do not block first chat paint on slow image downloads or background migration.
+        _initialVisualsReady = true;
+        unawaited(_preloadWorldImages(
           (data['sessionId'] ?? '').toString(),
           (data['coverImage'] ?? '').toString(), npcs,
-        );
-        if (!mounted) return;
-        _initialVisualsReady = true;
+        ));
       }
       final sid = (data['sessionId'] ?? '').toString();
       final loadedAffinity = <String, int>{};
@@ -729,10 +766,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
         _pendingRequestText = null;
         _pendingFailed = false;
       }
-      WidgetsBinding.instance.addPostFrameCallback((_){
-        if(mounted && _scroll.hasClients)_scroll.animateTo(_scroll.position.maxScrollExtent,
-            duration:const Duration(milliseconds:260),curve:Curves.easeOut);
-      });
+      _scrollToLatest();
     } on FirebaseFunctionsException catch(e) {
       if(!mounted || (requestIdAtStart != null && _cancelledLocalRequests.contains(requestIdAtStart)))return;
       setState((){
@@ -765,7 +799,14 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
         }
       });
       if (!silent) _showCenterNotice(_error, isError: true);
-    } finally {if(mounted && (action=='send' || action=='interact' || action=='regenerate' || action=='continue') && requestIdAtStart == _pendingRequestId)setState(()=>_sending=false);}
+    } finally {
+      // A successful call clears _pendingRequestId before reaching finally.
+      // Comparing it with requestIdAtStart here leaves _sending stuck at true.
+      if (mounted && (action == 'send' || action == 'interact' ||
+          action == 'regenerate' || action == 'continue')) {
+        setState(() => _sending = false);
+      }
+    }
   }
 
   // 重新生成：後端直接替換最新 AI 回覆，不重複收費或修改原回合好感度。
@@ -2109,7 +2150,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
                 Positioned.fill(child: IgnorePointer(
                     child: ColoredBox(color: Colors.white.withValues(alpha: 0.55)))),
               SafeArea(child:Column(children:[
-                if(_loading)const Expanded(child:Center(child:CircularProgressIndicator()))
+                if (_loading) const Expanded(child: SizedBox.expand())
                 else Expanded(child: (_messages.isEmpty && !_pendingVisible && !_sending)
                     ? Center(child: Text(_error.isEmpty ? AppLocalizations.of(context)!.world_chat_no_chat1 : '$_error\n可返回後重試',
                     textAlign: TextAlign.center))
@@ -2224,6 +2265,34 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
                   onSend: _send,
                 ),
               ])),
+              // Always keep a visible loading indicator ABOVE the background,
+              // message list and input. Both newly created and old rooms use it.
+              if (_loading)
+                Positioned.fill(
+                  child: ColoredBox(
+                    color: theme.scaffoldBackgroundColor.withValues(alpha: 0.94),
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircularProgressIndicator(
+                            strokeWidth: 3,
+                            color: theme.colorScheme.primary,
+                          ),
+                          const SizedBox(height: 18),
+                          Text(
+                            AppLocalizations.of(context)!.world_chat_loading1,
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.notoSerifTc(
+                              fontSize: 15,
+                              color: theme.colorScheme.onSurface,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
             ]),
           );
         },

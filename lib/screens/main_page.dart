@@ -155,11 +155,21 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
       final lastType = prefs.getString('last_chat_type_$uid') ?? '';
       if (lastType == 'world') {
         final worldId = prefs.getString('last_chat_world_$uid')?.trim() ?? '';
-        if (worldId.isEmpty) return;
+        final worldSessionId =
+            prefs.getString('last_chat_world_session_$uid')?.trim() ?? '';
+        // 多房間世界觀必須同時取得世界與房間 ID；缺少其中之一時
+        // 僅留在聊天列表，不能退回舊版固定世界觀房間。
+        if (worldId.isEmpty || worldSessionId.isEmpty) {
+          debugPrint('世界觀最後房間紀錄不完整，略過自動開啟');
+          return;
+        }
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!mounted) return;
+          if (!mounted || FirebaseAuth.instance.currentUser?.uid != uid) return;
           Navigator.of(context).push(MaterialPageRoute<void>(
-            builder: (_) => WorldChatPage(worldId: worldId),
+            builder: (_) => WorldChatPage(
+              worldId: worldId,
+              sessionId: worldSessionId,
+            ),
           ));
         });
         return;

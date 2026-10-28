@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/toast_utils.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
-/// 世界觀秘密篇章：由後端檢查劇情並返回解鎖狀態；未解鎖無標題、內容或條件。
+/// 世界觀秘密篇章：未解鎖可見順序及標題；正文由後端 read 授權保護。
 class WorldSecretChaptersPage extends StatefulWidget {
   const WorldSecretChaptersPage({super.key, required this.worldId, this.sessionId});
 
@@ -109,41 +109,31 @@ class _WorldSecretChaptersPageState extends State<WorldSecretChaptersPage> {
           if (items.isEmpty) {
             return Center(child: Text(l10n.world_secret_chapters_empty1));
           }
-          final openedItems = items.where((c) => c['unlocked'] == true).toList();
-          final lockedItems = items.where((c) => c['unlocked'] != true).toList();
           Widget chapterTile(Map<String, dynamic> chapter) {
             final opened = chapter['unlocked'] == true;
+            const chapterNumbers = ['一','二','三','四','五','六','七','八','九','十','十一','十二'];
+            final orderNumber = int.tryParse((chapter['order'] ?? '').toString());
+            final order = orderNumber != null && orderNumber >= 1 && orderNumber <= chapterNumbers.length
+                ? chapterNumbers[orderNumber - 1] : '?';
+            final title = (chapter['title'] ?? '未命名篇章').toString();
             return ListTile(
               leading: Icon(opened ? Icons.lock_open : Icons.lock_outline),
-              title: Text(opened
-                  ? (chapter['title'] ?? '秘密篇章').toString()
-                  : l10n.world_secret_chapters_locked_chapter1(
-                (chapter['order'] ?? '?').toString(),
-              )),
-              subtitle: Text(opened
-                  ? l10n.world_secret_chapters_unlocked1
-                  : l10n.world_secret_chapters_locked1),
+              title: Text('第$order篇章　$title'),
+              subtitle: Text(opened ? '已解鎖・點擊閱讀' : '????'),
               trailing: opened ? const Icon(Icons.chevron_right) : null,
               onTap: _openingChapter ? null : () => _read(chapter),
             );
           }
+          final unlockedCount = items.where((c) => c['unlocked'] == true).length;
           return ListView(
             padding: const EdgeInsets.symmetric(vertical: 12),
             children: [
-              if (openedItems.isNotEmpty) ...[
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(16, 10, 16, 8),
-                  child: Text('已解鎖', style: TextStyle(fontWeight: FontWeight.w600)),
-                ),
-                for (final chapter in openedItems) chapterTile(chapter),
-              ],
-              if (lockedItems.isNotEmpty) ...[
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(16, 18, 16, 8),
-                  child: Text('未解鎖', style: TextStyle(fontWeight: FontWeight.w600)),
-                ),
-                for (final chapter in lockedItems) chapterTile(chapter),
-              ],
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+                child: Text('已解鎖 $unlockedCount / ${items.length}',
+                    style: Theme.of(context).textTheme.bodyMedium),
+              ),
+              for (final chapter in items) chapterTile(chapter),
             ],
           );
         },

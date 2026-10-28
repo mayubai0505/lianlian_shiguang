@@ -372,6 +372,11 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
                 final data = Map<String, dynamic>.from(result.data as Map);
                 final newSessionId = (data['sessionId'] ?? '').toString().trim();
                 if (newSessionId.isEmpty) throw StateError('建立新房間失敗：沒有房間 ID');
+                // Public entry should never use old deterministic 64-character SHA-256 room IDs.
+                // This catches a stale deployment that accidentally returns the legacy room.
+                if (RegExp(r'^[a-f0-9]{64}$').hasMatch(newSessionId)) {
+                  throw StateError('後端仍回傳舊版固定房間 ID，請更新 worldPrivateTest');
+                }
                 if (!mounted) return;
                 await Navigator.push(context, MaterialPageRoute(
                     builder: (_) => WorldChatPage(worldId: widget.worldId, sessionId: newSessionId)));

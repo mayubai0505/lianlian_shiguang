@@ -18,8 +18,8 @@ class _WorldSecretChapterEditorPageState
     extends State<WorldSecretChapterEditorPage> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _title;
-  late final TextEditingController _condition;
   late final TextEditingController _content;
+  late final TextEditingController _condition;
 
   bool get _isEditing => (widget.original['id'] ?? '').isNotEmpty;
 
@@ -27,8 +27,8 @@ class _WorldSecretChapterEditorPageState
   void initState() {
     super.initState();
     _title = TextEditingController(text: widget.original['title'] ?? '');
-    _condition = TextEditingController(text: widget.original['condition'] ?? '');
     _content = TextEditingController(text: widget.original['content'] ?? '');
+    _condition = TextEditingController(text: widget.original['condition'] ?? '');
   }
 
   void _save() {
@@ -39,16 +39,16 @@ class _WorldSecretChapterEditorPageState
           ? id
           : DateTime.now().microsecondsSinceEpoch.toString(),
       'title': _title.text.trim(),
-      'condition': _condition.text.trim(),
       'content': _content.text.trim(),
+      'condition': _condition.text.trim(),
     });
   }
 
   @override
   void dispose() {
     _title.dispose();
-    _condition.dispose();
     _content.dispose();
+    _condition.dispose();
     super.dispose();
   }
 
@@ -74,11 +74,11 @@ class _WorldSecretChapterEditorPageState
                 key: _formKey,
                 child: ListView(
                   keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  ScrollViewKeyboardDismissBehavior.onDrag,
                   padding: const EdgeInsets.fromLTRB(18, 20, 18, 26),
                   children: [
                     Text(
-                      l10n.world_edit_secret_explain1,
+                      '請撰寫秘密篇章正文。AI 優先比對玩家已發生的劇情；也可以選填「備援解鎖條件」，供正文判斷未通過時再審核。兩者都需要真實的劇情證據。',
                       style: theme.textTheme.bodyMedium,
                     ),
                     const SizedBox(height: 20),
@@ -99,11 +99,13 @@ class _WorldSecretChapterEditorPageState
                       maxLength: 500,
                       minLines: 3,
                       maxLines: 6,
+                      keyboardType: TextInputType.multiline,
                       textInputAction: TextInputAction.newline,
-                      validator: requiredText,
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
-                        labelText: l10n.world_edit_unlock_condition1,
+                        labelText: '${l10n.world_edit_unlock_condition1}（選填備援）',
+                        helperText: '只有實際劇情達成才會解鎖；不能只填數字或關鍵字。',
+                        helperMaxLines: 2,
                         alignLabelWithHint: true,
                       ),
                     ),
