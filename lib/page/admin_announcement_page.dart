@@ -7531,6 +7531,163 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     );
   }
 
+  // 活動素材純本機預覽：不寫入 Storage、Firestore 或活動商店草稿。
+  // 圖片使用 ImagePicker 的 bytes，支援 Web / Android / iOS 後台。
+  Future<void> _showEventAvatarFramePreview() async {
+    Uint8List? frameBytes;
+    String frameLabel = '尚未選擇頭像框';
+    double frameSize = 106;
+    bool showFrame = true;
+    bool selecting = false;
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    final avatarFuture = uid == null ? null
+        : FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, updatePreview) {
+          Future<void> pickFrame() async {
+            if (selecting) return;
+            updatePreview(() => selecting = true);
+            try {
+              final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+              if (image == null) return;
+              final bytes = await image.readAsBytes();
+              if (!dialogContext.mounted) return;
+              updatePreview(() {
+                frameBytes = bytes;
+                frameLabel = image.name;
+                showFrame = true;
+              });
+            } catch (error) {
+              debugPrint('活動頭像框本機預覽讀圖失敗：$error');
+              if (dialogContext.mounted) {
+                ScaffoldMessenger.of(dialogContext).showSnackBar(
+                  const SnackBar(content: Text('讀取圖片失敗，請重新選擇 PNG')),
+                );
+              }
+            } finally {
+              if (dialogContext.mounted) updatePreview(() => selecting = false);
+            }
+          }
+
+          Widget avatarPreview(String avatarPath) {
+            Widget avatar;
+            if (avatarPath.startsWith('https://') || avatarPath.startsWith('http://')) {
+              avatar = Image.network(avatarPath, width: 94, height: 94,
+                  fit: BoxFit.cover, errorBuilder: (_, __, ___) =>
+                  const Icon(Icons.person_rounded, size: 44));
+            } else if (avatarPath.startsWith('assets/')) {
+              avatar = Image.asset(avatarPath, width: 94, height: 94,
+                  fit: BoxFit.cover, errorBuilder: (_, __, ___) =>
+                  const Icon(Icons.person_rounded, size: 44));
+            } else {
+              avatar = const Icon(Icons.person_rounded, size: 44);
+            }
+            return SizedBox(
+              width: 176, height: 176,
+              child: Stack(alignment: Alignment.center, children: [
+                Container(
+                  width: 94, height: 94,
+                  clipBehavior: Clip.antiAlias,
+                  decoration: const BoxDecoration(shape: BoxShape.circle,
+                      color: Color(0xFFEDE4F4)),
+                  child: avatar,
+                ),
+                if (showFrame && frameBytes != null)
+                  IgnorePointer(child: Image.memory(frameBytes!,
+                      width: frameSize, height: frameSize, fit: BoxFit.contain,
+                      gaplessPlayback: true)),
+              ]),
+            );
+          }
+
+          return AlertDialog(
+            title: const Text('活動頭像框｜管理員預覽'),
+            content: SizedBox(
+              width: 440,
+              child: SingleChildScrollView(
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
+                  const Text('只在這個視窗顯示，不上傳圖片、不建立商品、不發放收藏。',
+                      style: TextStyle(fontSize: 12, color: Colors.grey)),
+                  const SizedBox(height: 14),
+                  if (uid != null)
+                    FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                      future: avatarFuture,
+                      builder: (context, snapshot) => avatarPreview(
+                        (snapshot.data?.data()?['avatarPath'] ??
+                            FirebaseAuth.instance.currentUser?.photoURL ??
+                            'assets/images/avatar1.webp').toString(),
+                      ),
+                    )
+                  else avatarPreview('assets/images/avatar1.webp'),
+                  const SizedBox(height: 8),
+                  Text(frameLabel, maxLines: 2, overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 12)),
+                  const SizedBox(height: 10),
+                  SizedBox(width: double.infinity, child: OutlinedButton.icon(
+                    onPressed: selecting ? null : pickFrame,
+                    icon: const Icon(Icons.add_photo_alternate_outlined),
+                    label: Text(selecting ? '選擇中…' : '選擇本機 PNG 頭像框'),
+                  )),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    title: const Text('顯示頭像框'),
+                    value: showFrame,
+                    onChanged: (value) => updatePreview(() => showFrame = value),
+                  ),
+                  Row(children: [
+                    const Text('框大小', style: TextStyle(fontSize: 13)),
+                    const Spacer(),
+                    Text('${frameSize.round()} px', style: const TextStyle(fontSize: 13)),
+                  ]),
+                  Slider(
+                    value: frameSize, min: 96, max: 140, divisions: 22,
+                    label: '${frameSize.round()} px',
+                    onChanged: (value) => updatePreview(() => frameSize = value),
+                  ),
+                  TextButton(onPressed: () => updatePreview(() => frameSize = 106),
+                      child: const Text('恢復目前 106 px')),
+                  const Text('頭像固定為 94 px；調整僅供預覽，不會改動正式 App。',
+                      style: TextStyle(fontSize: 11, color: Colors.grey)),
+                ]),
+              ),
+            ),
+            actions: [TextButton(onPressed: () => Navigator.of(dialogContext).pop(),
+                child: const Text('關閉'))],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildEventMaterialPreviewCard() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Row(children: [
+            Icon(Icons.preview_outlined), SizedBox(width: 8),
+            Expanded(child: Text('活動素材預覽（不公開）',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700))),
+          ]),
+          const SizedBox(height: 8),
+          const Text('從裝置選擇 PNG，套在目前管理員的頭像上預覽大小。'
+              '不會新增商店商品，也不會讓玩家看到。',
+              style: TextStyle(fontSize: 12)),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: _showEventAvatarFramePreview,
+            icon: const Icon(Icons.account_circle_outlined),
+            label: const Text('預覽頭像框'),
+          ),
+        ]),
+      ),
+    );
+  }
+
   Widget _buildReusableEventAdminTab() {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
@@ -7898,6 +8055,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                 items: _eventMilestoneDrafts,
               ),
             if (_eventHasMilestones) const SizedBox(height: 12),
+            _buildEventMaterialPreviewCard(),
+            const SizedBox(height: 12),
             if (_eventHasShop)
               _buildEventDraftList(
                 title: '活動商店商品',
