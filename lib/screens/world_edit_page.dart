@@ -110,8 +110,8 @@ class _WorldEditPageState extends State<WorldEditPage>
                     _secretChapters.add({
                       'id': (item['id'] ?? '').toString(),
                       'title': (item['title'] ?? '').toString(),
-                      'content': (item['content'] ?? '').toString(),
                       'condition': (item['condition'] ?? '').toString(),
+                      'content': (item['content'] ?? '').toString(),
                     });
                   }
                 }
@@ -218,7 +218,7 @@ class _WorldEditPageState extends State<WorldEditPage>
   }
 
   Widget _field(TextEditingController controller, String label,
-      {int lines = 1, int max = 10000}) {
+      {int lines = 1, int? max = 10000}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: TextField(
@@ -270,17 +270,13 @@ class _WorldEditPageState extends State<WorldEditPage>
             label: Text(_localizedTag(tag)), selected: chosen.contains(tag),
             onSelected: _busy ? null : (selected) {
               final next = List<String>.from(_selectedTags);
-              if (selected && next.length >= 5) {
-                _notice(AppLocalizations.of(context)!.world_edit_tag_max1);
-                return;
-              }
               if (selected) { next.add(tag); } else { next.remove(tag); }
               setState(() => _tags.text = next.join('、'));
             },
           ),
       ]),
       const SizedBox(height: 8),
-      _field(_tags, AppLocalizations.of(context)!.world_edit_tag_custom1, max: 120),
+      _field(_tags, AppLocalizations.of(context)!.world_edit_tag_custom1, max: null),
     ]);
   }
 
@@ -303,12 +299,9 @@ class _WorldEditPageState extends State<WorldEditPage>
         return false;
       }
     }
-    if (_selectedTags.length > 5) {
-      _notice(AppLocalizations.of(context)!.world_edit_max_tags_save1);
-      return false;
-    }
     if (_secretChapters.length > 12 || _secretChapters.any((c) =>
     (c['title'] ?? '').trim().isEmpty ||
+        (c['condition'] ?? '').trim().isEmpty ||
         (c['content'] ?? '').trim().isEmpty)) {
       _notice(AppLocalizations.of(context)!.world_edit_secret_validation1);
       return false;
@@ -372,12 +365,7 @@ class _WorldEditPageState extends State<WorldEditPage>
       final secretsRef = _db.collection('world_secrets').doc(worldId);
       batch.set(secretsRef, {
         'createdBy': user.uid,
-        'chapters': _secretChapters.map((c) => <String, String>{
-          'id': c['id'] ?? '',
-          'title': c['title'] ?? '',
-          'content': c['content'] ?? '',
-          'condition': c['condition'] ?? '',
-        }).toList(),
+        'chapters': _secretChapters.map((c) => Map<String, String>.from(c)).toList(),
         'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
       if (asDraft) {
@@ -620,9 +608,8 @@ class _WorldEditPageState extends State<WorldEditPage>
       const SizedBox(height: 10),
       for (var i = 0; i < _secretChapters.length; i++)
         Card(child: ListTile(
-          title: Text('第${['一','二','三','四','五','六','七','八','九','十','十一','十二'][i]}篇章　${_secretChapters[i]['title'] ?? ''}'),
-          subtitle: Text((_secretChapters[i]['condition'] ?? '').trim().isEmpty
-              ? '依劇情正文自動判斷' : '已設定備援解鎖條件'),
+          title: Text(_secretChapters[i]['title'] ?? ''),
+          subtitle: Text(_secretChapters[i]['condition'] ?? ''),
           onTap: _busy ? null : () => _editSecret(index: i),
           trailing: IconButton(icon: const Icon(Icons.delete_outline),
               onPressed: _busy ? null : () => setState(() => _secretChapters.removeAt(i))),
@@ -887,18 +874,6 @@ class _WorldPersonEditorState extends State<_WorldPersonEditor> {
             icon: const Icon(Icons.add_photo_alternate_outlined),
             label: Text(AppLocalizations.of(context)!.world_edit_upload_photo1),
           )),
-          const SizedBox(height: 12),
-          SwitchListTile.adaptive(
-            contentPadding: EdgeInsets.zero,
-            title: Text(AppLocalizations.of(context)!.world_edit_allow_photo1),
-            subtitle: Text(
-              AppLocalizations.of(context)!.world_edit_allow_photo_explain1,
-            ),
-            value: person.allowPhotoGeneration,
-            onChanged: (allowed) => setState(() {
-              person.allowPhotoGeneration = allowed;
-            }),
-          ),
           const SizedBox(height: 16),
           field('name', AppLocalizations.of(context)!.world_edit_name1, max: 60),
           field('gender', AppLocalizations.of(context)!.world_edit_gender1, max: 80),

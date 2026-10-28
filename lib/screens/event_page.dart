@@ -2026,7 +2026,11 @@ class _EventShopPageState extends State<EventShopPage> {
               ? Map<String, dynamic>.from(rawRedeemed)
               : <String, dynamic>{};
 
-          return Column(
+          // Keep the banner, balance and merchandise in ONE scrollable area.
+          // On short Web windows a fixed header previously squeezed the GridView.
+          return ListView(
+            primary: true,
+            physics: const AlwaysScrollableScrollPhysics(),
             children: [
               if (widget.shopHeroImageUrl.trim().isNotEmpty)
                 Container(
@@ -2034,21 +2038,23 @@ class _EventShopPageState extends State<EventShopPage> {
                   margin: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
-                    child: AspectRatio(
-                      aspectRatio: 16 / 9,
-                      child: CachedNetworkImage(
-                        imageUrl: widget.shopHeroImageUrl.trim(),
-                        fit: BoxFit.cover,
-                        placeholder: (_, __) => Container(
-                          color: widget.accentColor.withValues(alpha: 0.04),
-                          alignment: Alignment.center,
-                          child: CircularProgressIndicator(
-                            color: widget.accentColor,
-                            strokeWidth: 2,
+                    child: LayoutBuilder(
+                      builder: (context, constraints) => SizedBox(
+                        height: (constraints.maxWidth * 9 / 16).clamp(150.0, 280.0),
+                        child: CachedNetworkImage(
+                          imageUrl: widget.shopHeroImageUrl.trim(),
+                          fit: BoxFit.cover,
+                          placeholder: (_, __) => Container(
+                            color: widget.accentColor.withValues(alpha: 0.04),
+                            alignment: Alignment.center,
+                            child: CircularProgressIndicator(
+                              color: widget.accentColor,
+                              strokeWidth: 2,
+                            ),
                           ),
-                        ),
-                        errorWidget: (_, __, ___) => Container(
-                          color: widget.accentColor.withValues(alpha: 0.04),
+                          errorWidget: (_, __, ___) => Container(
+                            color: widget.accentColor.withValues(alpha: 0.04),
+                          ),
                         ),
                       ),
                     ),
@@ -2100,103 +2106,103 @@ class _EventShopPageState extends State<EventShopPage> {
                   ],
                 ),
               ),
-              Expanded(
-                child:
-                StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                  stream: _itemsRef().orderBy('order').snapshots(),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return Center(
-                        child: CircularProgressIndicator(
-                          color: widget.accentColor,
-                          strokeWidth: 2.2,
-                        ),
-                      );
-                    }
-
-                    final docs = snapshot.data!.docs;
-
-                    if (docs.isEmpty) {
-                      return Center(
-                        child: Text(
-                          appL10n.event_message_redeem_current,
-                          style: GoogleFonts.notoSerifTc(
-                            color: widget.textMutedColor,
-                          ),
-                        ),
-                      );
-                    }
-
-                    return GridView.builder(
-                      padding:
-                      const EdgeInsets.fromLTRB(20, 8, 20, 32),
-                      itemCount: docs.length,
-                      gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
-                        childAspectRatio: 0.68,
+              StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                stream: _itemsRef().orderBy('order').snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(
+                      child: CircularProgressIndicator(
+                        color: widget.accentColor,
+                        strokeWidth: 2.2,
                       ),
-                      itemBuilder: (context, index) {
-                        final doc = docs[index];
-                        final data = doc.data();
-                        final price = data['price'] is num
-                            ? (data['price'] as num).toInt()
-                            : int.tryParse('${data['price']}') ?? 0;
-                        final redeemedCount =
-                        redeemedShopItems[doc.id] is num
-                            ? (redeemedShopItems[doc.id] as num)
-                            .toInt()
-                            : int.tryParse(
-                          '${redeemedShopItems[doc.id]}',
-                        ) ??
-                            0;
-                        final rawMaxRedemptions = data['maxRedemptions'];
-                        final int maxRedemptions = rawMaxRedemptions is num
-                            ? rawMaxRedemptions.toInt()
-                            : int.tryParse(
-                          rawMaxRedemptions?.toString() ?? '',
-                        ) ??
-                            (data['limitOne'] == true ? 1 : 0);
-                        final alreadyRedeemed =
-                            maxRedemptions > 0 &&
-                                redeemedCount >= maxRedemptions;
-                        final insufficient = currency < price;
+                    );
+                  }
 
-                        return _ShopItemCard(
+                  final docs = snapshot.data!.docs;
+
+                  if (docs.isEmpty) {
+                    return Center(
+                      child: Text(
+                        appL10n.event_message_redeem_current,
+                        style: GoogleFonts.notoSerifTc(
+                          color: widget.textMutedColor,
+                        ),
+                      ),
+                    );
+                  }
+
+                  return GridView.builder(
+                    // Outer ListView owns all scrolling on Web and mobile.
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding:
+                    const EdgeInsets.fromLTRB(20, 8, 20, 32),
+                    itemCount: docs.length,
+                    gridDelegate:
+                    const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: 0.68,
+                    ),
+                    itemBuilder: (context, index) {
+                      final doc = docs[index];
+                      final data = doc.data();
+                      final price = data['price'] is num
+                          ? (data['price'] as num).toInt()
+                          : int.tryParse('${data['price']}') ?? 0;
+                      final redeemedCount =
+                      redeemedShopItems[doc.id] is num
+                          ? (redeemedShopItems[doc.id] as num)
+                          .toInt()
+                          : int.tryParse(
+                        '${redeemedShopItems[doc.id]}',
+                      ) ??
+                          0;
+                      final rawMaxRedemptions = data['maxRedemptions'];
+                      final int maxRedemptions = rawMaxRedemptions is num
+                          ? rawMaxRedemptions.toInt()
+                          : int.tryParse(
+                        rawMaxRedemptions?.toString() ?? '',
+                      ) ??
+                          (data['limitOne'] == true ? 1 : 0);
+                      final alreadyRedeemed =
+                          maxRedemptions > 0 &&
+                              redeemedCount >= maxRedemptions;
+                      final insufficient = currency < price;
+
+                      return _ShopItemCard(
+                        itemId: doc.id,
+                        data: data,
+                        currencyIcon: widget.currencyIcon,
+                        redeemedCount: redeemedCount,
+                        maxRedemptions: maxRedemptions,
+                        isRedeeming: _redeemingItemIds.contains(doc.id),
+                        alreadyRedeemed: alreadyRedeemed,
+                        insufficient: insufficient,
+                        textPrimaryColor: widget.textPrimaryColor,
+                        textSecondaryColor: widget.textSecondaryColor,
+                        textMutedColor: widget.textMutedColor,
+                        accentColor: widget.accentColor,
+                        cardColor: widget.cardColor,
+                        onView: () => _showShopItemDetail(
                           itemId: doc.id,
                           data: data,
-                          currencyIcon: widget.currencyIcon,
+                          price: price,
                           redeemedCount: redeemedCount,
                           maxRedemptions: maxRedemptions,
-                          isRedeeming: _redeemingItemIds.contains(doc.id),
                           alreadyRedeemed: alreadyRedeemed,
                           insufficient: insufficient,
-                          textPrimaryColor: widget.textPrimaryColor,
-                          textSecondaryColor: widget.textSecondaryColor,
-                          textMutedColor: widget.textMutedColor,
-                          accentColor: widget.accentColor,
-                          cardColor: widget.cardColor,
-                          onView: () => _showShopItemDetail(
-                            itemId: doc.id,
-                            data: data,
-                            price: price,
-                            redeemedCount: redeemedCount,
-                            maxRedemptions: maxRedemptions,
-                            alreadyRedeemed: alreadyRedeemed,
-                            insufficient: insufficient,
-                          ),
-                          onRedeem: () => _redeemItem(
-                            itemId: doc.id,
-                            data: data,
-                            price: price,
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
+                        ),
+                        onRedeem: () => _redeemItem(
+                          itemId: doc.id,
+                          data: data,
+                          price: price,
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
             ],
           );
