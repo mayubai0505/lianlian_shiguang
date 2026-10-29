@@ -493,9 +493,14 @@ class _LoginPageState extends State<LoginPage> {
 
   // 🌟 終極合併版：負責控制蝴蝶、精準紀錄、以及轉場導向
   Future<void> _performLogin(
-      Future<Map<String, dynamic>?> Function() loginMethod,) async {
+      Future<Map<String, dynamic>?> Function() loginMethod, {
+        bool useBlockingDialog = true,
+      }) async {
     setState(() => _isLoginLoading = true);
-    _showLoadingDialog(context);
+    // Web Apple OAuth 使用瀏覽器彈出視窗，避免先開不可關閉的 Dialog。
+    if (useBlockingDialog) {
+      _showLoadingDialog(context);
+    }
     final l10n = AppLocalizations.of(context)!;
 
     try {
@@ -668,7 +673,10 @@ class _LoginPageState extends State<LoginPage> {
                       backgroundColor: Colors.black,
                       textColor: Colors.white,
                       onPressed: () {
-                        _performLogin(_authService.signInWithApple);
+                        _performLogin(
+                          _authService.signInWithApple,
+                          useBlockingDialog: !kIsWeb,
+                        );
                       },
                     ),
                     const SizedBox(height: 16),

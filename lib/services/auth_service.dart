@@ -238,38 +238,47 @@ class AuthService {
     }
   }
 
-  // ✨ Apple 登入
+  // Apple 登入：網頁版使用 Firebase OAuth Popup，Apple 裝置保留原生流程。
   Future<Map<String, dynamic>?> signInWithApple() async {
     try {
-      final appleCredential = await SignInWithApple.getAppleIDCredential(
-        scopes: [
-          AppleIDAuthorizationScopes.email,
-          AppleIDAuthorizationScopes.fullName,
-        ],
-      );
+      late final UserCredential userCredential;
 
-      final oauthProvider = OAuthProvider('apple.com');
-      final credential = oauthProvider.credential(
-        idToken: appleCredential.identityToken,
-        accessToken: appleCredential.authorizationCode,
-      );
+      if (kIsWeb) {
+        // 必須由登入按鈕直接觸發，避免瀏覽器封鎖彈出視窗。
+        final appleProvider = AppleAuthProvider();
+        appleProvider.addScope('email');
+        appleProvider.addScope('name');
+        userCredential = await _auth.signInWithPopup(appleProvider);
+      } else {
+        // 保留現有 iOS/macOS 的登入路徑，不改動原生簽章處理。
+        final appleCredential = await SignInWithApple.getAppleIDCredential(
+          scopes: [
+            AppleIDAuthorizationScopes.email,
+            AppleIDAuthorizationScopes.fullName,
+          ],
+        );
 
-      final UserCredential userCredential = await _auth.signInWithCredential(credential);
-
-      if (userCredential.user == null) {
-        return null;
+        final oauthProvider = OAuthProvider('apple.com');
+        final credential = oauthProvider.credential(
+          idToken: appleCredential.identityToken,
+          accessToken: appleCredential.authorizationCode,
+        );
+        userCredential = await _auth.signInWithCredential(credential);
       }
 
-// ✅ Apple 登入也要建立 users/{uid}，才會送新手 50 點
-      final bool isNewUser =
-      await createNewUser(userCredential.user!);
+      if (userCredential.user == null) return null;
 
+      // 保留原本的 users/{uid} 建立／補洞與新玩家獎勵邏輯。
+      final bool isNewUser = await createNewUser(userCredential.user!);
       return {
         'user': userCredential.user,
         'isNewUser': isNewUser,
       };
+    } on FirebaseAuthException catch (e) {
+      debugPrint('Apple 登入失敗：code=${e.code}, message=${e.message}');
+      rethrow;
     } catch (e) {
-      print('Apple 登入報錯: $e');
+      debugPrint('Apple 登入發生錯誤：$e');
       rethrow;
     }
   }
@@ -458,48 +467,17 @@ class AuthService {
               aiRequestsSnapshot.docs.isNotEmpty;
 
       if (hasOldData) {
-        // ⚠️ 有舊資料，但主文件不見
-        // 不當新玩家，不發50花
-        print("⚠️ 發現玩家資料異常 UID=${user.uid}，存在子集合但 users 文件不存在");
-
-
-        // ✅ 先根據流水帳重新計算花花
-        final repairedFlowerPoints =
-        await calculateFlowerPoints(user.uid);
-
-        await userDocRef.set({
-          'uid': user.uid,
-          'displayName':
-          user.displayName ?? "初識的旅人",
-          'nickname':
-          user.displayName ?? "初識的旅人",
-          'email':
-          user.email ?? '',
-          'photoURL':
-          user.photoURL ?? '',
-          // ✅ 使用流水帳計算出的花花
-          'flowerPoints':
-          repairedFlowerPoints,
-          'playerID':
-          _generateRandomPlayerID(),
-          'lastCheckInDate': null,
-          'checkInStreak': 0,
-          'dailyCheckInCount': 0,
-          // 標記人工修復
-          'dataRepaired': true,
-          'repairReason':
-          'Missing user document',
-          'createdAt':
-          FieldValue.serverTimestamp(),
-          'updatedAt':
-          FieldValue.serverTimestamp(),
-        }, SetOptions(merge: true));
-        print(
-            "✅ 玩家資料修復完成 UID=${user.uid}, 花花=$repairedFlowerPoints"
-        );
-        return false;
+        // 舊玩家仍有子集合，主文件卻遺失：禁止重建身分資訊。
+        throw StateError('既有玩家資料異常：已停止自動重新配發玩家 ID，請聯繫客服');
       }
 
+      // 若 Firebase Auth 早已建立，不能僅因 users 文件不存在就當新玩家。
+      // 新註冊帳號可正常建立；舊帳號則保留現況交由人工查核。
+      final createdAt = user.metadata.creationTime;
+      if (createdAt == null ||
+          DateTime.now().difference(createdAt).inMinutes > 10) {
+        throw StateError('既有登入帳號缺少玩家主資料，已停止自動初始化以保護暱稱與 ID');
+      }
 
       // ✅ 真的完全沒有資料，才算新玩家
       await userDocRef.set({
@@ -541,17 +519,21 @@ class AuthService {
       patchData['flowerPoints'] = 50;
     }
 
+    // 既有玩家的 playerID 即使為空，也絕不能在登入時隨機重產。
+    // 原 ID 可能仍存在 playerIDs 對照表，需要另行恢復。
     final String existingPlayerID = (data['playerID'] ?? '').toString().trim();
     if (existingPlayerID.isEmpty) {
-      patchData['playerID'] = _generateRandomPlayerID();
+      debugPrint('⚠️ 既有玩家 playerID 缺失，已略過自動配號 uid=${user.uid}');
     }
 
     if (!data.containsKey('displayName')) {
       patchData['displayName'] = user.displayName ?? "初識的旅人";
     }
 
+    // 既有玩家缺少暱稱時不從 Apple/Google 的 displayName 回填，
+    // 避免覆蓋已設定過的玩家身分；由修復流程核對來源。
     if (!data.containsKey('nickname')) {
-      patchData['nickname'] = user.displayName ?? "初識的旅人";
+      debugPrint('⚠️ 既有玩家 nickname 缺失，已略過登入預設暱稱 uid=${user.uid}');
     }
 
     if (!data.containsKey('email')) {
