@@ -931,11 +931,11 @@ Future<void> setupPushNotifications() async {
     await FirebaseMessaging.instance
         .setForegroundNotificationPresentationOptions(
       alert: false,
-      badge: true,
+      badge: false,
       sound: false,
     );
 
-    await messaging.requestPermission(alert: true, badge: true, sound: true);
+    await messaging.requestPermission(alert: true, badge: false, sound: true);
 
     String? token;
 

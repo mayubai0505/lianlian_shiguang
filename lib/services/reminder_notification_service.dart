@@ -147,7 +147,7 @@ class ReminderNotificationService {
       final bool? iosGranted =
       await iosPlugin.requestPermissions(
         alert: true,
-        badge: true,
+        badge: false,
         sound: true,
       );
 
@@ -277,7 +277,7 @@ class ReminderNotificationService {
     const iosDetails =
     DarwinNotificationDetails(
       presentAlert: true,
-      presentBadge: true,
+      presentBadge: false,
       presentSound: true,
     );
 
