@@ -166,7 +166,11 @@ class _AvatarFramePickerPageState extends State<AvatarFramePickerPage> {
     return result;
   }
 
-  Widget _avatarPreview({String? frameUrl, double size = 72}) {
+  Widget _avatarPreview({
+    String? frameUrl,
+    double size = 72,
+    double frameScale = 1.0,
+  }) {
     return SizedBox.square(
       dimension: size,
       child: Stack(
@@ -180,11 +184,14 @@ class _AvatarFramePickerPageState extends State<AvatarFramePickerPage> {
           if (frameUrl != null && frameUrl.trim().isNotEmpty)
             Positioned.fill(
               child: IgnorePointer(
-                child: Image(
-                  image: getAvatarImageProvider(frameUrl),
-                  fit: BoxFit.contain,
-                  filterQuality: FilterQuality.high,
-                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                child: Transform.scale(
+                  scale: frameScale,
+                  child: Image(
+                    image: getAvatarImageProvider(frameUrl),
+                    fit: BoxFit.contain,
+                    filterQuality: FilterQuality.high,
+                    errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                  ),
                 ),
               ),
             ),
@@ -309,6 +316,9 @@ class _AvatarFramePickerPageState extends State<AvatarFramePickerPage> {
                           preview: _avatarPreview(
                             frameUrl: frame.imageUrl,
                             size: 76,
+                            // 金色「秋日南瓜」圖片的透明留白較多，僅放大外框圖層。
+                            // 頭像半徑、其他框及卡片尺寸均保持不變。
+                            frameScale: frame.name.contains('秋日南瓜') ? 1.08 : 1.0,
                           ),
                           busy: _savingKey == key,
                           onTap: _savingKey == null

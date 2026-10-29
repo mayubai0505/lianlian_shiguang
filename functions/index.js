@@ -12739,7 +12739,7 @@ async function sendToUserDevices(userId, messageBase) {
 
     if (tokens.length === 0) {
         console.log(`玩家 ${userId} 沒有任何 FCM token，無法發送推播`);
-        return;
+        return { successCount: 0, failureCount: 0, tokenCount: 0 };
     }
 
     const response = await getMessaging().sendEachForMulticast({
@@ -12784,6 +12784,7 @@ async function sendToUserDevices(userId, messageBase) {
     if (deleteTasks.length > 0) {
         await Promise.all(deleteTasks);
     }
+    return { successCount: response.successCount, failureCount: response.failureCount, tokenCount: tokens.length };
 }
 
 
@@ -12907,7 +12908,7 @@ async function sendEventEndingNotificationToAllUsers({
                                 }
                             );
 
-                        await sendToUserDevices(
+                        return await sendToUserDevices(
                             userId,
                             {
                                 notification: {
@@ -12951,7 +12952,8 @@ async function sendEventEndingNotificationToAllUsers({
 
         for (const result of results) {
             if (result.status === "fulfilled") {
-                successUsers++;
+                if ((result.value?.successCount || 0) > 0) successUsers++;
+                else failedUsers++;
             } else {
                 failedUsers++;
                 console.error(
@@ -13056,22 +13058,27 @@ exports.processEventEndingNotifications =
                     continue;
                 }
 
-                const notificationState =
-                    eventData.notificationState &&
-                    typeof eventData
-                        .notificationState ===
-                        "object"
-                        ? eventData
-                            .notificationState
-                        : {};
-
-                if (
-                    notificationState[
-                        sentField
-                    ]
-                ) {
-                    continue;
-                }
+                // 原子性搶佔階段：避免排程重疊／重新啟動重送全服通知。
+                // 保守採 at-most-once 自動派送：若中途故障，需檢查
+                // notificationState.<stage>Dispatch 狀態後人工補送，
+                // 不可直接清除鎖重跑，否則先前成功者會重複收到。
+                const dispatchField = `${stage}Dispatch`;
+                const claimed = await db.runTransaction(async (tx) => {
+                    const fresh = await tx.get(eventDoc.ref);
+                    if (!fresh.exists) return false;
+                    const freshData = fresh.data() || {};
+                    const state = freshData.notificationState || {};
+                    if (state[sentField] || state[dispatchField]) return false;
+                    tx.update(eventDoc.ref, {
+                        [`notificationState.${dispatchField}`]: {
+                            status: "sending",
+                            startedAt: FieldValue.serverTimestamp(),
+                            claimId: `${eventDoc.id}_${stage}`,
+                        },
+                    });
+                    return true;
+                });
+                if (!claimed) continue;
 
                 const eventName =
                     String(
@@ -13100,40 +13107,30 @@ exports.processEventEndingNotifications =
                     }
                 );
 
-                const result =
-                    await sendEventEndingNotificationToAllUsers(
-                        {
-                            eventId:
-                                eventDoc.id,
-                            eventName,
-                            currencyName,
-                            stage,
-                        }
-                    );
-
-                await eventDoc.ref.set(
-                    {
-                        notificationState: {
-                            ...notificationState,
-                            [sentField]:
-                                FieldValue
-                                    .serverTimestamp(),
-                            [`${stage}LastResult`]:
-                                {
-                                    ...result,
-                                    completedAt:
-                                        FieldValue
-                                            .serverTimestamp(),
-                                },
-                        },
-                        updatedAt:
-                            FieldValue
-                                .serverTimestamp(),
-                    },
-                    {
-                        merge: true,
-                    }
-                );
+                let result;
+                try {
+                    result = await sendEventEndingNotificationToAllUsers({
+                        eventId: eventDoc.id,
+                        eventName,
+                        currencyName,
+                        stage,
+                    });
+                    await eventDoc.ref.update({
+                        [`notificationState.${sentField}`]: FieldValue.serverTimestamp(),
+                        [`notificationState.${dispatchField}.status`]: "completed",
+                        [`notificationState.${dispatchField}.completedAt`]: FieldValue.serverTimestamp(),
+                        [`notificationState.${stage}LastResult`]: result,
+                        updatedAt: FieldValue.serverTimestamp(),
+                    });
+                } catch (error) {
+                    await eventDoc.ref.update({
+                        [`notificationState.${dispatchField}.status`]: "needs_review",
+                        [`notificationState.${dispatchField}.error`]: String(error?.message || error).slice(0, 500),
+                        [`notificationState.${dispatchField}.failedAt`]: FieldValue.serverTimestamp(),
+                    }).catch((logError) => console.error("無法記錄提醒失敗", logError));
+                    console.error("活動提醒派送中斷，已停止自動重送以防玩家重複收訊", eventDoc.id, stage, error);
+                    continue;
+                }
 
                 console.log(
                     "✅ 活動結束提醒完成",
@@ -23264,7 +23261,7 @@ exports.sendGlobalAnnouncementNotificationV2 = onDocumentCreated(
                     : localizedContent;
 
                 try {
-                    await sendToUserDevices(userId, {
+                    const sendResult = await sendToUserDevices(userId, {
                         notification: {
                             title: localizedTitle,
                             body: localizedBody || genericText.body,
@@ -23292,7 +23289,8 @@ exports.sendGlobalAnnouncementNotificationV2 = onDocumentCreated(
                             },
                         },
                     });
-                    successUsers++;
+                    if ((sendResult?.successCount || 0) > 0) successUsers++;
+                    else failedUsers++;
                 } catch (error) {
                     failedUsers++;
                     console.error(

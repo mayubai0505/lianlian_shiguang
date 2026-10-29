@@ -5033,6 +5033,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       builder: (dialogContext) {
         String itemType = initial?['itemType']?.toString() ?? 'flower';
         String taskType = initial?['taskType']?.toString() ?? 'any_chat';
+        bool resetTaskProgress = false;
         final rawMaxRedemptions = initial?['maxRedemptions'];
         final int initialMaxRedemptions = rawMaxRedemptions is num
             ? rawMaxRedemptions.toInt()
@@ -5128,6 +5129,21 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                             setDialogState(() => taskType = value);
                           },
                         ),
+                        if (initial != null) ...[
+                          const SizedBox(height: 8),
+                          CheckboxListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: const Text('重新開始這項任務的進度'),
+                            subtitle: const Text(
+                              '此任務會取得新的識別碼；玩家須重新完成才能領取。'
+                                  '已發放的活動貨幣不會扣回，請勿無故重複發獎。',
+                            ),
+                            value: resetTaskProgress,
+                            onChanged: (value) => setDialogState(
+                                  () => resetTaskProgress = value ?? false,
+                            ),
+                          ),
+                        ],
                         const SizedBox(height: 12),
                         TextFormField(
                           initialValue: taskTargetValue,
@@ -5616,6 +5632,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                         'taskType': taskType,
                         'target': target,
                         'rewardAmount': amount,
+                        if (resetTaskProgress) '_resetProgress': true,
                       });
                     } else if (type == 'milestone') {
                       Navigator.of(dialogContext).pop({
@@ -6418,7 +6435,12 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
 
       List<Map<String, dynamic>> orderedItems(QuerySnapshot<Map<String, dynamic>> snap) {
         final items = snap.docs.map((itemDoc) {
-          return <String, dynamic>{...itemDoc.data()};
+          return <String, dynamic>{
+            ...itemDoc.data(),
+            '_docId': itemDoc.id,
+            '_originalTaskType': itemDoc.data()['taskType']?.toString() ?? '',
+            '_originalTarget': itemDoc.data()['target'],
+          };
         }).toList();
         items.sort((a, b) {
           final aOrder = (a['order'] as num?)?.toInt() ?? 999999;
@@ -6881,16 +6903,34 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         SetOptions(merge: true),
       );
 
+      // 任務 ID 代表永久進度身分，不能再依排序產生 task_1、task_2。
+      // 修改任務類型/目標或管理員指定重新開始時，改用新 ID；
+      // 其他編輯（例如文案、排序）保留原 ID 與玩家已領取紀錄。
       for (int i = 0; i < _eventTaskDrafts.length; i++) {
         final item = _eventTaskDrafts[i];
-        final ref = eventRef.collection('tasks').doc('task_${i + 1}');
+        final oldId = (item['_docId'] ?? '').toString().trim();
+        final oldType = (item['_originalTaskType'] ?? '').toString();
+        final oldTarget = int.tryParse((item['_originalTarget'] ?? '').toString()) ?? 1;
+        final newType = (item['taskType'] ?? 'any_chat').toString();
+        final newTarget = int.tryParse((item['target'] ?? '1').toString()) ?? 1;
+        final mustRenew = item['_resetProgress'] == true ||
+            (oldId.isNotEmpty && ((oldType.isNotEmpty && oldType != newType) || oldTarget != newTarget));
+        final taskDocId = oldId.isNotEmpty && !mustRenew
+            ? oldId
+            : 'task_${DateTime.now().microsecondsSinceEpoch}_$i';
+        final ref = eventRef.collection('tasks').doc(taskDocId);
         final fallbackContent = <String, dynamic>{
           if (item['title'] != null) 'title': item['title'].toString(),
           if (item['description'] != null)
             'description': item['description'].toString(),
         };
+        final storedItem = Map<String, dynamic>.from(item)
+          ..remove('_docId')
+          ..remove('_originalTaskType')
+          ..remove('_originalTarget')
+          ..remove('_resetProgress');
         batch.set(ref, {
-          ...item,
+          ...storedItem,
           'content': _localizedListItem(
             localized['tasks'],
             i,
@@ -7148,7 +7188,10 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                           );
                           if (edited == null || !mounted) return;
                           setState(() {
-                            items[index] = edited;
+                            items[index] = <String, dynamic>{
+                              ...item,
+                              ...edited,
+                            };
                           });
                         },
                         icon: const Icon(Icons.edit_outlined, size: 18),

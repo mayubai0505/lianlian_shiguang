@@ -1521,7 +1521,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
 
     final labelStyle = GoogleFonts.notoSerifTc(
-      color: Colors.black87,
+      color: onSurface,
       fontSize: 13,
       fontWeight: FontWeight.w500,
     );
@@ -1533,23 +1533,23 @@ class _EditProfilePageState extends State<EditProfilePage> {
       return InputDecoration(
         hintText: hintText,
         hintStyle: GoogleFonts.notoSerifTc(
-          color: onSurface.withValues(alpha: 0.34),
+          color: onSurface.withValues(alpha: 0.64),
           fontSize: 12,
         ),
         counterStyle: GoogleFonts.notoSerifTc(
-          color: onSurface.withValues(alpha: 0.42),
+          color: onSurface.withValues(alpha: 0.72),
           fontSize: 10.5,
         ),
         isDense: true,
         contentPadding: const EdgeInsets.fromLTRB(0, 6, 0, 8),
         border: UnderlineInputBorder(
           borderSide: BorderSide(
-            color: primaryColor.withValues(alpha: 0.22),
+            color: onSurface.withValues(alpha: 0.34),
           ),
         ),
         enabledBorder: UnderlineInputBorder(
           borderSide: BorderSide(
-            color: primaryColor.withValues(alpha: 0.22),
+            color: onSurface.withValues(alpha: 0.34),
           ),
         ),
         focusedBorder: UnderlineInputBorder(
@@ -1580,7 +1580,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             Text(
               helperText,
               style: GoogleFonts.notoSerifTc(
-                color: primaryColor.withValues(alpha: 0.58),
+                color: onSurface.withValues(alpha: 0.78),
                 fontSize: 10.5,
               ),
             ),
@@ -1642,14 +1642,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      // 讓外層 ThemeNotifier.currentBackground 真正呈現；原本白色 Scaffold 會遮住主題背景。
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
-        foregroundColor: Colors.black87,
-        iconTheme: const IconThemeData(color: Colors.black87),
+        foregroundColor: onSurface,
+        iconTheme: IconThemeData(color: onSurface),
         title: Text(
           widget.isCreating
               ? l10n.title_create_profile
@@ -1657,7 +1658,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           style: GoogleFonts.notoSerifTc(
             fontSize: 21,
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            color: onSurface,
             letterSpacing: 1.1,
           ),
         ),
@@ -1750,7 +1751,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           padding: const EdgeInsets.all(3),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.white,
+                            color: theme.colorScheme.surface,
                             boxShadow: [
                               BoxShadow(
                                 color: primaryColor.withValues(alpha: 0.10),
@@ -1774,14 +1775,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             top: -8,
                             bottom: -8,
                             child: IgnorePointer(
-                              child: Image(
-                                image: getAvatarImageProvider(
-                                  _equippedAvatarFrameImageUrl,
+                              child: Transform.scale(
+                                scale: _equippedAvatarFrameName.trim() == '秋日南瓜' ? 1.10 : 1.0,
+                                child: Image(
+                                  image: getAvatarImageProvider(
+                                    _equippedAvatarFrameImageUrl,
+                                  ),
+                                  fit: BoxFit.contain,
+                                  filterQuality: FilterQuality.high,
+                                  errorBuilder: (_, __, ___) =>
+                                  const SizedBox.shrink(),
                                 ),
-                                fit: BoxFit.contain,
-                                filterQuality: FilterQuality.high,
-                                errorBuilder: (_, __, ___) =>
-                                const SizedBox.shrink(),
                               ),
                             ),
                           ),
@@ -1797,7 +1801,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 shape: BoxShape.circle,
                                 color: primaryColor,
                                 border: Border.all(
-                                  color: Colors.white,
+                                  color: theme.colorScheme.surface,
                                   width: 2,
                                 ),
                                 boxShadow: [
@@ -1881,7 +1885,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           child: Row(
                             children: [
                               SizedBox.square(
-                                dimension: 54,
+                                dimension: 60,
                                 child: Stack(
                                   alignment: Alignment.center,
                                   children: [
@@ -1893,13 +1897,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     if (_equippedAvatarFrameImageUrl.isNotEmpty)
                                       Positioned.fill(
                                         child: IgnorePointer(
-                                          child: Image(
-                                            image: getAvatarImageProvider(
-                                              _equippedAvatarFrameImageUrl,
+                                          child: Transform.scale(
+                                            scale: 1.0,
+                                            child: Image(
+                                              image: getAvatarImageProvider(
+                                                _equippedAvatarFrameImageUrl,
+                                              ),
+                                              fit: BoxFit.contain,
+                                              errorBuilder: (_, __, ___) =>
+                                              const SizedBox.shrink(),
                                             ),
-                                            fit: BoxFit.contain,
-                                            errorBuilder: (_, __, ___) =>
-                                            const SizedBox.shrink(),
                                           ),
                                         ),
                                       ),
@@ -1980,7 +1987,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         ),
                         Text(
                           l10n.genderMale,
-                          style: GoogleFonts.notoSerifTc(fontSize: 13),
+                          style: GoogleFonts.notoSerifTc(fontSize: 13, color: onSurface),
                         ),
                         Radio<String>(
                           value: l10n.genderFemale,
@@ -1994,7 +2001,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         ),
                         Text(
                           l10n.genderFemale,
-                          style: GoogleFonts.notoSerifTc(fontSize: 13),
+                          style: GoogleFonts.notoSerifTc(fontSize: 13, color: onSurface),
                         ),
                         Radio<String>(
                           value: l10n.genderNotSelected,
@@ -2008,7 +2015,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         ),
                         Text(
                           l10n.genderNotSelected,
-                          style: GoogleFonts.notoSerifTc(fontSize: 13),
+                          style: GoogleFonts.notoSerifTc(fontSize: 13, color: onSurface),
                         ),
                       ],
                     ),

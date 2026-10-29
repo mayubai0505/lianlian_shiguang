@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import '../services/theme_notifier.dart';
 
 class HeartbeatDiaryPage extends StatefulWidget {
   final String title;
@@ -93,275 +95,281 @@ class _HeartbeatDiaryPageState extends State<HeartbeatDiaryPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
+    final isDark = theme.brightness == Brightness.dark;
+    final decorationColor = isDark ? Colors.white : primary;
+    final themeNotifier = context.watch<ThemeNotifier>();
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final width = constraints.maxWidth;
-            final height = constraints.maxHeight;
+    return Container(
+      decoration: themeNotifier.currentBackground,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final width = constraints.maxWidth;
+              final height = constraints.maxHeight;
 
-            // 花草採相對尺寸 + 上限，避免平板時過度放大。
-            final double flowerWidth = (width * 0.42).clamp(150.0, 240.0).toDouble();
-            // 負值越小，花草會露出更多；這裡比原本 -8% 更往內。
-            final double sideFlowerOffset =
-            -(width * 0.04).clamp(10.0, 32.0).toDouble();
-            final double bottomFlowerOffset =
-            -(height * 0.025).clamp(12.0, 28.0).toDouble();
+              // 花草採相對尺寸 + 上限，避免平板時過度放大。
+              final double flowerWidth = (width * 0.42).clamp(150.0, 240.0).toDouble();
+              // 負值越小，花草會露出更多；這裡比原本 -8% 更往內。
+              final double sideFlowerOffset =
+              -(width * 0.04).clamp(10.0, 32.0).toDouble();
+              final double bottomFlowerOffset =
+              -(height * 0.025).clamp(12.0, 28.0).toDouble();
 
-            return Stack(
-              children: [
-                // ==============================
-                // 左下花草
-                // ==============================
-                Positioned(
-                  left: sideFlowerOffset,
-                  bottom: bottomFlowerOffset,
-                  child: IgnorePointer(
-                    child: Opacity(
-                      opacity: 0.16,
-                      child: ColorFiltered(
-                        colorFilter: ColorFilter.mode(
-                          primary,
-                          BlendMode.srcIn,
-                        ),
-                        child: Image.asset(
-                          'assets/images/heartbeat_diary/botanical_left.webp',
-                          width: flowerWidth,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-
-                // ==============================
-                // 右下花草
-                // ==============================
-                Positioned(
-                  right: sideFlowerOffset,
-                  bottom: bottomFlowerOffset,
-                  child: IgnorePointer(
-                    child: Opacity(
-                      opacity: 0.16,
-                      child: ColorFiltered(
-                        colorFilter: ColorFilter.mode(
-                          primary,
-                          BlendMode.srcIn,
-                        ),
-                        child: Image.asset(
-                          'assets/images/heartbeat_diary/botanical_right.webp',
-                          width: flowerWidth,
-                          fit: BoxFit.contain,
+              return Stack(
+                children: [
+                  // ==============================
+                  // 左下花草
+                  // ==============================
+                  Positioned(
+                    left: sideFlowerOffset,
+                    bottom: bottomFlowerOffset,
+                    child: IgnorePointer(
+                      child: Opacity(
+                        opacity: 0.16,
+                        child: ColorFiltered(
+                          colorFilter: ColorFilter.mode(
+                            decorationColor,
+                            BlendMode.srcIn,
+                          ),
+                          child: Image.asset(
+                            'assets/images/heartbeat_diary/botanical_left.webp',
+                            width: flowerWidth,
+                            fit: BoxFit.contain,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
 
-                // ==============================
-                // 主內容
-                // ==============================
-                SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  padding: EdgeInsets.fromLTRB(
-                    width * 0.055,
-                    4,
-                    width * 0.055,
-                    height * 0.14,
+                  // ==============================
+                  // 右下花草
+                  // ==============================
+                  Positioned(
+                    right: sideFlowerOffset,
+                    bottom: bottomFlowerOffset,
+                    child: IgnorePointer(
+                      child: Opacity(
+                        opacity: 0.16,
+                        child: ColorFiltered(
+                          colorFilter: ColorFilter.mode(
+                            decorationColor,
+                            BlendMode.srcIn,
+                          ),
+                          child: Image.asset(
+                            'assets/images/heartbeat_diary/botanical_right.webp',
+                            width: flowerWidth,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                  child: Column(
-                    children: [
-                      // ==============================
-                      // 返回鍵
-                      // ==============================
-                      SizedBox(
-                        height: 52,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: IconButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                icon: const Icon(
-                                  Icons.arrow_back_ios_new_rounded,
-                                  color: Colors.black87,
-                                  size: 22,
-                                ),
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(
-                                  minWidth: 44,
-                                  minHeight: 44,
+
+                  // ==============================
+                  // 主內容
+                  // ==============================
+                  SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    padding: EdgeInsets.fromLTRB(
+                      width * 0.055,
+                      4,
+                      width * 0.055,
+                      height * 0.14,
+                    ),
+                    child: Column(
+                      children: [
+                        // ==============================
+                        // 返回鍵
+                        // ==============================
+                        SizedBox(
+                          height: 52,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: IconButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  icon: const Icon(
+                                    Icons.arrow_back_ios_new_rounded,
+                                    color: Colors.black87,
+                                    size: 22,
+                                  ),
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(
+                                    minWidth: 44,
+                                    minHeight: 44,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      SizedBox(height: height * 0.045),
-                      // ==============================
-                      // 任務 1
-                      // ==============================
-                      _buildTaskCard(
-                        context: context,
-                        assetPath:
-                        'assets/images/heartbeat_diary/task_daily_chat.webp',
-                        title: widget.dailyChatTitle,
-                        subtitle: widget.dailyChatSubtitle,
-                        progress: widget.dailyChatProgress,
-                        goal: 3,
-                        isClaimed: _dailyChatClaimed,
-                        onClaim: () async {
-                          if (_dailyChatClaimed ||
-                              widget.dailyChatProgress < 3) {
-                            return;
-                          }
-
-                          await widget.onClaimDailyChat(() {
-                            if (!mounted) return;
-                            setState(() {
-                              _dailyChatClaimed = true;
-                            });
-                          });
-                        },
-                      ),
-
-                      SizedBox(height: height * 0.018),
-
-                      // ==============================
-                      // 任務 2
-                      // ==============================
-                      _buildTaskCard(
-                        context: context,
-                        assetPath:
-                        'assets/images/heartbeat_diary/task_story.webp',
-                        title: widget.storyTitle,
-                        subtitle: widget.storySubtitle,
-                        progress: widget.storyProgress,
-                        goal: 1,
-                        isClaimed: _storyClaimed,
-                        iconScale: 1.22,
-                        onClaim: () async {
-                          if (_storyClaimed ||
-                              widget.storyProgress < 1) {
-                            return;
-                          }
-
-                          await widget.onClaimStory(() {
-                            if (!mounted) return;
-                            setState(() {
-                              _storyClaimed = true;
-                            });
-                          });
-                        },
-                      ),
-
-                      SizedBox(height: height * 0.018),
-
-                      // ==============================
-                      // 任務 3
-                      // ==============================
-                      _buildTaskCard(
-                        context: context,
-                        assetPath:
-                        'assets/images/heartbeat_diary/task_social.webp',
-                        title: widget.socialTitle,
-                        subtitle: widget.socialSubtitle,
-                        progress: widget.socialProgress,
-                        goal: 3,
-                        isClaimed: _socialClaimed,
-                        onClaim: () async {
-                          if (_socialClaimed ||
-                              widget.socialProgress < 3) {
-                            return;
-                          }
-
-                          await widget.onClaimSocial(() {
-                            if (!mounted) return;
-                            setState(() {
-                              _socialClaimed = true;
-                            });
-                          });
-                        },
-                      ),
-
-                      SizedBox(height: height * 0.018),
-
-                      // ==============================
-                      // 任務 4：月卡
-                      // ==============================
-                      _buildTaskCard(
-                        context: context,
-                        assetPath:
-                        'assets/images/heartbeat_diary/task_monthly.webp',
-                        title: widget.monthlyTitle,
-                        subtitle: widget.monthlySubtitle,
-                        progress:
-                        widget.hasActiveMonthlyCard ? 1 : 0,
-                        goal: 1,
-                        isClaimed: _monthlyClaimed,
-                        customIncompleteText:
-                        widget.monthlyLockedText,
-                        onClaim: () async {
-                          if (!widget.hasActiveMonthlyCard ||
-                              _monthlyClaimed) {
-                            return;
-                          }
-
-                          await widget.onClaimMonthly(() {
-                            if (!mounted) return;
-                            setState(() {
-                              _monthlyClaimed = true;
-                            });
-                          });
-                        },
-                      ),
-
-                      SizedBox(height: height * 0.038),
-
-                      // ==============================
-                      // 關閉
-                      // ==============================
-                      SizedBox(
-                        width: width * 0.55,
-                        height: 48,
-                        child: OutlinedButton(
-                          onPressed: () =>
-                              Navigator.of(context).pop(),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: primary,
-                            side: BorderSide(
-                              color: primary.withValues(alpha: 0.55),
-                              width: 1.1,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius:
-                              BorderRadius.circular(28),
-                            ),
-                            backgroundColor: Colors.white.withValues(
-                              alpha: 0.92,
-                            ),
-                          ),
-                          child: Text(
-                            widget.closeText,
-                            style: GoogleFonts.notoSerifTc(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 1,
-                              color: primary,
-                            ),
+                            ],
                           ),
                         ),
-                      ),
-                    ],
+
+                        SizedBox(height: height * 0.045),
+                        // ==============================
+                        // 任務 1
+                        // ==============================
+                        _buildTaskCard(
+                          context: context,
+                          assetPath:
+                          'assets/images/heartbeat_diary/task_daily_chat.webp',
+                          title: widget.dailyChatTitle,
+                          subtitle: widget.dailyChatSubtitle,
+                          progress: widget.dailyChatProgress,
+                          goal: 3,
+                          isClaimed: _dailyChatClaimed,
+                          onClaim: () async {
+                            if (_dailyChatClaimed ||
+                                widget.dailyChatProgress < 3) {
+                              return;
+                            }
+
+                            await widget.onClaimDailyChat(() {
+                              if (!mounted) return;
+                              setState(() {
+                                _dailyChatClaimed = true;
+                              });
+                            });
+                          },
+                        ),
+
+                        SizedBox(height: height * 0.018),
+
+                        // ==============================
+                        // 任務 2
+                        // ==============================
+                        _buildTaskCard(
+                          context: context,
+                          assetPath:
+                          'assets/images/heartbeat_diary/task_story.webp',
+                          title: widget.storyTitle,
+                          subtitle: widget.storySubtitle,
+                          progress: widget.storyProgress,
+                          goal: 1,
+                          isClaimed: _storyClaimed,
+                          iconScale: 1.22,
+                          onClaim: () async {
+                            if (_storyClaimed ||
+                                widget.storyProgress < 1) {
+                              return;
+                            }
+
+                            await widget.onClaimStory(() {
+                              if (!mounted) return;
+                              setState(() {
+                                _storyClaimed = true;
+                              });
+                            });
+                          },
+                        ),
+
+                        SizedBox(height: height * 0.018),
+
+                        // ==============================
+                        // 任務 3
+                        // ==============================
+                        _buildTaskCard(
+                          context: context,
+                          assetPath:
+                          'assets/images/heartbeat_diary/task_social.webp',
+                          title: widget.socialTitle,
+                          subtitle: widget.socialSubtitle,
+                          progress: widget.socialProgress,
+                          goal: 3,
+                          isClaimed: _socialClaimed,
+                          onClaim: () async {
+                            if (_socialClaimed ||
+                                widget.socialProgress < 3) {
+                              return;
+                            }
+
+                            await widget.onClaimSocial(() {
+                              if (!mounted) return;
+                              setState(() {
+                                _socialClaimed = true;
+                              });
+                            });
+                          },
+                        ),
+
+                        SizedBox(height: height * 0.018),
+
+                        // ==============================
+                        // 任務 4：月卡
+                        // ==============================
+                        _buildTaskCard(
+                          context: context,
+                          assetPath:
+                          'assets/images/heartbeat_diary/task_monthly.webp',
+                          title: widget.monthlyTitle,
+                          subtitle: widget.monthlySubtitle,
+                          progress:
+                          widget.hasActiveMonthlyCard ? 1 : 0,
+                          goal: 1,
+                          isClaimed: _monthlyClaimed,
+                          customIncompleteText:
+                          widget.monthlyLockedText,
+                          onClaim: () async {
+                            if (!widget.hasActiveMonthlyCard ||
+                                _monthlyClaimed) {
+                              return;
+                            }
+
+                            await widget.onClaimMonthly(() {
+                              if (!mounted) return;
+                              setState(() {
+                                _monthlyClaimed = true;
+                              });
+                            });
+                          },
+                        ),
+
+                        SizedBox(height: height * 0.038),
+
+                        // ==============================
+                        // 關閉
+                        // ==============================
+                        SizedBox(
+                          width: width * 0.55,
+                          height: 48,
+                          child: OutlinedButton(
+                            onPressed: () =>
+                                Navigator.of(context).pop(),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: primary,
+                              side: BorderSide(
+                                color: primary.withValues(alpha: 0.55),
+                                width: 1.1,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius:
+                                BorderRadius.circular(28),
+                              ),
+                              backgroundColor: theme.colorScheme.surface.withValues(
+                                alpha: isDark ? 0.86 : 0.92,
+                              ),
+                            ),
+                            child: Text(
+                              widget.closeText,
+                              style: GoogleFonts.notoSerifTc(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1,
+                                color: primary,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
@@ -381,6 +389,8 @@ class _HeartbeatDiaryPageState extends State<HeartbeatDiaryPage> {
   }) {
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
+    final isDark = theme.brightness == Brightness.dark;
+    final onSurface = theme.colorScheme.onSurface;
 
     final displayedProgress = progress > goal ? goal : progress;
     final isCompleted = progress >= goal;
@@ -401,7 +411,7 @@ class _HeartbeatDiaryPageState extends State<HeartbeatDiaryPage> {
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(14, 12, 13, 11),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.96),
+        color: theme.colorScheme.surface.withValues(alpha: isDark ? 0.86 : 0.96),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color: primary.withValues(alpha: 0.12),
@@ -428,14 +438,16 @@ class _HeartbeatDiaryPageState extends State<HeartbeatDiaryPage> {
                 height: 58,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: primary.withValues(alpha: 0.035),
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.07)
+                      : primary.withValues(alpha: 0.035),
                 ),
                 padding: const EdgeInsets.all(8),
                 child: Transform.scale(
                   scale: iconScale,
                   child: ColorFiltered(
                     colorFilter: ColorFilter.mode(
-                      primary.withValues(alpha: 0.62),
+                      isDark ? Colors.white : primary.withValues(alpha: 0.62),
                       BlendMode.srcIn,
                     ),
                     child: Image.asset(
@@ -462,7 +474,7 @@ class _HeartbeatDiaryPageState extends State<HeartbeatDiaryPage> {
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                         height: 1.3,
-                        color: primary,
+                        color: isDark ? onSurface : primary,
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -473,7 +485,9 @@ class _HeartbeatDiaryPageState extends State<HeartbeatDiaryPage> {
                       style: GoogleFonts.notoSerifTc(
                         fontSize: 11.5,
                         height: 1.45,
-                        color: primary.withValues(alpha: 0.62),
+                        color: isDark
+                            ? onSurface.withValues(alpha: 0.78)
+                            : primary.withValues(alpha: 0.62),
                       ),
                     ),
                   ],
@@ -513,9 +527,9 @@ class _HeartbeatDiaryPageState extends State<HeartbeatDiaryPage> {
                     style: GoogleFonts.notoSerifTc(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color: primary.withValues(
-                        alpha: canClaim ? 0.95 : 0.55,
-                      ),
+                      color: isDark
+                          ? onSurface.withValues(alpha: canClaim ? 1.0 : 0.75)
+                          : primary.withValues(alpha: canClaim ? 0.95 : 0.55),
                     ),
                   ),
                 ),

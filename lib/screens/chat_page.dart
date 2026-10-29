@@ -10033,8 +10033,52 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  // 送禮與小互動共用目前聊天室的人設名稱；每次發送前從雲端確認最新版本。
+  // 若讀取失敗保留已載入的名稱，避免因此阻擋玩家互動。
+  Future<String> _refreshChatPlayerName() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return _playerNickname;
+    try {
+      final snapshot = await _db.collection('users').doc(user.uid).get();
+      final data = snapshot.data() ?? <String, dynamic>{};
+      final accountName = (data['nickname'] ?? '').toString().trim();
+      final profiles = data['profiles'];
+      final roomProfiles = data['roomProfiles'];
+      final roomId = (_sessionId ?? widget.sessionId ?? '').trim();
+      final characterId = widget.characterId.trim();
+      String profileId = _activePlayerProfileId;
+      if (roomProfiles is Map && roomId.isNotEmpty) {
+        final selectedId = (roomProfiles[roomId] ??
+            roomProfiles['draft_$characterId'])
+            ?.toString().trim() ?? '';
+        if (selectedId.isNotEmpty) profileId = selectedId;
+      }
+      String resolvedName = accountName;
+      if (profileId != 'default' && profiles is List) {
+        for (final profile in profiles) {
+          if (profile is Map && profile['id']?.toString() == profileId) {
+            final name = (profile['name'] ?? '').toString().trim();
+            if (name.isNotEmpty) resolvedName = name;
+            break;
+          }
+        }
+      }
+      if (resolvedName.isNotEmpty && mounted) {
+        setState(() {
+          _playerNickname = resolvedName;
+          _currentAiProfile['name'] = resolvedName;
+        });
+      }
+    } catch (e) {
+      debugPrint('⚠️ 讀取聊天室最新玩家名稱失敗，沿用現有名稱：$e');
+    }
+    return _playerNickname;
+  }
+
   // 🚀 3. 執行送禮的終極合併函數 (內建雲端同步與好感度加分)
-  void _handleSendGift(Map<String, dynamic> gift) {
+  Future<void> _handleSendGift(Map<String, dynamic> gift) async {
+    final playerName = await _refreshChatPlayerName();
+    if (!mounted) return;
     final l10n = AppLocalizations.of(context)!;
     // 1. 檢查花花點數夠不夠
     if (_flowerPoints < gift['cost']) {
@@ -10120,9 +10164,7 @@ class _ChatPageState extends State<ChatPage> {
     if (affectionChange >= 10) preferenceTag = "超級喜歡的";
     if (affectionChange < 0) preferenceTag = "有點討厭或無感的";
 
-    // ✨ 5. 抓取玩家名字，讓沉浸感拉滿
-    final user = FirebaseAuth.instance.currentUser;
-    String playerName = user?.displayName ?? l10n.chat_you;
+    // 使用這個房間最新的「拾光檔案」名稱，不取 Auth 舊 displayName。
 
     // 📦 A 包：給玩家看的 (只會顯示這句)
     String displayText = l10n.chat_sys_gift(
@@ -10509,7 +10551,9 @@ class _ChatPageState extends State<ChatPage> {
           gifts: currentGiftList,
 
           // 親密互動：新頁面會先 pop 回聊天室，再呼叫這裡。
-          onAction: (message) {
+          onAction: (message) async {
+            final playerName = await _refreshChatPlayerName();
+            if (!mounted) return;
             String interactionType;
 
             if (message == l10n.chat_action_poke_prompt) {
@@ -10523,7 +10567,7 @@ class _ChatPageState extends State<ChatPage> {
             }
 
             _sendMessage(
-              text: message,
+              text: '$playerName：$message',
               billingType: 'interaction',
               interactionType: interactionType,
             );
@@ -12485,7 +12529,7 @@ class _ChatPageState extends State<ChatPage> {
             final bool isDarkChatTheme = theme.brightness == Brightness.dark;
             final normalStyle = TextStyle(
               color: isUserMessage && isDarkChatTheme
-                  ? theme.colorScheme.onSurface
+                  ? Colors.white
                   : Colors.black,
               fontSize: 15,
               height: 1.62,
@@ -12493,7 +12537,7 @@ class _ChatPageState extends State<ChatPage> {
 
             final actionStyle = TextStyle(
               color: isUserMessage && isDarkChatTheme
-                  ? theme.colorScheme.onSurface.withValues(alpha: 0.86)
+                  ? Colors.white
                   : primary,
               fontSize: 15,
               height: 1.62,

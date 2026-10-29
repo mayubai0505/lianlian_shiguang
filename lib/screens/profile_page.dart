@@ -2691,7 +2691,7 @@ class _ProfilePageState extends State<ProfilePage>
                       : null,
                 ),
                 child: SizedBox.square(
-                  dimension: 106,
+                  dimension: 120,
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
@@ -2707,14 +2707,17 @@ class _ProfilePageState extends State<ProfilePage>
                       if (_equippedAvatarFrameImageUrl.isNotEmpty)
                         Positioned.fill(
                           child: IgnorePointer(
-                            child: Image(
-                              image: getAvatarImageProvider(
-                                _equippedAvatarFrameImageUrl,
+                            child: Transform.scale(
+                              scale: _equippedAvatarFrameName.trim() == '秋日南瓜' ? 1.08 : 1.0,
+                              child: Image(
+                                image: getAvatarImageProvider(
+                                  _equippedAvatarFrameImageUrl,
+                                ),
+                                fit: BoxFit.contain,
+                                filterQuality: FilterQuality.high,
+                                errorBuilder: (_, __, ___) =>
+                                const SizedBox.shrink(),
                               ),
-                              fit: BoxFit.contain,
-                              filterQuality: FilterQuality.high,
-                              errorBuilder: (_, __, ___) =>
-                              const SizedBox.shrink(),
                             ),
                           ),
                         ),
