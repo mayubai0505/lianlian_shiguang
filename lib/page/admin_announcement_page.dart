@@ -187,6 +187,11 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   final FirebaseFunctions _functions = FirebaseFunctions.instanceFor(
     region: 'asia-east1',
   );
+  // 僅後台總覽與系統健康切至美國，其他管理功能仍使用台灣。
+  final FirebaseFunctions _usAdminFunctions = FirebaseFunctions.instanceFor(
+    region: 'us-central1',
+  );
+  bool _isTestingUsAdminFunctions = false;
   bool _isSyncingHelpTranslation = false;
   String _helpTranslationStatus = '';
   String _selectedHelpLanguage = 'en';
@@ -2251,8 +2256,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
 
   Future<Map<String, dynamic>> _loadDashboardData() async {
     final serial = ++_dashboardRequestSerial;
-    final dashboardCallable = _functions.httpsCallable(
-      'getAdminDashboardStats',
+    final dashboardCallable = _usAdminFunctions.httpsCallable(
+      'getAdminDashboardStatsUsTest',
       options: HttpsCallableOptions(timeout: const Duration(seconds: 120)),
     );
     // 先取得總覽基本資料；其他四個獨立統計不再卡住第一畫面。
@@ -2440,8 +2445,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   _loadSystemHealth() async {
     try {
       final callable =
-      _functions.httpsCallable(
-        'getAdminSystemHealth',
+      _usAdminFunctions.httpsCallable(
+        'getAdminSystemHealthUsTest',
         options:
         HttpsCallableOptions(
           timeout:
@@ -8459,6 +8464,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         return ListView(
           padding: const EdgeInsets.only(bottom: 80),
           children: [
+            const _AdminOperatingCostCard(),
             _adminPageHeader(
               title: '數據分析',
               subtitle: '先使用現有聊天室與會員資料計算可確認的數字；留存與轉換率不會用猜的，等事件埋點後再啟用。',
@@ -8565,6 +8571,106 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     );
   }
 
+  // 只供管理員手動測試美國測試函式；正式後台仍使用台灣版本。
+  Future<void> _testUsAdminFunctions() async {
+    if (_isTestingUsAdminFunctions) return;
+    setState(() => _isTestingUsAdminFunctions = true);
+
+    final usFunctions = FirebaseFunctions.instanceFor(region: 'us-central1');
+    final results = <String>[];
+
+    Future<Map<String, dynamic>?> runCheck(
+        FirebaseFunctions functions,
+        String functionName,
+        String label,
+        Duration timeout,
+        ) async {
+      final stopwatch = Stopwatch()..start();
+      try {
+        final response = await functions.httpsCallable(
+          functionName,
+          options: HttpsCallableOptions(timeout: timeout),
+        ).call();
+        stopwatch.stop();
+        if (response.data is! Map) {
+          results.add('❌ $label：資料格式不是 Map（${stopwatch.elapsedMilliseconds}ms）');
+          return null;
+        }
+        final data = Map<String, dynamic>.from(response.data as Map);
+        if (data.isEmpty) {
+          results.add('⚠️ $label：成功呼叫，但回傳空資料（${stopwatch.elapsedMilliseconds}ms）');
+        } else {
+          results.add('✅ $label：呼叫成功，回傳 ${data.length} 個頂層欄位（${stopwatch.elapsedMilliseconds}ms）');
+        }
+        results.add('  欄位：${data.keys.join(', ')}');
+        return data;
+      } on FirebaseFunctionsException catch (error) {
+        results.add('❌ $label：${error.code} / ${error.message ?? '無詳細訊息'}');
+        return null;
+      } catch (error) {
+        results.add('❌ $label：$error');
+        return null;
+      }
+    }
+
+    try {
+      final usHealth = await runCheck(
+        usFunctions, 'getAdminSystemHealthUsTest', '美國－系統健康',
+        const Duration(seconds: 40),
+      );
+      final twHealth = await runCheck(
+        _functions, 'getAdminSystemHealth', '台灣－系統健康',
+        const Duration(seconds: 40),
+      );
+      if (usHealth != null && twHealth != null) {
+        final missing = twHealth.keys.toSet().difference(usHealth.keys.toSet());
+        results.add(missing.isEmpty
+            ? '✅ 系統健康：美國版包含台灣版全部頂層欄位'
+            : '❌ 系統健康：美國版缺少欄位 ${missing.join(', ')}');
+      }
+
+      results.add('');
+      final usDashboard = await runCheck(
+        usFunctions, 'getAdminDashboardStatsUsTest', '美國－後台總覽',
+        const Duration(seconds: 135),
+      );
+      final twDashboard = await runCheck(
+        _functions, 'getAdminDashboardStats', '台灣－後台總覽',
+        const Duration(seconds: 135),
+      );
+      if (usDashboard != null && twDashboard != null) {
+        final missing = twDashboard.keys.toSet().difference(usDashboard.keys.toSet());
+        results.add(missing.isEmpty
+            ? '✅ 後台總覽：美國版包含台灣版全部頂層欄位'
+            : '❌ 後台總覽：美國版缺少欄位 ${missing.join(', ')}');
+      }
+      results.add('');
+      results.add('備註：成功呼叫表示目前登入身分通過函式的執行檢查；非空資料及欄位比對僅為初步驗證，不能取代逐項數值與資料來源檢查。');
+    } finally {
+      if (mounted) {
+        setState(() => _isTestingUsAdminFunctions = false);
+        await showDialog<void>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: const Text('美國後台函式測試結果'),
+            content: SizedBox(
+              width: 620,
+              child: SingleChildScrollView(
+                child: SelectableText(results.join('\n')),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: const Text('關閉'),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+  }
+
   Widget _buildSystemHealthTab() {
     final theme = Theme.of(context);
     return DefaultTabController(
@@ -8577,6 +8683,21 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
             '即時掌握 AI 請求成功率、失敗、Fallback、Timeout、回覆速度與使用量。',
             icon:
             Icons.monitor_heart_outlined,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: OutlinedButton.icon(
+                onPressed: _isTestingUsAdminFunctions ? null : _testUsAdminFunctions,
+                icon: _isTestingUsAdminFunctions
+                    ? const SizedBox(width: 18, height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Icon(Icons.cloud_outlined),
+                label: Text(_isTestingUsAdminFunctions
+                    ? '美國函式測試中…' : '測試美國函式（不切換正式服務）'),
+              ),
+            ),
           ),
           const TabBar(
             tabs: [
@@ -12857,6 +12978,174 @@ class _AdminCharacterPlaceholder extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+
+
+// 2026/10：管理員手動營運成本帳。僅呼叫 us-central1；不寫任何玩家資料。
+class _AdminOperatingCostCard extends StatefulWidget {
+  const _AdminOperatingCostCard();
+
+  @override
+  State<_AdminOperatingCostCard> createState() => _AdminOperatingCostCardState();
+}
+
+class _AdminOperatingCostCardState extends State<_AdminOperatingCostCard> {
+  static const _labels = <String,String>{
+    'gemini': 'Gemini API',
+    'firebase': 'Firebase / Google Cloud',
+    'runpod': 'Runpod',
+    'elevenlabs': 'ElevenLabs',
+    'otherAi': '其他 AI 平台',
+    'marketing': '廣告與行銷',
+    'other': '其他營運費用',
+    'platformFees': 'Apple / Google Play 平台抽成（僅未扣除部分）',
+  };
+  final _controllers = <String, TextEditingController>{
+    for (final key in _labels.keys) key: TextEditingController(),
+  };
+  final _revenue = TextEditingController();
+  final _notes = TextEditingController();
+  final _api = FirebaseFunctions.instanceFor(region: 'us-central1');
+  late DateTime _month;
+  bool _loading = true;
+  bool _saving = false;
+  String? _error;
+  bool _exists = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _month = DateTime(DateTime.now().year, DateTime.now().month);
+    _load();
+  }
+
+  String get _monthKey => '${_month.year}-${_month.month.toString().padLeft(2, '0')}';
+  double _amount(String text) => double.tryParse(text.trim()) ?? 0;
+  String _money(double n) => 'NT\$${NumberFormat('#,##0.##').format(n)}';
+
+  Future<void> _load() async {
+    setState(() { _loading = true; _error = null; });
+    try {
+      final result = await _api.httpsCallable('getAdminOperatingCostsUs')
+          .call(<String,dynamic>{'month': _monthKey});
+      final data = Map<String,dynamic>.from(result.data as Map);
+      final costs = Map<String,dynamic>.from(data['costs'] as Map? ?? {});
+      if (!mounted) return;
+      _exists = data['exists'] == true;
+      _revenue.text = (data['revenueGross'] ?? 0).toString();
+      _notes.text = (data['notes'] ?? '').toString();
+      for (final entry in _controllers.entries) {
+        entry.value.text = (costs[entry.key] ?? 0).toString();
+      }
+    } on FirebaseFunctionsException catch (e) {
+      if (mounted) _error = '[${e.code}] ${e.message ?? '讀取失敗'}';
+    } catch (e) {
+      if (mounted) _error = e.toString();
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  void _moveMonth(int diff) {
+    if (_saving || _loading) return;
+    _month = DateTime(_month.year, _month.month + diff);
+    _load();
+  }
+
+  Future<void> _save() async {
+    if (_saving || _loading) return;
+    final all = <String, String>{
+      'revenueGross': _revenue.text,
+      for (final e in _controllers.entries) e.key: e.value.text,
+    };
+    for (final e in all.entries) {
+      final v = double.tryParse(e.value.trim());
+      if (v == null || !v.isFinite || v < 0 || v > 100000000) {
+        setState(() => _error = '金額「${e.key}」請輸入 0 以上的有效數字');
+        return;
+      }
+    }
+    setState(() { _saving = true; _error = null; });
+    try {
+      await _api.httpsCallable('saveAdminOperatingCostsUs').call({
+        'month': _monthKey,
+        'revenueGross': double.parse(_revenue.text.trim()),
+        'costs': {for (final e in _controllers.entries) e.key: double.parse(e.value.text.trim())},
+        'notes': _notes.text.trim(),
+      });
+      if (!mounted) return;
+      _exists = true;
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('營運成本已儲存')));
+    } on FirebaseFunctionsException catch (e) {
+      if (mounted) _error = '[${e.code}] ${e.message ?? '儲存失敗'}';
+    } catch (e) {
+      if (mounted) _error = e.toString();
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  void dispose() {
+    for (final c in _controllers.values) { c.dispose(); }
+    _revenue.dispose();
+    _notes.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final costs = _controllers.entries.fold<double>(0,(sum,e) => sum + _amount(e.value.text));
+    final gross = _amount(_revenue.text);
+    final fee = _amount(_controllers['platformFees']!.text);
+    return Card(
+      margin: const EdgeInsets.fromLTRB(16,16,16,20),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
+          const Text('每月營運成本與損益', style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold)),
+          const SizedBox(height: 6),
+          const Text('手動填寫已發生的實際帳單金額（新台幣）。不會修改訂單、玩家花花或扣款。', style: TextStyle(fontSize: 12)),
+          Row(children: [
+            IconButton(onPressed: _loading ? null : () => _moveMonth(-1),icon: const Icon(Icons.chevron_left)),
+            Expanded(child: Center(child: Text(_monthKey,style: const TextStyle(fontWeight: FontWeight.bold)))),
+            IconButton(onPressed: _loading ? null : () => _moveMonth(1),icon: const Icon(Icons.chevron_right)),
+            IconButton(onPressed: _loading ? null : _load,icon: const Icon(Icons.refresh),tooltip:'重新讀取'),
+          ]),
+          if (_loading) const LinearProgressIndicator(),
+          if (_error != null) Padding(padding: const EdgeInsets.symmetric(vertical:8), child: Text(_error!,style: const TextStyle(color:Colors.red))),
+          if (!_loading) ...[
+            Text(_exists ? '已建立月份紀錄' : '尚無此月份紀錄，以下預設值均為 0',style: const TextStyle(fontSize:12)),
+            const SizedBox(height:12),
+            TextField(controller:_revenue,keyboardType:const TextInputType.numberWithOptions(decimal:true),
+                onChanged: (_) => setState(() {}),
+                decoration: const InputDecoration(labelText:'玩家付款總收入（尚未扣平台抽成）',prefixText:'NT\$ ',border:OutlineInputBorder())),
+            const SizedBox(height:12),
+            for (final entry in _labels.entries) ...[
+              TextField(controller:_controllers[entry.key], keyboardType: const TextInputType.numberWithOptions(decimal:true),
+                  onChanged: (_) => setState(() {}),
+                  decoration: InputDecoration(labelText:entry.value,prefixText:'NT\$ ',border: const OutlineInputBorder())),
+              const SizedBox(height:10),
+            ],
+            TextField(controller:_notes,maxLines:2,maxLength:1000,decoration: const InputDecoration(labelText:'本月備註（選填）',border:OutlineInputBorder())),
+            const SizedBox(height:8),
+            Text('平台抽成後收入：${_money(gross-fee)}'),
+            Text('全部成本（含平台抽成）：${_money(costs)}'),
+            Text('營運結餘：${_money(gross-costs)}',style:const TextStyle(fontSize:17,fontWeight:FontWeight.bold)),
+            const SizedBox(height:6),
+            const Text('注意：若填寫的是商店實際撥款淨額，請先換算為付款總收入；平台抽成請勿重複列入其他成本。此為營運結餘，非會計稅後淨利。',style:TextStyle(fontSize:12)),
+            const SizedBox(height:12),
+            Align(alignment:Alignment.centerRight,child: FilledButton.icon(
+              onPressed:_saving ? null : _save,
+              icon:_saving ? const SizedBox(width:16,height:16,child:CircularProgressIndicator(strokeWidth:2)) : const Icon(Icons.save_outlined),
+              label:Text(_saving ? '儲存中…' : '儲存本月帳務'),
+            )),
+          ],
+        ]),
+      ),
     );
   }
 }
