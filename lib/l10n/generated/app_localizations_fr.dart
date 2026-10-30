@@ -12884,6 +12884,18 @@ class AppLocalizationsFr extends AppLocalizations {
   String get world_discovery_world_background1 => 'Contexte du monde';
 
   @override
+  String get world_edit_custom_status_title1 =>
+      'Format de réponse / barre d’état personnalisés';
+
+  @override
+  String get world_edit_custom_status_hint1 =>
+      'Facultatif. Définissez un modèle de barre d’état pour les interactions dans le monde, par exemple l’heure, le lieu ou l’état des personnages. Ce contenu ne fait pas partie de la présentation publique.';
+
+  @override
+  String get world_edit_custom_status_field1 =>
+      'Contenu de la barre d’état personnalisée';
+
+  @override
   String get world_discovery_not_playable1 =>
       'Ce monde ouvert n’est pas encore jouable.';
 
@@ -13012,8 +13024,14 @@ class AppLocalizationsFr extends AppLocalizations {
       'One-line card description (optional, up to 60 characters)';
 
   @override
-  String get world_edit_public_summary1 =>
-      'Public world description (no spoilers)';
+  String get world_edit_public_summary1 => 'Public world description ';
+
+  @override
+  String get world_edit_creator_message_optional1 =>
+      'Message du créateur (facultatif)';
+
+  @override
+  String get world_discovery_creator_message1 => 'Message du créateur';
 
   @override
   String get world_edit_era1 =>

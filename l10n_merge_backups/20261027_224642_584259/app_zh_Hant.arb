@@ -6754,7 +6754,7 @@
   "world_edit_cover1": "封面",
   "world_edit_set_cover1": "設為封面",
   "world_edit_short_pitch1": "卡片一句話介紹（選填，最多 60 字）",
-  "world_edit_public_summary1": "世界觀公開簡介（不含劇透）",
+  "world_edit_public_summary1": "世界觀公開簡介",
   "world_edit_era1": "時空背景（例：架空現代、民國時期）",
   "world_edit_world_rules1": "世界觀背景與規則 *",
   "world_edit_full_lore1": "完整世界背景／事件與地點（給 AI 的設定）",

@@ -25,6 +25,8 @@ import 'character_model.dart';
 import 'settings_page.dart';
 import 'character_edit_page.dart';
 import 'world_edit_page.dart';
+import 'world_discovery_page.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'world_chat_page.dart';
 import 'store_page.dart';
 import '../page/announcement_page.dart';
@@ -3553,6 +3555,10 @@ class _ProfilePageState extends State<ProfilePage>
     final isPublic = data['status'] == 'public' || data['isPublic'] == true;
     final count = data['npcCharacters'] is List
         ? (data['npcCharacters'] as List).length : 0;
+    // 與公開世界卡片一致：只使用後端成功入帳的玩家聊天次數。
+    final rawChatCount = data['chatMessageCount'];
+    final chatCount = rawChatCount is num && rawChatCount >= 0
+        ? rawChatCount.toInt() : 0;
     return Card(
       elevation: 0,
       margin: const EdgeInsets.only(bottom: 12),
@@ -3566,18 +3572,36 @@ class _ProfilePageState extends State<ProfilePage>
             borderRadius: BorderRadius.circular(12),
             child: SizedBox(width: 72, height: 82,
                 child: cover.startsWith('https://')
-                    ? Image.network(cover, fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) =>
-                    const Icon(Icons.auto_stories_outlined))
+                    ? CachedNetworkImage(
+                  imageUrl: cover,
+                  fit: BoxFit.cover,
+                  memCacheWidth: 360,
+                  placeholder: (_, __) => const ColoredBox(
+                    color: Colors.transparent,
+                    child: Center(child: Icon(Icons.auto_stories_outlined)),
+                  ),
+                  errorWidget: (_, __, ___) =>
+                  const Icon(Icons.auto_stories_outlined),
+                )
                     : const Icon(Icons.auto_stories_outlined, size: 32)),
           ),
           const SizedBox(width: 12),
           Expanded(child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(name, maxLines: 2, overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.notoSerifTc(fontSize: 15,
-                      fontWeight: FontWeight.w600)),
+              Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                Flexible(child: Text(name, maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.notoSerifTc(fontSize: 15,
+                        fontWeight: FontWeight.w600))),
+                const SizedBox(width: 7),
+                const Text('💬', style: TextStyle(fontSize: 12)),
+                const SizedBox(width: 3),
+                Text(_formatPoints(chatCount),
+                    style: TextStyle(fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: theme.colorScheme.onSurfaceVariant)),
+              ]),
               const SizedBox(height: 5),
               Text("${isPublic ? AppLocalizations.of(context)!.profile_page_world_public1 : AppLocalizations.of(context)!.profile_page_world_private1} · ${AppLocalizations.of(context)!.profile_page_world_character_count1(count)}",
                   style: TextStyle(fontSize: 12,
@@ -3594,6 +3618,11 @@ class _ProfilePageState extends State<ProfilePage>
                         MaterialPageRoute(builder: (_) =>
                             WorldEditPage(worldId: doc.id))),
                     child: Text(AppLocalizations.of(context)!.profile_page_world_edit1)),
+                TextButton(
+                    onPressed: () => Navigator.push(context,
+                        MaterialPageRoute(builder: (_) =>
+                            WorldDiscoveryPage(worldId: doc.id, creatorPreview: true))),
+                    child: Text(AppLocalizations.of(context)!.theme_selection_preview)),
               ]),
             ],
           )),

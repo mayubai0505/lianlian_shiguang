@@ -376,8 +376,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     });
 
     try {
-      final callable = _functions.httpsCallable(
-        'backfillMomentSearchKeywords',
+      final callable = _usAdminFunctions.httpsCallable(
+        'backfillMomentSearchKeywordsUs',
         options: HttpsCallableOptions(
           timeout: const Duration(minutes: 9),
         ),
@@ -595,8 +595,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     setState(() => _isPublishing = true);
 
     try {
-      final callable = _functions.httpsCallable(
-        'publishAnnouncement',
+      final callable = _usAdminFunctions.httpsCallable(
+        'publishAnnouncementUs',
         options: HttpsCallableOptions(
           timeout: const Duration(minutes: 3),
         ),
@@ -662,8 +662,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     });
 
     try {
-      final callable = _functions.httpsCallable(
-        'uploadVoiceBank',
+      final callable = _usAdminFunctions.httpsCallable(
+        'uploadVoiceBankUs',
       );
 
       final result = await callable.call();
@@ -1317,8 +1317,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     });
 
     try {
-      final callable = _functions.httpsCallable(
-        'listRewardCampaigns',
+      final callable = _usAdminFunctions.httpsCallable(
+        'listRewardCampaignsUs',
       );
 
       final result = await callable.call();
@@ -1479,8 +1479,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     });
 
     try {
-      final callable = _functions.httpsCallable(
-        'createRewardCampaign',
+      final callable = _usAdminFunctions.httpsCallable(
+        'createRewardCampaignUs',
       );
 
       await callable.call({
@@ -1599,8 +1599,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     if (!confirmed || !mounted) return;
 
     try {
-      final callable = _functions.httpsCallable(
-        'disableRewardCampaign',
+      final callable = _usAdminFunctions.httpsCallable(
+        'disableRewardCampaignUs',
       );
 
       await callable.call({
@@ -2280,8 +2280,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     final stopwatch = Stopwatch()..start();
     debugPrint('📊 [v2.0] 營運分析專用 Future 開始請求');
     try {
-      final result = await _functions.httpsCallable(
-        'getAdminOperationsAnalytics',
+      final result = await _usAdminFunctions.httpsCallable(
+        'getAdminOperationsAnalyticsUs',
         options: HttpsCallableOptions(timeout: const Duration(seconds: 135)),
       ).call().timeout(const Duration(seconds: 140));
       debugPrint('📊 [v2.0] 營運分析網路請求耗時：${stopwatch.elapsedMilliseconds}ms');
@@ -4964,8 +4964,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     }
 
     try {
-      final callable = _functions.httpsCallable(
-        'analyzeEventStickerImage',
+      final callable = _usAdminFunctions.httpsCallable(
+        'analyzeEventStickerImageUs',
         options: HttpsCallableOptions(
           timeout: const Duration(seconds: 90),
         ),
@@ -6671,8 +6671,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     };
 
     try {
-      final callable = _functions.httpsCallable(
-        'translateEventContent',
+      final callable = _usAdminFunctions.httpsCallable(
+        'translateEventContentUs',
         options: HttpsCallableOptions(
           timeout: const Duration(minutes: 5),
         ),
@@ -9039,7 +9039,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     });
 
     try {
-      final callable = _functions.httpsCallable('listCreatorApplications');
+      final callable = _usAdminFunctions.httpsCallable('listCreatorApplicationsUs');
       final result = await callable.call();
       final data = result.data is Map
           ? Map<String, dynamic>.from(result.data as Map)
@@ -9221,7 +9221,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     if (result == null || !mounted) return;
 
     try {
-      final callable = _functions.httpsCallable('adminUpdateCreatorStatus');
+      final callable = _usAdminFunctions.httpsCallable('adminUpdateCreatorStatusUs');
       await callable.call({
         'creatorUid': uid,
         'targetStatus': targetStatus,
@@ -9260,7 +9260,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       _manualCreatorCandidate = null;
     });
     try {
-      final result = await _functions.httpsCallable('adminFindCreatorCandidate').call({
+      final result = await _usAdminFunctions.httpsCallable('adminFindCreatorCandidateUs').call({
         'query': query,
       });
       final raw = result.data;
@@ -9327,7 +9327,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     if (!confirmed || !mounted) return;
     setState(() => _manualCreatorActivating = true);
     try {
-      await _functions.httpsCallable('adminManuallyVerifyCreator').call({
+      await _usAdminFunctions.httpsCallable('adminManuallyVerifyCreatorUs').call({
         'creatorUid': uid,
         'activationConfirmed': true,
       });
@@ -9781,8 +9781,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     setState(() => _memoryHealthLoading = true);
 
     try {
-      final callable = _functions.httpsCallable(
-        'getMemoryHealthDiagnostics',
+      final callable = _usAdminFunctions.httpsCallable(
+        'getMemoryHealthDiagnosticsUs',
         options: HttpsCallableOptions(
           timeout: const Duration(seconds: 60),
         ),
@@ -9832,8 +9832,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     setState(() => _memoryDebugUpdating = true);
 
     try {
-      final callable = _functions.httpsCallable(
-        'setMemoryDebugEnabled',
+      final callable = _usAdminFunctions.httpsCallable(
+        'setMemoryDebugEnabledUs',
         options: HttpsCallableOptions(
           timeout: const Duration(seconds: 30),
         ),
@@ -11719,8 +11719,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     if (notice == null || !mounted) return;
 
     try {
-      final callable = _functions.httpsCallable(
-        'sendCharacterAdjustmentNotice',
+      final callable = _usAdminFunctions.httpsCallable(
+        'sendCharacterAdjustmentNoticeUs',
       );
 
       await callable.call({
@@ -11803,8 +11803,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
               setDialogState(() => isChecking = true);
 
               try {
-                final result = await _functions
-                    .httpsCallable('lookupAdminMailboxRecipient')
+                final result = await _usAdminFunctions
+                    .httpsCallable('lookupAdminMailboxRecipientUs')
                     .call({'recipientUid': uid});
 
                 final data = result.data is Map
@@ -11871,7 +11871,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
               setDialogState(() => isSending = true);
 
               try {
-                await _functions.httpsCallable('sendAdminMailboxMessage').call({
+                await _usAdminFunctions.httpsCallable('sendAdminMailboxMessageUs').call({
                   'recipientUid': verifiedUid,
                   'title': title,
                   'body': body,

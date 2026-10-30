@@ -7,6 +7,11 @@
   "allFriendsTitle": "Semua Teman",
   "noFriendsMessage": "Anda belum memiliki teman apa pun.",
   "unknownCharacter": "Karakter tidak dikenal",
+  "world_edit_custom_status_title1": "Format balasan / bilah status khusus",
+  "world_edit_custom_status_hint1": "Opsional. Atur templat bilah status untuk interaksi dunia, misalnya waktu, lokasi, atau status karakter. Konten ini bukan bagian dari deskripsi publik.",
+  "world_edit_custom_status_field1": "Isi bilah status khusus",
+  "world_edit_creator_message_optional1": "Pesan dari Kreator (Opsional)",
+  "world_discovery_creator_message1": "Pesan dari Kreator",
   "errorLoadingFriends": "Terjadi kesalahan saat memuat daftar teman: {error}",
   "@errorLoadingFriends": {
     "placeholders": {
@@ -6624,7 +6629,7 @@
   "world_edit_cover1": "Sampul",
   "world_edit_set_cover1": "Jadikan sampul",
   "world_edit_short_pitch1": "One-line card description (optional, up to 60 characters)",
-  "world_edit_public_summary1": "Public world description (no spoilers)",
+  "world_edit_public_summary1": "Public world description ",
   "world_edit_era1": "Time period (e.g. fictional present day, Republican era)",
   "world_edit_world_rules1": "World background and rules *",
   "world_edit_full_lore1": "Full world lore, events and locations (for AI)",

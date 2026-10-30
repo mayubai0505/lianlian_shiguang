@@ -7,6 +7,11 @@
   "allFriendsTitle": "所有好友",
   "noFriendsMessage": "您还没有任何好友。",
   "unknownCharacter": "未知角色",
+  "world_edit_custom_status_title1": "自定义回复格式／状态栏",
+  "world_edit_custom_status_hint1": "选填。可设置世界互动时的状态栏模板，例如时间、地点、人物状态等；此内容不是公开简介。",
+  "world_edit_custom_status_field1": "自定义状态栏内容",
+  "world_edit_creator_message_optional1": "创作者的话（选填）",
+  "world_discovery_creator_message1": "创作者的话",
   "errorLoadingFriends": "加载好友列表时发生错误: {error}",
   "@errorLoadingFriends": {
     "placeholders": {
@@ -6460,7 +6465,7 @@
   "world_edit_cover1": "封面",
   "world_edit_set_cover1": "设为封面",
   "world_edit_short_pitch1": "卡片一句话介绍（选填，最多 60 字）",
-  "world_edit_public_summary1": "世界观公开简介（不含剧透）",
+  "world_edit_public_summary1": "世界观公开简介",
   "world_edit_era1": "时空背景（例：架空现代、民国时期）",
   "world_edit_world_rules1": "世界观背景与规则 *",
   "world_edit_full_lore1": "完整世界背景／事件与地点（给 AI 的设定）",

@@ -1539,7 +1539,8 @@ async function describeImageWithGemini(imageUrlOrPath) {
 // 只描述貼紙本身的視覺訊號，不替玩家判定聊天當下意圖。
 // 真正的「撒嬌 / 求和 / 反諷 / 挑釁」留到聊天上下文再判斷。
 // ============================================================
-exports.analyzeEventStickerImage = onCall(
+/* 已搬遷美國後台：停用台灣匯出 analyzeEventStickerImage；保留原實作供必要時還原。 */
+void onCall(
   {
     region: REGION,
     timeoutSeconds: 90,
@@ -2991,7 +2992,8 @@ exports.deleteEventOwnedItem = onCall(
 // 從 shop_redemptions 的 redeemedAt 回填「首次取得日期」。
 // 新兌換物品已在 redeemEventShopItem 寫入 acquiredAt。
 // =====================================================
-exports.backfillEventOwnedItemAcquiredAt = onCall(
+/* 已搬遷美國後台：停用台灣匯出 backfillEventOwnedItemAcquiredAt；保留原實作供必要時還原。 */
+void onCall(
     {
         region: "asia-east1",
         timeoutSeconds: 60,
@@ -10194,7 +10196,8 @@ const resultPayload = {
 // 🩺 管理後台：AI 記憶健檢
 // 只讀診斷資料，不改玩家記憶內容與 RAG 排序。
 // ============================================================
-exports.setMemoryDebugEnabled = onCall(
+/* 已搬遷美國後台：停用台灣匯出 setMemoryDebugEnabled；保留原實作供必要時還原。 */
+void onCall(
     {
         region: REGION,
         timeoutSeconds: 30,
@@ -10223,7 +10226,8 @@ exports.setMemoryDebugEnabled = onCall(
 );
 
 
-exports.getMemoryHealthDiagnostics = onCall(
+/* 已搬遷美國後台：停用台灣匯出 getMemoryHealthDiagnostics；保留原實作供必要時還原。 */
+void onCall(
     {
         region: REGION,
         timeoutSeconds: 60,
@@ -15939,7 +15943,7 @@ exports.matchVoiceFromBank = onCall(
     };
   }
 );
-exports.uploadVoiceBank = onCall(
+const retiredTaiwan_uploadVoiceBank = onCall(
   {
     region: REGION,
   },
@@ -18638,7 +18642,8 @@ function buildMomentSearchKeywords(content, authorName) {
     .slice(0, 800);
 }
 
-exports.backfillMomentSearchKeywords = onCall(
+/* 已搬遷美國後台：停用台灣匯出 backfillMomentSearchKeywords；保留原實作供必要時還原。 */
+void onCall(
   {
     region: "asia-east1",
     timeoutSeconds: 540,
@@ -18962,7 +18967,8 @@ async function translateAnnouncementForLocale(title, content, targetLanguage) {
   };
 }
 
-exports.publishAnnouncement = onCall(
+/* 已搬遷美國後台：停用台灣匯出 publishAnnouncement；保留原實作供必要時還原。 */
+void onCall(
   {
     region: "asia-east1",
     timeoutSeconds: 180,
@@ -19560,7 +19566,7 @@ async function translateEventTextRecord(record, targetLanguage) {
   return result;
 }
 
-exports.translateEventContent = onCall(
+const retiredTaiwan_translateEventContent = onCall(
   {
     region: REGION,
     timeoutSeconds: 300,
@@ -20859,7 +20865,8 @@ exports.getRecommendationConversionStats =
   }
 
 
-  exports.getAdminFlowerStats = onCall(
+  /* 已搬遷美國後台：停用台灣匯出 getAdminFlowerStats；保留原實作供必要時還原。 */
+void onCall(
       {
           region: REGION,
           timeoutSeconds: 60,
@@ -21015,7 +21022,8 @@ exports.getRecommendationConversionStats =
   }
 
 
-  exports.getAdminRevenueStats = onCall(
+  /* 已搬遷美國後台：停用台灣匯出 getAdminRevenueStats；保留原實作供必要時還原。 */
+void onCall(
       {
           region: REGION,
           timeoutSeconds: 60,
@@ -21457,7 +21465,8 @@ function buildFlowerInventoryStats(rows = []) {
     };
 }
 
-exports.getAdminOperationsAnalytics = onCall(
+/* 已搬遷美國後台：停用台灣匯出 getAdminOperationsAnalytics；保留原實作供必要時還原。 */
+void onCall(
     {
         region: REGION,
         timeoutSeconds: 120,
@@ -21870,7 +21879,8 @@ exports.getAdminOperationsAnalytics = onCall(
     }
 );
 
-exports.createRewardCampaign = onCall(
+/* 已搬遷美國後台：停用台灣匯出 createRewardCampaign；保留原實作供必要時還原。 */
+void onCall(
   {
     region: "asia-east1",
     timeoutSeconds: 60,
@@ -22438,7 +22448,8 @@ exports.claimRewardCampaign = onCall(
 // 🛑 管理員停止活動
 // ==================================================
 
-exports.disableRewardCampaign = onCall(
+/* 已搬遷美國後台：停用台灣匯出 disableRewardCampaign；保留原實作供必要時還原。 */
+void onCall(
   {
     region: "asia-east1",
     timeoutSeconds: 60,
@@ -22495,7 +22506,8 @@ exports.disableRewardCampaign = onCall(
 // 🎁 管理員讀取活動禮物列表
 // ==================================================
 
-exports.listRewardCampaigns = onCall(
+/* 已搬遷美國後台：停用台灣匯出 listRewardCampaigns；保留原實作供必要時還原。 */
+void onCall(
   {
     region: "asia-east1",
     timeoutSeconds: 60,
@@ -22577,7 +22589,7 @@ exports.listRewardCampaigns = onCall(
 // 📨 管理員寄送角色調整通知
 // ==================================================
 
-exports.sendCharacterAdjustmentNotice = onCall(
+const retiredTaiwan_sendCharacterAdjustmentNotice = onCall(
   {
     region: "asia-east1",
     timeoutSeconds: 60,
@@ -22752,7 +22764,8 @@ exports.sendCharacterAdjustmentNotice = onCall(
 // 🔎 管理員查詢信件收件人
 // ==================================================
 
-exports.lookupAdminMailboxRecipient = onCall(
+/* 已搬遷美國後台：停用台灣匯出 lookupAdminMailboxRecipient；保留原實作供必要時還原。 */
+void onCall(
   {
     region: "asia-east1",
     timeoutSeconds: 30,
@@ -22807,7 +22820,8 @@ exports.lookupAdminMailboxRecipient = onCall(
 // 📨 管理員寄送單一玩家信件
 // ==================================================
 
-exports.sendAdminMailboxMessage = onCall(
+/* 已搬遷美國後台：停用台灣匯出 sendAdminMailboxMessage；保留原實作供必要時還原。 */
+void onCall(
   {
     region: "asia-east1",
     timeoutSeconds: 60,
@@ -24253,7 +24267,8 @@ try {
 // ============================================================
 const CREATOR_ADMIN_STATUSES = ["pending", "contract_pending", "approved", "suspended", "revoked", "rejected"];
 
-exports.listCreatorApplications = onCall({region: REGION, timeoutSeconds: 60}, async (request) => {
+/* 已搬遷美國後台：停用台灣匯出 listCreatorApplications；保留原實作供必要時還原。 */
+void onCall({region: REGION, timeoutSeconds: 60}, async (request) => {
   requireRewardCampaignAdmin(request);
   // 分狀態查詢避免讀取整個 users 集合；每組至多 200 位。
   const snapshots = await Promise.all(CREATOR_ADMIN_STATUSES.map(status =>
@@ -24282,7 +24297,8 @@ exports.listCreatorApplications = onCall({region: REGION, timeoutSeconds: 60}, a
   return {items};
 });
 
-exports.adminUpdateCreatorStatus = onCall({region: REGION, timeoutSeconds: 60}, async (request) => {
+/* 已搬遷美國後台：停用台灣匯出 adminUpdateCreatorStatus；保留原實作供必要時還原。 */
+void onCall({region: REGION, timeoutSeconds: 60}, async (request) => {
   const adminUid = requireRewardCampaignAdmin(request);
   const {creatorUid, targetStatus, reason} = request.data || {};
   const uid = String(creatorUid || "").trim();
@@ -24363,7 +24379,8 @@ exports.adminUpdateCreatorStatus = onCall({region: REGION, timeoutSeconds: 60}, 
 
 
 // 管理員手動開通：不以簽約為前提，僅使用 server SDK 並留存審計紀錄。
-exports.adminFindCreatorCandidate = onCall({region: REGION, timeoutSeconds: 30}, async (request) => {
+/* 已搬遷美國後台：停用台灣匯出 adminFindCreatorCandidate；保留原實作供必要時還原。 */
+void onCall({region: REGION, timeoutSeconds: 30}, async (request) => {
   requireRewardCampaignAdmin(request);
   const query = String(request.data?.query || "").trim();
   if (!query || query.length > 128) throw new HttpsError("invalid-argument", "請輸入有效的 UID 或玩家 ID");
@@ -24385,7 +24402,8 @@ exports.adminFindCreatorCandidate = onCall({region: REGION, timeoutSeconds: 30},
     creatorStatus: String(d.creatorStatus || "none")}};
 });
 
-exports.adminManuallyVerifyCreator = onCall({region: REGION, timeoutSeconds: 60}, async (request) => {
+/* 已搬遷美國後台：停用台灣匯出 adminManuallyVerifyCreator；保留原實作供必要時還原。 */
+void onCall({region: REGION, timeoutSeconds: 60}, async (request) => {
   const adminUid = requireRewardCampaignAdmin(request);
   const uid = String(request.data?.creatorUid || "").trim();
   if (!uid || uid.length > 128 || request.data?.activationConfirmed !== true) {
@@ -25340,3 +25358,5799 @@ require('../open_world').registerWorldFunctions(exports, {
 require('./admin_operating_costs').registerAdminOperatingCosts(exports, {
   onCall, HttpsError, db, FieldValue, requireRewardCampaignAdmin, APP_ID,
 });
+
+
+// ======================================================================
+// 管理後台美國區獨立入口；台灣原有服務保持原狀，供既有用戶安全過渡。
+// ======================================================================
+exports.analyzeEventStickerImageUs = onCall(
+  {
+    region: "us-central1",
+    timeoutSeconds: 90,
+    memory: "512MiB",
+    secrets: [geminiApiKey],
+  },
+  async (request) => {
+    requireRewardCampaignAdmin(request);
+
+    const imageUrl = String(request.data?.imageUrl || "").trim();
+
+    if (!imageUrl) {
+      throw new HttpsError("invalid-argument", "請先提供貼紙圖片");
+    }
+
+    const media = await downloadMediaAsBase64(imageUrl);
+
+    if (!media) {
+      throw new HttpsError("failed-precondition", "讀取貼紙圖片失敗");
+    }
+
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${geminiApiKey.value()}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                role: "user",
+                parts: [
+                  {
+                    text: [
+                      "你正在替戀愛聊天 App 建立貼紙的『視覺 metadata』。",
+                      "請只根據圖片看得到的內容分析，不要替玩家推斷聊天當下真正意圖。",
+                      "例如畫面看起來害羞，可以描述臉紅、遮臉、躲避視線；",
+                      "但不要寫成『玩家在撒嬌』『玩家想求和』『玩家在挑釁』。",
+                      "真正語意會在聊天當下結合上下文另外判斷。",
+                      "",
+                      "請使用台灣繁體中文，輸出 JSON，欄位固定如下：",
+                      "stickerName: 2~8 字的貼紙名稱",
+                      "visualTags: 3~6 個簡短視覺標籤陣列",
+                      "baseEmotion: 1~3 個畫面直接呈現的基礎情緒，用頓號分隔",
+                      "visualDescription: 1~2 句，只描述人物表情、動作、姿勢、可見符號與整體視覺氛圍",
+                      "",
+                      "如果圖片資訊有限，就保守描述，不要補不存在的細節。",
+                    ].join("\n"),
+                  },
+                  {
+                    inline_data: {
+                      mime_type: media.mimeType,
+                      data: media.base64,
+                    },
+                  },
+                ],
+              },
+            ],
+            generationConfig: {
+              temperature: 0.2,
+              responseMimeType: "application/json",
+            },
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(
+          "❌ 活動貼紙 AI 分析失敗:",
+          response.status,
+          errorText
+        );
+        throw new HttpsError("internal", "貼紙 AI 分析失敗，請稍後再試");
+      }
+
+      const data = await response.json();
+      const rawText = (
+        data?.candidates?.[0]?.content?.parts
+          ?.map((part) => part.text || "")
+          .join("")
+          .trim() || ""
+      );
+
+      if (!rawText) {
+        throw new HttpsError("internal", "AI 沒有回傳貼紙分析結果");
+      }
+
+      let parsed;
+      try {
+        parsed = JSON.parse(rawText);
+      } catch (_) {
+        const cleaned = rawText
+          .replace(/^```json\s*/i, "")
+          .replace(/^```\s*/i, "")
+          .replace(/\s*```$/i, "")
+          .trim();
+        parsed = JSON.parse(cleaned);
+      }
+
+      const stickerName = String(parsed?.stickerName || "貼紙").trim();
+      const visualTags = Array.isArray(parsed?.visualTags)
+        ? parsed.visualTags
+            .map((value) => String(value || "").trim())
+            .filter(Boolean)
+            .slice(0, 6)
+        : [];
+      const baseEmotion = String(parsed?.baseEmotion || "").trim();
+      const visualDescription = String(
+        parsed?.visualDescription || ""
+      ).trim();
+
+      if (!visualDescription) {
+        throw new HttpsError("internal", "AI 無法可靠描述這張貼紙");
+      }
+
+      return {
+        success: true,
+        analysis: {
+          stickerName: stickerName.slice(0, 30),
+          visualTags,
+          baseEmotion: baseEmotion.slice(0, 80),
+          visualDescription: visualDescription.slice(0, 500),
+          analysisSource: "gemini_vision",
+        },
+      };
+    } catch (error) {
+      if (error instanceof HttpsError) throw error;
+
+      console.error("❌ analyzeEventStickerImage 發生錯誤:", error);
+      throw new HttpsError("internal", "貼紙 AI 分析失敗，請稍後再試");
+    }
+  }
+);;
+
+exports.backfillEventOwnedItemAcquiredAtUs = onCall(
+    {
+        region: "us-central1",
+        timeoutSeconds: 60,
+        memory: "256MiB",
+    },
+    async (request) => {
+        const userId = request.auth?.uid;
+
+        if (!userId) {
+            throw new HttpsError(
+                "unauthenticated",
+                "請先登入"
+            );
+        }
+
+        const userRef =
+            db.collection("users").doc(userId);
+
+        const userSnapshot =
+            await userRef.get();
+
+        const userData =
+            userSnapshot.exists
+                ? (userSnapshot.data() || {})
+                : {};
+
+        if (
+            userData
+                .eventOwnedItemAcquiredAtBackfillV1Done === true
+        ) {
+            return {
+                success: true,
+                alreadyDone: true,
+                updatedItems: 0,
+            };
+        }
+
+        const eventsRef =
+            db.collection("artifacts")
+                .doc(APP_ID)
+                .collection("event_progress")
+                .doc(userId)
+                .collection("events");
+
+        const eventsSnapshot =
+            await eventsRef.get();
+
+        let updatedItems = 0;
+        let scannedEvents = 0;
+
+        for (const eventDoc of eventsSnapshot.docs) {
+            scannedEvents++;
+
+            const progressData =
+                eventDoc.data() || {};
+
+            const rawOwned =
+                progressData.ownedEventItems;
+
+            if (
+                !rawOwned ||
+                typeof rawOwned !== "object"
+            ) {
+                continue;
+            }
+
+            const ownedEventItems = {
+                ...rawOwned,
+            };
+
+            const missingItemIds =
+                Object.entries(ownedEventItems)
+                    .filter(([_, item]) => {
+                        return (
+                            item &&
+                            typeof item === "object" &&
+                            !item.acquiredAt
+                        );
+                    })
+                    .map(([itemId]) => itemId);
+
+            if (missingItemIds.length === 0) {
+                continue;
+            }
+
+            const redemptionsSnapshot =
+                await eventDoc.ref
+                    .collection("shop_redemptions")
+                    .orderBy("redeemedAt", "asc")
+                    .get();
+
+            const firstRedeemedAtByItem =
+                new Map();
+
+            for (
+                const redemptionDoc
+                of redemptionsSnapshot.docs
+            ) {
+                const redemption =
+                    redemptionDoc.data() || {};
+
+                const itemId =
+                    String(
+                        redemption.itemId || ""
+                    ).trim();
+
+                if (
+                    !itemId ||
+                    firstRedeemedAtByItem.has(itemId)
+                ) {
+                    continue;
+                }
+
+                const redeemedAt =
+                    redemption.redeemedAt;
+
+                if (redeemedAt) {
+                    firstRedeemedAtByItem.set(
+                        itemId,
+                        redeemedAt
+                    );
+                }
+            }
+
+            let changed = false;
+
+            for (const itemId of missingItemIds) {
+                const acquiredAt =
+                    firstRedeemedAtByItem.get(itemId);
+
+                if (!acquiredAt) {
+                    continue;
+                }
+
+                ownedEventItems[itemId] = {
+                    ...ownedEventItems[itemId],
+                    acquiredAt,
+                };
+
+                updatedItems++;
+                changed = true;
+            }
+
+            if (changed) {
+                await eventDoc.ref.set(
+                    {
+                        ownedEventItems,
+                        updatedAt:
+                            FieldValue.serverTimestamp(),
+                    },
+                    { merge: true }
+                );
+            }
+        }
+
+        await userRef.set(
+            {
+                eventOwnedItemAcquiredAtBackfillV1Done:
+                    true,
+                eventOwnedItemAcquiredAtBackfillV1At:
+                    FieldValue.serverTimestamp(),
+            },
+            { merge: true }
+        );
+
+        console.log(
+            "🕰️ 活動收藏日期補正完成",
+            {
+                userId,
+                scannedEvents,
+                updatedItems,
+            }
+        );
+
+        return {
+            success: true,
+            alreadyDone: false,
+            scannedEvents,
+            updatedItems,
+        };
+    }
+);;
+
+exports.getMemoryHealthDiagnosticsUs = onCall(
+    {
+        region: "us-central1",
+        timeoutSeconds: 60,
+        memory: "512MiB",
+    },
+    async (request) => {
+        requireRewardCampaignAdmin(request);
+
+        const appId = String(
+            request.data?.appId || APP_ID || "lianlianshiguang"
+        ).trim() || "lianlianshiguang";
+
+        const targetUserId = String(request.data?.userId || "").trim();
+        let characterId = String(request.data?.characterId || "").trim();
+        const sessionId = String(request.data?.sessionId || "").trim();
+        let playerProfileId = String(request.data?.playerProfileId || "").trim();
+
+        if (!targetUserId) {
+            throw new HttpsError("invalid-argument", "請提供玩家 UID");
+        }
+
+        const userRef = db.collection("users").doc(targetUserId);
+        const userSnapshot = await userRef.get();
+
+        if (!userSnapshot.exists) {
+            throw new HttpsError("not-found", "找不到這個玩家");
+        }
+
+        const userData = userSnapshot.data() || {};
+
+        if (sessionId) {
+            const sessionSnapshot = await db
+                .collection("artifacts")
+                .doc(appId)
+                .collection("chat_sessions")
+                .doc(sessionId)
+                .get();
+
+            if (sessionSnapshot.exists) {
+                const sessionData = sessionSnapshot.data() || {};
+                const sessionOwner = String(sessionData.userId || "").trim();
+
+                if (sessionOwner && sessionOwner !== targetUserId) {
+                    throw new HttpsError(
+                        "permission-denied",
+                        "這個聊天室不屬於指定玩家"
+                    );
+                }
+
+                if (!characterId) {
+                    characterId = String(sessionData.characterId || "").trim();
+                }
+                if (!playerProfileId) {
+                    playerProfileId = String(sessionData.playerProfileId || "").trim();
+                }
+            }
+        }
+
+        if (!playerProfileId) {
+            playerProfileId = String(
+                userData.activeProfileId ||
+                userData.defaultProfileId ||
+                "default"
+            ).trim() || "default";
+        }
+
+        const profileRef = userRef
+            .collection("profile_memories")
+            .doc(playerProfileId)
+            .collection("memories");
+
+        const profileSnapshot = await profileRef
+            .orderBy("timestamp", "desc")
+            .limit(200)
+            .get();
+
+        let characterSnapshot = null;
+        if (characterId) {
+            characterSnapshot = await userRef
+                .collection("profile_memories")
+                .doc(playerProfileId)
+                .collection("characters")
+                .doc(characterId)
+                .collection("memories")
+                .orderBy("timestamp", "desc")
+                .limit(200)
+                .get();
+        }
+
+        let sessionMemorySnapshot = null;
+        if (sessionId) {
+            sessionMemorySnapshot = await db
+                .collection("artifacts")
+                .doc(appId)
+                .collection("chat_sessions")
+                .doc(sessionId)
+                .collection("memories")
+                .orderBy("timestamp", "desc")
+                .limit(200)
+                .get();
+        }
+
+        const [jobsSnapshot, debugSnapshot] = await Promise.all([
+            db.collection("artifacts")
+                .doc(appId)
+                .collection("memory_jobs")
+                .where("userId", "==", targetUserId)
+                .limit(200)
+                .get(),
+            db.collection("artifacts")
+                .doc(appId)
+                .collection("memory_debug_logs")
+                .where("userId", "==", targetUserId)
+                .limit(100)
+                .get(),
+        ]);
+
+        function tsMillis(value) {
+            try {
+                return value?.toMillis?.() || 0;
+            } catch (_) {
+                return 0;
+            }
+        }
+
+        function normalizeMemoryDoc(doc, fallbackScope) {
+            const data = doc.data() || {};
+            return {
+                id: doc.id,
+                scope: String(data.scope || fallbackScope || ""),
+                text: String(data.text || data.content || ""),
+                factKey: String(data.factKey || ""),
+                factValue: String(data.factValue || ""),
+                category: String(data.category || ""),
+                confidence: Number(data.confidence || 0),
+                active: data.active !== false,
+                important: data.important === true,
+                sourceMessage: String(data.sourceMessage || ""),
+                timestampMs: tsMillis(data.timestamp || data.updatedAt),
+            };
+        }
+
+        function memoryStats(snapshot, scope) {
+            const rows = snapshot
+                ? snapshot.docs.map((doc) => normalizeMemoryDoc(doc, scope))
+                : [];
+            return {
+                totalLoaded: rows.length,
+                active: rows.filter((row) => row.active).length,
+                inactive: rows.filter((row) => !row.active).length,
+                rows: rows.slice(0, 100),
+            };
+        }
+
+        const jobs = jobsSnapshot.docs
+            .map((doc) => {
+                const data = doc.data() || {};
+                return {
+                    id: doc.id,
+                    status: String(data.status || "unknown"),
+                    characterId: String(data.characterId || ""),
+                    sessionId: String(data.sessionId || ""),
+                    playerProfileId: String(data.playerProfileId || ""),
+                    userMessage: String(data.userMessage || ""),
+                    attempts: Number(data.attempts || 0),
+                    memoryCreated: data.memoryCreated === true,
+                    memoryId: String(data.memoryId || ""),
+                    errorCode: String(data.errorCode || ""),
+                    errorMessage: String(data.errorMessage || ""),
+                    createdAtMs: tsMillis(data.createdAt),
+                    completedAtMs: tsMillis(data.completedAt),
+                };
+            })
+            .sort((a, b) => b.createdAtMs - a.createdAtMs);
+
+        const jobCounts = {};
+        for (const job of jobs) {
+            jobCounts[job.status] = Number(jobCounts[job.status] || 0) + 1;
+        }
+
+        const debugLogs = debugSnapshot.docs
+            .map((doc) => {
+                const data = doc.data() || {};
+                return {
+                    id: doc.id,
+                    characterId: String(data.characterId || ""),
+                    sessionId: String(data.sessionId || ""),
+                    playerProfileId: String(data.playerProfileId || ""),
+                    chatMode: String(data.chatMode || ""),
+                    retrievalQuery: String(data.retrievalQuery || ""),
+                    candidateCounts: data.candidateCounts || {},
+                    selectedLores: Array.isArray(data.selectedLores)
+                        ? data.selectedLores
+                        : [],
+                    selectedMemories: Array.isArray(data.selectedMemories)
+                        ? data.selectedMemories
+                        : [],
+                    createdAtMs: tsMillis(data.createdAt),
+                };
+            })
+            .sort((a, b) => b.createdAtMs - a.createdAtMs)
+            .slice(0, 30);
+
+        return {
+            success: true,
+            target: {
+                userId: targetUserId,
+                characterId,
+                sessionId,
+                playerProfileId,
+            },
+            debugEnabled: userData.memoryDebugEnabled === true,
+            limits: {
+                currentRagCandidateReadPerScope: 20,
+                currentRagSelectedMemories: 3,
+                currentRagSelectedMemoriesResonance: 4,
+                diagnosticsLoadCapPerScope: 200,
+            },
+            profile: memoryStats(profileSnapshot, "profile"),
+            character: memoryStats(characterSnapshot, "character"),
+            session: memoryStats(sessionMemorySnapshot, "session"),
+            jobs: {
+                totalLoaded: jobs.length,
+                counts: jobCounts,
+                rows: jobs.slice(0, 100),
+            },
+            ragDebugLogs: debugLogs,
+        };
+    }
+);;
+
+exports.setMemoryDebugEnabledUs = onCall(
+    {
+        region: "us-central1",
+        timeoutSeconds: 30,
+        memory: "256MiB",
+    },
+    async (request) => {
+        requireRewardCampaignAdmin(request);
+
+        const targetUserId = String(request.data?.userId || "").trim();
+        const enabled = request.data?.enabled === true;
+
+        if (!targetUserId) {
+            throw new HttpsError("invalid-argument", "請提供玩家 UID");
+        }
+
+        await db.collection("users").doc(targetUserId).set(
+            {
+                memoryDebugEnabled: enabled,
+                memoryDebugUpdatedAt: FieldValue.serverTimestamp(),
+            },
+            {merge: true}
+        );
+
+        return {success: true, enabled};
+    }
+);;
+
+exports.uploadVoiceBankUs = onCall(
+  {
+    region: "us-central1",
+  },
+  async (request) => {
+    requireLogin(request);
+
+    // 只有你的 Firebase UID 可以執行。
+    const officialCreatorUids = new Set([
+      "B71k2kyooubYsOtIO1nkiBwyBXt2",
+    ]);
+
+    const uid = request.auth?.uid;
+
+    if (!uid || !officialCreatorUids.has(uid)) {
+      throw new HttpsError(
+        "permission-denied",
+        "你沒有初始化 Voice Bank 的權限"
+      );
+    }
+
+    const voices = [
+      // =========================================================
+      // 01｜低沉男大學生
+      // =========================================================
+      {
+        documentId: "male_college_low_01",
+        voiceId: "H9O9f48DKXnZzFpd3IDY",
+        name: "低沉男大學生",
+        gender: "male",
+        age: "young_adult",
+        category: "male",
+        role: "沉穩學長",
+        style: "low_warm",
+        enabled: true,
+        displayOrder: 1,
+        searchWeight: 100,
+        tags: [
+          "低沉",
+          "男大生",
+          "大學生",
+          "學長",
+          "成熟",
+          "磁性",
+          "沉穩",
+          "可靠",
+          "冷靜",
+          "安全感",
+        ],
+        traits: {
+          depth: 0.82,
+          warmth: 0.55,
+          energy: 0.48,
+          softness: 0.42,
+          maturity: 0.68,
+          brightness: 0.32,
+          confidence: 0.72,
+          romance: 0.62,
+          elegance: 0.55,
+          mystery: 0.40,
+          cuteness: 0.18,
+        },
+        defaultSettings: {
+          stability: 0.45,
+          style: 0.55,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 02｜青春男高中生
+      // =========================================================
+      {
+        documentId: "male_highschool_youth_01",
+        voiceId: "xq9zKRI69Pfk0TE4Oke4",
+        name: "青春男高中生",
+        gender: "male",
+        age: "young",
+        category: "male",
+        role: "陽光少年",
+        style: "bright_youth",
+        enabled: true,
+        displayOrder: 2,
+        searchWeight: 100,
+        tags: [
+          "少年",
+          "青春",
+          "活潑",
+          "陽光",
+          "學生",
+          "清爽",
+          "元氣",
+          "開朗",
+          "親切",
+          "熱情",
+        ],
+        traits: {
+          depth: 0.28,
+          warmth: 0.72,
+          energy: 0.90,
+          softness: 0.52,
+          maturity: 0.24,
+          brightness: 0.88,
+          confidence: 0.62,
+          romance: 0.50,
+          elegance: 0.25,
+          mystery: 0.10,
+          cuteness: 0.72,
+        },
+        defaultSettings: {
+          stability: 0.35,
+          style: 0.62,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 03｜溫柔知性女聲
+      // =========================================================
+      {
+        documentId: "female_gentle_intellectual_01",
+        voiceId: "9lHjugDhwqoxA5MhX0az",
+        name: "溫柔知性女聲",
+        gender: "female",
+        age: "adult",
+        category: "female",
+        role: "知性姊姊",
+        style: "gentle_intellectual",
+        enabled: true,
+        displayOrder: 3,
+        searchWeight: 105,
+        tags: [
+          "溫柔",
+          "知性",
+          "成熟",
+          "可靠",
+          "姊姊",
+          "優雅",
+          "耐心",
+          "療癒",
+          "穩重",
+          "氣質",
+        ],
+        traits: {
+          depth: 0.48,
+          warmth: 0.88,
+          energy: 0.42,
+          softness: 0.82,
+          maturity: 0.78,
+          brightness: 0.52,
+          confidence: 0.66,
+          romance: 0.70,
+          elegance: 0.82,
+          mystery: 0.24,
+          cuteness: 0.30,
+        },
+        defaultSettings: {
+          stability: 0.52,
+          style: 0.45,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 04｜可愛甜美女聲
+      // =========================================================
+      {
+        documentId: "female_cute_01",
+        voiceId: "BT0SH7Hb8NRPpT5xbCgg",
+        name: "可愛甜美女聲",
+        gender: "female",
+        age: "young_adult",
+        category: "female",
+        role: "甜美女孩",
+        style: "cute_sweet",
+        enabled: true,
+        displayOrder: 4,
+        searchWeight: 100,
+        tags: [
+          "甜美",
+          "可愛",
+          "活潑",
+          "少女感",
+          "撒嬌",
+          "軟萌",
+          "元氣",
+          "親切",
+          "明亮",
+          "療癒",
+        ],
+        traits: {
+          depth: 0.18,
+          warmth: 0.82,
+          energy: 0.78,
+          softness: 0.88,
+          maturity: 0.24,
+          brightness: 0.94,
+          confidence: 0.52,
+          romance: 0.64,
+          elegance: 0.28,
+          mystery: 0.08,
+          cuteness: 0.96,
+        },
+        defaultSettings: {
+          stability: 0.38,
+          style: 0.60,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 05｜清爽女聲
+      // =========================================================
+      {
+        documentId: "female_fresh_01",
+        voiceId: "r6qgCCGI7RWKXCagm158",
+        name: "清爽女聲",
+        gender: "female",
+        age: "young_adult",
+        category: "female",
+        role: "陽光女孩",
+        style: "fresh_bright",
+        enabled: true,
+        displayOrder: 5,
+        searchWeight: 100,
+        tags: [
+          "清爽",
+          "陽光",
+          "活潑",
+          "溫柔",
+          "自然",
+          "開朗",
+          "明亮",
+          "親切",
+          "日常",
+          "舒服",
+        ],
+        traits: {
+          depth: 0.30,
+          warmth: 0.72,
+          energy: 0.75,
+          softness: 0.64,
+          maturity: 0.42,
+          brightness: 0.84,
+          confidence: 0.62,
+          romance: 0.54,
+          elegance: 0.42,
+          mystery: 0.10,
+          cuteness: 0.62,
+        },
+        defaultSettings: {
+          stability: 0.42,
+          style: 0.50,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 06｜高音機械男聲
+      // =========================================================
+      {
+        documentId: "male_robot_high_01",
+        voiceId: "zcdQ6CUofeH2gS9hw3Lx",
+        name: "高音機械男聲",
+        gender: "male",
+        age: "adult",
+        category: "ai",
+        role: "機械助手",
+        style: "robotic_high",
+        enabled: true,
+        displayOrder: 6,
+        searchWeight: 90,
+        tags: [
+          "機械",
+          "科技",
+          "冷淡",
+          "高音",
+          "AI",
+          "人工智慧",
+          "電子",
+          "未來",
+          "理性",
+          "助手",
+        ],
+        traits: {
+          depth: 0.22,
+          warmth: 0.12,
+          energy: 0.48,
+          softness: 0.16,
+          maturity: 0.42,
+          brightness: 0.90,
+          confidence: 0.64,
+          romance: 0.12,
+          elegance: 0.38,
+          mystery: 0.46,
+          cuteness: 0.20,
+        },
+        defaultSettings: {
+          stability: 0.60,
+          style: 0.38,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 07｜霸道總裁
+      // =========================================================
+      {
+        documentId: "male_ceo_dominant_01",
+        voiceId: "LmRvVeywStYPHnvjBTWF",
+        name: "霸道總裁",
+        gender: "male",
+        age: "adult",
+        category: "male",
+        role: "霸道總裁",
+        style: "dominant_ceo",
+        enabled: true,
+        displayOrder: 7,
+        searchWeight: 115,
+        tags: [
+          "霸總",
+          "霸道總裁",
+          "總裁",
+          "CEO",
+          "低沉",
+          "成熟",
+          "磁性",
+          "強勢",
+          "沉穩",
+          "可靠",
+          "禁慾",
+          "安全感",
+        ],
+        traits: {
+          depth: 0.92,
+          warmth: 0.52,
+          energy: 0.48,
+          softness: 0.30,
+          maturity: 0.92,
+          brightness: 0.20,
+          confidence: 0.96,
+          romance: 0.82,
+          elegance: 0.82,
+          mystery: 0.44,
+          cuteness: 0.08,
+        },
+        defaultSettings: {
+          stability: 0.50,
+          style: 0.56,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 08｜暖男
+      // =========================================================
+      {
+        documentId: "male_warm_gentle_01",
+        voiceId: "T23j4kFIFF9YsXJ3bg6J",
+        name: "暖男",
+        gender: "male",
+        age: "adult",
+        category: "male",
+        role: "溫柔暖男",
+        style: "warm_gentle",
+        enabled: true,
+        displayOrder: 8,
+        searchWeight: 115,
+        tags: [
+          "暖男",
+          "溫柔",
+          "親切",
+          "耐心",
+          "療癒",
+          "陪伴",
+          "可靠",
+          "安心",
+          "體貼",
+          "溫暖",
+          "男友感",
+        ],
+        traits: {
+          depth: 0.56,
+          warmth: 0.96,
+          energy: 0.44,
+          softness: 0.84,
+          maturity: 0.68,
+          brightness: 0.52,
+          confidence: 0.62,
+          romance: 0.88,
+          elegance: 0.58,
+          mystery: 0.12,
+          cuteness: 0.42,
+        },
+        defaultSettings: {
+          stability: 0.50,
+          style: 0.42,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 09｜高冷學長
+      // =========================================================
+      {
+        documentId: "male_cold_senior_01",
+        voiceId: "uMkUULHxGcMAFH2hQjJT",
+        name: "高冷學長",
+        gender: "male",
+        age: "young_adult",
+        category: "male",
+        role: "高冷學長",
+        style: "cold_intellectual",
+        enabled: true,
+        displayOrder: 9,
+        searchWeight: 110,
+        tags: [
+          "高冷",
+          "學長",
+          "禁慾",
+          "知性",
+          "冷靜",
+          "理性",
+          "沉穩",
+          "安靜",
+          "疏離",
+          "聰明",
+          "冷淡",
+        ],
+        traits: {
+          depth: 0.68,
+          warmth: 0.30,
+          energy: 0.30,
+          softness: 0.36,
+          maturity: 0.72,
+          brightness: 0.28,
+          confidence: 0.82,
+          romance: 0.60,
+          elegance: 0.78,
+          mystery: 0.58,
+          cuteness: 0.12,
+        },
+        defaultSettings: {
+          stability: 0.58,
+          style: 0.38,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 10｜腹黑男
+      // =========================================================
+      {
+        documentId: "male_cunning_01",
+        voiceId: "udNbD82XeRschRIbCliK",
+        name: "腹黑男",
+        gender: "male",
+        age: "adult",
+        category: "male",
+        role: "腹黑紳士",
+        style: "cunning_mysterious",
+        enabled: true,
+        displayOrder: 10,
+        searchWeight: 105,
+        tags: [
+          "腹黑",
+          "神秘",
+          "心機",
+          "聰明",
+          "優雅",
+          "危險",
+          "誘惑",
+          "沉穩",
+          "壞男人",
+          "反差",
+          "戲謔",
+        ],
+        traits: {
+          depth: 0.70,
+          warmth: 0.42,
+          energy: 0.44,
+          softness: 0.46,
+          maturity: 0.78,
+          brightness: 0.30,
+          confidence: 0.88,
+          romance: 0.76,
+          elegance: 0.82,
+          mystery: 0.94,
+          cuteness: 0.10,
+        },
+        defaultSettings: {
+          stability: 0.48,
+          style: 0.64,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 11｜成熟大叔
+      // =========================================================
+      {
+        documentId: "male_mature_uncle_01",
+        voiceId: "Gt4WurSAzDMsJV9RHXb5",
+        name: "成熟大叔",
+        gender: "male",
+        age: "mature",
+        category: "male",
+        role: "成熟大叔",
+        style: "mature_dependable",
+        enabled: true,
+        displayOrder: 11,
+        searchWeight: 105,
+        tags: [
+          "大叔",
+          "成熟",
+          "穩重",
+          "低沉",
+          "可靠",
+          "閱歷",
+          "安心",
+          "溫暖",
+          "包容",
+          "沉著",
+          "安全感",
+        ],
+        traits: {
+          depth: 0.90,
+          warmth: 0.78,
+          energy: 0.34,
+          softness: 0.54,
+          maturity: 0.98,
+          brightness: 0.18,
+          confidence: 0.86,
+          romance: 0.72,
+          elegance: 0.66,
+          mystery: 0.30,
+          cuteness: 0.06,
+        },
+        defaultSettings: {
+          stability: 0.62,
+          style: 0.42,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 12｜狼狗男友
+      // =========================================================
+      {
+        documentId: "male_wolf_boyfriend_01",
+        voiceId: "20fSfDdgdz72KR8SC52z",
+        name: "狼狗男友",
+        gender: "male",
+        age: "young_adult",
+        category: "male",
+        role: "狼狗系男友",
+        style: "energetic_protective",
+        enabled: true,
+        displayOrder: 12,
+        searchWeight: 110,
+        tags: [
+          "狼狗",
+          "男友",
+          "強勢",
+          "熱情",
+          "陽光",
+          "保護欲",
+          "活力",
+          "忠誠",
+          "直率",
+          "運動系",
+          "可靠",
+        ],
+        traits: {
+          depth: 0.62,
+          warmth: 0.78,
+          energy: 0.92,
+          softness: 0.40,
+          maturity: 0.58,
+          brightness: 0.68,
+          confidence: 0.90,
+          romance: 0.86,
+          elegance: 0.32,
+          mystery: 0.18,
+          cuteness: 0.46,
+        },
+        defaultSettings: {
+          stability: 0.38,
+          style: 0.68,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 13｜奶狗男友
+      // =========================================================
+      {
+        documentId: "male_puppy_boyfriend_01",
+        voiceId: "79DKiJlAThNFktKoHtIT",
+        name: "奶狗男友",
+        gender: "male",
+        age: "young_adult",
+        category: "male",
+        role: "奶狗系男友",
+        style: "sweet_playful",
+        enabled: true,
+        displayOrder: 13,
+        searchWeight: 110,
+        tags: [
+          "奶狗",
+          "男友",
+          "弟弟感",
+          "可愛",
+          "撒嬌",
+          "甜",
+          "活潑",
+          "陽光",
+          "黏人",
+          "溫暖",
+          "親切",
+        ],
+        traits: {
+          depth: 0.28,
+          warmth: 0.90,
+          energy: 0.80,
+          softness: 0.78,
+          maturity: 0.34,
+          brightness: 0.88,
+          confidence: 0.48,
+          romance: 0.84,
+          elegance: 0.22,
+          mystery: 0.06,
+          cuteness: 0.94,
+        },
+        defaultSettings: {
+          stability: 0.36,
+          style: 0.62,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 14｜吸血鬼男
+      // =========================================================
+      {
+        documentId: "male_vampire_01",
+        voiceId: "ZPL0oblTQM02VdmLYUhg",
+        name: "吸血鬼男",
+        gender: "male",
+        age: "adult",
+        category: "fantasy",
+        role: "吸血鬼貴族",
+        style: "dark_seductive",
+        enabled: true,
+        displayOrder: 14,
+        searchWeight: 100,
+        tags: [
+          "吸血鬼",
+          "神秘",
+          "低沉",
+          "優雅",
+          "誘惑",
+          "危險",
+          "暗黑",
+          "貴族",
+          "浪漫",
+          "冷豔",
+          "禁忌",
+        ],
+        traits: {
+          depth: 0.84,
+          warmth: 0.38,
+          energy: 0.34,
+          softness: 0.46,
+          maturity: 0.88,
+          brightness: 0.16,
+          confidence: 0.90,
+          romance: 0.88,
+          elegance: 0.94,
+          mystery: 0.98,
+          cuteness: 0.04,
+        },
+        defaultSettings: {
+          stability: 0.54,
+          style: 0.66,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 15｜英國執事
+      // =========================================================
+      {
+        documentId: "male_british_butler_01",
+        voiceId: "9Cuvq6uOfqBTtzKGr9ff",
+        name: "英國執事",
+        gender: "male",
+        age: "adult",
+        category: "male",
+        role: "優雅執事",
+        style: "refined_butler",
+        enabled: true,
+        displayOrder: 15,
+        searchWeight: 100,
+        tags: [
+          "執事",
+          "英國",
+          "英倫",
+          "紳士",
+          "優雅",
+          "禮貌",
+          "專業",
+          "沉穩",
+          "忠誠",
+          "貴族",
+          "可靠",
+        ],
+        traits: {
+          depth: 0.66,
+          warmth: 0.58,
+          energy: 0.34,
+          softness: 0.54,
+          maturity: 0.90,
+          brightness: 0.34,
+          confidence: 0.82,
+          romance: 0.68,
+          elegance: 0.98,
+          mystery: 0.34,
+          cuteness: 0.08,
+        },
+        defaultSettings: {
+          stability: 0.62,
+          style: 0.42,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 16｜心理師（男）
+      // =========================================================
+      {
+        documentId: "male_therapist_01",
+        voiceId: "cdQvlt0ckmjSs7PL6uBL",
+        name: "心理師男聲",
+        gender: "male",
+        age: "adult",
+        category: "male",
+        role: "溫柔心理師",
+        style: "calm_empathetic",
+        enabled: true,
+        displayOrder: 16,
+        searchWeight: 105,
+        tags: [
+          "心理師",
+          "諮商師",
+          "溫柔",
+          "療癒",
+          "冷靜",
+          "耐心",
+          "傾聽",
+          "成熟",
+          "安心",
+          "包容",
+          "可靠",
+        ],
+        traits: {
+          depth: 0.58,
+          warmth: 0.94,
+          energy: 0.24,
+          softness: 0.90,
+          maturity: 0.86,
+          brightness: 0.40,
+          confidence: 0.62,
+          romance: 0.54,
+          elegance: 0.62,
+          mystery: 0.10,
+          cuteness: 0.18,
+        },
+        defaultSettings: {
+          stability: 0.66,
+          style: 0.30,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 17｜鄰家女孩
+      // =========================================================
+      {
+        documentId: "female_neighbor_girl_01",
+        voiceId: "QZpltbNsn61REpnBnoia",
+        name: "鄰家女孩",
+        gender: "female",
+        age: "young_adult",
+        category: "female",
+        role: "鄰家女孩",
+        style: "friendly_natural",
+        enabled: true,
+        displayOrder: 17,
+        searchWeight: 105,
+        tags: [
+          "鄰家女孩",
+          "自然",
+          "親切",
+          "活潑",
+          "溫柔",
+          "日常",
+          "開朗",
+          "朋友感",
+          "清新",
+          "舒服",
+          "真誠",
+        ],
+        traits: {
+          depth: 0.32,
+          warmth: 0.88,
+          energy: 0.72,
+          softness: 0.70,
+          maturity: 0.42,
+          brightness: 0.82,
+          confidence: 0.58,
+          romance: 0.64,
+          elegance: 0.36,
+          mystery: 0.06,
+          cuteness: 0.70,
+        },
+        defaultSettings: {
+          stability: 0.42,
+          style: 0.52,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 18｜傲嬌女孩
+      // =========================================================
+      {
+        documentId: "female_tsundere_01",
+        voiceId: "TNtKaM5juUjkJmE1uRgZ",
+        name: "傲嬌女孩",
+        gender: "female",
+        age: "young_adult",
+        category: "female",
+        role: "傲嬌女孩",
+        style: "tsundere_playful",
+        enabled: true,
+        displayOrder: 18,
+        searchWeight: 105,
+        tags: [
+          "傲嬌",
+          "女孩",
+          "嘴硬心軟",
+          "可愛",
+          "害羞",
+          "活潑",
+          "反差",
+          "任性",
+          "俏皮",
+          "甜美",
+          "有個性",
+        ],
+        traits: {
+          depth: 0.26,
+          warmth: 0.62,
+          energy: 0.82,
+          softness: 0.58,
+          maturity: 0.38,
+          brightness: 0.86,
+          confidence: 0.70,
+          romance: 0.72,
+          elegance: 0.28,
+          mystery: 0.18,
+          cuteness: 0.88,
+        },
+        defaultSettings: {
+          stability: 0.34,
+          style: 0.72,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 19｜成熟御姊
+      // =========================================================
+      {
+        documentId: "female_mature_oneesan_01",
+        voiceId: "pbNOl2gQgFoptYo0KQ99",
+        name: "成熟御姊",
+        gender: "female",
+        age: "adult",
+        category: "female",
+        role: "成熟御姊",
+        style: "mature_elegant",
+        enabled: true,
+        displayOrder: 19,
+        searchWeight: 115,
+        tags: [
+          "御姊",
+          "成熟",
+          "優雅",
+          "性感",
+          "自信",
+          "知性",
+          "氣質",
+          "強勢",
+          "可靠",
+          "沉穩",
+          "姊姊",
+        ],
+        traits: {
+          depth: 0.62,
+          warmth: 0.66,
+          energy: 0.46,
+          softness: 0.52,
+          maturity: 0.94,
+          brightness: 0.40,
+          confidence: 0.94,
+          romance: 0.86,
+          elegance: 0.94,
+          mystery: 0.38,
+          cuteness: 0.12,
+        },
+        defaultSettings: {
+          stability: 0.54,
+          style: 0.58,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 20｜天使女生
+      // =========================================================
+      {
+        documentId: "female_angel_01",
+        voiceId: "8rkjdz33efyiKp8eHzvu",
+        name: "天使女生",
+        gender: "female",
+        age: "young_adult",
+        category: "fantasy",
+        role: "溫柔天使",
+        style: "angelic_soft",
+        enabled: true,
+        displayOrder: 20,
+        searchWeight: 100,
+        tags: [
+          "天使",
+          "溫柔",
+          "純淨",
+          "療癒",
+          "柔和",
+          "神聖",
+          "善良",
+          "夢幻",
+          "安心",
+          "輕柔",
+          "希望",
+        ],
+        traits: {
+          depth: 0.22,
+          warmth: 0.94,
+          energy: 0.32,
+          softness: 0.96,
+          maturity: 0.54,
+          brightness: 0.88,
+          confidence: 0.46,
+          romance: 0.70,
+          elegance: 0.82,
+          mystery: 0.32,
+          cuteness: 0.62,
+        },
+        defaultSettings: {
+          stability: 0.56,
+          style: 0.40,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 21｜惡魔御姊
+      // =========================================================
+      {
+        documentId: "female_demon_oneesan_01",
+        voiceId: "OEbJyckEsa1tZlr6W7a2",
+        name: "惡魔御姊",
+        gender: "female",
+        age: "adult",
+        category: "fantasy",
+        role: "惡魔御姊",
+        style: "demon_seductive",
+        enabled: true,
+        displayOrder: 21,
+        searchWeight: 100,
+        tags: [
+          "惡魔",
+          "御姊",
+          "誘惑",
+          "危險",
+          "神秘",
+          "強勢",
+          "性感",
+          "腹黑",
+          "暗黑",
+          "女王",
+          "魅惑",
+        ],
+        traits: {
+          depth: 0.66,
+          warmth: 0.34,
+          energy: 0.52,
+          softness: 0.40,
+          maturity: 0.90,
+          brightness: 0.26,
+          confidence: 0.98,
+          romance: 0.88,
+          elegance: 0.86,
+          mystery: 0.96,
+          cuteness: 0.06,
+        },
+        defaultSettings: {
+          stability: 0.48,
+          style: 0.72,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 22｜療癒姊姊
+      // =========================================================
+      {
+        documentId: "female_healing_sister_01",
+        voiceId: "YFB2iGvrwZlt5KL8A02x",
+        name: "療癒姊姊",
+        gender: "female",
+        age: "adult",
+        category: "female",
+        role: "療癒姊姊",
+        style: "healing_warm",
+        enabled: true,
+        displayOrder: 22,
+        searchWeight: 115,
+        tags: [
+          "療癒",
+          "姊姊",
+          "溫柔",
+          "包容",
+          "安心",
+          "陪伴",
+          "成熟",
+          "耐心",
+          "溫暖",
+          "可靠",
+          "安撫",
+        ],
+        traits: {
+          depth: 0.44,
+          warmth: 0.98,
+          energy: 0.30,
+          softness: 0.94,
+          maturity: 0.82,
+          brightness: 0.50,
+          confidence: 0.58,
+          romance: 0.76,
+          elegance: 0.68,
+          mystery: 0.08,
+          cuteness: 0.34,
+        },
+        defaultSettings: {
+          stability: 0.62,
+          style: 0.34,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 23｜心理師女聲
+      // =========================================================
+      {
+        documentId: "female_therapist_01",
+        voiceId: "RVWGE4EXdD2LfiJO7Y3Z",
+        name: "心理師女聲",
+        gender: "female",
+        age: "adult",
+        category: "female",
+        role: "知性心理師",
+        style: "empathetic_intellectual",
+        enabled: true,
+        displayOrder: 23,
+        searchWeight: 105,
+        tags: [
+          "心理師",
+          "諮商師",
+          "知性",
+          "溫柔",
+          "療癒",
+          "傾聽",
+          "冷靜",
+          "成熟",
+          "耐心",
+          "包容",
+          "專業",
+        ],
+        traits: {
+          depth: 0.46,
+          warmth: 0.92,
+          energy: 0.28,
+          softness: 0.88,
+          maturity: 0.88,
+          brightness: 0.46,
+          confidence: 0.66,
+          romance: 0.52,
+          elegance: 0.76,
+          mystery: 0.10,
+          cuteness: 0.20,
+        },
+        defaultSettings: {
+          stability: 0.66,
+          style: 0.32,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 24｜精靈女生
+      // =========================================================
+      {
+        documentId: "female_elf_01",
+        voiceId: "NoPw2IqHCHPEcawwW8lS",
+        name: "精靈女生",
+        gender: "female",
+        age: "young_adult",
+        category: "fantasy",
+        role: "精靈少女",
+        style: "ethereal_fantasy",
+        enabled: true,
+        displayOrder: 24,
+        searchWeight: 95,
+        tags: [
+          "精靈",
+          "夢幻",
+          "空靈",
+          "輕柔",
+          "優雅",
+          "自然",
+          "奇幻",
+          "神秘",
+          "純淨",
+          "森林",
+          "仙氣",
+        ],
+        traits: {
+          depth: 0.20,
+          warmth: 0.72,
+          energy: 0.42,
+          softness: 0.90,
+          maturity: 0.54,
+          brightness: 0.84,
+          confidence: 0.50,
+          romance: 0.70,
+          elegance: 0.92,
+          mystery: 0.76,
+          cuteness: 0.56,
+        },
+        defaultSettings: {
+          stability: 0.48,
+          style: 0.58,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 25｜AI 女聲
+      // =========================================================
+      {
+        documentId: "female_ai_01",
+        voiceId: "ApRCBcOW2USliHcIEgjZ",
+        name: "AI 女聲",
+        gender: "female",
+        age: "adult",
+        category: "ai",
+        role: "AI 女助手",
+        style: "ai_clear_warm",
+        enabled: true,
+        displayOrder: 25,
+        searchWeight: 100,
+        tags: [
+          "AI",
+          "人工智慧",
+          "科技",
+          "未來",
+          "智慧",
+          "清晰",
+          "冷靜",
+          "助手",
+          "機器人",
+          "理性",
+          "專業",
+        ],
+        traits: {
+          depth: 0.34,
+          warmth: 0.48,
+          energy: 0.42,
+          softness: 0.46,
+          maturity: 0.68,
+          brightness: 0.74,
+          confidence: 0.78,
+          romance: 0.32,
+          elegance: 0.64,
+          mystery: 0.52,
+          cuteness: 0.30,
+        },
+        defaultSettings: {
+          stability: 0.68,
+          style: 0.32,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 26｜女王
+      // =========================================================
+      {
+        documentId: "female_queen_01",
+        voiceId: "d3cKcjeeHMZTVXCfSttZ",
+        name: "女王",
+        gender: "female",
+        age: "adult",
+        category: "female",
+        role: "威嚴女王",
+        style: "queen_authoritative",
+        enabled: true,
+        displayOrder: 26,
+        searchWeight: 105,
+        tags: [
+          "女王",
+          "威嚴",
+          "強勢",
+          "高貴",
+          "成熟",
+          "自信",
+          "優雅",
+          "領袖",
+          "權威",
+          "冷豔",
+          "霸氣",
+        ],
+        traits: {
+          depth: 0.64,
+          warmth: 0.38,
+          energy: 0.54,
+          softness: 0.30,
+          maturity: 0.96,
+          brightness: 0.34,
+          confidence: 1.00,
+          romance: 0.62,
+          elegance: 0.98,
+          mystery: 0.48,
+          cuteness: 0.04,
+        },
+        defaultSettings: {
+          stability: 0.62,
+          style: 0.58,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 27｜活潑女生
+      // =========================================================
+      {
+        documentId: "female_lively_01",
+        voiceId: "o0sXhSukFUcDJhKYGjTx",
+        name: "活潑女生",
+        gender: "female",
+        age: "young_adult",
+        category: "female",
+        role: "活潑女大生",
+        style: "lively_bright",
+        enabled: true,
+        displayOrder: 27,
+        searchWeight: 105,
+        tags: [
+          "活潑",
+          "女生",
+          "女大生",
+          "元氣",
+          "開朗",
+          "陽光",
+          "青春",
+          "明亮",
+          "熱情",
+          "親切",
+          "可愛",
+        ],
+        traits: {
+          depth: 0.24,
+          warmth: 0.82,
+          energy: 0.96,
+          softness: 0.60,
+          maturity: 0.34,
+          brightness: 0.96,
+          confidence: 0.70,
+          romance: 0.60,
+          elegance: 0.26,
+          mystery: 0.04,
+          cuteness: 0.82,
+        },
+        defaultSettings: {
+          stability: 0.34,
+          style: 0.70,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 28｜主播女聲
+      // =========================================================
+      {
+        documentId: "female_broadcaster_01",
+        voiceId: "1OinDRYy3uD41VyHNDCt",
+        name: "主播女聲",
+        gender: "female",
+        age: "adult",
+        category: "professional",
+        role: "專業主播",
+        style: "broadcast_clear",
+        enabled: true,
+        displayOrder: 28,
+        searchWeight: 95,
+        tags: [
+          "主播",
+          "新聞",
+          "專業",
+          "清晰",
+          "知性",
+          "穩定",
+          "正式",
+          "旁白",
+          "主持人",
+          "成熟",
+          "可信",
+        ],
+        traits: {
+          depth: 0.46,
+          warmth: 0.56,
+          energy: 0.54,
+          softness: 0.44,
+          maturity: 0.88,
+          brightness: 0.58,
+          confidence: 0.90,
+          romance: 0.30,
+          elegance: 0.78,
+          mystery: 0.10,
+          cuteness: 0.10,
+        },
+        defaultSettings: {
+          stability: 0.70,
+          style: 0.32,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 29｜AI 男聲
+      // =========================================================
+      {
+        documentId: "male_ai_01",
+        voiceId: "mFVgAqb6vmxGccYkG2sN",
+        name: "AI 男聲",
+        gender: "male",
+        age: "adult",
+        category: "ai",
+        role: "AI 男助手",
+        style: "ai_male_clear",
+        enabled: true,
+        displayOrder: 29,
+        searchWeight: 100,
+        tags: [
+          "AI",
+          "人工智慧",
+          "科技",
+          "未來",
+          "男助手",
+          "理性",
+          "冷靜",
+          "清晰",
+          "機器人",
+          "智慧",
+          "專業",
+        ],
+        traits: {
+          depth: 0.50,
+          warmth: 0.34,
+          energy: 0.42,
+          softness: 0.34,
+          maturity: 0.72,
+          brightness: 0.58,
+          confidence: 0.82,
+          romance: 0.26,
+          elegance: 0.60,
+          mystery: 0.54,
+          cuteness: 0.14,
+        },
+        defaultSettings: {
+          stability: 0.70,
+          style: 0.34,
+        },
+        previewUrl: "",
+      },
+    ];
+    const collectionRef = db
+      .collection("artifacts")
+      .doc(APP_ID)
+      .collection("voice_bank");
+
+    const batch = db.batch();
+
+    for (const voice of voices) {
+      const {
+        documentId,
+        ...voiceData
+      } = voice;
+
+      batch.set(
+        collectionRef.doc(documentId),
+        {
+          ...voiceData,
+          updatedAt:
+            FieldValue.serverTimestamp(),
+        },
+        {
+          merge: true,
+        }
+      );
+    }
+
+    await batch.commit();
+
+    console.log(
+      `✅ Voice Bank 已同步 ${voices.length} 筆資料`
+    );
+
+    return {
+      success: true,
+      count: voices.length,
+      documentIds: voices.map(
+        (voice) => voice.documentId
+      ),
+    };
+  }
+);;
+
+exports.backfillMomentSearchKeywordsUs = onCall(
+  {
+    region: "us-central1",
+    timeoutSeconds: 540,
+    memory: "512MiB",
+    maxInstances: 1,
+  },
+  async (request) => {
+    const officialCreatorUids = new Set([
+      "B71k2kyooubYsOtIO1nkiBwyBXt2",
+    ]);
+
+    const uid = request.auth?.uid;
+
+    if (!uid) {
+      throw new HttpsError(
+        "unauthenticated",
+        "請先登入管理員帳號"
+      );
+    }
+
+    if (!officialCreatorUids.has(uid)) {
+      throw new HttpsError(
+        "permission-denied",
+        "你沒有執行貼文索引補建的權限"
+      );
+    }
+
+    const momentsRef = db
+      .collection("artifacts")
+      .doc(APP_ID)
+      .collection("moments");
+
+    let lastDocument = null;
+    let scannedCount = 0;
+    let updatedCount = 0;
+    let batchCount = 0;
+
+    try {
+      while (true) {
+        let query = momentsRef
+          .where("isPublic", "==", true)
+          .orderBy(FieldPath.documentId())
+          .limit(350);
+
+        if (lastDocument) {
+          query = query.startAfter(lastDocument);
+        }
+
+        const snapshot = await query.get();
+
+        if (snapshot.empty) {
+          break;
+        }
+
+        const batch = db.batch();
+
+        for (const document of snapshot.docs) {
+          const data = document.data();
+
+          const searchKeywords =
+            buildMomentSearchKeywords(
+              data.content,
+              data.authorName
+            );
+
+          batch.update(document.ref, {
+            searchKeywords,
+            searchIndexedAt:
+              FieldValue.serverTimestamp(),
+          });
+
+          scannedCount++;
+          updatedCount++;
+        }
+
+        await batch.commit();
+
+        batchCount++;
+        lastDocument =
+          snapshot.docs[snapshot.docs.length - 1];
+
+        console.log(
+          `🔎 搜尋索引補建：已完成 ${updatedCount} 篇，` +
+          `目前批次 ${batchCount}`
+        );
+
+        if (snapshot.size < 350) {
+          break;
+        }
+      }
+
+      return {
+        success: true,
+        scannedCount,
+        updatedCount,
+        batchCount,
+      };
+    } catch (error) {
+      console.error(
+        "❌ 舊公開貼文搜尋索引補建失敗：",
+        error
+      );
+
+      throw new HttpsError(
+        "internal",
+        "補建搜尋索引失敗",
+        {
+          scannedCount,
+          updatedCount,
+          batchCount,
+          message:
+            error?.message || String(error),
+        }
+      );
+    }
+  }
+);;
+
+exports.publishAnnouncementUs = onCall(
+  {
+    region: "us-central1",
+    timeoutSeconds: 180,
+    memory: "512MiB",
+  },
+  async (request) => {
+    const adminUid = requireRewardCampaignAdmin(request);
+
+    const title = String(request.data?.title || "").trim();
+    const content = String(request.data?.content || "").trim();
+    const sendNotification = request.data?.sendNotification !== false;
+
+    if (!title) {
+      throw new HttpsError("invalid-argument", "公告標題不能為空");
+    }
+    if (!content) {
+      throw new HttpsError("invalid-argument", "公告內容不能為空");
+    }
+    if (title.length > 150) {
+      throw new HttpsError("invalid-argument", "公告標題不能超過 150 字");
+    }
+    if (content.length > 10000) {
+      throw new HttpsError("invalid-argument", "公告內容不能超過 10000 字");
+    }
+
+    const translations = {};
+    const translationFailures = [];
+
+    // 每一個語系互不牽連；單一語言翻譯失敗時仍可發布公告，
+    // 該語系前端會自動 fallback 到繁中原文。
+    const translationResults = await Promise.allSettled(
+      Object.entries(ANNOUNCEMENT_TRANSLATION_TARGETS).map(
+        async ([localeKey, targetLanguage]) => {
+          const translated = await translateAnnouncementForLocale(
+            title,
+            content,
+            targetLanguage,
+          );
+          return { localeKey, translated };
+        },
+      ),
+    );
+
+    for (let i = 0; i < translationResults.length; i++) {
+      const result = translationResults[i];
+      const localeKey = Object.keys(ANNOUNCEMENT_TRANSLATION_TARGETS)[i];
+
+      if (result.status === "fulfilled") {
+        translations[result.value.localeKey] = result.value.translated;
+      } else {
+        translationFailures.push(localeKey);
+        console.error(
+          `❌ 公告翻譯失敗 locale=${localeKey}:`,
+          result.reason,
+        );
+      }
+    }
+
+    const announcementRef = db.collection("announcements").doc();
+    const batch = db.batch();
+
+    batch.set(announcementRef, {
+      title,
+      content,
+      sourceLocale: "zh_Hant",
+      translations,
+      translationStatus:
+        translationFailures.length === 0 ? "complete" : "partial",
+      translationFailures,
+      publishedBy: adminUid,
+      createdAt: FieldValue.serverTimestamp(),
+    });
+
+    if (sendNotification) {
+      const notifyRef = db.collection("system_notifications").doc();
+      batch.set(notifyRef, {
+        type: "global_announcement",
+        announcementId: announcementRef.id,
+        createdAt: FieldValue.serverTimestamp(),
+      });
+    }
+
+    await batch.commit();
+
+    console.log("📢 公告已發布並完成翻譯", {
+      announcementId: announcementRef.id,
+      translationCount: Object.keys(translations).length,
+      translationFailures,
+      sendNotification,
+    });
+
+    return {
+      success: true,
+      announcementId: announcementRef.id,
+      translatedLocales: Object.keys(translations),
+      translationFailures,
+      sendNotification,
+    };
+  },
+);;
+
+exports.translateEventContentUs = onCall(
+  {
+    region: "us-central1",
+    timeoutSeconds: 300,
+    memory: "512MiB",
+  },
+  async (request) => {
+    requireRewardCampaignAdmin(request);
+
+    const data = request.data || {};
+
+    const eventSource =
+      eventTextRecord(
+        data.event,
+        [
+          "name",
+          "subtitle",
+          "description",
+          "currencyName",
+        ]
+      );
+
+    const taskSources =
+      Array.isArray(data.tasks)
+        ? data.tasks.map((item) =>
+            eventTextRecord(
+              item,
+              ["title", "description"]
+            )
+          )
+        : [];
+
+    const milestoneSources =
+      Array.isArray(data.milestones)
+        ? data.milestones.map((item) =>
+            eventTextRecord(
+              item,
+              ["title", "description"]
+            )
+          )
+        : [];
+
+    const shopSources =
+      Array.isArray(data.shopItems)
+        ? data.shopItems.map((item) =>
+            eventTextRecord(
+              item,
+              ["title", "name", "description"]
+            )
+          )
+        : [];
+
+    const memorySources =
+      Array.isArray(data.memories)
+        ? data.memories.map((memory) => ({
+            content: eventTextRecord(
+              memory,
+              ["title", "subtitle", "description"]
+            ),
+            scenes:
+              Array.isArray(memory?.scenes)
+                ? memory.scenes.map((scene) =>
+                    eventTextRecord(
+                      scene,
+                      ["text"]
+                    )
+                  )
+                : [],
+          }))
+        : [];
+
+    const localized = {
+      event: {},
+      tasks: taskSources.map(() => ({})),
+      milestones: milestoneSources.map(() => ({})),
+      shopItems: shopSources.map(() => ({})),
+      memories: memorySources.map((memory) => ({
+        scenes: memory.scenes.map(() => ({})),
+      })),
+    };
+
+    for (
+      const [localeKey, targetLanguage]
+      of Object.entries(EVENT_TRANSLATION_TARGETS)
+    ) {
+      localized.event[localeKey] =
+        await translateEventTextRecord(
+          eventSource,
+          targetLanguage
+        );
+
+      for (let i = 0; i < taskSources.length; i++) {
+        localized.tasks[i][localeKey] =
+          await translateEventTextRecord(
+            taskSources[i],
+            targetLanguage
+          );
+      }
+
+      for (let i = 0; i < milestoneSources.length; i++) {
+        localized.milestones[i][localeKey] =
+          await translateEventTextRecord(
+            milestoneSources[i],
+            targetLanguage
+          );
+      }
+
+      for (let i = 0; i < shopSources.length; i++) {
+        localized.shopItems[i][localeKey] =
+          await translateEventTextRecord(
+            shopSources[i],
+            targetLanguage
+          );
+      }
+
+      for (let i = 0; i < memorySources.length; i++) {
+        localized.memories[i][localeKey] =
+          await translateEventTextRecord(
+            memorySources[i].content,
+            targetLanguage
+          );
+
+        for (
+          let j = 0;
+          j < memorySources[i].scenes.length;
+          j++
+        ) {
+          localized.memories[i].scenes[j][localeKey] =
+            await translateEventTextRecord(
+              memorySources[i].scenes[j],
+              targetLanguage
+            );
+        }
+      }
+    }
+
+    console.log("✅ 活動多語翻譯完成", {
+      eventName: eventSource.name || "",
+      locales:
+        Object.keys(EVENT_TRANSLATION_TARGETS),
+      taskCount: taskSources.length,
+      milestoneCount: milestoneSources.length,
+      shopItemCount: shopSources.length,
+      memoryCount: memorySources.length,
+    });
+
+    return {
+      success: true,
+      sourceLocale: "zh_Hant",
+      localized,
+    };
+  }
+);;
+
+exports.getAdminFlowerStatsUs = onCall(
+      {
+          region: "us-central1",
+          timeoutSeconds: 60,
+          memory: "256MiB",
+      },
+      async (request) => {
+          requireRewardCampaignAdmin(request);
+
+          const range =
+              getFlowerStatsTaipeiDayRange();
+
+          const snapshot =
+              await db
+                  .collectionGroup(
+                      "flower_logs"
+                  )
+                  .where(
+                      "createdAt",
+                      ">=",
+                      range.start
+                  )
+                  .where(
+                      "createdAt",
+                      "<",
+                      range.end
+                  )
+                  .get();
+
+          let flowerGranted = 0;
+          let flowerSpent = 0;
+
+          let grantedTransactions = 0;
+          let spentTransactions = 0;
+
+          for (
+              const doc of snapshot.docs
+          ) {
+              const data =
+                  doc.data() || {};
+
+              const amount =
+                  Number(
+                      data.amount || 0
+                  );
+
+              if (
+                  !Number.isFinite(amount) ||
+                  amount === 0
+              ) {
+                  continue;
+              }
+
+              if (amount > 0) {
+                  flowerGranted += amount;
+
+                  grantedTransactions++;
+              } else {
+                  // 後台顯示消耗量使用正數
+                  flowerSpent +=
+                      Math.abs(amount);
+
+                  spentTransactions++;
+              }
+          }
+
+          console.log(
+              "🌸 今日花花統計",
+              {
+                  flowerGranted,
+                  flowerSpent,
+                  grantedTransactions,
+                  spentTransactions,
+                  logs:
+                      snapshot.size,
+              }
+          );
+
+          return {
+              flowerGranted,
+              flowerSpent,
+
+              grantedTransactions,
+              spentTransactions,
+
+              totalLogs:
+                  snapshot.size,
+          };
+      }
+  );
+
+  // ============================================================
+  // 💰 後台：今日手機 IAP 金流
+  // ============================================================
+
+  function getRevenueTaipeiDayRange(
+      date = new Date()
+  ) {
+      const formatter =
+          new Intl.DateTimeFormat(
+              "en-US",
+              {
+                  timeZone: "Asia/Taipei",
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+              }
+          );
+
+      const parts =
+          formatter.formatToParts(date);
+
+      const values = {};
+
+      for (const part of parts) {
+          if (
+              part.type === "year" ||
+              part.type === "month" ||
+              part.type === "day"
+          ) {
+              values[part.type] =
+                  Number(part.value);
+          }
+      }
+
+      // 台灣時間 00:00
+      // 換算成 UTC = 前一天 16:00
+      const startUtc =
+          new Date(
+              Date.UTC(
+                  values.year,
+                  values.month - 1,
+                  values.day,
+                  -8,
+                  0,
+                  0,
+                  0
+              )
+          );
+
+      const endUtc =
+          new Date(
+              startUtc.getTime() +
+              24 * 60 * 60 * 1000
+          );
+
+      return {
+          start:
+              Timestamp.fromDate(startUtc),
+
+          end:
+              Timestamp.fromDate(endUtc),
+      };
+  }
+
+
+  /* 已搬遷美國後台：停用台灣匯出 getAdminRevenueStats；保留原實作供必要時還原。 */
+void onCall(
+      {
+          region: REGION,
+          timeoutSeconds: 60,
+          memory: "256MiB",
+      },
+      async (request) => {
+          requireRewardCampaignAdmin(request);
+
+          const range =
+              getRevenueTaipeiDayRange();
+
+          const snapshot =
+              await db
+                  .collectionGroup(
+                      "flower_logs"
+                  )
+                  .where(
+                      "createdAt",
+                      ">=",
+                      range.start
+                  )
+                  .where(
+                      "createdAt",
+                      "<",
+                      range.end
+                  )
+                  .get();
+
+          let revenueTwd = 0;
+
+          let purchaseCount = 0;
+
+          let applePurchaseCount = 0;
+
+          let googlePurchaseCount = 0;
+
+          const payerUids =
+              new Set();
+
+          for (
+              const doc of snapshot.docs
+          ) {
+              const data =
+                  doc.data() || {};
+
+              const type =
+                  String(
+                      data.type || ""
+                  ).trim();
+
+              const provider =
+                  String(
+                      data.provider || ""
+                  ).trim();
+
+              const currency =
+                  String(
+                      data.currency || ""
+                  )
+                      .trim()
+                      .toUpperCase();
+
+              const price =
+                  Number(
+                      data.price || 0
+                  );
+
+              // 只統計新的手機 IAP purchase log
+              if (type !== "purchase") {
+                  continue;
+              }
+
+              if (
+                  provider !== "apple_iap" &&
+                  provider !== "google_play"
+              ) {
+                  continue;
+              }
+
+              if (currency !== "TWD") {
+                  continue;
+              }
+
+              if (
+                  !Number.isFinite(price) ||
+                  price <= 0
+              ) {
+                  continue;
+              }
+
+              revenueTwd += price;
+
+              purchaseCount++;
+
+              if (provider === "apple_iap") {
+                  applePurchaseCount++;
+              }
+
+              if (provider === "google_play") {
+                  googlePurchaseCount++;
+              }
+
+              // flower_logs 位於 users/{uid}/flower_logs/{logId}
+              // parent = flower_logs
+              // parent.parent = user document
+              const userRef =
+                  doc.ref.parent.parent;
+
+              const uid =
+                  userRef?.id || "";
+
+              if (uid) {
+                  payerUids.add(uid);
+              }
+          }
+
+          const payingUsers =
+              payerUids.size;
+
+          const arppuTwd =
+              payingUsers > 0
+                  ? revenueTwd /
+                    payingUsers
+                  : null;
+
+          console.log(
+              "💰 今日手機 IAP 金流",
+              {
+                  revenueTwd,
+                  payingUsers,
+                  arppuTwd,
+                  purchaseCount,
+                  applePurchaseCount,
+                  googlePurchaseCount,
+              }
+          );
+
+          return {
+              revenueTwd,
+
+              payingUsers,
+
+              arppuTwd,
+
+              purchaseCount,
+
+              applePurchaseCount,
+
+              googlePurchaseCount,
+          };
+      }
+  );
+
+function parseRewardCampaignDate(value, fieldName) {
+  if (!value) {
+    throw new HttpsError(
+      "invalid-argument",
+      `缺少${fieldName}`
+    );
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    throw new HttpsError(
+      "invalid-argument",
+      `${fieldName}格式不正確`
+    );
+  }
+
+  return date;
+}
+
+// ==================================================
+// 🎁 管理員建立活動禮物
+// ==================================================
+
+
+// ============================================================
+// 📈 後台：營運分析（保留原本統計，另外提供月 / 來源 / 用途 / 趨勢 / 模式比例）
+// ============================================================
+function getTaipeiUtcStartOfDay(date = new Date()) {
+    const formatter = new Intl.DateTimeFormat("en-US", {
+        timeZone: "Asia/Taipei",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+    });
+
+    const values = {};
+    for (const part of formatter.formatToParts(date)) {
+        if (part.type === "year" || part.type === "month" || part.type === "day") {
+            values[part.type] = Number(part.value);
+        }
+    }
+
+    return new Date(Date.UTC(
+        values.year,
+        values.month - 1,
+        values.day,
+        -8,
+        0,
+        0,
+        0
+    ));
+}
+
+function getTaipeiMonthStart(date = new Date(), offsetMonths = 0) {
+    const dayStart = getTaipeiUtcStartOfDay(date);
+    const taipeiLocal = new Date(dayStart.getTime() + 8 * 60 * 60 * 1000);
+    return new Date(Date.UTC(
+        taipeiLocal.getUTCFullYear(),
+        taipeiLocal.getUTCMonth() + offsetMonths,
+        1,
+        -8,
+        0,
+        0,
+        0
+    ));
+}
+
+function normalizeAdminMode(rawMode) {
+    const mode = String(rawMode || "").trim().toLowerCase();
+    if (mode === "gemini") return "gemini";
+    if (mode === "daily") return "daily";
+    if (mode === "story") return "story";
+    if (mode === "immersive") return "immersive";
+    if (mode === "resonance") return "resonance";
+    return "other";
+}
+
+function classifyFlowerGrantSource(data = {}) {
+    const type = String(data.type || "").trim().toLowerCase();
+    const source = String(data.source || "").trim().toLowerCase();
+    const title = String(data.title || "").trim().toLowerCase();
+    const reason = String(data.reason || "").trim().toLowerCase();
+    const productId = String(data.productId || "").trim().toLowerCase();
+    const productType = String(data.productType || "").trim().toLowerCase();
+    const provider = String(data.provider || "").trim().toLowerCase();
+    const text = `${type} ${source} ${title} ${reason} ${productId} ${productType} ${provider}`;
+
+    const looksLikePurchase =
+        type === "purchase" ||
+        provider === "apple_iap" ||
+        provider === "google_play" ||
+        source === "stripe_web";
+
+    if (
+        /月卡/.test(text) &&
+        /(每日|日領|daily)/.test(text)
+    ) {
+        return "monthlyDaily";
+    }
+
+    if (looksLikePurchase) {
+        if (
+            productType === "monthly_card" ||
+            /monthly|月卡|星光契約/.test(text)
+        ) {
+            return "monthlyCardPurchase";
+        }
+        return "topup";
+    }
+
+    if (
+        type === "cs_compensation" ||
+        /客服補償|補償/.test(text)
+    ) {
+        return "compensation";
+    }
+
+    if (
+        type === "reward_campaign" ||
+        /活動|campaign|節慶|七夕|萬聖|聖誕/.test(text)
+    ) {
+        return "event";
+    }
+
+    if (
+        type === "admin_adjustment" &&
+        Number(data.amount || 0) > 0
+    ) {
+        return "admin";
+    }
+
+    if (
+        type === "system_grant" ||
+        /任務|簽到|新手|推薦|邀請|referral|每日任務|免費/.test(text)
+    ) {
+        return "freeTask";
+    }
+
+    return "other";
+}
+
+function classifyFlowerSpendUse(data = {}) {
+    const billingType = String(data.billingType || "").trim().toLowerCase();
+    const type = String(data.type || "").trim().toLowerCase();
+    const title = String(data.title || "").trim().toLowerCase();
+    const reason = String(data.reason || "").trim().toLowerCase();
+    const text = `${billingType} ${type} ${title} ${reason}`;
+
+    if (billingType === "interaction" || /互動|戳戳|抱抱|牽手|定位|擲骰子/.test(text)) {
+        return "interaction";
+    }
+    if (billingType === "gift" || /禮物|gift/.test(text)) {
+        return "gift";
+    }
+
+    const mode = normalizeAdminMode(data.chatMode);
+    if (mode !== "other") return mode;
+
+    return "other";
+}
+
+function getRevenuePurchaseInfo(data = {}) {
+    const type = String(data.type || "").trim().toLowerCase();
+    const provider = String(data.provider || "").trim().toLowerCase();
+    const currency = String(data.currency || "").trim().toUpperCase();
+    const price = Number(data.price || 0);
+    const productType = String(data.productType || "").trim().toLowerCase();
+    const productId = String(data.productId || "").trim().toLowerCase();
+    const title = String(data.title || "").trim().toLowerCase();
+
+    const isMobilePurchase =
+        type === "purchase" &&
+        (provider === "apple_iap" || provider === "google_play");
+
+    if (!isMobilePurchase) {
+        return null;
+    }
+
+    const isPricedTwd =
+        currency === "TWD" &&
+        Number.isFinite(price) &&
+        price > 0;
+
+    const isMonthlyCard =
+        productType === "monthly_card" ||
+        /monthly|月卡|星光契約/.test(`${productId} ${title}`);
+
+    return {
+        provider,
+        isPricedTwd,
+        revenueTwd: isPricedTwd ? price : 0,
+        isMonthlyCard,
+    };
+}
+
+function getBucketIndex(value, startMs, bucketMs, bucketCount) {
+    const index = Math.floor((value.getTime() - startMs) / bucketMs);
+    return index >= 0 && index < bucketCount ? index : -1;
+}
+
+function isInternalTesterForAnalytics(uid, data = {}, configuredUids = new Set()) {
+    if (configuredUids.has(String(uid || "").trim())) return true;
+
+    if (
+        data.analyticsExcludeFromEconomy === true ||
+        data.isInternalTester === true ||
+        data.internalTester === true ||
+        data.isTester === true ||
+        data.isTestUser === true ||
+        data.testUser === true ||
+        data.isBetaTester === true ||
+        data.betaTester === true
+    ) {
+        return true;
+    }
+
+    const accountType = String(data.accountType || "").trim().toLowerCase();
+    return [
+        "internal_test",
+        "internal_tester",
+        "tester",
+        "test",
+        "beta_tester",
+        "beta"
+    ].includes(accountType);
+}
+
+function medianNumber(values = []) {
+    if (!Array.isArray(values) || values.length === 0) return 0;
+
+    const sorted = values
+        .map((value) => Number(value || 0))
+        .filter((value) => Number.isFinite(value))
+        .sort((a, b) => a - b);
+
+    if (sorted.length === 0) return 0;
+
+    const middle = Math.floor(sorted.length / 2);
+    if (sorted.length % 2 === 1) return sorted[middle];
+    return (sorted[middle - 1] + sorted[middle]) / 2;
+}
+
+function buildFlowerInventoryStats(rows = []) {
+    const safeRows = Array.isArray(rows) ? rows : [];
+    const balances = safeRows.map((row) => Math.max(0, Number(row?.balance || 0)));
+    const totalPlayers = balances.length;
+    const totalFlowers = balances.reduce((sum, value) => sum + value, 0);
+
+    const bucketDefs = [
+        { key: "0_100", label: "0～100", min: 0, max: 100 },
+        { key: "101_300", label: "101～300", min: 101, max: 300 },
+        { key: "301_1000", label: "301～1,000", min: 301, max: 1000 },
+        { key: "1001_3000", label: "1,001～3,000", min: 1001, max: 3000 },
+        { key: "3001_plus", label: "3,001 以上", min: 3001, max: null },
+    ];
+
+    const buckets = bucketDefs.map((def) => {
+        const matched = safeRows.filter((row) => {
+            const balance = Math.max(0, Number(row?.balance || 0));
+            if (balance < def.min) return false;
+            if (def.max != null && balance > def.max) return false;
+            return true;
+        });
+
+        const flowerTotal = matched.reduce(
+            (sum, row) => sum + Math.max(0, Number(row?.balance || 0)),
+            0
+        );
+
+        return {
+            key: def.key,
+            label: def.label,
+            players: matched.length,
+            playerRatio: totalPlayers > 0 ? matched.length / totalPlayers : 0,
+            flowerTotal,
+        };
+    });
+
+    return {
+        playerCount: totalPlayers,
+        totalFlowers,
+        averageFlowers: totalPlayers > 0 ? totalFlowers / totalPlayers : 0,
+        medianFlowers: medianNumber(balances),
+        buckets,
+    };
+}
+
+/* 已搬遷美國後台：停用台灣匯出 getAdminOperationsAnalytics；保留原實作供必要時還原。 */
+void onCall(
+    {
+        region: REGION,
+        timeoutSeconds: 120,
+        memory: "512MiB",
+    },
+    async (request) => {
+        requireRewardCampaignAdmin(request);
+
+        const now = new Date();
+        const todayStart = getTaipeiUtcStartOfDay(now);
+        const tomorrowStart = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
+        const monthStart = getTaipeiMonthStart(now, 0);
+        const sixMonthStart = getTaipeiMonthStart(now, -5);
+        const sevenDayStart = new Date(todayStart.getTime() - 6 * 24 * 60 * 60 * 1000);
+        const eightWeekStart = new Date(todayStart.getTime() - 55 * 24 * 60 * 60 * 1000);
+
+        // Three independent Firestore reads run concurrently rather than sequentially.
+        // Timings help identify expensive queries without changing analytics semantics.
+        const analyticsStartedAt = Date.now();
+        const timedRead = async (label, read) => {
+            const startedAt = Date.now();
+            try {
+                const snapshot = await read();
+                console.info("[operationsAnalytics] read", {
+                    label,
+                    durationMs: Date.now() - startedAt,
+                    documents: snapshot.size ?? (snapshot.exists ? 1 : 0),
+                });
+                return snapshot;
+            } catch (error) {
+                console.error("[operationsAnalytics] read failed", {
+                    label,
+                    durationMs: Date.now() - startedAt,
+                    message: error?.message || String(error),
+                });
+                throw error;
+            }
+        };
+
+        const [flowerSnapshot, modeEventSnapshot, usersSnapshot, analyticsConfigSnapshot] =
+            await Promise.all([
+                timedRead("flower_logs", () => db
+                    .collectionGroup("flower_logs")
+                    .where("createdAt", ">=", Timestamp.fromDate(sixMonthStart))
+                    .where("createdAt", "<", Timestamp.fromDate(tomorrowStart))
+                    .get()),
+                timedRead("chat_mode_events", () => db
+                    .collection("artifacts")
+                    .doc(APP_ID)
+                    .collection("chat_mode_events")
+                    .where("createdAt", ">=", Timestamp.fromDate(monthStart))
+                    .where("createdAt", "<", Timestamp.fromDate(tomorrowStart))
+                    .get()).catch((error) => {
+                    console.warn("⚠️ chat_mode_events 讀取失敗，將以舊花花紀錄補足：", error?.message || error);
+                    return null;
+                }),
+                timedRead("users", () => db.collection("users").get()),
+                timedRead("operations_analytics_config", () => db
+                    .collection("artifacts")
+                    .doc(APP_ID)
+                    .collection("admin_settings")
+                    .doc("operations_analytics")
+                    .get()),
+            ]);
+
+        // Cache month boundaries instead of recalculating them for each flower log.
+        const monthBoundaries = Array.from({ length: 6 }, (_, i) => ({
+            start: getTaipeiMonthStart(now, i - 5),
+            end: getTaipeiMonthStart(now, i - 4),
+        }));
+        const monthBucketIndex = (createdAt) => {
+            for (let i = 0; i < monthBoundaries.length; i++) {
+                if (createdAt >= monthBoundaries[i].start && createdAt < monthBoundaries[i].end) {
+                    return i;
+                }
+            }
+            return -1;
+        };
+
+        const configuredTesterUids = new Set(
+            Array.isArray(analyticsConfigSnapshot.data()?.internalTesterUids)
+                ? analyticsConfigSnapshot.data().internalTesterUids
+                    .map((value) => String(value || "").trim())
+                    .filter(Boolean)
+                : []
+        );
+
+        const internalTesterUids = new Set();
+        for (const userDoc of usersSnapshot.docs) {
+            if (isInternalTesterForAnalytics(userDoc.id, userDoc.data() || {}, configuredTesterUids)) {
+                internalTesterUids.add(userDoc.id);
+            }
+        }
+
+        const allInventoryRows = [];
+        const normalInventoryRows = [];
+        const internalTesterRows = [];
+
+        for (const userDoc of usersSnapshot.docs) {
+            const userData = userDoc.data() || {};
+            const rawBalance = Number(userData.flowerPoints || 0);
+            const balance = Number.isFinite(rawBalance)
+                ? Math.max(0, Math.trunc(rawBalance))
+                : 0;
+
+            const row = {
+                uid: userDoc.id,
+                balance,
+            };
+
+            allInventoryRows.push(row);
+
+            if (
+                isInternalTesterForAnalytics(
+                    userDoc.id,
+                    userData,
+                    configuredTesterUids
+                )
+            ) {
+                internalTesterRows.push(row);
+            } else {
+                normalInventoryRows.push(row);
+            }
+        }
+
+        const flowerInventory = {
+            allPlayers: buildFlowerInventoryStats(allInventoryRows),
+            excludingInternalTesters: buildFlowerInventoryStats(normalInventoryRows),
+            internalTesters: buildFlowerInventoryStats(internalTesterRows),
+            internalTesterDetection: {
+                configuredUidCount: configuredTesterUids.size,
+                detectedPlayerCount: internalTesterRows.length,
+            },
+        };
+
+        const calculateEconomy = (excludeInternal) => {
+        let unattributedModeEventCount = 0;
+        let unattributedFlowerLogCount = 0;
+        const grantSources = {
+            freeTask: 0,
+            monthlyDaily: 0,
+            monthlyCardPurchase: 0,
+            topup: 0,
+            compensation: 0,
+            event: 0,
+            admin: 0,
+            other: 0,
+        };
+
+        const spendUses = {
+            gemini: 0,
+            daily: 0,
+            story: 0,
+            immersive: 0,
+            resonance: 0,
+            interaction: 0,
+            gift: 0,
+            other: 0,
+        };
+
+        const modeUsage = {
+            gemini: 0,
+            daily: 0,
+            story: 0,
+            immersive: 0,
+            resonance: 0,
+            other: 0,
+        };
+
+        const dailyTrend = Array.from({ length: 7 }, (_, index) => ({
+            label: new Intl.DateTimeFormat("zh-TW", {
+                timeZone: "Asia/Taipei",
+                month: "numeric",
+                day: "numeric",
+            }).format(new Date(sevenDayStart.getTime() + index * 24 * 60 * 60 * 1000)),
+            granted: 0,
+            spent: 0,
+            revenueTwd: 0,
+        }));
+
+        const weeklyTrend = Array.from({ length: 8 }, (_, index) => ({
+            label: `W${index + 1}`,
+            granted: 0,
+            spent: 0,
+            revenueTwd: 0,
+        }));
+
+        const monthlyTrend = Array.from({ length: 6 }, (_, index) => {
+            const bucketStart = getTaipeiMonthStart(now, index - 5);
+            const taipeiLocal = new Date(bucketStart.getTime() + 8 * 60 * 60 * 1000);
+            return {
+                label: `${taipeiLocal.getUTCMonth() + 1}月`,
+                granted: 0,
+                spent: 0,
+                revenueTwd: 0,
+            };
+        });
+
+        const monthPayerUids = new Set();
+        const seenModeEventKeys = new Set();
+
+        let monthRevenueTwd = 0;
+        let monthPurchaseCount = 0;
+        let monthMonthlyCardRevenueTwd = 0;
+        let monthTopupRevenueTwd = 0;
+        let monthMonthlyCardPurchaseCount = 0;
+        let monthTopupPurchaseCount = 0;
+        let monthFlowerGranted = 0;
+        let monthFlowerSpent = 0;
+        let monthPaidRelatedGranted = 0;
+        let monthFreeGranted = 0;
+        let unpricedPurchaseCount = 0;
+
+        if (modeEventSnapshot) {
+            for (const doc of modeEventSnapshot.docs) {
+                const data = doc.data() || {};
+                const eventUid = String(data.uid || data.userId || data.playerUid || data.createdBy || "").trim();
+                if (excludeInternal && (!eventUid || internalTesterUids.has(eventUid))) {
+                    if (!eventUid) unattributedModeEventCount++;
+                    continue;
+                }
+                const createdAt = data.createdAt?.toDate?.();
+                if (!createdAt || createdAt < monthStart || createdAt >= tomorrowStart) continue;
+
+                const mode = normalizeAdminMode(data.chatMode);
+                const eventBillingType =
+                    String(data.billingType || "chat")
+                        .trim()
+                        .toLowerCase();
+
+                if (eventBillingType === "chat") {
+                    modeUsage[mode] = (modeUsage[mode] || 0) + 1;
+                }
+
+                const key = `${String(data.sessionId || "")}|${String(data.messageId || "")}`;
+                if (key !== "|") seenModeEventKeys.add(key);
+            }
+        }
+
+        for (const doc of flowerSnapshot.docs) {
+            const data = doc.data() || {};
+            const transactionUid = doc.ref.parent.parent?.id || "";
+            if (excludeInternal && (!transactionUid || internalTesterUids.has(transactionUid))) {
+                if (!transactionUid) unattributedFlowerLogCount++;
+                continue;
+            }
+            const createdAt = data.createdAt?.toDate?.();
+            if (!createdAt) continue;
+
+            const amount = Number(data.amount || 0);
+            const isMonth = createdAt >= monthStart && createdAt < tomorrowStart;
+
+            // 日趨勢
+            if (createdAt >= sevenDayStart && createdAt < tomorrowStart) {
+                const idx = getBucketIndex(createdAt, sevenDayStart.getTime(), 24 * 60 * 60 * 1000, 7);
+                if (idx >= 0 && Number.isFinite(amount)) {
+                    if (amount > 0) dailyTrend[idx].granted += amount;
+                    if (amount < 0) dailyTrend[idx].spent += Math.abs(amount);
+                }
+            }
+
+            // 週趨勢（近 8 週，每 7 天一桶）
+            if (createdAt >= eightWeekStart && createdAt < tomorrowStart) {
+                const idx = getBucketIndex(createdAt, eightWeekStart.getTime(), 7 * 24 * 60 * 60 * 1000, 8);
+                if (idx >= 0 && Number.isFinite(amount)) {
+                    if (amount > 0) weeklyTrend[idx].granted += amount;
+                    if (amount < 0) weeklyTrend[idx].spent += Math.abs(amount);
+                }
+            }
+
+            // 月趨勢
+            const monthIndex = monthBucketIndex(createdAt);
+            if (monthIndex >= 0 && Number.isFinite(amount)) {
+                if (amount > 0) monthlyTrend[monthIndex].granted += amount;
+                if (amount < 0) monthlyTrend[monthIndex].spent += Math.abs(amount);
+            }
+
+            const revenueInfo = getRevenuePurchaseInfo(data);
+            if (revenueInfo) {
+                if (!revenueInfo.isPricedTwd) {
+                    if (isMonth) unpricedPurchaseCount++;
+                } else {
+                    // 日 revenue 趨勢
+                    if (createdAt >= sevenDayStart && createdAt < tomorrowStart) {
+                        const idx = getBucketIndex(createdAt, sevenDayStart.getTime(), 24 * 60 * 60 * 1000, 7);
+                        if (idx >= 0) dailyTrend[idx].revenueTwd += revenueInfo.revenueTwd;
+                    }
+                    if (createdAt >= eightWeekStart && createdAt < tomorrowStart) {
+                        const idx = getBucketIndex(createdAt, eightWeekStart.getTime(), 7 * 24 * 60 * 60 * 1000, 8);
+                        if (idx >= 0) weeklyTrend[idx].revenueTwd += revenueInfo.revenueTwd;
+                    }
+                    if (monthIndex >= 0) {
+                        monthlyTrend[monthIndex].revenueTwd += revenueInfo.revenueTwd;
+                    }
+                }
+
+                if (isMonth) {
+                    monthPurchaseCount++;
+                    if (revenueInfo.isPricedTwd) {
+                        monthRevenueTwd += revenueInfo.revenueTwd;
+                    }
+
+                    if (revenueInfo.isMonthlyCard) {
+                        monthMonthlyCardPurchaseCount++;
+                        if (revenueInfo.isPricedTwd) {
+                            monthMonthlyCardRevenueTwd += revenueInfo.revenueTwd;
+                        }
+                    } else {
+                        monthTopupPurchaseCount++;
+                        if (revenueInfo.isPricedTwd) {
+                            monthTopupRevenueTwd += revenueInfo.revenueTwd;
+                        }
+                    }
+
+                    const uid = doc.ref.parent.parent?.id || "";
+                    if (uid) monthPayerUids.add(uid);
+                }
+            }
+
+            if (!isMonth || !Number.isFinite(amount) || amount === 0) {
+                continue;
+            }
+
+            if (amount > 0) {
+                monthFlowerGranted += amount;
+                const sourceKey = classifyFlowerGrantSource(data);
+                grantSources[sourceKey] = (grantSources[sourceKey] || 0) + amount;
+
+                if (sourceKey === "monthlyCardPurchase" || sourceKey === "topup" || sourceKey === "monthlyDaily") {
+                    monthPaidRelatedGranted += amount;
+                } else {
+                    monthFreeGranted += amount;
+                }
+            } else {
+                monthFlowerSpent += Math.abs(amount);
+                const spendKey = classifyFlowerSpendUse(data);
+                spendUses[spendKey] = (spendUses[spendKey] || 0) + Math.abs(amount);
+
+                // 舊資料沒有 chat_mode_events 時，以付費聊天 log 補模式次數。
+                const mode = normalizeAdminMode(data.chatMode);
+                const legacyBillingType =
+                    String(data.billingType || "chat")
+                        .trim()
+                        .toLowerCase();
+
+                if (mode !== "other" && legacyBillingType === "chat") {
+                    const key = `${String(data.sessionId || "")}|${String(data.messageId || "")}`;
+                    if (!seenModeEventKeys.has(key)) {
+                        modeUsage[mode] = (modeUsage[mode] || 0) + 1;
+                    }
+                }
+            }
+        }
+
+        const modeUsageTotal = Object.values(modeUsage)
+            .reduce((sum, value) => sum + Number(value || 0), 0);
+
+        const monthPayingUsers = monthPayerUids.size;
+        const monthArppuTwd = monthPayingUsers > 0
+            ? monthRevenueTwd / monthPayingUsers
+            : null;
+
+        return {
+            generatedAt: new Date().toISOString(),
+            unattributedModeEventCount,
+            unattributedFlowerLogCount,
+            month: {
+                revenueTwd: monthRevenueTwd,
+                payingUsers: monthPayingUsers,
+                arppuTwd: monthArppuTwd,
+                purchaseCount: monthPurchaseCount,
+                monthlyCardRevenueTwd: monthMonthlyCardRevenueTwd,
+                topupRevenueTwd: monthTopupRevenueTwd,
+                monthlyCardPurchaseCount: monthMonthlyCardPurchaseCount,
+                topupPurchaseCount: monthTopupPurchaseCount,
+                flowerGranted: monthFlowerGranted,
+                flowerSpent: monthFlowerSpent,
+                paidRelatedGranted: monthPaidRelatedGranted,
+                freeGranted: monthFreeGranted,
+                unpricedPurchaseCount,
+            },
+            grantSources,
+            spendUses,
+            modeUsage,
+            modeUsageTotal,
+            trends: {
+                day: dailyTrend,
+                week: weeklyTrend,
+                month: monthlyTrend,
+            },
+        };
+        };
+        const formalEconomy = calculateEconomy(true);
+        const allEconomy = calculateEconomy(false);
+        console.info("[operationsAnalytics] completed", {
+            durationMs: Date.now() - analyticsStartedAt,
+            flowerLogCount: flowerSnapshot.size,
+            modeEventCount: modeEventSnapshot?.size ?? 0,
+            userCount: usersSnapshot.size,
+        });
+        return {
+            ...formalEconomy,
+            flowerInventory,
+            economyComparison: {
+                excludingInternalTesters: formalEconomy,
+                allPlayers: allEconomy,
+                internalTesterCount: internalTesterUids.size,
+            },
+        };
+    }
+);;
+
+exports.getAdminRevenueStatsUs = onCall(
+      {
+          region: "us-central1",
+          timeoutSeconds: 60,
+          memory: "256MiB",
+      },
+      async (request) => {
+          requireRewardCampaignAdmin(request);
+
+          const range =
+              getRevenueTaipeiDayRange();
+
+          const snapshot =
+              await db
+                  .collectionGroup(
+                      "flower_logs"
+                  )
+                  .where(
+                      "createdAt",
+                      ">=",
+                      range.start
+                  )
+                  .where(
+                      "createdAt",
+                      "<",
+                      range.end
+                  )
+                  .get();
+
+          let revenueTwd = 0;
+
+          let purchaseCount = 0;
+
+          let applePurchaseCount = 0;
+
+          let googlePurchaseCount = 0;
+
+          const payerUids =
+              new Set();
+
+          for (
+              const doc of snapshot.docs
+          ) {
+              const data =
+                  doc.data() || {};
+
+              const type =
+                  String(
+                      data.type || ""
+                  ).trim();
+
+              const provider =
+                  String(
+                      data.provider || ""
+                  ).trim();
+
+              const currency =
+                  String(
+                      data.currency || ""
+                  )
+                      .trim()
+                      .toUpperCase();
+
+              const price =
+                  Number(
+                      data.price || 0
+                  );
+
+              // 只統計新的手機 IAP purchase log
+              if (type !== "purchase") {
+                  continue;
+              }
+
+              if (
+                  provider !== "apple_iap" &&
+                  provider !== "google_play"
+              ) {
+                  continue;
+              }
+
+              if (currency !== "TWD") {
+                  continue;
+              }
+
+              if (
+                  !Number.isFinite(price) ||
+                  price <= 0
+              ) {
+                  continue;
+              }
+
+              revenueTwd += price;
+
+              purchaseCount++;
+
+              if (provider === "apple_iap") {
+                  applePurchaseCount++;
+              }
+
+              if (provider === "google_play") {
+                  googlePurchaseCount++;
+              }
+
+              // flower_logs 位於 users/{uid}/flower_logs/{logId}
+              // parent = flower_logs
+              // parent.parent = user document
+              const userRef =
+                  doc.ref.parent.parent;
+
+              const uid =
+                  userRef?.id || "";
+
+              if (uid) {
+                  payerUids.add(uid);
+              }
+          }
+
+          const payingUsers =
+              payerUids.size;
+
+          const arppuTwd =
+              payingUsers > 0
+                  ? revenueTwd /
+                    payingUsers
+                  : null;
+
+          console.log(
+              "💰 今日手機 IAP 金流",
+              {
+                  revenueTwd,
+                  payingUsers,
+                  arppuTwd,
+                  purchaseCount,
+                  applePurchaseCount,
+                  googlePurchaseCount,
+              }
+          );
+
+          return {
+              revenueTwd,
+
+              payingUsers,
+
+              arppuTwd,
+
+              purchaseCount,
+
+              applePurchaseCount,
+
+              googlePurchaseCount,
+          };
+      }
+  );
+
+function parseRewardCampaignDate(value, fieldName) {
+  if (!value) {
+    throw new HttpsError(
+      "invalid-argument",
+      `缺少${fieldName}`
+    );
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    throw new HttpsError(
+      "invalid-argument",
+      `${fieldName}格式不正確`
+    );
+  }
+
+  return date;
+}
+
+// ==================================================
+// 🎁 管理員建立活動禮物
+// ==================================================
+
+
+// ============================================================
+// 📈 後台：營運分析（保留原本統計，另外提供月 / 來源 / 用途 / 趨勢 / 模式比例）
+// ============================================================
+function getTaipeiUtcStartOfDay(date = new Date()) {
+    const formatter = new Intl.DateTimeFormat("en-US", {
+        timeZone: "Asia/Taipei",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+    });
+
+    const values = {};
+    for (const part of formatter.formatToParts(date)) {
+        if (part.type === "year" || part.type === "month" || part.type === "day") {
+            values[part.type] = Number(part.value);
+        }
+    }
+
+    return new Date(Date.UTC(
+        values.year,
+        values.month - 1,
+        values.day,
+        -8,
+        0,
+        0,
+        0
+    ));
+}
+
+function getTaipeiMonthStart(date = new Date(), offsetMonths = 0) {
+    const dayStart = getTaipeiUtcStartOfDay(date);
+    const taipeiLocal = new Date(dayStart.getTime() + 8 * 60 * 60 * 1000);
+    return new Date(Date.UTC(
+        taipeiLocal.getUTCFullYear(),
+        taipeiLocal.getUTCMonth() + offsetMonths,
+        1,
+        -8,
+        0,
+        0,
+        0
+    ));
+}
+
+function normalizeAdminMode(rawMode) {
+    const mode = String(rawMode || "").trim().toLowerCase();
+    if (mode === "gemini") return "gemini";
+    if (mode === "daily") return "daily";
+    if (mode === "story") return "story";
+    if (mode === "immersive") return "immersive";
+    if (mode === "resonance") return "resonance";
+    return "other";
+}
+
+function classifyFlowerGrantSource(data = {}) {
+    const type = String(data.type || "").trim().toLowerCase();
+    const source = String(data.source || "").trim().toLowerCase();
+    const title = String(data.title || "").trim().toLowerCase();
+    const reason = String(data.reason || "").trim().toLowerCase();
+    const productId = String(data.productId || "").trim().toLowerCase();
+    const productType = String(data.productType || "").trim().toLowerCase();
+    const provider = String(data.provider || "").trim().toLowerCase();
+    const text = `${type} ${source} ${title} ${reason} ${productId} ${productType} ${provider}`;
+
+    const looksLikePurchase =
+        type === "purchase" ||
+        provider === "apple_iap" ||
+        provider === "google_play" ||
+        source === "stripe_web";
+
+    if (
+        /月卡/.test(text) &&
+        /(每日|日領|daily)/.test(text)
+    ) {
+        return "monthlyDaily";
+    }
+
+    if (looksLikePurchase) {
+        if (
+            productType === "monthly_card" ||
+            /monthly|月卡|星光契約/.test(text)
+        ) {
+            return "monthlyCardPurchase";
+        }
+        return "topup";
+    }
+
+    if (
+        type === "cs_compensation" ||
+        /客服補償|補償/.test(text)
+    ) {
+        return "compensation";
+    }
+
+    if (
+        type === "reward_campaign" ||
+        /活動|campaign|節慶|七夕|萬聖|聖誕/.test(text)
+    ) {
+        return "event";
+    }
+
+    if (
+        type === "admin_adjustment" &&
+        Number(data.amount || 0) > 0
+    ) {
+        return "admin";
+    }
+
+    if (
+        type === "system_grant" ||
+        /任務|簽到|新手|推薦|邀請|referral|每日任務|免費/.test(text)
+    ) {
+        return "freeTask";
+    }
+
+    return "other";
+}
+
+function classifyFlowerSpendUse(data = {}) {
+    const billingType = String(data.billingType || "").trim().toLowerCase();
+    const type = String(data.type || "").trim().toLowerCase();
+    const title = String(data.title || "").trim().toLowerCase();
+    const reason = String(data.reason || "").trim().toLowerCase();
+    const text = `${billingType} ${type} ${title} ${reason}`;
+
+    if (billingType === "interaction" || /互動|戳戳|抱抱|牽手|定位|擲骰子/.test(text)) {
+        return "interaction";
+    }
+    if (billingType === "gift" || /禮物|gift/.test(text)) {
+        return "gift";
+    }
+
+    const mode = normalizeAdminMode(data.chatMode);
+    if (mode !== "other") return mode;
+
+    return "other";
+}
+
+function getRevenuePurchaseInfo(data = {}) {
+    const type = String(data.type || "").trim().toLowerCase();
+    const provider = String(data.provider || "").trim().toLowerCase();
+    const currency = String(data.currency || "").trim().toUpperCase();
+    const price = Number(data.price || 0);
+    const productType = String(data.productType || "").trim().toLowerCase();
+    const productId = String(data.productId || "").trim().toLowerCase();
+    const title = String(data.title || "").trim().toLowerCase();
+
+    const isMobilePurchase =
+        type === "purchase" &&
+        (provider === "apple_iap" || provider === "google_play");
+
+    if (!isMobilePurchase) {
+        return null;
+    }
+
+    const isPricedTwd =
+        currency === "TWD" &&
+        Number.isFinite(price) &&
+        price > 0;
+
+    const isMonthlyCard =
+        productType === "monthly_card" ||
+        /monthly|月卡|星光契約/.test(`${productId} ${title}`);
+
+    return {
+        provider,
+        isPricedTwd,
+        revenueTwd: isPricedTwd ? price : 0,
+        isMonthlyCard,
+    };
+}
+
+function getBucketIndex(value, startMs, bucketMs, bucketCount) {
+    const index = Math.floor((value.getTime() - startMs) / bucketMs);
+    return index >= 0 && index < bucketCount ? index : -1;
+}
+
+function isInternalTesterForAnalytics(uid, data = {}, configuredUids = new Set()) {
+    if (configuredUids.has(String(uid || "").trim())) return true;
+
+    if (
+        data.analyticsExcludeFromEconomy === true ||
+        data.isInternalTester === true ||
+        data.internalTester === true ||
+        data.isTester === true ||
+        data.isTestUser === true ||
+        data.testUser === true ||
+        data.isBetaTester === true ||
+        data.betaTester === true
+    ) {
+        return true;
+    }
+
+    const accountType = String(data.accountType || "").trim().toLowerCase();
+    return [
+        "internal_test",
+        "internal_tester",
+        "tester",
+        "test",
+        "beta_tester",
+        "beta"
+    ].includes(accountType);
+}
+
+function medianNumber(values = []) {
+    if (!Array.isArray(values) || values.length === 0) return 0;
+
+    const sorted = values
+        .map((value) => Number(value || 0))
+        .filter((value) => Number.isFinite(value))
+        .sort((a, b) => a - b);
+
+    if (sorted.length === 0) return 0;
+
+    const middle = Math.floor(sorted.length / 2);
+    if (sorted.length % 2 === 1) return sorted[middle];
+    return (sorted[middle - 1] + sorted[middle]) / 2;
+}
+
+function buildFlowerInventoryStats(rows = []) {
+    const safeRows = Array.isArray(rows) ? rows : [];
+    const balances = safeRows.map((row) => Math.max(0, Number(row?.balance || 0)));
+    const totalPlayers = balances.length;
+    const totalFlowers = balances.reduce((sum, value) => sum + value, 0);
+
+    const bucketDefs = [
+        { key: "0_100", label: "0～100", min: 0, max: 100 },
+        { key: "101_300", label: "101～300", min: 101, max: 300 },
+        { key: "301_1000", label: "301～1,000", min: 301, max: 1000 },
+        { key: "1001_3000", label: "1,001～3,000", min: 1001, max: 3000 },
+        { key: "3001_plus", label: "3,001 以上", min: 3001, max: null },
+    ];
+
+    const buckets = bucketDefs.map((def) => {
+        const matched = safeRows.filter((row) => {
+            const balance = Math.max(0, Number(row?.balance || 0));
+            if (balance < def.min) return false;
+            if (def.max != null && balance > def.max) return false;
+            return true;
+        });
+
+        const flowerTotal = matched.reduce(
+            (sum, row) => sum + Math.max(0, Number(row?.balance || 0)),
+            0
+        );
+
+        return {
+            key: def.key,
+            label: def.label,
+            players: matched.length,
+            playerRatio: totalPlayers > 0 ? matched.length / totalPlayers : 0,
+            flowerTotal,
+        };
+    });
+
+    return {
+        playerCount: totalPlayers,
+        totalFlowers,
+        averageFlowers: totalPlayers > 0 ? totalFlowers / totalPlayers : 0,
+        medianFlowers: medianNumber(balances),
+        buckets,
+    };
+}
+
+/* 已搬遷美國後台：停用台灣匯出 getAdminOperationsAnalytics；保留原實作供必要時還原。 */
+void onCall(
+    {
+        region: REGION,
+        timeoutSeconds: 120,
+        memory: "512MiB",
+    },
+    async (request) => {
+        requireRewardCampaignAdmin(request);
+
+        const now = new Date();
+        const todayStart = getTaipeiUtcStartOfDay(now);
+        const tomorrowStart = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
+        const monthStart = getTaipeiMonthStart(now, 0);
+        const sixMonthStart = getTaipeiMonthStart(now, -5);
+        const sevenDayStart = new Date(todayStart.getTime() - 6 * 24 * 60 * 60 * 1000);
+        const eightWeekStart = new Date(todayStart.getTime() - 55 * 24 * 60 * 60 * 1000);
+
+        // Three independent Firestore reads run concurrently rather than sequentially.
+        // Timings help identify expensive queries without changing analytics semantics.
+        const analyticsStartedAt = Date.now();
+        const timedRead = async (label, read) => {
+            const startedAt = Date.now();
+            try {
+                const snapshot = await read();
+                console.info("[operationsAnalytics] read", {
+                    label,
+                    durationMs: Date.now() - startedAt,
+                    documents: snapshot.size ?? (snapshot.exists ? 1 : 0),
+                });
+                return snapshot;
+            } catch (error) {
+                console.error("[operationsAnalytics] read failed", {
+                    label,
+                    durationMs: Date.now() - startedAt,
+                    message: error?.message || String(error),
+                });
+                throw error;
+            }
+        };
+
+        const [flowerSnapshot, modeEventSnapshot, usersSnapshot, analyticsConfigSnapshot] =
+            await Promise.all([
+                timedRead("flower_logs", () => db
+                    .collectionGroup("flower_logs")
+                    .where("createdAt", ">=", Timestamp.fromDate(sixMonthStart))
+                    .where("createdAt", "<", Timestamp.fromDate(tomorrowStart))
+                    .get()),
+                timedRead("chat_mode_events", () => db
+                    .collection("artifacts")
+                    .doc(APP_ID)
+                    .collection("chat_mode_events")
+                    .where("createdAt", ">=", Timestamp.fromDate(monthStart))
+                    .where("createdAt", "<", Timestamp.fromDate(tomorrowStart))
+                    .get()).catch((error) => {
+                    console.warn("⚠️ chat_mode_events 讀取失敗，將以舊花花紀錄補足：", error?.message || error);
+                    return null;
+                }),
+                timedRead("users", () => db.collection("users").get()),
+                timedRead("operations_analytics_config", () => db
+                    .collection("artifacts")
+                    .doc(APP_ID)
+                    .collection("admin_settings")
+                    .doc("operations_analytics")
+                    .get()),
+            ]);
+
+        // Cache month boundaries instead of recalculating them for each flower log.
+        const monthBoundaries = Array.from({ length: 6 }, (_, i) => ({
+            start: getTaipeiMonthStart(now, i - 5),
+            end: getTaipeiMonthStart(now, i - 4),
+        }));
+        const monthBucketIndex = (createdAt) => {
+            for (let i = 0; i < monthBoundaries.length; i++) {
+                if (createdAt >= monthBoundaries[i].start && createdAt < monthBoundaries[i].end) {
+                    return i;
+                }
+            }
+            return -1;
+        };
+
+        const configuredTesterUids = new Set(
+            Array.isArray(analyticsConfigSnapshot.data()?.internalTesterUids)
+                ? analyticsConfigSnapshot.data().internalTesterUids
+                    .map((value) => String(value || "").trim())
+                    .filter(Boolean)
+                : []
+        );
+
+        const internalTesterUids = new Set();
+        for (const userDoc of usersSnapshot.docs) {
+            if (isInternalTesterForAnalytics(userDoc.id, userDoc.data() || {}, configuredTesterUids)) {
+                internalTesterUids.add(userDoc.id);
+            }
+        }
+
+        const allInventoryRows = [];
+        const normalInventoryRows = [];
+        const internalTesterRows = [];
+
+        for (const userDoc of usersSnapshot.docs) {
+            const userData = userDoc.data() || {};
+            const rawBalance = Number(userData.flowerPoints || 0);
+            const balance = Number.isFinite(rawBalance)
+                ? Math.max(0, Math.trunc(rawBalance))
+                : 0;
+
+            const row = {
+                uid: userDoc.id,
+                balance,
+            };
+
+            allInventoryRows.push(row);
+
+            if (
+                isInternalTesterForAnalytics(
+                    userDoc.id,
+                    userData,
+                    configuredTesterUids
+                )
+            ) {
+                internalTesterRows.push(row);
+            } else {
+                normalInventoryRows.push(row);
+            }
+        }
+
+        const flowerInventory = {
+            allPlayers: buildFlowerInventoryStats(allInventoryRows),
+            excludingInternalTesters: buildFlowerInventoryStats(normalInventoryRows),
+            internalTesters: buildFlowerInventoryStats(internalTesterRows),
+            internalTesterDetection: {
+                configuredUidCount: configuredTesterUids.size,
+                detectedPlayerCount: internalTesterRows.length,
+            },
+        };
+
+        const calculateEconomy = (excludeInternal) => {
+        let unattributedModeEventCount = 0;
+        let unattributedFlowerLogCount = 0;
+        const grantSources = {
+            freeTask: 0,
+            monthlyDaily: 0,
+            monthlyCardPurchase: 0,
+            topup: 0,
+            compensation: 0,
+            event: 0,
+            admin: 0,
+            other: 0,
+        };
+
+        const spendUses = {
+            gemini: 0,
+            daily: 0,
+            story: 0,
+            immersive: 0,
+            resonance: 0,
+            interaction: 0,
+            gift: 0,
+            other: 0,
+        };
+
+        const modeUsage = {
+            gemini: 0,
+            daily: 0,
+            story: 0,
+            immersive: 0,
+            resonance: 0,
+            other: 0,
+        };
+
+        const dailyTrend = Array.from({ length: 7 }, (_, index) => ({
+            label: new Intl.DateTimeFormat("zh-TW", {
+                timeZone: "Asia/Taipei",
+                month: "numeric",
+                day: "numeric",
+            }).format(new Date(sevenDayStart.getTime() + index * 24 * 60 * 60 * 1000)),
+            granted: 0,
+            spent: 0,
+            revenueTwd: 0,
+        }));
+
+        const weeklyTrend = Array.from({ length: 8 }, (_, index) => ({
+            label: `W${index + 1}`,
+            granted: 0,
+            spent: 0,
+            revenueTwd: 0,
+        }));
+
+        const monthlyTrend = Array.from({ length: 6 }, (_, index) => {
+            const bucketStart = getTaipeiMonthStart(now, index - 5);
+            const taipeiLocal = new Date(bucketStart.getTime() + 8 * 60 * 60 * 1000);
+            return {
+                label: `${taipeiLocal.getUTCMonth() + 1}月`,
+                granted: 0,
+                spent: 0,
+                revenueTwd: 0,
+            };
+        });
+
+        const monthPayerUids = new Set();
+        const seenModeEventKeys = new Set();
+
+        let monthRevenueTwd = 0;
+        let monthPurchaseCount = 0;
+        let monthMonthlyCardRevenueTwd = 0;
+        let monthTopupRevenueTwd = 0;
+        let monthMonthlyCardPurchaseCount = 0;
+        let monthTopupPurchaseCount = 0;
+        let monthFlowerGranted = 0;
+        let monthFlowerSpent = 0;
+        let monthPaidRelatedGranted = 0;
+        let monthFreeGranted = 0;
+        let unpricedPurchaseCount = 0;
+
+        if (modeEventSnapshot) {
+            for (const doc of modeEventSnapshot.docs) {
+                const data = doc.data() || {};
+                const eventUid = String(data.uid || data.userId || data.playerUid || data.createdBy || "").trim();
+                if (excludeInternal && (!eventUid || internalTesterUids.has(eventUid))) {
+                    if (!eventUid) unattributedModeEventCount++;
+                    continue;
+                }
+                const createdAt = data.createdAt?.toDate?.();
+                if (!createdAt || createdAt < monthStart || createdAt >= tomorrowStart) continue;
+
+                const mode = normalizeAdminMode(data.chatMode);
+                const eventBillingType =
+                    String(data.billingType || "chat")
+                        .trim()
+                        .toLowerCase();
+
+                if (eventBillingType === "chat") {
+                    modeUsage[mode] = (modeUsage[mode] || 0) + 1;
+                }
+
+                const key = `${String(data.sessionId || "")}|${String(data.messageId || "")}`;
+                if (key !== "|") seenModeEventKeys.add(key);
+            }
+        }
+
+        for (const doc of flowerSnapshot.docs) {
+            const data = doc.data() || {};
+            const transactionUid = doc.ref.parent.parent?.id || "";
+            if (excludeInternal && (!transactionUid || internalTesterUids.has(transactionUid))) {
+                if (!transactionUid) unattributedFlowerLogCount++;
+                continue;
+            }
+            const createdAt = data.createdAt?.toDate?.();
+            if (!createdAt) continue;
+
+            const amount = Number(data.amount || 0);
+            const isMonth = createdAt >= monthStart && createdAt < tomorrowStart;
+
+            // 日趨勢
+            if (createdAt >= sevenDayStart && createdAt < tomorrowStart) {
+                const idx = getBucketIndex(createdAt, sevenDayStart.getTime(), 24 * 60 * 60 * 1000, 7);
+                if (idx >= 0 && Number.isFinite(amount)) {
+                    if (amount > 0) dailyTrend[idx].granted += amount;
+                    if (amount < 0) dailyTrend[idx].spent += Math.abs(amount);
+                }
+            }
+
+            // 週趨勢（近 8 週，每 7 天一桶）
+            if (createdAt >= eightWeekStart && createdAt < tomorrowStart) {
+                const idx = getBucketIndex(createdAt, eightWeekStart.getTime(), 7 * 24 * 60 * 60 * 1000, 8);
+                if (idx >= 0 && Number.isFinite(amount)) {
+                    if (amount > 0) weeklyTrend[idx].granted += amount;
+                    if (amount < 0) weeklyTrend[idx].spent += Math.abs(amount);
+                }
+            }
+
+            // 月趨勢
+            const monthIndex = monthBucketIndex(createdAt);
+            if (monthIndex >= 0 && Number.isFinite(amount)) {
+                if (amount > 0) monthlyTrend[monthIndex].granted += amount;
+                if (amount < 0) monthlyTrend[monthIndex].spent += Math.abs(amount);
+            }
+
+            const revenueInfo = getRevenuePurchaseInfo(data);
+            if (revenueInfo) {
+                if (!revenueInfo.isPricedTwd) {
+                    if (isMonth) unpricedPurchaseCount++;
+                } else {
+                    // 日 revenue 趨勢
+                    if (createdAt >= sevenDayStart && createdAt < tomorrowStart) {
+                        const idx = getBucketIndex(createdAt, sevenDayStart.getTime(), 24 * 60 * 60 * 1000, 7);
+                        if (idx >= 0) dailyTrend[idx].revenueTwd += revenueInfo.revenueTwd;
+                    }
+                    if (createdAt >= eightWeekStart && createdAt < tomorrowStart) {
+                        const idx = getBucketIndex(createdAt, eightWeekStart.getTime(), 7 * 24 * 60 * 60 * 1000, 8);
+                        if (idx >= 0) weeklyTrend[idx].revenueTwd += revenueInfo.revenueTwd;
+                    }
+                    if (monthIndex >= 0) {
+                        monthlyTrend[monthIndex].revenueTwd += revenueInfo.revenueTwd;
+                    }
+                }
+
+                if (isMonth) {
+                    monthPurchaseCount++;
+                    if (revenueInfo.isPricedTwd) {
+                        monthRevenueTwd += revenueInfo.revenueTwd;
+                    }
+
+                    if (revenueInfo.isMonthlyCard) {
+                        monthMonthlyCardPurchaseCount++;
+                        if (revenueInfo.isPricedTwd) {
+                            monthMonthlyCardRevenueTwd += revenueInfo.revenueTwd;
+                        }
+                    } else {
+                        monthTopupPurchaseCount++;
+                        if (revenueInfo.isPricedTwd) {
+                            monthTopupRevenueTwd += revenueInfo.revenueTwd;
+                        }
+                    }
+
+                    const uid = doc.ref.parent.parent?.id || "";
+                    if (uid) monthPayerUids.add(uid);
+                }
+            }
+
+            if (!isMonth || !Number.isFinite(amount) || amount === 0) {
+                continue;
+            }
+
+            if (amount > 0) {
+                monthFlowerGranted += amount;
+                const sourceKey = classifyFlowerGrantSource(data);
+                grantSources[sourceKey] = (grantSources[sourceKey] || 0) + amount;
+
+                if (sourceKey === "monthlyCardPurchase" || sourceKey === "topup" || sourceKey === "monthlyDaily") {
+                    monthPaidRelatedGranted += amount;
+                } else {
+                    monthFreeGranted += amount;
+                }
+            } else {
+                monthFlowerSpent += Math.abs(amount);
+                const spendKey = classifyFlowerSpendUse(data);
+                spendUses[spendKey] = (spendUses[spendKey] || 0) + Math.abs(amount);
+
+                // 舊資料沒有 chat_mode_events 時，以付費聊天 log 補模式次數。
+                const mode = normalizeAdminMode(data.chatMode);
+                const legacyBillingType =
+                    String(data.billingType || "chat")
+                        .trim()
+                        .toLowerCase();
+
+                if (mode !== "other" && legacyBillingType === "chat") {
+                    const key = `${String(data.sessionId || "")}|${String(data.messageId || "")}`;
+                    if (!seenModeEventKeys.has(key)) {
+                        modeUsage[mode] = (modeUsage[mode] || 0) + 1;
+                    }
+                }
+            }
+        }
+
+        const modeUsageTotal = Object.values(modeUsage)
+            .reduce((sum, value) => sum + Number(value || 0), 0);
+
+        const monthPayingUsers = monthPayerUids.size;
+        const monthArppuTwd = monthPayingUsers > 0
+            ? monthRevenueTwd / monthPayingUsers
+            : null;
+
+        return {
+            generatedAt: new Date().toISOString(),
+            unattributedModeEventCount,
+            unattributedFlowerLogCount,
+            month: {
+                revenueTwd: monthRevenueTwd,
+                payingUsers: monthPayingUsers,
+                arppuTwd: monthArppuTwd,
+                purchaseCount: monthPurchaseCount,
+                monthlyCardRevenueTwd: monthMonthlyCardRevenueTwd,
+                topupRevenueTwd: monthTopupRevenueTwd,
+                monthlyCardPurchaseCount: monthMonthlyCardPurchaseCount,
+                topupPurchaseCount: monthTopupPurchaseCount,
+                flowerGranted: monthFlowerGranted,
+                flowerSpent: monthFlowerSpent,
+                paidRelatedGranted: monthPaidRelatedGranted,
+                freeGranted: monthFreeGranted,
+                unpricedPurchaseCount,
+            },
+            grantSources,
+            spendUses,
+            modeUsage,
+            modeUsageTotal,
+            trends: {
+                day: dailyTrend,
+                week: weeklyTrend,
+                month: monthlyTrend,
+            },
+        };
+        };
+        const formalEconomy = calculateEconomy(true);
+        const allEconomy = calculateEconomy(false);
+        console.info("[operationsAnalytics] completed", {
+            durationMs: Date.now() - analyticsStartedAt,
+            flowerLogCount: flowerSnapshot.size,
+            modeEventCount: modeEventSnapshot?.size ?? 0,
+            userCount: usersSnapshot.size,
+        });
+        return {
+            ...formalEconomy,
+            flowerInventory,
+            economyComparison: {
+                excludingInternalTesters: formalEconomy,
+                allPlayers: allEconomy,
+                internalTesterCount: internalTesterUids.size,
+            },
+        };
+    }
+);;
+
+exports.getAdminOperationsAnalyticsUs = onCall(
+    {
+        region: "us-central1",
+        timeoutSeconds: 120,
+        memory: "512MiB",
+    },
+    async (request) => {
+        requireRewardCampaignAdmin(request);
+
+        const now = new Date();
+        const todayStart = getTaipeiUtcStartOfDay(now);
+        const tomorrowStart = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
+        const monthStart = getTaipeiMonthStart(now, 0);
+        const sixMonthStart = getTaipeiMonthStart(now, -5);
+        const sevenDayStart = new Date(todayStart.getTime() - 6 * 24 * 60 * 60 * 1000);
+        const eightWeekStart = new Date(todayStart.getTime() - 55 * 24 * 60 * 60 * 1000);
+
+        // Three independent Firestore reads run concurrently rather than sequentially.
+        // Timings help identify expensive queries without changing analytics semantics.
+        const analyticsStartedAt = Date.now();
+        const timedRead = async (label, read) => {
+            const startedAt = Date.now();
+            try {
+                const snapshot = await read();
+                console.info("[operationsAnalytics] read", {
+                    label,
+                    durationMs: Date.now() - startedAt,
+                    documents: snapshot.size ?? (snapshot.exists ? 1 : 0),
+                });
+                return snapshot;
+            } catch (error) {
+                console.error("[operationsAnalytics] read failed", {
+                    label,
+                    durationMs: Date.now() - startedAt,
+                    message: error?.message || String(error),
+                });
+                throw error;
+            }
+        };
+
+        const [flowerSnapshot, modeEventSnapshot, usersSnapshot, analyticsConfigSnapshot] =
+            await Promise.all([
+                timedRead("flower_logs", () => db
+                    .collectionGroup("flower_logs")
+                    .where("createdAt", ">=", Timestamp.fromDate(sixMonthStart))
+                    .where("createdAt", "<", Timestamp.fromDate(tomorrowStart))
+                    .get()),
+                timedRead("chat_mode_events", () => db
+                    .collection("artifacts")
+                    .doc(APP_ID)
+                    .collection("chat_mode_events")
+                    .where("createdAt", ">=", Timestamp.fromDate(monthStart))
+                    .where("createdAt", "<", Timestamp.fromDate(tomorrowStart))
+                    .get()).catch((error) => {
+                    console.warn("⚠️ chat_mode_events 讀取失敗，將以舊花花紀錄補足：", error?.message || error);
+                    return null;
+                }),
+                timedRead("users", () => db.collection("users").get()),
+                timedRead("operations_analytics_config", () => db
+                    .collection("artifacts")
+                    .doc(APP_ID)
+                    .collection("admin_settings")
+                    .doc("operations_analytics")
+                    .get()),
+            ]);
+
+        // Cache month boundaries instead of recalculating them for each flower log.
+        const monthBoundaries = Array.from({ length: 6 }, (_, i) => ({
+            start: getTaipeiMonthStart(now, i - 5),
+            end: getTaipeiMonthStart(now, i - 4),
+        }));
+        const monthBucketIndex = (createdAt) => {
+            for (let i = 0; i < monthBoundaries.length; i++) {
+                if (createdAt >= monthBoundaries[i].start && createdAt < monthBoundaries[i].end) {
+                    return i;
+                }
+            }
+            return -1;
+        };
+
+        const configuredTesterUids = new Set(
+            Array.isArray(analyticsConfigSnapshot.data()?.internalTesterUids)
+                ? analyticsConfigSnapshot.data().internalTesterUids
+                    .map((value) => String(value || "").trim())
+                    .filter(Boolean)
+                : []
+        );
+
+        const internalTesterUids = new Set();
+        for (const userDoc of usersSnapshot.docs) {
+            if (isInternalTesterForAnalytics(userDoc.id, userDoc.data() || {}, configuredTesterUids)) {
+                internalTesterUids.add(userDoc.id);
+            }
+        }
+
+        const allInventoryRows = [];
+        const normalInventoryRows = [];
+        const internalTesterRows = [];
+
+        for (const userDoc of usersSnapshot.docs) {
+            const userData = userDoc.data() || {};
+            const rawBalance = Number(userData.flowerPoints || 0);
+            const balance = Number.isFinite(rawBalance)
+                ? Math.max(0, Math.trunc(rawBalance))
+                : 0;
+
+            const row = {
+                uid: userDoc.id,
+                balance,
+            };
+
+            allInventoryRows.push(row);
+
+            if (
+                isInternalTesterForAnalytics(
+                    userDoc.id,
+                    userData,
+                    configuredTesterUids
+                )
+            ) {
+                internalTesterRows.push(row);
+            } else {
+                normalInventoryRows.push(row);
+            }
+        }
+
+        const flowerInventory = {
+            allPlayers: buildFlowerInventoryStats(allInventoryRows),
+            excludingInternalTesters: buildFlowerInventoryStats(normalInventoryRows),
+            internalTesters: buildFlowerInventoryStats(internalTesterRows),
+            internalTesterDetection: {
+                configuredUidCount: configuredTesterUids.size,
+                detectedPlayerCount: internalTesterRows.length,
+            },
+        };
+
+        const calculateEconomy = (excludeInternal) => {
+        let unattributedModeEventCount = 0;
+        let unattributedFlowerLogCount = 0;
+        const grantSources = {
+            freeTask: 0,
+            monthlyDaily: 0,
+            monthlyCardPurchase: 0,
+            topup: 0,
+            compensation: 0,
+            event: 0,
+            admin: 0,
+            other: 0,
+        };
+
+        const spendUses = {
+            gemini: 0,
+            daily: 0,
+            story: 0,
+            immersive: 0,
+            resonance: 0,
+            interaction: 0,
+            gift: 0,
+            other: 0,
+        };
+
+        const modeUsage = {
+            gemini: 0,
+            daily: 0,
+            story: 0,
+            immersive: 0,
+            resonance: 0,
+            other: 0,
+        };
+
+        const dailyTrend = Array.from({ length: 7 }, (_, index) => ({
+            label: new Intl.DateTimeFormat("zh-TW", {
+                timeZone: "Asia/Taipei",
+                month: "numeric",
+                day: "numeric",
+            }).format(new Date(sevenDayStart.getTime() + index * 24 * 60 * 60 * 1000)),
+            granted: 0,
+            spent: 0,
+            revenueTwd: 0,
+        }));
+
+        const weeklyTrend = Array.from({ length: 8 }, (_, index) => ({
+            label: `W${index + 1}`,
+            granted: 0,
+            spent: 0,
+            revenueTwd: 0,
+        }));
+
+        const monthlyTrend = Array.from({ length: 6 }, (_, index) => {
+            const bucketStart = getTaipeiMonthStart(now, index - 5);
+            const taipeiLocal = new Date(bucketStart.getTime() + 8 * 60 * 60 * 1000);
+            return {
+                label: `${taipeiLocal.getUTCMonth() + 1}月`,
+                granted: 0,
+                spent: 0,
+                revenueTwd: 0,
+            };
+        });
+
+        const monthPayerUids = new Set();
+        const seenModeEventKeys = new Set();
+
+        let monthRevenueTwd = 0;
+        let monthPurchaseCount = 0;
+        let monthMonthlyCardRevenueTwd = 0;
+        let monthTopupRevenueTwd = 0;
+        let monthMonthlyCardPurchaseCount = 0;
+        let monthTopupPurchaseCount = 0;
+        let monthFlowerGranted = 0;
+        let monthFlowerSpent = 0;
+        let monthPaidRelatedGranted = 0;
+        let monthFreeGranted = 0;
+        let unpricedPurchaseCount = 0;
+
+        if (modeEventSnapshot) {
+            for (const doc of modeEventSnapshot.docs) {
+                const data = doc.data() || {};
+                const eventUid = String(data.uid || data.userId || data.playerUid || data.createdBy || "").trim();
+                if (excludeInternal && (!eventUid || internalTesterUids.has(eventUid))) {
+                    if (!eventUid) unattributedModeEventCount++;
+                    continue;
+                }
+                const createdAt = data.createdAt?.toDate?.();
+                if (!createdAt || createdAt < monthStart || createdAt >= tomorrowStart) continue;
+
+                const mode = normalizeAdminMode(data.chatMode);
+                const eventBillingType =
+                    String(data.billingType || "chat")
+                        .trim()
+                        .toLowerCase();
+
+                if (eventBillingType === "chat") {
+                    modeUsage[mode] = (modeUsage[mode] || 0) + 1;
+                }
+
+                const key = `${String(data.sessionId || "")}|${String(data.messageId || "")}`;
+                if (key !== "|") seenModeEventKeys.add(key);
+            }
+        }
+
+        for (const doc of flowerSnapshot.docs) {
+            const data = doc.data() || {};
+            const transactionUid = doc.ref.parent.parent?.id || "";
+            if (excludeInternal && (!transactionUid || internalTesterUids.has(transactionUid))) {
+                if (!transactionUid) unattributedFlowerLogCount++;
+                continue;
+            }
+            const createdAt = data.createdAt?.toDate?.();
+            if (!createdAt) continue;
+
+            const amount = Number(data.amount || 0);
+            const isMonth = createdAt >= monthStart && createdAt < tomorrowStart;
+
+            // 日趨勢
+            if (createdAt >= sevenDayStart && createdAt < tomorrowStart) {
+                const idx = getBucketIndex(createdAt, sevenDayStart.getTime(), 24 * 60 * 60 * 1000, 7);
+                if (idx >= 0 && Number.isFinite(amount)) {
+                    if (amount > 0) dailyTrend[idx].granted += amount;
+                    if (amount < 0) dailyTrend[idx].spent += Math.abs(amount);
+                }
+            }
+
+            // 週趨勢（近 8 週，每 7 天一桶）
+            if (createdAt >= eightWeekStart && createdAt < tomorrowStart) {
+                const idx = getBucketIndex(createdAt, eightWeekStart.getTime(), 7 * 24 * 60 * 60 * 1000, 8);
+                if (idx >= 0 && Number.isFinite(amount)) {
+                    if (amount > 0) weeklyTrend[idx].granted += amount;
+                    if (amount < 0) weeklyTrend[idx].spent += Math.abs(amount);
+                }
+            }
+
+            // 月趨勢
+            const monthIndex = monthBucketIndex(createdAt);
+            if (monthIndex >= 0 && Number.isFinite(amount)) {
+                if (amount > 0) monthlyTrend[monthIndex].granted += amount;
+                if (amount < 0) monthlyTrend[monthIndex].spent += Math.abs(amount);
+            }
+
+            const revenueInfo = getRevenuePurchaseInfo(data);
+            if (revenueInfo) {
+                if (!revenueInfo.isPricedTwd) {
+                    if (isMonth) unpricedPurchaseCount++;
+                } else {
+                    // 日 revenue 趨勢
+                    if (createdAt >= sevenDayStart && createdAt < tomorrowStart) {
+                        const idx = getBucketIndex(createdAt, sevenDayStart.getTime(), 24 * 60 * 60 * 1000, 7);
+                        if (idx >= 0) dailyTrend[idx].revenueTwd += revenueInfo.revenueTwd;
+                    }
+                    if (createdAt >= eightWeekStart && createdAt < tomorrowStart) {
+                        const idx = getBucketIndex(createdAt, eightWeekStart.getTime(), 7 * 24 * 60 * 60 * 1000, 8);
+                        if (idx >= 0) weeklyTrend[idx].revenueTwd += revenueInfo.revenueTwd;
+                    }
+                    if (monthIndex >= 0) {
+                        monthlyTrend[monthIndex].revenueTwd += revenueInfo.revenueTwd;
+                    }
+                }
+
+                if (isMonth) {
+                    monthPurchaseCount++;
+                    if (revenueInfo.isPricedTwd) {
+                        monthRevenueTwd += revenueInfo.revenueTwd;
+                    }
+
+                    if (revenueInfo.isMonthlyCard) {
+                        monthMonthlyCardPurchaseCount++;
+                        if (revenueInfo.isPricedTwd) {
+                            monthMonthlyCardRevenueTwd += revenueInfo.revenueTwd;
+                        }
+                    } else {
+                        monthTopupPurchaseCount++;
+                        if (revenueInfo.isPricedTwd) {
+                            monthTopupRevenueTwd += revenueInfo.revenueTwd;
+                        }
+                    }
+
+                    const uid = doc.ref.parent.parent?.id || "";
+                    if (uid) monthPayerUids.add(uid);
+                }
+            }
+
+            if (!isMonth || !Number.isFinite(amount) || amount === 0) {
+                continue;
+            }
+
+            if (amount > 0) {
+                monthFlowerGranted += amount;
+                const sourceKey = classifyFlowerGrantSource(data);
+                grantSources[sourceKey] = (grantSources[sourceKey] || 0) + amount;
+
+                if (sourceKey === "monthlyCardPurchase" || sourceKey === "topup" || sourceKey === "monthlyDaily") {
+                    monthPaidRelatedGranted += amount;
+                } else {
+                    monthFreeGranted += amount;
+                }
+            } else {
+                monthFlowerSpent += Math.abs(amount);
+                const spendKey = classifyFlowerSpendUse(data);
+                spendUses[spendKey] = (spendUses[spendKey] || 0) + Math.abs(amount);
+
+                // 舊資料沒有 chat_mode_events 時，以付費聊天 log 補模式次數。
+                const mode = normalizeAdminMode(data.chatMode);
+                const legacyBillingType =
+                    String(data.billingType || "chat")
+                        .trim()
+                        .toLowerCase();
+
+                if (mode !== "other" && legacyBillingType === "chat") {
+                    const key = `${String(data.sessionId || "")}|${String(data.messageId || "")}`;
+                    if (!seenModeEventKeys.has(key)) {
+                        modeUsage[mode] = (modeUsage[mode] || 0) + 1;
+                    }
+                }
+            }
+        }
+
+        const modeUsageTotal = Object.values(modeUsage)
+            .reduce((sum, value) => sum + Number(value || 0), 0);
+
+        const monthPayingUsers = monthPayerUids.size;
+        const monthArppuTwd = monthPayingUsers > 0
+            ? monthRevenueTwd / monthPayingUsers
+            : null;
+
+        return {
+            generatedAt: new Date().toISOString(),
+            unattributedModeEventCount,
+            unattributedFlowerLogCount,
+            month: {
+                revenueTwd: monthRevenueTwd,
+                payingUsers: monthPayingUsers,
+                arppuTwd: monthArppuTwd,
+                purchaseCount: monthPurchaseCount,
+                monthlyCardRevenueTwd: monthMonthlyCardRevenueTwd,
+                topupRevenueTwd: monthTopupRevenueTwd,
+                monthlyCardPurchaseCount: monthMonthlyCardPurchaseCount,
+                topupPurchaseCount: monthTopupPurchaseCount,
+                flowerGranted: monthFlowerGranted,
+                flowerSpent: monthFlowerSpent,
+                paidRelatedGranted: monthPaidRelatedGranted,
+                freeGranted: monthFreeGranted,
+                unpricedPurchaseCount,
+            },
+            grantSources,
+            spendUses,
+            modeUsage,
+            modeUsageTotal,
+            trends: {
+                day: dailyTrend,
+                week: weeklyTrend,
+                month: monthlyTrend,
+            },
+        };
+        };
+        const formalEconomy = calculateEconomy(true);
+        const allEconomy = calculateEconomy(false);
+        console.info("[operationsAnalytics] completed", {
+            durationMs: Date.now() - analyticsStartedAt,
+            flowerLogCount: flowerSnapshot.size,
+            modeEventCount: modeEventSnapshot?.size ?? 0,
+            userCount: usersSnapshot.size,
+        });
+        return {
+            ...formalEconomy,
+            flowerInventory,
+            economyComparison: {
+                excludingInternalTesters: formalEconomy,
+                allPlayers: allEconomy,
+                internalTesterCount: internalTesterUids.size,
+            },
+        };
+    }
+);;
+
+exports.createRewardCampaignUs = onCall(
+  {
+    region: "us-central1",
+    timeoutSeconds: 60,
+    memory: "256MiB",
+  },
+  async (request) => {
+    const adminUid =
+      requireRewardCampaignAdmin(request);
+
+    const data = request.data || {};
+
+    const title = String(
+      data.title || ""
+    ).trim();
+
+    const description = String(
+      data.description || ""
+    ).trim();
+
+    const rewardType = String(
+      data.rewardType || "flowerPoints"
+    ).trim();
+
+    const rewardAmount = Number(
+      data.rewardAmount || 0
+    );
+
+const rawAudience = String(
+  data.audience || "admin_only"
+).trim();
+
+const audienceType =
+  rawAudience === "all_users"
+    ? "all"
+    : "targeted";
+
+const targetUserIds =
+  audienceType === "all"
+    ? []
+    : [adminUid];
+
+    const startAt = parseRewardCampaignDate(
+      data.startAt,
+      "開始時間"
+    );
+
+    const endAt = parseRewardCampaignDate(
+      data.endAt,
+      "結束時間"
+    );
+
+    if (!title) {
+      throw new HttpsError(
+        "invalid-argument",
+        "請輸入活動標題"
+      );
+    }
+
+    if (!description) {
+      throw new HttpsError(
+        "invalid-argument",
+        "請輸入活動說明"
+      );
+    }
+
+    if (rewardType !== "flowerPoints") {
+      throw new HttpsError(
+        "invalid-argument",
+        "目前僅支援花花點數"
+      );
+    }
+
+    if (
+      !Number.isInteger(rewardAmount) ||
+      rewardAmount <= 0 ||
+      rewardAmount > 10000
+    ) {
+      throw new HttpsError(
+        "invalid-argument",
+        "花花數量必須是 1～10000 的整數"
+      );
+    }
+
+    if (endAt <= startAt) {
+      throw new HttpsError(
+        "invalid-argument",
+        "結束時間必須晚於開始時間"
+      );
+    }
+
+    const campaignRef = db
+      .collection("artifacts")
+      .doc(APP_ID)
+      .collection("reward_campaigns")
+      .doc();
+
+    await campaignRef.set({
+      title,
+      description,
+      rewardType,
+      rewardAmount,
+
+      audienceType,
+      targetUserIds,
+
+      startAt,
+      endAt,
+      status: "active",
+
+      createdBy: adminUid,
+      createdAt:
+        FieldValue.serverTimestamp(),
+      updatedAt:
+        FieldValue.serverTimestamp(),
+    });
+
+    console.log(
+      "🎁 已建立活動禮物",
+      {
+        campaignId: campaignRef.id,
+        title,
+        rewardAmount,
+        adminUid,
+      }
+    );
+
+    return {
+      success: true,
+      campaignId: campaignRef.id,
+    };
+  }
+);;
+
+exports.syncRewardCampaignsToMailboxUs = onCall(
+  {
+    region: "us-central1",
+    timeoutSeconds: 60,
+    memory: "256MiB",
+  },
+  async (request) => {
+    const userId = request.auth?.uid;
+
+    if (!userId) {
+      throw new HttpsError(
+        "unauthenticated",
+        "請先登入"
+      );
+    }
+
+    const now = new Date();
+
+    const campaignsSnapshot = await db
+      .collection("artifacts")
+      .doc(APP_ID)
+      .collection("reward_campaigns")
+      .where("status", "==", "active")
+      .limit(100)
+      .get();
+
+    const availableCampaigns =
+      campaignsSnapshot.docs.filter(
+        (document) => {
+          const data = document.data();
+
+          const startAt =
+            data.startAt?.toDate?.();
+
+          const endAt =
+            data.endAt?.toDate?.();
+
+          if (!startAt || !endAt) {
+            return false;
+          }
+
+          if (now < startAt || now > endAt) {
+            return false;
+          }
+
+          const audienceType =
+            data.audienceType || "all";
+
+          if (audienceType === "all") {
+            return true;
+          }
+
+          const targetUserIds =
+            Array.isArray(
+              data.targetUserIds
+            )
+              ? data.targetUserIds
+              : [];
+
+          return targetUserIds.includes(
+            userId
+          );
+        }
+      );
+
+    if (availableCampaigns.length === 0) {
+      return {
+        success: true,
+        syncedCount: 0,
+      };
+    }
+
+    const userMailboxRef = db
+      .collection("users")
+      .doc(userId)
+      .collection("mailbox");
+
+    const mailboxChecks =
+      await Promise.all(
+        availableCampaigns.map(
+          async (campaignDocument) => {
+            const mailRef =
+              userMailboxRef.doc(
+                `reward_campaign_${campaignDocument.id}`
+              );
+
+            const mailSnapshot =
+              await mailRef.get();
+
+            return {
+              campaignDocument,
+              mailRef,
+              exists: mailSnapshot.exists,
+            };
+          }
+        )
+      );
+
+    const batch = db.batch();
+    let syncedCount = 0;
+
+    for (const result of mailboxChecks) {
+      if (result.exists) {
+        continue;
+      }
+
+      const campaign =
+        result.campaignDocument.data();
+
+      batch.set(result.mailRef, {
+        type: "reward_campaign",
+
+        title:
+          `🎁 ${campaign.title}`,
+
+        body: campaign.description,
+
+        rewardCampaignId:
+          result.campaignDocument.id,
+
+        rewardType:
+          campaign.rewardType,
+
+        rewardAmount:
+          campaign.rewardAmount,
+
+        endAt:
+          campaign.endAt,
+
+        expiresAt:
+          campaign.endAt,
+
+        claimed: false,
+        isRead: false,
+
+        createdAt:
+          FieldValue.serverTimestamp(),
+      });
+
+      syncedCount++;
+    }
+
+    if (syncedCount > 0) {
+      await batch.commit();
+    }
+
+    return {
+      success: true,
+      syncedCount,
+    };
+  }
+);;
+
+exports.disableRewardCampaignUs = onCall(
+  {
+    region: "us-central1",
+    timeoutSeconds: 60,
+    memory: "256MiB",
+  },
+  async (request) => {
+    const adminUid =
+      requireRewardCampaignAdmin(request);
+
+    const campaignId = String(
+      request.data?.campaignId || ""
+    ).trim();
+
+    if (!campaignId) {
+      throw new HttpsError(
+        "invalid-argument",
+        "缺少活動編號"
+      );
+    }
+
+    const campaignRef = db
+      .collection("artifacts")
+      .doc(APP_ID)
+      .collection("reward_campaigns")
+      .doc(campaignId);
+
+    const snapshot =
+      await campaignRef.get();
+
+    if (!snapshot.exists) {
+      throw new HttpsError(
+        "not-found",
+        "找不到這個活動"
+      );
+    }
+
+    await campaignRef.update({
+      status: "disabled",
+      disabledBy: adminUid,
+      disabledAt:
+        FieldValue.serverTimestamp(),
+      updatedAt:
+        FieldValue.serverTimestamp(),
+    });
+
+    return {
+      success: true,
+      campaignId,
+    };
+  }
+);;
+
+exports.listRewardCampaignsUs = onCall(
+  {
+    region: "us-central1",
+    timeoutSeconds: 60,
+    memory: "256MiB",
+  },
+  async (request) => {
+    requireRewardCampaignAdmin(request);
+
+    const snapshot = await db
+      .collection("artifacts")
+      .doc(APP_ID)
+      .collection("reward_campaigns")
+      .orderBy("createdAt", "desc")
+      .limit(50)
+      .get();
+
+    const campaigns = snapshot.docs.map(
+      (document) => {
+        const data = document.data();
+
+        return {
+          id: document.id,
+
+          title:
+            String(data.title || ""),
+
+          description:
+            String(
+              data.description || ""
+            ),
+
+          rewardType:
+            String(
+              data.rewardType ||
+              "flowerPoints"
+            ),
+
+          rewardAmount:
+            Number(
+              data.rewardAmount || 0
+            ),
+
+          audienceType:
+            String(
+              data.audienceType || "all"
+            ),
+
+          status:
+            String(
+              data.status || "active"
+            ),
+
+          startAt:
+            data.startAt
+              ?.toDate?.()
+              ?.toISOString?.() || "",
+
+          endAt:
+            data.endAt
+              ?.toDate?.()
+              ?.toISOString?.() || "",
+
+          createdAt:
+            data.createdAt
+              ?.toDate?.()
+              ?.toISOString?.() || "",
+        };
+      }
+    );
+
+    return {
+      success: true,
+      campaigns,
+    };
+  }
+);;
+
+exports.lookupAdminMailboxRecipientUs = onCall(
+  {
+    region: "us-central1",
+    timeoutSeconds: 30,
+    memory: "256MiB",
+  },
+  async (request) => {
+    requireRewardCampaignAdmin(request);
+
+    const recipientUid = String(
+      request.data?.recipientUid || ""
+    ).trim();
+
+    if (!recipientUid) {
+      throw new HttpsError(
+        "invalid-argument",
+        "請輸入玩家 UID"
+      );
+    }
+
+    const userSnapshot = await db
+      .collection("users")
+      .doc(recipientUid)
+      .get();
+
+    if (!userSnapshot.exists) {
+      return {
+        success: true,
+        exists: false,
+      };
+    }
+
+    const userData =
+      userSnapshot.data() || {};
+
+    const recipientName =
+      String(
+        userData.nickname ||
+        userData.displayName ||
+        userData.name ||
+        "未設定暱稱的玩家"
+      ).trim();
+
+    return {
+      success: true,
+      exists: true,
+      recipientUid,
+      recipientName,
+    };
+  }
+);;
+
+exports.sendAdminMailboxMessageUs = onCall(
+  {
+    region: "us-central1",
+    timeoutSeconds: 60,
+    memory: "256MiB",
+  },
+  async (request) => {
+    const adminUid =
+      requireRewardCampaignAdmin(request);
+
+    const recipientUid = String(
+      request.data?.recipientUid || ""
+    ).trim();
+
+    const title = String(
+      request.data?.title || ""
+    ).trim();
+
+    const body = String(
+      request.data?.body || ""
+    ).trim();
+
+    if (!recipientUid) {
+      throw new HttpsError(
+        "invalid-argument",
+        "缺少收件人 UID"
+      );
+    }
+
+    if (!title) {
+      throw new HttpsError(
+        "invalid-argument",
+        "請輸入信件標題"
+      );
+    }
+
+    if (!body) {
+      throw new HttpsError(
+        "invalid-argument",
+        "請輸入信件內容"
+      );
+    }
+
+    if (title.length > 100) {
+      throw new HttpsError(
+        "invalid-argument",
+        "信件標題不能超過 100 字"
+      );
+    }
+
+    if (body.length > 3000) {
+      throw new HttpsError(
+        "invalid-argument",
+        "信件內容不能超過 3000 字"
+      );
+    }
+
+    const recipientRef = db
+      .collection("users")
+      .doc(recipientUid);
+
+    const recipientSnapshot =
+      await recipientRef.get();
+
+    if (!recipientSnapshot.exists) {
+      throw new HttpsError(
+        "not-found",
+        "找不到這位玩家"
+      );
+    }
+
+    const recipientData =
+      recipientSnapshot.data() || {};
+
+    const recipientName =
+      String(
+        recipientData.nickname ||
+        recipientData.displayName ||
+        recipientData.name ||
+        "未設定暱稱的玩家"
+      ).trim();
+
+    const mailboxRef = recipientRef
+      .collection("mailbox")
+      .doc();
+
+    const mailLogRef = db
+      .collection("artifacts")
+      .doc(APP_ID)
+      .collection("admin_mail_logs")
+      .doc(mailboxRef.id);
+
+    const batch = db.batch();
+
+    batch.set(mailboxRef, {
+      type: "admin_mail",
+
+      title,
+      body,
+
+      fromId: adminUid,
+      fromName: "戀戀拾光管理團隊",
+
+      isRead: false,
+
+      createdAt:
+        FieldValue.serverTimestamp(),
+    });
+
+    batch.set(mailLogRef, {
+      mailId: mailboxRef.id,
+
+      recipientUid,
+      recipientName,
+
+      title,
+      body,
+
+      adminUid,
+      status: "sent",
+
+      createdAt:
+        FieldValue.serverTimestamp(),
+    });
+
+    await batch.commit();
+
+    console.log(
+      "📨 管理員玩家信件已寄出",
+      {
+        mailId: mailboxRef.id,
+        recipientUid,
+        recipientName,
+        adminUid,
+      }
+    );
+
+    return {
+      success: true,
+      mailId: mailboxRef.id,
+      recipientUid,
+      recipientName,
+    };
+  }
+);;
+
+exports.listCreatorApplicationsUs = onCall({region: "us-central1", timeoutSeconds: 60}, async (request) => {
+  requireRewardCampaignAdmin(request);
+  // 分狀態查詢避免讀取整個 users 集合；每組至多 200 位。
+  const snapshots = await Promise.all(CREATOR_ADMIN_STATUSES.map(status =>
+    db.collection("users").where("creatorStatus", "==", status).limit(200).get()
+  ));
+  const items = [];
+  for (let i = 0; i < snapshots.length; i++) {
+    for (const doc of snapshots[i].docs) {
+      const d = doc.data() || {};
+      items.push({
+        uid: doc.id,
+        nickname: String(d.nickname || d.displayName || ""),
+        playerID: String(d.playerID || d.playerId || ""),
+        creatorStatus: CREATOR_ADMIN_STATUSES[i],
+        creatorDirection: String(d.creatorDirection || ""),
+        creatorApplicationReason: String(d.creatorApplicationReason || ""),
+        creatorStatusReason: String(d.creatorStatusReason || ""),
+        publicCharacterCount: Number(d.publicCharacterCount || 0),
+        followerCount: Number(d.followerCount || 0),
+        totalLikes: Number(d.totalLikes || 0),
+        creatorReviewedAt: d.creatorReviewedAt?.toDate?.()?.toISOString() || null,
+        creatorContractSignedAt: d.creatorContractSignedAt?.toDate?.()?.toISOString() || null,
+      });
+    }
+  }
+  return {items};
+});;
+
+exports.adminUpdateCreatorStatusUs = onCall({region: "us-central1", timeoutSeconds: 60}, async (request) => {
+  const adminUid = requireRewardCampaignAdmin(request);
+  const {creatorUid, targetStatus, reason} = request.data || {};
+  const uid = String(creatorUid || "").trim();
+  const status = String(targetStatus || "").trim();
+  const explanation = String(reason || "").trim();
+  if (!uid || !CREATOR_ADMIN_STATUSES.includes(status) || status === "pending") {
+    throw new HttpsError("invalid-argument", "無效的創作者或目標狀態");
+  }
+  if (["rejected", "suspended", "revoked"].includes(status) && !explanation) {
+    throw new HttpsError("invalid-argument", "此操作必須填寫原因");
+  }
+  if (explanation.length > 300) throw new HttpsError("invalid-argument", "原因過長");
+
+  const userRef = db.collection("users").doc(uid);
+  const transition = await db.runTransaction(async tx => {
+    const snap = await tx.get(userRef);
+    if (!snap.exists) throw new HttpsError("not-found", "找不到創作者帳號");
+    const user = snap.data() || {};
+    const current = String(user.creatorStatus || "none");
+    const allowed = {
+      pending: ["approved", "rejected"],
+      contract_pending: ["approved", "rejected", "revoked"],
+      approved: ["suspended", "revoked"],
+      suspended: ["approved", "revoked"],
+      revoked: ["approved"],
+      rejected: ["approved"],
+    };
+    if (!(allowed[current] || []).includes(status)) {
+      throw new HttpsError("failed-precondition", `不允許從 ${current} 變更成 ${status}`);
+    }
+    // 每次真正轉入 revoked 才計一次；舊版已被取消的帳號視為至少一次。
+    const previousRevocationsRaw = Number(user.creatorRevocationCount);
+    const previousRevocations = Number.isSafeInteger(previousRevocationsRaw) && previousRevocationsRaw >= 0
+      ? previousRevocationsRaw : (current === "revoked" ? 1 : 0);
+    // TEST ONLY: 不在測試期間套用正式累計上限；正式上線前必須恢復。
+    // if (status === "contract_pending" && current === "revoked" && previousRevocations >= 5) {
+    //   throw new HttpsError("failed-precondition", "此帳號累計取消創作者資格達五次，不能再次開通");
+    // }
+    const changes = {
+      creatorStatus: status,
+      creatorStatusReason: explanation,
+      creatorStatusUpdatedAt: FieldValue.serverTimestamp(),
+      creatorStatusUpdatedBy: adminUid,
+      // 僅已認證可以使用合作創作者後台。
+      creatorDashboardEnabled: status === "approved",
+      creatorVerified: status === "approved",
+    };
+    if (status === "approved") {
+      changes.creatorReviewedAt = FieldValue.serverTimestamp();
+      // 未實際簽署合約，不寫入 creatorContractSignedAt。
+    }
+    if (status === "revoked") {
+      // TEST ONLY: 保留既有正式取消累計，不因測試操作增加。
+      // changes.creatorRevocationCount = previousRevocations + 1;
+      changes.creatorRevokedAt = FieldValue.serverTimestamp();
+    }
+    tx.update(userRef, changes);
+    const auditRef = db.collection("creator_admin_audit").doc();
+    tx.set(auditRef, {creatorUid: uid, previousStatus: current, targetStatus: status,
+      reason: explanation, changedBy: adminUid, changedAt: FieldValue.serverTimestamp()});
+    return {previousStatus: current};
+  });
+
+  // 通知發送獨立於資格交易，失敗不可回滾已完成的資格變更。
+  const titles = {contract_pending:"創作者合作審核通過", approved:"創作者後台已開通",
+    rejected:"創作者申請審核結果", suspended:"創作者合作資格暫停", revoked:"創作者合作資格已取消"};
+  const bodies = {contract_pending:"妳的合作申請已通過初步審核。請等待官方寄送合作合約；雙方完成簽約後，才會開通專屬創作者後台。",
+    approved:"妳的創作者申請已通過官方審核，專屬創作者後台權限已開通。正式合作授權與合約將另行公告。",
+    rejected:`申請未通過。原因：${explanation}`, suspended:`合作資格已暫停。原因：${explanation}`,
+    revoked:`合作認證已取消，妳仍可作為一般創作者管理既有角色與作品。原因：${explanation}`};
+  try {
+    await userRef.collection("mailbox").add({type:"creator_status", title:titles[status] || "創作者資格通知",
+      body:bodies[status] || "創作者資格已更新。", isRead:false, read:false,
+      createdAt:FieldValue.serverTimestamp()});
+  } catch (e) { logger.error("creator status mailbox delivery failed", {creatorUid:uid, status, error:String(e)}); }
+  return {success:true, previousStatus:transition.previousStatus, creatorStatus:status};
+});;
+
+exports.adminFindCreatorCandidateUs = onCall({region: "us-central1", timeoutSeconds: 30}, async (request) => {
+  requireRewardCampaignAdmin(request);
+  const query = String(request.data?.query || "").trim();
+  if (!query || query.length > 128) throw new HttpsError("invalid-argument", "請輸入有效的 UID 或玩家 ID");
+  let snap = await db.collection("users").doc(query).get();
+  if (!snap.exists) {
+    const found = await db.collection("users").where("playerID", "==", query).limit(2).get();
+    if (found.size > 1) throw new HttpsError("failed-precondition", "此玩家 ID 對應多個帳號，請改用 UID");
+    if (!found.empty) snap = found.docs[0];
+  }
+  if (!snap.exists) {
+    const found = await db.collection("users").where("playerId", "==", query).limit(2).get();
+    if (found.size > 1) throw new HttpsError("failed-precondition", "此玩家 ID 對應多個帳號，請改用 UID");
+    if (!found.empty) snap = found.docs[0];
+  }
+  if (!snap.exists) return {user: null};
+  const d = snap.data() || {};
+  return {user: {uid: snap.id, nickname: String(d.nickname || d.displayName || ""),
+    playerID: String(d.playerID || d.playerId || ""),
+    creatorStatus: String(d.creatorStatus || "none")}};
+});;
+
+exports.adminManuallyVerifyCreatorUs = onCall({region: "us-central1", timeoutSeconds: 60}, async (request) => {
+  const adminUid = requireRewardCampaignAdmin(request);
+  const uid = String(request.data?.creatorUid || "").trim();
+  if (!uid || uid.length > 128 || request.data?.activationConfirmed !== true) {
+    throw new HttpsError("invalid-argument", "必須指定玩家並確認手動開通");
+  }
+  if (uid === adminUid) throw new HttpsError("failed-precondition", "不可自行授予合作創作者資格");
+  const userRef = db.collection("users").doc(uid);
+  const result = await db.runTransaction(async tx => {
+    const snap = await tx.get(userRef);
+    if (!snap.exists) throw new HttpsError("not-found", "找不到指定玩家");
+    const d = snap.data() || {};
+    const previousStatus = String(d.creatorStatus || "none");
+    if (previousStatus === "approved" || d.creatorVerified === true) {
+      throw new HttpsError("already-exists", "這位玩家已經是認證創作者");
+    }
+    tx.update(userRef, {
+      creatorStatus: "approved",
+      creatorVerified: true,
+      creatorDashboardEnabled: true,
+      creatorReviewedAt: FieldValue.serverTimestamp(),
+      creatorStatusUpdatedAt: FieldValue.serverTimestamp(),
+      creatorStatusUpdatedBy: adminUid,
+      creatorStatusReason: "管理員手動開通創作者資格",
+    });
+    tx.set(db.collection("creator_admin_audit").doc(), {
+      creatorUid: uid, previousStatus, targetStatus: "approved",
+      action: "manual_creator_activation", activationConfirmed: true,
+      changedBy: adminUid, changedAt: FieldValue.serverTimestamp(),
+    });
+    // 同一交易寄站內信，避免權限已開通卻未收到通知。
+    tx.set(userRef.collection("mailbox").doc(), {
+      type: "creator_status", title: "官方合作創作者認證完成",
+      body: "妳的創作者資格已由官方審核開通，現在可以使用專屬創作者後台。正式合作合約將另行公告。",
+      isRead: false, read: false, createdAt: FieldValue.serverTimestamp(),
+    });
+    return {previousStatus};
+  });
+  return {success: true, creatorUid: uid, creatorStatus: "approved", previousStatus: result.previousStatus};
+});;
+
+exports.sendCharacterAdjustmentNoticeUs = onCall(
+  {
+    region: "us-central1",
+    timeoutSeconds: 60,
+    memory: "256MiB",
+  },
+  async (request) => {
+    const adminUid =
+      requireRewardCampaignAdmin(request);
+
+    const data = request.data || {};
+
+    const characterId = String(
+      data.characterId || ""
+    ).trim();
+
+    const reason = String(
+      data.reason || ""
+    ).trim();
+
+    const requirePrivate =
+      data.requirePrivate === true;
+
+    if (!characterId) {
+      throw new HttpsError(
+        "invalid-argument",
+        "缺少角色編號"
+      );
+    }
+
+    if (!reason) {
+      throw new HttpsError(
+        "invalid-argument",
+        "請填寫需要調整的內容"
+      );
+    }
+
+    if (reason.length > 1000) {
+      throw new HttpsError(
+        "invalid-argument",
+        "調整內容不能超過 1000 字"
+      );
+    }
+
+    // 必須由後端讀取真正的角色擁有者，
+    // 不接受前端自行指定收件人。
+    const characterRef = db
+      .collection("artifacts")
+      .doc(APP_ID)
+      .collection("public_characters")
+      .doc(characterId);
+
+    const characterSnapshot =
+      await characterRef.get();
+
+    if (!characterSnapshot.exists) {
+      throw new HttpsError(
+        "not-found",
+        "找不到這個公開角色"
+      );
+    }
+
+    const characterData =
+      characterSnapshot.data() || {};
+
+    const creatorId = String(
+      characterData.createdBy || ""
+    ).trim();
+
+    const characterName = String(
+      characterData.name || "未命名角色"
+    ).trim();
+
+    if (!creatorId) {
+      throw new HttpsError(
+        "failed-precondition",
+        "此角色沒有創作者資料"
+      );
+    }
+
+    const mailboxRef = db
+      .collection("users")
+      .doc(creatorId)
+      .collection("mailbox")
+      .doc();
+
+    const noticeLogRef = db
+      .collection("artifacts")
+      .doc(APP_ID)
+      .collection(
+        "character_adjustment_notices"
+      )
+      .doc(mailboxRef.id);
+
+    const privateSuggestion =
+      requirePrivate
+        ? "\n\n為避免其他玩家在調整期間繼續看到相關內容，建議你先將此角色轉為私人，完成調整後再重新公開。"
+        : "";
+
+    const body =
+      `你好，我們在審查角色「${characterName}」時，`
+      + "發現部分內容可能需要調整。\n\n"
+      + `【需要調整的內容】\n${reason}`
+      + privateSuggestion
+      + "\n\n請完成調整後再次確認角色內容。"
+      + "若你對通知有疑問，可以透過客服與我們聯繫。";
+
+    const batch = db.batch();
+
+    batch.set(mailboxRef, {
+      type:
+        "character_adjustment_notice",
+
+      title:
+        `角色「${characterName}」需要調整`,
+
+      body,
+
+      characterId,
+      characterName,
+      creatorId,
+
+      adjustmentReason: reason,
+      requirePrivate,
+
+      adminUid,
+      isRead: false,
+
+      createdAt:
+        FieldValue.serverTimestamp(),
+    });
+
+    // 保存管理員寄送紀錄
+    batch.set(noticeLogRef, {
+      mailId: mailboxRef.id,
+
+      characterId,
+      characterName,
+      creatorId,
+
+      reason,
+      requirePrivate,
+
+      status: "sent",
+      adminUid,
+
+      createdAt:
+        FieldValue.serverTimestamp(),
+    });
+
+    await batch.commit();
+
+    console.log(
+      "📨 已寄送角色調整通知",
+      {
+        characterId,
+        characterName,
+        creatorId,
+        adminUid,
+        mailId: mailboxRef.id,
+      }
+    );
+
+    return {
+      success: true,
+      mailId: mailboxRef.id,
+      creatorId,
+      characterName,
+    };
+  }
+);;
+
+exports.listCreatorSupportCasesUs = onCall({region:"us-central1",timeoutSeconds:30},async request=>{
+ const uid=creatorSupportUid(request); const isAdmin=REWARD_CAMPAIGN_ADMIN_UIDS.has(uid)&&request.data?.asCreator!==true;
+ if(!isAdmin) await creatorSupportCreator(request);
+ const limit=20;const start=String(request.data?.cursor||'');if(start&&!/^[A-Za-z0-9]{1,100}$/.test(start))throw new HttpsError('invalid-argument','游標不正確');
+ let q=isAdmin?creatorSupportRoot().orderBy(FieldPath.documentId()):creatorSupportRoot().where('creatorId','==',uid).orderBy(FieldPath.documentId());
+ if(start)q=q.startAfter(start);
+ const docs=(await q.limit(limit+1).get()).docs;const page=docs.slice(0,limit);
+ return {items:page.map(d=>{const x=creatorSupportPublic(d.data(),d.id);if(!isAdmin)delete x.internalNote;return x;}),nextCursor:docs.length>limit?page[page.length-1].id:null};
+});;
+
+exports.getCreatorSupportCaseUs = onCall({region:"us-central1",timeoutSeconds:30},async request=>{
+ const uid=creatorSupportUid(request),id=String(request.data?.caseId||'').trim();if(!/^[A-Za-z0-9]{1,100}$/.test(id))throw new HttpsError('invalid-argument','案件ID無效');
+ const ref=creatorSupportRoot().doc(id),snap=await ref.get();if(!snap.exists)throw new HttpsError('not-found','案件不存在');const d=snap.data()||{};const isAdmin=REWARD_CAMPAIGN_ADMIN_UIDS.has(uid)&&request.data?.asCreator!==true;
+ if(!isAdmin && d.creatorId!==uid)throw new HttpsError('permission-denied','無權查看此案件');
+ if(!isAdmin)await creatorSupportCreator(request);
+ const messages=await ref.collection('messages').orderBy('createdAt').limit(300).get();
+ await ref.update({[isAdmin?'adminUnreadCount':'creatorUnreadCount']:0});
+ const info=creatorSupportPublic(d,id);if(!isAdmin)delete info.internalNote;
+ const images=await ref.collection('images').orderBy('createdAt').limit(60).get();return {case:info,images:images.docs.filter(x=>{const mid=String(x.data().messageId||'');const msg=messages.docs.find(m=>m.id===mid);return !mid||(msg&&!msg.data().recalledAt&&!(msg.data().hiddenFor||[]).includes(uid));}).map(x=>({id:x.id,messageId:x.data().messageId||'',contentType:x.data().contentType||''})),messages:messages.docs.filter(m=>!(m.data().hiddenFor||[]).includes(uid)).map(m=>({id:m.id,senderId:m.data().senderId||'',senderRole:m.data().senderRole||'',body:m.data().recalledAt?'':(m.data().body||''),recalled:!!m.data().recalledAt,edited:!!m.data().editedAt,createdAt:m.data().createdAt?.toMillis?.()||0}))};
+});;
+
+exports.replyCreatorSupportCaseUs = onCall({region:"us-central1",timeoutSeconds:45},async request=>{
+ const uid=creatorSupportUid(request);
+ const id=String(request.data?.caseId||'').trim();
+ if(!/^[A-Za-z0-9]{1,100}$/.test(id)) throw new HttpsError('invalid-argument','案件ID無效');
+ const suppliedRequestId=String(request.data?.requestId||'').trim();
+ if(suppliedRequestId && !/^[A-Za-z0-9_-]{12,100}$/.test(suppliedRequestId)) throw new HttpsError('invalid-argument','訊息識別碼無效');
+ // Backwards compatibility: legacy clients can still reply; only updated clients get retry deduplication.
+ const requestId=suppliedRequestId || crypto.randomUUID();
+ const hasImages=request.data?.hasImages===true;
+ const body=creatorSupportText(request.data?.body,3000,'回覆內容',!hasImages);
+ if(!body&&!hasImages) throw new HttpsError('invalid-argument','請輸入文字或選擇圖片');
+ const isAdmin=REWARD_CAMPAIGN_ADMIN_UIDS.has(uid)&&request.data?.asCreator!==true;
+ const ref=creatorSupportRoot().doc(id);
+ // Deterministic, unguessable document ID scoped to sender, case and request key.
+ const messageId=crypto.createHash('sha256').update(JSON.stringify([id,uid,requestId])).digest('hex');
+ const msg=ref.collection('messages').doc(messageId);
+ let committed=false;
+ try {
+  // Check eligibility even on retries; access must never be granted by a cached receipt alone.
+  if(!isAdmin) await creatorSupportCreator(request);
+  const outcome=await db.runTransaction(async tx=>{
+   const [caseSnap,priorSnap]=await Promise.all([tx.get(ref),tx.get(msg)]);
+   if(!caseSnap.exists) throw new HttpsError('not-found','案件不存在');
+   const d=caseSnap.data()||{};
+   if(!isAdmin&&d.creatorId!==uid) throw new HttpsError('permission-denied','無權回覆此案件');
+   if(priorSnap.exists){
+    const prior=priorSnap.data()||{};
+    // Do not replay the same key with different content, even after message edits.
+    if(prior.senderId!==uid || prior.originalBody!==body || prior.originalHasImages!==hasImages || prior.senderRole!==(isAdmin?'admin':'creator'))
+      throw new HttpsError('already-exists','此訊息識別碼已被不同內容使用');
+    return {alreadySubmitted:true};
+   }
+   if(d.status==='resolved'&&!isAdmin) throw new HttpsError('failed-precondition','案件已結案，請由官方重新開啟');
+   tx.create(msg,{senderRole:isAdmin?'admin':'creator',senderId:uid,body,
+    originalBody:body,originalHasImages:hasImages,createdAt:FieldValue.serverTimestamp()});
+   tx.update(ref,{updatedAt:FieldValue.serverTimestamp(),lastReplyAt:FieldValue.serverTimestamp(),lastReplyBy:isAdmin?'admin':'creator',
+    status:!isAdmin&&d.status==='waiting_creator'?'in_progress':d.status,
+    ...(isAdmin?{creatorUnreadCount:FieldValue.increment(1)}:{adminUnreadCount:FieldValue.increment(1)})});
+   return {alreadySubmitted:false};
+  });
+  committed=true;
+  logger.info('creator_support_reply_persisted',{caseId:id,messageId,actorRole:isAdmin?'admin':'creator',replayed:outcome.alreadySubmitted});
+  if(!outcome.alreadySubmitted){
+   // Notification is best effort; it must never turn a committed message into an INTERNAL error.
+   try {
+    if(isAdmin){
+     const caseSnap=await ref.get();
+     await creatorSupportNotify(caseSnap.data()?.creatorId,'創作者問題回報有新回覆','官方已回覆妳的案件',id);
+    } else await creatorSupportNotifyAdmins('創作者有新回覆','有新的案件訊息待查看',id);
+   } catch(notifyError){
+    logger.warn('creator_support_reply_notification_failed',{caseId:id,messageId,code:notifyError?.code||'',error:String(notifyError?.message||notifyError)});
+   }
+  }
+  return {success:true,messageId,alreadySubmitted:outcome.alreadySubmitted};
+ } catch(error){
+  logger.error('creator_support_reply_failed',{caseId:id,actorRole:isAdmin?'admin':'creator',committed,code:error?.code||'',error:String(error?.message||error)});
+  if(error instanceof HttpsError) throw error;
+  throw new HttpsError('internal','客服回覆暫時無法處理，請稍後重試');
+ }
+});;
+
+exports.updateCreatorSupportCaseUs = onCall({region:"us-central1",timeoutSeconds:30},async request=>{
+ creatorSupportAdmin(request);const id=String(request.data?.caseId||''),ref=creatorSupportRoot().doc(id);
+ if(!/^[A-Za-z0-9]{1,100}$/.test(id))throw new HttpsError('invalid-argument','案件ID無效');
+ const status=request.data?.status;const note=request.data?.internalNote;
+ if(status===undefined&&note===undefined)throw new HttpsError('invalid-argument','沒有修改內容');
+ const update={updatedAt:FieldValue.serverTimestamp()};
+ if(status!==undefined){if(!CREATOR_SUPPORT_STATUSES.has(status))throw new HttpsError('invalid-argument','狀態無效');update.status=status;update.creatorUnreadCount=FieldValue.increment(1);}
+ if(note!==undefined)update.internalNote=creatorSupportText(note,2000,'內部備註',false);
+ await ref.update(update);if(status!==undefined)await creatorSupportNotify((await ref.get()).data().creatorId,'創作者案件狀態已更新',`案件狀態：${status}`,id);return {success:true};
+});;
+
+exports.manageCreatorSupportMessageUs = onCall({region:"us-central1",timeoutSeconds:30},async request=>{
+ const uid=creatorSupportUid(request);
+ const caseId=String(request.data?.caseId||'');
+ const messageId=String(request.data?.messageId||'');
+ const operation=String(request.data?.operation||'');
+ if(!/^[A-Za-z0-9]{1,100}$/.test(caseId)||!/^[A-Za-z0-9]{1,100}$/.test(messageId))throw new HttpsError('invalid-argument','案件或訊息 ID 無效');
+ if(!['edit','recall','delete'].includes(operation))throw new HttpsError('invalid-argument','操作類型無效');
+ const ref=creatorSupportRoot().doc(caseId);
+ const msgRef=ref.collection('messages').doc(messageId);
+ const isAdmin=REWARD_CAMPAIGN_ADMIN_UIDS.has(uid)&&request.data?.asCreator!==true;
+ if(!isAdmin)await creatorSupportCreator(request);
+ await db.runTransaction(async tx=>{
+  const caseSnap=await tx.get(ref);
+  const msgSnap=await tx.get(msgRef);
+  if(!caseSnap.exists||!msgSnap.exists)throw new HttpsError('not-found','案件或訊息不存在');
+  if(!isAdmin&&caseSnap.data().creatorId!==uid)throw new HttpsError('permission-denied','無權操作案件');
+  const m=msgSnap.data()||{};
+  if(m.senderId!==uid)throw new HttpsError('permission-denied','只能操作自己發送的訊息');
+  if(m.recalledAt)throw new HttpsError('failed-precondition','訊息已收回');
+  if(operation==='delete'){
+   tx.update(msgRef,{hiddenFor:FieldValue.arrayUnion(uid)});
+   return;
+  }
+  if((m.hiddenFor||[]).includes(uid))throw new HttpsError('failed-precondition','訊息已刪除');
+  if(operation==='edit'){
+   const body=creatorSupportText(request.data?.body,3000,'訊息內容');
+   if(!String(m.body||'').trim())throw new HttpsError('failed-precondition','純圖片訊息不能編輯文字');
+   tx.update(msgRef,{body,editedAt:FieldValue.serverTimestamp()});
+   return;
+  }
+  const sent=m.createdAt?.toMillis?.();
+  if(!Number.isFinite(sent)||Date.now()-sent>60000||Date.now()<sent)
+   throw new HttpsError('failed-precondition','已超過 60 秒收回期限');
+  tx.update(msgRef,{body:'',recalledAt:FieldValue.serverTimestamp()});
+ });
+ return {success:true};
+});;
+
+exports.getCreatorSupportImageUs = onCall({region:"us-central1",timeoutSeconds:45,memory:'512MiB'},async request=>{
+  const caseId=String(request.data?.caseId||''),imageId=String(request.data?.imageId||'');
+  const {ref}=await creatorSupportAuthorizeImage(request,caseId);
+  if(!/^[A-Za-z0-9]{1,100}$/.test(imageId))throw new HttpsError('invalid-argument','圖片ID無效');
+  const doc=await ref.collection('images').doc(imageId).get();if(!doc.exists)throw new HttpsError('not-found','找不到圖片');
+  const mid=String(doc.data()?.messageId||'');if(mid){const m=await ref.collection('messages').doc(mid).get();if(!m.exists||m.data()?.recalledAt||(m.data()?.hiddenFor||[]).includes(request.auth.uid))throw new HttpsError('not-found','圖片已不可查看');}
+  const path=String(doc.data()?.path||'');if(!path.startsWith(`creator_support/${caseId}/`))throw new HttpsError('permission-denied','圖片路徑異常');
+  const [bytes]=await require('firebase-admin/storage').getStorage().bucket().file(path).download();
+  if(bytes.length>CREATOR_SUPPORT_MAX_IMAGE_BYTES)throw new HttpsError('resource-exhausted','圖片超出限制');
+  return {imageBase64:bytes.toString('base64'),contentType:doc.data().contentType||'image/jpeg'};
+});;

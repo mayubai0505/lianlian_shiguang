@@ -12081,6 +12081,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get world_discovery_world_background1 => '世界の背景';
 
   @override
+  String get world_edit_custom_status_title1 => 'カスタム返信形式／ステータス欄';
+
+  @override
+  String get world_edit_custom_status_hint1 =>
+      '任意項目です。時間、場所、登場人物の状態など、ワールド内でのやり取りに使うステータス欄のテンプレートを設定できます。この内容は公開紹介文には含まれません。';
+
+  @override
+  String get world_edit_custom_status_field1 => 'カスタムステータス欄の内容';
+
+  @override
   String get world_discovery_not_playable1 => 'この世界はまだプレイできません。';
 
   @override
@@ -12206,7 +12216,13 @@ class AppLocalizationsJa extends AppLocalizations {
       'One-line card description (optional, up to 60 characters)';
 
   @override
-  String get world_edit_public_summary1 => '公開用の世界紹介（ネタバレなし）';
+  String get world_edit_public_summary1 => '公開用の世界紹介';
+
+  @override
+  String get world_edit_creator_message_optional1 => 'クリエイターからのメッセージ（任意）';
+
+  @override
+  String get world_discovery_creator_message1 => 'クリエイターからのメッセージ';
 
   @override
   String get world_edit_era1 =>

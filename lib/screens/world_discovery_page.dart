@@ -16,11 +16,13 @@ import '../services/app_constants.dart';
 import 'world_chat_page.dart';
 import 'creator_profile_page.dart';
 import '../widgets/world_echo_wall.dart';
+import '../widgets/user_avatar_with_frame.dart';
 
-/// 開放世界介紹頁。進入世界時由 worldPrivateTest 後端再次檢查公開遊玩權限。
+//開放世界介紹頁。進入世界時由 worldPrivateTest 後端再次檢查公開遊玩權限。
 class WorldDiscoveryPage extends StatefulWidget {
-  const WorldDiscoveryPage({super.key, required this.worldId});
+  const WorldDiscoveryPage({super.key, required this.worldId, this.creatorPreview = false});
   final String worldId;
+  final bool creatorPreview;
   @override
   State<WorldDiscoveryPage> createState() => _WorldDiscoveryPageState();
 }
@@ -218,23 +220,25 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
   }
 
   Widget _backgroundTab(Map<String,dynamic> d) {
-    final setting=_s(d,'worldSetting');
-    final lore=_s(d,'worldLore');
-    final era=_s(d,'era');
-    return ListView(padding:const EdgeInsets.all(18),children:[
-      Text(AppLocalizations.of(context)!.world_discovery_background_title1,style:GoogleFonts.notoSerifTc(
-          fontSize:21,fontWeight:FontWeight.w600)),
-      if(era.isNotEmpty) ...[const SizedBox(height:12),Text(AppLocalizations.of(context)!.world_discovery_era1(era))],
-      const SizedBox(height:14),
-      SelectableText(setting.isEmpty?AppLocalizations.of(context)!.world_discovery_background_unset1:setting,
-          style:const TextStyle(fontSize:14,height:1.8)),
-      if(lore.isNotEmpty) ...[
-        const SizedBox(height:22),
-        Text(AppLocalizations.of(context)!.world_discovery_background_full1,style:GoogleFonts.notoSerifTc(
-            fontSize:17,fontWeight:FontWeight.w600)),
-        const SizedBox(height:8),
-        SelectableText(lore,style:const TextStyle(fontSize:14,height:1.8)),
+    // 玩家／創作者預覽僅顯示公開簡介，絕不展示給 AI 的規則及完整世界設定。
+    final summary = _s(d, 'summary').trim();
+    final era = _s(d, 'era').trim();
+    return ListView(padding: const EdgeInsets.all(18), children: [
+      Text(
+        AppLocalizations.of(context)!.world_edit_public_summary1,
+        style: GoogleFonts.notoSerifTc(fontSize: 21, fontWeight: FontWeight.w600),
+      ),
+      if (era.isNotEmpty) ...[
+        const SizedBox(height: 12),
+        Text(AppLocalizations.of(context)!.world_discovery_era1(era)),
       ],
+      const SizedBox(height: 14),
+      SelectableText(
+        summary.isEmpty
+            ? AppLocalizations.of(context)!.world_discovery_background_unset1
+            : summary,
+        style: const TextStyle(fontSize: 14, height: 1.8),
+      ),
     ]);
   }
 
@@ -280,8 +284,8 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
       children: [
         Text(AppLocalizations.of(context)!.world_discovery_creator1, style: GoogleFonts.notoSerifTc(fontSize: 21, fontWeight: FontWeight.w600)),
         const SizedBox(height: 14),
-        FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-          future: FirebaseFirestore.instance.collection('users').doc(uid).get(),
+        StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+          stream: FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
           builder: (context, snap) {
             if (snap.hasError) return Text(AppLocalizations.of(context)!.world_discovery_creator_load_failed1);
             if (!snap.hasData) return const Center(child: CircularProgressIndicator());
@@ -298,9 +302,18 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
               Card(clipBehavior: Clip.antiAlias, child: InkWell(
                   onTap: openCreator,
                   child: Padding(padding: const EdgeInsets.all(14), child: Row(children: [
-                    CircleAvatar(radius: 29,
-                        backgroundImage: avatar.startsWith('http') ? CachedNetworkImageProvider(avatar) : null,
-                        child: avatar.startsWith('http') ? null : const Icon(Icons.person_outline)),
+                    UserAvatarWithFrame(
+                      // 裝備／卸下頭像框時，透過 users/{uid} 即時更新重建頭框。
+                      key: ValueKey('world_creator_${uid}_${creator['equippedAvatarFrame']}'),
+                      userId: uid,
+                      avatarImage: avatar.startsWith('http')
+                          ? CachedNetworkImageProvider(avatar)
+                          : null,
+                      // 外框維持放大；頭像本身恢復原本半徑 29。
+                      size: 73,
+                      avatarRadius: 29,
+                      fallbackChild: const Icon(Icons.person_outline),
+                    ),
                     const SizedBox(width: 14),
                     Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text(AppLocalizations.of(context)!.world_discovery_creator1, style: TextStyle(fontSize: 12)),
@@ -309,13 +322,28 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
                     const Icon(Icons.chevron_right_rounded),
                   ]))),
               ),
-              if (_s(creator, 'bio').isNotEmpty) ...[
-                const SizedBox(height: 12),
-                Text(_s(creator, 'bio'), style: const TextStyle(height: 1.7)),
-              ],
             ]);
           },
         ),
+        if (_s(d, 'creatorMessage').trim().isNotEmpty) ...[
+          const SizedBox(height: 16),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
+              border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(AppLocalizations.of(context)!.world_discovery_creator_message1, style: GoogleFonts.notoSerifTc(
+                  fontSize: 16, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 10),
+              SelectableText(_s(d, 'creatorMessage').trim(),
+                  style: const TextStyle(fontSize: 14, height: 1.7)),
+            ]),
+          ),
+        ],
         const SizedBox(height: 24),
         WorldEchoWall(worldId: widget.worldId),
       ],
@@ -348,7 +376,10 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
     }
     if(!snapshot.hasData)return const Scaffold(body:Center(child:CircularProgressIndicator()));
     final d=snapshot.data?.data();
-    if(d==null || d['isPublic']!=true || d['status']!='public') {
+    // 草稿僅允許建立者在個人主頁預覽；一般公開入口仍必須正式公開。
+    final previewOwner = widget.creatorPreview && d != null &&
+        FirebaseAuth.instance.currentUser?.uid == (d['createdBy'] ?? '').toString();
+    if(d==null || (!previewOwner && (d['isPublic']!=true || d['status']!='public'))) {
       return Scaffold(appBar:AppBar(),body:Center(child:Text(AppLocalizations.of(context)!.world_discovery_unpublished1)));
     }
     final theme=Theme.of(context);
@@ -361,72 +392,99 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
     final canEnter=isOwner || d['publicPlayable']==true;
     return Scaffold(
       appBar:AppBar(
-        title:Text(AppLocalizations.of(context)!.world_discovery_open_world1),
+        title: Text(_s(d, 'name').trim().isNotEmpty
+            ? _s(d, 'name').trim()
+            : AppLocalizations.of(context)!.world_discovery_open_world1,
+            maxLines: 2, overflow: TextOverflow.ellipsis),
         actions: [IconButton(
           tooltip: AppLocalizations.of(context)!.world_discovery_share_tooltip1,
           onPressed: () => _showSharePreview(d),
           icon: const Icon(Icons.ios_share_rounded),
         )],
       ),
-      body:Column(children:[
-        AspectRatio(aspectRatio:4/3,child:PageView(children:[
+      body: LayoutBuilder(builder: (context, constraints) {
+        // Keep the cover visible without consuming the full screen height in landscape.
+        // In wide layouts the image occupies a separate column, so the tab content
+        // and the enter button always have a bounded area of their own.
+        final landscape = constraints.maxWidth > constraints.maxHeight &&
+            constraints.maxWidth >= 600;
+        final gallery = PageView(children:[
           for(final url in images) ColoredBox(
               color:theme.colorScheme.surfaceContainerHighest,
               child:_image(url,fit:BoxFit.cover)),
           if(images.isEmpty) _image(''),
-        ])),
-        if(_s(d,'shortPitch').trim().isNotEmpty) Padding(
-            padding:const EdgeInsets.fromLTRB(18,12,18,12),
-            child:Text(_s(d,'shortPitch'),maxLines:3,
-                style:GoogleFonts.notoSerifTc(fontSize:15.5,height:1.5,fontWeight:FontWeight.w500))),
-        TabBar(controller:_tabs,labelColor:theme.colorScheme.primary,
-            indicatorColor:theme.colorScheme.primary,
-            isScrollable:false,labelPadding:EdgeInsets.zero,
-            labelStyle:const TextStyle(fontSize:12,fontWeight:FontWeight.w600),
-            unselectedLabelStyle:const TextStyle(fontSize:12),
-            tabs:[Tab(text:AppLocalizations.of(context)!.world_discovery_story_open1),Tab(text:AppLocalizations.of(context)!.world_discovery_world_background1),
-              Tab(text:AppLocalizations.of(context)!.world_discovery_people_intro1),Tab(text:AppLocalizations.of(context)!.world_discovery_creator1)]),
-        Expanded(child:TabBarView(controller:_tabs,children:[
-          _storyTab(d),_backgroundTab(d),_peopleTab(d),_creatorTab(d),
-        ])),
-        SafeArea(top:false,child:Padding(
-          padding:const EdgeInsets.fromLTRB(16,8,16,12),
-          child:SizedBox(width:double.infinity,child:FilledButton(
-            onPressed: _creatingRoom ? null : () async {
-              if (!canEnter) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content:Text(AppLocalizations.of(context)!.world_discovery_not_playable1)));
-                return;
-              }
-              setState(() => _creatingRoom = true);
-              try {
-                final result = await FirebaseFunctions.instanceFor(region: 'asia-east1')
-                    .httpsCallable('worldPrivateTest').call({
-                  'worldId': widget.worldId, 'action': 'newRoom',
-                });
-                final data = Map<String, dynamic>.from(result.data as Map);
-                final newSessionId = (data['sessionId'] ?? '').toString().trim();
-                if (newSessionId.isEmpty) throw StateError('建立新房間失敗：沒有房間 ID');
-                // Public entry should never use old deterministic 64-character SHA-256 room IDs.
-                // This catches a stale deployment that accidentally returns the legacy room.
-                if (RegExp(r'^[a-f0-9]{64}$').hasMatch(newSessionId)) {
-                  throw StateError('後端仍回傳舊版固定房間 ID，請更新 worldPrivateTest');
+        ]);
+        final intro = <Widget>[
+          if(_s(d,'shortPitch').trim().isNotEmpty) Padding(
+              padding:const EdgeInsets.fromLTRB(18,12,18,12),
+              child:Text(_s(d,'shortPitch'),maxLines:landscape ? 2 : 3,
+                  overflow:TextOverflow.ellipsis,
+                  style:GoogleFonts.notoSerifTc(fontSize:15.5,height:1.5,fontWeight:FontWeight.w500))),
+          TabBar(controller:_tabs,labelColor:theme.colorScheme.primary,
+              indicatorColor:theme.colorScheme.primary,
+              isScrollable:landscape,labelPadding:landscape
+                  ? const EdgeInsets.symmetric(horizontal: 14) : EdgeInsets.zero,
+              labelStyle:const TextStyle(fontSize:12,fontWeight:FontWeight.w600),
+              unselectedLabelStyle:const TextStyle(fontSize:12),
+              tabs:[Tab(text:AppLocalizations.of(context)!.world_discovery_story_open1),Tab(text:AppLocalizations.of(context)!.world_discovery_world_background1),
+                Tab(text:AppLocalizations.of(context)!.world_discovery_people_intro1),Tab(text:AppLocalizations.of(context)!.world_discovery_creator1)]),
+          Expanded(child:TabBarView(controller:_tabs,children:[
+            _storyTab(d),_backgroundTab(d),_peopleTab(d),_creatorTab(d),
+          ])),
+          SafeArea(top:false,child:Padding(
+            padding:const EdgeInsets.fromLTRB(16,8,16,12),
+            child:SizedBox(width:double.infinity,child:FilledButton(
+              onPressed: _creatingRoom ? null : () async {
+                if (!canEnter) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content:Text(AppLocalizations.of(context)!.world_discovery_not_playable1)));
+                  return;
                 }
-                if (!mounted) return;
-                await Navigator.push(context, MaterialPageRoute(
-                    builder: (_) => WorldChatPage(worldId: widget.worldId, sessionId: newSessionId)));
-              } catch (e) {
-                debugPrint('開始新世界觀劇情失敗：$e');
-                if (mounted) ToastUtils.showCenterToast(context, '無法建立新故事，請重試', isError: true);
-              } finally {
-                if (mounted) setState(() => _creatingRoom = false);
-              }
-            },child: _creatingRoom ? const SizedBox(height: 20, width: 20,
-              child: CircularProgressIndicator(strokeWidth: 2))
-              : Text(AppLocalizations.of(context)!.world_discovery_enter1),
+                setState(() => _creatingRoom = true);
+                try {
+                  final result = await FirebaseFunctions.instanceFor(region: 'asia-east1')
+                      .httpsCallable('worldPrivateTest').call({
+                    'worldId': widget.worldId, 'action': 'newRoom',
+                  });
+                  final data = Map<String, dynamic>.from(result.data as Map);
+                  final newSessionId = (data['sessionId'] ?? '').toString().trim();
+                  if (newSessionId.isEmpty) throw StateError('建立新房間失敗：沒有房間 ID');
+                  // Public entry should never use old deterministic 64-character SHA-256 room IDs.
+                  // This catches a stale deployment that accidentally returns the legacy room.
+                  if (RegExp(r'^[a-f0-9]{64}$').hasMatch(newSessionId)) {
+                    throw StateError('後端仍回傳舊版固定房間 ID，請更新 worldPrivateTest');
+                  }
+                  if (!mounted) return;
+                  await Navigator.push(context, MaterialPageRoute(
+                      builder: (_) => WorldChatPage(worldId: widget.worldId, sessionId: newSessionId)));
+                } catch (e) {
+                  debugPrint('開始新世界觀劇情失敗：$e');
+                  if (mounted) ToastUtils.showCenterToast(context, '無法建立新故事，請重試', isError: true);
+                } finally {
+                  if (mounted) setState(() => _creatingRoom = false);
+                }
+              },child: _creatingRoom ? const SizedBox(height: 20, width: 20,
+                child: CircularProgressIndicator(strokeWidth: 2))
+                : Text(AppLocalizations.of(context)!.world_discovery_enter1),
+            )),
           )),
-        )),
-      ]),
+        ];
+        if (landscape) {
+          final galleryWidth = (constraints.maxWidth * 0.36).clamp(180.0, 420.0).toDouble();
+          return Row(children: [
+            SizedBox(width: galleryWidth, height: constraints.maxHeight,
+                child: gallery),
+            const VerticalDivider(width: 1),
+            Expanded(child: Column(children: intro)),
+          ]);
+        }
+        final galleryHeight = (constraints.maxHeight * 0.34)
+            .clamp(100.0, constraints.maxWidth * 0.75).toDouble();
+        return Column(children: [
+          SizedBox(height: galleryHeight, width: double.infinity, child: gallery),
+          ...intro,
+        ]);
+      }),
     );
   },
   );

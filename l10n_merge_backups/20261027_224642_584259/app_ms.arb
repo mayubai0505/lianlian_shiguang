@@ -6574,7 +6574,7 @@
   "world_edit_cover1": "Kulit buku",
   "world_edit_set_cover1": "Jadikan kulit",
   "world_edit_short_pitch1": "One-line card description (optional, up to 60 characters)",
-  "world_edit_public_summary1": "Public world description (no spoilers)",
+  "world_edit_public_summary1": "Public world description ",
   "world_edit_era1": "Time period (e.g. fictional present day, Republican era)",
   "world_edit_world_rules1": "World background and rules *",
   "world_edit_full_lore1": "Full world lore, events and locations (for AI)",

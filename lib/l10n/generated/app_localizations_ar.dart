@@ -12552,6 +12552,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get world_discovery_world_background1 => 'خلفية العالم';
 
   @override
+  String get world_edit_custom_status_title1 => 'تنسيق رد مخصص / شريط الحالة';
+
+  @override
+  String get world_edit_custom_status_hint1 =>
+      'اختياري. يمكنك إعداد قالب لشريط الحالة أثناء التفاعل داخل العالم، مثل الوقت والموقع وحالة الشخصيات. هذا المحتوى ليس جزءًا من الوصف العام.';
+
+  @override
+  String get world_edit_custom_status_field1 => 'محتوى شريط الحالة المخصص';
+
+  @override
   String get world_discovery_not_playable1 =>
       'هذا العالم المفتوح غير متاح للعب بعد.';
 
@@ -12680,8 +12690,14 @@ class AppLocalizationsAr extends AppLocalizations {
       'One-line card description (optional, up to 60 characters)';
 
   @override
-  String get world_edit_public_summary1 =>
-      'Public world description (no spoilers)';
+  String get world_edit_public_summary1 => 'Public world description ';
+
+  @override
+  String get world_edit_creator_message_optional1 =>
+      'رسالة من منشئ العالم (اختياري)';
+
+  @override
+  String get world_discovery_creator_message1 => 'رسالة من منشئ العالم';
 
   @override
   String get world_edit_era1 =>

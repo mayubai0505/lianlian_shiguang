@@ -12115,6 +12115,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get world_discovery_world_background1 => '세계 배경';
 
   @override
+  String get world_edit_custom_status_title1 => '사용자 지정 응답 형식 / 상태 표시줄';
+
+  @override
+  String get world_edit_custom_status_hint1 =>
+      '선택 사항입니다. 시간, 장소, 등장인물 상태 등 월드 상호작용에 사용할 상태 표시줄 템플릿을 설정할 수 있습니다. 이 내용은 공개 소개에 포함되지 않습니다.';
+
+  @override
+  String get world_edit_custom_status_field1 => '사용자 지정 상태 표시줄 내용';
+
+  @override
   String get world_discovery_not_playable1 => '이 오픈 월드는 아직 플레이할 수 없습니다.';
 
   @override
@@ -12242,8 +12252,13 @@ class AppLocalizationsKo extends AppLocalizations {
       'One-line card description (optional, up to 60 characters)';
 
   @override
-  String get world_edit_public_summary1 =>
-      'Public world description (no spoilers)';
+  String get world_edit_public_summary1 => 'Public world description ';
+
+  @override
+  String get world_edit_creator_message_optional1 => '크리에이터의 메시지 (선택)';
+
+  @override
+  String get world_discovery_creator_message1 => '크리에이터의 메시지';
 
   @override
   String get world_edit_era1 =>

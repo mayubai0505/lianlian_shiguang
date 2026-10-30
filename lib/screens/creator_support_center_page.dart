@@ -12,8 +12,11 @@ import '../services/toast_utils.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 final _supportFns = FirebaseFunctions.instanceFor(region: 'asia-east1');
-Future<Map<String,dynamic>> _supportCall(String name,[Map<String,dynamic>? data]) async {
- final response=await _supportFns.httpsCallable(name).call(data??<String,dynamic>{});
+final _supportAdminFns = FirebaseFunctions.instanceFor(region: 'us-central1');
+// 僅後台管理模式導向美國；創作者本人仍走原有台灣端點。
+Future<Map<String,dynamic>> _supportCall(String name, Map<String,dynamic> data, {bool adminMode=false}) async {
+ final callable = adminMode ? _supportAdminFns.httpsCallable('${name}Us') : _supportFns.httpsCallable(name);
+ final response=await callable.call(data??<String,dynamic>{});
  return Map<String,dynamic>.from(response.data as Map);
 }
 const supportCategories=['角色管理問題','AI 角色互動異常','創作者後台問題','合作與權益問題','其他問題'];
@@ -56,7 +59,14 @@ class _CreatorSupportCenterState extends State<CreatorSupportCenterPage> {
  }
  @override Widget build(BuildContext context)=>Scaffold(appBar:AppBar(title:Text(AppLocalizations.of(context)!.creator_support_page_title1,style:GoogleFonts.notoSerifTc())),body:Column(children:[
   Padding(padding:const EdgeInsets.all(16),child:SizedBox(width:double.infinity,child:FilledButton(onPressed:()=>Navigator.push(context,MaterialPageRoute(builder:(_)=>const _NewCreatorCasePage())).then((_){_load(true);}),child:Text(AppLocalizations.of(context)!.creator_support_new_report1)))),
-  if(error!=null)Padding(padding:const EdgeInsets.all(12),child:Text(AppLocalizations.of(context)!.creator_support_error1)),
+  if (error != null)
+   Padding(
+    padding: const EdgeInsets.all(18),
+    child: SelectableText(
+     '創作者案件載入失敗：$error',
+     style: const TextStyle(color: Colors.red),
+    ),
+   ),
   Expanded(child:RefreshIndicator(onRefresh:()=>_load(true),child:ListView(children:[
    if(cases.isEmpty&&!loading)Padding(padding:EdgeInsets.all(24),child:Center(child:Text(AppLocalizations.of(context)!.creator_support_no_cases1))),
    for(final item in cases)Card(margin:const EdgeInsets.symmetric(horizontal:14,vertical:5),child:ListTile(title:Text(item['title']?.toString()??''),subtitle:Text('${_supportCategoryText1(context, (item['category']??'').toString())} · ${_supportStatusText1(context, item['status'])}'),trailing:(item['creatorUnreadCount'] as num? ??0)>0?Text(AppLocalizations.of(context)!.creator_support_unread1):const Icon(Icons.chevron_right_rounded),onTap:()=>Navigator.push(context,MaterialPageRoute(builder:(_)=>CreatorSupportCasePage(caseId:item['id'].toString()))).then((_){_load(true); }))),
@@ -89,7 +99,7 @@ class CreatorSupportCasePage extends StatefulWidget{final String caseId;final bo
 class _CreatorSupportCasePageState extends State<CreatorSupportCasePage>{Map<String,dynamic>? info;List<Map<String,dynamic>> messages=[];List<Map<String,dynamic>> images=[];final reply=TextEditingController();final note=TextEditingController();bool busy=false;bool uploading=false;String? error; String? _pendingReplyId; final List<Uint8List> pickedImages=[];
 @override void initState(){super.initState();load();}
 @override void dispose(){reply.dispose();note.dispose();super.dispose();}
-Future<void> load()async{try{final r=await _supportCall('getCreatorSupportCase',{'caseId':widget.caseId,'asCreator':!widget.adminMode});if(!mounted)return;setState((){info=Map<String,dynamic>.from(r['case'] as Map);messages=(r['messages'] as List).map((e)=>Map<String,dynamic>.from(e as Map)).toList();images=(r['images'] as List? ??[]).map((e)=>Map<String,dynamic>.from(e as Map)).toList();if(widget.adminMode)note.text=info?['internalNote']?.toString()??'';error=null;});}catch(e){if(mounted)setState(()=>error=e.toString());}}
+Future<void> load()async{try{final r=await _supportCall('getCreatorSupportCase',{'caseId':widget.caseId,'asCreator':!widget.adminMode},adminMode:widget.adminMode);if(!mounted)return;setState((){info=Map<String,dynamic>.from(r['case'] as Map);messages=(r['messages'] as List).map((e)=>Map<String,dynamic>.from(e as Map)).toList();images=(r['images'] as List? ??[]).map((e)=>Map<String,dynamic>.from(e as Map)).toList();if(widget.adminMode)note.text=info?['internalNote']?.toString()??'';error=null;});}catch(e){if(mounted)setState(()=>error=e.toString());}}
 Future<void> pickReplyImages() async {
  if(busy)return;
  try {
@@ -122,7 +132,7 @@ Future<void> send()async{
   final result=await _supportCall('replyCreatorSupportCase',{
    'caseId':widget.caseId,'body':content,'asCreator':!widget.adminMode,
    'hasImages':pickedImages.isNotEmpty,'requestId':requestId,
-  });
+  },adminMode:widget.adminMode);
   final messageId=result['messageId']?.toString()??'';
   if(messageId.isEmpty)throw StateError('後端未回傳訊息 ID，請重新載入案件確認狀態');
   // At this point the text is committed. Never resend it because a later image upload failed.
@@ -131,7 +141,7 @@ Future<void> send()async{
   reply.clear();pickedImages.clear();
   var failed=0;
   for(final bytes in uploads){
-   try{await _supportCall('uploadCreatorSupportImage',{'caseId':widget.caseId,'messageId':messageId,'imageBase64':base64Encode(bytes)});}
+   try{await _supportCall('uploadCreatorSupportImage',{'caseId':widget.caseId,'messageId':messageId,'imageBase64':base64Encode(bytes)},adminMode:widget.adminMode);}
    catch(e){failed++;debugPrint('回覆圖片上傳失敗：$e');}
   }
   try {await load();}catch(e){debugPrint('回覆已儲存，畫面重新載入失敗：$e');}
@@ -171,7 +181,7 @@ Future<void> _operate(Map<String,dynamic> m,String operation,{String? body})asyn
   if(accepted!=true||!mounted)return;
  }
  try{
-  await _supportCall('manageCreatorSupportMessage',{'caseId':widget.caseId,'messageId':m['id'],'operation':operation,'asCreator':!widget.adminMode,if(body!=null)'body':body});
+  await _supportCall('manageCreatorSupportMessage',{'caseId':widget.caseId,'messageId':m['id'],'operation':operation,'asCreator':!widget.adminMode,if(body!=null)'body':body},adminMode:widget.adminMode);
   await load();
   if(mounted)ToastUtils.showCenterToast(context,AppLocalizations.of(context)!.creator_support_operation_success1);
  }catch(e){if(mounted)ToastUtils.showCenterToast(context,AppLocalizations.of(context)!.creator_support_error1,isError:true);}
@@ -222,7 +232,7 @@ Future<void> _actions(Map<String,dynamic> m) async {
   await _operate(m, action);
  }
 }
-Future<void> update({String? status,bool updateNote=false})async{setState(()=>busy=true);try{await _supportCall('updateCreatorSupportCase',{'caseId':widget.caseId,if(status!=null)'status':status,if(updateNote)'internalNote':note.text.trim()});await load();if(mounted)ToastUtils.showCenterToast(context,AppLocalizations.of(context)!.creator_support_case_updated1);}catch(e){if(mounted)ToastUtils.showCenterToast(context,AppLocalizations.of(context)!.creator_support_error1,isError:true);}finally{if(mounted)setState(()=>busy=false);}}
+Future<void> update({String? status,bool updateNote=false})async{setState(()=>busy=true);try{await _supportCall('updateCreatorSupportCase',{'caseId':widget.caseId,if(status!=null)'status':status,if(updateNote)'internalNote':note.text.trim()},adminMode:widget.adminMode);await load();if(mounted)ToastUtils.showCenterToast(context,AppLocalizations.of(context)!.creator_support_case_updated1);}catch(e){if(mounted)ToastUtils.showCenterToast(context,AppLocalizations.of(context)!.creator_support_error1,isError:true);}finally{if(mounted)setState(()=>busy=false);}}
 @override
 Widget build(BuildContext context) => Scaffold(
  appBar: AppBar(
@@ -279,7 +289,7 @@ Widget build(BuildContext context) => Scaffold(
          ],
         ),
        ),
-      if(images.any((img)=>(img['messageId']??'').toString().isEmpty))Padding(padding:const EdgeInsets.all(14),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(AppLocalizations.of(context)!.creator_support_case_images1,style:TextStyle(fontWeight:FontWeight.bold)),const SizedBox(height:8),Wrap(spacing:10,runSpacing:10,children:[for(final img in images.where((img)=>(img['messageId']??'').toString().isEmpty))_SupportPrivateImage(caseId:widget.caseId,imageId:img['id'].toString())])])),
+      if(images.any((img)=>(img['messageId']??'').toString().isEmpty))Padding(padding:const EdgeInsets.all(14),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(AppLocalizations.of(context)!.creator_support_case_images1,style:TextStyle(fontWeight:FontWeight.bold)),const SizedBox(height:8),Wrap(spacing:10,runSpacing:10,children:[for(final img in images.where((img)=>(img['messageId']??'').toString().isEmpty))_SupportPrivateImage(caseId:widget.caseId,imageId:img['id'].toString(),adminMode:widget.adminMode)])])),
       const Divider(),
       for (final m in messages)
        GestureDetector(onLongPress:_mine(m)?()=>_actions(m):null,child:Align(
@@ -301,7 +311,7 @@ Widget build(BuildContext context) => Scaffold(
             if(m['recalled']==true)Text(AppLocalizations.of(context)!.creator_support_recalled1,style:TextStyle(color:Colors.grey,fontStyle:FontStyle.italic))
             else if((m['body']?.toString()??'').isNotEmpty)Text(m['body']?.toString() ?? ''),
             if(m['edited']==true&&m['recalled']!=true)Text(AppLocalizations.of(context)!.creator_support_edited1,style:TextStyle(fontSize:11,color:Colors.grey)),
-            if(m['recalled']!=true&&images.any((img)=>img['messageId']==m['id']))Padding(padding:const EdgeInsets.only(top:8),child:Wrap(spacing:8,runSpacing:8,children:[for(final img in images.where((img)=>img['messageId']==m['id'])) _SupportPrivateImage(caseId:widget.caseId,imageId:img['id'].toString())])),
+            if(m['recalled']!=true&&images.any((img)=>img['messageId']==m['id']))Padding(padding:const EdgeInsets.only(top:8),child:Wrap(spacing:8,runSpacing:8,children:[for(final img in images.where((img)=>img['messageId']==m['id'])) _SupportPrivateImage(caseId:widget.caseId,imageId:img['id'].toString(),adminMode:widget.adminMode)])),
            ],
           ),
          ),
@@ -367,14 +377,14 @@ Widget build(BuildContext context) => Scaffold(
 class CreatorSupportAdminPage extends StatefulWidget{const CreatorSupportAdminPage({super.key});@override State<CreatorSupportAdminPage> createState()=>_CreatorSupportAdminState();}
 class _CreatorSupportAdminState extends State<CreatorSupportAdminPage>{List<Map<String,dynamic>> cases=[];String? cursor;bool loading=false;String? error;
 @override void initState(){super.initState();load(true);}
-Future<void> load(bool reset)async{if(loading)return;setState(()=>loading=true);try{final r=await _supportCall('listCreatorSupportCases',{'cursor':reset?'':cursor??''});if(!mounted)return;setState((){final incoming=(r['items'] as List? ??[]).map((e)=>Map<String,dynamic>.from(e as Map)).toList();cases=reset?incoming:[...cases,...incoming];cursor=r['nextCursor']?.toString();error=null;});}catch(e){if(mounted)setState(()=>error=e.toString());}finally{if(mounted)setState(()=>loading=false);}}
+Future<void> load(bool reset)async{if(loading)return;setState(()=>loading=true);try{final r=await _supportCall('listCreatorSupportCases',{'cursor':reset?'':cursor??''},adminMode:true);if(!mounted)return;setState((){final incoming=(r['items'] as List? ??[]).map((e)=>Map<String,dynamic>.from(e as Map)).toList();cases=reset?incoming:[...cases,...incoming];cursor=r['nextCursor']?.toString();error=null;});}catch(e){if(mounted)setState(()=>error=e.toString());}finally{if(mounted)setState(()=>loading=false);}}
 @override Widget build(BuildContext context)=>Scaffold(appBar:AppBar(title:Text(AppLocalizations.of(context)!.creator_support_admin_title1)),body:RefreshIndicator(onRefresh:()=>load(true),child:ListView(children:[if(error!=null)Padding(padding:const EdgeInsets.all(18),child:Text(AppLocalizations.of(context)!.creator_support_error1)),for(final item in cases)Card(margin:const EdgeInsets.symmetric(horizontal:12,vertical:5),child:ListTile(title:Text(item['title']?.toString()??''),subtitle:Text('${item['creatorName']} · ${_supportStatusText1(context, item['status'])}'),trailing:(item['adminUnreadCount'] as num? ??0)>0?Text(AppLocalizations.of(context)!.creator_support_new_reply1):const Icon(Icons.chevron_right_rounded),onTap:()=>Navigator.push(context,MaterialPageRoute(builder:(_)=>CreatorSupportCasePage(caseId:item['id'].toString(),adminMode:true))).then((_){load(true);}))),if(cursor!=null)TextButton(onPressed:loading?null:()=>load(false),child:Text(AppLocalizations.of(context)!.creator_support_load_more_cases1)),if(loading)Padding(padding:EdgeInsets.all(18),child:Center(child:CircularProgressIndicator()))])));
 }
 
 // Only an authorized creator or administrator can fetch attachment bytes.
-class _SupportPrivateImage extends StatefulWidget {final String caseId,imageId;const _SupportPrivateImage({required this.caseId,required this.imageId});@override State<_SupportPrivateImage> createState()=>_SupportPrivateImageState();}
+class _SupportPrivateImage extends StatefulWidget {final String caseId,imageId;final bool adminMode;const _SupportPrivateImage({required this.caseId,required this.imageId,this.adminMode=false});@override State<_SupportPrivateImage> createState()=>_SupportPrivateImageState();}
 class _SupportPrivateImageState extends State<_SupportPrivateImage>{late final Future<Uint8List> bytes;
-@override void initState(){super.initState();bytes=_supportCall('getCreatorSupportImage',{'caseId':widget.caseId,'imageId':widget.imageId}).then((r)=>base64Decode(r['imageBase64'] as String));}
+@override void initState(){super.initState();bytes=_supportCall('getCreatorSupportImage',{'caseId':widget.caseId,'imageId':widget.imageId},adminMode:widget.adminMode).then((r)=>base64Decode(r['imageBase64'] as String));}
 @override Widget build(BuildContext context)=>FutureBuilder<Uint8List>(future:bytes,builder:(ctx,s){if(s.hasError)return SizedBox(width:110,height:110,child:Center(child:Text(AppLocalizations.of(context)!.creator_support_image_load_error1)));if(!s.hasData)return const SizedBox(width:110,height:110,child:Center(child:CircularProgressIndicator()));return InkWell(onTap:()=>showDialog<void>(context:context,builder:(ctx)=>Dialog(child:InteractiveViewer(child:Image.memory(s.data!)))),child:Image.memory(s.data!,width:110,height:110,fit:BoxFit.cover));});
 }
 

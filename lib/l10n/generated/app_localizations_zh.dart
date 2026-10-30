@@ -11819,6 +11819,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get world_discovery_world_background1 => '世界背景';
 
   @override
+  String get world_edit_custom_status_title1 => '自訂回覆格式／狀態欄';
+
+  @override
+  String get world_edit_custom_status_hint1 =>
+      '選填。可設定世界互動時的狀態欄模板，例如時間、地點、人物狀態等；此內容不是公開簡介。';
+
+  @override
+  String get world_edit_custom_status_field1 => '自訂狀態欄內容';
+
+  @override
   String get world_discovery_not_playable1 => '這個開放世界尚未開放遊玩。';
 
   @override
@@ -11935,7 +11945,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get world_edit_short_pitch1 => '卡片一句話介紹（選填，最多 60 字）';
 
   @override
-  String get world_edit_public_summary1 => '世界觀公開簡介（不含劇透）';
+  String get world_edit_public_summary1 => '世界觀公開簡介';
+
+  @override
+  String get world_edit_creator_message_optional1 => '創作者的話（選填）';
+
+  @override
+  String get world_discovery_creator_message1 => '創作者的話';
 
   @override
   String get world_edit_era1 => '時空背景（例：架空現代、民國時期）';
@@ -23966,6 +23982,16 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get world_discovery_world_background1 => '世界背景';
 
   @override
+  String get world_edit_custom_status_title1 => '自定义回复格式／状态栏';
+
+  @override
+  String get world_edit_custom_status_hint1 =>
+      '选填。可设置世界互动时的状态栏模板，例如时间、地点、人物状态等；此内容不是公开简介。';
+
+  @override
+  String get world_edit_custom_status_field1 => '自定义状态栏内容';
+
+  @override
   String get world_discovery_not_playable1 => '这个开放世界尚未开放游玩。';
 
   @override
@@ -24082,7 +24108,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get world_edit_short_pitch1 => '卡片一句话介绍（选填，最多 60 字）';
 
   @override
-  String get world_edit_public_summary1 => '世界观公开简介（不含剧透）';
+  String get world_edit_public_summary1 => '世界观公开简介';
+
+  @override
+  String get world_edit_creator_message_optional1 => '创作者的话（选填）';
+
+  @override
+  String get world_discovery_creator_message1 => '创作者的话';
 
   @override
   String get world_edit_era1 => '时空背景（例：架空现代、民国时期）';
@@ -36577,6 +36609,16 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get world_discovery_world_background1 => '世界背景';
 
   @override
+  String get world_edit_custom_status_title1 => '自訂回覆格式／狀態欄';
+
+  @override
+  String get world_edit_custom_status_hint1 =>
+      '選填。可設定世界互動時的狀態欄模板，例如時間、地點、人物狀態等；此內容不是公開簡介。';
+
+  @override
+  String get world_edit_custom_status_field1 => '自訂狀態欄內容';
+
+  @override
   String get world_discovery_not_playable1 => '這個開放世界尚未開放遊玩。';
 
   @override
@@ -36693,7 +36735,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get world_edit_short_pitch1 => '卡片一句話介紹（選填，最多 60 字）';
 
   @override
-  String get world_edit_public_summary1 => '世界觀公開簡介（不含劇透）';
+  String get world_edit_public_summary1 => '世界觀公開簡介';
+
+  @override
+  String get world_edit_creator_message_optional1 => '創作者的話（選填）';
+
+  @override
+  String get world_discovery_creator_message1 => '創作者的話';
 
   @override
   String get world_edit_era1 => '時空背景（例：架空現代、民國時期）';

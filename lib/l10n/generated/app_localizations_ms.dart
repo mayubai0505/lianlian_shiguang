@@ -12713,6 +12713,17 @@ class AppLocalizationsMs extends AppLocalizations {
   String get world_discovery_world_background1 => 'Latar Dunia';
 
   @override
+  String get world_edit_custom_status_title1 =>
+      'Format balasan / bar status tersuai';
+
+  @override
+  String get world_edit_custom_status_hint1 =>
+      'Pilihan. Tetapkan templat bar status untuk interaksi dunia, seperti masa, lokasi atau status watak. Kandungan ini bukan sebahagian daripada penerangan awam.';
+
+  @override
+  String get world_edit_custom_status_field1 => 'Kandungan bar status tersuai';
+
+  @override
   String get world_discovery_not_playable1 =>
       'Dunia terbuka ini belum boleh dimainkan.';
 
@@ -12841,8 +12852,14 @@ class AppLocalizationsMs extends AppLocalizations {
       'One-line card description (optional, up to 60 characters)';
 
   @override
-  String get world_edit_public_summary1 =>
-      'Public world description (no spoilers)';
+  String get world_edit_public_summary1 => 'Public world description ';
+
+  @override
+  String get world_edit_creator_message_optional1 =>
+      'Pesanan daripada Pencipta (Pilihan)';
+
+  @override
+  String get world_discovery_creator_message1 => 'Pesanan daripada Pencipta';
 
   @override
   String get world_edit_era1 =>

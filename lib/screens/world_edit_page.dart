@@ -1,4 +1,7 @@
 import 'dart:typed_data';
+import 'dart:ui' as ui;
+
+import 'package:flutter/rendering.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -49,6 +52,10 @@ class _WorldEditPageState extends State<WorldEditPage>
   ];
   final TextEditingController _opening = TextEditingController();
   final TextEditingController _firstLine = TextEditingController();
+  // 與角色編輯頁一致的創作者自訂回覆格式／狀態欄。
+  final TextEditingController _customOutputFormat = TextEditingController();
+  // 創作者針對此世界留給玩家的話；與個人首頁自我介紹分開。
+  final TextEditingController _creatorMessage = TextEditingController();
 
   final List<_WorldImage> _images = [];
   final List<_WorldNpc> _npcs = [];
@@ -97,6 +104,8 @@ class _WorldEditPageState extends State<WorldEditPage>
         _lore.text = data['worldLore']?.toString() ?? '';
         _opening.text = data['storyOpening']?.toString() ?? '';
         _firstLine.text = data['firstLine']?.toString() ?? '';
+        _customOutputFormat.text = data['customOutputFormat']?.toString() ?? '';
+        _creatorMessage.text = data['creatorMessage']?.toString() ?? '';
         _isPublic = data['isPublic'] == true;
         final secretId = _worldId ?? _draftId;
         if (secretId != null) {
@@ -156,6 +165,27 @@ class _WorldEditPageState extends State<WorldEditPage>
     ToastUtils.showCenterToast(context, value, isError: isError);
   }
 
+  // 世界照片沿用主角／NPC 的內建裁切器，但使用介紹頁的 4:3 構圖。
+  // 取消裁切時不加入照片，避免原圖被意外上傳。
+  Future<XFile?> _cropWorldImage(XFile source) async {
+    final bytes = await source.readAsBytes();
+    if (!mounted) return null;
+    final cropped = await Navigator.of(context).push<Uint8List>(
+      MaterialPageRoute(
+        builder: (_) => _WorldAvatarCropPage(
+          imageBytes: bytes,
+          aspectRatio: 4 / 3,
+        ),
+      ),
+    );
+    if (!mounted || cropped == null) return null;
+    return XFile.fromData(
+      cropped,
+      name: 'world_gallery_crop.png',
+      mimeType: 'image/png',
+    );
+  }
+
   Future<void> _pickImages() async {
     if (_busy || _images.length >= maxImages) return;
     try {
@@ -165,14 +195,37 @@ class _WorldEditPageState extends State<WorldEditPage>
       );
       if (!mounted) return;
       final remaining = maxImages - _images.length;
-      setState(() {
-        _images.addAll(
-          selected.take(remaining).map((file) => _WorldImage(file: file)),
-        );
-      });
-      if (selected.length > remaining) _notice(AppLocalizations.of(context)!.world_edit_image_max1(maxImages));
+      if (selected.length > remaining) {
+        _notice(AppLocalizations.of(context)!.world_edit_image_max1(maxImages));
+      }
+      // 每張圖片獨立確認，取消某張不影響其他圖片。
+      for (final file in selected.take(remaining)) {
+        if (!mounted) return;
+        final cropped = await _cropWorldImage(file);
+        if (!mounted) return;
+        if (cropped != null) {
+          setState(() => _images.add(_WorldImage(file: cropped)));
+        }
+      }
     } catch (e) {
-      _notice(AppLocalizations.of(context)!.world_edit_image_read_error1(e.toString()));
+      if (mounted) {
+        _notice(AppLocalizations.of(context)!.world_edit_image_read_error1(e.toString()), isError: true);
+      }
+    }
+  }
+
+  // 上傳前可再次微調尚未儲存至雲端的世界照片。
+  Future<void> _recropPendingWorldImage(int index) async {
+    if (_busy || index >= _images.length || _images[index].file == null) return;
+    try {
+      final cropped = await _cropWorldImage(_images[index].file!);
+      if (mounted && cropped != null && index < _images.length) {
+        setState(() => _images[index].file = cropped);
+      }
+    } catch (e) {
+      if (mounted) {
+        _notice(AppLocalizations.of(context)!.world_edit_image_read_error1(e.toString()), isError: true);
+      }
     }
   }
 
@@ -316,12 +369,14 @@ class _WorldEditPageState extends State<WorldEditPage>
         if (image.file == null) {
           urls.add(image.url);
         } else {
+          final isPng = image.file!.mimeType == 'image/png' ||
+              image.file!.name.toLowerCase().endsWith('.png');
           final ref = _storage.ref(
-            'world_images/${user.uid}/$worldId/gallery_${DateTime.now().microsecondsSinceEpoch}_$i.jpg',
+            'world_images/${user.uid}/$worldId/gallery_${DateTime.now().microsecondsSinceEpoch}_$i.${isPng ? 'png' : 'jpg'}',
           );
           await ref.putData(
             await image.file!.readAsBytes(),
-            SettableMetadata(contentType: 'image/jpeg'),
+            SettableMetadata(contentType: isPng ? 'image/png' : 'image/jpeg'),
           );
           image.url = await ref.getDownloadURL();
           image.file = null;
@@ -331,12 +386,14 @@ class _WorldEditPageState extends State<WorldEditPage>
       for (var i = 0; i < _npcs.length; i++) {
         final npc = _npcs[i];
         if (npc.avatarFile == null) continue;
+        final isPng = npc.avatarFile!.mimeType == 'image/png' ||
+            npc.avatarFile!.name.toLowerCase().endsWith('.png');
         final ref = _storage.ref(
-          'world_images/${user.uid}/$worldId/npc_${DateTime.now().microsecondsSinceEpoch}_$i.jpg',
+          'world_images/${user.uid}/$worldId/npc_${DateTime.now().microsecondsSinceEpoch}_$i.${isPng ? 'png' : 'jpg'}',
         );
         await ref.putData(
           await npc.avatarFile!.readAsBytes(),
-          SettableMetadata(contentType: 'image/jpeg'),
+          SettableMetadata(contentType: isPng ? 'image/png' : 'image/jpeg'),
         );
         npc.avatarUrl = await ref.getDownloadURL();
         npc.avatarFile = null;
@@ -351,6 +408,8 @@ class _WorldEditPageState extends State<WorldEditPage>
         'worldLore': _lore.text.trim(),
         'storyOpening': _opening.text.trim(),
         'firstLine': _firstLine.text.trim(),
+        'customOutputFormat': _customOutputFormat.text.trim(),
+        'creatorMessage': _creatorMessage.text.trim(),
         'images': urls,
         'coverImage': urls.isNotEmpty ? urls.first : '',
         'npcCharacters': _npcs.map((npc) => npc.toMap()).toList(),
@@ -478,18 +537,20 @@ class _WorldEditPageState extends State<WorldEditPage>
           }
           final img = _images[i];
           return Stack(fit: StackFit.expand, children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: img.file == null
-                  ? Image.network(img.url, fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => const Icon(Icons.broken_image_outlined))
-                  : FutureBuilder<Uint8List>(
-                future: img.file!.readAsBytes(),
-                builder: (_, snap) => snap.hasData
-                    ? Image.memory(snap.data!, fit: BoxFit.cover)
-                    : const Center(child: CircularProgressIndicator()),
-              ),
-            ),
+            InkWell(
+                onTap: img.file == null ? null : () => _recropPendingWorldImage(i),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: img.file == null
+                      ? Image.network(img.url, fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => const Icon(Icons.broken_image_outlined))
+                      : FutureBuilder<Uint8List>(
+                    future: img.file!.readAsBytes(),
+                    builder: (_, snap) => snap.hasData
+                        ? Image.memory(snap.data!, fit: BoxFit.cover)
+                        : const Center(child: CircularProgressIndicator()),
+                  ),
+                )),
             Positioned(
               top: 0, right: 0,
               child: IconButton.filledTonal(
@@ -516,6 +577,7 @@ class _WorldEditPageState extends State<WorldEditPage>
       const SizedBox(height: 18),
       _field(_shortPitch, AppLocalizations.of(context)!.world_edit_short_pitch1, max: 60),
       _field(_summary, AppLocalizations.of(context)!.world_edit_public_summary1, lines: 3, max: 1200),
+      _field(_creatorMessage, AppLocalizations.of(context)!.world_edit_creator_message_optional1, lines: 3, max: 1000),
       _field(_era, AppLocalizations.of(context)!.world_edit_era1, max: 120),
       _tagPicker(),
       _field(_setting, AppLocalizations.of(context)!.world_edit_world_rules1, lines: 6, max: 10000),
@@ -602,6 +664,18 @@ class _WorldEditPageState extends State<WorldEditPage>
       _field(_opening, AppLocalizations.of(context)!.world_edit_story_opening1, lines: 5, max: 1500),
       _field(_firstLine, AppLocalizations.of(context)!.world_edit_first_line1, lines: 5, max: 3000),
       const SizedBox(height: 12),
+      Text(
+        AppLocalizations.of(context)!.world_edit_custom_status_title1,
+        style: Theme.of(context).textTheme.titleMedium,
+      ),
+      const SizedBox(height: 6),
+      Text(
+        AppLocalizations.of(context)!.world_edit_custom_status_hint1,
+        style: Theme.of(context).textTheme.bodySmall,
+      ),
+      const SizedBox(height: 10),
+      _field(_customOutputFormat, AppLocalizations.of(context)!.world_edit_custom_status_field1, lines: 5, max: 6000),
+      const SizedBox(height: 12),
       Text(AppLocalizations.of(context)!.world_edit_secret_chapters1, style: Theme.of(context).textTheme.titleMedium),
       const SizedBox(height: 6),
       Text(AppLocalizations.of(context)!.world_edit_secret_explain1),
@@ -659,9 +733,15 @@ class _WorldEditPageState extends State<WorldEditPage>
             ? const Center(child: CircularProgressIndicator())
             : Column(children: [
           Expanded(
-            child: TabBarView(controller: _tabs, children: [
-              _basicTab(), _npcTab(), _storyTab(),
-            ]),
+            child: GestureDetector(
+              // 只在輕點表單空白處時收起鍵盤；捲動與滑動切頁不觸發。
+              // TextField、按鈕等子元件自己的點擊手勢優先處理。
+              behavior: HitTestBehavior.deferToChild,
+              onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+              child: TabBarView(controller: _tabs, children: [
+                _basicTab(), _npcTab(), _storyTab(),
+              ]),
+            ),
           ),
           SafeArea(
             top: false,
@@ -706,6 +786,8 @@ class _WorldEditPageState extends State<WorldEditPage>
     _lore.dispose();
     _opening.dispose();
     _firstLine.dispose();
+    _customOutputFormat.dispose();
+    _creatorMessage.dispose();
     super.dispose();
   }
 }
@@ -835,6 +917,41 @@ class _WorldPersonEditorState extends State<_WorldPersonEditor> {
             child: image)));
   }
 
+  Future<void> _pickAndCropAvatar() async {
+    final picked = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 90,
+      maxWidth: 1600,
+    );
+    if (picked == null || !mounted) return;
+
+    try {
+      final bytes = await picked.readAsBytes();
+      if (!mounted) return;
+      final cropped = await Navigator.of(context).push<Uint8List>(
+        MaterialPageRoute(
+          builder: (_) => _WorldAvatarCropPage(imageBytes: bytes),
+        ),
+      );
+      if (!mounted || cropped == null) return;
+      setState(() {
+        person.avatarFile = XFile.fromData(
+          cropped,
+          name: 'world_avatar_crop.png',
+          mimeType: 'image/png',
+        );
+      });
+    } catch (error) {
+      if (mounted) {
+        ToastUtils.showCenterToast(
+          context,
+          AppLocalizations.of(context)!.world_edit_image_read_error1(error.toString()),
+          isError: true,
+        );
+      }
+    }
+  }
+
   void save() {
     final name = fields['name']!.text.trim();
     if (name.isEmpty) {
@@ -861,32 +978,31 @@ class _WorldPersonEditorState extends State<_WorldPersonEditor> {
     return Scaffold(
       appBar: AppBar(title: Text(AppLocalizations.of(context)!.world_edit_edit_person1(title))),
       body: SafeArea(child: Column(children: [
-        Expanded(child: ListView(padding: const EdgeInsets.all(18), children: [
-          Center(child: avatar()),
-          const SizedBox(height: 10),
-          Center(child: OutlinedButton.icon(
-            onPressed: () async {
-              final picked = await _picker.pickImage(
-                source: ImageSource.gallery, imageQuality: 82, maxWidth: 1000,
-              );
-              if (picked != null && mounted) setState(() => person.avatarFile = picked);
-            },
-            icon: const Icon(Icons.add_photo_alternate_outlined),
-            label: Text(AppLocalizations.of(context)!.world_edit_upload_photo1),
-          )),
-          const SizedBox(height: 16),
-          field('name', AppLocalizations.of(context)!.world_edit_name1, max: 60),
-          field('gender', AppLocalizations.of(context)!.world_edit_gender1, max: 80),
-          field('birthday', AppLocalizations.of(context)!.world_edit_birthday1, max: 60),
-          field('age', AppLocalizations.of(context)!.world_edit_age1, max: 30),
-          field('role', AppLocalizations.of(context)!.world_edit_role1, max: 120),
-          field('appearance', AppLocalizations.of(context)!.world_edit_appearance1, lines: 3, max: 2000),
-          field('personality', AppLocalizations.of(context)!.world_edit_personality1, lines: 4, max: 3000),
-          field('background', AppLocalizations.of(context)!.world_edit_background1, lines: 4, max: 3000),
-          field('relationships', AppLocalizations.of(context)!.world_edit_relationships1, lines: 3, max: 2000),
-          field('speechStyle', AppLocalizations.of(context)!.world_edit_speech_style1, lines: 3, max: 1000),
-          field('dialogueExamples', AppLocalizations.of(context)!.world_edit_dialogue_examples1, lines: 4, max: 1500),
-        ])),
+        Expanded(child: GestureDetector(
+          behavior: HitTestBehavior.deferToChild,
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          child: ListView(padding: const EdgeInsets.all(18), children: [
+            Center(child: avatar()),
+            const SizedBox(height: 10),
+            Center(child: OutlinedButton.icon(
+              onPressed: _pickAndCropAvatar,
+              icon: const Icon(Icons.add_photo_alternate_outlined),
+              label: Text(AppLocalizations.of(context)!.world_edit_upload_photo1),
+            )),
+            const SizedBox(height: 16),
+            field('name', AppLocalizations.of(context)!.world_edit_name1, max: 60),
+            field('gender', AppLocalizations.of(context)!.world_edit_gender1, max: 80),
+            field('birthday', AppLocalizations.of(context)!.world_edit_birthday1, max: 60),
+            field('age', AppLocalizations.of(context)!.world_edit_age1, max: 30),
+            field('role', AppLocalizations.of(context)!.world_edit_role1, max: 120),
+            field('appearance', AppLocalizations.of(context)!.world_edit_appearance1, lines: 3, max: 2000),
+            field('personality', AppLocalizations.of(context)!.world_edit_personality1, lines: 4, max: 3000),
+            field('background', AppLocalizations.of(context)!.world_edit_background1, lines: 4, max: 3000),
+            field('relationships', AppLocalizations.of(context)!.world_edit_relationships1, lines: 3, max: 2000),
+            field('speechStyle', AppLocalizations.of(context)!.world_edit_speech_style1, lines: 3, max: 1000),
+            field('dialogueExamples', AppLocalizations.of(context)!.world_edit_dialogue_examples1, lines: 4, max: 1500),
+          ]),
+        )),
         Padding(padding: const EdgeInsets.all(16), child: SizedBox(
           width: double.infinity,
           child: FilledButton(onPressed: save, child: Text(AppLocalizations.of(context)!.world_edit_save_person1)),
@@ -899,5 +1015,154 @@ class _WorldPersonEditorState extends State<_WorldPersonEditor> {
   void dispose() {
     for (final controller in fields.values) { controller.dispose(); }
     super.dispose();
+  }
+}
+
+/// 主角／NPC 預設正方形；世界相簿使用 4:3。只使用 Flutter 內建元件，
+/// 不需要額外套件；取消時不變更原本頭像。
+class _WorldAvatarCropPage extends StatefulWidget {
+  const _WorldAvatarCropPage({required this.imageBytes, this.aspectRatio = 1});
+  final Uint8List imageBytes;
+  final double aspectRatio;
+
+  @override
+  State<_WorldAvatarCropPage> createState() => _WorldAvatarCropPageState();
+}
+
+class _WorldAvatarCropPageState extends State<_WorldAvatarCropPage> {
+  final GlobalKey _cropKey = GlobalKey();
+  bool _saving = false;
+  late final Future<Size> _sourceSize = _decodeSourceSize();
+
+  // 取得真正原始圖片長寬，避免 BoxFit.cover 在互動前就裁掉上下／左右。
+  Future<Size> _decodeSourceSize() async {
+    final codec = await ui.instantiateImageCodec(widget.imageBytes);
+    try {
+      final frame = await codec.getNextFrame();
+      final size = Size(frame.image.width.toDouble(), frame.image.height.toDouble());
+      frame.image.dispose();
+      return size;
+    } finally {
+      codec.dispose();
+    }
+  }
+
+  Future<void> _saveCrop() async {
+    if (_saving) return;
+    setState(() => _saving = true);
+    try {
+      await WidgetsBinding.instance.endOfFrame;
+      final boundary = _cropKey.currentContext?.findRenderObject()
+      as RenderRepaintBoundary?;
+      if (boundary == null) throw StateError('Crop preview is not ready');
+      final image = await boundary.toImage(pixelRatio: 3);
+      try {
+        final png = await image.toByteData(format: ui.ImageByteFormat.png);
+        if (png == null) throw StateError('Could not encode cropped image');
+        if (mounted) Navigator.pop(context, png.buffer.asUint8List());
+      } finally {
+        image.dispose();
+      }
+    } catch (error) {
+      if (mounted) {
+        ToastUtils.showCenterToast(
+          context,
+          AppLocalizations.of(context)!.world_edit_image_read_error1(error.toString()),
+          isError: true,
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.world_edit_upload_photo1)),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: Center(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final ratio = widget.aspectRatio;
+                    final width = (constraints.maxWidth < constraints.maxHeight * ratio
+                        ? constraints.maxWidth : constraints.maxHeight * ratio)
+                        .clamp(120.0, 420.0).toDouble();
+                    final height = width / ratio;
+                    return FutureBuilder<Size>(
+                      future: _sourceSize,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return Text(l10n.world_edit_image_read_error1(snapshot.error.toString()));
+                        }
+                        if (!snapshot.hasData) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                        final originalSize = snapshot.data!;
+                        // 先按比例縮放完整原圖，使其至少覆蓋裁切視窗。
+                        // 圖片本身不預裁切；長圖超出視窗的部分可自由拖入。
+                        final scaleX = width / originalSize.width;
+                        final scaleY = height / originalSize.height;
+                        final baseScale = scaleX > scaleY ? scaleX : scaleY;
+                        final imageWidth = originalSize.width * baseScale;
+                        final imageHeight = originalSize.height * baseScale;
+                        return RepaintBoundary(
+                          key: _cropKey,
+                          child: ClipRect(
+                            child: SizedBox(
+                              width: width,
+                              height: height,
+                              child: InteractiveViewer(
+                                constrained: false,
+                                boundaryMargin: EdgeInsets.zero,
+                                alignment: Alignment.center,
+                                minScale: 1,
+                                maxScale: 5,
+                                child: SizedBox(
+                                  width: imageWidth,
+                                  height: imageHeight,
+                                  child: Image.memory(
+                                    widget.imageBytes,
+                                    fit: BoxFit.fill,
+                                    gaplessPlayback: true,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              child: Row(
+                children: [
+                  Expanded(child: OutlinedButton(
+                    onPressed: _saving ? null : () => Navigator.pop(context),
+                    child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+                  )),
+                  const SizedBox(width: 12),
+                  Expanded(child: FilledButton(
+                    onPressed: _saving ? null : _saveCrop,
+                    child: _saving
+                        ? const SizedBox.square(dimension: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2))
+                        : Text(MaterialLocalizations.of(context).saveButtonLabel),
+                  )),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

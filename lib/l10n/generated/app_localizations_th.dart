@@ -12587,6 +12587,17 @@ class AppLocalizationsTh extends AppLocalizations {
   String get world_discovery_world_background1 => 'ฉากหลังของโลก';
 
   @override
+  String get world_edit_custom_status_title1 =>
+      'รูปแบบการตอบกลับ / แถบสถานะที่กำหนดเอง';
+
+  @override
+  String get world_edit_custom_status_hint1 =>
+      'ไม่บังคับ สามารถกำหนดเทมเพลตแถบสถานะสำหรับการโต้ตอบในโลก เช่น เวลา สถานที่ และสถานะตัวละคร เนื้อหานี้ไม่ใช่ส่วนหนึ่งของคำอธิบายสาธารณะ';
+
+  @override
+  String get world_edit_custom_status_field1 => 'เนื้อหาแถบสถานะที่กำหนดเอง';
+
+  @override
   String get world_discovery_not_playable1 => 'โลกเปิดนี้ยังไม่สามารถเล่นได้';
 
   @override
@@ -12714,8 +12725,14 @@ class AppLocalizationsTh extends AppLocalizations {
       'One-line card description (optional, up to 60 characters)';
 
   @override
-  String get world_edit_public_summary1 =>
-      'Public world description (no spoilers)';
+  String get world_edit_public_summary1 => 'Public world description ';
+
+  @override
+  String get world_edit_creator_message_optional1 =>
+      'ข้อความจากผู้สร้าง (ไม่บังคับ)';
+
+  @override
+  String get world_discovery_creator_message1 => 'ข้อความจากผู้สร้าง';
 
   @override
   String get world_edit_era1 =>

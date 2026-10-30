@@ -21684,6 +21684,24 @@ abstract class AppLocalizations {
   /// **'世界背景'**
   String get world_discovery_world_background1;
 
+  /// No description provided for @world_edit_custom_status_title1.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'自訂回覆格式／狀態欄'**
+  String get world_edit_custom_status_title1;
+
+  /// No description provided for @world_edit_custom_status_hint1.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選填。可設定世界互動時的狀態欄模板，例如時間、地點、人物狀態等；此內容不是公開簡介。'**
+  String get world_edit_custom_status_hint1;
+
+  /// No description provided for @world_edit_custom_status_field1.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'自訂狀態欄內容'**
+  String get world_edit_custom_status_field1;
+
   /// No description provided for @world_discovery_not_playable1.
   ///
   /// In zh_Hant, this message translates to:
@@ -21891,8 +21909,20 @@ abstract class AppLocalizations {
   /// No description provided for @world_edit_public_summary1.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'世界觀公開簡介（不含劇透）'**
+  /// **'世界觀公開簡介'**
   String get world_edit_public_summary1;
+
+  /// No description provided for @world_edit_creator_message_optional1.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'創作者的話（選填）'**
+  String get world_edit_creator_message_optional1;
+
+  /// No description provided for @world_discovery_creator_message1.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'創作者的話'**
+  String get world_discovery_creator_message1;
 
   /// No description provided for @world_edit_era1.
   ///

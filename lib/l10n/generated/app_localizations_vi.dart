@@ -12717,6 +12717,18 @@ class AppLocalizationsVi extends AppLocalizations {
   String get world_discovery_world_background1 => 'Bối cảnh thế giới';
 
   @override
+  String get world_edit_custom_status_title1 =>
+      'Định dạng phản hồi / thanh trạng thái tùy chỉnh';
+
+  @override
+  String get world_edit_custom_status_hint1 =>
+      'Không bắt buộc. Thiết lập mẫu thanh trạng thái cho tương tác trong thế giới, như thời gian, địa điểm hoặc trạng thái nhân vật. Nội dung này không thuộc phần giới thiệu công khai.';
+
+  @override
+  String get world_edit_custom_status_field1 =>
+      'Nội dung thanh trạng thái tùy chỉnh';
+
+  @override
   String get world_discovery_not_playable1 => 'Thế giới mở này chưa thể chơi.';
 
   @override
@@ -12844,8 +12856,14 @@ class AppLocalizationsVi extends AppLocalizations {
       'One-line card description (optional, up to 60 characters)';
 
   @override
-  String get world_edit_public_summary1 =>
-      'Public world description (no spoilers)';
+  String get world_edit_public_summary1 => 'Public world description ';
+
+  @override
+  String get world_edit_creator_message_optional1 =>
+      'Lời nhắn từ nhà sáng tạo (không bắt buộc)';
+
+  @override
+  String get world_discovery_creator_message1 => 'Lời nhắn từ nhà sáng tạo';
 
   @override
   String get world_edit_era1 =>

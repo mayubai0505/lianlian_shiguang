@@ -7,6 +7,11 @@
   "allFriendsTitle": "เพื่อนทั้งหมด",
   "noFriendsMessage": "คุณยังไม่มีเพื่อนเลย",
   "unknownCharacter": "ตัวละครที่ไม่รู้จัก",
+  "world_edit_custom_status_title1": "รูปแบบการตอบกลับ / แถบสถานะที่กำหนดเอง",
+  "world_edit_custom_status_hint1": "ไม่บังคับ สามารถกำหนดเทมเพลตแถบสถานะสำหรับการโต้ตอบในโลก เช่น เวลา สถานที่ และสถานะตัวละคร เนื้อหานี้ไม่ใช่ส่วนหนึ่งของคำอธิบายสาธารณะ",
+  "world_edit_custom_status_field1": "เนื้อหาแถบสถานะที่กำหนดเอง",
+  "world_edit_creator_message_optional1": "ข้อความจากผู้สร้าง (ไม่บังคับ)",
+  "world_discovery_creator_message1": "ข้อความจากผู้สร้าง",
   "errorLoadingFriends": "เกิดข้อผิดพลาดขณะโหลดรายชื่อเพื่อน: {error}",
   "@errorLoadingFriends": {
     "placeholders": {
@@ -6574,7 +6579,7 @@
   "world_edit_cover1": "ปก",
   "world_edit_set_cover1": "ตั้งเป็นปก",
   "world_edit_short_pitch1": "One-line card description (optional, up to 60 characters)",
-  "world_edit_public_summary1": "Public world description (no spoilers)",
+  "world_edit_public_summary1": "Public world description ",
   "world_edit_era1": "Time period (e.g. fictional present day, Republican era)",
   "world_edit_world_rules1": "World background and rules *",
   "world_edit_full_lore1": "Full world lore, events and locations (for AI)",

@@ -130,6 +130,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   final _coreCharacterSettingController = TextEditingController();
 // 創作者自訂狀態欄／固定回覆格式
   final _customOutputFormatController = TextEditingController();
+  final _creatorMessageController = TextEditingController();
   final _worldSettingController = TextEditingController();
   final _dialogueExamplesController = TextEditingController();
   final _extraInputController = TextEditingController();
@@ -219,6 +220,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
           mapData['coreCharacterSetting']?.toString().trim() ?? '';
       _customOutputFormatController.text =
           mapData['customOutputFormat']?.toString() ?? '';
+      _creatorMessageController.text = mapData['creatorMessage']?.toString() ?? '';
 
       _coreCharacterSettingController.text =
       savedCoreCharacterSetting.isNotEmpty
@@ -346,6 +348,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
           data['coreCharacterSetting']?.toString().trim() ?? '';
       _customOutputFormatController.text =
           data['customOutputFormat']?.toString() ?? '';
+      _creatorMessageController.text = data['creatorMessage']?.toString() ?? '';
 
       _coreCharacterSettingController.text =
       savedCoreCharacterSetting.isNotEmpty
@@ -365,6 +368,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       // 保留草稿的進階設定，跨裝置重新開啟也能完整還原。
       _customOutputFormatController.text =
           data['customOutputFormat']?.toString() ?? '';
+      _creatorMessageController.text = data['creatorMessage']?.toString() ?? '';
       _likesController.text = data['likes']?.toString() ?? '';
       _dislikesController.text = data['dislikes']?.toString() ?? '';
       _secretsController.text = data['secrets']?.toString() ?? '';
@@ -572,6 +576,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     _detailedPersonalityController.dispose();
     _coreCharacterSettingController.dispose();
     _customOutputFormatController.dispose();
+    _creatorMessageController.dispose();
     _worldSettingController.dispose();
     _likesController.dispose();
     _dislikesController.dispose();
@@ -757,6 +762,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         _coreCharacterSettingController.text.trim(),
         'customOutputFormat':
         _customOutputFormatController.text.trim(),
+        'creatorMessage': _creatorMessageController.text.trim(),
 // 舊版相容：讓尚未更新的程式仍能取得完整角色設定
         'detailedPersonality':
         _coreCharacterSettingController.text.trim(),
@@ -1535,6 +1541,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         _coreCharacterSettingController.text.trim(),
         'customOutputFormat':
         _customOutputFormatController.text.trim(),
+        'creatorMessage': _creatorMessageController.text.trim(),
 // 舊版相容：讓尚未更新的程式仍能取得完整角色設定
         'detailedPersonality':
         _coreCharacterSettingController.text.trim(),
@@ -1886,6 +1893,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       _stageIntimateController.text = prefs.getString('temp_char_stageIntimate') ?? '';
       _socialInteractionController.text = prefs.getString('temp_char_socialInteraction') ?? '';
       _playerIdentityController.text = prefs.getString('temp_char_playerIdentity') ?? '';
+      _creatorMessageController.text = prefs.getString('temp_char_creatorMessage') ?? '';
       final easterEggsJson = prefs.getStringList('temp_char_easterEggs');
       if (easterEggsJson != null) {
         _easterEggs = easterEggsJson.map((jsonStr) => EasterEgg.fromMap(jsonDecode(jsonStr))).toList();
@@ -1944,6 +1952,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     await prefs.setString('temp_char_stageIntimate', _stageIntimateController.text.trim());
     await prefs.setString('temp_char_socialInteraction', _socialInteractionController.text.trim());
     await prefs.setString('temp_char_playerIdentity', _playerIdentityController.text.trim());
+    await prefs.setString('temp_char_creatorMessage', _creatorMessageController.text.trim());
     final easterEggsJson = _easterEggs.map((egg) => jsonEncode(egg.toMap())).toList();
     await prefs.setStringList('temp_char_easterEggs', easterEggsJson);
     if (_selectedRelationship != null) {
@@ -3216,89 +3225,110 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
               color: theme.scaffoldBackgroundColor,
               child: TabBarView(
                 children: [
-                  CharacterEditBasicTab(
-                    l10n: l10n,
-                    bannerSection: _buildBannerImageSection(),
-                    imageGallerySection: _buildImageGallery(),
-                    nameController: _nameController,
-                    ageController: _ageController,
-                    occupationController: _occupationController,
-                    birthdayController: _birthdayController,
-                    heightController: _heightController,
-                    appearanceController: _appearanceController,
-                    customRelationshipController: _customRelationshipController,
-                    worldSettingController: _worldSettingController,
-                    storySummaryController: _storySummaryController,
-                    storyController: _storyController,
-                    firstLineController: _firstLineController,
-                    personalityController: _personalityController,
-                    coreCharacterSettingController: _coreCharacterSettingController,
-                    customOutputFormatController: _customOutputFormatController,
-                    likesController: _likesController,
-                    dislikesController: _dislikesController,
-                    secretsController: _secretsController,
-                    dialogueExamplesController: _dialogueExamplesController,
-                    extraInputController: _extraInputController,
-                    currentValidGender: currentValidGender,
-                    genderOptions: genderOptions,
-                    onGenderChanged: (value) {
-                      setState(() {
-                        _gender = value ?? '';
-                      });
-                    },
-                    relationshipKeys: relationshipKeys,
-                    selectedRelationship: _selectedRelationship,
-                    onRelationshipChanged: (value) {
-                      setState(() {
-                        _selectedRelationship = value;
-                        if (value != 'relationship_other') {
-                          _customRelationshipController.clear();
+                  Column(children: [
+                    Expanded(child: CharacterEditBasicTab(
+                      l10n: l10n,
+                      bannerSection: _buildBannerImageSection(),
+                      imageGallerySection: _buildImageGallery(),
+                      nameController: _nameController,
+                      ageController: _ageController,
+                      occupationController: _occupationController,
+                      birthdayController: _birthdayController,
+                      heightController: _heightController,
+                      appearanceController: _appearanceController,
+                      customRelationshipController: _customRelationshipController,
+                      worldSettingController: _worldSettingController,
+                      storySummaryController: _storySummaryController,
+                      storyController: _storyController,
+                      firstLineController: _firstLineController,
+                      personalityController: _personalityController,
+                      coreCharacterSettingController: _coreCharacterSettingController,
+                      customOutputFormatController: _customOutputFormatController,
+                      likesController: _likesController,
+                      dislikesController: _dislikesController,
+                      secretsController: _secretsController,
+                      dialogueExamplesController: _dialogueExamplesController,
+                      extraInputController: _extraInputController,
+                      currentValidGender: currentValidGender,
+                      genderOptions: genderOptions,
+                      onGenderChanged: (value) {
+                        setState(() {
+                          _gender = value ?? '';
+                        });
+                      },
+                      relationshipKeys: relationshipKeys,
+                      selectedRelationship: _selectedRelationship,
+                      onRelationshipChanged: (value) {
+                        setState(() {
+                          _selectedRelationship = value;
+                          if (value != 'relationship_other') {
+                            _customRelationshipController.clear();
+                          }
+                        });
+                      },
+                      relationshipLabelForKey: (key) {
+                        if (key == 'relationship_other') {
+                          return l10n.relationship_other;
                         }
-                      });
-                    },
-                    relationshipLabelForKey: (key) {
-                      if (key == 'relationship_other') {
-                        return l10n.relationship_other;
-                      }
-                      if (key == 'relationship_none') {
-                        return _relationshipNoneLabel(l10n);
-                      }
-                      return _getTranslatedLabel(key, l10n);
-                    },
-                    isWorldSettingExpanded: _isWorldSettingExpanded,
-                    onToggleWorldSettingExpanded: () {
-                      setState(() {
-                        _isWorldSettingExpanded = !_isWorldSettingExpanded;
-                      });
-                    },
-                    isCoreCharacterSettingExpanded: _isCoreCharacterSettingExpanded,
-                    onToggleCoreCharacterSettingExpanded: () {
-                      setState(() {
-                        _isCoreCharacterSettingExpanded =
-                        !_isCoreCharacterSettingExpanded;
-                      });
-                    },
-                    personalityTags: _personalityTags,
-                    defaultPersonalityTags: defaultPersonalityTags,
-                    onTogglePersonalityTag: _togglePersonalityTag,
-                    onMovePersonalityTag: _movePersonalityTag,
-                    onAddCustomPersonalityTag: _addCustomPersonalityTag,
-                    easterEggs: _easterEggs,
-                    onOpenEasterEggEditor: _openEasterEggEditor,
-                    onRemoveEasterEgg: (index) {
-                      setState(() {
-                        _easterEggs.removeAt(index);
-                      });
-                    },
-                    extraInfoItems: _extraInfoItems,
-                    onEditExtraInfoItem: _editExtraInfoItem,
-                    onRemoveExtraInfoItem: (index) {
-                      setState(() {
-                        _extraInfoItems.removeAt(index);
-                      });
-                    },
-                    onAddExtraInfoItem: _addExtraInfoItem,
-                  ),
+                        if (key == 'relationship_none') {
+                          return _relationshipNoneLabel(l10n);
+                        }
+                        return _getTranslatedLabel(key, l10n);
+                      },
+                      isWorldSettingExpanded: _isWorldSettingExpanded,
+                      onToggleWorldSettingExpanded: () {
+                        setState(() {
+                          _isWorldSettingExpanded = !_isWorldSettingExpanded;
+                        });
+                      },
+                      isCoreCharacterSettingExpanded: _isCoreCharacterSettingExpanded,
+                      onToggleCoreCharacterSettingExpanded: () {
+                        setState(() {
+                          _isCoreCharacterSettingExpanded =
+                          !_isCoreCharacterSettingExpanded;
+                        });
+                      },
+                      personalityTags: _personalityTags,
+                      defaultPersonalityTags: defaultPersonalityTags,
+                      onTogglePersonalityTag: _togglePersonalityTag,
+                      onMovePersonalityTag: _movePersonalityTag,
+                      onAddCustomPersonalityTag: _addCustomPersonalityTag,
+                      easterEggs: _easterEggs,
+                      onOpenEasterEggEditor: _openEasterEggEditor,
+                      onRemoveEasterEgg: (index) {
+                        setState(() {
+                          _easterEggs.removeAt(index);
+                        });
+                      },
+                      extraInfoItems: _extraInfoItems,
+                      onEditExtraInfoItem: _editExtraInfoItem,
+                      onRemoveExtraInfoItem: (index) {
+                        setState(() {
+                          _extraInfoItems.removeAt(index);
+                        });
+                      },
+                      onAddExtraInfoItem: _addExtraInfoItem,
+                    )),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(l10n.world_edit_creator_message_optional1),
+                          const SizedBox(height: 10),
+                          TextField(
+                            controller: _creatorMessageController,
+                            minLines: 3,
+                            maxLines: 5,
+                            maxLength: 1000,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ]),
                   CharacterEditVoiceTab(
                     voiceSamples: _voiceSamples,
                     isGeneratingVoice: _isGeneratingVoice,

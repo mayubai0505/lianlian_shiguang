@@ -4889,6 +4889,38 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                   ),
                 ),
 
+                StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                  stream: FirebaseFirestore.instance
+                      .collection('artifacts').doc(AppConfig.appId)
+                      .collection('public_characters').doc(widget.character.id)
+                      .snapshots(),
+                  builder: (context, messageSnapshot) {
+                    final creatorMessage = (messageSnapshot.data?.data()?['creatorMessage'] ?? '')
+                        .toString().trim();
+                    if (creatorMessage.isEmpty) return const SizedBox.shrink();
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 16),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary.withValues(alpha: 0.06),
+                          border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.16)),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(l10n.world_discovery_creator_message1,
+                                style: GoogleFonts.notoSerifTc(fontSize: 16, fontWeight: FontWeight.w600)),
+                            const SizedBox(height: 8),
+                            Text(creatorMessage, style: const TextStyle(height: 1.65)),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
                 const SizedBox(height: 28),
 
                 Row(

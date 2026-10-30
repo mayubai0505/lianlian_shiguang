@@ -12687,6 +12687,17 @@ class AppLocalizationsHi extends AppLocalizations {
   String get world_discovery_world_background1 => 'दुनिया की पृष्ठभूमि';
 
   @override
+  String get world_edit_custom_status_title1 =>
+      'कस्टम जवाब प्रारूप / स्टेटस बार';
+
+  @override
+  String get world_edit_custom_status_hint1 =>
+      'वैकल्पिक। दुनिया में बातचीत के लिए समय, स्थान और पात्रों की स्थिति जैसे विवरणों वाला स्टेटस बार टेम्पलेट सेट करें। यह सार्वजनिक परिचय का हिस्सा नहीं है।';
+
+  @override
+  String get world_edit_custom_status_field1 => 'कस्टम स्टेटस बार सामग्री';
+
+  @override
   String get world_discovery_not_playable1 =>
       'इस खुली दुनिया को अभी खेला नहीं जा सकता।';
 
@@ -12815,8 +12826,14 @@ class AppLocalizationsHi extends AppLocalizations {
       'One-line card description (optional, up to 60 characters)';
 
   @override
-  String get world_edit_public_summary1 =>
-      'Public world description (no spoilers)';
+  String get world_edit_public_summary1 => 'Public world description ';
+
+  @override
+  String get world_edit_creator_message_optional1 =>
+      'रचनाकार का संदेश (वैकल्पिक)';
+
+  @override
+  String get world_discovery_creator_message1 => 'रचनाकार का संदेश';
 
   @override
   String get world_edit_era1 =>

@@ -6625,7 +6625,7 @@
   "world_edit_cover1": "表紙",
   "world_edit_set_cover1": "表紙に設定",
   "world_edit_short_pitch1": "One-line card description (optional, up to 60 characters)",
-  "world_edit_public_summary1": "公開用の世界紹介（ネタバレなし）",
+  "world_edit_public_summary1": "公開用の世界紹介",
   "world_edit_era1": "Time period (e.g. fictional present day, Republican era)",
   "world_edit_world_rules1": "世界の背景とルール *",
   "world_edit_full_lore1": "世界の詳細設定・出来事・場所（AI用）",

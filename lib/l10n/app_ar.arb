@@ -6685,7 +6685,7 @@
   "world_edit_cover1": "الغلاف",
   "world_edit_set_cover1": "تعيين كغلاف",
   "world_edit_short_pitch1": "One-line card description (optional, up to 60 characters)",
-  "world_edit_public_summary1": "Public world description (no spoilers)",
+  "world_edit_public_summary1": "Public world description ",
   "world_edit_era1": "Time period (e.g. fictional present day, Republican era)",
   "world_edit_world_rules1": "World background and rules *",
   "world_edit_full_lore1": "Full world lore, events and locations (for AI)",
@@ -7029,5 +7029,10 @@
   "store_pack_1290_name1": "حزمة الحب الحقيقي",
   "store_pack_1314_name1": "حزمة مدى الحياة",
   "store_pack_1930_name1": "حزمة العهد",
-  "store_pack_2990_name1": "حزمة العشاق الأبديين"
+  "store_pack_2990_name1": "حزمة العشاق الأبديين",
+  "world_edit_custom_status_title1": "تنسيق رد مخصص / شريط الحالة",
+  "world_edit_custom_status_hint1": "اختياري. يمكنك إعداد قالب لشريط الحالة أثناء التفاعل داخل العالم، مثل الوقت والموقع وحالة الشخصيات. هذا المحتوى ليس جزءًا من الوصف العام.",
+  "world_edit_custom_status_field1": "محتوى شريط الحالة المخصص",
+  "world_edit_creator_message_optional1": "رسالة من منشئ العالم (اختياري)",
+  "world_discovery_creator_message1": "رسالة من منشئ العالم"
 }

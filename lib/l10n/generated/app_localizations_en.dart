@@ -12640,6 +12640,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get world_discovery_world_background1 => 'World Background';
 
   @override
+  String get world_edit_custom_status_title1 =>
+      'Custom Reply Format / Status Bar';
+
+  @override
+  String get world_edit_custom_status_hint1 =>
+      'Optional. Set a status bar template for world interactions, such as time, location, or character status. This is not part of the public description.';
+
+  @override
+  String get world_edit_custom_status_field1 => 'Custom status bar content';
+
+  @override
   String get world_discovery_not_playable1 =>
       'This open world is not yet available to play.';
 
@@ -12768,8 +12779,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'One-line card description (optional, up to 60 characters)';
 
   @override
-  String get world_edit_public_summary1 =>
-      'Public world description (no spoilers)';
+  String get world_edit_public_summary1 => 'Public world description ';
+
+  @override
+  String get world_edit_creator_message_optional1 =>
+      'A Message from the Creator (Optional)';
+
+  @override
+  String get world_discovery_creator_message1 => 'A Message from the Creator';
 
   @override
   String get world_edit_era1 =>

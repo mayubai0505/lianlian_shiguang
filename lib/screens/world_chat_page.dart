@@ -1,4 +1,3 @@
-
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'dart:async';
 import 'dart:typed_data';
@@ -21,6 +20,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'chat_input_bar.dart';
 import 'world_chat_header.dart';
 import 'world_profile_popup.dart';
+import 'world_discovery_page.dart';
 import 'world_interaction_play_page.dart';
 import 'world_scene_page_full.dart';
 import 'world_secret_chapters_page.dart';
@@ -110,6 +110,9 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     if (previous != null && (previous['sessionId'] ?? '').toString().isNotEmpty && (widget.sessionId == null || previous['sessionId'] == widget.sessionId)) {
       _applyCachedRoom(previous);
       _initialVisualsReady = true;
+      // Returning to an already-read room: show cached messages on the first frame.
+      // The cloud refresh continues in the background.
+      if (_messages.isNotEmpty) _loading = false;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         _listenMessages(_sessionId!);
@@ -133,9 +136,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     _npcs = Map<String, String>.from(data['avatars'] as Map? ?? const {});
     _names = Map<String, String>.from(data['names'] as Map? ?? const {});
     _characterAffinity = Map<String, int>.from(data['affinities'] as Map? ?? const {});
-    // 快取只負責預先備妥資料；首次雲端 load 完成以前保持載入指示器。
-    // 否則有快取的 sessionId 卻沒有完整畫面資料時，聊天室會先出現空白。
-    // _loading 由 _run('load') 成功或失敗統一結束。
+    // The caller reveals a nonempty cache immediately; empty caches still wait for load.
     _error = '';
   }
 
@@ -171,6 +172,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       };
       _applyCachedRoom(cached);
       _initialVisualsReady = true;
+      if (_messages.isNotEmpty) _loading = false;
       setState(() {});
       _listenMessages(sid);
       _scrollToLatest();
@@ -520,15 +522,26 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
   }
 
   bool _needsInitialScroll = true;
+  bool _scrollUpdateScheduled = false;
+  bool _scrollImmediately = false;
 
-  void _scrollToLatest() {
+  void _scrollToLatest({bool immediately = false}) {
+    // Several updates (optimistic bubble, generating state, Firestore stream)
+    // can arrive in the same frame. Combine them instead of stacking animations.
+    _scrollImmediately |= immediately || _pendingVisible || _sending;
+    if (_scrollUpdateScheduled) return;
+    _scrollUpdateScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollUpdateScheduled = false;
+      final snap = _scrollImmediately;
+      _scrollImmediately = false;
       if (!mounted || !_scroll.hasClients) return;
-      final end = _scroll.position.maxScrollExtent;
-      if (_needsInitialScroll) {
-        _scroll.jumpTo(end); // No upward/downward animation during first entry.
+      // The list is reversed, so its newest message is at offset zero.
+      final end = _scroll.position.minScrollExtent;
+      if (_needsInitialScroll || snap) {
+        _scroll.jumpTo(end); // Do not animate during send / loading.
         _needsInitialScroll = false;
-      } else {
+      } else if ((_scroll.offset - end).abs() > 1) {
         _scroll.animateTo(end,
             duration: const Duration(milliseconds: 180), curve: Curves.easeOut);
       }
@@ -667,7 +680,8 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     if(action=='send' || action=='interact' || action=='regenerate' || action=='continue') {
       if(_sending || _loading)return;
       setState(() { _sending = true; _pendingFailed = false; });
-      _scrollToLatest();
+      // Sending is followed by a message/layout update; avoid a second scroll
+      // before the new bubble has been laid out.
     }
     final requestIdAtStart = _pendingRequestId;
     try {
@@ -874,7 +888,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     _input.clear();
     _scheduleDraftSave('');
     setState(() { _pendingVisible = true; _pendingFailed = false; });
-    _scrollToLatest();
+    _scrollToLatest(immediately: true);
     // 世界觀模式由後端決定價格、模型及成功後扣花花。
     _run('send',message:text);
   }
@@ -1377,7 +1391,9 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     return Container(
       height: 380,
       decoration: BoxDecoration(
-        color: Color.alphaBlend(
+        color: theme.brightness == Brightness.dark
+            ? Colors.black
+            : Color.alphaBlend(
           theme.colorScheme.primaryContainer.withValues(alpha: .74),
           theme.colorScheme.surface,
         ),
@@ -1431,6 +1447,15 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     onTap: () { Navigator.pop(context); _notReady(label); },
   );
 
+  // NPC 頭像統一連到所屬世界觀介紹，不進入個別角色頁。
+  void _openCurrentWorldIntroduction() {
+    if (!mounted) return;
+    FocusManager.instance.primaryFocus?.unfocus();
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => WorldDiscoveryPage(worldId: widget.worldId),
+    ));
+  }
+
   Widget _segment(Map<String,dynamic> value,ThemeData theme, Map<String,dynamic> parent, int segmentIndex) {
     final kind=(value['kind']??'').toString();
     final text=(value['text']??'').toString();
@@ -1459,9 +1484,15 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
         onLongPress: () => _showWorldSegmentOptions(parent, segmentIndex, value),
         child:Padding(padding:const EdgeInsets.symmetric(vertical:7),child:Row(
           crossAxisAlignment:CrossAxisAlignment.start,children:[
-          CircleAvatar(radius:20,backgroundColor:theme.colorScheme.primaryContainer,
-              backgroundImage:_worldAvatarProvider(url),
-              child:_worldAvatarProvider(url)==null?const Icon(Icons.person_outline):null),
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: _worldSelectionMode
+                ? () => _toggleWorldMessage(_worldSegmentKey((parent['id'] ?? '').toString(), segmentIndex))
+                : _openCurrentWorldIntroduction,
+            child: CircleAvatar(radius:20,backgroundColor:theme.colorScheme.primaryContainer,
+                backgroundImage:_worldAvatarProvider(url),
+                child:_worldAvatarProvider(url)==null?const Icon(Icons.person_outline):null),
+          ),
           const SizedBox(width:10),
           Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
             Row(mainAxisSize: MainAxisSize.min, children: [
@@ -2156,16 +2187,21 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
                     textAlign: TextAlign.center))
                     : ListView.builder(
                   controller: _scroll,
+                  reverse: true, // Render the newest messages immediately; no opening-to-bottom jump.
                   padding: const EdgeInsets.all(16),
                   itemCount: _messages.length + (_pendingVisible ? 1 : 0) + (_sending ? 1 : 0),
                   itemBuilder: (context,index) {
-                    if (index == _messages.length && _pendingVisible) {
+                    // Reverse the original chronological index without changing message order
+                    // in _messages, exports, searches, or Firestore reconciliation.
+                    final total = _messages.length + (_pendingVisible ? 1 : 0) + (_sending ? 1 : 0);
+                    final messageIndex = total - 1 - index;
+                    if (messageIndex == _messages.length && _pendingVisible) {
                       return _pendingUserBubble(theme);
                     }
-                    if (index == _messages.length + (_pendingVisible ? 1 : 0) && _sending) {
+                    if (messageIndex == _messages.length + (_pendingVisible ? 1 : 0) && _sending) {
                       return _generatingBubble(theme);
                     }
-                    final raw = _messages[index];
+                    final raw = _messages[messageIndex];
                     if (raw is! Map) return const SizedBox.shrink();
                     final data = Map<String,dynamic>.from(raw);
                     if (data['sender'] == 'user') return _wrapWorldMessage(data, Align(
@@ -2220,14 +2256,18 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
                             alignment: Alignment.center,
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
                             decoration: BoxDecoration(
+                              // Solid surface prevents chat wallpaper from washing out the shortcut.
+                              color: theme.colorScheme.surface,
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
-                                color: theme.colorScheme.primary.withValues(alpha: .38),
+                                color: theme.colorScheme.primary.withValues(alpha: .85),
+                                width: 1.2,
                               ),
                             ),
                             child: Text('（ ）', style: GoogleFonts.notoSerifTc(
                               fontSize: 12,
-                              color: theme.colorScheme.primary.withValues(alpha: .7),
+                              fontWeight: FontWeight.w600,
+                              color: theme.colorScheme.onSurface,
                             )),
                           ),
                         ),
@@ -2346,4 +2386,3 @@ class _WorldScreenshotPreviewState extends State<_WorldScreenshotPreview> {
     ],
   );
 }
-

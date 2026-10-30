@@ -7,6 +7,11 @@
   "allFriendsTitle": "Tous les amis",
   "noFriendsMessage": "Vous n'avez pas encore d'amis.",
   "unknownCharacter": "Personnage inconnu",
+  "world_edit_custom_status_title1": "Format de réponse / barre d’état personnalisés",
+  "world_edit_custom_status_hint1": "Facultatif. Définissez un modèle de barre d’état pour les interactions dans le monde, par exemple l’heure, le lieu ou l’état des personnages. Ce contenu ne fait pas partie de la présentation publique.",
+  "world_edit_custom_status_field1": "Contenu de la barre d’état personnalisée",
+  "world_edit_creator_message_optional1": "Message du créateur (facultatif)",
+  "world_discovery_creator_message1": "Message du créateur",
   "errorLoadingFriends": "Une erreur s'est produite lors du chargement de la liste d'amis : {error}",
   "@errorLoadingFriends": {
     "placeholders": {
@@ -6625,7 +6630,7 @@
   "world_edit_cover1": "Couverture",
   "world_edit_set_cover1": "Définir comme couverture",
   "world_edit_short_pitch1": "One-line card description (optional, up to 60 characters)",
-  "world_edit_public_summary1": "Public world description (no spoilers)",
+  "world_edit_public_summary1": "Public world description ",
   "world_edit_era1": "Time period (e.g. fictional present day, Republican era)",
   "world_edit_world_rules1": "World background and rules *",
   "world_edit_full_lore1": "Full world lore, events and locations (for AI)",
