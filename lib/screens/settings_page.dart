@@ -804,7 +804,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    l10n.appVersion('1.9.0'),
+                    l10n.appVersion('1.0.10'),
                     style: GoogleFonts.notoSerifTc(
                       fontSize: 11,
                       color: onSurface.withValues(alpha: 0.38),
