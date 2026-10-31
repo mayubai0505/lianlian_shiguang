@@ -1043,6 +1043,25 @@ exports.worldPublish = onCall({region: REGION, memory:'256MiB', timeoutSeconds:3
       name:String(w.name||'').slice(0,60),summary:String(w.summary||'').slice(0,1200),
       shortPitch:String(w.shortPitch||'').slice(0,60),
       coverImage:String(w.coverImage||'').slice(0,2000),
+      // The public introduction screen requires a deliberately limited display
+      // projection. Never copy worldSetting, worldLore, customOutputFormat,
+      // full NPC profiles, secrets, or any player-specific data here.
+      images:Array.isArray(w.images) ? w.images.slice(0,6)
+        .filter(x=>typeof x==='string' && x.trim()).map(x=>x.slice(0,2000)) : [],
+      era:String(w.era||'').slice(0,120),
+      storyOpening:String(w.storyOpening||'').slice(0,1500),
+      firstLine:String(w.firstLine||'').slice(0,3000),
+      creatorMessage:String(w.creatorMessage||'').slice(0,1000),
+      npcCharacters:Array.isArray(w.npcCharacters) ? w.npcCharacters.slice(0,35)
+        .filter(n=>n && typeof n==='object')
+        .map(n=>({
+          id:String(n.id||'').slice(0,160),
+          kind:n.kind==='main'?'main':'npc',
+          name:String(n.name||'').slice(0,80),
+          role:String(n.role||'').slice(0,120),
+          appearance:String(n.appearance||'').slice(0,2000),
+          avatarUrl:String(n.avatarUrl||'').slice(0,2000),
+        })) : [],
       tags:Array.isArray(w.tags)?w.tags.slice(0,5).map(x=>String(x).slice(0,30)):[],
       createdBy:uid,updatedAt:FieldValue.serverTimestamp(),
     });

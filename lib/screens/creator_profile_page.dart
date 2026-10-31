@@ -73,6 +73,7 @@ class CreatorProfilePage extends StatelessWidget {
         String? photoUrl;
         String? avatarPath;
         String creatorBio = '';
+        bool isVerifiedCreator = false;
         List<Map<String, String>> profileLinks = <Map<String, String>>[];
 
         if (userSnapshot.hasData &&
@@ -80,6 +81,12 @@ class CreatorProfilePage extends StatelessWidget {
           final userData =
           userSnapshot.data!.data()
           as Map<String, dynamic>;
+
+          // 正式認證以三個後端管理欄位共同判斷，避免待審或停權顯示徽章。
+          isVerifiedCreator =
+              userData['creatorStatus'] == 'approved' &&
+                  userData['creatorVerified'] == true &&
+                  userData['creatorDashboardEnabled'] == true;
 
           final String fetchedNickname =
           (userData['nickname'] ?? '')
@@ -384,6 +391,7 @@ class CreatorProfilePage extends StatelessWidget {
                                 theme,
                                 creatorId: creatorId,
                                 displayNickname: displayNickname,
+                                isVerifiedCreator: isVerifiedCreator,
                                 displayPlayerID: displayPlayerID,
                                 creatorBio: creatorBio,
                                 imageProvider: imageProvider,
@@ -1521,6 +1529,7 @@ class CreatorProfilePage extends StatelessWidget {
       ThemeData theme, {
         required String creatorId,
         required String displayNickname,
+        required bool isVerifiedCreator,
         required String displayPlayerID,
         required String creatorBio,
         required ImageProvider? imageProvider,
@@ -1600,16 +1609,32 @@ class CreatorProfilePage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      displayNickname,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.notoSerifTc(
-                        fontSize: 23,
-                        fontWeight: FontWeight.w700,
-                        color: textColor,
-                        letterSpacing: 0.2,
-                      ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            displayNickname,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.notoSerifTc(
+                              fontSize: 23,
+                              fontWeight: FontWeight.w700,
+                              color: textColor,
+                              letterSpacing: 0.2,
+                            ),
+                          ),
+                        ),
+                        if (isVerifiedCreator) ...[
+                          const SizedBox(width: 5),
+                          Image.asset(
+                            'assets/images/creator/creator_verified_badge.png',
+                            width: 20,
+                            height: 20,
+                            fit: BoxFit.contain,
+                          ),
+                        ],
+                      ],
                     ),
                     const SizedBox(height: 5),
                     Text(

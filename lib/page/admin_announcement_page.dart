@@ -123,6 +123,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   bool _isCreatingRewardCampaign = false;
   bool _isLoadingRewardCampaigns = false;
   List<Map<String, dynamic>> _rewardCampaigns = [];
+  // 通知已快取的活動禮物分頁重新繪製，不重建整個營運 Tab。
+  final ValueNotifier<int> _rewardCampaignViewRevision = ValueNotifier<int>(0);
   String _rewardAudience = 'admin_only';
 
   // ==========================================
@@ -293,6 +295,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     _rewardTitleController.dispose();
     _rewardDescriptionController.dispose();
     _rewardAmountController.dispose();
+    _rewardCampaignViewRevision.dispose();
     _eventIdController.dispose();
     _eventNameController.dispose();
     _eventSubtitleController.dispose();
@@ -1255,6 +1258,47 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     ).format(value);
   }
 
+  // 後端活動清單可能回傳 ISO 字串、epoch 毫秒／秒，或序列化的 Timestamp。
+  // 統一轉為裝置當地時間；不影響發送到後端的 UTC 時間。
+  DateTime? _parseRewardCampaignTime(Object? raw) {
+    if (raw == null) return null;
+    if (raw is Timestamp) return raw.toDate().toLocal();
+    if (raw is DateTime) return raw.toLocal();
+    if (raw is num) {
+      final value = raw.toDouble();
+      if (!value.isFinite) return null;
+      final milliseconds = value.abs() < 100000000000
+          ? (value * 1000).round() : value.round();
+      return DateTime.fromMillisecondsSinceEpoch(milliseconds, isUtc: true)
+          .toLocal();
+    }
+    if (raw is Map) {
+      final seconds = raw['_seconds'] ?? raw['seconds'];
+      final nanoseconds = raw['_nanoseconds'] ?? raw['nanoseconds'] ?? 0;
+      if (seconds is num) {
+        final nanos = nanoseconds is num ? nanoseconds.toInt() : 0;
+        return DateTime.fromMillisecondsSinceEpoch(
+          seconds.toInt() * 1000 + nanos ~/ 1000000,
+          isUtc: true,
+        ).toLocal();
+      }
+      final nested = raw['milliseconds'] ?? raw['millisecondsSinceEpoch'] ??
+          raw['timestamp'] ?? raw['_value'];
+      if (nested != null && !identical(nested, raw)) {
+        return _parseRewardCampaignTime(nested);
+      }
+      return null;
+    }
+    final value = raw.toString().trim();
+    if (value.isEmpty) return null;
+    final numeric = num.tryParse(value);
+    if (numeric != null) return _parseRewardCampaignTime(numeric);
+    final parsed = DateTime.tryParse(value);
+    if (parsed == null) return null;
+    // 帶 Z／時區偏移的 ISO 值會由 DateTime 自動正確換算。
+    return parsed.toLocal();
+  }
+
   Future<void> _pickRewardDateTime({
     required bool isStart,
   }) async {
@@ -1315,6 +1359,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     setState(() {
       _isLoadingRewardCampaigns = true;
     });
+    _rewardCampaignViewRevision.value++; // 已快取子頁顯示載入狀態
 
     try {
       final callable = _usAdminFunctions.httpsCallable(
@@ -1381,6 +1426,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         setState(() {
           _isLoadingRewardCampaigns = false;
         });
+        _rewardCampaignViewRevision.value++; // 重新顯示最新活動資料或空清單
       }
     }
   }
@@ -1884,13 +1930,11 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                 final String status =
                     campaign['status']?.toString() ?? 'active';
 
-                final DateTime? startAt = DateTime.tryParse(
-                  campaign['startAt']?.toString() ?? '',
-                )?.toLocal();
+                final DateTime? startAt =
+                _parseRewardCampaignTime(campaign['startAt']);
 
-                final DateTime? endAt = DateTime.tryParse(
-                  campaign['endAt']?.toString() ?? '',
-                )?.toLocal();
+                final DateTime? endAt =
+                _parseRewardCampaignTime(campaign['endAt']);
 
                 final DateTime now = DateTime.now();
 
@@ -1905,6 +1949,9 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                   statusColor = Colors.blue;
                 } else if (endAt != null && now.isAfter(endAt)) {
                   statusText = '已結束';
+                  statusColor = Colors.orange;
+                } else if (startAt == null || endAt == null) {
+                  statusText = '時間待確認';
                   statusColor = Colors.orange;
                 } else {
                   statusText = '進行中';
@@ -2001,14 +2048,15 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                             ),
                           ),
                         ],
-                        if (endAt != null)
-                          Text(
-                            '結束：${_formatRewardDateTime(endAt)}',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
+                        Text(
+                          endAt == null
+                              ? '結束：無法解析後端時間'
+                              : '結束：${_formatRewardDateTime(endAt)}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: endAt == null ? Colors.orange : Colors.grey,
                           ),
+                        ),
                         if (status == 'active') ...[
                           const SizedBox(height: 12),
                           Align(
@@ -4479,7 +4527,10 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                 _LazyAdminTab(
                   builder: () => _RewardCampaignLazyLoader(
                     onFirstBuild: _loadRewardCampaigns,
-                    childBuilder: _buildRewardCampaignTab,
+                    childBuilder: () => ValueListenableBuilder<int>(
+                      valueListenable: _rewardCampaignViewRevision,
+                      builder: (context, revision, child) => _buildRewardCampaignTab(),
+                    ),
                   ),
                 ),
                 _LazyAdminTab(

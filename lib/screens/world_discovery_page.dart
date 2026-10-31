@@ -37,9 +37,21 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
     _tabs = TabController(length: 4, vsync: this);
     _worldFuture = _fetchWorld();
   }
-  Future<DocumentSnapshot<Map<String, dynamic>>> _fetchWorld() =>
-      FirebaseFirestore.instance.collection('artifacts')
-          .doc(AppConfig.appId).collection('worlds').doc(widget.worldId).get();
+  Future<DocumentSnapshot<Map<String, dynamic>>> _fetchWorld() {
+    // worlds contains private prompts, NPC settings and creator-only data.
+    // Never fetch it for regular players: Firestore Rules only permit its owner.
+    // Owner preview keeps using the full document; everyone else reads the
+    // backend-maintained, publicly readable projection.
+    final collection = widget.creatorPreview
+        ? 'worlds'
+        : 'public_worlds';
+    return FirebaseFirestore.instance
+        .collection('artifacts')
+        .doc(AppConfig.appId)
+        .collection(collection)
+        .doc(widget.worldId)
+        .get();
+  }
 
   void _retryWorldLoad() {
     setState(() => _worldFuture = _fetchWorld());
