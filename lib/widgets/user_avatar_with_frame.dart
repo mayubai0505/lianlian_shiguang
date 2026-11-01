@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../services/app_constants.dart';
 import '../utils/image_utils.dart';
@@ -75,6 +76,29 @@ class _UserAvatarWithFrameState extends State<UserAvatarWithFrame> {
       (equipped['imageUrl'] ?? '').toString().trim();
       if (directImageUrl.isNotEmpty) return directImageUrl;
 
+      // 公開頁的訪客無權讀取別人的 event_progress（這是正確的安全規則）。
+      // 因此先從活動公開商店目錄取得框圖；不需要讀對方的持有清單。
+      try {
+        final shopDoc = await db
+            .collection('artifacts')
+            .doc(AppConfig.appId)
+            .collection('events')
+            .doc(eventId)
+            .collection('shop_items')
+            .doc(itemId)
+            .get();
+        final shop = shopDoc.data();
+        if (shop != null &&
+            (shop['itemType'] ?? '').toString() == 'avatar_frame') {
+          final imageUrl = (shop['imageUrl'] ?? '').toString().trim();
+          if (imageUrl.isNotEmpty) return imageUrl;
+        }
+      } catch (e) {
+        debugPrint('⚠️ 從公開活動商店讀取頭像框失敗：$e');
+      }
+
+      // 舊活動可能已不在公開目錄；僅帳號本人才能查自己的私有持有紀錄。
+      if (FirebaseAuth.instance.currentUser?.uid != uid) return '';
       final progressDoc = await db
           .collection('artifacts')
           .doc(AppConfig.appId)
@@ -86,14 +110,8 @@ class _UserAvatarWithFrameState extends State<UserAvatarWithFrame> {
 
       final rawOwned = progressDoc.data()?['ownedEventItems'];
       if (rawOwned is! Map || rawOwned[itemId] is! Map) return '';
-
-      final ownedItem =
-      Map<String, dynamic>.from(rawOwned[itemId] as Map);
-
-      if ((ownedItem['itemType'] ?? '').toString() != 'avatar_frame') {
-        return '';
-      }
-
+      final ownedItem = Map<String, dynamic>.from(rawOwned[itemId] as Map);
+      if ((ownedItem['itemType'] ?? '').toString() != 'avatar_frame') return '';
       return (ownedItem['imageUrl'] ?? '').toString().trim();
     } catch (e) {
       debugPrint('⚠️ 讀取玩家頭像框失敗：$e');

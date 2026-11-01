@@ -193,7 +193,6 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   final FirebaseFunctions _usAdminFunctions = FirebaseFunctions.instanceFor(
     region: 'us-central1',
   );
-  bool _isTestingUsAdminFunctions = false;
   bool _isSyncingHelpTranslation = false;
   String _helpTranslationStatus = '';
   String _selectedHelpLanguage = 'en';
@@ -2779,10 +2778,18 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   Widget _buildModeUsageCard(Map<String, dynamic> analytics) {
     final theme = Theme.of(context);
     final modeUsage = _asStringMap(analytics['modeUsage']);
-    final total = _analyticsInt(analytics['modeUsageTotal']);
+    // 閒聊獨立統計 gemini；舊 daily 不冒充新的閒聊使用次數。
+    final normalUsage = <String, dynamic>{
+      'gemini': _analyticsInt(modeUsage['gemini']),
+      'story': _analyticsInt(modeUsage['story']),
+      'immersive': _analyticsInt(modeUsage['immersive']),
+      'resonance': _analyticsInt(modeUsage['resonance']),
+      'other': _analyticsInt(modeUsage['other']),
+    };
+    final normalTotal = ['gemini', 'story', 'immersive', 'resonance']
+        .fold<int>(0, (sum, key) => sum + _analyticsInt(normalUsage[key]));
     final modes = <(String, String)>[
       ('gemini', '閒聊'),
-      ('daily', '日常'),
       ('story', '劇情'),
       ('immersive', '沉浸'),
       ('resonance', '共鳴'),
@@ -2795,7 +2802,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '本月模式使用比例',
+              '本月一般聊天模式使用比例',
               style: GoogleFonts.notoSerifTc(
                 fontSize: 15.5,
                 fontWeight: FontWeight.w700,
@@ -2803,7 +2810,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
             ),
             const SizedBox(height: 5),
             Text(
-              '舊版日常與新版閒聊都保留；比例以成功 AI 回覆次數計算。',
+              '一般聊天：閒聊單獨統計；舊日常不併入閒聊，開放世界另行統計。這是使用比例，不是曝光轉換率。',
               style: GoogleFonts.notoSerifTc(
                 fontSize: 11.5,
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.58),
@@ -2811,8 +2818,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
             ),
             const SizedBox(height: 15),
             ...modes.map((mode) {
-              final value = _analyticsInt(modeUsage[mode.$1]);
-              final ratio = total <= 0 ? 0.0 : value / total;
+              final value = _analyticsInt(normalUsage[mode.$1]);
+              final ratio = normalTotal <= 0 ? 0.0 : value / normalTotal;
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Row(
@@ -3288,7 +3295,6 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                 values: spend,
                 rows: const [
                   ('gemini', '閒聊'),
-                  ('daily', '日常'),
                   ('story', '劇情'),
                   ('immersive', '沉浸'),
                   ('resonance', '共鳴'),
@@ -3320,6 +3326,26 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
           ),
           const SizedBox(height: 12),
           _buildModeUsageCard(analytics),
+          const SizedBox(height: 12),
+          _analyticsBreakdownCard(
+            title: '本月開放世界模式使用比例（${_formatCount(_analyticsInt(analytics['worldModeUsageTotal']))} 次）',
+            values: _asStringMap(analytics['worldModeUsage']),
+            rows: const [
+              ('story', '世界觀・劇情'),
+              ('immersive', '世界觀・沉浸'),
+              ('resonance', '世界觀・共鳴'),
+              ('interaction', '世界觀・互動模式'),
+              ('gift', '世界觀・送禮互動'),
+            ],
+            suffix: '次',
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+            child: Text(
+              '開放世界開聊房間：${_formatCount(analytics['worldStartedRooms'])} 間（當月有成功回覆的房間）。目前沒有世界介紹頁曝光埋點，故暫不計算進入→開聊轉換率。',
+              style: const TextStyle(fontSize: 12),
+            ),
+          ),
           const SizedBox(height: 12),
           Card(
             child: Padding(
@@ -3444,6 +3470,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                     _adminStatCard(label: '今日活躍玩家', value: v('todayActiveUsers'), icon: Icons.bolt_outlined, caption: '聊天室活動'),
                     _adminStatCard(label: '目前公開角色', value: v('publicCharacters'), icon: Icons.auto_awesome_outlined),
                     _adminStatCard(label: '今日新增角色', value: v('todayNewCharacters'), icon: Icons.person_pin_circle_outlined),
+                    _adminStatCard(label: '公開開放世界', value: v('publicWorlds'), icon: Icons.public_outlined),
+                    _adminStatCard(label: '今日新增開放世界', value: v('todayNewWorlds'), icon: Icons.add_circle_outline),
                     _adminStatCard(label: '待處理／處理中客服', value: v('pendingReports'), icon: Icons.support_agent_outlined),
                     _adminStatCard(label: '今日活躍聊天室', value: v('todayChatSessions'), icon: Icons.forum_outlined),
                     _adminStatCard(label: '今日花花發放 / 消耗', value: '${v('flowerGranted')} / ${v('flowerSpent')}', icon: Icons.local_florist_outlined),
@@ -8505,7 +8533,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         final todaySessions = (data['todayChatSessions'] as num?)?.toInt() ?? 0;
         final avg = activeToday == 0 ? 0.0 : todaySessions / activeToday;
         final modes = Map<String, int>.from(data['chatModes'] ?? <String, int>{});
-        final totalMode = modes.values.fold<int>(0, (a, b) => a + b);
+        final totalMode = ['gemini', 'story', 'immersive', 'resonance']
+            .fold<int>(0, (sum, key) => sum + (modes[key] ?? 0));
 
         String modePercent(String key) {
           if (totalMode == 0) return '0%';
@@ -8534,9 +8563,10 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                   _adminStatCard(label: 'DAU（聊天室活動）', value: '$activeToday', icon: Icons.today_outlined),
                   _adminStatCard(label: '近 7 天活躍聊天室', value: '$sessions7d', icon: Icons.date_range_outlined),
                   _adminStatCard(label: '今日平均活躍聊天室 / 人', value: avg.toStringAsFixed(2), icon: Icons.forum_outlined),
-                  _adminStatCard(label: '日常模式占比', value: modePercent('daily'), icon: Icons.chat_bubble_outline),
+                  _adminStatCard(label: '閒聊模式占比', value: modePercent('gemini'), icon: Icons.chat_bubble_outline),
                   _adminStatCard(label: '劇情模式占比', value: modePercent('story'), icon: Icons.menu_book_outlined),
                   _adminStatCard(label: '沉浸模式占比', value: modePercent('immersive'), icon: Icons.auto_stories_outlined),
+                  _adminStatCard(label: '共鳴模式占比', value: modePercent('resonance'), icon: Icons.forum_outlined),
                   _adminStatCard(
                     label: 'D1 留存',
                     value: _formatRetentionText(d1),
@@ -8622,106 +8652,6 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     );
   }
 
-  // 只供管理員手動測試美國測試函式；正式後台仍使用台灣版本。
-  Future<void> _testUsAdminFunctions() async {
-    if (_isTestingUsAdminFunctions) return;
-    setState(() => _isTestingUsAdminFunctions = true);
-
-    final usFunctions = FirebaseFunctions.instanceFor(region: 'us-central1');
-    final results = <String>[];
-
-    Future<Map<String, dynamic>?> runCheck(
-        FirebaseFunctions functions,
-        String functionName,
-        String label,
-        Duration timeout,
-        ) async {
-      final stopwatch = Stopwatch()..start();
-      try {
-        final response = await functions.httpsCallable(
-          functionName,
-          options: HttpsCallableOptions(timeout: timeout),
-        ).call();
-        stopwatch.stop();
-        if (response.data is! Map) {
-          results.add('❌ $label：資料格式不是 Map（${stopwatch.elapsedMilliseconds}ms）');
-          return null;
-        }
-        final data = Map<String, dynamic>.from(response.data as Map);
-        if (data.isEmpty) {
-          results.add('⚠️ $label：成功呼叫，但回傳空資料（${stopwatch.elapsedMilliseconds}ms）');
-        } else {
-          results.add('✅ $label：呼叫成功，回傳 ${data.length} 個頂層欄位（${stopwatch.elapsedMilliseconds}ms）');
-        }
-        results.add('  欄位：${data.keys.join(', ')}');
-        return data;
-      } on FirebaseFunctionsException catch (error) {
-        results.add('❌ $label：${error.code} / ${error.message ?? '無詳細訊息'}');
-        return null;
-      } catch (error) {
-        results.add('❌ $label：$error');
-        return null;
-      }
-    }
-
-    try {
-      final usHealth = await runCheck(
-        usFunctions, 'getAdminSystemHealthUsTest', '美國－系統健康',
-        const Duration(seconds: 40),
-      );
-      final twHealth = await runCheck(
-        _functions, 'getAdminSystemHealth', '台灣－系統健康',
-        const Duration(seconds: 40),
-      );
-      if (usHealth != null && twHealth != null) {
-        final missing = twHealth.keys.toSet().difference(usHealth.keys.toSet());
-        results.add(missing.isEmpty
-            ? '✅ 系統健康：美國版包含台灣版全部頂層欄位'
-            : '❌ 系統健康：美國版缺少欄位 ${missing.join(', ')}');
-      }
-
-      results.add('');
-      final usDashboard = await runCheck(
-        usFunctions, 'getAdminDashboardStatsUsTest', '美國－後台總覽',
-        const Duration(seconds: 135),
-      );
-      final twDashboard = await runCheck(
-        _functions, 'getAdminDashboardStats', '台灣－後台總覽',
-        const Duration(seconds: 135),
-      );
-      if (usDashboard != null && twDashboard != null) {
-        final missing = twDashboard.keys.toSet().difference(usDashboard.keys.toSet());
-        results.add(missing.isEmpty
-            ? '✅ 後台總覽：美國版包含台灣版全部頂層欄位'
-            : '❌ 後台總覽：美國版缺少欄位 ${missing.join(', ')}');
-      }
-      results.add('');
-      results.add('備註：成功呼叫表示目前登入身分通過函式的執行檢查；非空資料及欄位比對僅為初步驗證，不能取代逐項數值與資料來源檢查。');
-    } finally {
-      if (mounted) {
-        setState(() => _isTestingUsAdminFunctions = false);
-        await showDialog<void>(
-          context: context,
-          builder: (dialogContext) => AlertDialog(
-            title: const Text('美國後台函式測試結果'),
-            content: SizedBox(
-              width: 620,
-              child: SingleChildScrollView(
-                child: SelectableText(results.join('\n')),
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(dialogContext).pop(),
-                child: const Text('關閉'),
-              ),
-            ],
-          ),
-        );
-      }
-    }
-  }
-
   Widget _buildSystemHealthTab() {
     final theme = Theme.of(context);
     return DefaultTabController(
@@ -8734,21 +8664,6 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
             '即時掌握 AI 請求成功率、失敗、Fallback、Timeout、回覆速度與使用量。',
             icon:
             Icons.monitor_heart_outlined,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: OutlinedButton.icon(
-                onPressed: _isTestingUsAdminFunctions ? null : _testUsAdminFunctions,
-                icon: _isTestingUsAdminFunctions
-                    ? const SizedBox(width: 18, height: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Icon(Icons.cloud_outlined),
-                label: Text(_isTestingUsAdminFunctions
-                    ? '美國函式測試中…' : '測試美國函式（不切換正式服務）'),
-              ),
-            ),
           ),
           const TabBar(
             tabs: [

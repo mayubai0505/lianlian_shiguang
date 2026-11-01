@@ -50,7 +50,20 @@ db.settings({
 });
 const REGION = "asia-east1";
 
+const {createMemoryScopeTools} = require('./memory/scope');
+const {createRagSelector} = require('./memory/rag_selector');
+const {createMemoryExtractor} = require('./memory/extractor');
+const {createStorySummaryFunction} = require('./memory/story_summary');
 const {geminiSafeInCharacterReply, enforceGeminiNoSexualContent} = require('./gemini_safety');
+const { buildImmersivePrompt } = require('./chat/prompts/immersive');
+const { buildCharacterIdentityDirective } = require('./chat/prompts/character_identity');
+const {createHistoryUtils} = require('./chat/history_utils');
+const {createWriterResponseUtils} = require('./ai/writer_response');
+const {parseRoleCommands} = require('./chat/role_commands');
+const {createPlayerIdentityTools} = require('./chat/player_identity');
+const {createAiProviders} = require('./ai/providers');
+const {createAiRetryHandler} = require('./ai/retry_handler');
+const {isAiContentFiltered,hasUsableAiContent,isAiTimeoutError} = require('./ai/response_checks');
 
 const openRouterApiKey = defineSecret("OPENROUTER_API_KEY");
 const elevenLabsApiKey = defineSecret("ELEVENLABS_API_KEY");
@@ -62,6 +75,8 @@ const stripeSecretKey = defineSecret("STRIPE_SECRET_KEY");
 const stripeWebhookSecret = defineSecret("STRIPE_WEBHOOK_SECRET");
 const crypto = require("crypto");
 const APP_ID = "lianlianshiguang";
+const {limitPromptText, normalizeDailyAssistantHistory, duplicateReplyFingerprint} = createHistoryUtils({fixMojibake});
+const {resolvePlayerIdentityFromUserData, resolveEffectivePlayerProfileId} = createPlayerIdentityTools({db, APP_ID});
 
 const {normalizeNotificationLocale, getUserNotificationLocale, getNotificationText} = require('./notification_texts')(db);
 
@@ -359,270 +374,9 @@ function scoreChineseText(str) {
     );
 }
 
-async function callOpenRouter({
-    apiUrl,
-    apiKey,
-    modelId,
-    requestBody,
-    abortController,
-    timeoutMs = 95_000,
-}) {
-    const timeoutController = new AbortController();
-
-    const timer = setTimeout(() => {
-        timeoutController.abort();
-    }, timeoutMs);
-
-    let finalSignal = timeoutController.signal;
-
-    if (abortController?.signal) {
-        finalSignal = AbortSignal.any([
-            abortController.signal,
-            timeoutController.signal,
-        ]);
-    }
-
-    let response;
-    let rawText = "";
-
-    try {
-        const finalBody = {
-            ...requestBody,
-            model: modelId,
-        };
-
-        console.log("🚀 AI REQUEST:", {
-            apiUrl,
-            model: modelId,
-            timeoutMs,
-            messageCount: finalBody.messages?.length,
-            max_tokens: finalBody.max_tokens,
-        });
-
-        response = await fetch(apiUrl, {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${apiKey}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(finalBody),
-            signal: finalSignal,
-        });
-
-        rawText = await response.text();
-
-        console.log("🧪 AI HTTP STATUS:", response.status);
-        console.log("🧪 AI RAW TEXT PREVIEW:", rawText.slice(0, 2000));
-    } catch (err) {
-        console.error("🚨 AI fetch failed:", {
-            name: err?.name,
-            message: err?.message,
-            model: modelId,
-            playerDisconnected: abortController?.signal?.aborted === true,
-        });
-
-        if (err?.name === "AbortError") {
-            if (abortController?.signal?.aborted) {
-                throw new Error("PLAYER_DISCONNECTED");
-            }
-
-            throw new Error("AI 回覆時間太久，已主動中止");
-        }
-
-        throw new Error("AI 連線暫時不穩");
-    } finally {
-        clearTimeout(timer);
-    }
-
-    let data = null;
-
-    try {
-        data = rawText ? JSON.parse(rawText) : null;
-    } catch (err) {
-        console.error("🚨 AI returned non-JSON:", {
-            status: response?.status,
-            rawText: rawText.slice(0, 2000),
-            parseMessage: err?.message,
-        });
-
-        throw new Error("AI 回傳格式異常");
-    }
-
-    if (!response.ok) {
-        const errorMessage =
-            data?.error?.message ||
-            data?.message ||
-            `AI HTTP ERROR ${response.status}`;
-
-        console.error("🚨 AI HTTP ERROR:", {
-            status: response.status,
-            errorMessage,
-            data,
-            rawText: rawText.slice(0, 2000),
-        });
-
-        const error = new Error(errorMessage);
-        error.statusCode = response.status;
-        error.result = data;
-
-        throw error;
-    }
-
-    if (!data?.choices || data.choices.length === 0) {
-        console.error("🚨 AI 沒有 choices:", {
-            status: response.status,
-            data,
-            rawText: rawText.slice(0, 2000),
-        });
-
-        throw new Error(
-            data?.error?.message ||
-            data?.message ||
-            "AI 斷線或沒有回傳 choices"
-        );
-    }
-
-    return data;
-}
-
-// Claude 官方 Messages API；轉成既有 OpenAI-compatible 結果格式以保留後端解析流程。
-async function callAnthropicDirect({modelId, requestBody, abortController, timeoutMs = 95_000}) {
-    const timeoutController = new AbortController();
-    const timer = setTimeout(() => timeoutController.abort(), timeoutMs);
-    const signal = abortController?.signal
-        ? AbortSignal.any([timeoutController.signal, abortController.signal])
-        : timeoutController.signal;
-    try {
-        const sourceMessages = Array.isArray(requestBody?.messages) ? requestBody.messages : [];
-        const systemParts = [];
-        const messages = [];
-        for (const msg of sourceMessages) {
-            const content = typeof msg.content === "string" ? msg.content :
-                (Array.isArray(msg.content) ? msg.content.map(p => p?.text || "").join("\n") : String(msg.content || ""));
-            if (msg.role === "system" || msg.role === "developer") {
-                if (content.trim()) systemParts.push(content);
-                continue;
-            }
-            const role = msg.role === "assistant" ? "assistant" : "user";
-            if (messages.length && messages[messages.length - 1].role === role) {
-                messages[messages.length - 1].content += "\n\n" + content;
-            } else {
-                messages.push({role, content});
-            }
-        }
-        if (messages.length === 0 || messages[0].role !== "user") {
-            messages.unshift({role: "user", content: "請依照系統設定開始回覆。"});
-        }
-        const body = {
-            model: modelId,
-            max_tokens: Number(requestBody.max_tokens) || 2600,
-            messages,
-        };
-        if (systemParts.length) body.system = systemParts.join("\n\n");
-        // Sonnet 5.5 不接受非預設 temperature；故不轉送 temperature/response_format/reasoning_effort。
-        const response = await fetch("https://api.anthropic.com/v1/messages", {
-            method: "POST",
-            headers: {
-                "x-api-key": anthropicApiKey.value(),
-                "anthropic-version": "2023-06-01",
-                "content-type": "application/json",
-            },
-            body: JSON.stringify(body),
-            signal,
-        });
-        const raw = await response.text();
-        let data;
-        try { data = JSON.parse(raw); } catch (_) { throw new Error("Anthropic 回傳格式異常"); }
-        if (!response.ok) {
-            const error = new Error(data?.error?.message || `Anthropic HTTP ${response.status}`);
-            error.statusCode = response.status;
-            error.result = data;
-            throw error;
-        }
-        const content = Array.isArray(data.content)
-            ? data.content.filter(block => block?.type === "text").map(block => block.text || "").join("\n") : "";
-        return {
-            model: data.model || modelId,
-            usage: {
-                prompt_tokens: Number(data.usage?.input_tokens || 0),
-                completion_tokens: Number(data.usage?.output_tokens || 0),
-                total_tokens: Number(data.usage?.input_tokens || 0) + Number(data.usage?.output_tokens || 0),
-            },
-            choices: [{
-                message: {role: "assistant", content},
-                finish_reason: data.stop_reason === "max_tokens" ? "length" :
-                    data.stop_reason === "refusal" ? "content_filter" : "stop",
-            }],
-        };
-    } catch (err) {
-        if (err?.name === "AbortError") {
-            if (abortController?.signal?.aborted) throw new Error("PLAYER_DISCONNECTED");
-            throw new Error("AI 回覆時間太久，已主動中止");
-        }
-        throw err;
-    } finally {
-        clearTimeout(timer);
-    }
-}
-
-function isGeminiDirectModel(modelId) {
-    const id = String(modelId || "");
-    return id.startsWith("google/gemini") || id.startsWith("gemini-");
-}
-
-function isXaiDirectModel(modelId) {
-    const id = String(modelId || "");
-    return id.startsWith("xai/grok-") || id.startsWith("grok-");
-}
-
-function normalizeModelIdForRequest(modelId) {
-    const id = String(modelId || "");
-
-    if (id.startsWith("google/")) {
-        return id.replace(/^google\//, "");
-    }
-
-    if (id.startsWith("xai/")) {
-        return id.replace(/^xai\//, "");
-    }
-
-    return id;
-}
-
-function getAiProviderConfig(modelId) {
-    const isGemini = isGeminiDirectModel(modelId);
-    const isXai = isXaiDirectModel(modelId);
-    const isAnthropic = String(modelId || "").startsWith("claude-");
-
-    if (isAnthropic) {
-        return {provider: "anthropic", apiUrl: "https://api.anthropic.com/v1/messages", modelIdForRequest: modelId};
-    }
-
-    if (isGemini) {
-        return {
-            provider: "gemini",
-            apiUrl: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
-            apiKey: geminiApiKey.value(),
-            modelIdForRequest: normalizeModelIdForRequest(modelId),
-        };
-    }
-
-    if (isXai) {
-        return {
-            provider: "xai",
-            apiUrl: "https://api.x.ai/v1/chat/completions",
-            apiKey: xaiApiKey.value(),
-            modelIdForRequest: normalizeModelIdForRequest(modelId),
-        };
-    }
-
-    return {
-        provider: "openrouter",
-        apiUrl: "https://openrouter.ai/api/v1/chat/completions",
-        apiKey: openRouterApiKey.value(),
-        modelIdForRequest: modelId,
-    };
-}
+const {callOpenRouter,callAnthropicDirect,getAiProviderConfig} = createAiProviders({
+    anthropicApiKey, geminiApiKey, xaiApiKey, openRouterApiKey
+});
 
 // ==================================================
 // 🩺 AI 系統健康監測
@@ -868,65 +622,6 @@ function formatAiCostTraceLine(cost) {
   };
 }
 
-function isAiContentFiltered(result) {
-  return (
-    result?.choices?.some(
-      (choice) => {
-        const finishReason = String(
-          choice?.finish_reason || ""
-        ).toLowerCase();
-
-        return (
-          finishReason.includes("content_filter") ||
-          finishReason.includes("prohibited_content") ||
-          finishReason.includes("safety")
-        );
-      }
-    ) === true
-  );
-}
-
-function hasUsableAiContent(result) {
-  if (!result?.choices?.length) return false;
-
-  return result.choices.some((choice) => {
-    const content = choice?.message?.content;
-
-    if (typeof content === "string") {
-      return content.trim().length > 0;
-    }
-
-    if (Array.isArray(content)) {
-      return content.some((part) => {
-        if (typeof part === "string") {
-          return part.trim().length > 0;
-        }
-
-        const text = String(
-          part?.text ||
-          part?.content ||
-          ""
-        ).trim();
-
-        return text.length > 0;
-      });
-    }
-
-    return false;
-  });
-}
-
-function isAiTimeoutError(error) {
-  const message =
-    String(error?.message || "").toLowerCase();
-
-  return (
-    message.includes("回覆時間太久") ||
-    message.includes("timeout") ||
-    message.includes("timed out")
-  );
-}
-
 async function recordAiHealth({
   success,
   latencyMs = 0,
@@ -1038,407 +733,21 @@ async function recordAiHealth({
   }
 }
 
-async function callAiWithRetry({
-  modelId,
-  fallbackModelId,
-  requestBody,
-  abortController,
-  timeoutMs = 95_000,
-  retryPrimary = true,
-}) {
-  const startedAt = Date.now();
-
-  let apiAttempts = 0;
-  let usedFallback = false;
-  let finalModelId = modelId;
-
-  async function callCurrentAiModel(
-    targetModelId
-  ) {
-    apiAttempts++;
-
-    const providerConfig =
-      getAiProviderConfig(
-        targetModelId
-      );
-
-    console.log(
-      "🧭 AI PROVIDER ROUTE:",
-      {
-        originalModelId:
-          targetModelId,
-
-        provider:
-          providerConfig.provider,
-
-        apiUrl:
-          providerConfig.apiUrl,
-
-        modelIdForRequest:
-          providerConfig.modelIdForRequest,
-      }
-    );
-
-    // 每一次嘗試都依「實際 provider」重建 reasoning 設定，
-    // 這樣 primary / retry / fallback 換供應商時不會沿用錯誤參數。
-    const providerRequestBody = {
-      ...requestBody,
-    };
-
-    delete providerRequestBody.reasoning;
-    delete providerRequestBody.reasoning_effort;
-
-    if (providerConfig.provider === "gemini") {
-      providerRequestBody.reasoning_effort = "low";
-    } else if (providerConfig.provider === "xai") {
-      // Grok 4.6 預設 reasoning 偏高；寫作場景固定 low，避免延遲與隱藏 token 暴增。
-      providerRequestBody.reasoning_effort = "low";
-    } else if (providerConfig.provider === "openrouter") {
-      providerRequestBody.reasoning = {
-        effort: "none",
-      };
-    }
-
-    const result = providerConfig.provider === "anthropic"
-      ? await callAnthropicDirect({
-          modelId: providerConfig.modelIdForRequest,
-          requestBody: providerRequestBody,
-          abortController,
-          timeoutMs,
-        })
-      : await callOpenRouter({
-          apiUrl: providerConfig.apiUrl,
-          apiKey: providerConfig.apiKey,
-          modelId: providerConfig.modelIdForRequest,
-          requestBody: providerRequestBody,
-          abortController,
-          timeoutMs,
-        });
-
-    // HTTP 200 不代表模型真的成功產生內容。
-    // Gemini 會用 200 + finish_reason=content_filter: PROHIBITED_CONTENT 擋掉回覆；
-    // 其他 provider 也可能回 choices 但 content 為空。
-    // 這兩種情況都必須在這一層視為 provider failure，
-    // 才能讓所有模式統一進入 fallback，而不是外層一直重撞同一模型。
-    if (isAiContentFiltered(result)) {
-      const finishReasons = (result?.choices || [])
-        .map((choice) => String(choice?.finish_reason || ""))
-        .filter(Boolean);
-
-      const error = new Error("AI_CONTENT_FILTERED");
-      error.code = "AI_CONTENT_FILTERED";
-      error.result = result;
-      error.provider = providerConfig.provider;
-      error.modelId = targetModelId;
-      error.finishReasons = finishReasons;
-
-      console.warn(
-        "🛡️ AI provider content filter，改走 fallback:",
-        {
-          provider: providerConfig.provider,
-          modelId: targetModelId,
-          finishReasons,
-        }
-      );
-
-      throw error;
-    }
-
-    if (!hasUsableAiContent(result)) {
-      const finishReasons = (result?.choices || [])
-        .map((choice) => String(choice?.finish_reason || ""))
-        .filter(Boolean);
-
-      const error = new Error("AI_EMPTY_RESPONSE");
-      error.code = "AI_EMPTY_RESPONSE";
-      error.result = result;
-      error.provider = providerConfig.provider;
-      error.modelId = targetModelId;
-      error.finishReasons = finishReasons;
-
-      console.warn(
-        "🫥 AI provider 回傳空內容，改走 fallback:",
-        {
-          provider: providerConfig.provider,
-          modelId: targetModelId,
-          finishReasons,
-        }
-      );
-
-      throw error;
-    }
-
-    return result;
-  }
-
-  async function finishSuccess(
-    result,
-    selectedModelId
-  ) {
-    finalModelId =
-      selectedModelId;
-
-    await recordAiHealth({
-      success: true,
-
-      latencyMs:
-        Date.now() - startedAt,
-
-      apiAttempts,
-
-      usedFallback,
-
-      contentFiltered:
-        isAiContentFiltered(result),
-
-      timedOut: false,
-
-      cancelled: false,
-
-      result,
-
-      modelId:
-        finalModelId,
-    });
-
-    return result;
-  }
-
-  async function finishFailure(
-    error
-  ) {
-    const cancelled =
-      error?.message ===
-      "PLAYER_DISCONNECTED";
-
-    await recordAiHealth({
-      success: false,
-
-      latencyMs:
-        Date.now() - startedAt,
-
-      apiAttempts:
-        Math.max(1, apiAttempts),
-
-      usedFallback,
-
-      contentFiltered:
-        error?.code === "AI_CONTENT_FILTERED" ||
-        isAiContentFiltered(error?.result),
-
-      timedOut:
-        isAiTimeoutError(error),
-
-      cancelled,
-
-      result:
-        error?.result || null,
-
-      modelId:
-        finalModelId,
-    });
-
-    throw error;
-  }
-
-  try {
-    try {
-      const result =
-        await callCurrentAiModel(
-          modelId
-        );
-
-      return await finishSuccess(
-        result,
-        modelId
-      );
-    } catch (error) {
-      if (
-        error.message ===
-        "PLAYER_DISCONNECTED"
-      ) {
-        return await finishFailure(
-          error
-        );
-      }
-
-      const retryable =
-        error.statusCode === 429 ||
-        error.statusCode === 500 ||
-        error.statusCode === 502 ||
-        error.statusCode === 503 ||
-        error.statusCode === 504 ||
-        error.message ===
-          "AI_PROVIDER_BUSY" ||
-        error.message?.includes(
-          "AI 回覆時間太久"
-        ) ||
-        error.message?.includes(
-          "AI 服務暫時忙碌"
-        ) ||
-        error.message?.includes(
-          "AI 連線暫時不穩"
-        ) ||
-        error.message?.includes(
-          "AI 回傳格式異常"
-        ) ||
-        error.message?.includes(
-          "AI 斷線或沒有回傳 choices"
-        ) ||
-        error?.code === "AI_CONTENT_FILTERED" ||
-        error?.code === "AI_EMPTY_RESPONSE" ||
-        error?.message === "AI_CONTENT_FILTERED" ||
-        error?.message === "AI_EMPTY_RESPONSE";
-
-      if (!retryable) {
-        return await finishFailure(
-          error
-        );
-      }
-
-      // v2.4.6：Writer 主路由不重撞同供應商。
-      // Gemini / Grok 失敗後直接切 OpenRouter DeepSeek v3.2；
-      // fallback 也失敗就結束，不再切第三模型。
-      if (!retryPrimary) {
-        if (!fallbackModelId) {
-          return await finishFailure(
-            error
-          );
-        }
-
-        usedFallback = true;
-        finalModelId =
-          fallbackModelId;
-
-        console.warn(
-          "🚑 Writer 主模型失敗，直接切換最後 fallback:",
-          {
-            modelId,
-            fallbackModelId,
-            message:
-              error?.message,
-            code:
-              error?.code || "",
-            statusCode:
-              error?.statusCode,
-            finishReasons:
-              error?.finishReasons || [],
-          }
-        );
-
-        try {
-          const fallbackResult =
-            await callCurrentAiModel(
-              fallbackModelId
-            );
-
-          return await finishSuccess(
-            fallbackResult,
-            fallbackModelId
-          );
-        } catch (fallbackError) {
-          console.error(
-            "🧯 Writer fallback 也失敗，本輪結束且不再切第三模型:",
-            {
-              fallbackModelId,
-              message:
-                fallbackError?.message,
-              code:
-                fallbackError?.code || "",
-              statusCode:
-                fallbackError?.statusCode,
-              finishReasons:
-                fallbackError?.finishReasons || [],
-            }
-          );
-
-          return await finishFailure(
-            fallbackError
-          );
-        }
-      }
-
-      console.warn(
-        "🌧️ 主模型忙線、逾時或回傳異常，先重試一次:",
-        {
-          modelId,
-          message:
-            error?.message,
-          statusCode:
-            error?.statusCode,
-        }
-      );
-
-      await new Promise(
-        (resolve) =>
-          setTimeout(
-            resolve,
-            1200
-          )
-      );
-
-      try {
-        const retryResult =
-          await callCurrentAiModel(
-            modelId
-          );
-
-        return await finishSuccess(
-          retryResult,
-          modelId
-        );
-      } catch (retryError) {
-        if (
-          retryError.message ===
-          "PLAYER_DISCONNECTED"
-        ) {
-          return await finishFailure(
-            retryError
-          );
-        }
-
-        if (!fallbackModelId) {
-          return await finishFailure(
-            retryError
-          );
-        }
-
-        usedFallback = true;
-        finalModelId =
-          fallbackModelId;
-
-        console.warn(
-          "🚑 主模型重試失敗，切換 fallback:",
-          {
-            fallbackModelId,
-            message:
-              retryError?.message,
-            statusCode:
-              retryError?.statusCode,
-          }
-        );
-
-        try {
-          const fallbackResult =
-            await callCurrentAiModel(
-              fallbackModelId
-            );
-
-          return await finishSuccess(
-            fallbackResult,
-            fallbackModelId
-          );
-        } catch (fallbackError) {
-          return await finishFailure(
-            fallbackError
-          );
-        }
-      }
-    }
-  } catch (error) {
-    throw error;
-  }
+// 沉浸與共鳴模式：只識別高度明確的模型內部分析輸出，不誤判一般角色對白。
+function isRoleplayInternalLeak(value) {
+    const text = String(value || "");
+    return /["「]?userRequestSummary["」]?\s*[:：]/i.test(text) ||
+        /["「]?reasoning_content["」]?\s*[:：]/i.test(text) ||
+        /["「]?於封禁狀態["」]?\s*[:：]/.test(text) ||
+        /["「]?用戶性別未設定["」]?\s*[,，}]/.test(text) ||
+        (/(回顧系統提示|檢查之前的系統提示|上一輪的系統提示|現在開始正式寫作)/.test(text) &&
+         /(我需要|我注意到|系統提示|AI系統|我決定)/.test(text));
 }
+
+const {callAiWithRetry} = createAiRetryHandler({
+    getAiProviderConfig,callOpenRouter,callAnthropicDirect,
+    isAiContentFiltered,hasUsableAiContent,isAiTimeoutError,recordAiHealth
+});
 
 async function downloadMediaAsBase64(mediaUrlOrPath) {
     if (!mediaUrlOrPath) return null;
@@ -5019,76 +4328,6 @@ let relationContext = "";
             如有，先修正再輸出。
             `;
 
-function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, charactersList) {
-    if (!userInput) return { activeCharacters, currentFocusCharacter };
-
-    const input = userInput.toLowerCase().trim();
-    let newActive = [...activeCharacters];
-    let newFocus = currentFocusCharacter;
-
-    // 提取所有可能的角色名（從角色卡中抓取）
-    const possibleNames = charactersList ?
-        charactersList.match(/【([^】]+)】/g)?.map(m => m.replace(/[【】]/g, '').trim()) || [] : [];
-
-    // 1. 召喚角色
-    if (/召喚|出來|上場|回來|叫/.test(input)) {
-        for (let name of possibleNames) {
-            if (input.includes(name.toLowerCase())) {
-                if (!newActive.includes(name)) newActive.push(name);
-                newFocus = name;
-                break;
-            }
-        }
-    }
-
-    // 2. 隱藏/退下角色
-    if (/退下|離開|隱藏|別出來|先走|消失/.test(input)) {
-        for (let name of possibleNames) {
-            if (input.includes(name.toLowerCase())) {
-                newActive = newActive.filter(n => n !== name);
-                if (newFocus === name && newActive.length > 0) {
-                    newFocus = newActive[0];
-                }
-                break;
-            }
-        }
-    }
-
-    // 3. 專注 / 切換焦點
-    if (/專注|只跟|切換到|只看|只和|只想/.test(input)) {
-        for (let name of possibleNames) {
-            if (input.includes(name.toLowerCase())) {
-                newFocus = name;
-                if (!newActive.includes(name)) newActive.push(name);
-                break;
-            }
-        }
-    }
-
-    // 4. 只留某人
-    if (/只留|只剩|只讓/.test(input)) {
-        for (let name of possibleNames) {
-            if (input.includes(name.toLowerCase())) {
-                newActive = [name];
-                newFocus = name;
-                break;
-            }
-        }
-    }
-
-    // 5. 全員管理
-    if (/所有人退下|全員隱藏|大家退下|全部退下/.test(input)) {
-        newActive = [newFocus];
-    }
-    if (/全員上場|大家都在|全部出來|所有人都出來/.test(input)) {
-        newActive = possibleNames.length > 0 ? [...possibleNames] : newActive;
-    }
-
-    return {
-        activeCharacters: newActive,
-        currentFocusCharacter: newFocus
-    };
-}
 
 
             const npcDirective = `
@@ -5386,15 +4625,15 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                                             .collection("memories");
 
                                                                                                         const [profileSnapshot, characterSnapshot, sessionSnapshot] = await Promise.all([
-                                                                                                            profileMemoriesRef.orderBy("timestamp", "desc").limit(20).get(),
-                                                                                                            characterMemoriesRef.orderBy("timestamp", "desc").limit(20).get(),
-                                                                                                            sessionMemoriesRef.orderBy("timestamp", "desc").limit(20).get(),
+                                                                                                            profileMemoriesRef.orderBy("timestamp", "desc").limit(["immersive", "resonance"].includes(chatMode) ? 40 : 20).get(),
+                                                                                                            characterMemoriesRef.orderBy("timestamp", "desc").limit(["immersive", "resonance"].includes(chatMode) ? 40 : 20).get(),
+                                                                                                            sessionMemoriesRef.orderBy("timestamp", "desc").limit(["immersive", "resonance"].includes(chatMode) ? 40 : 20).get(),
                                                                                                         ]);
 
                                                                                                         const appendScopedMemories = (snapshot, scope) => {
                                                                                                             snapshot.forEach((doc) => {
                                                                                                                 const memory = doc.data() || {};
-                                                                                                                const text = limitMemoryText(memory.text || memory.content, 320);
+                                                                                                                const text = limitMemoryText(memory.text || memory.content, ["immersive", "resonance"].includes(chatMode) ? 350 : 320);
                                                                                                                 if (!text) return;
 
                                                                                                                 sharedMemoryCandidates.push({
@@ -5454,78 +4693,14 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                                 // 不額外呼叫模型：先用本輪訊息 + 最近對話做輕量相關性檢索。
                                                                                                 // 之後若換成 embedding RAG，只需要替換這個 selector，Writer 不用改。
                                                                                                 // =========================================================================
-                                                                                                function buildRetrievalTerms(value) {
-                                                                                                    const raw = String(value || "")
-                                                                                                        .toLowerCase()
-                                                                                                        .replace(/\s+/g, " ")
-                                                                                                        .trim();
-
-                                                                                                    if (!raw) return [];
-
-                                                                                                    const terms = new Set();
-
-                                                                                                    // 英數詞
-                                                                                                    for (const token of raw.match(/[a-z0-9_\-]{2,}/g) || []) {
-                                                                                                        terms.add(token);
-                                                                                                    }
-
-                                                                                                    // 中文 2-gram，對人名、物件、地點與事件關鍵字很實用
-                                                                                                    const cjk = (raw.match(/[\u4e00-\u9fff]/g) || []).join("");
-                                                                                                    for (let i = 0; i < cjk.length - 1; i++) {
-                                                                                                        terms.add(cjk.slice(i, i + 2));
-                                                                                                    }
-
-                                                                                                    return [...terms].slice(0, 180);
-                                                                                                }
-
-                                                                                                function scoreRelevantCandidate(queryTerms, textValue, important = false) {
-                                                                                                    const haystack = String(textValue || "").toLowerCase();
-                                                                                                    let score = important ? 6 : 0;
-
-                                                                                                    for (const term of queryTerms) {
-                                                                                                        if (term && haystack.includes(term)) {
-                                                                                                            score += term.length >= 3 ? 3 : 1;
-                                                                                                        }
-                                                                                                    }
-
-                                                                                                    return score;
-                                                                                                }
-
-                                                                                                function selectRelevantCandidates(items, query, limit, toText) {
-                                                                                                    if (!Array.isArray(items) || items.length === 0) return [];
-
-                                                                                                    const queryTerms = buildRetrievalTerms(query);
-
-                                                                                                    const ranked = items.map((item, index) => ({
-                                                                                                        item,
-                                                                                                        index,
-                                                                                                        score:
-                                                                                                            scoreRelevantCandidate(
-                                                                                                                queryTerms,
-                                                                                                                toText(item),
-                                                                                                                item?.important === true
-                                                                                                            ) +
-                                                                                                            // Firestore 原本即依時間倒序；只給很小的近期加權
-                                                                                                            Math.max(0, 1 - index * 0.08),
-                                                                                                    }));
-
-                                                                                                    ranked.sort((a, b) => b.score - a.score);
-
-                                                                                                    const positive = ranked.filter(
-                                                                                                        (entry) => entry.score > 1.05 || entry.item?.important === true
-                                                                                                    );
-
-                                                                                                    // 完全沒有命中時仍保留最近少量資料，避免角色突然失憶
-                                                                                                    return (positive.length > 0 ? positive : ranked.slice(0, 2))
-                                                                                                        .slice(0, limit)
-                                                                                                        .map((entry) => entry.item);
-                                                                                                }
+                                                                                                const selectRelevantCandidates = createRagSelector({chatMode, finalUserMessage});
 
                                                                                                 const retrievalQuery = [
                                                                                                     String(finalUserMessage || ""),
                                                                                                     ...(Array.isArray(chatHistory)
                                                                                                         ? chatHistory
                                                                                                             .slice(-4)
+                                                                                                            .filter((msg) => !(["immersive", "resonance"].includes(chatMode)) || msg?.role !== "assistant" || !isRoleplayInternalLeak(msg?.content || msg?.text || ""))
                                                                                                             .map((msg) => String(msg?.content || ""))
                                                                                                         : []),
                                                                                                 ]
@@ -5552,13 +4727,33 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                                     loresContext = "";
                                                                                                 }
 
-                                                                                                const retrievedSharedMemories = selectRelevantCandidates(
-                                                                                                    sharedMemoryCandidates,
-                                                                                                    retrievalQuery,
-                                                                                                    chatMode === "resonance" ? 4 : 3,
-                                                                                                    (item) =>
-                                                                                                        `${item?.scope || ""} ${item?.title || ""} ${item?.subtitle || ""} ${item?.content || ""}`
-                                                                                                );
+                                                                                                // 沉浸與共鳴模式：優先保留已確認的世界線里程碑與關係狀態；
+                                                                                                // 其餘仍按玩家當前話題檢索，避免無關往事反覆出場。
+                                                                                                const retrievedSharedMemories = (() => {
+                                                                                                    if (!["immersive", "resonance"].includes(chatMode)) {
+                                                                                                        return selectRelevantCandidates(sharedMemoryCandidates, retrievalQuery,
+                                                                                                            chatMode === "resonance" ? 4 : 3,
+                                                                                                            (item) => `${item?.scope || ""} ${item?.title || ""} ${item?.subtitle || ""} ${item?.content || ""}`);
+                                                                                                    }
+                                                                                                    const stable = sharedMemoryCandidates.filter((item) =>
+                                                                                                        item?.active !== false && item?.scope === "session" &&
+                                                                                                        (item?.factKey === "relationship.status" ||
+                                                                                                         item?.factKey === "worldline.pregnancy_status" ||
+                                                                                                         item?.factKey === "worldline.identity")
+                                                                                                    ).slice(0, 3);
+                                                                                                    const relevant = selectRelevantCandidates(
+                                                                                                        sharedMemoryCandidates.filter((item) => item?.active !== false),
+                                                                                                        retrievalQuery, 8,
+                                                                                                        (item) => `${item?.scope || ""} ${item?.title || ""} ${item?.subtitle || ""} ${item?.content || ""}`
+                                                                                                    );
+                                                                                                    const seen = new Set();
+                                                                                                    return [...stable, ...relevant].filter((item) => {
+                                                                                                        const key = `${item?.scope || ""}:${item?.id || item?.factKey || item?.content || ""}`;
+                                                                                                        if (seen.has(key)) return false;
+                                                                                                        seen.add(key);
+                                                                                                        return true;
+                                                                                                    }).slice(0, 5);
+                                                                                                })();
 
                                                                                                 if (retrievedSharedMemories.length > 0) {
                                                                                                     sharedMemoriesText =
@@ -5634,10 +4829,32 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                                 // =========================================================================
                                                                                                 let systemPrompt = "";
 
+        // 同聊天室既有故事摘要：只讀取玩家自己的摘要，與世界線分離。
+        // 既有 generateStorySummary 為文學摘要，僅作輔助脈絡，不可取代 canonical facts。
+        let compactSessionStorySummary = "";
+        if (["immersive", "resonance"].includes(chatMode)) {
+            try {
+                const summaryUid = String(body.userId || body.uid || userId || "").trim();
+                const summaryCharId = String(body.characterId || body.botId || characterProfile.id || "").trim();
+                const summarySessionId = String(sessionId || "").trim().replace(/[\/\\#?\[\]\s]/g, "_").slice(0, 150);
+                if (summaryUid && summaryCharId && summarySessionId) {
+                    const summarySnapshot = await db.collection("users").doc(summaryUid)
+                        .collection("friendships").doc(summaryCharId)
+                        .collection("chat_sessions").doc(summarySessionId)
+                        .collection("summaries").orderBy("createdAt", "desc").limit(2).get();
+                    const summaries = summarySnapshot.docs.map(doc => String(doc.data()?.content || "").trim())
+                        .filter(content => content && !isRoleplayInternalLeak(content));
+                    compactSessionStorySummary = summaries.reverse().join("；").slice(0, 480);
+                }
+            } catch (summaryReadError) {
+                console.warn("⚠️ 聊天室摘要讀取失敗，保留原記憶流程:", summaryReadError?.code || summaryReadError?.message);
+            }
+        }
+
         // 在 systemPrompt 分模式組裝前先準備壓縮版
         const compactLoresContext =
             chatMode === "resonance" ? limitPromptText(loresContext || "", 2200) :
-            chatMode === "immersive" ? limitPromptText(loresContext || "", 1800) :
+            chatMode === "immersive" ? limitPromptText(loresContext || "", 2400) :
             chatMode === "story" ? limitPromptText(loresContext || "", 1200) :
             chatMode === "daily" ? limitPromptText(loresContext || "", 300) :
             chatMode === "gemini" ? limitPromptText(loresContext || "", 200) :
@@ -5645,15 +4862,15 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
 
         const compactRelationContext =
             chatMode === "resonance" ? limitPromptText(relationContext || "", 1500) :
-            chatMode === "immersive" ? limitPromptText(relationContext || "", 1200) :
+            chatMode === "immersive" ? limitPromptText(relationContext || "", 1500) :
             chatMode === "story" ? limitPromptText(relationContext || "", 900) :
             chatMode === "daily" ? limitPromptText(relationContext || "", 300) :
             chatMode === "gemini" ? limitPromptText(relationContext || "", 200) :
             "";
 
         const compactSharedMemories =
-            chatMode === "resonance" ? limitPromptText(sharedMemoriesText || "", 1800) :
-            chatMode === "immersive" ? limitPromptText(sharedMemoriesText || "", 1400) :
+            chatMode === "resonance" ? limitPromptText(sharedMemoriesText || "", 2500) :
+            chatMode === "immersive" ? limitPromptText(sharedMemoriesText || "", 2500) :
             chatMode === "story" ? limitPromptText(sharedMemoriesText || "", 1000) :
             "";
         // ✨✨✨ Gemini：1 點生活陪伴 / 輕聊模式 ✨✨✨
@@ -6115,115 +5332,10 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
           "storyLocation": "本輪結束後人物實際所在位置"
         }
         `;
-    }
-        else if (chatMode === "immersive") {
-            const previousStyleExcerpt = Array.isArray(chatHistory)
-                ? String(
-                    [...chatHistory]
-                        .reverse()
-                        .find((msg) => msg?.role === "assistant")?.content || ""
-                )
-                    .slice(-1200)
-                    .trim()
-                : "";
-
-            systemPrompt = `
-            ${backendConfidentialityDirective}
-            ${langDirective}
-            ${playerIdentityDirective}
-            ${writerPolishDirective}
-            ${highFreedomWriterDirective}
-
-            【沉浸模式｜Lean Writer】
-            你現在是「${name}」。
-
-            【角色】
-            ${detailedPersonalityBlock}
-
-            【目前關係】
-            ${relationship}
-
-            【世界與本輪相關資料】
-            ${limitPromptText(worldSetting || "", 2800)}
-            ${compactLoresContext}
-            ${compactRelationContext}
-            ${compactSharedMemories}
-
-            【NPC 已知資料】
-            ${limitPromptText(npcCharactersBlock || "", 1800)}
-
-            【玩家資料與當前狀態】
-            ${limitPromptText(contextBriefing || "", 2200)}
-
-            ${systemEventRules}
-
-            ${previousStyleExcerpt ? `【文風連續】\n以下是上一輪實際正文節錄：\n${previousStyleExcerpt}\n延續它的敘事密度、句長、節奏與角色語感。即使 Writer 模型切換，也不要突然改成另一種文體。` : ""}
-
-            【人物內在決策｜人格優先】
-            - 根據創作者原始角色設定及已發生的開場／故事事實來演繹，不要將黑暗角色自動改造成守法、公平、禮貌的調查員。
-            - 從角色自己的目的、利益、資訊、情緒、權力與習慣決定下一步，而不是為了秀性格標籤、刻意寫金句或套用「不是 A 而是 B」的戲劇句型。
-            - 角色可以冷酷、強硬、欺瞞或不公平，也可以輕鬆、嘴硬、幽默；依人設和現場因果，不無故放大單一特質。
-            - 創作者已確立的劇情事實不可重新改寫；新情報先保持為 NPC 的情報、判斷或說法，不可擅自確立重大未知真相。
-            - 讓 NPC 有自己的生意、職責、關係與行動；不強制每個 NPC 每輪發言。
-
-            【沉浸專屬｜今晚對照測試定案】
-            - 以「我就是這個角色」的當下利益、欲望、權力、人格與資訊差決定言行，不先編漂亮台詞、不把黑道人物修飾成公平守法的理想伴侶。
-            - 玩家和角色可以有真實衝突；冷酷、陰狠、霸道和危險人設可自然展現，但不為了表演黑暗面而每輪無因升級暴力或親密。
-            - 原始開場的債務、人物遭遇、組織地位及既有選擇優先，不得悄悄改寫成其他類型的案件；角色猜測不得直接當作世界真相。
-            - NPC 可以推進自己的故事，絕不代玩家說出新台詞、答應條件、產生愛意或決定是否合作。
-            - 每一輪 response 第一行時間、第二行地點；第三行起以全形括號旁白和「」台詞交錯。外層 JSON 僅供後端解析。
-
-            【劇情與情感動態平衡】
-            - 沉浸模式同時具備互動小說和戀愛演繹能力，依世界觀規模、角色人設、當前事件及玩家意圖調整重心；不以角色數量判斷。
-            - 大型世界觀允許 NPC、勢力和事件獨立發展；單人日常可著重情感互動。劇情與戀愛能並行或交替，不必每輪同時推進。
-            - 玩家拒絕、反抗或質疑不等於角色必須升級威脅，更不自動代表角色產生興趣、佔有慾或好感。
-            - 允許創造合理事件與情報，但須區分客觀事實、角色推測及已知資訊；角色不得無故知道未取得的情報。
-            - NPC 可以依自己的人格接受、迴避或拒絕玩家尚未完成的動作，但不得代替玩家完成行為。
-            - 尊重創作者角色性格與危險世界觀，不強制美化反派，亦不無故升級暴力或浪漫化拒絕。
-
-            【寫法】
-            - 先像人，再像角色。先回應玩家最新一句，再自然延續。
-            - 寫成自然、有畫面感的商業戀愛小說，但不要像規則執行器。
-            - 角色可以有自己的反應、決定、節奏與主動行動，不要只圍著玩家最新一句打轉。
-            - 可以自由創造低風險生活細節、普通小習慣、臨時事件、場景物件與合理 NPC 行動。
-            - 禁止新增玩家本輪未說過的任何台詞（包括代答、反駁、求饒、接受邀請）；原始開場已發生的台詞僅可視為既定歷史。
-            - 玩家已明確開始的動作只可承接已確立的客觀結果，不得代玩家完成、延長或新增動作；玩家的沉默、表情、情緒、同意、拒絕、接受物品、跟隨或其他反應一律不可自行補寫。
-            - NPC 可主動行動、施壓、發問或離開，即使與玩家意願衝突；但不把玩家受到的外部強制寫成其主動選擇。
-            - 已提供的重大關係、重大共同歷史、重要 NPC 關係、玩家正式資料與精確既定事實不得擅自改寫。
-            - 不得自行宣稱精確的相識／交往／同居／婚姻時長或精確時間，例如「三個月了」「我們交往一年了」；除非角色設定、共同回憶或本輪已知對話明確提供。若時間不明，只能保持模糊表述。
-            - 不確定的重要既有事實保持模糊，不要硬定案。
-            - 玩家說算了、不想講、別問了時，讓該話題自然停下，不要硬逼回去。
-            - 不要因角色強勢、危險或有權勢，就每輪硬塞威脅、槍、堂口危機或手下來電。
-            - 不要替讀者解釋「這就是愛／偏寵／在意」；讓行為自己成立。
-            - 不要寫「熟悉他的妳會發現」「像是卸下防備」「那是他不會展現的一面」等作者判讀。
-            - 長篇不等於更多情緒解說。每段旁白盡量只完成一件事：動作、場景變化、事件結果或可觀察反應。
-            - 不要連續兩段旁白都在解釋角色其實很在意玩家；若上一段已經用行為呈現，下一段直接推進事件或對話。
-            - 避免「像是……又像是……」「彷彿只要……」「更多的是一種……」「連他自己都沒察覺到……」這類替讀者解讀角色的句型。
-            - 不要固定套用同一組視線、呼吸、喉結、指尖、低笑、靠近等描寫。
-            - 需要長度時，用真正的新互動、資訊、事件或關係變化增加內容，不用重複描寫灌字。
-
-            【時間與場景連續】
-            - response 第一行固定為「時間：${lastStoryTime || "自然承接上一輪"}」，第二行固定為「地點：${lastStoryLocation || "當前地點"}」，兩行不可合併或省略；時間地點需依本輪實際進展連續更新。
-            - storyTime / storyLocation 代表本輪結束後的實際狀態，且必須與正文一致。
-            - 沒有真正發生時間流逝或移動時，不要憑空跳時間或地點。
-            - 承接最近對話的人物位置、物件位置與已完成動作，不要瞬移或重演上一輪。
-
-            【排版】
-            - 第三行起，所有非台詞的動作、環境、心理與敘事旁白使用全形括號（）包覆，維持 Flutter 既有的主題色區分；人物台詞以「」呈現並獨立分段。
-            - 角色台詞使用「」並自然分段；正文不要出現「玩家」「NPC」「系統」等遊戲內部稱呼。
-            - 不得替玩家補出「」中的新台詞。
-            - 正文長度依事件複雜度彈性決定；需要時可寫長，但不可為湊字數灌水。
-
-            ${customOutputFormatDirective}
-
-            只回傳合法 JSON：
-            {
-              "response": "完整沉浸正文",
-              "affectionChange": 0,
-              "storyTime": "本輪結束後的故事時間",
-              "storyLocation": "本輪結束後人物實際所在位置"
-            }
-            `;
+    } else if (chatMode === "immersive") {
+            systemPrompt = buildImmersivePrompt({
+                chatHistory, isRoleplayInternalLeak, backendConfidentialityDirective, langDirective, playerIdentityDirective, writerPolishDirective, highFreedomWriterDirective, name, detailedPersonalityBlock, relationship, worldSetting, limitPromptText, compactLoresContext, compactRelationContext, compactSharedMemories, npcCharactersBlock, contextBriefing, systemEventRules, lastStoryTime, lastStoryLocation, customOutputFormatDirective
+            });
         }
         else if (chatMode === "resonance") {
             const previousStyleExcerpt = Array.isArray(chatHistory)
@@ -6326,6 +5438,10 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
         else {
             throw new Error(`不支援的聊天模式：${chatMode}`);
         }
+
+         // 角色本人是所有一般聊天模式共用的身分基礎；模式僅影響敘事節奏與輸出格式。
+         // 七夕限定開場同樣適用；不修改原本各模式的 JSON／計費／模型分流。
+         systemPrompt += buildCharacterIdentityDirective({name, chatMode});
 
          if (chatMode !== "gemini") {
              systemPrompt += `
@@ -6455,6 +5571,10 @@ systemPrompt += `
             2. 【風格死守】維持當前模式的長度與尺度規定。
             3. 【玩家加戲承認】順應玩家在彩蛋中的互動。
             `;
+        }
+
+        if (compactSessionStorySummary) {
+            systemPrompt += `\n【同聊天室近期故事摘要（輔助脈絡，非已核實世界線事實）】\n${compactSessionStorySummary}\n如摘要與玩家最新明確敘述或已確認狀態矛盾，以最新且可確認的內容為準；不可把摘要中的文學修辭當作已發生事件。`;
         }
 
         // 🧠 記憶自然化：記得 ≠ 這一輪一定要拿出來說。
@@ -6603,16 +5723,16 @@ ${persistentPreferenceDirective}
                    });
                           // 🧠 根據模式壓縮聊天紀錄，確保話題連貫性 (1 輪 = User + AI 共 2 條)
                           const HISTORY_LIMIT =
-                              chatMode === "resonance" ? 12 : // v2.4.6：固定最近 6 輪（User+AI 共 12 則）+ 玩家記憶/RAG
-                              chatMode === "immersive" ? 10 : // 最近 5 輪 + RAG
+                              chatMode === "resonance" ? 16 : // 平衡版：最近 8 輪
+                              chatMode === "immersive" ? 16 : // 平衡版：最近 8 輪
                               chatMode === "story"     ? 8  : // 最近 4 輪 + RAG
                               chatMode === "daily"     ? 6  :
                               chatMode === "gemini"    ? 4  :
                               6;
 
                           const HISTORY_TEXT_LIMIT =
-                              chatMode === "resonance" ? 900 :
-                              chatMode === "immersive" ? 800 :
+                              chatMode === "resonance" ? 1100 :
+                              chatMode === "immersive" ? 1100 :
                               chatMode === "story"     ? 650 :
                               chatMode === "daily"     ? 300 :
                               chatMode === "gemini"    ? 160 :
@@ -6626,49 +5746,6 @@ ${persistentPreferenceDirective}
                               chatMode === "gemini"    ? 180  :
                               1000;
 
-                          function limitPromptText(
-                              text,
-                              maxLength,
-                              preserveTail = false
-                          ) {
-                              if (!text || typeof text !== "string") return "";
-
-                              const cleaned = fixMojibake(text)
-                                  .replace(/�/g, "")
-                                  .trim();
-
-                              if (cleaned.length <= maxLength) {
-                                  return cleaned;
-                              }
-
-                              // 劇情／沉浸的 AI 歷史：
-                              // 保留前段正文，也保留尾端狀態欄。
-                              if (preserveTail) {
-                                  const tailLength = Math.min(
-                                      350,
-                                      Math.floor(maxLength * 0.6)
-                                  );
-
-                                  const headLength =
-                                      maxLength - tailLength - 4;
-
-                                  const head = cleaned
-                                      .slice(0, headLength)
-                                      .trim();
-
-                                  const tail = cleaned
-                                      .slice(-tailLength)
-                                      .trim();
-
-                                  return `${head}\n……\n${tail}`;
-                              }
-
-                              const suffix = "……";
-
-                              return cleaned
-                                  .slice(0, maxLength - suffix.length)
-                                  .trim() + suffix;
-                          }
 
                           const trimmedHistory = chatHistory
                               .slice(-HISTORY_LIMIT)
@@ -6707,7 +5784,8 @@ ${persistentPreferenceDirective}
                               .filter(
                                   (msg) =>
                                       msg.content &&
-                                      msg.content.trim() !== ""
+                                      msg.content.trim() !== "" &&
+                                      !(["immersive", "resonance"].includes(chatMode) && msg.role === "assistant" && isRoleplayInternalLeak(msg.content))
                               );
 
                                       const requestDocRef = await userDocRef.collection("aiRequests").add({
@@ -6808,24 +5886,6 @@ ${persistentPreferenceDirective}
                                   // 🧼 Daily 舊歷史格式正規化
                                   // ==========================================
 
-                                  function normalizeDailyAssistantHistory(content) {
-                                      let text = String(content || "").trim();
-
-                                      text = text.replace(
-                                          /（([^（）]+)）\s*([^「\n][^\n]*)/g,
-                                          (match, action, dialogue) => {
-                                              const cleanDialogue = String(dialogue || "").trim();
-
-                                              if (!cleanDialogue) {
-                                                  return `（${action}）`;
-                                              }
-
-                                              return `（${action}）\n\n「${cleanDialogue}」`;
-                                          }
-                                      );
-
-                                      return text;
-                                  }
 
                                   const normalizedHistory = safeTrimmedHistory.map((msg) => {
                                       if (
@@ -6914,16 +5974,6 @@ ${persistentPreferenceDirective}
 
                                   // 🛡️ 只比較本次 request 帶入的同聊天室歷史，
                                   // 不會跨玩家、跨聊天室比對。
-                                  function duplicateReplyFingerprint(value) {
-                                      return String(value || "")
-                                          .replace(
-                                              /^\s*時間\s*[：:][^\r\n]*\r?\n\s*地點\s*[：:][^\r\n]*\r?\n?/i,
-                                              ""
-                                          )
-                                          .replace(/\s+/g, "")
-                                          .trim()
-                                          .slice(0, 360);
-                                  }
 
                                   const recentAssistantFingerprints =
                                       normalizedHistory
@@ -7186,323 +6236,7 @@ ${persistentPreferenceDirective}
                                                                                return cut.trim();
                                                                            }
 
-                                                                           function sanitizeWriterArtifacts(rawText) {
-                                                                               if (!rawText || typeof rawText !== "string") return rawText;
-
-                                                                               let text = String(rawText);
-
-                                                                               // 只修高度確定是模型抖字／標點殘留的情況；
-                                                                               // 不做廣泛「重複中文字壓縮」，避免誤傷「微微／慢慢／看看／人人」等正常中文。
-                                                                               const safeFixes = [
-                                                                                   [/，，+/g, "，"],
-                                                                                   [/。。+/g, "。"],
-                                                                                   [/！！+/g, "！"],
-                                                                                   [/？？+/g, "？"],
-                                                                                   [/（（+/g, "（"],
-                                                                                   [/））+/g, "）"],
-                                                                                   [/手手指/g, "手指"],
-                                                                                   [/溫熱熱水/g, "溫熱水"],
-                                                                                   [/浴室室/g, "浴室"],
-                                                                                   [/居高臨下下/g, "居高臨下"],
-                                                                                   [/有有壓迫感/g, "有壓迫感"],
-                                                                                   [/安靜得得/g, "安靜得"],
-                                                                                   [/視視線/g, "視線"],
-                                                                                   [/伸手就能能/g, "伸手就能"],
-                                                                                   [/還還怕/g, "還怕"],
-                                                                                   [/誠實實/g, "誠實"],
-                                                                                   [/調調暗/g, "調暗"],
-
-                                                                                   // v2.3：正式鏈路實測抓到的生成抖字。
-                                                                                   // 只處理極少數高風險重複字，避免誤傷「微微／慢慢／輕輕」等正常疊字。
-                                                                                   [/躁鬱鬱/g, "躁鬱"],
-                                                                                   [/他他(?=[起開把將拿伸抬轉走坐站看盯靠往])/g, "他"],
-                                                                                   [/她她(?=[起開把將拿伸抬轉走坐站看盯靠往])/g, "她"],
-                                                                                   [/妳妳(?=[的也還又就再才])/g, "妳"],
-                                                                                   [/你你(?=[的也還又就再才])/g, "你"],
-                                                                                   [/幾幾(?=[分秒句步次個])/g, "幾"],
-                                                                                   [/得得(?=[些很更太像])/g, "得"],
-
-                                                                                   // v2.3.2：第二輪正式鏈路抓到的漏網抖字。
-                                                                                   [/隨意意(?=[交疊放靠坐站])/g, "隨意"],
-                                                                                   [/的的(?=[事話人東西情況問題])/g, "的"],
-                                                                                   [/招了了手/g, "招了手"],
-                                                                                   [/兩顆顆(?=[冰糖藥珠球塊])/g, "兩顆"],
-
-                                                                                   // v2.3.5：最新正式鏈路實測。
-                                                                                   [/香水水(?=[瞬味氣混散撲])/g, "香水"],
-                                                                                   [/指指(?=[尖腹節端])/g, "指"],
-                                                                                   [/麼麼(?=[做近遠樣久])/g, "麼"],
-
-                                                                                   // v2.3.7：完整鏈路實測的高確定性修復。
-                                                                                   [/依舊舊著/g, "依舊帶著"],
-                                                                                   [/線條條光影下/g, "線條在光影下"],
-                                                                                   [/浮動動淡淡/g, "浮動著淡淡"],
-                                                                                   [/總總不自覺/g, "總不自覺"],
-                                                                                   [/眼神神卻/g, "眼神卻"],
-                                                                               ];
-
-                                                                               for (const [pattern, replacement] of safeFixes) {
-                                                                                   text = text.replace(pattern, replacement);
-                                                                               }
-
-                                                                               // 偶發的 API / 生成殘片：獨立一個 n 被插在段落中。
-                                                                               // 同時處理實際換行與字串化的 \\n 殘片。
-                                                                               text = text
-                                                                                   // 單獨佔一行的 n：不依賴前後換行一起被 regex 吃到。
-                                                                                   .replace(/^[ \t]*n[ \t]*$/gm, "")
-                                                                                   .replace(/(?:\r?\n|\\n)\s*n\s*(?:\r?\n|\\n)/g, "\n\n")
-                                                                                   .replace(/\n{3,}/g, "\n\n");
-
-                                                                               return text;
-                                                                           }
-
-                                                                           // ==================================================
-                                                                           // 🧪 v2.3.3 Final Quality Guard
-                                                                           // --------------------------------------------------
-                                                                           // 不把「看到一個錯字就永久加一條 regex」當主要策略。
-                                                                           // 先找出清理後仍殘留的可疑生成抖字；若尚有 retry 額度，
-                                                                           // 讓 Writer 重生整份回覆。第二次仍殘留時才做最後保守壓縮。
-                                                                           // ==================================================
-                                                                           function findResidualWriterArtifacts(rawText) {
-                                                                               const text = String(rawText || "");
-                                                                               const issues = [];
-                                                                               if (!text) return issues;
-
-                                                                               // 不再以 AA 疊字本身當錯誤：正常中文、擬聲詞、角色口癖
-                                                                               // 都可能含「死死／草草／將將」，不能只靠 regex 斷言不自然。
-                                                                               // 只攔截明確的連續生成循環，例如 4 字以上同字連發，
-                                                                               // 或同一個 2～12 字片語連續重複 >= 4 次（長片語 >= 3 次）。
-                                                                               // 保留對單一奇怪詞的觀測，交由後續語言品質評估處理，
-                                                                               // 不會因為「難難」就讓玩家整則回覆失敗。
-                                                                               if (/([\u3400-\u9fff])\1{3,}/u.test(text)) {
-                                                                                   issues.push("repeat:long-single-character-run");
-                                                                               }
-
-                                                                               if (/([\u3400-\u9fff]{2,3})\1{3,}/u.test(text)) {
-                                                                                   issues.push("repeat:short-phrase-loop");
-                                                                               }
-
-                                                                               if (/([\u3400-\u9fff]{4,12})\1{2,}/u.test(text)) {
-                                                                                   issues.push("repeat:long-phrase-loop");
-                                                                               }
-
-                                                                               // 一整句連續複製三遍以上，屬於高信心生成循環；
-                                                                               // 短的「哈哈」「不要不要」不在這個檢測範圍。
-                                                                               if (/([^。！？\n]{6,}[。！？])\s*\1\s*\1/u.test(text)) {
-                                                                                   issues.push("repeat:sentence-loop");
-                                                                               }
-
-                                                                               if (/(?:\r?\n|\\n)\s*n\s*(?:\r?\n|\\n)/.test(text)) {
-                                                                                   issues.push("orphan:n");
-                                                                               }
-
-                                                                               if (/[，。！？]{2,}/.test(text)) {
-                                                                                   issues.push("duplicate:punctuation");
-                                                                               }
-
-                                                                               if (/\b(?:indifferently|suddenly|softly|quietly)\b/i.test(text)) {
-                                                                                   issues.push("stray:english-adverb");
-                                                                               }
-
-                                                                               return [...new Set(issues)];
-                                                                           }
-
-                                                                           function compressResidualWriterArtifacts(rawText) {
-                                                                               let text = sanitizeWriterArtifacts(String(rawText || ""));
-
-                                                                               // 不做全域「非白名單中文字重複 → 單字」。
-                                                                               // 這種壓縮可能把缺字型錯誤變成另一個錯字，例如
-                                                                               // 「初初的旅人」會被錯壓成「初的旅人」。
-                                                                               text = text
-                                                                                   .replace(/\b(?:indifferently|suddenly|softly|quietly)\b/gi, "")
-                                                                                   .replace(/[ \t]{2,}/g, " ")
-                                                                                   .replace(/\n{3,}/g, "\n\n");
-
-                                                                               return text.trim();
-                                                                           }
-
-                                                                           function extractQuotedJsonField(raw, fieldName) {
-                                                                               const text = String(raw || "");
-                                                                               const field = String(fieldName || "")
-                                                                                   .replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-                                                                               const quoted = new RegExp(
-                                                                                   `["']?${field}["']?\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"`,
-                                                                                   "i"
-                                                                               ).exec(text);
-
-                                                                               if (quoted?.[1] != null) {
-                                                                                   try {
-                                                                                       return JSON.parse(`"${quoted[1]}"`);
-                                                                                   } catch (_) {
-                                                                                       return quoted[1]
-                                                                                           .replace(/\\n/g, "\n")
-                                                                                           .replace(/\\"/g, '"')
-                                                                                           .replace(/\\\\/g, "\\");
-                                                                                   }
-                                                                               }
-
-                                                                               return "";
-                                                                           }
-
-                                                                           function extractNumberJsonField(raw, fieldName) {
-                                                                               const text = String(raw || "");
-                                                                               const field = String(fieldName || "")
-                                                                                   .replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-                                                                               const match = new RegExp(
-                                                                                   `["']?${field}["']?\\s*:\\s*(-?\\d+(?:\\.\\d+)?)`,
-                                                                                   "i"
-                                                                               ).exec(text);
-
-                                                                               return match ? Number(match[1]) : null;
-                                                                           }
-
-                                                                           function extractDialogueVoiceText(responseText) {
-                                                                               const source = String(responseText || "");
-
-                                                                               // v2.3.7：先移除旁白，再抽取「」。
-                                                                               // 否則旁白中的音效（例如「砰」「噹」）也會被誤當角色台詞送進 TTS。
-                                                                               const dialogueOnlySource = source
-                                                                                   .replace(/（[\s\S]*?）/g, " ");
-
-                                                                               const dialogues = [
-                                                                                   ...dialogueOnlySource.matchAll(/「([\s\S]*?)」/g)
-                                                                               ]
-                                                                                   .map((m) => String(m[1] || "").trim())
-                                                                                   .filter(Boolean);
-
-                                                                               if (dialogues.length > 0) {
-                                                                                   return dialogues.join(" ");
-                                                                               }
-
-                                                                               return dialogueOnlySource
-                                                                                   .replace(/^時間：[^\r\n]*(?:\r?\n)地點：[^\r\n]*(?:\r?\n|$)/, "")
-                                                                                   .replace(/^時間：.*?\|\s*地點：.*?(?:\r?\n|$)/, "")
-                                                                                   .replace(/\s+/g, " ")
-                                                                                   .trim()
-                                                                                   .slice(0, 600);
-                                                                           }
-
-                                                                           function salvageMalformedWriterJson(rawContent, safePlayerName = "") {
-                                                                               const safeContent = String(rawContent || "");
-
-                                                                               const response = cleanAiResponseText(
-                                                                                   safeContent,
-                                                                                   safePlayerName
-                                                                               );
-
-                                                                               const voiceText =
-                                                                                   extractQuotedJsonField(safeContent, "voiceText") ||
-                                                                                   extractDialogueVoiceText(response);
-
-                                                                               const affectionChange =
-                                                                                   extractNumberJsonField(
-                                                                                       safeContent,
-                                                                                       "affectionChange"
-                                                                                   );
-
-                                                                               const storyTime =
-                                                                                   extractQuotedJsonField(safeContent, "storyTime");
-
-                                                                               const storyLocation =
-                                                                                   extractQuotedJsonField(safeContent, "storyLocation");
-
-                                                                               return {
-                                                                                   response,
-                                                                                   affectionChange:
-                                                                                       Number.isFinite(affectionChange)
-                                                                                           ? affectionChange
-                                                                                           : 0,
-                                                                                   voiceText,
-                                                                                   ...(storyTime ? { storyTime } : {}),
-                                                                                   ...(storyLocation ? { storyLocation } : {}),
-                                                                               };
-                                                                           }
-
-                                                                           function cleanAiResponseText(raw, safePlayerName = "") {
-                                                                                                                           if (!raw) return "";
-
-                                                                                                                           let text = String(raw)
-                                                                                                                               .replace(/```json/g, "")
-                                                                                                                               .replace(/```/g, "")
-                                                                                                                               .trim();
-
-                                                                                                                           // 1. 完整 JSON：正常解析
-                                                                                                                           try {
-                                                                                                                               const parsed = JSON.parse(text);
-
-                                                                                                                               if (parsed && typeof parsed === "object") {
-                                                                                                                                   if (typeof parsed.response === "string") {
-                                                                                                                                       text = parsed.response;
-                                                                                                                                   } else if (typeof parsed.text === "string") {
-                                                                                                                                       text = parsed.text;
-                                                                                                                                   } else if (typeof parsed.message === "string") {
-                                                                                                                                       text = parsed.message;
-                                                                                                                                   }
-                                                                                                                               } else if (typeof parsed === "string") {
-                                                                                                                                   text = parsed;
-                                                                                                                               }
-                                                                                                                           } catch (e) {
-                                                                                                                               // 不是完整 JSON，往下救
-                                                                                                                           }
-
-                                                                                                                           // 2. 救被截斷的格式
-                                                                                                                           const responseMatch = text.match(/"?response"?\s*:\s*"([\s\S]*)/);
-                                                                                                                           if (responseMatch && responseMatch[1]) {
-                                                                                                                               text = responseMatch[1];
-                                                                                                                           }
-
-                                                                                                                           // 3. 清掉尾巴殘留欄位與轉義字元
-                                                                                                                           text = text
-                                                                                                                               .replace(/",?\s*"affectionChange"\s*:\s*[\s\S]*$/g, "")
-                                                                                                                               .replace(/",?\s*"voiceText"\s*:\s*"[\s\S]*$/g, "")
-                                                                                                                               .replace(/",?\s*"reasoning"\s*:\s*"[\s\S]*$/g, "")
-                                                                                                                               .replace(/",?\s*"reasoning_details"\s*:\s*\[[\s\S]*$/g, "")
-                                                                                                                               .replace(/"\s*}\s*$/g, "")
-                                                                                                                               .replace(/\\n/g, "\n")
-                                                                                                                               .replace(/\\"/g, '"');
-
-                                                                                                                           // 🌟🌟🌟 總裁專屬防線：自動偵測並砍掉中途重複出現的第二組「時間／地點」標頭！
-                                                                                                                           // 原理：用正則找出第二次出現的時間地點標頭，直接把後面重複的截掉或合併
-                                                                                                                           const duplicateHeaderRegex = /((?:時間：[^\r\n]*\r?\n地點：[^\r\n]*)|(?:時間：[^\r\n]*\|\s*地點：[^\r\n]*))\n\n[\s\S]*?\1/;
-                                                                                                                           if (duplicateHeaderRegex.test(text)) {
-                                                                                                                               // 如果抓到它自己複製貼上兩次，我們保留第一次，把第二次以後的雜訊清掉
-                                                                                                                               text = text.replace(duplicateHeaderRegex, "$1");
-                                                                                                                           }
-
-                                                                                                                           // 也可以用更暴力的保底：如果文字中出現兩次「時間：」，直接從第二個「時間：」切掉前半段重複的
-                                                                                                                           const firstIndex = text.indexOf("時間：");
-                                                                                                                           if (firstIndex !== -1) {
-                                                                                                                               const secondIndex = text.indexOf("時間：", firstIndex + 3);
-                                                                                                                               if (secondIndex !== -1) {
-                                                                                                                                   // 代表它真的鬼打牆寫了兩次！我們只取第二段接續下去的精華，或者把第一段拔掉
-                                                                                                                                   // 這裡我們把第二個「時間：」開頭到之間的廢話拔掉，讓它變成流暢的一段
-                                                                                                                                   text = text.substring(0, secondIndex) + text.substring(text.indexOf("（", secondIndex));
-                                                                                                                               }
-                                                                                                                           }
-
-                                                                                                                           text = text.replace(/玩家/g, safePlayerName);
-
-                                                                                                                           // 玩家名稱是後端已知真值，因此可安全修復
-                                                                                                                           // 「首字重複、第二字遺失」這種生成抖字。
-                                                                                                                           // 例：初識的旅人 → 模型誤生為 初初的旅人。
-                                                                                                                           if (safePlayerName && safePlayerName.length >= 2) {
-                                                                                                                               const first = safePlayerName[0];
-                                                                                                                               const suffix = safePlayerName.slice(2);
-
-                                                                                                                               if (suffix) {
-                                                                                                                                   const brokenName =
-                                                                                                                                       `${first}${first}${suffix}`;
-
-                                                                                                                                   text =
-                                                                                                                                       text.split(brokenName)
-                                                                                                                                           .join(safePlayerName);
-                                                                                                                               }
-                                                                                                                           }
-
-                                                                                                                           return text.trim();
-                                                                                                                       }
+                                                                           const { sanitizeWriterArtifacts, findResidualWriterArtifacts, compressResidualWriterArtifacts, extractQuotedJsonField, extractNumberJsonField, extractDialogueVoiceText, salvageMalformedWriterJson, cleanAiResponseText } = createWriterResponseUtils();
 
                                                                            // ==========================================
                                                                            // 🔄 總裁的惡鬼催稿迴圈：防爆 + 防亂碼版
@@ -7774,13 +6508,12 @@ ${persistentPreferenceDirective}
 
                                                                                    // 🚨 如果 content 是空的，但明明有花費 tokens，立刻啟動 X光機！
                                                                                    if (!rawContent || rawContent.trim() === "") {
-                                                                                       console.warn("⚠️ 警告：抓不到 content！印出完整 choice 結構檢查：", JSON.stringify(aiResult.choices?.[0]));
+                                                                                       console.warn("⚠️ AI content 空白", { chatMode, finishReason: aiResult.choices?.[0]?.finish_reason || "", hasReasoning: Boolean(aiResult.choices?.[0]?.message?.reasoning_content) });
 
-                                                                                       // 1. 檢查是不是 DeepSeek 把內容放在了思考欄位 (reasoning_content)
-                                                                                       const reasoning = aiResult.choices?.[0]?.message?.reasoning_content;
-                                                                                       if (reasoning) {
-                                                                                           rawContent = reasoning;
-                                                                                           console.log("💡 抓到了！DeepSeek 把回覆藏在 reasoning_content 裡！");
+                                                                                       // 安全修復：reasoning_content 是模型內部分析，不是可顯示的角色正文。
+                                                                                       // 空 content 不得從 reasoning_content 補文字；下方既有空回覆流程會攔截，避免儲存及扣花。
+                                                                                       if (aiResult.choices?.[0]?.message?.reasoning_content) {
+                                                                                           console.warn("🛡️ AI 僅回傳推理內容；拒絕將 reasoning_content 當成角色回覆");
                                                                                        }
 
                                                                                        // 2. 檢查是不是被官方強制靜音
@@ -7789,6 +6522,16 @@ ${persistentPreferenceDirective}
                                                                                            rawContent = "（男神欲言又止，似乎被某種不可抗力限制了發言...）";
                                                                                        }
                                                                                    }
+                                                                               // 沉浸模式：拒絕將內部分析當作對話回傳。
+                                                                               if (["immersive", "resonance"].includes(chatMode) && isRoleplayInternalLeak(rawContent)) {
+                                                                                   console.error("🛡️ 沉浸回覆出現內部分析，阻止回傳／寫入／扣花", {chatMode, finishReason});
+                                                                                   return res.status(400).json({
+                                                                                       error: "AI_INTERNAL_ANALYSIS_LEAK",
+                                                                                       message: "本次回覆生成異常，請重新發送訊息。",
+                                                                                       charged: false,
+                                                                                       cost: 0,
+                                                                                   });
+                                                                               }
                                                                                // ==========================================
                                                                                    // 🛡️ 總裁級防護網 2.0：精準攔截，拒絕誤殺
                                                                                    // ==========================================
@@ -8601,6 +7344,11 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
 
 // v2.3.1：清理後文字必須在 session 區塊外仍可使用，
 // 因為最終 HTTP resultPayload 位於 session if/else 之後。
+// 最終正文也檢查：避免模型把分析藏進 response JSON，脫殼後才出現。
+if (["immersive", "resonance"].includes(chatMode) && isRoleplayInternalLeak(finalResponseText)) {
+    console.error("🛡️ 沉浸模式最終正文含內部分析，拒絕儲存與扣點");
+    return res.status(400).json({error: "AI_INTERNAL_ANALYSIS_LEAK", message: "本次回覆生成異常，請重新發送訊息。", charged: false, cost: 0});
+}
 let cleanDisplayText = String(finalResponseText || "");
 let cleanVoiceText = String(finalVoiceText || "");
 // ==================================================
@@ -9895,6 +8643,7 @@ const sessionData =
 
                     userMessage:
                         originalUserMessage.slice(0, 2000),
+                    chatMode: String(chatMode || ""),
 
                     sessionId,
                     playerProfileId: String(playerProfileId || body.playerProfileId || "").trim(),
@@ -10526,6 +9275,7 @@ exports.processMemoryJob = onDocumentCreated(
             String(
                 jobData.userMessage || ""
             ).trim();
+        const chatMode = String(jobData.chatMode || "");
 
         const memoryScopeVersion =
             Number(jobData.memoryScopeVersion || 0);
@@ -10633,6 +9383,7 @@ exports.processMemoryJob = onDocumentCreated(
                     sessionId,
                     userMessage,
                     playerName,
+                    chatMode,
                     abortController: null,
                 });
 
@@ -13206,108 +11957,7 @@ exports.syncNotificationBadge = onCall(
 );
 
 // 🌟 總裁專屬：殿堂級劇情書記官 (對話摘要生成)
-exports.generateStorySummary = onRequest({
-    region: "asia-east1",
-    secrets: [openRouterApiKey],
-    memory: "512MiB",
-    timeoutSeconds: 120, // 寫作需要一點時間，給他 2 分鐘
-}, (req, res) => {
-    return cors(req, res, async () => {
-        try {
-            // 1. 驗證身分
-            const authHeader = req.headers.authorization;
-            if (!authHeader || !authHeader.startsWith('Bearer ')) return res.status(401).json({ error: "未授權" });
-            const idToken = authHeader.split('Bearer ')[1];
-            const decodedToken = await getAuth().verifyIdToken(idToken);
-            const userId = decodedToken.uid;
-
-            const {
-                characterId,
-                characterName,
-                playerName,
-                chatHistory,
-                sessionId,
-            } = req.body;
-            const rawSessionId = String(sessionId || "").trim();
-
-            if (!rawSessionId) {
-                return res.status(400).json({
-                    error: "缺少聊天室 ID，無法分開儲存劇情摘要",
-                });
-            }
-
-            const safeSessionId = rawSessionId
-                .replace(/[\/\\#?\[\]\s]/g, "_")
-                .slice(0, 150);
-            if (!characterId || !chatHistory || chatHistory.length === 0) {
-                return res.status(400).json({ error: "缺少參數或歷史對話為空" });
-            }
-
-            // 將對話紀錄轉成純文字格式，方便 AI 閱讀
-            const formattedHistory = chatHistory.map(msg =>
-                `${msg.role === 'user' ? playerName : characterName}: ${msg.content}`
-            ).join('\n');
-
-            // 2. 🌟 核心寫作 Prompt：小說家筆觸
-            const systemPrompt = `
-            你是一位文筆極佳的浪漫小說家。
-            請閱讀以下 ${playerName} 與 ${characterName} 的對話紀錄，並寫下一段「唯美的劇情摘要」。
-
-            【寫作規則】：
-            1. 視角：請用「第三人稱全知視角」或是「客觀的敘事口吻」來撰寫。
-            2. 重點：抓住兩人互動中最有張力、最曖昧、或最關鍵的情感轉折。不需要流水帳紀錄每一句話。
-            3. 長度：嚴格控制在 100 到 150 字之間，簡潔而雋永。
-            4. 結尾：以一個帶有餘韻的句子收尾（例如：「兩人之間的氣氛似乎又產生了微妙的變化。」）。
-            5. 格式：請直接輸出摘要文字，絕對不要加上任何標題、引號或「以下是摘要」等廢話。
-            `;
-
-            // 3. 呼叫 AI 寫作 (用便宜又聰明的模型)
-            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${openRouterApiKey.value()}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    model: "google/gemini-2.5-flash-lite",
-                    messages: [
-                        { role: "system", content: systemPrompt },
-                        { role: "user", content: `【對話紀錄】：\n${formattedHistory}` }
-                    ],
-                    temperature: 0.6, // 稍微給一點創意空間
-                })
-            });
-
-            const aiResult = await response.json();
-            const summaryText = aiResult.choices?.[0]?.message?.content?.trim();
-
-            if (!summaryText) throw new Error("AI 沒有回傳摘要");
-
-            // 4. 寫入總裁的那個專屬展示櫃抽屜
-            await db
-                .collection("users")
-                .doc(userId)
-                .collection("friendships")
-                .doc(characterId)
-                .collection("chat_sessions")
-                .doc(safeSessionId)
-                .collection("summaries")
-                .add({
-                    content: summaryText,
-                    sessionId: rawSessionId,
-                    characterId,
-                    createdAt: FieldValue.serverTimestamp(),
-                });
-
-            console.log(`📖 成功生成並寫入摘要：${summaryText.substring(0, 20)}...`);
-            return res.status(200).json({ success: true });
-
-        } catch (error) {
-            console.error("生成摘要失敗:", error);
-            return res.status(500).json({ error: error.message });
-        }
-    });
-});
+exports.generateStorySummary = createStorySummaryFunction({onRequest, openRouterApiKey, cors, getAuth, db, FieldValue});
 
 exports.scanBrokenMessages = onRequest({
     region: "asia-east1",
@@ -17554,824 +16204,23 @@ exports.claimReferralReward = onCall(
  *   confidence: number
  * }
  */
-async function extractPlayerMemory({
-  userMessage,
-  playerName,
-  abortController,
-}) {
-  const cleanMessage = String(userMessage || "").trim();
-
-  if (!cleanMessage) {
-    return {
-      shouldRemember: false,
-      memory: "",
-      category: "none",
-      confidence: 0,
-    };
-  }
-
-  // 系統續寫指令、圖片失敗提示等內容不做記憶分析
-  if (
-    cleanMessage.startsWith("【續寫指令】") ||
-    cleanMessage.startsWith("【系統事件】") ||
-    cleanMessage.startsWith("[玩家傳來")
-  ) {
-    return {
-      shouldRemember: false,
-      memory: "",
-      category: "none",
-      confidence: 0,
-    };
-  }
-
-  const memorySystemPrompt = `
-你是「玩家長期記憶提取器」。
-
-你的工作不是聊天，也不能回應玩家。
-你只需要判斷玩家最新一句話中，是否包含值得未來持續記住的個人資訊。
-
-【應該記住】
-1. 穩定偏好：
-   - 喜歡或討厭的食物、事物、活動、類型。
-   - 例如：我喜歡草莓蛋糕、我討厭香菜。
-
-2. 個人基本資訊：
-   - 職業、生日、居住地、家庭關係、寵物、長期興趣。
-   - 例如：我是護理師、我的生日是 8 月 12 日。
-
-3. 穩定習慣或明確特質：
-   - 例如：我怕打雷、我不喝咖啡、我習慣晚睡。
-
-4. 對玩家具有長期意義的重要事件：
-   - 例如：下週要面試、最近剛失戀、正在準備重要考試。
-   - 只有明顯會影響後續關心與陪伴時才記住。
-
-【不應該記住】
-1. 純粹當下狀態：
-   - 今天很熱、我現在好睏、剛剛吃了飯。
-
-2. 普通劇情台詞或角色扮演內容。
-
-3. 不確定、假設、玩笑、反問句。
-
-4. AI 自己推測出來的資訊。
-
-5. 玩家沒有明確說出的資訊。
-
-【重要規則】
-- 只能提取玩家明確表達的事實。
-- 不得補充、推測或改寫成更誇張的內容。
-- 記憶中的玩家稱呼，必須使用系統提供的玩家名稱。
-- 例如玩家名稱是「妮妮」，就寫「妮妮喜歡吃草莓蛋糕」。
-- 絕對不要使用「玩家喜歡……」這種系統式稱呼。
-- 一次最多提取一項最重要的記憶。
-- 若沒有值得長期保存的資訊，shouldRemember 必須是 false。
-- 若 shouldRemember=true，必須同時提供 factKey 與 factValue。
-- factKey 是「這條事實屬於哪一個固定欄位」的機器鍵，不可把玩家姓名、角色姓名、日期或具體值塞進 key。
-- 同一件事即使說法改變，也必須盡量使用相同 factKey，讓系統能辨識更新與衝突。
-- factKey 必須使用下列固定 taxonomy；不要自行創造新的第一、第二層分類。
-- 固定鍵：
-  - identity.name
-  - identity.gender
-  - identity.occupation
-  - identity.birthday
-  - identity.residence
-  - identity.family
-  - identity.pet
-  - interaction.preferred_address
-  - interaction.preferred_treatment
-  - relationship.status
-  - worldline.pregnancy_status
-  - worldline.identity
-- 可帶「穩定主題 slug」的鍵（第三層只能放被描述的事物，不可放喜歡/討厭/現在/每天等狀態）：
-  - preference.food.<subject>
-  - preference.drink.<subject>
-  - preference.hobby.<subject>
-  - preference.activity.<subject>
-  - preference.media.<subject>
-  - preference.other.<subject>
-  - habit.<subject>
-  - trait.<subject>
-  - important_event.<subject>
-  - relationship.event.<subject>
-  - worldline.preference.<subject>
-  - worldline.event.<subject>
-- subject 一律使用簡短、穩定的小寫英文 snake_case。相同事物前後改變時必須沿用同一 subject。
-- 特別例子：
-  - 「我不喝咖啡」→ preference.drink.coffee
-  - 「我現在每天喝咖啡」若是在更新長期習慣，仍用 preference.drink.coffee，不要改成 habit.coffee。
-  - 「我討厭草莓蛋糕」與「我現在最喜歡草莓蛋糕」→ 都用 preference.food.strawberry_cake。
-  - 「我是學生」與「我畢業後成為咖啡師」→ 都用 identity.occupation。
-  - 「叫我小滿」與「以後叫我阿滿」→ 都用 interaction.preferred_address。
-  - 若是一般、跨聊天室成立的稱呼（例如「大家都叫我阿滿」「叫我小滿就好」）→ scope=profile。
-  - 若是目前角色／目前聊天室專屬稱呼（例如「我喜歡你叫我寶寶」「你叫我老婆」「不要叫我寶寶，叫名字」）→ scope=session。
-  - 「我們結婚了」與「我們決定離婚」→ 都用 relationship.status；事件本身若另有長期意義才用 relationship.event.<subject>。
-  - scope 只表示「這個事實在哪裡成立」，不要把 scope 重複編進 factKey。
-  - 「在這個世界裡我很愛甜食」→ scope=session，但 factKey 仍是 preference.food.sweets，不要輸出 worldline.preference.sweets。
-  - 只要已有 identity / preference / habit / interaction / relationship 等語意鍵可用，就優先使用語意鍵；worldline.* 僅保留給沒有其他 canonical semantic key 可表達的世界線事實。
-  - 「我懷孕了」→ worldline.pregnancy_status。
-- 禁止輸出 personal.job、habit.alcohol、relationship.preferred_name、story.relationship_status、story.pregnancy_status 等舊式自由鍵。
-- factValue 是這條事實目前的簡潔值，例如「咖啡師」「不喝」「喜歡」「阿滿」「已婚」「離婚」「懷孕」。
-- 只回傳合法 JSON，不要加入 Markdown 或說明。
-
-【記憶範圍判斷】
-- profile：只在明確是玩家穩定、自身、跨角色都成立的事實時使用。
-  例：我是咖啡師、我對花生過敏、我固定不喝酒。
-- character：只對目前這個角色有意義、而且應跨該角色不同聊天室共享的長期記憶。
-  例：我最喜歡你做的草莓蛋糕、我一直很信任你。
-- session：只在目前聊天室／世界線成立的劇情事實與稱呼。
-  例：我們昨天結婚了、在這個世界裡我不吃甜食、我現在懷孕了、我喜歡你在這裡叫我寶寶。
-- none：一次性、模糊、玩笑、當下狀態，或不值得長期保存。
-
-判斷原則：
-- 「我今天想吃草莓蛋糕」只是當下需求，不是穩定偏好，scope 應為 none。
-- 「我現在最喜歡草莓蛋糕」中的「現在」是在更新長期偏好，不是短暫狀態；scope 應為 profile。
-- 「最喜歡／最愛／討厭／不喜歡／不吃／不喝／每天／固定／習慣」等明確穩定語意，若沒有角色或世界線限定，優先視為 profile。
-- 只有「今天／剛剛／突然／今晚／這次／現在想……」這類純當下需求才應判為 none。
-- 若無法確定是全域穩定事實，寧可選 character 或 session，不要誤放 profile。
-- 一次最多提取一項最重要的記憶。
-
-輸出要求：
-- 只輸出一個合法 JSON object。
-- 禁止任何前言、解釋、Markdown、程式碼框或「Here is...」之類文字。
-- 即使 shouldRemember=false，也必須輸出完整 JSON 結構。
-
-輸出格式：
-{
-  "shouldRemember": true 或 false,
-  "memory": "${playerName || "對方"}喜歡吃草莓蛋糕。",
-  "scope": "profile | character | session | none",
-  "category": "preference | personal | habit | relationship | story_state | important_event | none",
-  "factKey": "preference.food.strawberry_cake",
-  "factValue": "喜歡",
-  "confidence": 0 到 1
-}
-`;
-
-  const requestBody = {
-    messages: [
-      {
-        role: "system",
-        content: memorySystemPrompt,
-      },
-      {
-        role: "user",
-        content: `需要記憶的人名：${playerName || "對方"}\n最新訊息：${cleanMessage}`,
-      },
-    ],
-    max_tokens: 400,
-    temperature: 0,
-    response_format: {
-      type: "json_object",
-    },
-  };
-
-  try {
-    const result = await callAiWithRetry({
-      // 使用便宜、快速的模型即可
-      modelId: "google/gemini-2.5-flash-lite",
-      fallbackModelId: "deepseek/deepseek-v4-flash",
-      abortController,
-      timeoutMs: 20_000,
-      requestBody,
-    });
-
-    const parseMemoryJson = (value) => {
-      const cleaned = String(value || "")
-        .replace(/```json/gi, "")
-        .replace(/```/g, "")
-        .trim();
-
-      if (!cleaned) {
-        throw new Error("EMPTY_MEMORY_EXTRACTOR_OUTPUT");
-      }
-
-      const start = cleaned.indexOf("{");
-      const end = cleaned.lastIndexOf("}");
-      if (start < 0 || end <= start) {
-        throw new Error(
-          `INVALID_MEMORY_EXTRACTOR_JSON: ${cleaned.slice(0, 160)}`
-        );
-      }
-
-      return JSON.parse(cleaned.slice(start, end + 1));
-    };
-
-    let parsed;
-
-    try {
-      parsed = parseMemoryJson(
-        result?.choices?.[0]?.message?.content || ""
-      );
-    } catch (firstParseError) {
-      console.warn(
-        "⚠️ Gemini 記憶提取輸出不是合法 JSON，改用 DeepSeek 重試一次：",
-        {
-          finishReason: result?.choices?.[0]?.finish_reason || "",
-          preview: String(
-            result?.choices?.[0]?.message?.content || ""
-          ).slice(0, 180),
-          error: firstParseError?.message || String(firstParseError),
-        }
-      );
-
-      const retryResult = await callAiWithRetry({
-        modelId: "deepseek/deepseek-v4-flash",
-        fallbackModelId: "deepseek/deepseek-v4-flash",
-        abortController,
-        timeoutMs: 20_000,
-        requestBody: {
-          ...requestBody,
-          max_tokens: 400,
-          messages: [
-            {
-              role: "system",
-              content:
-                memorySystemPrompt +
-                "\n\n【最高格式要求】只輸出一個合法 JSON object；禁止前言、說明、Markdown 或程式碼框。",
-            },
-            {
-              role: "user",
-              content: `需要記憶的人名：${playerName || "對方"}\n最新訊息：${cleanMessage}`,
-            },
-          ],
-        },
-      });
-
-      parsed = parseMemoryJson(
-        retryResult?.choices?.[0]?.message?.content || ""
-      );
-    }
-
-    return {
-      shouldRemember: parsed.shouldRemember === true,
-      memory: String(parsed.memory || "").trim(),
-      scope: String(parsed.scope || "none").trim().toLowerCase(),
-      category: String(parsed.category || "none").trim(),
-      factKey: String(parsed.factKey || "").trim(),
-      factValue: String(parsed.factValue || "").trim(),
-      confidence: Number(parsed.confidence || 0),
-    };
-  } catch (error) {
-    console.error("⚠️ 玩家記憶提取失敗：", error);
-
-    // 記憶失敗不能影響正常聊天
-    return {
-      shouldRemember: false,
-      memory: "",
-      category: "none",
-      confidence: 0,
-    };
-  }
-}
-
-
-function resolvePlayerIdentityFromUserData(userData = {}, playerProfileId = "default") {
-  const safeProfileId = String(playerProfileId || "default").trim() || "default";
-  const accountName =
-    String(
-      userData.nickname ||
-      userData.displayName ||
-      userData.name ||
-      "你"
-    ).trim() || "你";
-
-  const accountGender =
-    String(userData.gender || "未設定").trim() || "未設定";
-  const accountBirthday =
-    String(userData.birthday || "未設定").trim() || "未設定";
-
-  const profiles = Array.isArray(userData.profiles)
-    ? userData.profiles
-    : [];
-
-  const matchedProfile =
-    safeProfileId !== "default"
-      ? profiles.find(
-          (profile) =>
-            String(profile?.id || "").trim() === safeProfileId
-        ) || null
-      : null;
-
-  if (!matchedProfile) {
-    return {
-      id: "default",
-      name: accountName,
-      gender: accountGender,
-      birthday: accountBirthday,
-      profile: null,
-    };
-  }
-
-  return {
-    id: safeProfileId,
-    name:
-      String(matchedProfile.name || accountName).trim() || accountName,
-    // 目前前端的自訂拾光檔案仍沿用帳號層級性別／生日；若未來 profile 自己有值則優先使用。
-    gender:
-      String(matchedProfile.gender || accountGender).trim() || accountGender,
-    birthday:
-      String(matchedProfile.birthday || accountBirthday).trim() || accountBirthday,
-    profile: matchedProfile,
-  };
-}
-
-async function resolveEffectivePlayerProfileId({
-  appId = APP_ID,
-  userId,
-  characterId = "",
-  sessionId = "",
-  requestedProfileId = "",
-  userData = null,
-}) {
-  const safeAppId = String(appId || APP_ID).trim() || APP_ID;
-  const safeUserId = String(userId || "").trim();
-  const safeCharacterId = String(characterId || "").trim();
-  const safeSessionId = String(sessionId || "").trim();
-  let effectiveProfileId = String(requestedProfileId || "").trim();
-
-  let resolvedUserData = userData;
-  let roomData = null;
-
-  if (safeSessionId && safeUserId) {
-    try {
-      const roomSnapshot = await db
-        .collection("artifacts")
-        .doc(safeAppId)
-        .collection("chat_sessions")
-        .doc(safeSessionId)
-        .get();
-
-      if (roomSnapshot.exists) {
-        const candidateRoomData = roomSnapshot.data() || {};
-        const roomOwner = String(candidateRoomData.userId || "").trim();
-        const roomCharacterId = String(candidateRoomData.characterId || "").trim();
-
-        if (
-          roomOwner === safeUserId &&
-          (!safeCharacterId || !roomCharacterId || roomCharacterId === safeCharacterId)
-        ) {
-          roomData = candidateRoomData;
-          const roomProfileId =
-            String(candidateRoomData.playerProfileId || "").trim();
-          if (roomProfileId) {
-            effectiveProfileId = roomProfileId;
-          }
-        }
-      }
-    } catch (error) {
-      console.warn(
-        "⚠️ resolveEffectivePlayerProfileId 讀取聊天室失敗：",
-        error?.message || error
-      );
-    }
-  }
-
-  if (!resolvedUserData && safeUserId) {
-    try {
-      const userSnapshot = await db
-        .collection("users")
-        .doc(safeUserId)
-        .get();
-      resolvedUserData = userSnapshot.data() || {};
-    } catch (error) {
-      console.warn(
-        "⚠️ resolveEffectivePlayerProfileId 讀取玩家資料失敗：",
-        error?.message || error
-      );
-      resolvedUserData = {};
-    }
-  }
-
-  const safeUserData = resolvedUserData || {};
-
-  if (!effectiveProfileId && safeSessionId) {
-    const roomProfiles =
-      safeUserData.roomProfiles && typeof safeUserData.roomProfiles === "object"
-        ? safeUserData.roomProfiles
-        : {};
-
-    effectiveProfileId =
-      String(roomProfiles[safeSessionId] || "").trim();
-  }
-
-  // 舊房間若完全沒有紀錄，視為基礎檔案，避免再落回角色共用記憶路徑。
-  if (!effectiveProfileId) {
-    effectiveProfileId = "default";
-  }
-
-  if (effectiveProfileId !== "default") {
-    const profiles = Array.isArray(safeUserData.profiles)
-      ? safeUserData.profiles
-      : [];
-    const profileExists = profiles.some(
-      (profile) =>
-        String(profile?.id || "").trim() === effectiveProfileId
-    );
-
-    if (!profileExists) {
-      console.warn(
-        "⚠️ 找不到指定 playerProfileId，退回基礎檔案：",
-        effectiveProfileId
-      );
-      effectiveProfileId = "default";
-    }
-  }
-
-  // 可以安全補回舊房間，之後每次都以 room 綁定為準。
-  if (
-    safeSessionId &&
-    safeUserId &&
-    roomData &&
-    !String(roomData.playerProfileId || "").trim()
-  ) {
-    try {
-      await db
-        .collection("artifacts")
-        .doc(safeAppId)
-        .collection("chat_sessions")
-        .doc(safeSessionId)
-        .set(
-          {
-            playerProfileId: effectiveProfileId,
-          },
-          {merge: true}
-        );
-    } catch (error) {
-      console.warn(
-        "⚠️ 回填聊天室 playerProfileId 失敗：",
-        error?.message || error
-      );
-    }
-  }
-
-  return effectiveProfileId;
-}
-
-
-function normalizeMemoryFactKey(value) {
-  return String(value || "")
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, "_")
-    .replace(/[^a-z0-9._:-]/g, "")
-    .replace(/\.{2,}/g, ".")
-    .replace(/^\.|\.$/g, "")
-    .slice(0, 120);
-}
-
-const MEMORY_FACT_KEY_EXACT = new Set([
-  "identity.name",
-  "identity.gender",
-  "identity.occupation",
-  "identity.birthday",
-  "identity.residence",
-  "identity.family",
-  "identity.pet",
-  "interaction.preferred_address",
-  "interaction.preferred_treatment",
-  "relationship.status",
-  "worldline.pregnancy_status",
-  "worldline.identity",
-]);
-
-const MEMORY_FACT_KEY_PREFIXES = [
-  "preference.food.",
-  "preference.drink.",
-  "preference.hobby.",
-  "preference.activity.",
-  "preference.media.",
-  "preference.other.",
-  "habit.",
-  "trait.",
-  "important_event.",
-  "relationship.event.",
-  "worldline.preference.",
-  "worldline.event.",
-];
-
-const MEMORY_FACT_KEY_ALIASES = new Map([
-  ["personal.job", "identity.occupation"],
-  ["personal.occupation", "identity.occupation"],
-  ["identity.job", "identity.occupation"],
-  ["relationship.preferred_name", "interaction.preferred_address"],
-  ["relationship.preferred_address", "interaction.preferred_address"],
-  ["story.relationship_status", "relationship.status"],
-  ["story.pregnancy_status", "worldline.pregnancy_status"],
-  ["pregnancy.status", "worldline.pregnancy_status"],
-  ["habit.alcohol", "preference.drink.alcohol"],
-  ["habit.coffee", "preference.drink.coffee"],
-  ["preference.coffee", "preference.drink.coffee"],
-  ["preference.alcohol", "preference.drink.alcohol"],
-]);
-
-function canonicalizeMemoryFactKey(value, {userMessage = "", category = ""} = {}) {
-  let key = normalizeMemoryFactKey(value);
-  if (!key) return "";
-
-  key = MEMORY_FACT_KEY_ALIASES.get(key) || key;
-
-  // 常見「同一事實、不同分類」的模型漂移，伺服器再做一次收斂。
-  const message = String(userMessage || "").toLowerCase();
-  const normalizedCategory = String(category || "").trim().toLowerCase();
-
-  // 已經是明確 identity 欄位時，不要再因為值裡含有「咖啡」等字樣被食物/飲料規則覆蓋。
-  // 例：「我是咖啡師」的 factKey=identity.occupation，不能被「咖啡」誤改成 preference.drink.coffee。
-  if (MEMORY_FACT_KEY_EXACT.has(key) && key.startsWith("identity.")) {
-    return key;
-  }
-
-  // 如果模型已經給了「有效而且更具體」的偏好主題，就不要只因為句子背景提到
-  // 咖啡店、酒吧等詞，把主題粗暴覆蓋掉。
-  // 例：「我在咖啡店不喝拿鐵」若模型已判 preference.drink.latte，
-  // 必須保留 latte，不能因為「咖啡店」被改成 coffee。
-  const hasSpecificDrinkKey =
-    key.startsWith("preference.drink.") &&
-    !["preference.drink.drink", "preference.drink.other"].includes(key);
-
-  const hasSpecificFoodKey =
-    key.startsWith("preference.food.") &&
-    !["preference.food.food", "preference.food.other"].includes(key);
-
-  if (!hasSpecificDrinkKey && /(不喝咖啡|喝咖啡|喜歡咖啡|愛喝咖啡|討厭咖啡|每天(?:都)?喝咖啡|coffee)/i.test(message)) {
-    key = "preference.drink.coffee";
-  } else if (!hasSpecificDrinkKey && /(不喝酒|喝酒|喜歡喝酒|愛喝酒|討厭喝酒|酒精|alcohol|wine|beer)/i.test(message)) {
-    key = "preference.drink.alcohol";
-  } else if ((!hasSpecificFoodKey || key === "preference.food.cake") && /(草莓蛋糕|strawberry\s*cake)/i.test(message)) {
-    key = "preference.food.strawberry_cake";
-  } else if (!hasSpecificFoodKey && /(甜食|甜點|dessert|sweets?)/i.test(message)) {
-    key = "preference.food.sweets";
-  } else if (!hasSpecificFoodKey && /(香菜|cilantro|coriander)/i.test(message)) {
-    key = "preference.food.cilantro";
-  }
-
-  // 關係狀態屬於同一 canonical fact。
-  // scope 只決定這個事實在哪一層成立，不應讓「結婚 / 離婚 / 交往 / 分手」
-  // 因為措辭不同而漂成 relationship.event.*。
-  if (/(結婚|已婚|夫妻|離婚|分手|交往|在一起|戀人|情侶|曖昧)/i.test(message)) {
-    key = "relationship.status";
-  }
-
-  // 若模型把一般偏好誤編成 worldline.preference.*，在有明確語意主題時
-  // 收斂回 preference.*；世界線限定應由 scope=session 表示。
-  if (key === "worldline.preference.sweets") {
-    key = "preference.food.sweets";
-  } else if (key === "worldline.preference.strawberry_cake") {
-    key = "preference.food.strawberry_cake";
-  } else if (key === "worldline.preference.coffee") {
-    key = "preference.drink.coffee";
-  }
-
-  if (
-    normalizedCategory === "personal" &&
-    /^(personal\.|identity\.).*(job|occupation|career|work)$/.test(key)
-  ) {
-    key = "identity.occupation";
-  }
-
-  if (MEMORY_FACT_KEY_EXACT.has(key)) return key;
-
-  for (const prefix of MEMORY_FACT_KEY_PREFIXES) {
-    if (!key.startsWith(prefix)) continue;
-    const subject = key.slice(prefix.length);
-    // 第三層主題必須穩定且不能再偷偷帶更多階層。
-    if (/^[a-z0-9][a-z0-9_]{0,63}$/.test(subject)) {
-      return key;
-    }
-    return "";
-  }
-
-  return "";
-}
-
-function normalizeMemoryFactValue(value) {
-  return String(value || "")
-    .trim()
-    .toLowerCase()
-    .replace(/[，。！？、；：,.!?;:\s"'「」『』（）()【】\[\]]/g, "")
-    .slice(0, 240);
-}
-
-function memoryTimestampToMillis(value) {
-  if (!value) return 0;
-  if (typeof value.toMillis === "function") {
-    try {
-      return Number(value.toMillis()) || 0;
-    } catch (_) {
-      return 0;
-    }
-  }
-  if (value instanceof Date) return value.getTime();
-  if (typeof value === "number") return value;
-  return 0;
-}
-
-function resolveMemoryConflicts(entries = []) {
-  if (!Array.isArray(entries) || entries.length === 0) return [];
-
-  const scopeRank = {
-    session: 3,
-    character: 2,
-    profile: 1,
-    legacy: 0,
-  };
-
-  const noKey = [];
-  const bestByFactKey = new Map();
-
-  for (const rawEntry of entries) {
-    if (!rawEntry || rawEntry.active === false) continue;
-
-    const entry = {
-      ...rawEntry,
-      factKey: canonicalizeMemoryFactKey(rawEntry.factKey, {
-        category: rawEntry.category,
-      }),
-    };
-
-    if (!entry.factKey) {
-      noKey.push(entry);
-      continue;
-    }
-
-    const current = bestByFactKey.get(entry.factKey);
-    if (!current) {
-      bestByFactKey.set(entry.factKey, entry);
-      continue;
-    }
-
-    const entryRank = scopeRank[entry.scope] ?? 0;
-    const currentRank = scopeRank[current.scope] ?? 0;
-
-    if (entryRank > currentRank) {
-      bestByFactKey.set(entry.factKey, entry);
-      continue;
-    }
-
-    if (
-      entryRank === currentRank &&
-      memoryTimestampToMillis(entry.timestamp) >
-        memoryTimestampToMillis(current.timestamp)
-    ) {
-      bestByFactKey.set(entry.factKey, entry);
-    }
-  }
-
-  return [
-    ...bestByFactKey.values(),
-    ...noKey,
-  ];
-}
-
-async function loadScopedMemoryEntries({
-  appId = APP_ID,
-  userId,
-  characterId,
-  playerProfileId,
-  sessionId,
-  perScopeLimit = 8,
-}) {
-  const safeAppId = String(appId || APP_ID).trim() || APP_ID;
-  const safeUserId = String(userId || "").trim();
-  const safeCharacterId = String(characterId || "").trim();
-  const safeProfileId = String(playerProfileId || "default").trim() || "default";
-  const safeSessionId = String(sessionId || "").trim();
-
-  if (!safeUserId || !safeCharacterId || !safeSessionId) {
-    return [];
-  }
-
-  const profileMemoriesRef = db
-    .collection("users")
-    .doc(safeUserId)
-    .collection("profile_memories")
-    .doc(safeProfileId)
-    .collection("memories");
-
-  const characterMemoriesRef = db
-    .collection("users")
-    .doc(safeUserId)
-    .collection("profile_memories")
-    .doc(safeProfileId)
-    .collection("characters")
-    .doc(safeCharacterId)
-    .collection("memories");
-
-  const sessionMemoriesRef = db
-    .collection("artifacts")
-    .doc(safeAppId)
-    .collection("chat_sessions")
-    .doc(safeSessionId)
-    .collection("memories");
-
-  const [profileSnapshot, characterSnapshot, sessionSnapshot] =
-    await Promise.all([
-      profileMemoriesRef
-        .orderBy("timestamp", "desc")
-        .limit(perScopeLimit)
-        .get(),
-      characterMemoriesRef
-        .orderBy("timestamp", "desc")
-        .limit(perScopeLimit)
-        .get(),
-      sessionMemoriesRef
-        .orderBy("timestamp", "desc")
-        .limit(perScopeLimit)
-        .get(),
-    ]);
-
-  const entries = [];
-
-  const append = (snapshot, scope) => {
-    for (const doc of snapshot.docs) {
-      const data = doc.data() || {};
-      const content =
-        String(data.text || data.content || "").trim().slice(0, 700);
-      if (!content) continue;
-
-      entries.push({
-        id: doc.id,
-        scope,
-        title: String(data.title || "").trim().slice(0, 80),
-        content,
-        factKey: canonicalizeMemoryFactKey(data.factKey, {
-          category: data.category,
-        }),
-        factValue: String(data.factValue || "").trim().slice(0, 240),
-        active: data.active !== false,
-        confidence: Number(data.confidence || 0),
-        timestamp: data.timestamp || null,
-      });
-    }
-  };
-
-  // 世界線事實最靠近當前聊天室，其次角色關係，最後才是玩家跨角色穩定資料。
-  append(sessionSnapshot, "session");
-  append(characterSnapshot, "character");
-  append(profileSnapshot, "profile");
-
-  return resolveMemoryConflicts(entries);
-}
-
-
-function repairMemoryScope({
-  scope,
-  shouldRemember,
-  factKey,
-  userMessage,
-}) {
-  let safeScope = String(scope || "none").trim().toLowerCase();
-  const message = String(userMessage || "").trim();
-
-  // 目前角色／聊天室專屬稱呼一律屬於 session。
-  // 即使 Extractor 已先判成 character，也要在這裡修正，
-  // 避免同角色不同聊天室互相污染「寶寶／老婆／老公」等稱呼。
-  if (
-    factKey === "interaction.preferred_address" &&
-    /(你叫我|你喊我|你稱呼我|你可以叫我|我喜歡你叫我|不要再叫我|不要叫我|改叫我|叫我老婆|叫我老公|叫我寶寶)/i.test(message)
-  ) {
-    return "session";
-  }
-
-  if (["profile", "character", "session"].includes(safeScope)) {
-    return safeScope;
-  }
-
-  if (shouldRemember !== true || !factKey) {
-    return "none";
-  }
-
-  // 明確世界線限定，一律 session。
-  if (/(在這個世界(?:裡|中)?|這個世界線|這條世界線|在這個聊天室|這個聊天室裡)/i.test(message)) {
-    return "session";
-  }
-
-  // 只有在模型已判定 shouldRemember=true、factKey 也合法，
-  // 且句子有明確穩定語意時，才把錯誤的 none 修回 profile。
-  const stableSignal =
-    /(最喜歡|最愛|很喜歡|喜歡|討厭|不喜歡|不吃|不喝|每天|固定|習慣|我是|我的職業|叫我.+就好|以後叫我|大家都叫我)/i.test(message);
-
-  const ephemeralOnly =
-    /(今天(?:突然)?想|剛剛|突然想|今晚想|這次想|等等想|現在想(?:吃|喝|做|看|去))/i.test(message);
-
-  if (stableSignal && !ephemeralOnly) {
-    if (
-      factKey.startsWith("identity.") ||
-      factKey.startsWith("preference.") ||
-      factKey.startsWith("habit.") ||
-      factKey.startsWith("trait.") ||
-      factKey === "interaction.preferred_address" ||
-      factKey === "interaction.preferred_treatment"
-    ) {
-      return "profile";
-    }
-  }
-
-  return "none";
-}
-
+const extractPlayerMemory = createMemoryExtractor({callAiWithRetry});
+
+
+
+// 記憶分類、scope 載入與衝突解決，搬至獨立模組；保持原函式介面。
+const {
+  normalizeMemoryFactKey,
+  canonicalizeMemoryFactKey,
+  normalizeMemoryFactValue,
+  memoryTimestampToMillis,
+  resolveMemoryConflicts,
+  loadScopedMemoryEntries,
+  repairMemoryScope
+} = createMemoryScopeTools({db, APP_ID});
 
 async function savePlayerMemoryIfNeeded({
+  chatMode = "",
   appId,
   userId,
   characterId,
@@ -18389,6 +16238,7 @@ async function savePlayerMemoryIfNeeded({
   const extracted = await extractPlayerMemory({
     userMessage,
     playerName,
+    chatMode,
     abortController,
   });
 
@@ -18420,7 +16270,7 @@ async function savePlayerMemoryIfNeeded({
   // 第一版先採較保守門檻，避免亂存
   if (
     extracted.shouldRemember !== true ||
-    confidence < 0.75 ||
+    confidence < (["immersive", "resonance"].includes(chatMode) ? 0.68 : 0.75) ||
     memoryText.length < 4 ||
     memoryScope === "none" ||
     !factKey
@@ -19815,6 +17665,9 @@ const getAdminDashboardStatsHandler = async (request) => {
         .collection("public_characters")
         .get();
 
+      const worldsFuture = db.collection('artifacts').doc(APP_ID)
+        .collection('worlds').get();
+
       const privateCharactersFuture = db
         .collectionGroup("private_characters")
         .get();
@@ -19852,6 +17705,7 @@ const getAdminDashboardStatsHandler = async (request) => {
       const [
         usersSnapshot,
         publicCharactersSnapshot,
+        worldsSnapshot,
         privateCharactersSnapshot,
         reportsSnapshot,
         chatSessionsSnapshot,
@@ -19859,6 +17713,7 @@ const getAdminDashboardStatsHandler = async (request) => {
       ] = await Promise.all([
         usersFuture,
         publicCharactersFuture,
+        worldsFuture,
         privateCharactersFuture,
         reportsFuture,
         chatSessionsFuture,
@@ -20224,7 +18079,23 @@ const getAdminDashboardStatsHandler = async (request) => {
             100
           : null;
 
+      // First publication date is preferred; old documents without it use
+      // the initial creation date rather than updatedAt (which changes on edits).
+      const publicWorldDocs = worldsSnapshot.docs.filter(doc => {
+        const w = doc.data() || {};
+        return w.isPublic === true && w.publicPlayable === true &&
+          w.isDraft !== true && w.status === 'public';
+      });
+      const publicWorlds = publicWorldDocs.length;
+      const todayNewWorlds = publicWorldDocs.filter(doc => {
+        const w = doc.data() || {};
+        const firstDate = w.firstPublishedAt?.toDate?.() || w.createdAt?.toDate?.();
+        return firstDate && firstDate >= today && firstDate <= now;
+      }).length;
+
       const result = {
+        publicWorlds,
+        todayNewWorlds,
         totalUsers:
           usersSnapshot.size,
 
@@ -29810,6 +27681,9 @@ exports.getAdminOperationsAnalyticsUs = onCall(
             other: 0,
         };
 
+        const worldModeUsage = {story:0, immersive:0, resonance:0, interaction:0, gift:0};
+        const worldStartedRooms = new Set();
+
         const dailyTrend = Array.from({ length: 7 }, (_, index) => ({
             label: new Intl.DateTimeFormat("zh-TW", {
                 timeZone: "Asia/Taipei",
@@ -29871,7 +27745,16 @@ exports.getAdminOperationsAnalyticsUs = onCall(
                         .trim()
                         .toLowerCase();
 
-                if (eventBillingType === "chat") {
+                const worldEvent = String(doc.id).startsWith('world_') || Boolean(data.worldId);
+                if (worldEvent) {
+                    if (eventBillingType === 'chat' && ['story','immersive','resonance'].includes(mode)) {
+                        worldModeUsage[mode]++;
+                        if (data.sessionId) worldStartedRooms.add(String(data.sessionId));
+                    } else if (eventBillingType === 'interaction' || eventBillingType === 'gift') {
+                        worldModeUsage[eventBillingType]++;
+                        if (data.sessionId) worldStartedRooms.add(String(data.sessionId));
+                    }
+                } else if (eventBillingType === "chat") {
                     modeUsage[mode] = (modeUsage[mode] || 0) + 1;
                 }
 
@@ -29986,7 +27869,9 @@ exports.getAdminOperationsAnalyticsUs = onCall(
                         .trim()
                         .toLowerCase();
 
-                if (mode !== "other" && legacyBillingType === "chat") {
+                if (!String(doc.id).startsWith('world_') &&
+                    !String(data.type || '').startsWith('world_') &&
+                    !data.worldId && mode !== "other" && legacyBillingType === "chat") {
                     const key = `${String(data.sessionId || "")}|${String(data.messageId || "")}`;
                     if (!seenModeEventKeys.has(key)) {
                         modeUsage[mode] = (modeUsage[mode] || 0) + 1;
@@ -30026,6 +27911,9 @@ exports.getAdminOperationsAnalyticsUs = onCall(
             spendUses,
             modeUsage,
             modeUsageTotal,
+            worldModeUsage,
+            worldModeUsageTotal: Object.values(worldModeUsage).reduce((sum, n) => sum + n, 0),
+            worldStartedRooms: worldStartedRooms.size,
             trends: {
                 day: dailyTrend,
                 week: weeklyTrend,
