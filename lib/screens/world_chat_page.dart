@@ -25,6 +25,7 @@ import 'world_interaction_play_page.dart';
 import 'world_scene_page_full.dart';
 import 'world_secret_chapters_page.dart';
 import 'world_chat_side_menu.dart';
+import 'world_about_us_page.dart';
 import 'world_chat_search_page.dart';
 import 'world_chat_transcript_book_page.dart';
 import 'world_chat_records_pages.dart';
@@ -1113,6 +1114,9 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       case '劇情摘要':
         _openWorldRecords();
         break;
+      case '關於我們':
+        _openWorldAboutUs();
+        break;
       case '人物關係':
         _openWorldRelationships();
         break;
@@ -1128,6 +1132,22 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       default:
         _notReady(action);
     }
+  }
+
+  Future<void> _openWorldAboutUs() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    final sid = _sessionId;
+    if (uid == null || sid == null || sid.isEmpty) {
+      _showCenterNotice(AppLocalizations.of(context)!.world_chat_loading1);
+      return;
+    }
+    await Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => WorldAboutUsPage(
+        currentUserId: uid,
+        worldId: widget.worldId,
+        sessionId: sid,
+      ),
+    ));
   }
 
   Future<void> _openWorldRecords() async {

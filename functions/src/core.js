@@ -1,3 +1,7 @@
+const {createMemoryJobHandler} = require('./memory/job_handler');
+const {createChatMessageNotificationHandler,createMailboxNotificationHandler,createSyncNotificationBadgeHandler} = require('./notifications/player_message_handlers');
+const {createLegacyMemoryExtractionHandler} = require('./memory/legacy_extraction_handler');
+const {createCancelAiResponseHandler} = require('./ai/cancel_response_handler');
 const {createBrokenMessageHandlers} = require('./maintenance/broken_messages');
 const {createQixiLettersScheduler} = require('./events/qixi_letters_scheduler');
 const {createAnnouncementDeliveryHandler} = require('./notifications/announcement_delivery_handler');
@@ -73,6 +77,8 @@ const stripeSecretKey = defineSecret("STRIPE_SECRET_KEY");
 const stripeWebhookSecret = defineSecret("STRIPE_WEBHOOK_SECRET");
 const crypto = require("crypto");
 const APP_ID = "lianlianshiguang";
+const {createDateTimeHelpers} = require('./utils/date_time_helpers');
+const {formatTimeDisplay,parseRewardCampaignDate,getTaipeiUtcStartOfDay,getTaipeiMonthStart} = createDateTimeHelpers({HttpsError});
 const {normalizeReusableEventTaskDefinition, reusableEventTaskMatchesAction, reusableEventIsRunning, reusableEventProgressRef} = createEventTaskUtils({db, APP_ID});
 const {limitPromptText, normalizeDailyAssistantHistory, duplicateReplyFingerprint} = createHistoryUtils({fixMojibake});
 const {resolvePlayerIdentityFromUserData, resolveEffectivePlayerProfileId} = createPlayerIdentityTools({db, APP_ID});
@@ -118,16 +124,7 @@ let converter = null;
 let translateClient = null;
 
 // --- 輔助函式：時間顯示格式化 ---
-const formatTimeDisplay = (date) => {
-    const YYYY = date.getFullYear();
-    const MM = date.getMonth() + 1;
-    const DD = String(date.getDate()).padStart(2, '0');
-    const rawHour = date.getHours();
-    const min = String(date.getMinutes()).padStart(2, '0');
-    let period = (rawHour < 6) ? "凌晨" : (rawHour < 12) ? "早上" : (rawHour === 12) ? "中午" : (rawHour < 18) ? "下午" : "晚上";
-    let displayHour = (rawHour > 12) ? rawHour - 12 : (rawHour === 0) ? 12 : rawHour;
-    return `${YYYY}/${MM}/${DD} ${period}${displayHour}:${min}`;
-};
+
 
 // V55: keep the original HTTP endpoint settings while moving its handler.
 const {createGenerateVoiceHandler} = require('./voice/generate_handler');
@@ -169,114 +166,19 @@ const {createAiHealthRecorder} = require('./ai/health_recorder');
 const recordAiHealth = createAiHealthRecorder({db,APP_ID,FieldValue,getAiHealthTaipeiDateKey,extractAiUsage});
 
 // 沉浸與共鳴模式：只識別高度明確的模型內部分析輸出，不誤判一般角色對白。
-function isRoleplayInternalLeak(value) {
-    const text = String(value || "");
-    return /["「]?userRequestSummary["」]?\s*[:：]/i.test(text) ||
-        /["「]?reasoning_content["」]?\s*[:：]/i.test(text) ||
-        /["「]?於封禁狀態["」]?\s*[:：]/.test(text) ||
-        /["「]?用戶性別未設定["」]?\s*[,，}]/.test(text) ||
-        (/(回顧系統提示|檢查之前的系統提示|上一輪的系統提示|現在開始正式寫作)/.test(text) &&
-         /(我需要|我注意到|系統提示|AI系統|我決定)/.test(text));
-}
+const {isRoleplayInternalLeak} = require('./ai/internal_leak_detection');
+
+const {createMediaAnalysisHelpers} = require('./ai/media_analysis');
+const {downloadMediaAsBase64,describeImageWithGemini,transcribeAudioWithGemini} = createMediaAnalysisHelpers({admin,geminiApiKey});
 
 const {callAiWithRetry} = createAiRetryHandler({
     getAiProviderConfig,callOpenRouter,callAnthropicDirect,
     isAiContentFiltered,hasUsableAiContent,isAiTimeoutError,recordAiHealth
 });
 
-async function downloadMediaAsBase64(mediaUrlOrPath) {
-    if (!mediaUrlOrPath) return null;
 
-    try {
-        if (
-            mediaUrlOrPath.startsWith("http://") ||
-            mediaUrlOrPath.startsWith("https://")
-        ) {
-            const response = await fetch(mediaUrlOrPath);
 
-            if (!response.ok) {
-                console.error("❌ 下載媒體 URL 失敗:", response.status, mediaUrlOrPath);
-                return null;
-            }
 
-            const arrayBuffer = await response.arrayBuffer();
-            const contentType =
-                response.headers.get("content-type") || "application/octet-stream";
-
-            return {
-                base64: Buffer.from(arrayBuffer).toString("base64"),
-                mimeType: contentType,
-            };
-        }
-
-        const bucket = admin.storage().bucket();
-        const file = bucket.file(mediaUrlOrPath);
-        const [buffer] = await file.download();
-        const [metadata] = await file.getMetadata();
-
-        return {
-            base64: buffer.toString("base64"),
-            mimeType: metadata.contentType || "application/octet-stream",
-        };
-    } catch (error) {
-        console.error("❌ downloadMediaAsBase64 失敗:", error);
-        return null;
-    }
-}
-
-async function describeImageWithGemini(imageUrlOrPath) {
-  const media = await downloadMediaAsBase64(imageUrlOrPath);
-
-  if (!media) return "";
-
-  try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${geminiApiKey.value()}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              role: "user",
-              parts: [
-                {
-                  text: "請用台灣繁體中文簡潔描述這張圖片。重點包括：畫面中有什麼、人物表情/動作、氛圍、可能想表達的情緒。不要編造看不到的內容。",
-                },
-                {
-                  inline_data: {
-                    mime_type: media.mimeType,
-                    data: media.base64,
-                  },
-                },
-              ],
-            },
-          ],
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("❌ Gemini 讀圖失敗:", response.status, errorText);
-      return "";
-    }
-
-    const data = await response.json();
-
-    return (
-      data?.candidates?.[0]?.content?.parts
-        ?.map((part) => part.text || "")
-        .join("")
-        .trim() || ""
-    );
-  } catch (error) {
-    console.error("❌ describeImageWithGemini 失敗:", error);
-    return "";
-  }
-}
 
 // ============================================================
 // 🖼️ 後台：活動貼紙 AI 視覺分析
@@ -285,59 +187,7 @@ async function describeImageWithGemini(imageUrlOrPath) {
 // ============================================================
 // V19：analyzeEventStickerImage 台灣端未匯出的舊 onCall 已移除；正式美國函式不在本檔修改。
 
-async function transcribeAudioWithGemini(audioUrlOrPath) {
-    const media = await downloadMediaAsBase64(audioUrlOrPath);
 
-    if (!media) return "";
-
-    try {
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${geminiApiKey.value()}`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    contents: [
-                        {
-                            role: "user",
-                            parts: [
-                                {
-                                    text: "請將這段語音轉成台灣繁體中文文字。只輸出語音內容本身，不要加解釋。如果聽不清楚，請輸出：語音內容聽不清楚。",
-                                },
-                                {
-                                    inline_data: {
-                                        mime_type: media.mimeType,
-                                        data: media.base64,
-                                    },
-                                },
-                            ],
-                        },
-                    ],
-                }),
-            }
-        );
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error("❌ Gemini 語音辨識失敗:", response.status, errorText);
-            return "";
-        }
-
-        const data = await response.json();
-
-        return (
-            data?.candidates?.[0]?.content?.parts
-                ?.map((part) => part.text || "")
-                .join("")
-                .trim() || ""
-        );
-    } catch (error) {
-        console.error("❌ transcribeAudioWithGemini 失敗:", error);
-        return "";
-    }
-}
 
 
 // ============================================================
@@ -345,181 +195,12 @@ async function transcribeAudioWithGemini(audioUrlOrPath) {
 // ============================================================
 
 // Event task helper functions are now in ./events/task_utils.js.
-async function recordReusableEventTaskProgress({
-    userId,
-    sessionId,
-    messageId,
-    chatMode,
-    billingType,
-    interactionType = "",
-    giftType = "",
-    isTestChat = false,
-    isRegenerate = false,
-    isContinue = false,
-    isQixiOpening = false,
-}) {
-    // 只有玩家真正完成一次正式互動才計入活動任務。
-    if (
-        !userId ||
-        !messageId ||
-        isTestChat ||
-        isRegenerate ||
-        isContinue ||
-        isQixiOpening
-    ) {
-        return;
-    }
-
-    const now = new Date();
-
-    const eventsSnapshot = await db
-        .collection("artifacts")
-        .doc(APP_ID)
-        .collection("events")
-        .where("isActive", "==", true)
-        .limit(10)
-        .get();
-
-    for (const eventDoc of eventsSnapshot.docs) {
-        const eventData = eventDoc.data() || {};
-        if (!reusableEventIsRunning(eventData, now)) continue;
-        if (eventData.hasTasks === false) continue;
-
-        const tasksSnapshot = await eventDoc.ref
-            .collection("tasks")
-            .limit(50)
-            .get();
-
-        const action = {
-            chatMode,
-            billingType,
-            interactionType,
-            giftType,
-        };
-
-        const matchedTasks = tasksSnapshot.docs
-            .map((taskDoc) =>
-                normalizeReusableEventTaskDefinition(
-                    taskDoc.id,
-                    taskDoc.data() || {}
-                )
-            )
-            .filter((task) =>
-                reusableEventTaskMatchesAction(
-                    task.taskType,
-                    action
-                )
-            );
-
-        if (matchedTasks.length === 0) continue;
-
-        const progressRef =
-            reusableEventProgressRef(
-                userId,
-                eventDoc.id
-            );
-
-        // 同一則 AI 訊息只允許計入一次，避免重試 / 重送造成重複進度。
-        const safeActionId =
-            `${sessionId || "session"}_${messageId}`
-                .replace(/\//g, "_");
-
-        const actionRef =
-            progressRef
-                .collection("actions")
-                .doc(safeActionId);
-
-        await db.runTransaction(async (transaction) => {
-            const [
-                actionSnapshot,
-                progressSnapshot,
-            ] = await Promise.all([
-                transaction.get(actionRef),
-                transaction.get(progressRef),
-            ]);
-
-            if (actionSnapshot.exists) {
-                return;
-            }
-
-            const progressData =
-                progressSnapshot.data() || {};
-
-            const currentTaskProgress =
-                progressData.taskProgress &&
-                typeof progressData.taskProgress === "object"
-                    ? { ...progressData.taskProgress }
-                    : {};
-
-            const changedTaskIds = [];
-
-            for (const task of matchedTasks) {
-                const current =
-                    Number(
-                        currentTaskProgress[
-                            task.taskId
-                        ] || 0
-                    );
-
-                const next = Math.min(
-                    task.target,
-                    Math.max(0, current) + 1
-                );
-
-                if (next !== current) {
-                    currentTaskProgress[
-                        task.taskId
-                    ] = next;
-
-                    changedTaskIds.push(
-                        task.taskId
-                    );
-                }
-            }
-
-            transaction.set(
-                progressRef,
-                {
-                    userId,
-                    eventId: eventDoc.id,
-                    currency:
-                        Number(
-                            progressData.currency || 0
-                        ),
-                    taskProgress:
-                        currentTaskProgress,
-                    updatedAt:
-                        FieldValue.serverTimestamp(),
-                    lastProgressAt:
-                        FieldValue.serverTimestamp(),
-                },
-                { merge: true }
-            );
-
-            transaction.set(
-                actionRef,
-                {
-                    userId,
-                    eventId: eventDoc.id,
-                    sessionId:
-                        String(sessionId || ""),
-                    messageId,
-                    chatMode:
-                        String(chatMode || ""),
-                    billingType:
-                        String(billingType || ""),
-                    interactionType:
-                        String(interactionType || ""),
-                    giftType:
-                        String(giftType || ""),
-                    changedTaskIds,
-                    createdAt:
-                        FieldValue.serverTimestamp(),
-                }
-            );
-        });
-    }
-}
+// V81: preserve original progress transactions and idempotency in a dedicated module.
+const {createTaskProgressRecorder} = require('./events/task_progress_recorder');
+const recordReusableEventTaskProgress = createTaskProgressRecorder({
+    db,APP_ID,FieldValue,reusableEventIsRunning,
+    normalizeReusableEventTaskDefinition,reusableEventTaskMatchesAction,reusableEventProgressRef
+});
 
 exports.claimEventTaskReward = onCall(
     {
@@ -8001,235 +7682,7 @@ exports.processMemoryJob = onDocumentCreated(
             geminiApiKey,
         ],
     },
-    async (event) => {
-        const snapshot = event.data;
-
-        if (!snapshot) {
-            console.warn(
-                "⚠️ processMemoryJob 沒有收到文件資料"
-            );
-            return;
-        }
-
-        const jobRef = snapshot.ref;
-        const jobData = snapshot.data() || {};
-
-        const appId =
-            event.params.appId;
-
-        const jobId =
-            event.params.jobId;
-
-        const userId =
-            String(jobData.userId || "").trim();
-
-        const characterId =
-            String(
-                jobData.characterId || ""
-            ).trim();
-
-        const playerName =
-            String(
-                jobData.playerName || "對方"
-            ).trim() || "對方";
-
-        const playerProfileId =
-            String(jobData.playerProfileId || "").trim();
-
-        const sessionId =
-            String(jobData.sessionId || "").trim();
-
-        const userMessage =
-            String(
-                jobData.userMessage || ""
-            ).trim();
-        const chatMode = String(jobData.chatMode || "");
-
-        const memoryScopeVersion =
-            Number(jobData.memoryScopeVersion || 0);
-
-        console.log(
-            "🧠 開始處理長期記憶背景工作：",
-            {
-                appId,
-                jobId,
-                userId,
-                characterId,
-                messageLength:
-                    userMessage.length,
-            }
-        );
-
-        // ==========================================
-        // 0. 三層記憶版本 gate
-        // ==========================================
-        if (memoryScopeVersion < 1) {
-            console.log(
-                "🧠 memoryScopeVersion < 1：略過新版三層記憶背景工作。",
-                { jobId, memoryScopeVersion }
-            );
-
-            await jobRef.set(
-                {
-                    status: "skipped",
-                    errorCode: "MEMORY_SCOPE_VERSION_DISABLED",
-                    errorMessage: "舊版 App 未啟用新版三層記憶。",
-                    completedAt: FieldValue.serverTimestamp(),
-                },
-                { merge: true }
-            );
-
-            return;
-        }
-
-        // ==========================================
-        // 1. 基本資料防禦
-        // ==========================================
-        if (
-            !userId ||
-            !characterId ||
-            !userMessage
-        ) {
-            console.warn(
-                "🛑 長期記憶工作資料不完整，停止處理：",
-                {
-                    jobId,
-                    userId,
-                    characterId,
-                    hasMessage:
-                        Boolean(userMessage),
-                }
-            );
-
-            await jobRef.set(
-                {
-                    status: "skipped",
-                    errorCode:
-                        "INVALID_MEMORY_JOB",
-
-                    errorMessage:
-                        "缺少 userId、characterId 或 userMessage。",
-
-                    completedAt:
-                        FieldValue.serverTimestamp(),
-                },
-                {
-                    merge: true,
-                }
-            );
-
-            return;
-        }
-
-        // ==========================================
-        // 2. 標記處理中
-        // ==========================================
-        await jobRef.set(
-            {
-                status: "processing",
-
-                attempts:
-                    FieldValue.increment(1),
-
-                startedAt:
-                    FieldValue.serverTimestamp(),
-            },
-            {
-                merge: true,
-            }
-        );
-
-        try {
-            // 背景函式不依賴玩家 HTTP 連線，
-            // 因此不傳 getAiResponse 的 abortController。
-            const savedMemory =
-                await savePlayerMemoryIfNeeded({
-                    appId,
-                    userId,
-                    characterId,
-                    playerProfileId,
-                    sessionId,
-                    userMessage,
-                    playerName,
-                    chatMode,
-                    abortController: null,
-                });
-
-            // ======================================
-            // 3. 完成
-            // ======================================
-            await jobRef.set(
-                {
-                    status: "completed",
-
-                    memoryCreated:
-                        savedMemory != null,
-
-                    memoryId:
-                        savedMemory?.id || null,
-
-                    completedAt:
-                        FieldValue.serverTimestamp(),
-
-                    errorCode:
-                        FieldValue.delete(),
-
-                    errorMessage:
-                        FieldValue.delete(),
-                },
-                {
-                    merge: true,
-                }
-            );
-
-            console.log(
-                savedMemory
-                    ? "✅ 長期記憶背景工作完成，已保存記憶："
-                    : "✅ 長期記憶背景工作完成，本輪無需保存：",
-                {
-                    jobId,
-                    memoryId:
-                        savedMemory?.id || null,
-                    userId,
-                    characterId,
-                }
-            );
-        } catch (error) {
-            console.error(
-                "❌ 長期記憶背景工作失敗：",
-                {
-                    jobId,
-                    userId,
-                    characterId,
-                    message:
-                        error?.message,
-                    stack:
-                        error?.stack,
-                }
-            );
-
-            await jobRef.set(
-                {
-                    status: "error",
-
-                    errorCode:
-                        "MEMORY_PROCESS_FAILED",
-
-                    errorMessage:
-                        String(
-                            error?.message ||
-                            "未知錯誤"
-                        ).slice(0, 1000),
-
-                    failedAt:
-                        FieldValue.serverTimestamp(),
-                },
-                {
-                    merge: true,
-                }
-            );
-        }
-    }
+    createMemoryJobHandler({FieldValue, savePlayerMemoryIfNeeded})
 );
 
                           exports.onPostCreated = onDocumentCreated({
@@ -8313,6 +7766,7 @@ exports.processMemoryJob = onDocumentCreated(
 // ============================================================
 // 創作者 / 角色新動態 → 通知該創作者的追蹤者
 // ============================================================
+const {createMomentFollowersNotificationHandler} = require('./moments/follower_notification_handler');
 exports.notifyFollowersOnNewMomentV2 = onDocumentCreated(
     {
         region: "asia-east1",
@@ -8320,163 +7774,7 @@ exports.notifyFollowersOnNewMomentV2 = onDocumentCreated(
         timeoutSeconds: 180,
         memory: "512MiB",
     },
-    async (event) => {
-        const snap = event.data;
-        if (!snap) return null;
-
-        const moment = snap.data() || {};
-        const {appId, momentId} = event.params;
-        if (moment.isPublic !== true) return null;
-
-        const isCreatorPost = moment.isCreatorPost === true;
-        let creatorId = "";
-        let actorName = String(moment.authorName || "").trim();
-        let characterId = "";
-
-        if (isCreatorPost) {
-            creatorId = String(moment.createdBy || moment.authorId || "").trim();
-        } else {
-            characterId = String(moment.authorId || "").trim();
-            if (!characterId) return null;
-
-            const charSnap = await db
-                .collection("artifacts")
-                .doc(appId)
-                .collection("public_characters")
-                .doc(characterId)
-                .get();
-            if (!charSnap.exists) return null;
-
-            const charData = charSnap.data() || {};
-            creatorId = String(charData.createdBy || moment.createdBy || "").trim();
-            actorName = actorName || String(charData.name || "角色").trim();
-        }
-
-        if (!creatorId) return null;
-
-        if (!actorName) {
-            const creatorSnap = await db.collection("users").doc(creatorId).get();
-            const creatorData = creatorSnap.data() || {};
-            actorName = String(
-                creatorData.nickname ||
-                creatorData.displayName ||
-                creatorData.name ||
-                "創作者"
-            ).trim();
-        }
-
-        const followersSnap = await db
-            .collection("users")
-            .doc(creatorId)
-            .collection("followers")
-            .get();
-        if (followersSnap.empty) return null;
-
-        let batch = db.batch();
-        let operationCount = 0;
-
-        const commitIfNeeded = async (force = false) => {
-            if (operationCount === 0) return;
-            if (force || operationCount >= 350) {
-                await batch.commit();
-                batch = db.batch();
-                operationCount = 0;
-            }
-        };
-
-        for (const followerDoc of followersSnap.docs) {
-            const followerId = String(followerDoc.id || "").trim();
-            if (!followerId || followerId === creatorId) continue;
-
-            const blockedCreatorSnap = await db
-                .collection("users")
-                .doc(followerId)
-                .collection("blockedCreators")
-                .doc(creatorId)
-                .get();
-            if (blockedCreatorSnap.exists) continue;
-
-            if (characterId) {
-                const blockedCharacterSnap = await db
-                    .collection("users")
-                    .doc(followerId)
-                    .collection("blockedCharacters")
-                    .doc(characterId)
-                    .get();
-                if (blockedCharacterSnap.exists) continue;
-            }
-
-            const locale = await getUserNotificationLocale(followerId);
-            const notificationType = isCreatorPost
-                ? "creator_moment"
-                : "character_moment";
-            const text = getNotificationText(locale, notificationType, {
-                name: actorName,
-            });
-
-            // 角色的新瞬間僅發 FCM 橫幅，不存進私人信箱。
-            // 直接推播不設定 aps.badge，避免改動信箱未讀徽章。
-            if (!isCreatorPost) {
-                try {
-                    await sendToUserDevices(followerId, {
-                        notification: {
-                            title: text.title,
-                            body: text.body,
-                        },
-                        data: {
-                            type: "character_moment",
-                            postId: String(momentId),
-                            characterId: String(characterId),
-                            creatorId: String(creatorId),
-                            click_action: "FLUTTER_NOTIFICATION_CLICK",
-                        },
-                        android: {
-                            priority: "high",
-                            notification: {
-                                channelId: "high_importance_channel",
-                                sound: "default",
-                                defaultVibrateTimings: true,
-                            },
-                        },
-                        apns: {
-                            payload: {aps: {sound: "default"}},
-                        },
-                    });
-                } catch (error) {
-                    console.warn(`角色新瞬間推播失敗 follower=${followerId}, moment=${momentId}`, error);
-                }
-                continue;
-            }
-
-            // 創作者本人發文維持既有信箱與推播行為。
-            const mailRef = db
-                .collection("users")
-                .doc(followerId)
-                .collection("mailbox")
-                .doc(`${notificationType}_${momentId}`);
-
-            batch.set(mailRef, {
-                type: notificationType,
-                title: text.title,
-                body: text.body,
-                fromId: isCreatorPost ? creatorId : characterId,
-                fromName: actorName,
-                creatorId,
-                characterId: characterId || null,
-                postId: momentId,
-                source: "followed_creator_moment",
-                notificationLocale: locale,
-                isRead: false,
-                read: false,
-                createdAt: FieldValue.serverTimestamp(),
-            });
-            operationCount++;
-            await commitIfNeeded();
-        }
-
-        await commitIfNeeded(true);
-        return null;
-    }
+    createMomentFollowersNotificationHandler({db, FieldValue, getUserNotificationLocale, getNotificationText, sendToUserDevices})
 );
 
 // ============================================================================
@@ -8491,19 +7789,13 @@ exports.notifyFollowersOnNewMomentV2 = onDocumentCreated(
                           // 4. AI 產生的留言一律 isPlayer:false + autoGenerated:true，避免觸發自己形成迴圈。
                           // ============================================================================
 
-                          function momentTimestampToMillis(value) {
-                              if (!value) return 0;
-                              if (typeof value.toMillis === "function") return value.toMillis();
-                              if (value instanceof Date) return value.getTime();
-                              const parsed = new Date(value).getTime();
-                              return Number.isFinite(parsed) ? parsed : 0;
-                          }
 
-                          function sanitizeMomentReplyId(value) {
-                              return String(value || "")
-                                  .replace(/[^a-zA-Z0-9_-]/g, "_")
-                                  .slice(0, 180);
-                          }
+
+
+
+
+// V88: shared, side-effect-free helpers for moment auto-reply and auto-post.
+const {momentTimestampToMillis, sanitizeMomentReplyId, extractJsonObjectText, hasPromptLeak} = require('./moments/auto_reply_helpers');
 
                           async function generateMomentAiText({
                               characterData,
@@ -8677,68 +7969,9 @@ exports.notifyFollowersOnNewMomentV2 = onDocumentCreated(
                               }
                           }
 
-                          async function loadAutoReplyCharacter(appId, characterId) {
-                              const safeCharacterId = String(characterId || "").trim();
-                              if (!safeCharacterId) return null;
-
-                              const ref = db
-                                  .collection("artifacts")
-                                  .doc(appId)
-                                  .collection("public_characters")
-                                  .doc(safeCharacterId);
-
-                              const snap = await ref.get();
-                              if (!snap.exists) return null;
-
-                              const data = snap.data() || {};
-                              if (data.autoReplyEnabled !== true) return null;
-
-                              return {
-                                  id: snap.id,
-                                  ref,
-                                  data,
-                              };
-                          }
-
-                          async function findNamedRecentCharacters({appId, userId, content}) {
-                              const safeContent = String(content || "").trim();
-                              if (!safeContent) return [];
-
-                              const sessionsSnapshot = await db
-                                  .collection("artifacts")
-                                  .doc(appId)
-                                  .collection("chat_sessions")
-                                  .where("userId", "==", userId)
-                                  .limit(40)
-                                  .get();
-
-                              const characterIds = Array.from(
-                                  new Set(
-                                      sessionsSnapshot.docs
-                                          .map((doc) => String(doc.data()?.characterId || "").trim())
-                                          .filter(Boolean)
-                                  )
-                              ).slice(0, 20);
-
-                              const characterDocs = await Promise.all(
-                                  characterIds.map((characterId) =>
-                                      db
-                                          .collection("artifacts")
-                                          .doc(appId)
-                                          .collection("public_characters")
-                                          .doc(characterId)
-                                          .get()
-                                  )
-                              );
-
-                              return characterDocs
-                                  .filter((snap) => snap.exists)
-                                  .map((snap) => ({
-                                      characterId: snap.id,
-                                      name: String(snap.data()?.name || "").trim(),
-                                  }))
-                                  .filter((item) => item.name && safeContent.includes(item.name));
-                          }
+                          // V89: player-scoped social auto-reply character lookups.
+                          const {createAutoReplyLookups} = require('./moments/auto_reply_lookup');
+                          const {loadAutoReplyCharacter, findNamedRecentCharacters} = createAutoReplyLookups({db});
 
                           async function pickRecentAutoReplyCharacter({appId, userId, excludedIds = []}) {
                               const excluded = new Set(
@@ -9351,52 +8584,9 @@ exports.notifyFollowersOnNewMomentV2 = onDocumentCreated(
                               }
                           );
 
-                          function extractJsonObjectText(text) {
-                              if (!text) return "";
 
-                              let cleaned = text.trim();
 
-                              // 去掉 ```json ``` 包裝
-                              cleaned = cleaned
-                                  .replace(/^```json\s*/i, "")
-                                  .replace(/^```\s*/i, "")
-                                  .replace(/```$/i, "")
-                                  .trim();
 
-                              const start = cleaned.indexOf("{");
-                              const end = cleaned.lastIndexOf("}");
-
-                              if (start >= 0 && end > start) {
-                                  return cleaned.substring(start, end + 1);
-                              }
-
-                              return cleaned;
-                          }
-
-                          function hasPromptLeak(text) {
-                              if (!text) return true;
-
-                              const markers = [
-                                  "任務指令",
-                                  "這次的目標是",
-                                  "這次的發文情境主題",
-                                  "情境主題是",
-                                  "最高防重複警告",
-                                  "你上一次的發文內容",
-                                  "請確保這次的貼文",
-                                  "完全不同",
-                                  "禁止使用 AI",
-                                  "AI 機器人腔調",
-                                  "來，發文吧",
-                                  "現在請發一篇貼文",
-                                  "30~80 字",
-                                  "30-80 字",
-                                  "Threads 風格",
-                                  "內心獨白或生活動態"
-                              ];
-
-                              return markers.some((marker) => text.includes(marker));
-                          }
 
                          exports.autoPostManager = onSchedule({
                              schedule: "*/5 * * * *",
@@ -9650,139 +8840,10 @@ exports.notifyFollowersOnNewMomentV2 = onDocumentCreated(
 // 新版 Call 會傳 memoryScopeVersion: 1 + sessionId + characterId。
 // 舊版 Call 沒有這些欄位時仍維持原本行為，不會被擋住。
 // =====================================================
-async function buildCallScopedMemoryContext({
-    userId,
-    sessionId,
-    characterId,
-    memoryScopeVersion = 0,
-}) {
-    if (Number(memoryScopeVersion || 0) < 1) {
-        return "";
-    }
-
-    const safeUserId = String(userId || "").trim();
-    const safeSessionId = String(sessionId || "").trim();
-    const requestedCharacterId = String(characterId || "").trim();
-
-    if (!safeUserId || !safeSessionId) {
-        return "";
-    }
-
-    const roomSnapshot = await db
-        .collection("artifacts")
-        .doc(APP_ID)
-        .collection("chat_sessions")
-        .doc(safeSessionId)
-        .get();
-
-    if (!roomSnapshot.exists) {
-        console.warn("📞 找不到通話來源聊天室，略過三層記憶：", {
-            userId: safeUserId,
-            sessionId: safeSessionId,
-        });
-        return "";
-    }
-
-    const roomData = roomSnapshot.data() || {};
-    const roomOwner = String(roomData.userId || "").trim();
-    const roomCharacterId = String(roomData.characterId || "").trim();
-
-    if (roomOwner !== safeUserId) {
-        const error = new Error("CALL_ROOM_FORBIDDEN");
-        error.code = "CALL_ROOM_FORBIDDEN";
-        throw error;
-    }
-
-    if (
-        requestedCharacterId &&
-        roomCharacterId &&
-        requestedCharacterId !== roomCharacterId
-    ) {
-        const error = new Error("CALL_CHARACTER_MISMATCH");
-        error.code = "CALL_CHARACTER_MISMATCH";
-        throw error;
-    }
-
-    const effectiveCharacterId =
-        roomCharacterId || requestedCharacterId;
-
-    if (!effectiveCharacterId) {
-        return "";
-    }
-
-    const userSnapshot = await db
-        .collection("users")
-        .doc(safeUserId)
-        .get();
-
-    const userData = userSnapshot.data() || {};
-
-    const effectiveProfileId =
-        await resolveEffectivePlayerProfileId({
-            appId: APP_ID,
-            userId: safeUserId,
-            characterId: effectiveCharacterId,
-            sessionId: safeSessionId,
-            requestedProfileId:
-                String(roomData.playerProfileId || "").trim(),
-            userData,
-        });
-
-    const identity =
-        resolvePlayerIdentityFromUserData(
-            userData,
-            effectiveProfileId
-        );
-
-    const entries =
-        await loadScopedMemoryEntries({
-            appId: APP_ID,
-            userId: safeUserId,
-            characterId: effectiveCharacterId,
-            playerProfileId: effectiveProfileId,
-            sessionId: safeSessionId,
-            perScopeLimit: 8,
-        });
-
-    const identityLines = [
-        `目前玩家檔案：${identity.name || "你"}`,
-        identity.gender && identity.gender !== "未設定"
-            ? `玩家性別設定：${identity.gender}`
-            : "",
-        identity.birthday && identity.birthday !== "未設定"
-            ? `玩家生日設定：${identity.birthday}`
-            : "",
-    ].filter(Boolean);
-
-    const memoryLines = entries
-        .slice(0, 18)
-        .map((entry, index) => {
-            const scopeLabel =
-                entry.scope === "session"
-                    ? "本聊天室"
-                    : entry.scope === "character"
-                    ? "你們之間"
-                    : "玩家檔案";
-
-            return `${index + 1}. [${scopeLabel}] ${entry.content}`;
-        });
-
-    if (memoryLines.length === 0 && identityLines.length === 0) {
-        return "";
-    }
-
-    return `
-【本次電話綁定的玩家檔案與聊天室記憶｜既定事實】
-${identityLines.join("\n")}
-${memoryLines.join("\n")}
-
-【通話記憶規則】
-- 這通電話屬於 sessionId=${safeSessionId} 的同一條世界線。
-- 本聊天室(Session)事實優先於角色共用(Character)，角色共用再優先於玩家檔案(Profile)。
-- 不得自行引用其他聊天室的世界線、身份、關係或稱呼。
-- 若近期通話 history 與長期記憶看似衝突，先自然回應最新對話，不要假裝沒看見玩家剛說過的內容。
-`.trim();
-}
+const {createCallScopedMemoryContext} = require('./call/scoped_memory_context');
+const buildCallScopedMemoryContext = createCallScopedMemoryContext({
+  db, APP_ID, resolveEffectivePlayerProfileId, resolvePlayerIdentityFromUserData, loadScopedMemoryEntries,
+});
 
 
                           exports.directCallAi = onRequest({
@@ -10059,6 +9120,7 @@ ${memoryLines.join("\n")}
 // ============================================================
 // Event ending localization moved to ./notifications/event_ending_text.js.
 
+const {createEventEndingScheduler} = require('./notifications/event_ending_scheduler');
 const {createEventEndingDelivery} = require('./notifications/event_ending_delivery');
 const {sendEventEndingNotificationToAllUsers} = createEventEndingDelivery({db, normalizeNotificationLocale, getEventEndingNotificationText, sendToUserDevices});
 
@@ -10071,170 +9133,8 @@ exports.processEventEndingNotifications =
             timeoutSeconds: 540,
             memory: "512MiB",
         },
-        async () => {
-            const now =
-                new Date();
-
-            const eventsSnapshot =
-                await db
-                    .collection("artifacts")
-                    .doc(APP_ID)
-                    .collection("events")
-                    .where(
-                        "isActive",
-                        "==",
-                        true
-                    )
-                    .limit(20)
-                    .get();
-
-            if (eventsSnapshot.empty) {
-                console.log(
-                    "⏳ 目前沒有啟用中的活動"
-                );
-                return null;
-            }
-
-            for (
-                const eventDoc
-                of eventsSnapshot.docs
-            ) {
-                const eventData =
-                    eventDoc.data() || {};
-
-                const endAt =
-                    eventData.endAt
-                        ?.toDate?.();
-
-                if (!endAt) continue;
-
-                const msLeft =
-                    endAt.getTime() -
-                    now.getTime();
-
-                if (msLeft <= 0) {
-                    continue;
-                }
-
-                const hoursLeft =
-                    msLeft /
-                    (60 * 60 * 1000);
-
-                let stage = null;
-                let sentField = null;
-
-                // 3 天提醒：48～72 小時區間內第一次掃到就送。
-                if (
-                    hoursLeft > 48 &&
-                    hoursLeft <= 72
-                ) {
-                    stage = "3d";
-                    sentField =
-                        "ending3DaysSentAt";
-                }
-                // 最後一天提醒：0～24 小時區間內第一次掃到就送。
-                else if (
-                    hoursLeft > 0 &&
-                    hoursLeft <= 24
-                ) {
-                    stage = "1d";
-                    sentField =
-                        "ending1DaySentAt";
-                }
-
-                if (!stage || !sentField) {
-                    continue;
-                }
-
-                // 原子性搶佔階段：避免排程重疊／重新啟動重送全服通知。
-                // 保守採 at-most-once 自動派送：若中途故障，需檢查
-                // notificationState.<stage>Dispatch 狀態後人工補送，
-                // 不可直接清除鎖重跑，否則先前成功者會重複收到。
-                const dispatchField = `${stage}Dispatch`;
-                const claimed = await db.runTransaction(async (tx) => {
-                    const fresh = await tx.get(eventDoc.ref);
-                    if (!fresh.exists) return false;
-                    const freshData = fresh.data() || {};
-                    const state = freshData.notificationState || {};
-                    if (state[sentField] || state[dispatchField]) return false;
-                    tx.update(eventDoc.ref, {
-                        [`notificationState.${dispatchField}`]: {
-                            status: "sending",
-                            startedAt: FieldValue.serverTimestamp(),
-                            claimId: `${eventDoc.id}_${stage}`,
-                        },
-                    });
-                    return true;
-                });
-                if (!claimed) continue;
-
-                const eventName =
-                    String(
-                        eventData.name ||
-                        "期間限定活動"
-                    ).trim();
-
-                const currencyName =
-                    String(
-                        eventData.currencyName ||
-                        "活動貨幣"
-                    ).trim();
-
-                console.log(
-                    "⏳ 準備發送活動結束提醒",
-                    {
-                        eventId:
-                            eventDoc.id,
-                        eventName,
-                        stage,
-                        hoursLeft:
-                            Number(
-                                hoursLeft
-                                    .toFixed(2)
-                            ),
-                    }
-                );
-
-                let result;
-                try {
-                    result = await sendEventEndingNotificationToAllUsers({
-                        eventId: eventDoc.id,
-                        eventName,
-                        currencyName,
-                        stage,
-                    });
-                    await eventDoc.ref.update({
-                        [`notificationState.${sentField}`]: FieldValue.serverTimestamp(),
-                        [`notificationState.${dispatchField}.status`]: "completed",
-                        [`notificationState.${dispatchField}.completedAt`]: FieldValue.serverTimestamp(),
-                        [`notificationState.${stage}LastResult`]: result,
-                        updatedAt: FieldValue.serverTimestamp(),
-                    });
-                } catch (error) {
-                    await eventDoc.ref.update({
-                        [`notificationState.${dispatchField}.status`]: "needs_review",
-                        [`notificationState.${dispatchField}.error`]: String(error?.message || error).slice(0, 500),
-                        [`notificationState.${dispatchField}.failedAt`]: FieldValue.serverTimestamp(),
-                    }).catch((logError) => console.error("無法記錄提醒失敗", logError));
-                    console.error("活動提醒派送中斷，已停止自動重送以防玩家重複收訊", eventDoc.id, stage, error);
-                    continue;
-                }
-
-                console.log(
-                    "✅ 活動結束提醒完成",
-                    {
-                        eventId:
-                            eventDoc.id,
-                        stage,
-                        ...result,
-                    }
-                );
-            }
-
-            return null;
-        }
+        createEventEndingScheduler({db, APP_ID, FieldValue, sendEventEndingNotificationToAllUsers})
     );
-
 
 exports.notifyPlayerNewMessage = onDocumentCreated({
     region: "asia-east1",
@@ -10242,144 +9142,7 @@ exports.notifyPlayerNewMessage = onDocumentCreated({
     document: "artifacts/lianlianshiguang/chat_sessions/{sessionId}/messages/{messageId}",
     timeoutSeconds: 60,
     memory: "256MiB"
-}, async (event) => {
-    const snap = event.data;
-    if (!snap) return;
-
-    const messageData = snap.data();
-    const sessionId = event.params.sessionId;
-
-    // 確定是 AI 說的話才發通知
-    if (messageData.sender !== "ai" && messageData.role !== "assistant") {
-        return null;
-    }
-
-    try {
-        // 1. 去 session 拿 userId
-        const sessionDoc = await db
-            .collection('artifacts').doc('lianlianshiguang')
-            .collection('chat_sessions').doc(sessionId).get();
-
-        if (!sessionDoc.exists) return null;
-        const sessionData = sessionDoc.data();
-        const userId = sessionData.userId;
-// 計算玩家目前 AI 未讀訊息數量
-const unreadSnapshot = await db
-    .collection("artifacts")
-    .doc("lianlianshiguang")
-    .collection("chat_sessions")
-    .where("userId", "==", userId)
-    .get();
-
-let unreadCount = 0;
-
-for (const doc of unreadSnapshot.docs) {
-    const messagesSnapshot = await doc.ref
-        .collection("messages")
-        .where("role", "==", "assistant")
-        .where("isUnread", "==", true)
-        .get();
-
-    unreadCount += messagesSnapshot.size;
-}
-        let previewText = "你收到了一則新訊息 ✨";
-        // 🌟 優先從 cleanDisplayText (text 欄位) 拿資料，如果沒有才去解析 content
-        const rawContent = messageData.text || messageData.content || "";
-
-        try {
-            // 🎯 使用正則表達式「吸塵器」，不管內容多亂，只吸 response 裡的對白
-            const regex = /"response"\s*:\s*"((?:[^"\\]|\\.)*)"/g;
-            const matches = [...rawContent.matchAll(regex)];
-
-            if (matches.length > 0) {
-                // 把所有片段接在一起，並處理換行
-                previewText = matches.map(m => m[1]).join(" ")
-                    .replace(/\\n/g, " ")
-                    .replace(/\\"/g, '"');
-            } else {
-                // 如果完全不含 JSON 格式，就直接用原始文字
-                previewText = rawContent;
-            }
-        } catch (e) {
-            previewText = "（發送了一則訊息）";
-        }
-
-        // 限制通知長度
-        if (previewText.length > 40) previewText = previewText.substring(0, 40) + "...";
-
-        // ==========================================
-        // 🔎 【修正 2：對準路徑抓角色姓名與頭像】
-        // ==========================================
-        const charId = messageData.characterId || sessionData.characterId;
-
-        // 🌟 初始化安全的空箱子：預設名稱與空圖片
-        let charName = '你的愛人';
-        let charAvatar = null;
-
-        try {
-            // ❌ 原本錯誤路徑：.collection('characters')
-            // ✅ 【關鍵修正】：對準真正的角色檔案大樓
-            const charDoc = await db
-                .collection('artifacts').doc('lianlianshiguang')
-                .collection('public_characters').doc(String(charId)).get();
-
-            if (charDoc.exists) {
-                const charData = charDoc.data();
-                // 🌟 【修正】：將抓到的真正名字和頭像路徑裝進箱子
-                charName = charData.name || charName;
-                charAvatar = charData.avatarPath;
-            }
-        } catch (error) {
-            console.error("查無此人資料:", error);
-        }
-
-        // ==========================================
-        // 🚀 【修正 3：將正確的名字與圖片塞入 Payload】
-        // ==========================================
-        const safeNotificationImageUrl =
-            typeof charAvatar === "string" &&
-            /^https?:\/\//i.test(charAvatar.trim())
-                ? charAvatar.trim()
-                : "";
-
-        const payload = {
-            notification: {
-                title: charName,
-                body: previewText,
-                ...(safeNotificationImageUrl
-                    ? { imageUrl: safeNotificationImageUrl }
-                    : {}),
-            },
-            data: {
-                type: 'chat',
-                characterId: String(charId || ""),
-                sessionId: String(sessionId || ""),
-                click_action: 'FLUTTER_NOTIFICATION_CLICK',
-            },
-            android: {
-                priority: "high",
-                notification: {
-                    channelId: "high_importance_channel",
-                    sound: "default",
-                    defaultVibrateTimings: true,
-                    defaultLightSettings: true
-                }
-            },
-            apns: {
-                payload: {
-                    aps: {
-                        sound: "default",
-                    }
-                }
-            }
-        };
-
-        console.log(`叮咚！準備發送推播給用戶: ${userId}，來自角色的通知: ${charName}`);
-        return await sendToUserDevices(userId, payload);
-    } catch (error) {
-        console.error("推播接線生發生錯誤:", error);
-    }
-});
+}, createChatMessageNotificationHandler({db, sendToUserDevices}));
 
 // =========================================================================
 // 🌟 總裁萬能郵差 (v2 升級版)：只要信箱有新信，直接無腦發推播！
@@ -10387,52 +9150,7 @@ for (const doc of unreadSnapshot.docs) {
 exports.sendMailboxNotification = onDocumentCreated({
     region: "asia-east1",
     document: "users/{userId}/mailbox/{mailId}"
-}, async (event) => {
-    const snap = event.data;
-    if (!snap) return null;
-
-    const mailData = snap.data();
-    const userId = event.params.userId;
-    const mailId = event.params.mailId;
-
-    const payload = {
-        notification: {
-            title: mailData.title || "您有新通知！",
-            body: mailData.body || "點擊查看詳細內容 💌",
-        },
-        data: {
-            type: String(mailData.type || "system"),
-            postId: String(mailData.postId || ""),
-            mailId: String(mailId || ""),
-            click_action: "FLUTTER_NOTIFICATION_CLICK",
-        },
-        android: {
-            priority: "high",
-            notification: {
-                channelId: "high_importance_channel",
-                sound: "default",
-                defaultVibrateTimings: true,
-            },
-        },
-        apns: {
-            payload: {
-                aps: {
-                    sound: "default",
-                    badge: 0, // 只清除桌面舊徽章，不依信箱未讀數新增 Badge。
-                },
-            },
-        },
-    };
-
-    try {
-        await sendToUserDevices(userId, payload);
-        console.log(`✅ 信箱推播已送出給 ${userId}，類型: ${mailData.type}`);
-    } catch (error) {
-        console.error("❌ 郵差推播發送失敗:", error);
-    }
-
-    return null;
-});
+}, createMailboxNotificationHandler({sendToUserDevices}));
 
 // ============================================================================
 // 📛 舊版客戶端相容：只清除手機桌面 Badge，不再查詢信箱未讀數。
@@ -10445,32 +9163,13 @@ exports.syncNotificationBadge = onCall(
         timeoutSeconds: 30,
         memory: "256MiB",
     },
-    async (request) => {
-        const userId = request.auth?.uid;
-        if (!userId) {
-            throw new HttpsError("unauthenticated", "請先登入");
-        }
-
-        // 若舊版客戶端還在呼叫這個函式，以靜默推播將歷史 iOS Badge 歸零。
-        await sendToUserDevices(userId, {
-            data: { type: "badge_sync", unreadCount: "0" },
-            android: { priority: "normal" },
-            apns: {
-                headers: {
-                    "apns-priority": "5",
-                    "apns-push-type": "background",
-                },
-                payload: { aps: { "content-available": 1, badge: 0 } },
-            },
-        });
-        return { success: true, unreadCount: 0 };
-    }
+    createSyncNotificationBadgeHandler({sendToUserDevices, HttpsError})
 );
 
 // 🌟 總裁專屬：殿堂級劇情書記官 (對話摘要生成)
 exports.generateStorySummary = createStorySummaryFunction({onRequest, openRouterApiKey, cors, getAuth, db, FieldValue});
 
-const brokenMessageHandlers = createBrokenMessageHandlers({db});
+const brokenMessageHandlers = createBrokenMessageHandlers({db,auth,adminUids:{has:(uid)=>REWARD_CAMPAIGN_ADMIN_UIDS.has(uid)}});
 exports.scanBrokenMessages = onRequest({
     region: "asia-east1", memory: "1GiB", timeoutSeconds: 300,
 }, brokenMessageHandlers.scanBrokenMessages);
@@ -10660,11 +9359,8 @@ exports.directCallAiStream = onRequest({
     }
 });
 
-function requireLogin(request) {
-  if (!request.auth) {
-    throw new HttpsError("unauthenticated", "請先登入後再使用語音功能");
-  }
-}
+const {createVoiceLoginGuard} = require('./voice/login_guard');
+const requireLogin = createVoiceLoginGuard({HttpsError});
 
 const {createVoicePreviewHandlers} = require('./voice/preview_handlers');
 const voicePreviewHandlers = createVoicePreviewHandlers({requireLogin,HttpsError,elevenLabsApiKey});
@@ -10703,144 +9399,12 @@ exports.extractUserMemory = onRequest({
     memory: "512MiB",
     timeoutSeconds: 60,
     secrets: [openRouterApiKey, geminiApiKey],
-}, (req, res) => {
-    return cors(req, res, async () => {
-        try {
-            if (req.method === "OPTIONS") {
-                return res.status(204).send("");
-            }
-
-            if (req.method !== "POST") {
-                return res.status(405).json({
-                    status: "error",
-                    errorMessage: "Method not allowed",
-                });
-            }
-
-            const authHeader = req.headers.authorization || "";
-            const idToken = authHeader.startsWith("Bearer ")
-                ? authHeader.substring("Bearer ".length)
-                : null;
-
-            if (!idToken) {
-                return res.status(401).json({
-                    status: "error",
-                    errorMessage: "Missing Authorization token",
-                });
-            }
-
-            const decodedToken = await getAuth().verifyIdToken(idToken);
-            const userId = decodedToken.uid;
-            const body = req.body || {};
-
-            const appId =
-                String(body.appId || APP_ID).trim() || APP_ID;
-            const characterId =
-                String(body.characterId || "").trim();
-            const sessionId =
-                String(body.sessionId || "").trim();
-            const requestedProfileId =
-                String(body.playerProfileId || "").trim();
-            const userMessage =
-                String(body.userMessage || "").trim();
-            const memoryScopeVersion =
-                Number(body.memoryScopeVersion || 0);
-
-            // 舊 App 若仍呼叫這支相容 API，也不允許偷偷進入新版三層記憶。
-            if (memoryScopeVersion < 1) {
-                return res.status(200).json({
-                    status: "success",
-                    saved: false,
-                    reason: "memory_scope_version_disabled",
-                });
-            }
-
-            if (!characterId || !userMessage) {
-                return res.status(400).json({
-                    status: "error",
-                    errorMessage: "Missing characterId or userMessage",
-                });
-            }
-
-            if (userMessage.length < 4) {
-                return res.status(200).json({
-                    status: "success",
-                    saved: false,
-                    reason: "too_short",
-                });
-            }
-
-            // 這支 API 是舊版相容入口。沒有任何可辨識的玩家檔案／聊天室範圍時，
-            // 寧可不存，也不要再寫回 users/{uid}/characters/{characterId}/memories。
-            if (!sessionId && !requestedProfileId) {
-                console.log(
-                    "🧠 extractUserMemory 缺少 sessionId / playerProfileId，略過未分流記憶寫入"
-                );
-                return res.status(200).json({
-                    status: "success",
-                    saved: false,
-                    reason: "missing_memory_scope",
-                });
-            }
-
-            const userSnapshot = await db
-                .collection("users")
-                .doc(userId)
-                .get();
-            const userData = userSnapshot.data() || {};
-
-            const effectiveProfileId =
-                await resolveEffectivePlayerProfileId({
-                    appId,
-                    userId,
-                    characterId,
-                    sessionId,
-                    requestedProfileId,
-                    userData,
-                });
-
-            const playerIdentity =
-                resolvePlayerIdentityFromUserData(
-                    userData,
-                    effectiveProfileId
-                );
-
-            const savedMemory =
-                await savePlayerMemoryIfNeeded({
-                    appId,
-                    userId,
-                    characterId,
-                    playerProfileId: effectiveProfileId,
-                    sessionId,
-                    userMessage,
-                    playerName: playerIdentity.name,
-                    abortController: null,
-                });
-
-            return res.status(200).json({
-                status: "success",
-                saved: savedMemory != null,
-                memory: savedMemory?.memory || "",
-                scope: savedMemory?.scope || "none",
-                playerProfileId: effectiveProfileId,
-                reason:
-                    savedMemory != null
-                        ? "saved"
-                        : "not_worth_saving",
-            });
-        } catch (error) {
-            console.error("🧠 extractUserMemory 發生錯誤:", error);
-
-            // 記憶擷取失敗不要影響聊天主流程，所以回 200
-            return res.status(200).json({
-                status: "success",
-                saved: false,
-                reason: "server_error_but_ignored",
-            });
-        }
-    });
-});
-
+}, createLegacyMemoryExtractionHandler({
+    cors, getAuth, db, APP_ID,
+    resolveEffectivePlayerProfileId,
+    resolvePlayerIdentityFromUserData,
+    savePlayerMemoryIfNeeded,
+}));
 exports.createStripeCheckoutSession = onCall(
   {
     region: REGION,
@@ -11234,232 +9798,9 @@ const {
   repairMemoryScope
 } = createMemoryScopeTools({db, APP_ID});
 
-async function savePlayerMemoryIfNeeded({
-  chatMode = "",
-  appId,
-  userId,
-  characterId,
-  playerProfileId,
-  sessionId,
-  userMessage,
-  playerName,
-  abortController,
-}) {
-  if (!userId || !characterId) {
-    console.warn("⚠️ 缺少 userId 或 characterId，略過記憶提取");
-    return null;
-  }
-
-  const extracted = await extractPlayerMemory({
-    userMessage,
-    playerName,
-    chatMode,
-    abortController,
-  });
-
-  const confidence = Number(extracted.confidence || 0);
-  let memoryText = String(extracted.memory || "").trim();
-  let memoryScope = String(extracted.scope || "none").trim().toLowerCase();
-  const factKey = canonicalizeMemoryFactKey(extracted.factKey, {
-    userMessage,
-    category: extracted.category,
-  });
-  const factValue = String(extracted.factValue || "").trim().slice(0, 240);
-
-  memoryScope = repairMemoryScope({
-    scope: memoryScope,
-    shouldRemember: extracted.shouldRemember,
-    factKey,
-    userMessage,
-  });
-
-  const safeMemoryName =
-      String(playerName || "對方").trim() || "對方";
-
-  memoryText = memoryText.replace(/^玩家/, safeMemoryName);
-
-  if (!["profile", "character", "session"].includes(memoryScope)) {
-    memoryScope = "none";
-  }
-
-  // 第一版先採較保守門檻，避免亂存
-  if (
-    extracted.shouldRemember !== true ||
-    confidence < (["immersive", "resonance"].includes(chatMode) ? 0.68 : 0.75) ||
-    memoryText.length < 4 ||
-    memoryScope === "none" ||
-    !factKey
-  ) {
-    console.log("🧠 本輪沒有需要保存的玩家記憶", {
-      shouldRemember: extracted.shouldRemember,
-      scope: memoryScope,
-      factKey: factKey || null,
-      confidence,
-    });
-
-    return null;
-  }
-
-  const safeSessionId = String(sessionId || "").trim();
-  const safeAppId = String(appId || APP_ID).trim() || APP_ID;
-  const safeProfileId = await resolveEffectivePlayerProfileId({
-    appId: safeAppId,
-    userId,
-    characterId,
-    sessionId: safeSessionId,
-    requestedProfileId: playerProfileId,
-  });
-
-  let memoriesRef;
-
-  if (memoryScope === "profile") {
-    memoriesRef = db
-      .collection("users")
-      .doc(userId)
-      .collection("profile_memories")
-      .doc(safeProfileId)
-      .collection("memories");
-  } else if (memoryScope === "character") {
-    memoriesRef = db
-      .collection("users")
-      .doc(userId)
-      .collection("profile_memories")
-      .doc(safeProfileId)
-      .collection("characters")
-      .doc(characterId)
-      .collection("memories");
-  } else if (memoryScope === "session") {
-    if (!safeSessionId) {
-      console.warn("⚠️ Session Memory 缺少 sessionId，為避免串世界線，本輪不保存");
-      return null;
-    }
-
-    memoriesRef = db
-      .collection("artifacts")
-      .doc(safeAppId)
-      .collection("chat_sessions")
-      .doc(safeSessionId)
-      .collection("memories");
-  }
-
-  if (!memoriesRef) return null;
-
-  try {
-    const recentSnapshot = await memoriesRef
-      .orderBy("timestamp", "desc")
-      .limit(30)
-      .get();
-
-    const normalizedNewMemory = memoryText
-      .replace(/[，。！？、\s]/g, "")
-      .toLowerCase();
-
-    const activeDocs = recentSnapshot.docs.filter(
-      (doc) => doc.data()?.active !== false
-    );
-
-    const alreadyExists = activeDocs.some((doc) => {
-      const oldData = doc.data() || {};
-      const oldText = String(oldData.text || "")
-        .replace(/[，。！？、\s]/g, "")
-        .toLowerCase();
-
-      if (oldText === normalizedNewMemory) return true;
-
-      const oldFactKey = canonicalizeMemoryFactKey(oldData.factKey, {
-        userMessage: oldData.sourceMessage || "",
-        category: oldData.category,
-      });
-      const oldFactValue = normalizeMemoryFactValue(oldData.factValue);
-      const newFactValue = normalizeMemoryFactValue(factValue);
-
-      return Boolean(
-        factKey &&
-        oldFactKey === factKey &&
-        newFactValue &&
-        oldFactValue === newFactValue
-      );
-    });
-
-    if (alreadyExists) {
-      console.log("🧠 相同記憶已存在，略過新增：", {
-        factKey: factKey || null,
-        text: memoryText,
-      });
-      return null;
-    }
-
-    const conflictingDocs = factKey
-      ? activeDocs.filter(
-          (doc) =>
-            canonicalizeMemoryFactKey(doc.data()?.factKey, {
-              userMessage: doc.data()?.sourceMessage || "",
-              category: doc.data()?.category,
-            }) === factKey
-        )
-      : [];
-
-    const memoryRef = memoriesRef.doc();
-    const batch = db.batch();
-
-    batch.set(memoryRef, {
-      text: memoryText,
-      scope: memoryScope,
-      playerProfileId: safeProfileId || null,
-      characterId,
-      sessionId: safeSessionId || null,
-      category: extracted.category || "personal",
-      factKey: factKey || null,
-      factValue: factValue || null,
-      confidence,
-      source: "auto",
-      sourceMessage: String(userMessage || "").trim().slice(0, 500),
-      isFavorite: false,
-      active: true,
-      supersedes:
-        conflictingDocs.length > 0
-          ? conflictingDocs.map((doc) => doc.id)
-          : [],
-      timestamp: FieldValue.serverTimestamp(),
-      updatedAt: FieldValue.serverTimestamp(),
-    });
-
-    for (const oldDoc of conflictingDocs) {
-      batch.set(
-        oldDoc.ref,
-        {
-          active: false,
-          supersededBy: memoryRef.id,
-          supersededAt: FieldValue.serverTimestamp(),
-          updatedAt: FieldValue.serverTimestamp(),
-        },
-        {merge: true}
-      );
-    }
-
-    await batch.commit();
-
-    console.log("✅ 已自動保存玩家記憶：", {
-      id: memoryRef.id,
-      scope: memoryScope,
-      playerProfileId: safeProfileId || null,
-      factKey: factKey || null,
-      supersededCount: conflictingDocs.length,
-      text: memoryText,
-      category: extracted.category,
-      confidence,
-    });
-
-    return {
-      id: memoryRef.id,
-      ...extracted,
-      scope: memoryScope,
-    };
-  } catch (error) {
-    console.error("⚠️ 儲存玩家記憶失敗：", error);
-    return null;
-  }
-}
+// V83: keep original memory persistence rules and transaction behavior.
+const {createPlayerMemorySaver} = require('./memory/player_memory_saver');
+const savePlayerMemoryIfNeeded = createPlayerMemorySaver({extractPlayerMemory, canonicalizeMemoryFactKey, repairMemoryScope, APP_ID, resolveEffectivePlayerProfileId, db, normalizeMemoryFactValue, FieldValue});
 
 // ==================================================
 // 🔎 一次性工具：補建舊公開拾光牆貼文搜尋索引
@@ -11475,162 +9816,7 @@ exports.cancelAiResponse = onRequest(
     region: REGION,
     cors: true,
   },
-  async (req, res) => {
-    try {
-      if (req.method !== "POST") {
-        return res.status(405).json({
-          status: "error",
-          message: "Method not allowed",
-        });
-      }
-
-      const authorization =
-          req.headers.authorization || "";
-
-      if (!authorization.startsWith("Bearer ")) {
-        return res.status(401).json({
-          status: "error",
-          message: "尚未登入",
-        });
-      }
-
-      const idToken =
-          authorization.substring(7).trim();
-
-      const decodedToken =
-          await auth.verifyIdToken(
-              idToken
-          );
-
-      const userId = decodedToken.uid;
-
-      const clientRequestId = String(
-        req.body?.clientRequestId || ""
-      )
-          .trim()
-          .slice(0, 200);
-
-      if (!clientRequestId) {
-        return res.status(400).json({
-          status: "error",
-          message: "缺少 clientRequestId",
-        });
-      }
-
-      // 取得聊天室 ID
-      const rawSessionId = String(
-        req.body?.sessionId || ""
-      ).trim();
-
-      if (!rawSessionId) {
-        return res.status(400).json({
-          status: "error",
-          message: "缺少 sessionId",
-        });
-      }
-
-      // 必須與 getAiResponse 建立 lock 時使用相同的清理規則
-      const safeSessionId = rawSessionId
-        .replace(/[\/\\#?\[\]\s]/g, "_")
-        .slice(0, 150);
-
-      const cancellationRef = db
-          .collection("artifacts")
-          .doc(APP_ID)
-          .collection(
-            "ai_request_cancellations"
-          )
-          .doc(clientRequestId);
-
-      const aiLockRef = db
-          .collection("users")
-          .doc(userId)
-          .collection("locks")
-          .doc(`aiResponse_${safeSessionId}`);
-
-      let lockReleased = false;
-
-      await db.runTransaction(
-          async (transaction) => {
-              // 先讀取鎖，再執行所有寫入
-              const lockSnapshot =
-                  await transaction.get(
-                      aiLockRef
-                  );
-
-              const lockData =
-                  lockSnapshot.data() || {};
-
-              // 建立取消紀錄
-              transaction.set(
-                  cancellationRef,
-                  {
-                      userId,
-                      clientRequestId,
-                      sessionId: rawSessionId,
-                      cancelled: true,
-
-                      cancelledAt:
-                          FieldValue
-                              .serverTimestamp(),
-
-                      expiresAt:
-                          new Date(
-                              Date.now() +
-                              24 * 60 * 60 * 1000
-                          ),
-                  },
-                  {
-                      merge: true,
-                  }
-              );
-
-              // 只能刪除完全屬於本次請求的鎖，
-              // 不得誤刪後來新請求建立的鎖。
-              if (
-                  lockSnapshot.exists &&
-                  lockData.userId === userId &&
-                  lockData.sessionId ===
-                      rawSessionId &&
-                  lockData.clientRequestId ===
-                      clientRequestId
-              ) {
-                  transaction.delete(
-                      aiLockRef
-                  );
-
-                  lockReleased = true;
-              }
-          }
-      );
-
-      console.log(
-          "🛑 收到玩家主動取消 AI 請求",
-          {
-              userId,
-              sessionId: rawSessionId,
-              clientRequestId,
-              lockReleased,
-          }
-      );
-
-      return res.status(200).json({
-          status: "cancelled",
-          clientRequestId,
-          lockReleased,
-      });
-    } catch (error) {
-      console.error(
-        "❌ 取消 AI 請求失敗：",
-        error
-      );
-
-      return res.status(500).json({
-        status: "error",
-        message: "取消請求失敗",
-      });
-    }
-  }
+  createCancelAiResponseHandler({auth, db, APP_ID, FieldValue})
 );
 
 // ==================================================
@@ -11653,6 +9839,7 @@ const {ANNOUNCEMENT_TRANSLATION_TARGETS, translateAnnouncementForLocale} = creat
 // ============================================================
 // 🌍 角色內容多語系：按需翻譯 + Firestore 共用快取
 // ============================================================
+const {createCharacterTranslationHandler} = require('./translation/character_translation_handler');
 const {createCharacterTranslationTools} = require('./translation/character_translation');
 const {CHARACTER_TRANSLATION_TARGETS, normalizeCharacterLocale, buildCharacterSourcePayload, translateCharacterPayload} = createCharacterTranslationTools({getTranslateClient: () => { if (!translateClient) translateClient = new Translate(); return translateClient; }});
 
@@ -11662,159 +9849,11 @@ exports.getCharacterTranslation = onCall(
     timeoutSeconds: 120,
     memory: "512MiB",
   },
-  async (request) => {
-    if (!request.auth) {
-      throw new HttpsError(
-        "unauthenticated",
-        "請先登入。",
-      );
-    }
-
-    const characterId = String(
-      request.data?.characterId || "",
-    ).trim();
-
-    const targetLocale = normalizeCharacterLocale(
-      request.data?.targetLocale,
-    );
-
-    const force = request.data?.force === true;
-
-    if (!characterId) {
-      throw new HttpsError(
-        "invalid-argument",
-        "缺少角色 ID。",
-      );
-    }
-
-    if (
-      !Object.prototype.hasOwnProperty.call(
-        CHARACTER_TRANSLATION_TARGETS,
-        targetLocale,
-      )
-    ) {
-      throw new HttpsError(
-        "invalid-argument",
-        "不支援的目標語言。",
-      );
-    }
-
-    const charRef = db
-      .collection("artifacts")
-      .doc(APP_ID)
-      .collection("public_characters")
-      .doc(characterId);
-
-    const charSnap = await charRef.get();
-
-    if (!charSnap.exists) {
-      throw new HttpsError(
-        "not-found",
-        "找不到角色。",
-      );
-    }
-
-    const data = charSnap.data() || {};
-
-    if (
-      data.isPublic !== true ||
-      String(data.status || "") !== "published"
-    ) {
-      throw new HttpsError(
-        "permission-denied",
-        "此角色目前不可翻譯。",
-      );
-    }
-
-    const sourceLocale = normalizeCharacterLocale(
-      data.content_language || "zh_Hant",
-    );
-
-    const sourcePayload = buildCharacterSourcePayload(data);
-
-    const sourceHash = crypto
-      .createHash("sha256")
-      .update(JSON.stringify(sourcePayload))
-      .digest("hex");
-
-    if (targetLocale === sourceLocale) {
-      return {
-        success: true,
-        locale: targetLocale,
-        sourceLocale,
-        cached: true,
-        translation: sourcePayload,
-      };
-    }
-
-    const existingTranslations =
-      data.translations &&
-      typeof data.translations === "object"
-        ? data.translations
-        : {};
-
-    const cached = existingTranslations[targetLocale];
-
-    if (
-      !force &&
-      cached &&
-      typeof cached === "object" &&
-      cached.__sourceHash === sourceHash
-    ) {
-      const {
-        __sourceHash,
-        __translatedAt,
-        ...publicCached
-      } = cached;
-
-      return {
-        success: true,
-        locale: targetLocale,
-        sourceLocale,
-        cached: true,
-        translation: publicCached,
-      };
-    }
-
-    const targetLanguage =
-      CHARACTER_TRANSLATION_TARGETS[targetLocale];
-
-    const translated = await translateCharacterPayload(
-      sourcePayload,
-      targetLanguage,
-    );
-
-    const storedTranslation = {
-      ...translated,
-      __sourceHash: sourceHash,
-      __translatedAt: new Date().toISOString(),
-    };
-
-    await charRef.set(
-      {
-        translations: {
-          [targetLocale]: storedTranslation,
-        },
-        translationUpdatedAt: FieldValue.serverTimestamp(),
-      },
-      { merge: true },
-    );
-
-    console.log("🌍 角色翻譯完成", {
-      characterId,
-      sourceLocale,
-      targetLocale,
-      fields: Object.keys(translated),
-    });
-
-    return {
-      success: true,
-      locale: targetLocale,
-      sourceLocale,
-      cached: false,
-      translation: translated,
-    };
-  },
+  createCharacterTranslationHandler({
+    HttpsError, db, APP_ID, crypto, FieldValue,
+    CHARACTER_TRANSLATION_TARGETS, normalizeCharacterLocale,
+    buildCharacterSourcePayload, translateCharacterPayload,
+  }),
 );
 
 const REWARD_CAMPAIGN_ADMIN_UIDS = new Set([
@@ -11920,66 +9959,12 @@ exports.getRecommendationConversionStats = onCall(
   // 🌸 後台：今日花花發放 / 消耗
   // ============================================================
 
-  function getFlowerStatsTaipeiDayRange(
-      date = new Date()
-  ) {
-      const formatter =
-          new Intl.DateTimeFormat(
-              "en-CA",
-              {
-                  timeZone: "Asia/Taipei",
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-              }
-          );
 
-      const parts =
-          formatter.formatToParts(date);
 
-      const values = {};
 
-      for (const part of parts) {
-          if (
-              part.type === "year" ||
-              part.type === "month" ||
-              part.type === "day"
-          ) {
-              values[part.type] =
-                  Number(part.value);
-          }
-      }
-
-      // 台北 UTC+8
-      // 台北 00:00 = UTC 前一天 16:00
-      const startUtc =
-          new Date(
-              Date.UTC(
-                  values.year,
-                  values.month - 1,
-                  values.day,
-                  -8,
-                  0,
-                  0,
-                  0
-              )
-          );
-
-      const endUtc =
-          new Date(
-              startUtc.getTime() +
-              24 * 60 * 60 * 1000
-          );
-
-      return {
-          start:
-              Timestamp.fromDate(startUtc),
-
-          end:
-              Timestamp.fromDate(endUtc),
-      };
-  }
-
+// V85: preserve existing flower and revenue Taiwan-day helpers in one isolated module.
+const {createAdminDailyRanges} = require('./analytics/admin_daily_ranges');
+const {getFlowerStatsTaipeiDayRange,getRevenueTaipeiDayRange} = createAdminDailyRanges({Timestamp});
 
   // V23：清理已停用且未匯出的台灣舊處理器 getAdminFlowerStats。
 
@@ -11987,88 +9972,12 @@ exports.getRecommendationConversionStats = onCall(
   // 💰 後台：今日手機 IAP 金流
   // ============================================================
 
-  function getRevenueTaipeiDayRange(
-      date = new Date()
-  ) {
-      const formatter =
-          new Intl.DateTimeFormat(
-              "en-US",
-              {
-                  timeZone: "Asia/Taipei",
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-              }
-          );
 
-      const parts =
-          formatter.formatToParts(date);
-
-      const values = {};
-
-      for (const part of parts) {
-          if (
-              part.type === "year" ||
-              part.type === "month" ||
-              part.type === "day"
-          ) {
-              values[part.type] =
-                  Number(part.value);
-          }
-      }
-
-      // 台灣時間 00:00
-      // 換算成 UTC = 前一天 16:00
-      const startUtc =
-          new Date(
-              Date.UTC(
-                  values.year,
-                  values.month - 1,
-                  values.day,
-                  -8,
-                  0,
-                  0,
-                  0
-              )
-          );
-
-      const endUtc =
-          new Date(
-              startUtc.getTime() +
-              24 * 60 * 60 * 1000
-          );
-
-      return {
-          start:
-              Timestamp.fromDate(startUtc),
-
-          end:
-              Timestamp.fromDate(endUtc),
-      };
-  }
 
 
   // V23：清理已停用且未匯出的台灣舊處理器 getAdminRevenueStats。
 
-function parseRewardCampaignDate(value, fieldName) {
-  if (!value) {
-    throw new HttpsError(
-      "invalid-argument",
-      `缺少${fieldName}`
-    );
-  }
 
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    throw new HttpsError(
-      "invalid-argument",
-      `${fieldName}格式不正確`
-    );
-  }
-
-  return date;
-}
 
 // ==================================================
 // 🎁 管理員建立活動禮物
@@ -12078,45 +9987,9 @@ function parseRewardCampaignDate(value, fieldName) {
 // ============================================================
 // 📈 後台：營運分析（保留原本統計，另外提供月 / 來源 / 用途 / 趨勢 / 模式比例）
 // ============================================================
-function getTaipeiUtcStartOfDay(date = new Date()) {
-    const formatter = new Intl.DateTimeFormat("en-US", {
-        timeZone: "Asia/Taipei",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-    });
 
-    const values = {};
-    for (const part of formatter.formatToParts(date)) {
-        if (part.type === "year" || part.type === "month" || part.type === "day") {
-            values[part.type] = Number(part.value);
-        }
-    }
 
-    return new Date(Date.UTC(
-        values.year,
-        values.month - 1,
-        values.day,
-        -8,
-        0,
-        0,
-        0
-    ));
-}
 
-function getTaipeiMonthStart(date = new Date(), offsetMonths = 0) {
-    const dayStart = getTaipeiUtcStartOfDay(date);
-    const taipeiLocal = new Date(dayStart.getTime() + 8 * 60 * 60 * 1000);
-    return new Date(Date.UTC(
-        taipeiLocal.getUTCFullYear(),
-        taipeiLocal.getUTCMonth() + offsetMonths,
-        1,
-        -8,
-        0,
-        0,
-        0
-    ));
-}
 
 // V26：刪除被下方同名正式函式覆蓋的 8 個舊轉接函式。
 
@@ -12407,158 +10280,17 @@ exports.publishAnnouncementUs = onCall(
   createAnnouncementPublishHandler({requireRewardCampaignAdmin,HttpsError,ANNOUNCEMENT_TRANSLATION_TARGETS,translateAnnouncementForLocale,db,FieldValue}),
 );;
 
+const {createEventContentTranslationHandler} = require('./events/event_content_translation_handler');
 exports.translateEventContentUs = onCall(
   {
     region: "us-central1",
     timeoutSeconds: 300,
     memory: "512MiB",
   },
-  async (request) => {
-    requireRewardCampaignAdmin(request);
-
-    const data = request.data || {};
-
-    const eventSource =
-      eventTextRecord(
-        data.event,
-        [
-          "name",
-          "subtitle",
-          "description",
-          "currencyName",
-        ]
-      );
-
-    const taskSources =
-      Array.isArray(data.tasks)
-        ? data.tasks.map((item) =>
-            eventTextRecord(
-              item,
-              ["title", "description"]
-            )
-          )
-        : [];
-
-    const milestoneSources =
-      Array.isArray(data.milestones)
-        ? data.milestones.map((item) =>
-            eventTextRecord(
-              item,
-              ["title", "description"]
-            )
-          )
-        : [];
-
-    const shopSources =
-      Array.isArray(data.shopItems)
-        ? data.shopItems.map((item) =>
-            eventTextRecord(
-              item,
-              ["title", "name", "description"]
-            )
-          )
-        : [];
-
-    const memorySources =
-      Array.isArray(data.memories)
-        ? data.memories.map((memory) => ({
-            content: eventTextRecord(
-              memory,
-              ["title", "subtitle", "description"]
-            ),
-            scenes:
-              Array.isArray(memory?.scenes)
-                ? memory.scenes.map((scene) =>
-                    eventTextRecord(
-                      scene,
-                      ["text"]
-                    )
-                  )
-                : [],
-          }))
-        : [];
-
-    const localized = {
-      event: {},
-      tasks: taskSources.map(() => ({})),
-      milestones: milestoneSources.map(() => ({})),
-      shopItems: shopSources.map(() => ({})),
-      memories: memorySources.map((memory) => ({
-        scenes: memory.scenes.map(() => ({})),
-      })),
-    };
-
-    for (
-      const [localeKey, targetLanguage]
-      of Object.entries(EVENT_TRANSLATION_TARGETS)
-    ) {
-      localized.event[localeKey] =
-        await translateEventTextRecord(
-          eventSource,
-          targetLanguage
-        );
-
-      for (let i = 0; i < taskSources.length; i++) {
-        localized.tasks[i][localeKey] =
-          await translateEventTextRecord(
-            taskSources[i],
-            targetLanguage
-          );
-      }
-
-      for (let i = 0; i < milestoneSources.length; i++) {
-        localized.milestones[i][localeKey] =
-          await translateEventTextRecord(
-            milestoneSources[i],
-            targetLanguage
-          );
-      }
-
-      for (let i = 0; i < shopSources.length; i++) {
-        localized.shopItems[i][localeKey] =
-          await translateEventTextRecord(
-            shopSources[i],
-            targetLanguage
-          );
-      }
-
-      for (let i = 0; i < memorySources.length; i++) {
-        localized.memories[i][localeKey] =
-          await translateEventTextRecord(
-            memorySources[i].content,
-            targetLanguage
-          );
-
-        for (
-          let j = 0;
-          j < memorySources[i].scenes.length;
-          j++
-        ) {
-          localized.memories[i].scenes[j][localeKey] =
-            await translateEventTextRecord(
-              memorySources[i].scenes[j],
-              targetLanguage
-            );
-        }
-      }
-    }
-
-    console.log("✅ 活動多語翻譯完成", {
-      eventName: eventSource.name || "",
-      locales:
-        Object.keys(EVENT_TRANSLATION_TARGETS),
-      taskCount: taskSources.length,
-      milestoneCount: milestoneSources.length,
-      shopItemCount: shopSources.length,
-      memoryCount: memorySources.length,
-    });
-
-    return {
-      success: true,
-      sourceLocale: "zh_Hant",
-      localized,
-    };
-  }
+  createEventContentTranslationHandler({
+    requireRewardCampaignAdmin, eventTextRecord, EVENT_TRANSLATION_TARGETS,
+    translateEventTextRecord,
+  })
 );;
 
 exports.getAdminFlowerStatsUs = onCall(
@@ -12589,225 +10321,16 @@ exports.getAdminFlowerStatsUs = onCall(
 // ============================================================
 
 
-function normalizeAdminMode(rawMode) {
-    const mode = String(rawMode || "").trim().toLowerCase();
-    if (mode === "gemini") return "gemini";
-    if (mode === "daily") return "daily";
-    if (mode === "story") return "story";
-    if (mode === "immersive") return "immersive";
-    if (mode === "resonance") return "resonance";
-    return "other";
-}
-
-function classifyFlowerGrantSource(data = {}) {
-    const type = String(data.type || "").trim().toLowerCase();
-    const source = String(data.source || "").trim().toLowerCase();
-    const title = String(data.title || "").trim().toLowerCase();
-    const reason = String(data.reason || "").trim().toLowerCase();
-    const productId = String(data.productId || "").trim().toLowerCase();
-    const productType = String(data.productType || "").trim().toLowerCase();
-    const provider = String(data.provider || "").trim().toLowerCase();
-    const text = `${type} ${source} ${title} ${reason} ${productId} ${productType} ${provider}`;
-
-    const looksLikePurchase =
-        type === "purchase" ||
-        provider === "apple_iap" ||
-        provider === "google_play" ||
-        source === "stripe_web";
-
-    if (
-        /月卡/.test(text) &&
-        /(每日|日領|daily)/.test(text)
-    ) {
-        return "monthlyDaily";
-    }
-
-    if (looksLikePurchase) {
-        if (
-            productType === "monthly_card" ||
-            /monthly|月卡|星光契約/.test(text)
-        ) {
-            return "monthlyCardPurchase";
-        }
-        return "topup";
-    }
-
-    if (
-        type === "cs_compensation" ||
-        /客服補償|補償/.test(text)
-    ) {
-        return "compensation";
-    }
-
-    if (
-        type === "reward_campaign" ||
-        /活動|campaign|節慶|七夕|萬聖|聖誕/.test(text)
-    ) {
-        return "event";
-    }
-
-    if (
-        type === "admin_adjustment" &&
-        Number(data.amount || 0) > 0
-    ) {
-        return "admin";
-    }
-
-    if (
-        type === "system_grant" ||
-        /任務|簽到|新手|推薦|邀請|referral|每日任務|免費/.test(text)
-    ) {
-        return "freeTask";
-    }
-
-    return "other";
-}
-
-function classifyFlowerSpendUse(data = {}) {
-    const billingType = String(data.billingType || "").trim().toLowerCase();
-    const type = String(data.type || "").trim().toLowerCase();
-    const title = String(data.title || "").trim().toLowerCase();
-    const reason = String(data.reason || "").trim().toLowerCase();
-    const text = `${billingType} ${type} ${title} ${reason}`;
-
-    if (billingType === "interaction" || /互動|戳戳|抱抱|牽手|定位|擲骰子/.test(text)) {
-        return "interaction";
-    }
-    if (billingType === "gift" || /禮物|gift/.test(text)) {
-        return "gift";
-    }
-
-    const mode = normalizeAdminMode(data.chatMode);
-    if (mode !== "other") return mode;
-
-    return "other";
-}
-
-function getRevenuePurchaseInfo(data = {}) {
-    const type = String(data.type || "").trim().toLowerCase();
-    const provider = String(data.provider || "").trim().toLowerCase();
-    const currency = String(data.currency || "").trim().toUpperCase();
-    const price = Number(data.price || 0);
-    const productType = String(data.productType || "").trim().toLowerCase();
-    const productId = String(data.productId || "").trim().toLowerCase();
-    const title = String(data.title || "").trim().toLowerCase();
-
-    const isMobilePurchase =
-        type === "purchase" &&
-        (provider === "apple_iap" || provider === "google_play");
-
-    if (!isMobilePurchase) {
-        return null;
-    }
-
-    const isPricedTwd =
-        currency === "TWD" &&
-        Number.isFinite(price) &&
-        price > 0;
-
-    const isMonthlyCard =
-        productType === "monthly_card" ||
-        /monthly|月卡|星光契約/.test(`${productId} ${title}`);
-
-    return {
-        provider,
-        isPricedTwd,
-        revenueTwd: isPricedTwd ? price : 0,
-        isMonthlyCard,
-    };
-}
-
-function getBucketIndex(value, startMs, bucketMs, bucketCount) {
-    const index = Math.floor((value.getTime() - startMs) / bucketMs);
-    return index >= 0 && index < bucketCount ? index : -1;
-}
-
-function isInternalTesterForAnalytics(uid, data = {}, configuredUids = new Set()) {
-    if (configuredUids.has(String(uid || "").trim())) return true;
-
-    if (
-        data.analyticsExcludeFromEconomy === true ||
-        data.isInternalTester === true ||
-        data.internalTester === true ||
-        data.isTester === true ||
-        data.isTestUser === true ||
-        data.testUser === true ||
-        data.isBetaTester === true ||
-        data.betaTester === true
-    ) {
-        return true;
-    }
-
-    const accountType = String(data.accountType || "").trim().toLowerCase();
-    return [
-        "internal_test",
-        "internal_tester",
-        "tester",
-        "test",
-        "beta_tester",
-        "beta"
-    ].includes(accountType);
-}
-
-function medianNumber(values = []) {
-    if (!Array.isArray(values) || values.length === 0) return 0;
-
-    const sorted = values
-        .map((value) => Number(value || 0))
-        .filter((value) => Number.isFinite(value))
-        .sort((a, b) => a - b);
-
-    if (sorted.length === 0) return 0;
-
-    const middle = Math.floor(sorted.length / 2);
-    if (sorted.length % 2 === 1) return sorted[middle];
-    return (sorted[middle - 1] + sorted[middle]) / 2;
-}
-
-function buildFlowerInventoryStats(rows = []) {
-    const safeRows = Array.isArray(rows) ? rows : [];
-    const balances = safeRows.map((row) => Math.max(0, Number(row?.balance || 0)));
-    const totalPlayers = balances.length;
-    const totalFlowers = balances.reduce((sum, value) => sum + value, 0);
-
-    const bucketDefs = [
-        { key: "0_100", label: "0～100", min: 0, max: 100 },
-        { key: "101_300", label: "101～300", min: 101, max: 300 },
-        { key: "301_1000", label: "301～1,000", min: 301, max: 1000 },
-        { key: "1001_3000", label: "1,001～3,000", min: 1001, max: 3000 },
-        { key: "3001_plus", label: "3,001 以上", min: 3001, max: null },
-    ];
-
-    const buckets = bucketDefs.map((def) => {
-        const matched = safeRows.filter((row) => {
-            const balance = Math.max(0, Number(row?.balance || 0));
-            if (balance < def.min) return false;
-            if (def.max != null && balance > def.max) return false;
-            return true;
-        });
-
-        const flowerTotal = matched.reduce(
-            (sum, row) => sum + Math.max(0, Number(row?.balance || 0)),
-            0
-        );
-
-        return {
-            key: def.key,
-            label: def.label,
-            players: matched.length,
-            playerRatio: totalPlayers > 0 ? matched.length / totalPlayers : 0,
-            flowerTotal,
-        };
-    });
-
-    return {
-        playerCount: totalPlayers,
-        totalFlowers,
-        averageFlowers: totalPlayers > 0 ? totalFlowers / totalPlayers : 0,
-        medianFlowers: medianNumber(balances),
-        buckets,
-    };
-}
+const {
+  normalizeAdminMode,
+  classifyFlowerGrantSource,
+  classifyFlowerSpendUse,
+  getRevenuePurchaseInfo,
+  getBucketIndex,
+  isInternalTesterForAnalytics,
+  medianNumber,
+  buildFlowerInventoryStats
+} = require('./analytics/operations_helpers');
 
 // V23：清理已停用且未匯出的台灣舊處理器 getAdminOperationsAnalytics。;
 

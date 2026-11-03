@@ -1,6 +1,6 @@
 'use strict';
 const storyClock = require('./story_clock');
-const {parseFields, lockCreatorStatus, describeCreatorTemplate} = require('./status_template');
+const {parseFields, lockCreatorStatus, describeCreatorTemplate, isCreatorGuidance} = require('./status_template');
 
 // 世界觀邏輯集中管理；依賴由 functions/index.js 注入，避免重複初始化 Firebase Admin。
 function registerWorldFunctions(exports, deps) {
@@ -709,6 +709,19 @@ exports.worldPrivateTest = onCall({
       const playerTimeAnchor = action === 'send' ? extractWorldStoryTimeAnchor(rawMessage) : '';
       const currentStoryTimeAnchor = playerTimeAnchor || String(roomConfig.storyTimeAnchor || '');
       const previousStoryClock = storyClock.normalize(roomConfig.storyClock);
+      // Older worlds may use the creator's 📅 fictional-day status instead of
+      // a Gregorian storyClock. Recover the latest saved status once, then persist
+      // an independent fictional clock; never trust a later AI-generated timestamp.
+      const latestStatusText = recent.docs.flatMap(doc =>
+        (Array.isArray(doc.data()?.segments) ? doc.data().segments : [])
+          .filter(seg => seg?.isStatusBar === true).map(seg => String(seg.text || ''))
+      ).at(-1) || '';
+      const statusCalendarValue = latestStatusText.split('\n').map(line =>
+        line.match(/^\s*(?:📅|🗓️?|📆)\s*[:：]\s*(.*)$/u)?.[1] || ''
+      ).find(Boolean) || '';
+      const previousFictionalClock = storyClock.normalizeFictionalClock(roomConfig.fictionalStoryClock)
+        || storyClock.parseFictionalTime(statusCalendarValue);
+
       const displayStoryTime = clock => storyClock.displayTime(clock,world);
       const creatorTimePolicy = storyClock.creatorTimePolicy(world);
       const worldDefaultAdvance = storyClock.advanceForWorld(world,3);
@@ -846,6 +859,10 @@ exports.worldPrivateTest = onCall({
       const effectiveStoryClock = storyClock.resolveClock(previousStoryClock, action === 'send' ? rawMessage : '', storyClock.advanceForWorld(world,parsed.storyMinutesElapsed), creatorTimePolicy.fixedMinutes === null ? 5 : 120);
       // 重新生成必須保留原回合時間，不可因重新生成而再次推進。
       const finalStoryClock = action === 'regenerate' ? previousStoryClock : effectiveStoryClock.clock;
+      const newFictionalClock = action === 'regenerate' ? previousFictionalClock :
+        storyClock.resolveFictionalClock(previousFictionalClock,
+          action === 'send' ? rawMessage : '', storyClock.advanceForWorld(world, parsed.storyMinutesElapsed));
+
       const validIds = new Map(allowed.filter(n=>n.id).map(n=>[n.id,n.name]));
       // 防止模型把後端玩家檔案 JSON 當成可見旁白或狀態欄。
       // 只匹配完整的 nickname/identity 物件，避免誤刪故事中正常的 JSON 描述。
@@ -871,7 +888,9 @@ exports.worldPrivateTest = onCall({
       }).filter(s=>s.text);
       if (!segments.length) throw new HttpsError('internal','AI 回覆為空');
       const leakedInternal = /(?:reasoning_content|userRequestSummary|現在開始正式寫作|讓我檢查之前的系統提示|回顧系統提示|於封禁狀態)/iu;
-      if (segments.some(s => leakedInternal.test(s.text)))
+      // The model may also accidentally place creator template instructions in story segments.
+      // Reject that response rather than publishing an internal field-filling instruction.
+      if (segments.some(s => leakedInternal.test(s.text) || isCreatorGuidance(s.text)))
         throw new HttpsError('internal','AI 回覆包含不適合顯示的內部內容，請重試');
       const memoryEvents = action === 'regenerate' ? [] : validatedWorldMemoryEvents(
         parsed.memoryEvents, rawMessage, segments, new Set(allowed.map(n=>n.id).filter(Boolean)));
@@ -886,12 +905,26 @@ exports.worldPrivateTest = onCall({
       // 維持現有聊天 JSON/Firestore segments 結構，最後加一段旁白顯示狀態欄。
       // 不信任模型生成內容；如似乎含有幕後指令，寧可省略而不洩漏。
       const statusParts = [];
+      let finalFictionalClock = newFictionalClock;
       if (hasCustomStatusBar) {
         const rawStatus = typeof parsed.statusBar === 'string' ? parsed.statusBar.slice(0,1800) : '';
         const renderedStatus = sanitizeStatusBar(normalizeAiResponseScript(rawStatus,'台灣繁體中文'));
+        // Let lockCreatorStatus validate each field independently so that one bad value
+        // cannot hide all other valid status fields or leak author instructions.
         const unsafeStatus = /(?:請系統|請描述|顯示目前|自動不顯示|內部提示詞|系統提示詞|世界完整設定|隱藏篇章|好感度數值)/u.test(renderedStatus);
+        // Only bootstrap an uninitialized fictional clock from the 📅 value.
+        // Once persisted, subsequent replies are based on the previous server state.
+        const generatedCalendarValue = renderedStatus.split('\n').map(line =>
+          line.match(/^\s*(?:📅|🗓️?|📆)\s*[:：]\s*(.*)$/u)?.[1] || ''
+        ).find(Boolean) || '';
+        const initialFictionalClock = !previousFictionalClock && !finalStoryClock
+          ? storyClock.parseFictionalTime(generatedCalendarValue) : null;
+        const savedFictionalClock = newFictionalClock || initialFictionalClock;
+        if (savedFictionalClock) finalFictionalClock = savedFictionalClock;
+        const serverTimeText = finalStoryClock ? storyClock.displayTime(finalStoryClock,world)
+          : storyClock.displayFictionalClock(savedFictionalClock);
         const lockedStatus = lockCreatorStatus(customStatusTemplate, unsafeStatus ? '' : renderedStatus,
-          {timeText: finalStoryClock ? storyClock.displayTime(finalStoryClock,world) : ''});
+          {timeText: serverTimeText});
         if (lockedStatus) statusParts.push(lockedStatus);
       }
       // 玩家勾選的欄位只由白名單組裝，不顯示模型擅自新增的鍵或原始 JSON。
@@ -903,7 +936,7 @@ exports.worldPrivateTest = onCall({
           let safe = cleanProfileLeak(normalizeAiResponseScript(candidate, '台灣繁體中文'))
             .replace(/[\r\n]+/g, ' ').trim().slice(0,100);
           // 不洩漏身份檔案、模型內部規則或可疑生成指令。
-          if (!safe || /[{}]|(?:nickname|identity|請系統|系統提示詞|內部提示詞|隱藏篇章)/iu.test(safe)) {
+          if (!safe || isCreatorGuidance(safe) || /[{}]|(?:nickname|identity|請系統|系統提示詞|內部提示詞|隱藏篇章)/iu.test(safe)) {
             safe = '未確認';
           }
           return `${statusLabels[key]}：${safe}`;
@@ -1063,6 +1096,7 @@ exports.worldPrivateTest = onCall({
           lastActivity:now,processing:false,lockedAt:FieldValue.delete(),activeRequestId:FieldValue.delete(),
           ...(action === 'send' && playerTimeAnchor ? {storyTimeAnchor:playerTimeAnchor, storyTimeAnchorUpdatedAt:now} : {}),
           ...(finalStoryClock ? {storyClock:finalStoryClock, storyClockUpdatedAt:now} : {}),
+          ...(finalFictionalClock ? {fictionalStoryClock:finalFictionalClock} : {}),
           messageCount:FieldValue.increment(action === 'continue' ? 1 : 2)});
         // 公開世界真正聊天次數：玩家成功送出一則文字才 +1。
         // 與訊息寫入及扣費同一交易，requestId 去重；失敗、取消、重生、繼續皆不累加。

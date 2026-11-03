@@ -66,6 +66,7 @@ class WorldChatSideMenu extends StatelessWidget {
           tile(l10n.world_menu_memories_background1, '專屬回憶與背景', 'assets/images/chat/chat_menu_gallery_mask.webp'),
           const Divider(), section(l10n.world_menu_relations_section1),
           tile(l10n.world_menu_story_summary1, '劇情摘要', 'assets/images/chat/chat_menu_about_us_mask.png'),
+          tile(l10n.chat_menu_aboutus, '關於我們', 'assets/images/chat/chat_menu_about_us_mask.png'),
           tile(l10n.world_menu_relationships1, '人物關係', 'assets/images/chat/chat_menu_related_mask.png'),
           tile(l10n.world_menu_memos1, '備忘錄', 'assets/images/chat/chat_menu_memo_mask.png'),
           const Divider(), section(l10n.world_menu_memory_section1),

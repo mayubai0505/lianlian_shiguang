@@ -1,13 +1,24 @@
 'use strict';
 // Keep creator-authored visible labels, order and decoration. Never render notes as values.
 const LABEL = /^(\s*(?:[-*•]\s*)?)([^：:\n｜|]{1,36}?)(\s*[:：]\s*)(.*)$/u;
-const TIME_LABEL = /^(?:時間|日期時間|故事時間|當前時間|目前時間)$/u;
+const TIME_LABEL = /^(?:時間|日期時間|故事時間|當前時間|目前時間|📅|🗓️?|📆)$/u;
 const DATE_LABEL = /^(?:日期|故事日期|當前日期|目前日期)$/u;
 const INSTRUCTION = /(?:希望|請|依劇情|每回合|每輪|推進|顯示|使用|格式|自動|更新|進行|不可|不要|以.+(?:時辰|分鐘)|設定|字內|例如|舉例|視情況|需承接|不准|必須|開始|個別對玩家|一句真實內心話)/u;
 const UNSAFE = /(?:nickname|identity|reasoning_content|userRequestSummary|請系統|請描述|顯示目前|系統提示詞|內部提示詞|隱藏篇章|世界完整設定)/iu;
 const EMOJI = /[\p{Extended_Pictographic}\u2600-\u27BF\uFE0F]/u;
 const KAOMOJI = /(?:[（(][^\n]{1,30}[）)]|[♡♥❤☆★♪♫ღ])/u;
 const PLACEHOLDER = /^(?:未確認|不確定|未知|無|待確認|待更新|XX(?:\/XX)*|hh:mm|\.{2,}|…+|[-—_]+)$/iu;
+// Creator guidance and unfilled alternatives must never be treated as a rendered state.
+// Match template *instructions*, not particular adult-related vocabulary.
+const GUIDANCE_LEAK = /(?:是否[^\n]{0,36}[（(][^）)]{0,140}(?:\/|／)[^）)]{0,140}[）)]|(?:狀態|程度|選項|反應)[（(][^）)]{0,140}(?:\/|／)[^）)]{0,140}[）)]|一句話(?:形容|描述)|適時加入|隨機事件\s*[（(](?:可|適時|依|加入)|(?:可|適時)加入(?:其他)?角色|(?:男主|女主|人物|角色)們?是否|(?:填寫|請選擇|擇一|三選一|二選一|依劇情|視情況|請依)[^。！\n]{0,70}(?:選項|狀態|勃起|加入|描述|形容))/u;
+const ALTERNATIVES = /[（(][^()（）\n]{2,100}(?:\/|／)[^()（）\n]{2,100}[）)]/u;
+function isCreatorGuidance(value) {
+  const text=String(value||'').trim();
+  return GUIDANCE_LEAK.test(text) || ALTERNATIVES.test(text) ||
+    /(?:隨機事件|角色進入劇情)[^\n]{0,70}(?:適時|加入|可加入|or)/iu.test(text) ||
+    /(?:[（(]\s*(?:未勃起|半勃起|完全勃起|軟|半硬|極硬)\s*[\/／])/u.test(text);
+}
+
 // Describe intent to the writer without allowing creator notes to become visible values.
 // The writer interprets free-form instructions; server-side rendering validates labels/values.
 function describeCreatorTemplate(template) {
@@ -47,7 +58,7 @@ function fieldsInLine(line) {
     const name=match[2].trim();
     if(!name || INSTRUCTION.test(name) || UNSAFE.test(name))return null;
     const bareName=name.replace(/^[^\p{Script=Han}\p{Letter}]+/gu,'').trim();
-    return {name,time:TIME_LABEL.test(bareName),date:DATE_LABEL.test(bareName),prefix:match[1],separator:match[3],sample:match[4]};
+    return {name,time:TIME_LABEL.test(bareName)||TIME_LABEL.test(name),date:DATE_LABEL.test(bareName),prefix:match[1],separator:match[3],sample:match[4]};
   }).filter(Boolean);
 }
 function parseFields(template) {
@@ -62,7 +73,7 @@ function parseFields(template) {
 }
 function safeLine(raw) {
   const v=cleanInstructionNotes(raw).trim();
-  if(!v || PLACEHOLDER.test(v) || UNSAFE.test(v) || /[{}]/u.test(v))return '';
+  if(!v || PLACEHOLDER.test(v) || UNSAFE.test(v) || isCreatorGuidance(v) || /[{}]/u.test(v))return '';
   if(INSTRUCTION.test(v) && /[()（）]/u.test(v))return '';
   if(/(?:日期從|三人個別|當下一句|20字內|24小時制|不可瞬移|以十分鐘|視情況推進)/u.test(v))return '';
   if(/^(?:依照|請|需|不可|不得|例如|範例|要求|規則|備註|說明)[：:：\s]/u.test(v))return '';
@@ -97,7 +108,7 @@ function readValues(generated, allowed) {
 }
 function fixedSuffix(sample) {
   let raw=String(sample||'').trim();
-  if(!raw || UNSAFE.test(raw) || INSTRUCTION.test(raw))return '';
+  if(!raw || UNSAFE.test(raw) || INSTRUCTION.test(raw) || isCreatorGuidance(raw))return '';
   raw=raw.replace(/^(?:\d{1,4}[\/-])?\d{1,2}[\/-]\d{1,2}\s*/u,'')
     .replace(/^(?:\d{1,2}:\d{2}(?::\d{2})?|(?:子|丑|寅|卯|辰|巳|午|未|申|酉|戌|亥)時(?:[初正]|\d+刻)?|未確認)\s*/u,'');
   raw=raw.replace(/^(?:未知|待確認|不確定|無|待更新|描述|範例|地點|目標)(?=\s|[（(]|$)\s*/u,'');
@@ -109,7 +120,7 @@ function fixedSuffix(sample) {
 }
 function isDecoration(line) {
   const t=String(line).trim();
-  if(!t || t.length>150 || UNSAFE.test(t) || INSTRUCTION.test(t) || /[{}]/u.test(t))return false;
+  if(!t || t.length>150 || UNSAFE.test(t) || INSTRUCTION.test(t) || isCreatorGuidance(t) || /[{}]/u.test(t))return false;
   if(/^(?:[─━═=\-—_＊*·•.\s]{3,}|[【\[「『][^\n:：]{1,70}[】\]」』])$/u.test(t))return true;
   if((EMOJI.test(t)||KAOMOJI.test(t)) && !/[:：]/u.test(t))return true;
   return /^〔固定文字〕[^\n]{1,100}$/u.test(t);
@@ -127,7 +138,7 @@ function lockCreatorStatus(template,generated,options={}) {
     for(const f of fs) {
       if(!allowed.has(f.name)||seen.has(f.name))continue;
       seen.add(f.name);
-      const value=f.time&&timeText?timeText:f.date&&dateText?dateText:(values.get(f.name)||'未確認');
+      const value=f.time?(timeText||'未確認'):f.date?(dateText||'未確認'):(values.get(f.name)||'未確認');
       result.push(`${f.prefix}${f.name}${f.separator}${value}${fixedSuffix(f.sample)}`);
     }
     if(result.length)out.push(result.join('｜'));
@@ -135,4 +146,4 @@ function lockCreatorStatus(template,generated,options={}) {
   }
   return out.join('\n').trim().slice(0,6000);
 }
-module.exports={parseFields,lockCreatorStatus,describeCreatorTemplate};
+module.exports={parseFields,lockCreatorStatus,describeCreatorTemplate,isCreatorGuidance};

@@ -93,4 +93,71 @@ function timePresentationDirective(world={}) {
  return pacing+' '+'【世界紀時】此世界使用現代時間表達（24 小時制）；以故事內時間為準，不使用現實手機時間。若世界設定明示其他紀時方式，人物台詞依世界設定自然表達。';
 }
 function enforceStatusTime(status,clock,world={}){const c=normalize(clock);if(!c)return String(status||'');const time=displayTime(c,world);return String(status||'').replace(/(^|\n)(\s*(?:時間|日期時間|故事時間|當前時間|目前時間)\s*[:：]\s*)[^\n]*/gu,(_,lead,prefix)=>lead+prefix+time);}
-module.exports={normalize,label,addMinutes,resolveClock,enforceStatusTime,detectTimeStyle,branchOfHour,displayTime,timePresentationDirective,creatorTimePolicy,advanceForWorld};
+
+// Fictional day number (e.g. "第三日，07:20") is deliberately separate
+// from the Gregorian-based storyClock, so fictional calendars are not converted.
+const HAN_DIGITS = {'零':0,'〇':0,'一':1,'二':2,'兩':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9};
+function parseDayNumber(value) {
+ const raw=String(value||'').trim();
+ if (/^\d{1,4}$/u.test(raw)) return Number(raw);
+ if (!/^[零〇一二兩三四五六七八九十百千]+$/u.test(raw)) return null;
+ let total=0, digit=0;
+ for (const c of raw) {
+  if (Object.prototype.hasOwnProperty.call(HAN_DIGITS,c)) digit=HAN_DIGITS[c];
+  else { const unit=c==='十'?10:c==='百'?100:1000; total+=(digit||1)*unit; digit=0; }
+ }
+ return total+digit;
+}
+function chineseDay(n) {
+ if(n<=10)return ['','一','二','三','四','五','六','七','八','九','十'][n];
+ if(n<20)return '十'+(n===10?'':['','一','二','三','四','五','六','七','八','九'][n%10]);
+ if(n<100)return ['','一','二','三','四','五','六','七','八','九'][Math.floor(n/10)]+'十'+(n%10?['','一','二','三','四','五','六','七','八','九'][n%10]:'');
+ return String(n);
+}
+function normalizeFictionalClock(value) {
+ if(!value || typeof value!=='object')return null;
+ const day=Number(value.day),hour=Number(value.hour),minute=Number(value.minute);
+ if(!Number.isInteger(day)||day<1||day>9999||!Number.isInteger(hour)||hour<0||hour>23||!Number.isInteger(minute)||minute<0||minute>59)return null;
+ return {day,hour,minute};
+}
+function parseFictionalTime(value) {
+ const text=String(value||'');
+ // Parse a status value, not free-form prose. The label is validated by status_template.
+ const m=text.match(/第\s*([零〇一二兩三四五六七八九十百千\d]{1,8})\s*[日天]\s*[,，、\s]*([01]?\d|2[0-3])\s*[:：]\s*([0-5]\d)/u);
+ if(!m)return null;
+ return normalizeFictionalClock({day:parseDayNumber(m[1]),hour:Number(m[2]),minute:Number(m[3])});
+}
+function addFictionalMinutes(clock,minutes) {
+ const base=normalizeFictionalClock(clock);if(!base)return null;
+ const next=(base.day-1)*1440+base.hour*60+base.minute+Math.max(0,Math.trunc(minutes));
+ return {day:Math.floor(next/1440)+1,hour:Math.floor((next%1440)/60),minute:next%60};
+}
+function displayFictionalClock(clock) {
+ const c=normalizeFictionalClock(clock);if(!c)return '';
+ return `第${chineseDay(c.day)}日，${PAD(c.hour)}:${PAD(c.minute)}`;
+}
+function resolveFictionalClock(previous,player,minutes=3) {
+ const base=normalizeFictionalClock(previous);if(!base)return null;
+ const input=String(player||'');
+ if(/(?:隔天|第二天|翌日|次日)/u.test(input)) {
+  const next=addFictionalMinutes(base,1440);
+  if(/早上|上午|清晨|一早/u.test(input))return {...next,hour:7,minute:10};
+  if(/中午/u.test(input))return {...next,hour:12,minute:0};
+  if(/下午/u.test(input))return {...next,hour:15,minute:0};
+  if(/晚上/u.test(input))return {...next,hour:20,minute:0};
+  return next;
+ }
+ const elapsed=input.match(/(?:過了|經過|時間過了|時間推進)\s*(\d{1,3})\s*(分鐘|分|小時|個小時|天|日)/u);
+ if(elapsed) {
+  const n=Number(elapsed[1]),unit=elapsed[2];
+  return addFictionalMinutes(base,n*(unit==='分鐘'||unit==='分'?1:unit==='天'||unit==='日'?1440:60));
+ }
+ // Only an explicit instruction may override the present time.
+ const explicit=parseFictionalTime(input.match(/(?:現在|目前|故事時間|時間設定|時間改成|時間跳到)[^。\n]{0,60}/u)?.[0]||'');
+ if(explicit)return explicit;
+ const local=input.match(/(?:現在(?:的)?時間(?:是|為)?|時間(?:改成|跳到|來到|設定為))\s*([01]?\d|2[0-3])\s*[:：]\s*([0-5]\d)/u);
+ if(local)return {...base,hour:Number(local[1]),minute:Number(local[2])};
+ return addFictionalMinutes(base,Math.max(1,Math.min(120,Number.isFinite(Number(minutes))?Math.trunc(Number(minutes)):3)));
+}
+
+module.exports={normalize,label,addMinutes,resolveClock,enforceStatusTime,detectTimeStyle,branchOfHour,displayTime,timePresentationDirective,creatorTimePolicy,advanceForWorld,normalizeFictionalClock,parseFictionalTime,displayFictionalClock,resolveFictionalClock};
