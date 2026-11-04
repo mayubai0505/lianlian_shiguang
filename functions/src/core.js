@@ -7682,7 +7682,10 @@ exports.processMemoryJob = onDocumentCreated(
             geminiApiKey,
         ],
     },
-    createMemoryJobHandler({FieldValue, savePlayerMemoryIfNeeded})
+    createMemoryJobHandler({
+        FieldValue,
+        savePlayerMemoryIfNeeded: (...args) => savePlayerMemoryIfNeeded(...args)
+    })
 );
 
                           exports.onPostCreated = onDocumentCreated({
@@ -8842,9 +8845,12 @@ const {momentTimestampToMillis, sanitizeMomentReplyId, extractJsonObjectText, ha
 // =====================================================
 const {createCallScopedMemoryContext} = require('./call/scoped_memory_context');
 const buildCallScopedMemoryContext = createCallScopedMemoryContext({
-  db, APP_ID, resolveEffectivePlayerProfileId, resolvePlayerIdentityFromUserData, loadScopedMemoryEntries,
+  db,
+  APP_ID,
+  resolveEffectivePlayerProfileId,
+  resolvePlayerIdentityFromUserData,
+  loadScopedMemoryEntries: (...args) => loadScopedMemoryEntries(...args),
 });
-
 
                           exports.directCallAi = onRequest({
                               region: "asia-east1",
@@ -9124,12 +9130,12 @@ const {createEventEndingScheduler} = require('./notifications/event_ending_sched
 const {createEventEndingDelivery} = require('./notifications/event_ending_delivery');
 const {sendEventEndingNotificationToAllUsers} = createEventEndingDelivery({db, normalizeNotificationLocale, getEventEndingNotificationText, sendToUserDevices});
 
-exports.processEventEndingNotifications =
+exports.processEventEndingNotificationsUs =
     onSchedule(
         {
             schedule: "every 1 hours",
             timeZone: "Asia/Taipei",
-            region: REGION,
+            region: 'us-central1',
             timeoutSeconds: 540,
             memory: "512MiB",
         },
@@ -9403,7 +9409,7 @@ exports.extractUserMemory = onRequest({
     cors, getAuth, db, APP_ID,
     resolveEffectivePlayerProfileId,
     resolvePlayerIdentityFromUserData,
-    savePlayerMemoryIfNeeded,
+    savePlayerMemoryIfNeeded: (...args) => savePlayerMemoryIfNeeded(...args),
 }));
 exports.createStripeCheckoutSession = onCall(
   {
@@ -10117,7 +10123,7 @@ const creatorFanMailHandlers = createCreatorFanMailHandlers({
 });
 exports.getCreatorFanMailOverview = creatorFanMailHandlers.getCreatorFanMailOverview;
 exports.sendCreatorFanMail = creatorFanMailHandlers.sendCreatorFanMail;
-exports.processCreatorFanMailJobs = creatorFanMailHandlers.processCreatorFanMailJobs;
+exports.processCreatorFanMailJobsUs = creatorFanMailHandlers.processCreatorFanMailJobs;
 
 // V65: Gift-to-fans handlers moved to creator/flower_gift_handlers.js.
 const {createCreatorFlowerGiftHandlers} = require('./creator/flower_gift_handlers');

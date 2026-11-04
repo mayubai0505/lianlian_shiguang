@@ -897,6 +897,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
   // 僅從本玩家目前已授權讀取的世界房間訊息進行搜尋／匯出。
   // 目前同步視窗是最近 200 筆；不宣稱這是完整歷史。
   String _speakerName(Map<String, dynamic> segment) {
+    if (segment['isStatusBar'] == true) return '狀態欄';
     if ((segment['kind'] ?? '') != 'npc') return '世界旁白';
     final id = (segment['npcId'] ?? '').toString();
     final savedName = (_names[id] ?? '').trim();
@@ -1478,6 +1479,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
 
   Widget _segment(Map<String,dynamic> value,ThemeData theme, Map<String,dynamic> parent, int segmentIndex) {
     final kind=(value['kind']??'').toString();
+    final isStatusBar = value['isStatusBar'] == true;
     final text=(value['text']??'').toString();
     final rawId=(value['npcId']??'').toString();
     final inlineName=(value['name']??'').toString();
@@ -1495,7 +1497,8 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
               : theme.colorScheme.surfaceContainerHighest.withValues(alpha:.65),
               borderRadius:BorderRadius.circular(16)),
           child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
-            Text('世界旁白',style:TextStyle(fontSize:11,color:theme.colorScheme.primary)),
+            Text(isStatusBar ? '狀態欄' : '世界旁白',
+                style:TextStyle(fontSize:11,color:theme.colorScheme.primary)),
             const SizedBox(height:5),Text(text,style:const TextStyle(height:1.65)),
           ]),
         ));
@@ -1823,7 +1826,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
         final npcId = _officialNpcId((segment['npcId'] ?? '').toString(),
             (segment['name'] ?? '').toString());
         final kind = (segment['kind'] ?? '').toString();
-        lines.add({'speaker': kind == 'npc' ? (_names[npcId] ?? _speakerName(segment)) : '世界旁白',
+        lines.add({'speaker': _speakerName(segment),
           'text': (segment['text'] ?? '').toString(),
           'avatar': kind == 'npc' ? (_npcs[npcId] ?? _worldCoverImage) : _worldCoverImage,
           'kind': kind});

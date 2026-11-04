@@ -62,6 +62,11 @@ class _ChatInputBarState extends State<ChatInputBar>
   void initState() {
     super.initState();
     widget.focusNode.addListener(_handleFocusChange);
+    widget.controller.addListener(_handleComposerChange);
+  }
+
+  void _handleComposerChange() {
+    if (mounted) setState(() {});
   }
 
   @override
@@ -72,11 +77,16 @@ class _ChatInputBarState extends State<ChatInputBar>
       oldWidget.focusNode.removeListener(_handleFocusChange);
       widget.focusNode.addListener(_handleFocusChange);
     }
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller.removeListener(_handleComposerChange);
+      widget.controller.addListener(_handleComposerChange);
+    }
   }
 
   @override
   void dispose() {
     widget.focusNode.removeListener(_handleFocusChange);
+    widget.controller.removeListener(_handleComposerChange);
     super.dispose();
   }
 
@@ -114,6 +124,11 @@ class _ChatInputBarState extends State<ChatInputBar>
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
     final disabled = widget.isGenerating || widget.isLoading;
+    // Web: 滑鼠按下按鈕時輸入框會先失焦。只依 focus 顯示送出鍵，
+    // 會在 onPressed 執行前把按鈕換掉，造成「點了沒反應」。
+    // 有文字時固定保留送出鍵，直到上層成功處理／清空文字。
+    final showSend = widget.controller.text.trim().isNotEmpty ||
+        (widget.focusNode.hasFocus && !_toolsExpandedWhileFocused);
     final l10n = AppLocalizations.of(context)!;
 
     final bool showFullToolButtons =
@@ -284,49 +299,35 @@ class _ChatInputBarState extends State<ChatInputBar>
             ),
             // 最右側按鈕：
             // - AI 生成中：停止
-            // - 輸入框聚焦，而且左邊工具仍收起：送出
-            // - 其他狀態：只有有提供 onSticker 時才顯示貼圖
-            if (widget.isGenerating ||
-                (widget.focusNode.hasFocus &&
-                    !_toolsExpandedWhileFocused) ||
-                widget.onSticker != null) ...[
+            // - 有輸入文字（不依賴 focus）或聚焦時：送出
+            // - 其他狀態：只有提供 onSticker 時才顯示貼圖
+            if (widget.isGenerating || showSend || widget.onSticker != null) ...[
               const SizedBox(width: 5),
               _BareIconButton(
                 tooltip: widget.isGenerating
                     ? 'Stop'
-                    : (widget.focusNode.hasFocus &&
-                    !_toolsExpandedWhileFocused
-                    ? 'Send'
-                    : appL10n.chat_input_message_sticker),
-                icon: widget.isGenerating
-                    ? Icons.stop_circle_outlined
-                    : null,
+                    : (showSend ? 'Send' : appL10n.chat_input_message_sticker),
+                icon: widget.isGenerating ? Icons.stop_circle_outlined : null,
                 asset: widget.isGenerating
                     ? null
-                    : (widget.focusNode.hasFocus &&
-                    !_toolsExpandedWhileFocused)
+                    : (showSend
                     ? 'assets/images/chat/chat_send_plane_mask.webp'
-                    : 'assets/icons/icon_chat_sticker.png',
+                    : 'assets/icons/icon_chat_sticker.png'),
                 assetSize: 30,
                 iconSize: widget.isGenerating ? 25 : 27,
-                iconColor:
-                widget.isGenerating ? Colors.redAccent : primary,
+                iconColor: widget.isGenerating ? Colors.redAccent : primary,
                 onPressed: widget.isGenerating
                     ? widget.onStop
                     : widget.isLoading
                     ? null
-                    : (widget.focusNode.hasFocus &&
-                    !_toolsExpandedWhileFocused
+                    : (showSend
                     ? () {
-                  // 按送出時立刻解除輸入框 focus。
                   widget.focusNode.unfocus();
-
                   if (mounted) {
                     setState(() {
                       _toolsExpandedWhileFocused = false;
                     });
                   }
-
                   widget.onSend();
                 }
                     : widget.onSticker),

@@ -74,7 +74,7 @@ handlers.sendCreatorFanMail = onCall({region: REGION, timeoutSeconds:60, maxInst
 
 // 每分鐘處理最多 5 個工作、每工作最多 120 位；不會在單次 callable 中掃描全部粉絲。
 // Transaction 內完成「信件寫入 + 游標更新」，失敗回滾，不重複寄送。
-handlers.processCreatorFanMailJobs = onSchedule({schedule:'every 1 minutes', timeZone:'Asia/Taipei',region:REGION,
+handlers.processCreatorFanMailJobs = onSchedule({schedule:'every 1 minutes', timeZone:'Asia/Taipei',region:'us-central1',
   timeoutSeconds:540,memory:'512MiB'},async () => {
   const jobs=await db.collection('creator_fan_mail_jobs').where('status','in',['queued','processing']).limit(5).get();
   for (const job of jobs.docs) {

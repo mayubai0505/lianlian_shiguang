@@ -19,6 +19,7 @@ import 'services/locale_notifier.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 // 🌟 修改這裡：只保留一個數據來源，並給它一個別名
 import 'dart:async';
 import 'screens/character_model.dart';
@@ -28,6 +29,12 @@ import 'services/reminder_notification_service.dart';
 import 'package:home_widget/home_widget.dart';
 import 'screens/notification_list_page.dart';
 import 'screens/world_chat_memos_page.dart';
+
+// 僅供本機 Web Debug 測試，正式版與一般 Debug 皆維持原本 Firebase 連線。
+const bool _worldEmulatorRequested = bool.fromEnvironment(
+  'WORLD_EMULATOR_TEST', defaultValue: false,
+);
+final bool _worldEmulatorEnabled = kIsWeb && kDebugMode && _worldEmulatorRequested;
 
 String? globalActiveCharacterId;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -140,9 +147,28 @@ class _BootstrapAppState extends State<_BootstrapApp> {
     final stopwatch = Stopwatch()..start();
 
     try {
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
+      final normalOptions = DefaultFirebaseOptions.currentPlatform;
+      // Firebase 專案 ID 與 Emulator CLI 的 --project 一致，避免誤打到正式專案。
+      // APP_ID（Firestore artifacts 的文件 ID）保持原有值，不在此更動。
+      final options = _worldEmulatorEnabled
+          ? FirebaseOptions(
+              apiKey: normalOptions.apiKey,
+              appId: normalOptions.appId,
+              messagingSenderId: normalOptions.messagingSenderId,
+              projectId: 'lianlian-shiguang-test',
+              authDomain: normalOptions.authDomain,
+              storageBucket: normalOptions.storageBucket,
+            )
+          : normalOptions;
+      await Firebase.initializeApp(options: options);
+      if (_worldEmulatorEnabled) {
+        await FirebaseAuth.instance.useAuthEmulator('127.0.0.1', 9099);
+        FirebaseFirestore.instance.useFirestoreEmulator('127.0.0.1', 8080);
+        FirebaseFunctions.instanceFor(region: 'asia-east1')
+            .useFunctionsEmulator('127.0.0.1', 5001);
+        await FirebaseStorage.instance.useStorageEmulator('127.0.0.1', 9199);
+        debugPrint('🧪 WORLD_EMULATOR_TEST 啟用：Auth/Firestore/Functions/Storage 均使用本機 Emulator');
+      }
 
       stopwatch.stop();
       debugPrint(
@@ -223,7 +249,11 @@ class _BootstrapAppState extends State<_BootstrapApp> {
               create: (_) => LocaleNotifier(),
             ),
             ChangeNotifierProvider(
-              create: (_) => PurchaseService()..initialize(),
+              create: (_) {
+                final service = PurchaseService();
+                if (!_worldEmulatorEnabled) service.initialize();
+                return service;
+              },
             ),
           ],
           child: const MyApp(),
@@ -638,6 +668,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 
   Future<void> _initializeAfterAppStarted() async {
+    // 本機測試時不啟動推播、線上活動統計與登入狀態更新。
+    if (_worldEmulatorEnabled) return;
     // 啟動後工作彼此獨立，不要讓其中一項網路請求拖住下一項。
     unawaited(_recordDailyAppActivity());
 

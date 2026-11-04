@@ -28,8 +28,8 @@ class _NotificationListPageState extends State<NotificationListPage> {
   bool _isSyncingRewardMail = false;
   bool _showCollectedOnly = false;
   final Set<String> _selectedMailIds = <String>{};
-  final FirebaseFunctions _functions = FirebaseFunctions.instanceFor(
-    region: 'asia-east1',
+  final FirebaseFunctions _rewardMailFunctions = FirebaseFunctions.instanceFor(
+    region: 'us-central1',
   );
 
   @override
@@ -50,8 +50,8 @@ class _NotificationListPageState extends State<NotificationListPage> {
     _isSyncingRewardMail = true;
 
     try {
-      await _functions
-          .httpsCallable('syncRewardCampaignsToMailbox')
+      await _rewardMailFunctions
+          .httpsCallable('syncRewardCampaignsToMailboxUs')
           .call();
     } on FirebaseFunctionsException catch (error) {
       // 同步活動信失敗不能妨礙玩家閱讀原有信件。
