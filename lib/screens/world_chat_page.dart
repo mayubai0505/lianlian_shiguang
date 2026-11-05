@@ -454,6 +454,42 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     })).timeout(const Duration(seconds: 6), onTimeout: () => <void>[]);
   }
 
+  // delta_v1 僅含最近幾筆訊息，不能拿它覆蓋既有的完整聊天紀錄。
+  // 依 Firestore 訊息 ID 更新／追加：重新生成沿用 ai_ 訊息 ID，避免重複氣泡。
+  // 若即時監聽尚未收到新回合，仍能先顯示 callable 的結果。
+  List<dynamic> _mergeWorldMessageDelta(
+      List<dynamic> current, List<dynamic> recent) {
+    final merged = <dynamic>[];
+    final positions = <String, int>{};
+    for (final raw in current) {
+      if (raw is! Map) continue;
+      final id = (raw['id'] ?? '').toString();
+      if (id.isEmpty || positions.containsKey(id)) continue;
+      positions[id] = merged.length;
+      merged.add(raw);
+    }
+    for (final raw in recent) {
+      if (raw is! Map) continue;
+      final id = (raw['id'] ?? '').toString();
+      if (id.isEmpty) continue;
+      final previousIndex = positions[id];
+      if (previousIndex != null) {
+        // 更新已存在的 AI 回覆與狀態欄；保留監聽中可能已有的 timestamp。
+        final previous = merged[previousIndex];
+        merged[previousIndex] = <String, dynamic>{
+          if (previous is Map) ...Map<String, dynamic>.from(previous),
+          ...Map<String, dynamic>.from(raw),
+        };
+      } else {
+        positions[id] = merged.length;
+        merged.add(raw);
+      }
+    }
+    // 與既有 200 筆聊天室視窗一致；新回合追加在後，不改動舊訊息順序。
+    if (merged.length > 200) return merged.sublist(merged.length - 200);
+    return merged;
+  }
+
   void _cacheCurrentRoom() {
     if (_sessionId == null || _sessionId!.isEmpty) return;
     _roomCache[_roomCacheKey] = {
@@ -693,8 +729,11 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
         if(action=='regenerate') 'paidRegenerateConfirmed':_paidRegenerateConfirmed,
         if(action=='interact') ...?interaction,
         if(action=='send' || action=='interact' || action=='regenerate' || action=='continue') 'requestId':_pendingRequestId,
+        // 僅新版 App 主動啟用。舊版後端會忽略此欄位並回傳完整訊息。
+        if(action=='send' || action=='interact' || action=='regenerate' || action=='continue') 'responseMode':'delta_v1',
       });
       final data=Map<String,dynamic>.from(result.data as Map);
+      final isMessageDelta = data['responseMode'] == 'delta_v1';
       if (!mounted || (requestIdAtStart != null && _cancelledLocalRequests.contains(requestIdAtStart))) return;
       // Explicitly opened rooms MUST never silently fall back to the legacy world room.
       // Reject the response before preloading images, applying messages or switching listeners.
@@ -746,7 +785,10 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
         _name=_safeWorldName(data['worldName']);
         _worldCoverImage=(data['coverImage']??'').toString();
         if (!_hasStreamData || _sessionId != sid) {
-          _messages=List<dynamic>.from(data['messages'] as List? ?? []);
+          final responseMessages = List<dynamic>.from(data['messages'] as List? ?? []);
+          _messages = isMessageDelta && _sessionId == sid
+              ? _mergeWorldMessageDelta(_messages, responseMessages)
+              : responseMessages;
         }
         _npcs=npcs;_names=names;_loading=false;_error='';
       });
@@ -772,7 +814,9 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
             _pendingVisible = false;
             // Fallback when the Firestore listener has not delivered the new pair yet.
             if (action == 'regenerate' || action == 'continue' || !_messages.any((m) => m is Map && m['id'] == _pendingRequestId)) {
-              _messages = serverMessages;
+              _messages = isMessageDelta && _sessionId == sid
+                  ? _mergeWorldMessageDelta(_messages, serverMessages)
+                  : serverMessages;
             }
           });
         }

@@ -43,6 +43,133 @@ function describeCreatorTemplate(template) {
   }))};
 }
 
+
+
+// Preserve only the creator's *literal presentation prefix* (emoji, symbols,
+// kaomoji, punctuation, authored labels). Never transplant a template value,
+// instruction, or placeholder into generated story state.
+const TEMPLATE_SEPARATOR = /[：:]/u;
+const LITERAL_DECORATION = /[^\p{L}\p{N}\s]/u;
+const GENERATED_PREFIX = /^\s*([^\n：:]{1,48})\s*([：:])(.*)$/u;
+
+function creatorStatusRows(template) {
+  return String(template || '').replace(/\r\n?/g, '\n').split('\n')
+    .map(raw => {
+      const match=raw.match(GENERATED_PREFIX);
+      if (!match) return null;
+      const prefix=match[1];
+      // The template may contain instructional sentences or merely samples.
+      // Only protect authored *symbolic* prefixes, not full arbitrary text.
+      if (!LITERAL_DECORATION.test(prefix) || isCreatorGuidance(raw)) return null;
+      if (PLACEHOLDER.test(prefix)) return null;
+      return {prefix:prefix.trim(), separator:match[2], raw};
+    }).filter(Boolean);
+}
+
+function generatedStatusRows(generated) {
+  return String(generated || '').replace(/\r\n?/g, '\n').split('\n')
+    .map((raw,index) => {
+      const match=raw.match(GENERATED_PREFIX);
+      return match && !isCreatorGuidance(raw)
+        ? {index, raw, prefix:match[1].trim(), separator:match[2], value:match[3]}
+        : null;
+    }).filter(Boolean);
+}
+
+function protectCreatorStatusSymbols(template, generated) {
+  const rows=creatorStatusRows(template);
+  if (!rows.length || !String(generated || '').trim()) return generated;
+  const input=String(generated).replace(/\r\n?/g,'\n').split('\n');
+  const outputRows=generatedStatusRows(generated);
+  if (!outputRows.length) return generated;
+
+  // If *all* output fields match the template field count, order is reliable
+  // even when a model translated an emoji into 'Zombie'. Never attempt this
+  // alignment if conditional sections added or removed fields.
+  const sameCount=rows.length === outputRows.length;
+  const hasAnchor=rows.length === 1 || outputRows.some((r,i)=>r.prefix===rows[i]?.prefix);
+  const reordered=outputRows.some((r,i)=>r.prefix!==rows[i]?.prefix && rows.some((t,j)=>j!==i && t.prefix===r.prefix));
+  const fullAlignment=sameCount && hasAnchor && !reordered;
+  const used=new Set();
+  for (let i=0;i<outputRows.length;i++) {
+    const current=outputRows[i];
+    let expected=null;
+    if (fullAlignment) expected=rows[i];
+    else {
+      // With conditional layouts, change only prefixes that match exactly.
+      // No guessing from index: that could attach the wrong icon to a field.
+      const candidates=rows.filter((r,j)=>!used.has(j) && r.prefix===current.prefix);
+      if (candidates.length===1) expected=candidates[0];
+    }
+    if (!expected) {
+      // An AI may prepend a translated English name to an unchanged authored
+      // symbol, e.g. "Zombie🧟". Match by the exact creator prefix suffix,
+      // only when it identifies one unique creator row. Never translate text.
+      const candidates=rows.filter((r,j)=>!used.has(j) &&
+        r.prefix!==current.prefix && current.prefix.endsWith(r.prefix) &&
+        /^[\p{Script=Latin}\s_-]{1,48}$/u.test(current.prefix.slice(0,-r.prefix.length)));
+      if(candidates.length===1)expected=candidates[0];
+    }
+    if (!expected) continue;
+    const templateIndex=rows.indexOf(expected);
+    used.add(templateIndex);
+    // Keep model-generated value exactly, including natural-language contents.
+    // Preserve the author's original field name / emoji and its separator.
+    const leading=current.raw.match(/^\s*/u)?.[0] || '';
+    input[current.index]=leading+expected.prefix+expected.separator+current.value;
+  }
+  return input.join('\n');
+}
+
+// Use only a validated server clock to refresh explicit time fields. Do not
+// change decorative text, dialogue, free-form dynamic columns or date-only rows.
+// A time field has to be a standalone line; a compound row is left unchanged.
+function applyServerStatusTime(template, generated, timeText) {
+  const clock=String(timeText||'').trim();
+  if(!clock || clock==='尚未確認')return generated;
+  const source=String(generated||'');
+  const templateLines=String(template||'').split(/\r?\n/u);
+  const timeHeader=/^\s*(?:(?:[\p{Extended_Pictographic}\u2600-\u27BF]\uFE0F?\s*)?(?:時間|時刻|故事時間|目前時間|現在時間|日期時間)|(?:📅|📆|🗓️?|⏰|🕒))\s*[:：]/u;
+  const hasTimeField=templateLines.some(line=>timeHeader.test(line));
+  if(!hasTimeField)return generated;
+  // A creator may combine day, time and location on one row. Keep the
+  // location/other fields unchanged, and change only a recognizable time token.
+  const serverClock=clock.match(/(?:^|\s|，)([01]?\d|2[0-3])[:：]([0-5]\d)\s*$/u);
+  if(!serverClock)return generated; // Ancient branches and unknown clocks stay untouched.
+  const hhmm=`${serverClock[1].padStart(2,'0')}:${serverClock[2]}`;
+  // The displayed fictional day must agree with the persisted server clock.
+  // Preserve the creator's original 日/天 suffix; only change an explicit
+  // fictional day token. Do not touch arbitrary narrative prose or locations.
+  const fictionalDay=clock.match(/^第([零〇一二兩三四五六七八九十百千\d]{1,8})[日天][，,、\s]+(?:[01]?\d|2[0-3])[:：][0-5]\d$/u)?.[1] || '';
+  return source.split('\n').map(line=>{
+    const m=line.match(/^(\s*[^\n：:]{1,48}[：:]\s*)(.*)$/u);
+    if(!m||!timeHeader.test(line))return line;
+    const body=m[2];
+    const split=body.match(/^([^｜|]*)([｜|].*)?$/u);
+    if(!split)return line;
+    let leading=split[1];
+    const tail=split[2]||'';
+    // The model may silently jump to 第二天 while the server remains on
+    // 第一天. Correct only an explicitly labeled fictional day inside a
+    // recognized status time row, keeping all surrounding formatting.
+    if(fictionalDay) {
+      leading=leading.replace(/^(\s*)第[零〇一二兩三四五六七八九十百千\d]{1,8}([日天])(?=\s*[,，、])/u,
+        (_,spaces,unit)=>`${spaces}第${fictionalDay}${unit}`);
+    }
+    // Keep fictional day labels; overwrite only the numeric clock or a bare
+    // daypart when the backend already knows an exact current time.
+    const numeric=/(?:[01]?\d|2[0-3])[:：][0-5]\d/u;
+    if(numeric.test(leading)) {
+      leading=leading.replace(numeric,hhmm);
+    } else if(/^(?:\s*第[零〇一二兩三四五六七八九十百千\d]{1,8}[日天]\s*[,，、]?\s*)?(?:上午|早上|下午|晚上|凌晨|中午|傍晚|清晨)(?:[。．.!！]?\s*)$/u.test(leading.trim())) {
+      leading=leading.replace(/(?:上午|早上|下午|晚上|凌晨|中午|傍晚|清晨)/u,hhmm);
+    } else {
+      return line;
+    }
+    return m[1]+leading+tail;
+  }).join('\n');
+}
+
 function lockCreatorStatus(template, generated, options={}) {
   if (!String(template || '').trim()) return '';
   const source = String(generated || '').replace(/\r\n?/g, '\n');
@@ -59,6 +186,6 @@ function lockCreatorStatus(template, generated, options={}) {
     if (PLACEHOLDER.test(trimmed) && /(?:根據劇情|YYYY|HH\s*[:：]\s*MM)/iu.test(trimmed)) continue;
     out.push(line);
   }
-  return out.join('\n').trim().slice(0,10000);
+  return applyServerStatusTime(template, protectCreatorStatusSymbols(template, out.join('\n').trim()), options.timeText).slice(0,10000);
 }
-module.exports={parseFields, lockCreatorStatus, describeCreatorTemplate, isCreatorGuidance};
+module.exports={parseFields, lockCreatorStatus, describeCreatorTemplate, isCreatorGuidance, protectCreatorStatusSymbols};

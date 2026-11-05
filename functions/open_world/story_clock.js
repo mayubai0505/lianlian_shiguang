@@ -18,7 +18,7 @@ function resolveClock(previous, player, advanceMinutes=3, maxNaturalMinutes=5){
   const date=text.match(/(?:時間\s*[:：]?\s*|現在(?:是|時間)|今天(?:是)?\s*|日期\s*[:：]?\s*|^\s*)\s*(?:(\d{4})[\/.-])?(\d{1,2})[\/.-](\d{1,2})(?:\s*(?:日|號))?\s*(?:(上午|早上|下午|晚上|凌晨|中午|傍晚)\s*)?(\d{1,2})(?:[:：點時](\d{1,2}))?/u);
   if(date){let h=Number(date[5]);const mer=date[4]||'';if(['下午','晚上','傍晚'].includes(mer)&&h<12)h+=12;if(['凌晨','上午','早上'].includes(mer)&&h===12)h=0;let y=date[1]?Number(date[1]):base?.year||2000;const m=Number(date[2]),day=Number(date[3]),minute=Number(date[6]||0);const explicit=normalize({year:y,month:m,day,hour:h,minute,yearKnown:Boolean(date[1])||Boolean(base?.yearKnown),dateKnown:true});if(explicit)return {clock:explicit,reason:'player_absolute'};}
   const time=text.match(/(?:現在(?:的)?時間\s*(?:是|為)?\s*|時間\s*[:：]\s*|(?:改成|跳到|來到)\s*)(?:(早上|上午|下午|晚上|凌晨|中午|傍晚)\s*)?(\d{1,2})(?:[:：點時](\d{1,2}))?/u);
-  if(time&&base){let h=Number(time[2]);const mer=time[1]||'';if(['下午','晚上','傍晚'].includes(mer)&&h<12)h+=12;if(['凌晨','早上','上午'].includes(mer)&&h===12)h=0;if(h<24&&Number(time[3]||0)<60){return {clock:{...base,hour:h,minute:Number(time[3]||0)},reason:'player_time_override'};}}
+  if(time){let h=Number(time[2]);const mer=time[1]||'';if(['下午','晚上','傍晚'].includes(mer)&&h<12)h+=12;if(['凌晨','早上','上午'].includes(mer)&&h===12)h=0;if(h<24&&Number(time[3]||0)<60){const seed=base||{year:2000,month:1,day:1,yearKnown:false,dateKnown:false};return {clock:{...seed,hour:h,minute:Number(time[3]||0)},reason:'player_time_override'};}}
   if(base){const nextDay=/(?:隔天|第二天|翌日|次日)(?:的)?(?:早上|上午|清晨|一早|中午|下午|晚上|凌晨)?/u.test(text);
    if(nextDay){const next=addMinutes(base,24*60);let hour=next.hour,minute=next.minute;
      if(/早上|上午|清晨|一早/u.test(text)){hour=7;minute=10;}
@@ -37,6 +37,27 @@ function resolveClock(previous, player, advanceMinutes=3, maxNaturalMinutes=5){
  const safe=Number.isFinite(requested)?Math.min(Math.max(5,Math.min(120,Math.trunc(maxNaturalMinutes))),Math.max(1,Math.trunc(requested))):3;
  return {clock:addMinutes(base,safe),reason:'normal_turn'};
 }
+// Restore only an explicitly displayed clock from a creator status field.
+// The internal 2000-01-01 below is arithmetic-only when the creator supplied
+// a clock time without a date: dateKnown=false prevents displaying that date.
+function parseStatusClock(status) {
+ const lines=String(status||'').replace(/\r\n?/g,'\n').split('\n');
+ for(const line of lines) {
+  const m=line.match(/^\s*(?:(?:[\p{Extended_Pictographic}\u2600-\u27BF]\uFE0F?\s*)?(?:時間|時刻|故事時間|目前時間|現在時間|日期時間|📅|📆|🗓️?|⏰|🕒)\s*[:：])\s*(.+)$/u);
+  if(!m)continue;
+  const value=m[1].trim();
+  if(/第[零〇一二兩三四五六七八九十百千\d]+[日天]/u.test(value))continue;
+  const match=value.match(/^(?:(?:(\d{4})[\/.-])?(\d{1,2})[\/.-](\d{1,2})\s+)?([01]?\d|2[0-3])[:：]([0-5]\d)(?!\d)/u);
+  if(!match)continue;
+  const dated=Boolean(match[2]);
+  const year=match[1]?Number(match[1]):2000;
+  const clock=normalize({year,month:dated?Number(match[2]):1,day:dated?Number(match[3]):1,
+    hour:Number(match[4]),minute:Number(match[5]),yearKnown:Boolean(match[1]),dateKnown:dated});
+  if(clock)return clock;
+ }
+ return null;
+}
+
 // Internal clock remains Gregorian-like arithmetic; display labels follow fictional world conventions.
 // Ancient lunar calendars / reign years are NOT inferred from these internal month/day values.
 const BRANCHES = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
@@ -127,6 +148,34 @@ function parseFictionalTime(value) {
  if(!m)return null;
  return normalizeFictionalClock({day:parseDayNumber(m[1]),hour:Number(m[2]),minute:Number(m[3])});
 }
+// Bootstrap a fictional daypart only when an explicit creator-status calendar
+// row supplies both the fictional day and a named time-of-day. These defaults
+// are game conventions, not inferred historical/real-world timestamps.
+const FICTIONAL_DAYPART_START = Object.freeze({
+  '凌晨':[3,0], '清晨':[6,0], '早上':[9,0], '上午':[9,0],
+  '中午':[12,0], '下午':[15,0], '傍晚':[18,0], '晚上':[20,0], '半夜':[0,0],
+});
+function parseFictionalDaypart(value) {
+  const source=String(value||'').trim();
+  const match=source.match(/^第\s*([零〇一二兩三四五六七八九十百千\d]{1,8})\s*[日天]\s*[,，、\s]*(凌晨|清晨|早上|上午|中午|下午|傍晚|晚上|半夜)(?=$|[。．!！\s｜|])/u);
+  if(!match)return null;
+  const hm=FICTIONAL_DAYPART_START[match[2]];
+  return normalizeFictionalClock({day:parseDayNumber(match[1]),hour:hm[0],minute:hm[1]});
+}
+// Limit fictional bootstrap to explicit 📅 calendar rows, never narration or
+// random occurrences of 'morning' in dialogue or an author's instructions.
+function parseFictionalStatusAnchor(status) {
+  for(const line of String(status||'').replace(/\r\n?/gu,'\n').split('\n')) {
+    const match=line.match(/^\s*(?:📅|📆|🗓️?)\s*[:：]\s*([^\n]*)$/u);
+    if(!match)continue;
+    const value=match[1].split(/[｜|]/u)[0].trim();
+    const exact=parseFictionalTime(value);
+    if(exact)return {clock:exact,source:'explicit_time'};
+    const part=parseFictionalDaypart(value);
+    if(part)return {clock:part,source:'daypart_default'};
+  }
+  return null;
+}
 function addFictionalMinutes(clock,minutes) {
  const base=normalizeFictionalClock(clock);if(!base)return null;
  const next=(base.day-1)*1440+base.hour*60+base.minute+Math.max(0,Math.trunc(minutes));
@@ -160,4 +209,4 @@ function resolveFictionalClock(previous,player,minutes=3) {
  return addFictionalMinutes(base,Math.max(1,Math.min(120,Number.isFinite(Number(minutes))?Math.trunc(Number(minutes)):3)));
 }
 
-module.exports={normalize,label,addMinutes,resolveClock,enforceStatusTime,detectTimeStyle,branchOfHour,displayTime,timePresentationDirective,creatorTimePolicy,advanceForWorld,normalizeFictionalClock,parseFictionalTime,displayFictionalClock,resolveFictionalClock};
+module.exports={normalize,label,addMinutes,resolveClock,parseStatusClock,enforceStatusTime,detectTimeStyle,branchOfHour,displayTime,timePresentationDirective,creatorTimePolicy,advanceForWorld,normalizeFictionalClock,parseFictionalTime,parseFictionalDaypart,parseFictionalStatusAnchor,displayFictionalClock,resolveFictionalClock};

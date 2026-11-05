@@ -14,6 +14,8 @@ class WorldSharedMemory {
   final String subtitle;
   final String content;
   final DateTime timestamp;
+  final bool isAuto;
+  final bool isActive;
 
   WorldSharedMemory({
     required this.id,
@@ -21,12 +23,16 @@ class WorldSharedMemory {
     required this.subtitle,
     required this.content,
     required this.timestamp,
+    required this.isAuto,
+    required this.isActive,
   });
 
   factory WorldSharedMemory.fromDocument(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return WorldSharedMemory(
       id: doc.id,
+      isAuto: data['source'] == 'auto',
+      isActive: data['active'] != false && data['deletedByUser'] != true,
       title: data['title'] ?? '',
       subtitle: data['subtitle'] ?? '',
       content: data['content'] ?? '',
@@ -83,6 +89,7 @@ class _WorldAboutUsPageState extends State<WorldAboutUsPage> {
       setState(() {
         _memories = snapshot.docs
             .map((doc) => WorldSharedMemory.fromDocument(doc))
+            .where((memory) => memory.isActive)
             .toList();
         _isLoading = false;
       });
@@ -97,7 +104,7 @@ class _WorldAboutUsPageState extends State<WorldAboutUsPage> {
   Future<void> _openAddMemoryPage() async {
     final l10n = AppLocalizations.of(context)!;
 
-    if (_memories.length >= 10) {
+    if (_memories.where((memory) => !memory.isAuto).length >= 10) {
       ToastUtils.showCenterToast(
         context,
         l10n.about_us_limit_error,
@@ -132,7 +139,16 @@ class _WorldAboutUsPageState extends State<WorldAboutUsPage> {
       AppLocalizations l10n,
       ) async {
     try {
-      await _memoriesRef.doc(memoryId).delete();
+      final snapshot = await _memoriesRef.doc(memoryId).get();
+      if (snapshot.data() is Map<String,dynamic> && (snapshot.data() as Map<String,dynamic>)['source'] == 'auto') {
+        // Tombstone: prevent the extractor from restoring a user-deleted fact.
+        await _memoriesRef.doc(memoryId).set({
+          'active': false, 'deletedByUser': true,
+          'updatedAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+      } else {
+        await _memoriesRef.doc(memoryId).delete();
+      }
       await _fetchMemories();
 
       if (!mounted) return true;
@@ -431,8 +447,16 @@ class _WorldSharedMemoryDetailPageState extends State<_WorldSharedMemoryDetailPa
     );
 
     if (updated == true && mounted) {
-      // 編輯頁已完成 Firebase 更新；回到清單重新抓最新資料，
-      // 避免在詳情頁顯示舊文字。
+      // 玩家編輯自動記憶後鎖定該筆，避免背景 AI 再覆寫玩家版本。
+      if (widget.memory.isAuto) {
+        await FirebaseFirestore.instance
+            .collection('users').doc(widget.currentUserId)
+            .collection('worlds').doc(widget.worldId)
+            .collection('sessions').doc(widget.sessionId)
+            .collection('shared_memories').doc(widget.memory.id)
+            .set({'lockedByUser': true}, SetOptions(merge: true));
+      }
+      if (!mounted) return;
       Navigator.pop(context, true);
     }
   }
