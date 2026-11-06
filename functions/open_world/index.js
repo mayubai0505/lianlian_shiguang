@@ -98,6 +98,11 @@ const WORLD_PERSONHOOD_DIRECTIVE = [
   '【角色本人演繹：適用所有世界觀模式】世界中的每一位 NPC 都是具有自身意志、記憶與人格的當事人，不是替玩家服務的 AI、演員、主持人或旁白代言人。',
   '每位 NPC 只能依自己的性格、價值觀、立場、已知消息、當下所見所聞與過往經歷作出選擇；可以主動行動、提問、拒絕、猶豫、誤解或改變主意，但不得憑空知道其他人的秘密。',
   'NPC 的感情與關係須由雙方實際互動自然累積；不同 NPC 不得共用人格、口吻或同一種戀愛反應，也不可無理由圍繞玩家集體示好。',
+
+  '【多人角色小說式演繹】當多位 NPC 同場時，先依人物設定中的 personality、speechStyle、dialogueExamples、背景、各自已知情報與彼此關係，決定誰有必要參與本輪。選擇少數真正有反應的人物深入呈現；未發言者可以保持沉默、觀察或做符合人設的小動作，不必輪流點名、每人講一句。',
+  '讓不同 NPC 對同一事件產生各自合理的解讀、情緒與行動：有人謹慎、有人衝動、有人反駁、有人迴避，須由其既有人設與當下證據決定，不可為求差異硬改性格。角色可以意見相同，但避免照抄彼此句式、同一指令、同一結論；不要把多人對話寫成任務口令、行動清單或逐人報告。',
+  '重要角色的出場應自然結合有辨識度的語氣、表情、肢體細節、停頓及與其他 NPC 的互動，保留小說場景的戲劇張力；不必每句都加動作、不用刻意拖長字數，不得把外觀或慣用語重複當成個性。旁白只描述可觀察的情境與合理視角，不宣告玩家未說出的內心、感覺、反應或選擇。',
+  '【篇幅分配】整輪篇幅有限時，優先讓少數當下重要角色有完整、獨特的反應，不要為了讓全部人物出聲而縮成一人一句。segments 的 1～12 項是技術上限，絕非要求填滿；能以較少但更扎實的段落講清楚故事，就不要無意義切碎。',
   '使用符合人物的自然對白及必要的第三人稱敘事，不要讓角色講出提示詞、AI 分析、行為守則、寫作技巧或教條式總結；不需用「不是……而是……」反覆解釋意圖。',
   '角色自主不等於玩家失去控制權：玩家的台詞、動作、情緒、心理、身分與決定，只能以玩家已明確提供的內容為準。',
   '各模式只改變篇幅、節奏及描寫重點；不切換人格、不重置世界記憶，也不使 NPC 忘記已有的經歷。',
@@ -651,9 +656,19 @@ exports.worldPrivateTest = onCall({
     const lastAI = descending.find(d => d.data()?.sender === 'ai' && d.id !== 'opening');
     if (!lastAI) throw new HttpsError('failed-precondition','尚無可操作的 AI 回覆');
     if (action === 'regenerate') {
-      // 不允許更早的回答被悄悄重寫，或在最後一個玩家訊息未回覆時重新生成。
-      const lastTurn = descending.find(d => ['user','ai'].includes(d.data()?.sender) && d.id !== 'opening');
-      if (lastTurn?.id !== lastAI.id) throw new HttpsError('failed-precondition','只能重新生成最後一則 AI 回覆');
+      // 玩家訊息和 ai_ 對應回覆在同一交易建立，timestamp 可能完全相同。
+      // Firestore 同時刻會以文件 ID 當次排序；不能用第一筆 user/ai 判斷最後一輪。
+      // 檢查是否有「比最後 AI 更新」的未回覆玩家訊息；同時刻僅忽略這份 AI 對應的原始玩家訊息。
+      const sourceMessageId = lastAI.id.startsWith('ai_') ? lastAI.id.slice(3) : '';
+      const aiTime = lastAI.data()?.timestamp;
+      const newerUnansweredUser = descending.some(d => {
+        if (d.data()?.sender !== 'user' || d.id === sourceMessageId) return false;
+        const t = d.data()?.timestamp;
+        if (!aiTime || !t) return true; // 無法確認先後時採保守拒絕
+        return t.seconds > aiTime.seconds ||
+          (t.seconds === aiTime.seconds && t.nanoseconds >= aiTime.nanoseconds);
+      });
+      if (newerUnansweredUser) throw new HttpsError('failed-precondition','只能重新生成最後一則 AI 回覆');
       regenerateTargetId = lastAI.id;
       regeneratePreviousUserId = lastAI.id.startsWith('ai_') ? lastAI.id.slice(3) : '';
       const lastUser = regeneratePreviousUserId ? await msgs.doc(regeneratePreviousUserId).get() : null;
@@ -742,9 +757,17 @@ exports.worldPrivateTest = onCall({
       // 只讀此房間的事件；控制候選數量與提示長度，不增加額外 AI 呼叫。
       const worldEventSnapshot = await room.collection('world_memory_events')
         .orderBy('createdAt','desc').limit(40).get();
+      // The new automatic About Us RAG is canary-only. Existing event RAG remains unchanged.
+      const rolloutSnap = await db.collection('artifacts').doc(APP_ID)
+        .collection('settings').doc('world_memory_rollout').get().catch(() => null);
+      const rolloutCfg = rolloutSnap?.data() || {};
+      const canaryMemoryEnabled = rolloutCfg.enabled === true &&
+        Array.isArray(rolloutCfg.allowedUserIds) && rolloutCfg.allowedUserIds.includes(uid);
       const aboutMemoriesRef = db.collection('users').doc(uid).collection('worlds')
         .doc(worldId).collection('sessions').doc(sessionId).collection('shared_memories');
-      const aboutMemorySnap = await aboutMemoriesRef.orderBy('timestamp','desc').limit(60).get();
+      const aboutMemorySnap = canaryMemoryEnabled
+        ? await aboutMemoriesRef.orderBy('timestamp','desc').limit(60).get()
+        : {empty:true,docs:[]};
       const worldMemoryQuery = `${rawMessage}\n${history.slice(-900)}`;
       const queryEmbedding = worldEventSnapshot.empty && aboutMemorySnap.empty ? null : await embedWorldText(
         worldMemoryQuery,'RETRIEVAL_QUERY',geminiApiKey.value());
@@ -792,10 +815,21 @@ exports.worldPrivateTest = onCall({
         });
       }
 
+      // Time presentation must never be blank in a modern world. Recover the
+      // creator's known 📅 day/daypart first; otherwise initialize a neutral
+      // 08:00 fictional arithmetic seed (NOT the device/server wall clock).
+      // Once persisted, later AI status text is never allowed to reset it.
+      const modernWorldClock = storyClock.detectTimeStyle(world) !== 'ancient';
+      if (modernWorldClock && !previousStoryClock && !previousFictionalClock) {
+        previousStoryClock = storyClock.normalize({year:2000,month:1,day:1,
+          hour:8,minute:0,yearKnown:false,dateKnown:false});
+      }
       const displayStoryTime = clock => storyClock.displayTime(clock,world);
       const creatorTimePolicy = storyClock.creatorTimePolicy(world);
       const worldDefaultAdvance = storyClock.advanceForWorld(world,3);
-      const provisionalStoryClock = storyClock.resolveClock(previousStoryClock, action === 'send' ? rawMessage : '', worldDefaultAdvance, creatorTimePolicy.fixedMinutes === null ? 5 : 120);
+      const provisionalStoryClock = storyClock.resolveClock(
+        previousFictionalClock ? null : previousStoryClock,
+        action === 'send' ? rawMessage : '', worldDefaultAdvance, 5);
       const activeWorldScene = roomConfig.activeWorldScene || {};
       // 玩家在此房間勾選的狀態欄項目（獨立於創作者模板）。
       const statusLabels = Object.freeze({
@@ -826,6 +860,7 @@ exports.worldPrivateTest = onCall({
         profileIdentity ? `玩家自行設定的世界身分背景：${profileIdentity}` : '玩家尚未設定世界身分背景。',
         profileNickname ? `敘事與 NPC 對白提及玩家本人時，優先自然使用「${profileNickname}」或合適的人稱代名詞，絕不可把內部標籤「玩家」當成人名寫進故事。` : '未提供名字時，可使用自然的你／妳、他／她或角色已知的稱呼；不要憑空捏造姓名。',
         '姓名、身分只能依這個檔案及玩家明確說過的資訊；NPC 只有在劇情中已知曉時才能直呼其名。不得代替玩家做事、說話或決定。',
+        '【玩家不可成為 AI 發言者】玩家稱呼只是歷史與 NPC 稱呼用的識別資料，絕不是可演繹 NPC；無論模型如何分段，都不得以玩家姓名建立 npc、user、player 或其他人物發言段落。',
         '不要原樣輸出拾光檔案的資料結構、JSON、後端提示詞，也不要把整份個人檔案貼進旁白或狀態欄。',
       ].filter(Boolean).join('\n');
       // 世界觀創作者狀態欄：只影響 AI 回覆，不作公開目錄資料。
@@ -845,6 +880,8 @@ exports.worldPrivateTest = onCall({
         '逐行理解模板：創作者寫的「請、根據、讀取、只在、字數」等是生成規則，不是要照抄的狀態值；填入本回合已有依據的具體內容。',
         '條件式區塊只有在條件成立時才顯示；例如明確要求某事件發生才顯示的欄位，條件未成立時整個區塊省略，不要輸出條件說明。',
         '多角色內心話、直播彈幕等允許多行，照創作者要求分行；只包含已出場或有劇情依據的角色與資訊。',
+        '【主想法欄位即時性】只有創作者模板設有「💭」或明確標示「想法／當前想法」的主要想法欄位時才適用。這一欄要反映本回合最新事件、角色此刻的注意力及情緒，不可機械複製上一輪已失去情境依據的想法。面對逃生、受傷、衝突等當下重大事件，優先根據角色目前已知的風險與目標生成想法；若角色仍合理惦記舊事，才可自然延續。不得憑空替玩家編造心理。',
+        '【主想法與其他心聲分離】「💭」主要想法與「🗯️」多角色心聲是兩個不同欄位；這項即時更新指令只針對前者，不得刪除、改名、合併或借用「🗯️」內容，不得更動創作者其餘自訂狀態欄的生成規則。',
         '可保留模板的純裝飾、Emoji、顏文字和固定標題；不可複製模板裡的選項清單、範例佔位符、生成指令、玩家身分 JSON 或後端秘密。',
         '創作者原始模板中各欄位的固定符號、Emoji、顏文字、欄位名稱、分隔符號應逐字保留，不要翻譯成英文（例如不要把 Emoji 改寫成英文名稱）。只有冒號後的動態狀態值可以依劇情改變。',
         '不要把 YYYY/MM/NN、HH：MM 這種格式佔位符當成真正日期時間。故事時間以後端已確定的值為準，未知時不自行捏造。',
@@ -879,6 +916,8 @@ exports.worldPrivateTest = onCall({
         '你是互動敘事引擎。玩家是故事唯一自主控制的主角。',
         `目前敘事模式：${worldMode}；互動動作請以指定 NPC 為核心，不代替其他人做出選擇。`,
         '嚴禁代替玩家寫行為、對白、情緒、內心、決定或身份；只回應玩家實際提供的內容。',
+        '【玩家敘事主權與輸出段落】本輪玩家輸入中的台詞、動作、推測及想法都已經發生；不要重新敘述、改寫、擴寫或借玩家第一人稱說第二次。segments 的 npc 只能是世界正式 NPC 或真正獨立於玩家的臨時 NPC；不准將玩家暱稱當成 NPC，沒有頭像不代表可以代演玩家。',
+        '世界旁白可描寫 NPC 看到／聽到玩家已提供的內容，並簡短銜接情境，但不可新增玩家未指定的推理、言語、舉動、情緒、心理或下一步選擇。NPC 可以回應或引用玩家意思，卻不能把玩家原文當成 NPC 的新台詞重說一遍。',
         '成人情境也必須尊重人物年齡、明確意願與停止訊號；不得假定同意，不得因切換模型而修改角色設定或玩家自主權。',
         '遵守世界觀與 NPC 設定。主要角色不等於固定男主角；依場景選擇需要出場的人物。',
         '一次回覆可有多段世界旁白與多名 NPC 發言，但避免無關 NPC 集體插話。',
@@ -938,6 +977,27 @@ exports.worldPrivateTest = onCall({
         {role:'system',content:system},
         {role:'user',content:`既有劇情：\n${namedHistory.slice(-12500)}\n\n${playerStoryLabel}本次輸入：${rawMessage}`},
       ],temperature:0.45,max_tokens:writerRoute.maxTokens};
+      // Reject AI-created player speech *before* accepting any model response.
+      // A model can invent a temporary NPC by using npcId='', so checking only IDs
+      // is insufficient. Do not infer identity from a missing avatar/photo.
+      const speakerLabel = value => String(value || '').normalize('NFKC')
+        .replace(/[\s\u200B-\u200D]/gu, '').trim().toLocaleLowerCase('zh-TW');
+      const forbiddenPlayerSpeakers = new Set(
+        [profileNickname, playerStoryLabel, '玩家', 'player', 'user', '你', '妳']
+          .map(speakerLabel).filter(Boolean)
+      );
+      const playerSpeakerSegment = item => {
+        if (!item || typeof item !== 'object') return false;
+        const kind = speakerLabel(item.kind);
+        // Unknown kinds used to become narrator silently; player kinds must fail.
+        if (['user', 'player', '玩家'].includes(kind)) return true;
+        const claimedName = speakerLabel(item.name);
+        if (!claimedName) return false;
+        if (!forbiddenPlayerSpeakers.has(claimedName)) return false;
+        // Also reject a forged player name with a formal NPC ID; names must be
+        // unambiguous and the player cannot be an AI-driven character.
+        return true;
+      };
       const leakedInternal = /(?:reasoning_content|userRequestSummary|現在開始正式寫作|讓我檢查之前的系統提示|回顧系統提示|於封禁狀態)/iu;
       // 僅修復 JSON 的明確語法問題；不改寫敘事文字，也不杜撰 NPC、好感度或記憶。
       const repairWorldJsonSyntax = source => {
@@ -1023,6 +1083,9 @@ exports.worldPrivateTest = onCall({
           return {parsed:null,reason:'missing_segments',length:content.length};
         }
         const candidates = parsed.segments.slice(0,(hasCustomStatusBar || wantsPlayerStatus) ? 11 : 12);
+        if (candidates.some(playerSpeakerSegment)) {
+          return {parsed:null,reason:'player_speaker_segment',length:content.length};
+        }
         // 與後續清理一致：禁止只靠玩家個人檔案 JSON 當作唯一可顯示段落。
         const visibleTexts = candidates.map(item => {
           // 必須以實際寫入前的同一套文字正規化規則驗證，避免原文有效但清理後變空白。
@@ -1196,9 +1259,13 @@ exports.worldPrivateTest = onCall({
       if (!validation.parsed) throw new HttpsError('internal','AI 回傳格式異常，請重試（不會儲存失敗回覆）');
       writerStage = 'process_writer_output';
       const parsed = validation.parsed;
-      const effectiveStoryClock = storyClock.resolveClock(previousStoryClock, action === 'send' ? rawMessage : '', storyClock.advanceForWorld(world,parsed.storyMinutesElapsed), creatorTimePolicy.fixedMinutes === null ? 5 : 120);
-      // 重新生成必須保留原回合時間，不可因重新生成而再次推進。
-      let finalStoryClock = action === 'regenerate' ? previousStoryClock : effectiveStoryClock.clock;
+      const effectiveStoryClock = storyClock.resolveClock(
+        previousFictionalClock ? null : previousStoryClock,
+        action === 'send' ? rawMessage : '', storyClock.advanceForWorld(world,parsed.storyMinutesElapsed), 5);
+      // Fictional-day clock and Gregorian clock must never both control the UI.
+      // Regeneration reuses the same room time; never advances a second time.
+      let finalStoryClock = previousFictionalClock ? null :
+        (action === 'regenerate' ? previousStoryClock : effectiveStoryClock.clock);
       const newFictionalClock = action === 'regenerate' ? previousFictionalClock :
         storyClock.resolveFictionalClock(previousFictionalClock,
           action === 'send' ? rawMessage : '', storyClock.advanceForWorld(world, parsed.storyMinutesElapsed));
@@ -1226,6 +1293,9 @@ exports.worldPrivateTest = onCall({
         const name = kind === 'npc' ? (npcId ? validIds.get(npcId) : String(item?.name||'路人').slice(0,80)) : '';
         return {kind,npcId,name,text};
       }).filter(s=>s.text);
+      if (parsed.segments.some(playerSpeakerSegment)) {
+        throw new HttpsError('internal','AI 誤將玩家作為發言者，未儲存此回覆，請重試');
+      }
       if (!segments.length) throw new HttpsError('internal','AI 回覆為空');
       // The model may also accidentally place creator template instructions in story segments.
       // Reject that response rather than publishing an internal field-filling instruction.
@@ -1241,6 +1311,14 @@ exports.worldPrivateTest = onCall({
           if (embeddings[i]) {e.embedding=embeddings[i];e.embeddingVersion=WORLD_EMBED_VERSION;}
         });
       }
+      // A recovered status bar is not a newly generated thought. Avoid repeating
+      // a stale primary-thought value while preserving all other creator fields.
+      // This intentionally does not match the separate 🗯️ multi-person thoughts.
+      const markRecoveredPrimaryThoughtUnknown = status => String(status || '')
+        .split('\n').map(line => line.replace(
+          /^(\s*(?:💭(?:\s*想法)?|(?:目前|當前|角色|NPC)?想法)\s*[：:]\s*).*$/u,
+          '$1未確認',
+        )).join('\n');
       // 維持現有聊天 JSON/Firestore segments 結構，最後加一段旁白顯示狀態欄。
       // 不信任模型生成內容；如似乎含有幕後指令，寧可省略而不洩漏。
       const statusParts = [];
@@ -1276,8 +1354,10 @@ exports.worldPrivateTest = onCall({
             logger.info('world story clock initialized from status time', {mode:worldMode});
           }
         }
-        const serverTimeText = finalStoryClock ? storyClock.displayTime(finalStoryClock,world)
-          : storyClock.displayFictionalClock(savedFictionalClock);
+        if (savedFictionalClock) finalStoryClock = null;
+        const serverTimeText = savedFictionalClock
+          ? storyClock.displayFictionalClock(savedFictionalClock)
+          : finalStoryClock ? storyClock.displayTime(finalStoryClock,world) : '';
         logger.info('world story clock diagnostic', {
           mode:worldMode, action, clockType:finalStoryClock ? 'calendar' : savedFictionalClock ? 'fictional' : 'unknown',
           initSource:fictionalClockSource === 'unknown' && initialFictionalClock ? 'generated_daypart_or_time' : fictionalClockSource,
@@ -1287,7 +1367,9 @@ exports.worldPrivateTest = onCall({
         const lockedStatus = lockCreatorStatus(customStatusTemplate, renderedStatus,
           {timeText: serverTimeText});
         if (lockedStatus) {
-          statusParts.push(lockedStatus);
+          statusParts.push(modernWorldClock
+            ? storyClock.enforceModernStatusTime(lockedStatus,serverTimeText)
+            : lockedStatus);
         } else if (latestStatusText.trim()) {
           // A repaired/truncated writer JSON can contain valid story segments but
           // omit statusBar. Restore ONLY the most recent status in this same room;
@@ -1298,13 +1380,24 @@ exports.worldPrivateTest = onCall({
             {timeText: serverTimeText}
           );
           if (previousSafeStatus) {
-            statusParts.push(previousSafeStatus);
+            const safeRecoveredStatus = markRecoveredPrimaryThoughtUnknown(previousSafeStatus);
+            statusParts.push(modernWorldClock
+              ? storyClock.enforceModernStatusTime(safeRecoveredStatus,serverTimeText)
+              : safeRecoveredStatus);
             reusedPriorStatusBar = true;
             logger.warn('world status bar restored from room history', {
               sessionId, worldMode, parseStrategy:validation.parseStrategy, hasCustomStatusBar: true,
             });
           }
         }
+      }
+      // A modern world must have a server-authoritative numeric status time
+      // even if the AI returned no statusBar or the creator supplied no template.
+      if (modernWorldClock && !statusParts.some(part => /(?:[01]\d|2[0-3]):[0-5]\d/u.test(part))) {
+        const authoritative = finalFictionalClock
+          ? storyClock.displayFictionalClock(finalFictionalClock)
+          : finalStoryClock ? storyClock.displayTime(finalStoryClock,world) : '';
+        if (authoritative) statusParts.unshift(`⏰：${authoritative}`);
       }
       // 玩家勾選的欄位只由白名單組裝，不顯示模型擅自新增的鍵或原始 JSON。
       const playerStatus = parsed.playerStatus && typeof parsed.playerStatus === 'object' &&
@@ -1855,6 +1948,17 @@ exports.worldPublicCatalog = onCall({region: REGION, memory:'256MiB', timeoutSec
   })};
 });
 
+// Only normalize AI-generated Markdown decoration in world story summaries.
+// Preserve narrative punctuation, ordinary star characters and full-width symbols.
+function plainWorldSummary(value) {
+  return String(value || '').replace(/\r\n?/g, '\n').split('\n').map(line => {
+    let s = line.replace(/^\s{0,3}#{1,6}\s+(?=\S)/u, '');
+    s = s.replace(/^\s{0,3}(?:\*|-|\+)\s+(?=\S)/u, '・');
+    s = s.replace(/\*\*([^\n*]+?)\*\*/gu, '$1');
+    return s;
+  }).join('\n');
+}
+
 // ============================================================
 // 開放世界劇情摘要＋長期連續性記憶
 // 專用於目前「私人試玩」房間，避免混到一般單人聊天室。
@@ -1898,7 +2002,7 @@ exports.worldStoryMemory = onCall({
   if (action === 'listEntries') {
     const entries = await entriesRef.orderBy('createdAt', 'desc').limit(100).get();
     return {entries: entries.docs.map(doc => ({
-      id:doc.id, content:String(doc.data()?.content || ''),
+      id:doc.id, content:plainWorldSummary(doc.data()?.content),
       createdAt:doc.data()?.createdAt?.toMillis?.() || null,
     }))};
   }
@@ -1923,7 +2027,7 @@ exports.worldStoryMemory = onCall({
   const previous = original.exists ? original.data() || {} : {};
   const total = Number(roomSnap.data()?.messageCount || 0);
   const checkpoint = Number(previous.messageCount || 0);
-  const content = String(previous.summary || '');
+  const content = plainWorldSummary(previous.summary);
   if (action === 'load') {
     return {summary: content, messageCount: checkpoint,
       newMessageCount: Math.max(0, total - checkpoint),
@@ -1938,7 +2042,7 @@ exports.worldStoryMemory = onCall({
   const latestMemory = (await memoryRef.get()).data() || {};
   return {
     ...generation,
-    summary:String(latestMemory.summary || ''),
+    summary:plainWorldSummary(latestMemory.summary),
     messageCount:Number(latestMemory.messageCount || 0),
     newMessageCount:Math.max(0,total-Number(latestMemory.messageCount || 0)),
   };

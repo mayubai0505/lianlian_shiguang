@@ -34,7 +34,7 @@ function resolveClock(previous, player, advanceMinutes=3, maxNaturalMinutes=5){
  }
  if(!base)return {clock:null,reason:'unknown'};
  const requested=Number(advanceMinutes);
- const safe=Number.isFinite(requested)?Math.min(Math.max(5,Math.min(120,Math.trunc(maxNaturalMinutes))),Math.max(1,Math.trunc(requested))):3;
+ const safe=Number.isFinite(requested)?Math.min(Math.max(1,Math.min(5,Math.trunc(maxNaturalMinutes))),Math.max(1,Math.trunc(requested))):3;
  return {clock:addMinutes(base,safe),reason:'normal_turn'};
 }
 // Restore only an explicitly displayed clock from a creator status field.
@@ -81,7 +81,10 @@ function creatorTimePolicy(world={}) {
 }
 function advanceForWorld(world={},requested=3){
  const fixed=creatorTimePolicy(world).fixedMinutes;
- if(fixed!==null)return fixed;
+ // Product rule: every ordinary successful turn advances 1..5 minutes, even if
+ // a creator template asks for a larger automatic jump. Explicit player jumps
+ // are handled separately by resolveClock/resolveFictionalClock.
+ if(fixed!==null)return Math.max(1,Math.min(5,fixed));
  const value=Number(requested);
  return Number.isFinite(value)?Math.max(1,Math.min(5,Math.trunc(value))):3;
 }
@@ -109,10 +112,30 @@ function displayTime(clock, world={}) {
 }
 function timePresentationDirective(world={}) {
  const policy=creatorTimePolicy(world);
- const pacing=policy.fixedMinutes===null ? '每輪一般對話自然經過一至五分鐘；實際經過時間以情節為準。' : `創作者明訂每回合推進 ${policy.fixedMinutes} 分鐘；玩家明確指定跳時時以玩家為準。`;
+ const pacing='每次成功的新回合由後端強制推進一至五分鐘（至少一分鐘）。創作者指定的普通回合步長也以一至五分鐘為限；玩家明確指定跨日或跳時時依玩家為準，重新生成不額外推進。';
  if(detectTimeStyle(world)==='ancient') return pacing+' '+ '【世界紀時】此世界採古代時辰表達。NPC 自然使用子丑寅卯辰巳午未申酉戌亥時，避免現代數位鐘說法。後端以 24 小時精度保存事件先後；同一時辰內的短暫經過無須變更顯示。未指定陰曆/年號時，禁止把內部公曆月日當成農曆或虛構明朝年號。若創作者明訂不同曆法，以其世界觀為先，但勿自造日期換算。';
  return pacing+' '+'【世界紀時】此世界使用現代時間表達（24 小時制）；以故事內時間為準，不使用現實手機時間。若世界設定明示其他紀時方式，人物台詞依世界設定自然表達。';
 }
+// For modern creator status bars, replace only the value of a time/calendar row.
+// status_template's lockCreatorStatus currently ignores timeText, so the
+// authoritative server time must be applied after locking the creator layout.
+// A one-line calendar may contain other fields separated by ｜: preserve them.
+function enforceModernStatusTime(status, timeText) {
+  const stamp=String(timeText||'').trim();
+  if(!/(?:[01]\d|2[0-3]):[0-5]\d$/u.test(stamp)) return String(status||'');
+  let found=false;
+  const lines=String(status||'').replace(/\r\n?/gu,'\n').split('\n').map(line=>{
+    if(found)return line;
+    const m=line.match(/^(\s*(?:📅|📆|🗓️?|⏰|🕒|時間|時刻|故事時間|現在時間|目前時間|日期時間)\s*[:：]\s*)([^｜|]*)([\s\S]*)$/u);
+    if(!m)return line;
+    found=true;
+    // Keep the creator's icon, label and every post-calendar field (e.g. location).
+    return `${m[1]}${stamp}${m[3]}`;
+  });
+  if(!found) lines.unshift(`⏰：${stamp}`);
+  return lines.join('\n');
+}
+
 function enforceStatusTime(status,clock,world={}){const c=normalize(clock);if(!c)return String(status||'');const time=displayTime(c,world);return String(status||'').replace(/(^|\n)(\s*(?:時間|日期時間|故事時間|當前時間|目前時間)\s*[:：]\s*)[^\n]*/gu,(_,lead,prefix)=>lead+prefix+time);}
 
 // Fictional day number (e.g. "第三日，07:20") is deliberately separate
@@ -157,7 +180,7 @@ const FICTIONAL_DAYPART_START = Object.freeze({
 });
 function parseFictionalDaypart(value) {
   const source=String(value||'').trim();
-  const match=source.match(/^第\s*([零〇一二兩三四五六七八九十百千\d]{1,8})\s*[日天]\s*[,，、\s]*(凌晨|清晨|早上|上午|中午|下午|傍晚|晚上|半夜)(?=$|[。．!！\s｜|])/u);
+  const match=source.match(/第\s*([零〇一二兩三四五六七八九十百千\d]{1,8})\s*[日天]\s*[,，、\s]*(凌晨|清晨|早上|上午|中午|下午|傍晚|晚上|半夜)(?=$|[。．!！\s｜|])/u);
   if(!match)return null;
   const hm=FICTIONAL_DAYPART_START[match[2]];
   return normalizeFictionalClock({day:parseDayNumber(match[1]),hour:hm[0],minute:hm[1]});
@@ -206,7 +229,7 @@ function resolveFictionalClock(previous,player,minutes=3) {
  if(explicit)return explicit;
  const local=input.match(/(?:現在(?:的)?時間(?:是|為)?|時間(?:改成|跳到|來到|設定為))\s*([01]?\d|2[0-3])\s*[:：]\s*([0-5]\d)/u);
  if(local)return {...base,hour:Number(local[1]),minute:Number(local[2])};
- return addFictionalMinutes(base,Math.max(1,Math.min(120,Number.isFinite(Number(minutes))?Math.trunc(Number(minutes)):3)));
+ return addFictionalMinutes(base,Math.max(1,Math.min(5,Number.isFinite(Number(minutes))?Math.trunc(Number(minutes)):3)));
 }
 
-module.exports={normalize,label,addMinutes,resolveClock,parseStatusClock,enforceStatusTime,detectTimeStyle,branchOfHour,displayTime,timePresentationDirective,creatorTimePolicy,advanceForWorld,normalizeFictionalClock,parseFictionalTime,parseFictionalDaypart,parseFictionalStatusAnchor,displayFictionalClock,resolveFictionalClock};
+module.exports={normalize,label,addMinutes,resolveClock,parseStatusClock,enforceStatusTime,detectTimeStyle,branchOfHour,displayTime,timePresentationDirective,creatorTimePolicy,advanceForWorld,normalizeFictionalClock,parseFictionalTime,parseFictionalDaypart,parseFictionalStatusAnchor,displayFictionalClock,resolveFictionalClock,enforceModernStatusTime};
