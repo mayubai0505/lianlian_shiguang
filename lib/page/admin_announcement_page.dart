@@ -1,3 +1,4 @@
+import 'admin_world_chat_count_page.dart';
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -3454,6 +3455,18 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                 title: '營運總覽',
                 subtitle: '今天的戀戀拾光，一眼掌握。部分進階分析會在埋點完成後自動升級。',
                 icon: Icons.space_dashboard_outlined,
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                child: Card(child: ListTile(
+                  leading: const Icon(Icons.fact_check_outlined),
+                  title: const Text('開放世界聊天數核對'),
+                  subtitle: const Text('掃描歷史紀錄，核對差異後補正聊天數'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                    builder: (_) => const AdminWorldChatCountPage(),
+                  )),
+                )),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),

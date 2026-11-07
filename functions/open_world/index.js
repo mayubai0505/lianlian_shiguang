@@ -1,4 +1,6 @@
 'use strict';
+const {publicChatCount, recordPublicChatSend} = require('./chat_count');
+const {createWorldChatAudit} = require('./chat_count_audit');
 const storyClock = require('./story_clock');
 const {onDocumentCreated} = require('firebase-functions/v2/firestore');
 const {createWorldMemoryTools, EMBEDDING_VERSION} = require('./world_memory_worker');
@@ -11,6 +13,10 @@ function registerWorldFunctions(exports, deps) {
     openRouterApiKey, geminiApiKey, xaiApiKey, anthropicApiKey,
     callAiWithRetry, normalizeAiResponseScript,
   } = deps;
+
+  exports.worldAdminChatCountAudit = onCall({region:REGION, memory:'256MiB',timeoutSeconds:60,maxInstances:2},
+    createWorldChatAudit({db,FieldValue,HttpsError,crypto,APP_ID,
+      documentId:require('firebase-admin/firestore').FieldPath.documentId()}));
 
   const worldMemoryTools = createWorldMemoryTools({db, APP_ID, crypto, FieldValue, logger, callAiWithRetry, normalizeAiResponseScript, geminiApiKey, HttpsError});
   exports.worldMemoryOnMessage = onDocumentCreated({
@@ -396,7 +402,7 @@ exports.worldPrivateTest = onCall({
       coverImage:String(world.coverImage || ''),
       // 公開介紹頁 newRoom 一律屬於公開劇情，創作者本人也不例外。
       isPrivateTest: action === 'newRoom' && isPublicPlayable ? false : isWorldOwner,
-      entrySource: action === 'newRoom' && isPublicPlayable ? 'public' : 'private',
+      entrySource: isPublicPlayable && (action === 'newRoom' || !isWorldOwner) ? 'public' : 'private',
       lastMessage: first || opening, lastActivity:now, createdAt:now,
       messageCount:0, processing:false,
     });
@@ -1480,12 +1486,15 @@ exports.worldPrivateTest = onCall({
       const chargeRef = userRef.collection('flower_logs').doc(`world_${requestId}`);
       const usageRef = db.collection('artifacts').doc(APP_ID)
         .collection('chat_mode_events').doc(`world_${requestId}`);
+      const publicCountRef = db.collection('artifacts').doc(APP_ID)
+        .collection('public_worlds').doc(worldId);
       writerStage = 'commit_firestore_transaction';
       await db.runTransaction(async tx => {
-        const [roomState, existing, userSnap, regenUsageSnap, ...affinitySnaps] = await Promise.all([
+        const [roomState, existing, userSnap, regenUsageSnap, counterWorldSnap, publicCountSnap, ...affinitySnaps] = await Promise.all([
           tx.get(room),
           tx.get(msgs.doc(requestId)),tx.get(userRef),
           action === 'regenerate' ? tx.get(regenUsageRef) : Promise.resolve(null),
+          tx.get(worldSnap.ref), tx.get(publicCountRef),
           ...affinityRefs.map(x => tx.get(x.ref))
         ]);
         const regenUsed = action === 'regenerate' ? Number(regenUsageSnap?.data()?.usedCount || 0) : 0;
@@ -1573,9 +1582,9 @@ exports.worldPrivateTest = onCall({
           messageCount:FieldValue.increment(action === 'continue' ? 1 : 2)});
         // 公開世界真正聊天次數：玩家成功送出一則文字才 +1。
         // 與訊息寫入及扣費同一交易，requestId 去重；失敗、取消、重生、繼續皆不累加。
-        if (action === 'send' && roomState.data()?.entrySource === 'public') {
-          tx.update(worldSnap.ref, {chatMessageCount: FieldValue.increment(1)});
-        }
+        recordPublicChatSend({tx, action, room:roomState.data(),
+          world:counterWorldSnap.exists ? counterWorldSnap.data() : null,
+          worldRef:worldSnap.ref, publicRef:publicCountRef, publicExists:publicCountSnap.exists});
       });
       // 舊事件漸進補索引：每次成功聊天最多 2 筆，不需一次性大量重建。
       // 更新前再核對原事實，避免覆蓋玩家修改過的事件。
@@ -1897,6 +1906,7 @@ exports.worldPublish = onCall({region: REGION, memory:'256MiB', timeoutSeconds:3
           avatarUrl:String(n.avatarUrl||'').slice(0,2000),
         })) : [],
       tags:Array.isArray(w.tags)?w.tags.slice(0,5).map(x=>String(x).slice(0,30)):[],
+      chatMessageCount:publicChatCount(w), playCount:publicChatCount(w),
       createdBy:uid,updatedAt:FieldValue.serverTimestamp(),
     });
     else tx.delete(publicRef);
@@ -1935,7 +1945,7 @@ exports.worldPublicCatalog = onCall({region: REGION, memory:'256MiB', timeoutSec
   return {worlds: docs.map(doc => {
     const w = doc.data() || {};
     const creatorId = String(w.createdBy || '');
-    const rawCount = Number(w.chatMessageCount);
+
     return {id:doc.id, name:String(w.name||'').slice(0,60),
       summary:String(w.summary||'').slice(0,1200),
       shortPitch:String(w.shortPitch||'').slice(0,60),
@@ -1944,7 +1954,7 @@ exports.worldPublicCatalog = onCall({region: REGION, memory:'256MiB', timeoutSec
       creatorId,
       creatorName: creatorNames.get(creatorId) || '',
       // 保持前端欄位相容；現在的 playCount 顯示新聊天統計，而非歷史進入次數。
-      playCount: Number.isFinite(rawCount) && rawCount >= 0 ? Math.floor(rawCount) : 0};
+      playCount: publicChatCount(w)};
   })};
 });
 

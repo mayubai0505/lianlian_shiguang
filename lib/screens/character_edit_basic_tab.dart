@@ -11,6 +11,7 @@ class CharacterEditBasicTab extends StatefulWidget {
 
   final Widget bannerSection;
   final Widget imageGallerySection;
+  final Widget? creatorMessageSection;
 
   final TextEditingController nameController;
   final TextEditingController ageController;
@@ -66,6 +67,7 @@ class CharacterEditBasicTab extends StatefulWidget {
     required this.l10n,
     required this.bannerSection,
     required this.imageGallerySection,
+    this.creatorMessageSection,
     required this.nameController,
     required this.ageController,
     required this.occupationController,
@@ -478,6 +480,7 @@ class _CharacterEditBasicTabState extends State<CharacterEditBasicTab> {
           _buildCleanSection(
             theme: theme,
             title: l10n.characterEditCharacterImage,
+            icon: Icons.photo_library_outlined,
             children: [
               widget.bannerSection,
               const SizedBox(height: 22),
@@ -487,6 +490,7 @@ class _CharacterEditBasicTabState extends State<CharacterEditBasicTab> {
           _buildCleanSection(
             theme: theme,
             title: l10n.section_basic_info,
+            icon: Icons.person_outline_rounded,
             children: [
               _buildTextField(
                 widget.nameController,
@@ -558,6 +562,7 @@ class _CharacterEditBasicTabState extends State<CharacterEditBasicTab> {
           _buildCleanSection(
             theme: theme,
             title: l10n.section_story_identity,
+            icon: Icons.auto_stories_outlined,
             children: [
               Container(
                 padding: const EdgeInsets.all(13),
@@ -672,6 +677,7 @@ class _CharacterEditBasicTabState extends State<CharacterEditBasicTab> {
           _buildCleanSection(
             theme: theme,
             title: l10n.section_personality_evo,
+            icon: Icons.psychology_alt_outlined,
             children: [
               Text(
                 l10n.characterEditSelectedTagOrder,
@@ -739,6 +745,7 @@ class _CharacterEditBasicTabState extends State<CharacterEditBasicTab> {
           _buildCleanSection(
             theme: theme,
             title: l10n.section_habits,
+            icon: Icons.favorite_border_rounded,
             children: [
               _buildBoxedTextField(
                 widget.likesController,
@@ -769,6 +776,7 @@ class _CharacterEditBasicTabState extends State<CharacterEditBasicTab> {
           _buildCleanSection(
             theme: theme,
             title: l10n.section_easter_eggs,
+            icon: Icons.lock_outline_rounded,
             children: [
               if (widget.easterEggs.isEmpty)
                 Container(
@@ -806,6 +814,10 @@ class _CharacterEditBasicTabState extends State<CharacterEditBasicTab> {
                       ),
                     ),
                     child: ListTile(
+                      leading: Icon(
+                        Icons.lock_outline_rounded,
+                        color: theme.colorScheme.primary,
+                      ),
                       title: Text(
                         egg.keyword,
                         style: const TextStyle(fontWeight: FontWeight.w700),
@@ -834,6 +846,10 @@ class _CharacterEditBasicTabState extends State<CharacterEditBasicTab> {
                   label: Text(l10n.add_easter_egg_button),
                 ),
               ),
+              if (widget.creatorMessageSection != null) ...[
+                const SizedBox(height: 22),
+                widget.creatorMessageSection!,
+              ],
               const SizedBox(height: 22),
               Text(
                 l10n.other_extra_info,

@@ -1,6 +1,6 @@
 'use strict';
 // Background memory_jobs handler. Preserve the legacy processing and error semantics.
-function createMemoryJobHandler({FieldValue, savePlayerMemoryIfNeeded}) {
+function createMemoryJobHandler({FieldValue, db, savePlayerMemoryIfNeeded}) {
   return async (event) => {
         const snapshot = event.data;
 
@@ -12,7 +12,9 @@ function createMemoryJobHandler({FieldValue, savePlayerMemoryIfNeeded}) {
         }
 
         const jobRef = snapshot.ref;
-        const jobData = snapshot.data() || {};
+        const currentSnapshot = typeof jobRef.get === 'function' ? await jobRef.get() : snapshot;
+        const jobData = currentSnapshot.data() || {};
+        if (jobData.status === 'completed' || jobData.status === 'skipped' || Number(jobData.attempts || 0) >= 3) return;
 
         const appId =
             event.params.appId;
@@ -88,7 +90,7 @@ function createMemoryJobHandler({FieldValue, savePlayerMemoryIfNeeded}) {
         if (
             !userId ||
             !characterId ||
-            !userMessage
+            (!userMessage && !String(jobData.assistantMessage || '').trim())
         ) {
             console.warn(
                 "🛑 長期記憶工作資料不完整，停止處理：",
@@ -142,6 +144,36 @@ function createMemoryJobHandler({FieldValue, savePlayerMemoryIfNeeded}) {
         try {
             // 背景函式不依賴玩家 HTTP 連線，
             // 因此不傳 getAiResponse 的 abortController。
+            let assistantMessage = String(jobData.assistantMessage || '');
+            const sourceMessageId = String(jobData.sourceMessageId || '');
+            const userMessageId = String(jobData.userMessageId || '');
+            let sourceTimestamp = jobData.createdAt || null;
+            const sourceHashes = {};
+            if (db && sessionId && sourceMessageId) {
+                const sessionRef = db.collection('artifacts').doc(appId).collection('chat_sessions').doc(sessionId);
+                const room = await sessionRef.get();
+                const roomData = room.data() || {};
+                if (!room.exists || roomData.userId !== userId || String(roomData.characterId || '') !== characterId) {
+                    throw new Error('MEMORY_SESSION_SCOPE_MISMATCH');
+                }
+                const source = await sessionRef.collection('messages').doc(sourceMessageId).get();
+                if (!source.exists) {
+                    await jobRef.set({status:'skipped', errorCode:'SOURCE_REMOVED',completedAt:FieldValue.serverTimestamp()},{merge:true});
+                    return;
+                }
+                const data = source.data() || {};
+                assistantMessage = String(data.text || '');
+                sourceTimestamp = data.timestamp || sourceTimestamp;
+                sourceHashes.assistant = require('crypto').createHash('sha256').update(assistantMessage).digest('hex');
+                if (userMessageId) {
+                    const userSource = await sessionRef.collection('messages').doc(userMessageId).get();
+                    if (!userSource.exists) {
+                        await jobRef.set({status:'skipped',errorCode:'USER_SOURCE_REMOVED',completedAt:FieldValue.serverTimestamp()},{merge:true});
+                        return;
+                    }
+                    sourceHashes.user = require('crypto').createHash('sha256').update(String(userSource.data()?.text || '')).digest('hex');
+                }
+            }
             const savedMemory =
                 await savePlayerMemoryIfNeeded({
                     appId,
@@ -152,6 +184,9 @@ function createMemoryJobHandler({FieldValue, savePlayerMemoryIfNeeded}) {
                     userMessage,
                     playerName,
                     chatMode,
+                    assistantMessage,
+                    recentHistory: jobData.recentHistory || [],
+                    sourceMessageId, userMessageId, sourceTimestamp, sourceHashes,
                     abortController: null,
                 });
 
@@ -167,6 +202,8 @@ function createMemoryJobHandler({FieldValue, savePlayerMemoryIfNeeded}) {
 
                     memoryId:
                         savedMemory?.id || null,
+                    memoryIds: savedMemory?.ids || [],
+                    savedCount: savedMemory?.savedCount || 0,
 
                     completedAt:
                         FieldValue.serverTimestamp(),
@@ -228,6 +265,7 @@ function createMemoryJobHandler({FieldValue, savePlayerMemoryIfNeeded}) {
                     merge: true,
                 }
             );
+            throw error;
         }
     };
 }

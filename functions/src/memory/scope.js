@@ -86,22 +86,22 @@ function canonicalizeMemoryFactKey(value, {userMessage = "", category = ""} = {}
     key.startsWith("preference.food.") &&
     !["preference.food.food", "preference.food.other"].includes(key);
 
-  if (!hasSpecificDrinkKey && /(不喝咖啡|喝咖啡|喜歡咖啡|愛喝咖啡|討厭咖啡|每天(?:都)?喝咖啡|coffee)/i.test(message)) {
+  if (/^(preference\.|habit\.)/.test(key) && !hasSpecificDrinkKey && /(不喝咖啡|喝咖啡|喜歡咖啡|愛喝咖啡|討厭咖啡|每天(?:都)?喝咖啡|coffee)/i.test(message)) {
     key = "preference.drink.coffee";
-  } else if (!hasSpecificDrinkKey && /(不喝酒|喝酒|喜歡喝酒|愛喝酒|討厭喝酒|酒精|alcohol|wine|beer)/i.test(message)) {
+  } else if (/^(preference\.|habit\.)/.test(key) && !hasSpecificDrinkKey && /(不喝酒|喝酒|喜歡喝酒|愛喝酒|討厭喝酒|酒精|alcohol|wine|beer)/i.test(message)) {
     key = "preference.drink.alcohol";
-  } else if ((!hasSpecificFoodKey || key === "preference.food.cake") && /(草莓蛋糕|strawberry\s*cake)/i.test(message)) {
+  } else if (key.startsWith("preference.") && (!hasSpecificFoodKey || key === "preference.food.cake") && /(草莓蛋糕|strawberry\s*cake)/i.test(message)) {
     key = "preference.food.strawberry_cake";
-  } else if (!hasSpecificFoodKey && /(甜食|甜點|dessert|sweets?)/i.test(message)) {
+  } else if (key.startsWith("preference.") && !hasSpecificFoodKey && /(甜食|甜點|dessert|sweets?)/i.test(message)) {
     key = "preference.food.sweets";
-  } else if (!hasSpecificFoodKey && /(香菜|cilantro|coriander)/i.test(message)) {
+  } else if (key.startsWith("preference.") && !hasSpecificFoodKey && /(香菜|cilantro|coriander)/i.test(message)) {
     key = "preference.food.cilantro";
   }
 
   // 關係狀態屬於同一 canonical fact。
   // scope 只決定這個事實在哪一層成立，不應讓「結婚 / 離婚 / 交往 / 分手」
   // 因為措辭不同而漂成 relationship.event.*。
-  if (/(結婚|已婚|夫妻|離婚|分手|交往|在一起|戀人|情侶|曖昧)/i.test(message)) {
+  if (key === "relationship.status" && /(結婚|已婚|夫妻|離婚|分手|交往|在一起|戀人|情侶|曖昧)/i.test(message)) {
     key = "relationship.status";
   }
 
@@ -203,8 +203,8 @@ function resolveMemoryConflicts(entries = []) {
 
     if (
       entryRank === currentRank &&
-      memoryTimestampToMillis(entry.timestamp) >
-        memoryTimestampToMillis(current.timestamp)
+      memoryTimestampToMillis(entry.sourceTimestamp || entry.timestamp) >
+        memoryTimestampToMillis(current.sourceTimestamp || current.timestamp)
     ) {
       bestByFactKey.set(entry.factKey, entry);
     }
@@ -326,6 +326,10 @@ function repairMemoryScope({
     return "session";
   }
 
+  // 明確世界線限定優先於模型填的scope，防止誤存跨角色玩家資料。
+  if (shouldRemember === true && /(在這個世界(?:裡|中)?|這個世界線|這條世界線|在這個聊天室|這個聊天室裡)/i.test(message)) {
+    return "session";
+  }
   if (["profile", "character", "session"].includes(safeScope)) {
     return safeScope;
   }

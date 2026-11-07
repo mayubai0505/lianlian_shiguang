@@ -1,4 +1,5 @@
 'use strict';
+const {buildSearchTerms} = require('./search_index');
 // 原封不動搬移原 RAG 輕量檢索函式。
 function createRagSelector({chatMode, finalUserMessage}) {
                                                                                                 function buildRetrievalTerms(value) {
@@ -50,11 +51,12 @@ function createRagSelector({chatMode, finalUserMessage}) {
                                                                                                 }
 
                                                                                                 function scoreRelevantCandidate(queryTerms, textValue, important = false) {
-                                                                                                    const haystack = String(textValue || "").toLowerCase();
+                                                                                                    const haystack = String(textValue || "").normalize("NFKC").toLowerCase();
+                                                                                                    const indexed = new Set(buildSearchTerms(haystack));
                                                                                                     let score = important ? 6 : 0;
 
                                                                                                     for (const term of queryTerms) {
-                                                                                                        if (term && haystack.includes(term)) {
+                                                                                                        if (term && (haystack.includes(term) || indexed.has(term))) {
                                                                                                             score += term.length >= 3 ? 3 : 1;
                                                                                                         }
                                                                                                     }
@@ -65,7 +67,7 @@ function createRagSelector({chatMode, finalUserMessage}) {
                                                                                                 function selectRelevantCandidates(items, query, limit, toText) {
                                                                                                     if (!Array.isArray(items) || items.length === 0) return [];
 
-                                                                                                    const queryTerms = expandRoleplayRetrievalTerms(buildRetrievalTerms(query));
+                                                                                                    const queryTerms = [...new Set([...buildSearchTerms(query), ...expandRoleplayRetrievalTerms(buildRetrievalTerms(query))])];
 
                                                                                                     const ranked = items.map((item, index) => ({
                                                                                                         item,

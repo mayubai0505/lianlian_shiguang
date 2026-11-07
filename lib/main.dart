@@ -249,6 +249,7 @@ class _BootstrapAppState extends State<_BootstrapApp> {
               create: (_) => LocaleNotifier(),
             ),
             ChangeNotifierProvider(
+              lazy: false, // App 啟動即監聽，無需先進商店。
               create: (_) {
                 final service = PurchaseService();
                 if (!_worldEmulatorEnabled) service.initialize();

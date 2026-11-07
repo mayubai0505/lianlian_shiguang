@@ -3225,8 +3225,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
               color: theme.scaffoldBackgroundColor,
               child: TabBarView(
                 children: [
-                  Column(children: [
-                    Expanded(child: CharacterEditBasicTab(
+                  CharacterEditBasicTab(
                       l10n: l10n,
                       bannerSection: _buildBannerImageSection(),
                       imageGallerySection: _buildImageGallery(),
@@ -3308,10 +3307,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                         });
                       },
                       onAddExtraInfoItem: _addExtraInfoItem,
-                    )),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-                      child: Column(
+                      creatorMessageSection: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(l10n.world_edit_creator_message_optional1),
@@ -3327,8 +3323,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                           ),
                         ],
                       ),
-                    ),
-                  ]),
+                  ),
                   CharacterEditVoiceTab(
                     voiceSamples: _voiceSamples,
                     isGeneratingVoice: _isGeneratingVoice,

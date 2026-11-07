@@ -1,79 +1,80 @@
-﻿{
-    "hosting":  {
-                    "public":  "build/web",
-                    "ignore":  [
-                                   "firebase.json",
-                                   "**/.*",
-                                   "**/node_modules/**"
-                               ],
-                    "rewrites":  [
-                                     {
-                                         "source":  "**",
-                                         "destination":  "/index.html"
-                                     }
-                                 ]
-                },
-    "flutter":  {
-                    "platforms":  {
-                                      "dart":  {
-                                                   "lib/firebase_options.dart":  {
-                                                                                     "projectId":  "lianlianshiguang",
-                                                                                     "configurations":  {
-                                                                                                            "android":  "1:892791360631:android:aa3288f48c9d4600db4a72",
-                                                                                                            "ios":  "1:892791360631:ios:ba7a53fb352f7e37db4a72",
-                                                                                                            "web":  "1:892791360631:web:b49cee9b7898da95db4a72"
-                                                                                                        }
-                                                                                 }
-                                               },
-                                      "android":  {
-                                                      "default":  {
-                                                                      "projectId":  "lianlianshiguang",
-                                                                      "appId":  "1:892791360631:android:aa3288f48c9d4600db4a72",
-                                                                      "fileOutput":  "android/app/google-services.json"
-                                                                  }
-                                                  }
-                                  }
-                },
-    "functions":  [
-                      {
-                          "codebase":  "default",
-                          "ignore":  [
-                                         "node_modules",
-                                         ".git",
-                                         "firebase-debug.log",
-                                         "firebase-debug.*.log",
-                                         "*.local"
-                                     ],
-                          "predeploy":  [
-
-                                        ],
-                          "source":  "functions"
-                      }
-                  ],
-    "emulators":  {
-                      "auth":  {
-                                   "host":  "127.0.0.1",
-                                   "port":  9099
-                               },
-                      "firestore":  {
-                                        "host":  "127.0.0.1",
-                                        "port":  8080
-                                    },
-                      "functions":  {
-                                        "host":  "127.0.0.1",
-                                        "port":  5001
-                                    },
-                      "storage":  {
-                                      "host":  "127.0.0.1",
-                                      "port":  9199
-                                  },
-                      "ui":  {
-                                 "enabled":  true,
-                                 "host":  "127.0.0.1",
-                                 "port":  4000
-                             }
-                  },
-    "storage":  {
-                    "rules":  "storage.emulator.rules"
-                }
+{
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  "flutter": {
+    "platforms": {
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "lianlianshiguang",
+          "configurations": {
+            "android": "1:892791360631:android:aa3288f48c9d4600db4a72",
+            "ios": "1:892791360631:ios:ba7a53fb352f7e37db4a72",
+            "web": "1:892791360631:web:b49cee9b7898da95db4a72"
+          }
+        }
+      },
+      "android": {
+        "default": {
+          "projectId": "lianlianshiguang",
+          "appId": "1:892791360631:android:aa3288f48c9d4600db4a72",
+          "fileOutput": "android/app/google-services.json"
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [],
+      "source": "functions"
+    }
+  ],
+  "emulators": {
+    "auth": {
+      "host": "127.0.0.1",
+      "port": 9099
+    },
+    "firestore": {
+      "host": "127.0.0.1",
+      "port": 8080
+    },
+    "functions": {
+      "host": "127.0.0.1",
+      "port": 5001
+    },
+    "storage": {
+      "host": "127.0.0.1",
+      "port": 9199
+    },
+    "ui": {
+      "enabled": true,
+      "host": "127.0.0.1",
+      "port": 4000
+    }
+  },
+  "storage": {
+    "rules": "storage.emulator.rules"
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  }
 }

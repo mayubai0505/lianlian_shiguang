@@ -664,6 +664,49 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
+  // 故事既有關係與好感階段分開提供，避免低分覆蓋夫妻、兄妹等身分。
+  String _buildAiRelationshipContext(
+    AppLocalizations l10n,
+    String affectionStage,
+  ) {
+    final raw = _currentCharacter.initialRelationship.trim();
+    String initialRelationship;
+    switch (raw) {
+      case 'relationship_childhood_friend':
+        initialRelationship = l10n.relationship_childhood_friend;
+        break;
+      case 'relationship_senior_junior':
+        initialRelationship = l10n.relationship_senior_junior;
+        break;
+      case 'relationship_bickering_couple':
+        initialRelationship = l10n.relationship_bickering_couple;
+        break;
+      case 'relationship_colleagues':
+        initialRelationship = l10n.relationship_colleagues;
+        break;
+      case '':
+      case 'relationship_none':
+      case 'relationship_other':
+        initialRelationship = '';
+        break;
+      default:
+        initialRelationship = raw;
+    }
+    initialRelationship = initialRelationship
+        .replaceAll('{{玩家名字}}', _playerNickname)
+        .replaceAll('(玩家名字)', _playerNickname)
+        .replaceAll('（玩家名字）', _playerNickname);
+    return [
+      if (initialRelationship.isNotEmpty)
+        '創作者設定的初始身分關係：$initialRelationship',
+      if (initialRelationship.isEmpty)
+        '創作者未另外指定初始關係；依核心人設、世界觀、開場及本聊天室已發生事件判斷，不預設為初識。',
+      '好感數值對應階段（僅供情感參考）：$affectionStage',
+      '好感階段不是身分或相識時間，不得因此把既有夫妻、親屬、朋友等關係改成陌生人，也不得僅因高分建立戀愛關係。',
+      '初始關係是故事起點；後續關係變化須承接本聊天室已確立的事件，不得重置故事進度。',
+    ].join('\n');
+  }
+
   // ✨ 總裁級專屬：動態人設字串產生器
   String _buildDynamicUserProfileString() {
     // 防呆機制：如果沒有讀到，給個最基本的預設值
@@ -689,7 +732,7 @@ class _ChatPageState extends State<ChatPage> {
 - 性別：${profile['gender'] ?? '未填寫'}
 - 生日：${profile['birthday'] ?? '未填寫'}
 
-說明：當前為基礎相識時空，主角尚未展露更多具體的職業或外貌細節。請你以自然的語調與她交流，並在對話中逐步探索。
+說明：以上僅為玩家已提供的基本資料；未填寫的職業或外貌細節保持未知。資料完整程度不代表相識時間、親密程度或故事進度；請依角色設定與本聊天室已確立的關係及事件自然互動。
 """;
     }
   }
@@ -3672,7 +3715,7 @@ class _ChatPageState extends State<ChatPage> {
           'timestamp',
           descending: true,
         )
-            .limit(16)
+            .limit(32)
             .get()
             .timeout(
           const Duration(seconds: 10),
@@ -3977,7 +4020,7 @@ class _ChatPageState extends State<ChatPage> {
           ),
 
           'gender': _currentCharacter.gender,
-          'relationship': dynamicRelationship,
+          'relationship': _buildAiRelationshipContext(l10n, dynamicRelationship),
 
           'socialRelationships': _currentCharacter.relationships != null
               ? jsonEncode(
@@ -5772,7 +5815,7 @@ class _ChatPageState extends State<ChatPage> {
       if (_messagesCollection != null) {
         final historySnapshot = await _messagesCollection!
             .orderBy('timestamp', descending: true)
-            .limit(16)
+            .limit(32)
             .get();
 
         var docsList = historySnapshot.docs.reversed.toList();
@@ -6071,7 +6114,7 @@ class _ChatPageState extends State<ChatPage> {
           ),
 
           "gender": _currentCharacter.gender,
-          "relationship": dynamicRelationship,
+          "relationship": _buildAiRelationshipContext(l10n, dynamicRelationship),
 
           // 這是角色與其他角色的關係，不是 socialInteraction
           "socialRelationships": _currentCharacter.relationships != null
@@ -6369,6 +6412,7 @@ class _ChatPageState extends State<ChatPage> {
               _isLoading = false;
             });
           }
+          _scheduleStorySummary();
         } else {
           generatingRooms.remove(_roomLockKey);
           if (mounted) {
@@ -6984,7 +7028,19 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  int _turnsSinceStorySummary = 0;
+  bool _storySummaryInFlight = false;
+
+  void _scheduleStorySummary() {
+    if (widget.isTestMode) return;
+    _turnsSinceStorySummary++;
+    if (_turnsSinceStorySummary >= 5) {
+      unawaited(_triggerStorySummary());
+    }
+  }
+
   Future<void> _triggerStorySummary() async {
+    if (widget.isTestMode || _storySummaryInFlight) return;
     final user = FirebaseAuth.instance.currentUser;
 
     // 確保使用者及訊息資料庫已準備完成
@@ -7008,14 +7064,16 @@ class _ChatPageState extends State<ChatPage> {
       return;
     }
 
+    _storySummaryInFlight = true;
+    final turnsAtStart = _turnsSinceStorySummary;
     try {
-      // 只讀取目前聊天室的最後 10 則訊息
+      // 定期以最近 40 則訊息更新摘要，與近期歷史重疊以免漏接。
       final querySnapshot = await _messagesCollection!
           .orderBy(
         'timestamp',
         descending: true,
       )
-          .limit(10)
+          .limit(40)
           .get();
 
       // 對話不足 4 則時不產生摘要
@@ -7052,6 +7110,7 @@ class _ChatPageState extends State<ChatPage> {
 
         recentHistory.add({
           'role': sender == 'user' ? 'user' : 'assistant',
+          'id': doc.id,
           'content': text,
         });
       }
@@ -7075,8 +7134,7 @@ class _ChatPageState extends State<ChatPage> {
       );
 
       // 保留非阻塞處理，但正確檢查 HTTP 狀態
-      http
-          .post(
+      final response = await http.post(
         url,
         headers: {
           'Authorization': 'Bearer $idToken',
@@ -7087,33 +7145,30 @@ class _ChatPageState extends State<ChatPage> {
           'characterName': _currentCharacter.name,
           'playerName': _playerNickname,
           'chatHistory': recentHistory,
+          'completedTurns': turnsAtStart,
+          'sourceThroughMillis': docs.isNotEmpty &&
+                  (docs.last.data() as Map<String, dynamic>)['timestamp'] is Timestamp
+              ? ((docs.last.data() as Map<String, dynamic>)['timestamp'] as Timestamp)
+                  .millisecondsSinceEpoch
+              : 0,
 
           // 關鍵：依聊天室分開儲存
           'sessionId': summarySessionId,
         }),
-      )
-          .then((response) {
-        if (response.statusCode >= 200 && response.statusCode < 300) {
-          debugPrint(
-            '📖 劇情摘要任務完成：'
-                '$summarySessionId',
-          );
-        } else {
-          debugPrint(
-            '⚠️ 劇情摘要任務失敗：'
-                '${response.statusCode} '
-                '${response.body}',
-          );
-        }
-      }).catchError((error) {
-        debugPrint(
-          '⚠️ 劇情摘要連線失敗：$error',
-        );
-      });
+      ).timeout(const Duration(seconds: 130));
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        _turnsSinceStorySummary =
+            max(0, _turnsSinceStorySummary - turnsAtStart);
+        debugPrint('📖 劇情摘要已更新：$summarySessionId');
+      } else {
+        debugPrint('⚠️ 劇情摘要失敗：${response.statusCode}');
+      }
     } catch (e) {
       debugPrint(
         '⚠️ 劇情摘要發送失敗：$e',
       );
+    } finally {
+      _storySummaryInFlight = false;
     }
   }
 

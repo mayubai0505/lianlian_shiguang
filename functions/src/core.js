@@ -1,3 +1,4 @@
+const {loadIndexedCandidates, filterValidMemoryEvidence} = require('./memory/search_index');
 const {createMemoryJobHandler} = require('./memory/job_handler');
 const {createChatMessageNotificationHandler,createMailboxNotificationHandler,createSyncNotificationBadgeHandler} = require('./notifications/player_message_handlers');
 const {createLegacyMemoryExtractionHandler} = require('./memory/legacy_extraction_handler');
@@ -2168,7 +2169,7 @@ const cancellationRef =
 
                 return history
                     .slice(-limit)
-                    .map((msg) => String(msg?.content || ""))
+                    .map((msg) => String(msg?.content || msg?.text || ""))
                     .join("\n")
                     .slice(-6000);
             }
@@ -3277,7 +3278,7 @@ let relationContext = "";
                                                                                                 let sharedMemoryCandidates = [];
 
                                                                                                 try {
-                                                                                                    const uid = body.userId || body.uid || userId;
+                                                                                                    const uid = userId;
                                                                                                     const charId = body.characterId || body.botId || characterProfile.id;
                                                                                                     const requestedProfileId = String(playerProfileId || body.playerProfileId || "").trim();
                                                                                                     const safeSessionId = String(sessionId || "").trim();
@@ -3332,9 +3333,9 @@ let relationContext = "";
                                                                                                             .collection("memories");
 
                                                                                                         const [profileSnapshot, characterSnapshot, sessionSnapshot] = await Promise.all([
-                                                                                                            profileMemoriesRef.orderBy("timestamp", "desc").limit(["immersive", "resonance"].includes(chatMode) ? 40 : 20).get(),
-                                                                                                            characterMemoriesRef.orderBy("timestamp", "desc").limit(["immersive", "resonance"].includes(chatMode) ? 40 : 20).get(),
-                                                                                                            sessionMemoriesRef.orderBy("timestamp", "desc").limit(["immersive", "resonance"].includes(chatMode) ? 40 : 20).get(),
+                                                                                                            loadIndexedCandidates({db, memoriesRef: profileMemoriesRef, query: String(userMessage || "") + "\n" + (Array.isArray(chatHistory) ? chatHistory.slice(-4).map(msg => String(msg.content || msg.text || "")).join("\n") : "")}),
+                                                                                                            loadIndexedCandidates({db, memoriesRef: characterMemoriesRef, query: String(userMessage || "") + "\n" + (Array.isArray(chatHistory) ? chatHistory.slice(-4).map(msg => String(msg.content || msg.text || "")).join("\n") : "")}),
+                                                                                                            loadIndexedCandidates({db, memoriesRef: sessionMemoriesRef, query: String(userMessage || "") + "\n" + (Array.isArray(chatHistory) ? chatHistory.slice(-4).map(msg => String(msg.content || msg.text || "")).join("\n") : "")}),
                                                                                                         ]);
 
                                                                                                         const appendScopedMemories = (snapshot, scope) => {
@@ -3354,6 +3355,11 @@ let relationContext = "";
                                                                                                                     active: memory.active !== false,
                                                                                                                     confidence: Number(memory.confidence || 0),
                                                                                                                     timestamp: memory.timestamp || null,
+                                                                                                                    sourceTimestamp: memory.sourceTimestamp || null,
+                                                                                                                    sourceMessageId: memory.sourceMessageId || "",
+                                                                                                                    sourceSessionId: memory.sourceSessionId || "",
+                                                                                                                    sourceAppId: memory.sourceAppId || "",
+                                                                                                                    sourceHash: memory.sourceHash || "",
                                                                                                                     important: memory.important === true,
                                                                                                                 });
                                                                                                             });
@@ -3403,12 +3409,12 @@ let relationContext = "";
                                                                                                 const selectRelevantCandidates = createRagSelector({chatMode, finalUserMessage});
 
                                                                                                 const retrievalQuery = [
-                                                                                                    String(finalUserMessage || ""),
+                                                                                                    String(userMessage || ""),
                                                                                                     ...(Array.isArray(chatHistory)
                                                                                                         ? chatHistory
                                                                                                             .slice(-4)
                                                                                                             .filter((msg) => !(["immersive", "resonance"].includes(chatMode)) || msg?.role !== "assistant" || !isRoleplayInternalLeak(msg?.content || msg?.text || ""))
-                                                                                                            .map((msg) => String(msg?.content || ""))
+                                                                                                            .map((msg) => String(msg?.content || msg?.text || ""))
                                                                                                         : []),
                                                                                                 ]
                                                                                                     .join("\n")
@@ -3436,12 +3442,7 @@ let relationContext = "";
 
                                                                                                 // 沉浸與共鳴模式：優先保留已確認的世界線里程碑與關係狀態；
                                                                                                 // 其餘仍按玩家當前話題檢索，避免無關往事反覆出場。
-                                                                                                const retrievedSharedMemories = (() => {
-                                                                                                    if (!["immersive", "resonance"].includes(chatMode)) {
-                                                                                                        return selectRelevantCandidates(sharedMemoryCandidates, retrievalQuery,
-                                                                                                            chatMode === "resonance" ? 4 : 3,
-                                                                                                            (item) => `${item?.scope || ""} ${item?.title || ""} ${item?.subtitle || ""} ${item?.content || ""}`);
-                                                                                                    }
+                                                                                                let retrievedSharedMemories = (() => {
                                                                                                     const stable = sharedMemoryCandidates.filter((item) =>
                                                                                                         item?.active !== false && item?.scope === "session" &&
                                                                                                         (item?.factKey === "relationship.status" ||
@@ -3462,6 +3463,13 @@ let relationContext = "";
                                                                                                     }).slice(0, 5);
                                                                                                 })();
 
+                                                                                                try {
+                                                                                                    retrievedSharedMemories = await filterValidMemoryEvidence({db, items: retrievedSharedMemories});
+                                                                                                } catch (evidenceError) {
+                                                                                                    // Fail closed for evidence-backed memories if source verification fails.
+                                                                                                    retrievedSharedMemories = retrievedSharedMemories.filter(item => !item.sourceMessageId);
+                                                                                                    console.warn("Memory evidence validation failed:", evidenceError?.code || evidenceError?.message);
+                                                                                                }
                                                                                                 if (retrievedSharedMemories.length > 0) {
                                                                                                     sharedMemoriesText =
                                                                                                         "\n【本輪可能相關的背景記憶｜不是本輪必須提及】\n" +
@@ -3539,19 +3547,42 @@ let relationContext = "";
         // 同聊天室既有故事摘要：只讀取玩家自己的摘要，與世界線分離。
         // 既有 generateStorySummary 為文學摘要，僅作輔助脈絡，不可取代 canonical facts。
         let compactSessionStorySummary = "";
-        if (["immersive", "resonance"].includes(chatMode)) {
+        if (["gemini", "daily", "story", "immersive", "resonance"].includes(chatMode)) {
             try {
-                const summaryUid = String(body.userId || body.uid || userId || "").trim();
+                const summaryUid = String(userId || "").trim();
                 const summaryCharId = String(body.characterId || body.botId || characterProfile.id || "").trim();
                 const summarySessionId = String(sessionId || "").trim().replace(/[\/\\#?\[\]\s]/g, "_").slice(0, 150);
                 if (summaryUid && summaryCharId && summarySessionId) {
+                    const recentMemorySnapshot = await db.collection("users").doc(summaryUid)
+                        .collection("friendships").doc(summaryCharId)
+                        .collection("chat_sessions").doc(summarySessionId)
+                        .collection("memory_context").doc("recent").get();
+                    const recentFacts = String(recentMemorySnapshot.data()?.factualContent || "").trim();
                     const summarySnapshot = await db.collection("users").doc(summaryUid)
                         .collection("friendships").doc(summaryCharId)
                         .collection("chat_sessions").doc(summarySessionId)
-                        .collection("summaries").orderBy("createdAt", "desc").limit(2).get();
-                    const summaries = summarySnapshot.docs.map(doc => String(doc.data()?.content || "").trim())
-                        .filter(content => content && !isRoleplayInternalLeak(content));
-                    compactSessionStorySummary = summaries.reverse().join("；").slice(0, 480);
+                        .collection("summaries").orderBy("createdAt", "desc").limit(8).get();
+                    const summaries = summarySnapshot.docs.map(doc => {
+                        const data = doc.data() || {};
+                        // 玩家編輯摘要後以其編輯內容為準，不使用原先隱藏事實。
+                        const facts = !data.updatedAt && !data.lastEditedAt ? data.factualContent : "";
+                        const content = String(facts || data.content || "").trim();
+                        return content && !isRoleplayInternalLeak(content)
+                            ? `${facts ? "[事件紀錄]" : "[文學摘要／玩家編輯內容，僅供參考]"} ${content}` : "";
+                    }).filter(Boolean);
+                    // 優先保留較新的完整紀錄，不把最新進度截掉。
+                    const selected = [];
+                    let used = 0;
+                    for (const summary of summaries) {
+                        if (used + summary.length > 10000) break;
+                        selected.push(summary);
+                        used += summary.length;
+                    }
+                    compactSessionStorySummary = selected.reverse().join("\n\n");
+                    if (recentFacts && !isRoleplayInternalLeak(recentFacts)) {
+                        compactSessionStorySummary = compactSessionStorySummary.slice(-6000) +
+                            "\n\n[最新滾動事件紀錄；較新明確對話優先]\n" + recentFacts.slice(0, 4000);
+                    }
                 }
             } catch (summaryReadError) {
                 console.warn("⚠️ 聊天室摘要讀取失敗，保留原記憶流程:", summaryReadError?.code || summaryReadError?.message);
@@ -4281,7 +4312,7 @@ systemPrompt += `
         }
 
         if (compactSessionStorySummary) {
-            systemPrompt += `\n【同聊天室近期故事摘要（輔助脈絡，非已核實世界線事實）】\n${compactSessionStorySummary}\n如摘要與玩家最新明確敘述或已確認狀態矛盾，以最新且可確認的內容為準；不可把摘要中的文學修辭當作已發生事件。`;
+            systemPrompt += `\n【同聊天室事件與摘要（由舊至新；壓縮紀錄可能有誤）】\n${compactSessionStorySummary}\n如摘要與玩家最新明確敘述或已確認狀態矛盾，以最新且可確認的內容為準；不可把摘要中的文學修辭當作已發生事件；提議、承諾、已完成事件必須區分。較新明確事件可更新舊狀態，沒有後續確認的約定不得當作已完成。這些資料只維持故事連續，不必每輪主動提起。`;
         }
 
         // 🧠 記憶自然化：記得 ≠ 這一輪一定要拿出來說。
@@ -4429,21 +4460,10 @@ ${persistentPreferenceDirective}
                        }
                    });
                           // 🧠 根據模式壓縮聊天紀錄，確保話題連貫性 (1 輪 = User + AI 共 2 條)
-                          const HISTORY_LIMIT =
-                              chatMode === "resonance" ? 16 : // 平衡版：最近 8 輪
-                              chatMode === "immersive" ? 16 : // 平衡版：最近 8 輪
-                              chatMode === "story"     ? 8  : // 最近 4 輪 + RAG
-                              chatMode === "daily"     ? 6  :
-                              chatMode === "gemini"    ? 4  :
-                              6;
-
+                          const HISTORY_LIMIT = 32;
                           const HISTORY_TEXT_LIMIT =
-                              chatMode === "resonance" ? 1100 :
-                              chatMode === "immersive" ? 1100 :
-                              chatMode === "story"     ? 650 :
-                              chatMode === "daily"     ? 300 :
-                              chatMode === "gemini"    ? 160 :
-                              400;
+                              ["immersive", "resonance"].includes(chatMode) ? 6000 :
+                              chatMode === "story" ? 4000 : 1600;
 
                           const maxTokens =
                               chatMode === "resonance" ? 3200 :
@@ -4494,6 +4514,13 @@ ${persistentPreferenceDirective}
                                       msg.content.trim() !== "" &&
                                       !(["immersive", "resonance"].includes(chatMode) && msg.role === "assistant" && isRoleplayInternalLeak(msg.content))
                               );
+
+                          const historyBudget = ["immersive", "resonance"].includes(chatMode) ? 32000 :
+                              chatMode === "story" ? 24000 : 16000;
+                          let historyCharacters = trimmedHistory.reduce((n, msg) => n + msg.content.length, 0);
+                          while (trimmedHistory.length > 2 && historyCharacters > historyBudget) {
+                              historyCharacters -= trimmedHistory.shift().content.length;
+                          }
 
                                       const requestDocRef = await userDocRef.collection("aiRequests").add({
                                           status: "processing", createdAt: FieldValue.serverTimestamp(), chatMode: chatMode,
@@ -7333,7 +7360,7 @@ const sessionData =
                 !isTestChat &&
                 !isQixiOpeningRequest &&
                 finalCharacterId &&
-                originalUserMessage
+                (originalUserMessage || String(cleanDisplayText || "").trim())
             ) {
                 const memoryJobRef = db
                     .collection("artifacts")
@@ -7349,7 +7376,10 @@ const sessionData =
                         "對方",
 
                     userMessage:
-                        originalUserMessage.slice(0, 2000),
+                        originalUserMessage.slice(0, 6000),
+                    assistantMessage: String(cleanDisplayText || "").slice(0, 6000),
+                    recentHistory: normalizedHistory.slice(-6).map(msg => ({role: msg.role, content: String(msg.content || "").slice(0, 1800)})),
+                    userMessageId: String(userMessageId || ""),
                     chatMode: String(chatMode || ""),
 
                     sessionId,
@@ -7672,6 +7702,7 @@ exports.processMemoryJob = onDocumentCreated(
         region: REGION,
         document:
             "artifacts/{appId}/memory_jobs/{jobId}",
+        retry: true,
 
         memory: "512MiB",
         timeoutSeconds: 120,
@@ -7683,7 +7714,7 @@ exports.processMemoryJob = onDocumentCreated(
         ],
     },
     createMemoryJobHandler({
-        FieldValue,
+        FieldValue, db,
         savePlayerMemoryIfNeeded: (...args) => savePlayerMemoryIfNeeded(...args)
     })
 );
@@ -10480,3 +10511,9 @@ exports.manageCreatorSupportMessageUs = onCall({region:"us-central1",timeoutSeco
 exports.getCreatorSupportImageUs = onCall({region:"us-central1",timeoutSeconds:45,memory:'512MiB'},async request=>{
  return getCreatorSupportImageHandler(request);
 });;
+
+// Google Play verified, idempotent fulfillment.
+exports.fulfillGooglePlayPurchase = require("./payments/google_play")
+  .createGooglePlayPurchaseFunction({onCall, HttpsError, db, FieldValue});
+exports.fulfillApplePurchase = require('./payments/apple_iap')
+  .createApplePurchaseFunction({onCall,HttpsError,db,FieldValue});

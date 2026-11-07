@@ -1,0 +1,1067 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+  
+  // =========================
+// 管理員讀取所有私人角色
+// 支援 collectionGroup('private_characters')
+// =========================
+match /{documentPath=**}/private_characters/{characterId} {
+  allow read: if isAdmin();
+}
+  
+   match /artifacts/{appId}/voice_bank/{voiceDocId} {
+      allow read: if request.auth != null &&
+        request.auth.uid == "B71k2kyooubYsOtIO1nkiBwyBXt2";
+
+      allow write: if false;
+    }
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && request.auth.uid == 'B71k2kyooubYsOtIO1nkiBwyBXt2';
+    }
+
+    function isOfficialCreator() {
+      return isAdmin();
+    }
+
+    function officialFlagIsSafe() {
+      return !request.resource.data.keys().hasAny(['isOfficial'])
+        || request.resource.data.isOfficial == false
+        || isOfficialCreator();
+    }
+
+    function officialFlagIsFalseOrAbsent() {
+      return !request.resource.data.keys().hasAny(['isOfficial'])
+        || request.resource.data.isOfficial == false;
+    }
+
+    function ownerCreate() {
+      return signedIn()
+        && request.resource.data.createdBy == request.auth.uid;
+    }
+
+    function ownerExisting() {
+      return signedIn()
+        && resource.data.createdBy == request.auth.uid;
+    }
+
+    function ownerUnchanged() {
+      return request.resource.data.createdBy == resource.data.createdBy;
+    }
+
+    function onlyPlayCountIncrement() {
+      return signedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['playCount'])
+        && request.resource.data.playCount == resource.data.playCount + 1;
+    }
+
+    function profileLinkEntryIsSafe(link) {
+      return link is map
+        && link.keys().hasOnly(['name', 'url'])
+        && link.name is string
+        && link.url is string
+        && link.name.size() <= 40
+        && link.url.size() <= 500;
+    }
+
+    function profileLinksAreSafe() {
+      return !request.resource.data.keys().hasAny(['profileLinks'])
+        || (
+          request.resource.data.profileLinks is list
+          && request.resource.data.profileLinks.size() <= 10
+          && (
+            request.resource.data.profileLinks.size() < 1
+            || profileLinkEntryIsSafe(request.resource.data.profileLinks[0])
+          )
+          && (
+            request.resource.data.profileLinks.size() < 2
+            || profileLinkEntryIsSafe(request.resource.data.profileLinks[1])
+          )
+          && (
+            request.resource.data.profileLinks.size() < 3
+            || profileLinkEntryIsSafe(request.resource.data.profileLinks[2])
+          )
+          && (
+            request.resource.data.profileLinks.size() < 4
+            || profileLinkEntryIsSafe(request.resource.data.profileLinks[3])
+          )
+          && (
+            request.resource.data.profileLinks.size() < 5
+            || profileLinkEntryIsSafe(request.resource.data.profileLinks[4])
+          )
+          && (
+            request.resource.data.profileLinks.size() < 6
+            || profileLinkEntryIsSafe(request.resource.data.profileLinks[5])
+          )
+          && (
+            request.resource.data.profileLinks.size() < 7
+            || profileLinkEntryIsSafe(request.resource.data.profileLinks[6])
+          )
+          && (
+            request.resource.data.profileLinks.size() < 8
+            || profileLinkEntryIsSafe(request.resource.data.profileLinks[7])
+          )
+          && (
+            request.resource.data.profileLinks.size() < 9
+            || profileLinkEntryIsSafe(request.resource.data.profileLinks[8])
+          )
+          && (
+            request.resource.data.profileLinks.size() < 10
+            || profileLinkEntryIsSafe(request.resource.data.profileLinks[9])
+          )
+        );
+    }
+
+    // 只有受信任的後端 Admin SDK 能授予合作創作者資格。
+    // 玩家本人修改個人資料時，不能改動下列認證、簽約及授權欄位。
+    function creatorProtectedFields() {
+      return [
+        'creatorStatus', 'creatorVerified', 'creatorDashboardEnabled',
+        'creatorBadgeEnabled', 'creatorCanUseStudio', 'creatorPermissions',
+        'creatorApprovedAt', 'creatorApprovedBy',
+        'creatorContractSentAt', 'creatorContractSignedAt',
+        'creatorActivatedAt', 'creatorActivatedBy',
+        'creatorRevokedAt', 'creatorRevokedBy', 'creatorRevokedReason',
+        'creatorSuspendedAt', 'creatorSuspendedBy',
+        'creatorAdminNotes', 'creatorCertification',
+        'isCertifiedCreator', 'isVerifiedCreator'
+      ];
+    }
+
+    // 內測標記僅可由管理員變更；玩家本人不能自行更改統計分類或審核資訊。
+    function testerProtectedFields() {
+      return [
+        'analyticsExcludeFromEconomy',
+        'analyticsTesterUpdatedAt',
+        'analyticsTesterUpdatedBy'
+      ];
+    }
+
+    function adminTesterFlagUpdateSafe() {
+      return isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(testerProtectedFields())
+        && request.resource.data.analyticsExcludeFromEconomy is bool
+        && request.resource.data.analyticsTesterUpdatedAt == request.time
+        && request.resource.data.analyticsTesterUpdatedBy == request.auth.uid;
+    }
+
+    // 購買資格與首購紀錄只由驗證過訂單的後端維護。
+    function purchaseProtectedFields() {
+      return ['purchaseHistory', 'totalSpent', 'isMonthlySubscribed',
+        'monthlySubEndDate', 'monthlyCardStatus', 'maxRegenerateCount'];
+    }
+
+    function initialPurchaseStateSafe() {
+      return request.resource.data.get('purchaseHistory', []) == []
+        && request.resource.data.get('totalSpent', 0) == 0
+        && request.resource.data.get('isMonthlySubscribed', false) == false
+        && request.resource.data.get('monthlySubEndDate', null) in [null, '']
+        && request.resource.data.get('monthlyCardStatus', '') in ['', 'inactive', 'expired', 'none', null];
+    }
+
+    function userUpdateIsSafe() {
+      return signedIn()
+        && !request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(purchaseProtectedFields())
+        && !request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(creatorProtectedFields())
+        && !request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(testerProtectedFields())
+        && profileLinksAreSafe()
+        && (
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['flowerPoints'])
+          || request.resource.data.flowerPoints == resource.data.flowerPoints
+          || (
+            (resource.data.flowerPoints - request.resource.data.flowerPoints) in [1, 3, 5, 7, 20]
+            && request.resource.data.flowerPoints >= 0
+          )
+        );
+    }
+    
+    function adminFlowerCompensationSafe() {
+  return isAdmin()
+    && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+      'flowerPoints'
+    ])
+    && (
+      request.resource.data.flowerPoints
+      - resource.data.flowerPoints
+    ) >= 0
+    && (
+      request.resource.data.flowerPoints
+      - resource.data.flowerPoints
+    ) <= 100;
+}
+
+    // 不允許客戶端自行建立創作者官方來信，亦不可將普通信件改成官方來信。
+    // Cloud Functions Admin SDK 不受 Firestore Rules 限制，可正常投遞。
+    function protectedMailboxType(data) {
+      return data.get('type', '') in ['creator_fan_mail', 'cs_reply'];
+    }
+
+    // 此檢查同時用在 mailbox 與 users 下方的遞迴規則，防止權限重疊繞過。
+    function ownerNestedWriteSafe() {
+      return request.method == 'delete'
+        || (request.method == 'create'
+          && !protectedMailboxType(request.resource.data))
+        || (request.method == 'update'
+          && !protectedMailboxType(request.resource.data)
+          && !protectedMailboxType(resource.data))
+        || (request.method == 'update'
+          && protectedMailboxType(resource.data)
+          && request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(['isRead', 'read'])
+          && request.resource.data.get('type', '') == resource.data.get('type', ''));
+    }
+
+    function safeExternalMailboxCreate(userId) {
+      return signedIn()
+        && userId != request.auth.uid
+        && request.resource.data.fromId == request.auth.uid
+        && request.resource.data.type in ['like', 'comment', 'mention']
+        && request.resource.data.isRead == false
+        && request.resource.data.keys().hasOnly([
+          'type',
+          'fromId',
+          'fromName',
+          'title',
+          'body',
+          'postId',
+          'commentId',
+          'createdAt',
+          'isRead',
+          'source'
+        ]);
+    }
+    
+    function safeFollowMailboxCreate(userId) {
+  return signedIn()
+    && userId != request.auth.uid
+    && request.resource.data.fromId == request.auth.uid
+    && request.resource.data.type == 'follow'
+    && request.resource.data.isRead == false
+    && request.resource.data.keys().hasOnly([
+      'type',
+      'title',
+      'body',
+      'fromId',
+      'fromName',
+      'createdAt',
+      'isRead'
+    ]);
+}
+
+    function safeMomentEngagementUpdate() {
+      return signedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'likedBy',
+          'likeCount',
+          'likesCount',
+          'commentCount',
+          'commentsCount',
+          'favoriteCount',
+          'favoritedBy',
+          'savedBy',
+          'saveCount',
+          'reportCount',
+          'reporters',
+          'reportReasons',
+          'updatedAt',
+          'lastCommentAt'
+        ]);
+    }
+
+    function canWritePublicCharacterPhoto(appId, characterId) {
+      return signedIn() && (
+        isAdmin()
+        || getAfter(/databases/$(database)/documents/artifacts/$(appId)/public_characters/$(characterId)).data.createdBy == request.auth.uid
+        || get(/databases/$(database)/documents/artifacts/$(appId)/public_characters/$(characterId)).data.createdBy == request.auth.uid
+      );
+    }
+
+    function canDeletePublicCharacterPhoto(appId, characterId) {
+      return signedIn() && (
+        isAdmin()
+        || get(/databases/$(database)/documents/artifacts/$(appId)/public_characters/$(characterId)).data.createdBy == request.auth.uid
+      );
+    }
+    // =========================
+// 遊玩指南
+// =========================
+match /app_content/help_guide {
+  allow read: if true;
+  allow write: if isAdmin();
+
+  match /translations/{languageCode} {
+    allow read: if true;
+    allow write: if isAdmin();
+  }
+}
+
+// =========================
+// App 版本更新設定
+// =========================
+match /app_config/{document} {
+  allow read: if true;
+  allow write: if isAdmin();
+}
+
+
+    // =========================
+    // 系統公告：根目錄版本
+    // =========================
+    match /announcements/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // =========================
+    // 系統推播 / 系統通知：根目錄版本
+    // =========================
+    match /system_notifications/{id} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+
+    // Google Play 全域訂單紀錄，只有可信任後端能寫入。
+    match /google_play_receipts/{receiptId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    match /google_play_orders/{orderId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    match /google_play_legacy_approvals/{orderId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // Apple 全域交易防重複與舊單核准，僅可信任後端能寫入。
+    match /apple_iap_receipts/{receiptId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    match /apple_iap_legacy_approvals/{transactionId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    match /iap_sandbox_testers/{userId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // =========================
+    // 玩家主資料
+    // =========================
+    match /users/{userId} {
+      allow read: if signedIn();
+
+      allow create: if isOwner(userId)
+        && initialPurchaseStateSafe()
+        && request.resource.data.flowerPoints == 50
+        && !request.resource.data.keys().hasAny(creatorProtectedFields())
+        && !request.resource.data.keys().hasAny(testerProtectedFields())
+        && profileLinksAreSafe();
+
+      allow update: if
+    adminFlowerCompensationSafe()
+    || adminTesterFlagUpdateSafe()
+    || (
+      isOwner(userId)
+      && userUpdateIsSafe()
+    );
+
+      allow delete: if isOwner(userId);
+      
+      match /flower_logs/{logId} {
+  allow read: if isOwner(userId);
+
+  allow create: if isOwner(userId)
+    || isAdmin();
+
+  allow update, delete: if isOwner(userId)
+    || isAdmin();
+}
+
+      // App 內信箱
+      match /mailbox/{mailId} {
+  allow read, delete: if isOwner(userId);
+
+  allow update: if isOwner(userId) && ownerNestedWriteSafe();
+
+  allow create: if isAdmin()
+    || (isOwner(userId) && ownerNestedWriteSafe())
+    || safeExternalMailboxCreate(userId)
+    || safeFollowMailboxCreate(userId);
+}
+
+      // App 通知列表
+      match /notifications/{notificationId} {
+        allow read, delete: if isOwner(userId);
+        allow update: if isOwner(userId);
+
+        allow create: if isOwner(userId)
+  || safeExternalMailboxCreate(userId)
+  || safeFollowMailboxCreate(userId);
+      }
+
+      // FCM token / 推播 token
+      match /fcmTokens/{tokenId} {
+        allow read, write: if isOwner(userId);
+      }
+
+// 玩家追蹤的創作者
+match /following/{creatorId} {
+  allow read, create, update, delete:
+    if isOwner(userId);
+}
+
+// 創作者的追蹤者名單
+match /followers/{followerId} {
+  allow read: if signedIn();
+
+  allow create: if signedIn()
+    && request.auth.uid == followerId
+    && request.resource.data.followerId == request.auth.uid;
+
+  allow delete: if signedIn()
+    && request.auth.uid == followerId;
+
+  allow update: if false;
+}
+
+      // 子集合至少一組 collection/document，避免 rules v2 的零長度遞迴
+      // 同時匹配 users/{userId}，繞過主文件的餘額與認證欄位限制。
+      match /{subcollection}/{nestedDoc}/{allPaths=**} {
+        allow read: if isOwner(userId);
+        // 注意：Firestore 重疊 match 以 OR 判斷，這裡必須同步防護官方信件。
+        allow create, update: if isOwner(userId) && ownerNestedWriteSafe();
+        allow delete: if isOwner(userId);
+      }
+    }
+
+    // =========================
+    // 實體禮盒收件地址
+    // =========================
+    match /shipping_addresses/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // =========================
+    // 作品集主區
+    // =========================
+    match /artifacts/{appId} {
+
+      match /announcements/{id} {
+        allow read: if true;
+        allow write: if isAdmin();
+      }
+
+      match /system_notifications/{id} {
+        allow read: if signedIn();
+        allow write: if isAdmin();
+      }
+
+      // =====================================================
+      // 開放世界：公開作品可讀；私人作品僅創作者本人與管理員可讀。
+      // 查詢私人工作室時應使用 createdBy == currentUser.uid。
+      // =====================================================
+      // 完整世界資料：只有作品擁有者和管理員可從用戶端讀取。公開頁只讀 public_worlds。
+      match /worlds/{worldId} {
+        allow get, list: if isAdmin() || ownerExisting();
+        allow create: if ownerCreate()
+          && request.resource.data.isPublic is bool
+          && request.resource.data.isDraft == false
+          && !request.resource.data.keys().hasAny(['publicPlayable']);
+        allow update: if ownerExisting() && ownerUnchanged()
+          && request.resource.data.isPublic is bool
+          && request.resource.data.isDraft == false
+          && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['publicPlayable']);
+        allow delete: if ownerExisting() || isAdmin();
+      }
+
+      // 後端投影的公開展示資料；禁止玩家端寫入，避免夾帶秘密與偽造資格。
+      match /public_worlds/{worldId} {
+        allow get, list: if true;
+        allow create, update, delete: if false;
+
+        // 世界公開介紹頁「時空迴音」；與角色的 echoes 完全獨立。
+        match /echoes/{echoId} {
+          allow read: if true;
+          allow create: if signedIn()
+            && exists(/databases/$(database)/documents/artifacts/$(appId)/public_worlds/$(worldId))
+            && request.resource.data.userId == request.auth.uid
+            && request.resource.data.authorId == request.auth.uid
+            && request.resource.data.content is string
+            && request.resource.data.content.size() > 0
+            && request.resource.data.content.size() <= 500
+            && request.resource.data.cardType in ['butterfly', 'flower', 'starry', 'planet']
+            && request.resource.data.likedBy == []
+            && request.resource.data.reporters == [];
+          // 僅可切換按讚或新增檢舉，不可藉由 update 偷改原文/作者。
+          allow update: if signedIn() && (
+            (
+              request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likedBy'])
+              && request.resource.data.likedBy is list
+              && request.resource.data.likedBy.size() <= 10000
+              && request.resource.data.likedBy.hasAll(resource.data.likedBy.removeAll([request.auth.uid]))
+              && request.resource.data.likedBy.hasOnly(resource.data.likedBy.concat([request.auth.uid]))
+            ) || (
+              request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reporters', 'reportReasons'])
+              && !(request.auth.uid in resource.data.reporters)
+              && request.resource.data.reporters.hasAll(resource.data.reporters.concat([request.auth.uid]))
+              && request.resource.data.reporters.size() == resource.data.reporters.size() + 1
+              && request.resource.data.reportReasons[request.auth.uid] in ['不當內容', '騷擾或攻擊', '垃圾訊息', '其他']
+            )
+          );
+          allow delete: if signedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+        }
+      }
+
+      // 邂逅動態分類只有管理員可以編輯。
+      match /discovery_categories/{categoryId} {
+        allow read: if true;
+        allow create, update, delete: if isAdmin();
+      }
+
+      // 世界觀私人試玩：房間由 Cloud Functions Admin SDK 建立及寫入。
+      // 玩家僅能讀自己的房間與訊息，不可直接偽造訊息或改成公開試玩。
+      match /world_chat_sessions/{sessionId} {
+        allow get, list: if signedIn()
+          && resource.data.userId == request.auth.uid;
+        allow create, update, delete: if false;
+
+        match /messages/{messageId} {
+          allow get, list: if signedIn()
+            && get(/databases/$(database)/documents/artifacts/$(appId)/world_chat_sessions/$(sessionId)).data.userId == request.auth.uid;
+          allow create, update, delete: if false;
+        }
+
+        // 世界觀 NPC 好感度：只有該世界聊天室的玩家可唯讀，寫入交給後端。
+        match /character_affinities/{npcId} {
+          allow get, list: if signedIn()
+            && get(/databases/$(database)/documents/artifacts/$(appId)/world_chat_sessions/$(sessionId)).data.userId == request.auth.uid;
+          allow create, update, delete: if false;
+        }
+      }
+
+      match /public_characters/{characterId} {
+        allow read: if true;
+
+        allow create: if isAdmin()
+          || (
+            ownerCreate()
+            && officialFlagIsSafe()
+          );
+
+        allow update: if (
+            ownerExisting()
+            && ownerUnchanged()
+            && officialFlagIsSafe()
+          )
+          || onlyPlayCountIncrement()
+          || isAdmin();
+
+        allow delete: if ownerExisting()
+          || isAdmin();
+
+  // =========================
+  // 創作者劇場
+  // =========================
+
+          match /scenes/{sceneId} {
+  // 所有人都可以讀創作者劇場
+  allow read: if true;
+
+  // 只有角色創作者本人或管理員可以建立
+  allow create: if signedIn() && (
+    isAdmin()
+    || get(
+      /databases/$(database)/documents/artifacts/$(appId)/public_characters/$(characterId)
+    ).data.createdBy == request.auth.uid
+  );
+
+  // 只有角色創作者本人或管理員可以修改、刪除
+  allow update, delete: if signedIn() && (
+    isAdmin()
+    || get(
+      /databases/$(database)/documents/artifacts/$(appId)/public_characters/$(characterId)
+    ).data.createdBy == request.auth.uid
+  );
+}
+
+        match /photos/{photoId} {
+          allow read: if true;
+
+          allow create, update:
+            if canWritePublicCharacterPhoto(appId, characterId);
+
+          allow delete:
+            if canDeletePublicCharacterPhoto(appId, characterId);
+        }
+
+        match /echoes/{echoId} {
+          allow read: if true;
+
+          allow create: if signedIn() && (
+            request.resource.data.createdBy == request.auth.uid
+            || request.resource.data.userId == request.auth.uid
+            || request.resource.data.authorId == request.auth.uid
+          );
+
+          allow update: if signedIn() && (
+            resource.data.createdBy == request.auth.uid
+            || resource.data.userId == request.auth.uid
+            || resource.data.authorId == request.auth.uid
+            || isAdmin()
+            || request.resource.data.diff(resource.data).affectedKeys()
+                .hasOnly(['reportCount', 'reporters', 'reportReasons'])
+          );
+
+          allow delete: if signedIn() && (
+            resource.data.createdBy == request.auth.uid
+            || resource.data.userId == request.auth.uid
+            || resource.data.authorId == request.auth.uid
+            || isAdmin()
+          );
+        }
+
+        match /likers/{likedUserId} {
+          allow read: if true;
+          allow create, delete: if isOwner(likedUserId);
+          allow update: if false;
+        }
+
+        match /lores/{loreId} {
+          allow read: if true;
+          allow write: if signedIn();
+        }
+
+        match /unique_encounters/{encounterUserId} {
+          allow read: if signedIn();
+          allow create: if isOwner(encounterUserId);
+          allow update, delete: if false;
+        }
+      }
+
+
+      // =========================
+      // 通用活動系統
+      // 玩家可讀目前活動設定；僅管理員可新增、修改、刪除。
+      // 子集合 tasks / milestones / shop_items 同樣套用。
+      // =========================
+      match /events/{eventId} {
+        allow read: if true;
+        allow write: if isAdmin();
+
+        match /{allPaths=**} {
+          allow read: if true;
+          allow write: if isAdmin();
+        }
+      }
+
+      // =========================
+      // 通用活動玩家進度
+      // 只能由 Cloud Functions / Admin SDK 寫入，
+      // 玩家端只讀自己的資料，避免自行改活動貨幣或任務進度。
+      // =========================
+      match /event_progress/{userId}/events/{eventId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow write: if false;
+
+        match /{allPaths=**} {
+          allow read: if isOwner(userId) || isAdmin();
+          allow write: if false;
+        }
+      }
+
+      match /voice_bank/{voiceDocId} {
+        allow read: if request.auth != null
+          && request.auth.uid == "B71k2kyooubYsOtIO1nkiBwyBXt2";
+
+        allow write: if false;
+      }
+
+      match /violation_characters/{characterId} {
+        allow read, write: if isAdmin();
+      }
+
+      // =========================
+      // 等待審核角色
+      // =========================
+      match /pending_characters/{characterId} {
+        allow read: if isAdmin()
+          || (
+            signedIn()
+            && resource.data.createdBy == request.auth.uid
+          );
+
+        allow create: if isAdmin()
+          || (
+            signedIn()
+            && request.resource.data.createdBy == request.auth.uid
+            && officialFlagIsFalseOrAbsent()
+          );
+
+        allow update: if isAdmin()
+          || (
+            signedIn()
+            && resource.data.createdBy == request.auth.uid
+            && request.resource.data.createdBy == resource.data.createdBy
+            && officialFlagIsFalseOrAbsent()
+          );
+
+        allow delete: if isAdmin()
+          || (
+            signedIn()
+            && resource.data.createdBy == request.auth.uid
+          );
+
+        match /photos/{photoId} {
+          allow read: if isAdmin()
+            || (
+              signedIn()
+              && get(
+                /databases/$(database)/documents/artifacts/$(appId)/pending_characters/$(characterId)
+              ).data.createdBy == request.auth.uid
+            );
+
+          allow create, update, delete: if isAdmin()
+            || (
+              signedIn()
+              && (
+                get(
+                  /databases/$(database)/documents/artifacts/$(appId)/pending_characters/$(characterId)
+                ).data.createdBy == request.auth.uid
+                ||
+                getAfter(
+                  /databases/$(database)/documents/artifacts/$(appId)/pending_characters/$(characterId)
+                ).data.createdBy == request.auth.uid
+              )
+            );
+        }
+
+        match /lores/{loreId} {
+          allow read, create, update, delete: if isAdmin()
+            || (
+              signedIn()
+              && get(
+                /databases/$(database)/documents/artifacts/$(appId)/pending_characters/$(characterId)
+              ).data.createdBy == request.auth.uid
+            );
+        }
+      }
+
+      match /users/{userId}/private_characters/{characterId} {
+
+  allow read: if isOwner(userId)
+    || isAdmin();
+
+  allow create: if (
+      isOwner(userId)
+      || isAdmin()
+  )
+  && officialFlagIsFalseOrAbsent();
+
+  allow update: if (
+      isOwner(userId)
+      || isAdmin()
+  )
+  && officialFlagIsFalseOrAbsent();
+
+  allow delete: if isOwner(userId)
+    || isAdmin();
+
+    match /scenes/{sceneId} {
+  allow read, create, update, delete: if isOwner(userId)
+    || isAdmin();
+}
+
+        // 私人角色的記憶碎片：只有該私人角色的擁有者可讀寫
+        match /lores/{loreId} {
+          allow read, create, update, delete: if isOwner(userId);
+        }
+
+        match /photos/{photoId} {
+          allow read, write: if isOwner(userId);
+        }
+      }
+
+      match /private_characters/{characterId} {
+        allow read: if ownerExisting()
+          || isAdmin();
+
+        allow create, update: if ownerCreate()
+          && officialFlagIsFalseOrAbsent();
+
+        allow delete: if ownerExisting()
+          || isAdmin();
+
+        match /photos/{photoId} {
+          allow read, write: if signedIn()
+            && (
+              isAdmin()
+              || get(/databases/$(database)/documents/artifacts/$(appId)/private_characters/$(characterId)).data.createdBy == request.auth.uid
+              || getAfter(/databases/$(database)/documents/artifacts/$(appId)/private_characters/$(characterId)).data.createdBy == request.auth.uid
+            );
+        }
+      }
+      
+      match /reports/{reportId} {
+
+  allow create: if request.auth != null
+
+    && request.resource.data.reporterId
+
+       == request.auth.uid;
+
+
+
+  allow read, update, delete: if isAdmin();
+
+}
+
+      match /draft_characters/{draftId} {
+        allow read: if signedIn()
+          && (
+            isAdmin()
+            || resource.data.createdBy == request.auth.uid
+            || resource.data.userId == request.auth.uid
+          );
+
+        allow create: if signedIn()
+          && (
+            request.resource.data.createdBy == request.auth.uid
+            || request.resource.data.userId == request.auth.uid
+          )
+          && officialFlagIsFalseOrAbsent();
+
+        allow update, delete: if signedIn()
+          && (
+            isAdmin()
+            || resource.data.createdBy == request.auth.uid
+            || resource.data.userId == request.auth.uid
+          );
+      }
+
+      match /moments/{momentId} {
+        allow read: if signedIn();
+
+        allow create: if signedIn()
+          && request.resource.data.createdBy == request.auth.uid;
+
+        allow update: if (
+          signedIn()
+          && (
+            resource.data.createdBy == request.auth.uid
+            || isAdmin()
+            || safeMomentEngagementUpdate()
+          )
+        );
+
+        allow delete: if signedIn()
+          && (
+            resource.data.createdBy == request.auth.uid
+            || isAdmin()
+          );
+
+        match /likes/{likeUserId} {
+          allow read: if signedIn();
+
+          allow create: if isOwner(likeUserId)
+            && request.resource.data.userId == request.auth.uid;
+
+          allow delete: if isOwner(likeUserId);
+
+          allow update: if false;
+        }
+
+        match /comments/{commentId} {
+          allow read: if signedIn();
+
+          allow create: if signedIn()
+            && request.resource.data.authorId == request.auth.uid;
+
+          allow update, delete: if signedIn()
+            && (
+              resource.data.authorId == request.auth.uid
+              || isAdmin()
+            );
+        }
+
+        match /{allPaths=**} {
+          allow read, write: if signedIn();
+        }
+      }
+
+      match /chat_sessions/{sessionId} {
+  allow create: if signedIn()
+    && request.resource.data.userId == request.auth.uid;
+
+  allow read, update, delete: if signedIn()
+    && resource.data.userId == request.auth.uid;
+
+  match /messages/{messageId} {
+    allow read, write: if signedIn();
+  }
+
+  // =========================
+  // 玩家自行創建劇場
+  // 只屬於這一間聊天室
+  // =========================
+  match /scenes/{sceneId} {
+    allow read, create, update, delete: if signedIn()
+      && get(
+        /databases/$(database)/documents/artifacts/$(appId)/chat_sessions/$(sessionId)
+      ).data.userId == request.auth.uid;
+  }
+}
+
+      match /reports/{reportId} {
+        allow create: if signedIn();
+        allow read, update, delete: if isAdmin();
+      }
+    }
+
+    match /chat_sessions/{sessionId} {
+  allow create: if signedIn()
+    && request.resource.data.userId == request.auth.uid;
+
+  allow read, update, delete: if signedIn()
+    && resource.data.userId == request.auth.uid;
+
+  match /messages/{messageId} {
+    allow read, write: if signedIn();
+  }
+
+  match /scenes/{sceneId} {
+    allow read, create, update, delete: if signedIn()
+      && get(
+        /databases/$(database)/documents/chat_sessions/$(sessionId)
+      ).data.userId == request.auth.uid;
+  }
+}
+    // 開放世界秘密：不公開讀取；與 worlds 分離，Cloud Functions Admin SDK 可讀。
+    match /world_secrets/{worldId} {
+      // Existing secret document: only its recorded owner (or admin) may read it.
+      // Missing secret document: allow the creator to receive a normal not-found result,
+      // rather than permission-denied. This does NOT give access to other creators' secrets.
+      allow get: if isAdmin() || (signedIn() && (
+        (resource != null && resource.data.createdBy == request.auth.uid)
+        || (resource == null && (
+          (exists(/databases/$(database)/documents/artifacts/lianlianshiguang/worlds/$(worldId))
+            && get(/databases/$(database)/documents/artifacts/lianlianshiguang/worlds/$(worldId)).data.createdBy == request.auth.uid)
+          || (exists(/databases/$(database)/documents/draft_worlds/$(worldId))
+            && get(/databases/$(database)/documents/draft_worlds/$(worldId)).data.createdBy == request.auth.uid)
+        ))
+      ));
+      allow list: if false;
+      allow create: if signedIn()
+        && request.resource.data.createdBy == request.auth.uid
+        && (
+          (existsAfter(/databases/$(database)/documents/artifacts/lianlianshiguang/worlds/$(worldId))
+            && getAfter(/databases/$(database)/documents/artifacts/lianlianshiguang/worlds/$(worldId)).data.createdBy == request.auth.uid)
+          || (existsAfter(/databases/$(database)/documents/draft_worlds/$(worldId))
+            && getAfter(/databases/$(database)/documents/draft_worlds/$(worldId)).data.createdBy == request.auth.uid)
+        )
+        && request.resource.data.keys().hasOnly(['createdBy', 'chapters', 'updatedAt'])
+        && request.resource.data.chapters is list
+        && request.resource.data.chapters.size() <= 12;
+      allow update: if signedIn()
+        && resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdBy == resource.data.createdBy
+        && request.resource.data.keys().hasOnly(['createdBy', 'chapters', 'updatedAt'])
+        && request.resource.data.chapters is list
+        && request.resource.data.chapters.size() <= 12;
+      allow delete: if isAdmin();
+    }
+
+    // 開放世界草稿放在根目錄 draft_worlds；僅建立者能讀寫。
+    match /draft_worlds/{draftId} {
+      allow get, list: if isAdmin()
+        || (signedIn() && resource.data.createdBy == request.auth.uid);
+
+      allow create: if ownerCreate()
+        && request.resource.data.isDraft == true
+        && request.resource.data.isPublic == false;
+
+      allow update: if ownerExisting()
+        && ownerUnchanged()
+        && request.resource.data.isDraft == true
+        && request.resource.data.isPublic == false;
+
+      allow delete: if ownerExisting() || isAdmin();
+    }
+
+    match /draft_characters/{draftId} {
+      allow read: if signedIn()
+        && (
+          isAdmin()
+          || resource.data.createdBy == request.auth.uid
+          || resource.data.userId == request.auth.uid
+        );
+
+      allow create: if signedIn()
+        && (
+          request.resource.data.createdBy == request.auth.uid
+          || request.resource.data.userId == request.auth.uid
+        )
+        && officialFlagIsFalseOrAbsent();
+
+      allow update, delete: if signedIn()
+        && (
+          isAdmin()
+          || resource.data.createdBy == request.auth.uid
+          || resource.data.userId == request.auth.uid
+        );
+    }
+
+    // 客服案件位於根目錄 /reports；玩家只能讀取自己的案件。
+    // 客服狀態、管理員回覆、補償與結案僅管理員可以改動。
+    match /reports/{reportId} {
+      allow create: if signedIn()
+        && (
+          request.resource.data.type != 'feedback'
+          || (
+            request.resource.data.reporterId == request.auth.uid
+            && request.resource.data.createdBy == request.auth.uid
+            && request.resource.data.status == 'pending'
+            && request.resource.data.adminReply == ''
+          )
+        );
+      allow get: if isAdmin()
+        || (signedIn() && resource.data.reporterId == request.auth.uid);
+      allow list: if isAdmin()
+        || (signedIn() && resource.data.reporterId == request.auth.uid);
+      allow update, delete: if isAdmin();
+    }
+    
+    match /moderationAlerts/{alertId} {
+      allow create: if signedIn();
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /playerIDs/{id} {
+      allow read: if signedIn();
+
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid;
+
+      allow update, delete: if signedIn()
+        && resource.data.uid == request.auth.uid;
+    }
+  }
+}

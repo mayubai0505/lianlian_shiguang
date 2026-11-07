@@ -75,6 +75,108 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
   String _error = '';
   String _worldCoverImage = '';
   String _selectedMode = 'story';
+  // 雲端依帳號與世界記住選擇；本機快取用於進入頁面的立即顯示。
+  static final Map<String, String> _worldModeCache = {};
+  static Future<void> _modeSaveQueue = Future<void>.value();
+  late final String _modePrefKey;
+  late final String? _modeOwnerUid;
+  late final Future<void> _modeRestoreFuture;
+  int _modeSelectionRevision = 0;
+  int _pendingModeCloudWrites = 0;
+
+  DocumentReference<Map<String, dynamic>>? get _modeCloudRef {
+    final uid = _modeOwnerUid;
+    if (uid == null) return null;
+    return FirebaseFirestore.instance.collection('users').doc(uid)
+        .collection('worldChatPreferences').doc(widget.worldId);
+  }
+
+  bool _canRestoreMode(int revision, {bool skipWhileSending = false}) =>
+      mounted && FirebaseAuth.instance.currentUser?.uid == _modeOwnerUid &&
+          revision == _modeSelectionRevision && _pendingModeCloudWrites == 0 &&
+          !(skipWhileSending && _sending);
+
+  void _cacheSelectedMode(String mode) {
+    final key = _modePrefKey;
+    _worldModeCache[key] = mode;
+    _modeSaveQueue = _modeSaveQueue.then<void>((_) async {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(key, mode);
+    }).catchError((Object error) {
+      debugPrint('世界觀模式本機快取失敗：$error');
+    });
+  }
+
+  Future<void> _restoreSelectedMode({bool skipWhileSending = false}) async {
+    final ref = _modeCloudRef;
+    if (ref == null) return;
+    final revision = _modeSelectionRevision;
+    String? localMode;
+    try {
+      await _modeSaveQueue;
+      final prefs = await SharedPreferences.getInstance();
+      localMode = prefs.getString(_modePrefKey);
+      if (_canRestoreMode(revision, skipWhileSending: skipWhileSending) &&
+          _modes.containsKey(localMode)) {
+        setState(() => _selectedMode = localMode!);
+      }
+    } catch (error) {
+      debugPrint('世界觀模式本機讀取失敗：$error');
+    }
+    try {
+      // 指定伺服器來源，避免另一台裝置沿用舊的 Firestore 本機快取。
+      final snapshot = await ref.get(const GetOptions(source: Source.server))
+          .timeout(const Duration(seconds: 5));
+      if (!_canRestoreMode(revision, skipWhileSending: skipWhileSending)) return;
+      String? cloudMode = snapshot.data()?['mode'] as String?;
+      if (!snapshot.exists && _modes.containsKey(localMode)) {
+        // 舊版本只有本機偏好：僅在雲端尚未建立時遷移，避免覆蓋別台的新選擇。
+        cloudMode = await FirebaseFirestore.instance.runTransaction<String?>((tx) async {
+          final latest = await tx.get(ref);
+          if (latest.exists) return latest.data()?['mode'] as String?;
+          if (!_canRestoreMode(revision, skipWhileSending: skipWhileSending)) return null;
+          tx.set(ref, {'mode': localMode, 'worldId': widget.worldId,
+            'updatedAt': FieldValue.serverTimestamp()});
+          return localMode;
+        }).timeout(const Duration(seconds: 5));
+      }
+      if (!_canRestoreMode(revision, skipWhileSending: skipWhileSending) ||
+          !_modes.containsKey(cloudMode)) return;
+      final restored = cloudMode!;
+      setState(() => _selectedMode = restored);
+      _cacheSelectedMode(restored);
+    } catch (error) {
+      // 離線仍可使用本機已選模式；不把本機舊值盲目覆蓋雲端。
+      debugPrint('世界觀模式雲端讀取略過：$error');
+    }
+  }
+
+  void _selectMode(String mode) {
+    if (!mounted || !_modes.containsKey(mode) ||
+        FirebaseAuth.instance.currentUser?.uid != _modeOwnerUid) return;
+    setState(() { _selectedMode = mode; _modeSelectionRevision++; });
+    final ref = _modeCloudRef;
+    if (ref == null) return;
+    _cacheSelectedMode(mode);
+    _pendingModeCloudWrites++;
+    // 交給 Firestore 排序／重試寫入，不讓離線等待阻塞模式顯示或聊天。
+    unawaited(ref.set({'mode': mode, 'worldId': widget.worldId,
+      'updatedAt': FieldValue.serverTimestamp()}, SetOptions(merge: true))
+        .then<void>((_) {}, onError: (Object error, StackTrace stack) {
+      debugPrint('世界觀模式雲端儲存失敗：$error');
+      if (mounted && FirebaseAuth.instance.currentUser?.uid == _modeOwnerUid) {
+        _showCenterNotice('模式已在本機保留，但跨裝置同步失敗，請連線後重新選擇一次。', isError: true);
+      }
+    }).whenComplete(() { _pendingModeCloudWrites--; }));
+  }
+
+  Future<void> _refreshModeOnResume() async {
+    await _modeRestoreFuture;
+    if (!mounted || _sending) return;
+    await _restoreSelectedMode(skipWhileSending: true);
+    if (mounted && !_sending) await _run('load', silent: true);
+  }
+
   OverlayEntry? _centerNotice;
   StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _messageSubscription;
   StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _flowerSubscription;
@@ -102,6 +204,11 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
   @override
   void initState() {
     super.initState();
+    _modeOwnerUid = FirebaseAuth.instance.currentUser?.uid;
+    _modePrefKey = 'world_chat_mode_${_modeOwnerUid ?? 'signed_out'}_${widget.worldId}';
+    final cachedMode = _worldModeCache[_modePrefKey];
+    if (_modes.containsKey(cachedMode)) _selectedMode = cachedMode!;
+    _modeRestoreFuture = _restoreSelectedMode();
     WidgetsBinding.instance.addObserver(this);
     _focus.addListener(_onInputFocusChanged);
     _restoreDraft();
@@ -210,7 +317,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed && !_sending && mounted) {
-      _run('load', silent: true);
+      unawaited(_refreshModeOnResume());
     }
   }
 
@@ -722,6 +829,9 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     }
     final requestIdAtStart = _pendingRequestId;
     try {
+      // 先恢復偏好，再送出聊天，避免冷啟動時誤用預設模式與費率。
+      await _modeRestoreFuture;
+      if (!mounted) return;
       final result = await _api.call({
         'action':action,'worldId':widget.worldId, if (widget.sessionId != null) 'sessionId':widget.sessionId,
         if(action=='send') 'message':message,
@@ -1268,7 +1378,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
               trailing: _selectedMode == entry.key
                   ? Icon(Icons.check, color: Theme.of(context).colorScheme.primary) : null,
               onTap: () {
-                setState(() => _selectedMode = entry.key);
+                _selectMode(entry.key);
                 Navigator.pop(sheetContext);
               },
             ),
@@ -2216,7 +2326,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
         flowerPoints: _flowerPoints,
         onFlowerTap: _openFlowerStore,
         modeId: _selectedMode,
-        onModeSelected: (id) => setState(() => _selectedMode = id),
+        onModeSelected: _selectMode,
         onBack: () => Navigator.of(context).maybePop(),
         onMenuTap: () => WorldChatSideMenu.show(
           context,

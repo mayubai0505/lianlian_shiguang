@@ -3,12 +3,14 @@ function createMemoryExtractor({callAiWithRetry}) {
 async function extractPlayerMemory({
   userMessage,
   playerName,
+  recentHistory = [],
+  assistantMessage = "",
   chatMode = "",
   abortController,
 }) {
   const cleanMessage = String(userMessage || "").trim();
 
-  if (!cleanMessage) {
+  if (!cleanMessage && !String(assistantMessage || "").trim()) {
     return {
       shouldRemember: false,
       memory: "",
@@ -19,9 +21,10 @@ async function extractPlayerMemory({
 
   // 系統續寫指令、圖片失敗提示等內容不做記憶分析
   if (
+    !String(assistantMessage || "").trim() && (
     cleanMessage.startsWith("【續寫指令】") ||
     cleanMessage.startsWith("【系統事件】") ||
-    cleanMessage.startsWith("[玩家傳來")
+    cleanMessage.startsWith("[玩家傳來"))
   ) {
     return {
       shouldRemember: false,
@@ -31,12 +34,15 @@ async function extractPlayerMemory({
     };
   }
 
+  const contextText = (Array.isArray(recentHistory) ? recentHistory : []).slice(-6)
+    .map(msg => `${msg.role === 'assistant' ? '角色' : '玩家'}：${String(msg.content || msg.text || '').slice(0, 1800)}`).join('\n');
+  const evidenceInput = `需要記憶的人名：${playerName || "對方"}\n【前文，僅供指涉理解】\n${contextText}\n【玩家本輪訊息】\n${cleanMessage}\n【角色本輪回覆】\n${String(assistantMessage || '').slice(0, 6000)}`;
   const memorySystemPrompt = `
 你是「玩家長期記憶提取器」。
 ${["immersive", "resonance"].includes(chatMode) ? "【沉浸／共鳴模式補充】玩家明確敘述已發生的婚姻、關係變更、重要約定、時間進展、修為境界、重要 NPC、重大事件或長期情感關係中的重要承諾，屬於目前聊天室世界線可保存的劇情事實，優先使用 session 範圍與 relationship.status、relationship.event.*、important_event.* 或 worldline.event.*。僅保存玩家明確表示已發生或已確定的事件；不得把願望、假設、AI 未經確認的台詞當成事實，切勿寫入跨角色 profile。" : ""}
 
 你的工作不是聊天，也不能回應玩家。
-你只需要判斷玩家最新一句話中，是否包含值得未來持續記住的個人資訊。
+你需要提取本輪新出現或被明確更新的重要事實。前文只供理解「好」「那個約定」等指涉，不重複提取無關舊事。
 
 【應該記住】
 1. 穩定偏好：
@@ -58,7 +64,7 @@ ${["immersive", "resonance"].includes(chatMode) ? "【沉浸／共鳴模式補�
 1. 純粹當下狀態：
    - 今天很熱、我現在好睏、剛剛吃了飯。
 
-2. 普通劇情台詞或角色扮演內容（沉浸模式中，玩家明確確認的重大世界線事件例外）。
+2. 無長期意義的普通劇情。各模式中已明確成立的重要事件、約定、物品去向、關係變化可存session。
 
 3. 不確定、假設、玩笑、反問句。
 
@@ -67,12 +73,16 @@ ${["immersive", "resonance"].includes(chatMode) ? "【沉浸／共鳴模式補�
 5. 玩家沒有明確說出的資訊。
 
 【重要規則】
-- 只能提取玩家明確表達的事實。
+- 玩家自身事實必須由玩家明確表達，不得從角色回覆臆測玩家的偏好、身體狀態、身分、動作或同意。
+- 可保存角色自己明確說出的承諾或已敘述的自身行動，但只存session並保留來源。提議不等於雙方約定，承諾不等於已完成；玩家明確接受後才記為雙方約定。
+- 每項必須附evidence（引用本輪原文的連續片段，一般至少2字；玩家只回「好／嗯／對／是／行」且前文指涉明確時可用該單字）、sourceRole（user或assistant）。若玩家本輪明確確認，以user為證據。
+- assistant來源必須為session，category=important_event，factKey使用worldline.event.<subject>或relationship.event.<subject>；不可從角色回覆推導跨角色玩家事實。
+- 假設、疑問、演繹內的猜測或未完成的玩家動作不能保存為完成事實。取消、更正必須更新同一主題鍵並寫清新狀態。
 - 不得補充、推測或改寫成更誇張的內容。
 - 記憶中的玩家稱呼，必須使用系統提供的玩家名稱。
 - 例如玩家名稱是「妮妮」，就寫「妮妮喜歡吃草莓蛋糕」。
 - 絕對不要使用「玩家喜歡……」這種系統式稱呼。
-- 一次最多提取一項最重要的記憶。
+- 一次最多提取4項不同的重要事實，不要為湊數提取。
 - 若沒有值得長期保存的資訊，shouldRemember 必須是 false。
 - 若 shouldRemember=true，必須同時提供 factKey 與 factValue。
 - factKey 是「這條事實屬於哪一個固定欄位」的機器鍵，不可把玩家姓名、角色姓名、日期或具體值塞進 key。
@@ -137,7 +147,7 @@ ${["immersive", "resonance"].includes(chatMode) ? "【沉浸／共鳴模式補�
 - 「最喜歡／最愛／討厭／不喜歡／不吃／不喝／每天／固定／習慣」等明確穩定語意，若沒有角色或世界線限定，優先視為 profile。
 - 只有「今天／剛剛／突然／今晚／這次／現在想……」這類純當下需求才應判為 none。
 - 若無法確定是全域穩定事實，寧可選 character 或 session，不要誤放 profile。
-- 一次最多提取一項最重要的記憶。
+- 一次最多提取4項不同的重要事實，不要為湊數提取。
 
 輸出要求：
 - 只輸出一個合法 JSON object。
@@ -145,15 +155,8 @@ ${["immersive", "resonance"].includes(chatMode) ? "【沉浸／共鳴模式補�
 - 即使 shouldRemember=false，也必須輸出完整 JSON 結構。
 
 輸出格式：
-{
-  "shouldRemember": true 或 false,
-  "memory": "${playerName || "對方"}喜歡吃草莓蛋糕。",
-  "scope": "profile | character | session | none",
-  "category": "preference | personal | habit | relationship | story_state | important_event | none",
-  "factKey": "preference.food.strawberry_cake",
-  "factValue": "喜歡",
-  "confidence": 0 到 1
-}
+{"memories":[{"shouldRemember":true,"memory":"簡潔事實，標明主體及狀態", "scope":"profile | character | session", "category":"preference | personal | habit | relationship | story_state | important_event", "factKey":"固定taxonomy鍵", "factValue":"目前值或事件狀態", "confidence":0.95,"sourceRole":"user","evidence":"本輪原文片段"}]}
+無記憶時輸出 {"memories":[]}。
 `;
 
   const requestBody = {
@@ -164,10 +167,10 @@ ${["immersive", "resonance"].includes(chatMode) ? "【沉浸／共鳴模式補�
       },
       {
         role: "user",
-        content: `需要記憶的人名：${playerName || "對方"}\n最新訊息：${cleanMessage}`,
+        content: evidenceInput,
       },
     ],
-    max_tokens: 400,
+    max_tokens: 1500,
     temperature: 0,
     response_format: {
       type: "json_object",
@@ -230,7 +233,7 @@ ${["immersive", "resonance"].includes(chatMode) ? "【沉浸／共鳴模式補�
         timeoutMs: 20_000,
         requestBody: {
           ...requestBody,
-          max_tokens: 400,
+          max_tokens: 1500,
           messages: [
             {
               role: "system",
@@ -240,7 +243,7 @@ ${["immersive", "resonance"].includes(chatMode) ? "【沉浸／共鳴模式補�
             },
             {
               role: "user",
-              content: `需要記憶的人名：${playerName || "對方"}\n最新訊息：${cleanMessage}`,
+              content: evidenceInput,
             },
           ],
         },
@@ -251,25 +254,26 @@ ${["immersive", "resonance"].includes(chatMode) ? "【沉浸／共鳴模式補�
       );
     }
 
-    return {
-      shouldRemember: parsed.shouldRemember === true,
-      memory: String(parsed.memory || "").trim(),
-      scope: String(parsed.scope || "none").trim().toLowerCase(),
-      category: String(parsed.category || "none").trim(),
-      factKey: String(parsed.factKey || "").trim(),
-      factValue: String(parsed.factValue || "").trim(),
-      confidence: Number(parsed.confidence || 0),
-    };
+    const candidates = Array.isArray(parsed.memories) ? parsed.memories.slice(0, 4) : [parsed];
+    const memories = candidates.map(item => ({
+      shouldRemember: item.shouldRemember === true,
+      memory: String(item.memory || '').trim(), scope: String(item.scope || 'none').trim().toLowerCase(),
+      category: String(item.category || 'none').trim(), factKey: String(item.factKey || '').trim(),
+      factValue: String(item.factValue || '').trim(), confidence: Number(item.confidence || 0),
+      sourceRole: item.sourceRole === 'assistant' ? 'assistant' : 'user',
+      evidence: String(item.evidence || '').trim(),
+    })).filter(item => {
+      const source = item.sourceRole === 'assistant' ? String(assistantMessage || '') : cleanMessage;
+      const shortConfirmation = item.sourceRole === 'user' && /^(好|嗯|對|是|行)$/.test(item.evidence) && contextText.length > 0;
+      return item.shouldRemember && (item.evidence.length >= 2 || shortConfirmation) && source.includes(item.evidence);
+    });
+    return {shouldRemember: memories.length > 0, memories};
+
   } catch (error) {
     console.error("⚠️ 玩家記憶提取失敗：", error);
 
-    // 記憶失敗不能影響正常聊天
-    return {
-      shouldRemember: false,
-      memory: "",
-      category: "none",
-      confidence: 0,
-    };
+    throw error;
+
   }
 }
 

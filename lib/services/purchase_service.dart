@@ -1,7 +1,14 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
+import 'package:in_app_purchase_storekit/store_kit_2_wrappers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../main.dart'; // 確保 navigatorKey 在這裡
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
@@ -14,38 +21,106 @@ class ProductDetailsWrapper {
   ProductDetailsWrapper({required this.productDetails});
 }
 
-class PurchaseService extends ChangeNotifier {
+class PurchaseService extends ChangeNotifier with WidgetsBindingObserver {
   static final PurchaseService _instance = PurchaseService._internal();
   factory PurchaseService() => _instance;
   PurchaseService._internal();
 
   final InAppPurchase _inAppPurchase = InAppPurchase.instance;
-  late StreamSubscription<List<PurchaseDetails>> _subscription;
+  StreamSubscription<List<PurchaseDetails>>? _subscription;
+  StreamSubscription<User?>? _authSubscription;
+  Future<void> _queue = Future<void>.value();
+  Future<void>? _initialization;
+  bool _querying = false;
+  bool _disposed = false;
+  Timer? _retryTimer;
+  final Set<String> _reportedIssues = {};
+
+  String _accountId(String uid) => sha256.convert(utf8.encode(uid)).toString();
+
+  String _appleAccountToken(String uid) {
+    final chars = sha256.convert(utf8.encode('lianlian:apple:$uid')).toString().substring(0, 32).split('');
+    chars[12] = '8';
+    chars[16] = ((int.parse(chars[16], radix: 16) & 3) | 8).toRadixString(16);
+    final value = chars.join();
+    return '${value.substring(0, 8)}-${value.substring(8, 12)}-${value.substring(12, 16)}-${value.substring(16, 20)}-${value.substring(20)}';
+  }
+
+  void _enqueue(List<PurchaseDetails> purchases) {
+    _queue = _queue.then((_) => _handlePurchaseUpdates(purchases)).catchError((Object e) {
+      debugPrint('購買處理未完成，保留交易待重試: ${e.runtimeType}');
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) unawaited(retryPendingPurchases());
+  }
+
+  Future<void> retryPendingPurchases() async {
+    if (kIsWeb || _disposed || _querying || !isStoreAvailable || !(Platform.isAndroid || Platform.isIOS) ||
+        FirebaseAuth.instance.currentUser == null) return;
+    _querying = true;
+    try {
+      if (Platform.isAndroid) {
+        final response = await _inAppPurchase
+            .getPlatformAddition<InAppPurchaseAndroidPlatformAddition>()
+            .queryPastPurchases();
+        if (response.error != null) throw StateError('查詢未完成購買失敗');
+        _enqueue(response.pastPurchases);
+      } else {
+        final transactions = await SK2Transaction.unfinishedTransactions();
+        _enqueue(transactions.map((transaction) => SK2PurchaseDetails(
+          productID: transaction.productId,
+          purchaseID: transaction.id,
+          transactionDate: transaction.purchaseDate,
+          verificationData: PurchaseVerificationData(
+            localVerificationData: transaction.jsonRepresentation ?? '',
+            serverVerificationData: transaction.receiptData ?? '',
+            source: 'app_store'),
+          status: PurchaseStatus.purchased,
+          appAccountToken: transaction.appAccountToken,
+        )).toList());
+      }
+    } catch (e) {
+      debugPrint('購買補查失敗，稍後重試: ${e.runtimeType}');
+    } finally {
+      _querying = false;
+    }
+  }
 
   bool isStoreAvailable = false;
   List<ProductDetailsWrapper> products = [];
   bool isLoading = true;
 
-  Future<void> initialize() async {
-    isStoreAvailable = await _inAppPurchase.isAvailable();
+  Future<void> initialize() => _initialization ??= _initialize();
 
-    if (isStoreAvailable) {
-      _subscription = _inAppPurchase.purchaseStream.listen(
-            (List<PurchaseDetails> purchaseDetailsList) {
-          _handlePurchaseUpdates(purchaseDetailsList);
-        },
-        onDone: () {
-          _subscription.cancel();
-        },
-        onError: (error) {
-          print("監聽購買更新時發生錯誤: $error");
-        },
-      );
-
-      await _loadProducts();
-    } else {
+  Future<void> _initialize() async {
+    try {
+      if (kIsWeb || !(Platform.isAndroid || Platform.isIOS)) return;
+      if (Platform.isIOS) {
+        await InAppPurchaseStoreKitPlatform.enableStoreKit2();
+      }
+      WidgetsBinding.instance.addObserver(this);
+      _subscription = _inAppPurchase.purchaseStream.listen(_enqueue,
+        onError: (Object e) => debugPrint('購買監聽錯誤: ${e.runtimeType}'));
+      _authSubscription = FirebaseAuth.instance.authStateChanges().listen((user) {
+        if (user != null) unawaited(retryPendingPurchases());
+      });
+      isStoreAvailable = await _inAppPurchase.isAvailable();
+      if (isStoreAvailable) {
+        // Product-list failure must not prevent recovery of already paid orders.
+        _retryTimer = Timer.periodic(const Duration(minutes: 1), (_) {
+          unawaited(retryPendingPurchases());
+        });
+        await retryPendingPurchases();
+        await _loadProducts();
+      }
+    } catch (e) {
+      debugPrint('商店初始化失敗: ${e.runtimeType}');
+    } finally {
       isLoading = false;
-      notifyListeners();
+      if (!_disposed) notifyListeners();
     }
   }
 
@@ -119,9 +194,17 @@ class PurchaseService extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final PurchaseParam purchaseParam = PurchaseParam(productDetails: productDetails);
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) throw StateError('請先登入再購買');
+      final PurchaseParam purchaseParam = Platform.isAndroid
+          ? GooglePlayPurchaseParam(productDetails: productDetails,
+              applicationUserName: _accountId(user.uid))
+          : Sk2PurchaseParam(productDetails: productDetails,
+              applicationUserName: _appleAccountToken(user.uid));
       // 🌟 依然使用 buyConsumable，讓玩家能無限疊加
-      _inAppPurchase.buyConsumable(purchaseParam: purchaseParam);
+      final started = await _inAppPurchase.buyConsumable(
+        purchaseParam: purchaseParam, autoConsume: !Platform.isAndroid);
+      if (!started) throw StateError('商店未啟動購買');
     } catch (e) {
       // 🚨 如果呼叫 Google 結帳面板失敗 (例如被阻擋)，立刻關閉轉圈圈
       debugPrint("❌ 呼叫購買面板失敗: $e");
@@ -130,246 +213,99 @@ class PurchaseService extends ChangeNotifier {
     }
   }
 
-  Future<void> _handlePurchaseUpdates(List<PurchaseDetails> purchaseDetailsList) async {
-    for (var purchaseDetails in purchaseDetailsList) {
-      // ✨ 1. 安全尋找商品 (維持原樣)
-      if (products.isNotEmpty) {
-        final wrapper = products.where((p) => p.productDetails.id == purchaseDetails.productID).firstOrNull;
-        if (wrapper != null && purchaseDetails.status != PurchaseStatus.pending) {
-          wrapper.isPending = false;
+  Future<void> _handlePurchaseUpdates(List<PurchaseDetails> purchases) async {
+    for (final purchase in purchases) {
+      try {
+        final wrapper = products.where((p) => p.productDetails.id == purchase.productID).firstOrNull;
+        if (wrapper != null) wrapper.isPending = purchase.status == PurchaseStatus.pending;
+        if (purchase.status == PurchaseStatus.pending) continue;
+        if (purchase.status == PurchaseStatus.error) {
+          if (purchase.error != null) _handleError(purchase.error!);
+          continue;
         }
-      }
-
-      if (purchaseDetails.status == PurchaseStatus.pending) {
-        // 處理中...
-      } else {
-        if (purchaseDetails.status == PurchaseStatus.error) {
-          _handleError(purchaseDetails.error!);
-
-          // 🌟 修正點 1：購買失敗也要記得結案，否則蘋果會一直重複彈窗，但要安全結案
-          if (purchaseDetails.pendingCompletePurchase) {
-            await _inAppPurchase.completePurchase(purchaseDetails).catchError((e) => debugPrint("iOS 失敗訂單結案安全攔截: $e"));
+        if (purchase.status == PurchaseStatus.canceled) continue;
+        if (purchase.status == PurchaseStatus.purchased ||
+            (purchase.status == PurchaseStatus.restored)) {
+          if (Platform.isAndroid) {
+            await _deliverGooglePurchase(purchase);
+          } else {
+            await _deliverApplePurchase(purchase);
+          }
+          // Only after durable delivery (or a verified prior delivery) may the
+          // store transaction be consumed/completed. Errors leave it retryable.
+          if (Platform.isAndroid) {
+            final result = await _inAppPurchase
+                .getPlatformAddition<InAppPurchaseAndroidPlatformAddition>()
+                .consumePurchase(purchase);
+            if (result.responseCode != BillingResponse.ok) {
+              throw StateError('交易消耗未成功');
+            }
+          }
+          if (Platform.isIOS && purchase is SK2PurchaseDetails) {
+            final transactionId = int.tryParse(purchase.purchaseID ?? '');
+            if (transactionId == null) throw StateError('缺少 Apple 交易編號');
+            // StoreKit 0.4.9 marks restored as not pendingCompletePurchase;
+            // finish only after the server has confirmed this exact transaction.
+            await SK2Transaction.finish(transactionId);
+          } else if (purchase.pendingCompletePurchase) {
+            await _inAppPurchase.completePurchase(purchase);
           }
         }
-        else if (purchaseDetails.status == PurchaseStatus.purchased) {
-          // 🌟 正常購買成功：發放點數與月卡天數！
-          await _deliverPurchase(purchaseDetails);
 
-          // 🌟 修正點 2：只有成功發放商品後，才呼叫結案
-          if (purchaseDetails.pendingCompletePurchase) {
-            await _inAppPurchase.completePurchase(purchaseDetails).catchError((e) => debugPrint("iOS 成功訂單結案安全攔截: $e"));
-          }
-        }
-        else if (purchaseDetails.status == PurchaseStatus.restored) {
-          // 🚨 總裁防護鎖：攔截恢復購買！
-          debugPrint("🔄 偵測到歷史訂單恢復 (ID: ${purchaseDetails.productID})，不重複發放點數。");
-
-          // ⚠️ 修正點 3：如果是 iOS 的 restored，千、萬、不、能、叫 Google 的結案邏輯！
-          // 只有 Android 的 restored 需要手動消化訂單
-          if (Platform.isAndroid && purchaseDetails.pendingCompletePurchase) {
-            await _inAppPurchase.completePurchase(purchaseDetails);
+      } catch (e) {
+        debugPrint('交易尚未完成，等待重試: ${e.runtimeType}');
+        if (e is FirebaseFunctionsException && !_disposed &&
+            _reportedIssues.add('${purchase.purchaseID}:${e.code}')) {
+          final context = navigatorKey.currentContext;
+          if (context != null && context.mounted) {
+            final l10n = AppLocalizations.of(context);
+            if (l10n != null) {
+              unawaited(showDialog<void>(context: context, builder: (context) => AlertDialog(
+                title: Text(l10n.shop_purchase_failed_title),
+                content: Text(e.message ?? l10n.shop_purchase_failed_body(e.code)),
+                actions: [TextButton(onPressed: () => Navigator.pop(context),
+                  child: Text(l10n.ok_button))],
+              )));
+            }
           }
         }
       }
     }
-    notifyListeners();
+    if (!_disposed) notifyListeners();
   }
 
-  int _getBasePointsFromProductId(String productId) {
-    const Map<String, int> productPointsMap = {
-      'com.lianlian.points_90': 90,
-      'com.lianlian.points_215': 215,
-      'com.lianlian.points_370': 370,
-      'com.lianlian.points_590': 590,
-      'com.lianlian.points_780': 780,
-      'com.lianlian.points_1030': 1030,
-      'com.lianlian.points_1420': 1420,
-      'com.lianlian.points_1650': 1650,
-      'com.lianlian.points_2200': 2200,
-
-      // Apple / Google 同一禮包但不同 productId
-      'com.lianlian.points_2300': 2300,
-      'com.lianlian.points_2350': 2300,
-
-      'com.lianlian.points_2400': 2400,
-      'com.lianlian.points_2680': 2680,
-      'com.lianlian.points_3200': 3200,
-
-      // Apple / Google 同一禮包但不同 productId
-      'com.lianlian.points_3400': 3400,
-      'com.lianlian.points_3450': 3400,
-
-      'com.lianlian.points_4200': 4200,
-      'com.lianlian.points_4300': 4300,
-      'com.lianlian.points_6400': 6400,
-      'com.lianlian.points_10000': 10000,
-    };
-
-    return productPointsMap[productId] ?? 0;
-  }
-
-  // ✨ 新增：VIP 課條專屬的台幣定價對照表
-  int _getPriceFromProductId(String productId) {
-    // 1. 如果是月卡，直接回傳 250 元
-    if (productId.contains('monthly_card')) {
-      return 250;
-    }
-
-    // 2. 常駐產品包的對應價格 (對齊總裁的財政緊縮版定價)
-    const Map<String, int> productPriceMap = {
-      'com.lianlian.points_90': 30,      // 初見禮包
-      'com.lianlian.points_215': 70,     // 曖昧禮包
-      'com.lianlian.points_370': 120,    // 心動禮包
-      'com.lianlian.points_590': 190,    // 熱戀禮包
-      'com.lianlian.points_780': 250,    // 知己禮包
-      'com.lianlian.points_1030': 330,   // 守候禮包
-      'com.lianlian.points_1420': 450,   // 信賴禮包
-      'com.lianlian.points_1650': 520,   // 我愛你禮包
-      'com.lianlian.points_2200': 690,   // 蜜月禮包
-      'com.lianlian.points_2300': 720,   // 承諾禮包
-      'com.lianlian.points_2350': 720,   // 承諾禮包 (備用ID)
-      'com.lianlian.points_2400': 750,   // 相伴禮包
-      'com.lianlian.points_2680': 830,   // 深愛禮包
-      'com.lianlian.points_3200': 990,   // 長久禮包
-      'com.lianlian.points_3400': 1050,  // 唯一禮包
-      'com.lianlian.points_3450': 1050,  // 唯一禮包 (備用ID)
-      'com.lianlian.points_4200': 1290,  // 摯愛禮包
-      'com.lianlian.points_4300': 1314,  // 一生一世包
-      'com.lianlian.points_6400': 1930,  // 誓約禮包
-      'com.lianlian.points_10000': 2990, // 永恆戀人包
-    };
-
-    return productPriceMap[productId] ?? 0;
-  }
-
-  // ✨ 修改 3：完美對接新 ID 的首購雙倍發貨系統
-  Future<void> _deliverPurchase(PurchaseDetails purchaseDetails) async {
+  Future<void> _deliverGooglePurchase(PurchaseDetails purchase) async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      print("尚未登入，無法發放商品");
-      return;
+    if (user == null) throw StateError('登入後才能發放購買');
+    final result = await FirebaseFunctions.instanceFor(region: 'asia-east1')
+        .httpsCallable('fulfillGooglePlayPurchase').call(<String, dynamic>{
+      'productId': purchase.productID,
+      'purchaseToken': purchase.verificationData.serverVerificationData,
+    });
+    final data = Map<String, dynamic>.from(result.data as Map);
+    if (data['fulfilled'] != true) throw StateError('尚未確認發放');
+    if (data['alreadyFulfilled'] != true && !_disposed &&
+        FirebaseAuth.instance.currentUser?.uid == user.uid) {
+      _showSuccessDialog((data['points'] as num).toInt(),
+        isFirstTime: data['isFirstTime'] == true,
+        isMonthlyCard: purchase.productID.contains('monthly_card'));
     }
+  }
 
-    final productId = purchaseDetails.productID;
-    final docRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
-
-    try {
-      final docSnapshot = await docRef.get();
-      final data = docSnapshot.data() ?? {};
-
-      List<dynamic> purchaseHistory = data['purchaseHistory'] ?? [];
-      bool isFirstTime = !purchaseHistory.contains(productId);
-
-      int pointsToAdd = 0;
-      Map<String, dynamic> updateData = {};
-
-      // ✨ 修正後的 _deliverPurchase 片段
-      // ✨ 魔法升級：只要 ID 裡面「包含」 monthly_card 這個關鍵字，就當作是買月卡！
-      if (productId.contains('monthly_card')) {
-        pointsToAdd = 250;
-
-        // 1. 抓出舊的到期日 (如果是第一次買，就以現在為準)
-        DateTime now = DateTime.now();
-        DateTime currentEndDate = data['monthlySubEndDate'] != null
-            ? DateTime.parse(data['monthlySubEndDate'])
-            : now;
-
-        // 🕵️‍♂️ 總裁關鍵判斷：購買的這一刻，他的月卡是不是「還在有效期間內」？
-        // 如果舊的到期日還在未來，代表他是在有月卡的狀態下續約！
-        bool wasAlreadySubscribed = currentEndDate.isAfter(now);
-
-        // 2. 決定「起跳點」：如果已經過期了，從現在開始算；如果還沒過期，從舊到期日往後加
-        DateTime baseDate = currentEndDate.isBefore(now) ? now : currentEndDate;
-        DateTime newEndDate = baseDate.add(const Duration(days: 30));
-
-        // 3. 總裁的半年封頂條款 (180 天)
-        if (newEndDate.difference(now).inDays > 180) {
-          newEndDate = now.add(const Duration(days: 180));
-          print("⚠️ 已達半年上限，調整到期日為 180 天後");
-        }
-
-        updateData['isMonthlySubscribed'] = true;
-        updateData['monthlySubEndDate'] = newEndDate.toIso8601String();
-        updateData['monthlyCardStatus'] = 'active';
-
-        // 🌟 4. 【新增】重新生成次數的尊爵邏輯！
-        updateData['maxRegenerateCount'] = 20; // 只要有月卡，最大上限一律是 20 次
-
-        if (!wasAlreadySubscribed) {
-          // 如果他原本「沒有」月卡 (首購，或是過期後才重買)，立刻霸氣把次數補滿！
-          updateData['regenerateCount'] = 20;
-          print("🎁 玩家首購或重置月卡，重新生成次數已補滿 20 次！");
-        } else {
-          // 如果他原本就有月卡 (續約)，這行就不執行，保留他在 Firestore 裡面剩餘的次數 (例如 15/20)
-          print("🔄 玩家於月卡期間續約，保留當下剩餘的重新生成次數！");
-        }
-      }
-      // 🌟 第二種情況：買的是「一般花花禮包」
-      else if (productId.startsWith('com.lianlian.points_')) {
-        // 魔法：把前面的字串拔掉，剩下的數字直接轉成整數！
-        // 例如 'com.lianlian.points_90' 會直接變成整數 90
-        int basePoints = _getBasePointsFromProductId(productId);
-        // 首購雙倍判斷！
-        pointsToAdd = isFirstTime ? (basePoints * 2) : basePoints;
-      }
-      if (pointsToAdd > 0) {
-        updateData['flowerPoints'] = FieldValue.increment(pointsToAdd);
-
-        int priceSpent = _getPriceFromProductId(productId);
-        if (priceSpent > 0) {
-          updateData['totalSpent'] = FieldValue.increment(priceSpent);
-        }
-
-        if (isFirstTime) {
-          updateData['purchaseHistory'] = FieldValue.arrayUnion([productId]);
-        }
-
-        await docRef.set(updateData, SetOptions(merge: true));
-
-        // 🌟 獲取全域 Context 與多國語系 (加上防呆機制)
-        final context = navigatorKey.currentContext;
-        final l10n = context != null ? AppLocalizations.of(context) : null;
-
-        String logTitle = '';
-
-        // ✨ 總裁修正：只要 ID 裡面「包含」 monthly_card，不管是舊版還是 250 版，通通都是星光契約！
-        if (productId.contains('monthly_card')) {
-          // 如果抓不到翻譯，就給預設中文
-          logTitle =
-              l10n?.shop_log_monthly_card ?? '啟動：星光契約 (月卡立即贈點) 🌙';
-        } else {
-          logTitle = isFirstTime
-              ? (l10n?.shop_log_top_up_double(pointsToAdd) ??
-              '儲值：$pointsToAdd 點 (含首購雙倍 🎁)')
-              : (l10n?.shop_log_top_up_normal(pointsToAdd) ??
-              '儲值：$pointsToAdd 點');
-        }
-
-        await docRef.collection('flower_logs').add({
-          'title': logTitle,
-          'amount': pointsToAdd,
-
-          'type': 'purchase',
-          'provider': Platform.isIOS
-              ? 'apple_iap'
-              : 'google_play',
-          'productId': productId,
-          'price': _getPriceFromProductId(productId),
-          'currency': 'TWD',
-
-          'createdAt': FieldValue.serverTimestamp(),
-        });
-
-        print("成功發放！商品ID: $productId，獲得 $pointsToAdd 點，並已寫入明細！");
-// ✨ 總裁尊榮升級：把 isMonthlyCard 的判斷也傳進去！
-        _showSuccessDialog(
-          pointsToAdd,
-          isFirstTime: isFirstTime,
-          isMonthlyCard: productId.contains('monthly_card'), // 👈 自動判斷是不是月卡
-        );
-      }
-    } catch (e) {
-      print("寫入 Firebase 失敗: $e");
+  Future<void> _deliverApplePurchase(PurchaseDetails purchase) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) throw StateError('登入後才能發放購買');
+    final result = await FirebaseFunctions.instanceFor(region: 'asia-east1')
+        .httpsCallable('fulfillApplePurchase').call(<String, dynamic>{
+      'signedTransaction': purchase.verificationData.serverVerificationData,
+    });
+    final data = Map<String, dynamic>.from(result.data as Map);
+    if (data['fulfilled'] != true) throw StateError('Apple 交易尚未確認發放');
+    if (data['alreadyFulfilled'] != true && !_disposed &&
+        FirebaseAuth.instance.currentUser?.uid == user.uid) {
+      _showSuccessDialog((data['points'] as num).toInt(),
+        isFirstTime: data['isFirstTime'] == true,
+        isMonthlyCard: purchase.productID.contains('monthly_card'));
     }
   }
 
@@ -455,7 +391,6 @@ class PurchaseService extends ChangeNotifier {
 
   // 🌟 彈出失敗視窗 (多國語系版)
   void _handleError(IAPError error) {
-    if (error.code == 'purchase_error') return; // 忽略「玩家取消」或「測試卡假報警」
     if (error.code == 'canceled') return;       // 忽略 iOS/Android 常見的取消代碼
     final context = navigatorKey.currentContext;
     if (context == null) return;
@@ -480,7 +415,11 @@ class PurchaseService extends ChangeNotifier {
 
   @override
   void dispose() {
-    _subscription.cancel();
+    _disposed = true;
+    WidgetsBinding.instance.removeObserver(this);
+    _retryTimer?.cancel();
+    _authSubscription?.cancel();
+    _subscription?.cancel();
     super.dispose();
   }
 }

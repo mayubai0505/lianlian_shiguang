@@ -246,6 +246,23 @@ class Character {
     return originalValue;
   }
 
+  // 舊版資料提升為核心設定時，一併保留語氣及社交互動。
+  static String _resolveCoreCharacterSetting(Map<String, dynamic> data) {
+    final core = (data['coreCharacterSetting']?.toString() ?? '').trim();
+    if (core.isNotEmpty) return core;
+    final detailed = (data['detailedPersonality']?.toString() ?? '').trim();
+    final personality = detailed.isNotEmpty
+        ? detailed
+        : (data['personality']?.toString() ?? '').trim();
+    final tone = (data['toneAndStyle']?.toString() ?? '').trim();
+    final social = (data['socialInteraction']?.toString() ?? '').trim();
+    return [
+      if (personality.isNotEmpty) '角色性格與設定：\n$personality',
+      if (tone.isNotEmpty) '說話語氣與風格：\n$tone',
+      if (social.isNotEmpty) '社交與環境互動：\n$social',
+    ].join('\n\n');
+  }
+
   Character copyWith({
     String? initialStory,
     String? firstLine,
@@ -415,9 +432,7 @@ class Character {
       firstLine: data['storyModeFirstLine'] ?? '',
       background: data['background'] ?? '',
       coreCharacterSetting:
-      data['coreCharacterSetting']?.toString().trim().isNotEmpty == true
-          ? data['coreCharacterSetting'].toString()
-          : data['detailedPersonality']?.toString() ?? '',
+      _resolveCoreCharacterSetting(data),
       detailedPersonality: data['detailedPersonality'] ?? '',
       customOutputFormat: data['customOutputFormat']?.toString() ?? '',
       appearance: data['appearance'] ?? '',
@@ -548,9 +563,7 @@ class Character {
       firstLine: data['storyModeFirstLine'] ?? '',
       background: data['background'] ?? '',
       coreCharacterSetting:
-      data['coreCharacterSetting']?.toString().trim().isNotEmpty == true
-          ? data['coreCharacterSetting'].toString()
-          : data['detailedPersonality']?.toString() ?? '',
+      _resolveCoreCharacterSetting(data),
       detailedPersonality: data['detailedPersonality'] ?? '',
       customOutputFormat:
       data['customOutputFormat']?.toString() ?? '',
