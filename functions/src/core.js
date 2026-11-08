@@ -1,3 +1,4 @@
+const {isDefaultProfile, defaultCharacterMemories, prepareDefaultCharacterMemory} = require('./memory/default_character');
 const {loadIndexedCandidates, filterValidMemoryEvidence} = require('./memory/search_index');
 const {createMemoryJobHandler} = require('./memory/job_handler');
 const {createChatMessageNotificationHandler,createMailboxNotificationHandler,createSyncNotificationBadgeHandler} = require('./notifications/player_message_handlers');
@@ -3277,12 +3278,12 @@ let relationContext = "";
                                                                                                 let sharedMemoriesText = "";
                                                                                                 let sharedMemoryCandidates = [];
 
-                                                                                                try {
-                                                                                                    const uid = userId;
-                                                                                                    const charId = body.characterId || body.botId || characterProfile.id;
-                                                                                                    const requestedProfileId = String(playerProfileId || body.playerProfileId || "").trim();
-                                                                                                    const safeSessionId = String(sessionId || "").trim();
-                                                                                                    let effectiveProfileId = requestedProfileId;
+                                                                                                const uid = userId;
+const charId = body.characterId || body.botId || characterProfile.id;
+const requestedProfileId = String(playerProfileId || body.playerProfileId || "default").trim() || "default";
+let effectiveProfileId = requestedProfileId;
+try {
+const safeSessionId = String(sessionId || "").trim();
 
                                                                                                     // 新版聊天室以 session 內保存的 playerProfileId 為準，避免前端誤傳造成跨檔案記憶串台。
                                                                                                     if (uid && charId && safeSessionId && requestedProfileId) {
@@ -3314,7 +3315,10 @@ let relationContext = "";
                                                                                                     if (supportsScopedMemory && uid && charId && effectiveProfileId && safeSessionId) {
                                                                                                         // 新版三層記憶：Profile / Character / Session
                                                                                                         // 只有 memoryScopeVersion >= 1 的新版 App 才會進入此路徑。
-                                                                                                        const profileMemoriesRef = db
+                                                                                                        await prepareDefaultCharacterMemory({db, userId:uid, characterId:charId, playerProfileId:effectiveProfileId});
+const profileMemoriesRef = isDefaultProfile(effectiveProfileId)
+ ? defaultCharacterMemories(db, uid, charId)
+ : db
                                                                                                             .collection("users").doc(uid)
                                                                                                             .collection("profile_memories").doc(effectiveProfileId)
                                                                                                             .collection("memories");
@@ -3334,7 +3338,7 @@ let relationContext = "";
 
                                                                                                         const [profileSnapshot, characterSnapshot, sessionSnapshot] = await Promise.all([
                                                                                                             loadIndexedCandidates({db, memoriesRef: profileMemoriesRef, query: String(userMessage || "") + "\n" + (Array.isArray(chatHistory) ? chatHistory.slice(-4).map(msg => String(msg.content || msg.text || "")).join("\n") : "")}),
-                                                                                                            loadIndexedCandidates({db, memoriesRef: characterMemoriesRef, query: String(userMessage || "") + "\n" + (Array.isArray(chatHistory) ? chatHistory.slice(-4).map(msg => String(msg.content || msg.text || "")).join("\n") : "")}),
+                                                                                                            isDefaultProfile(effectiveProfileId) ? Promise.resolve({docs: [], forEach() {}}) : loadIndexedCandidates({db, memoriesRef: characterMemoriesRef, query: String(userMessage || "") + "\n" + (Array.isArray(chatHistory) ? chatHistory.slice(-4).map(msg => String(msg.content || msg.text || "")).join("\n") : "")}),
                                                                                                             loadIndexedCandidates({db, memoriesRef: sessionMemoriesRef, query: String(userMessage || "") + "\n" + (Array.isArray(chatHistory) ? chatHistory.slice(-4).map(msg => String(msg.content || msg.text || "")).join("\n") : "")}),
                                                                                                         ]);
 
@@ -3367,7 +3371,7 @@ let relationContext = "";
 
                                                                                                         appendScopedMemories(sessionSnapshot, "session");
                                                                                                         appendScopedMemories(characterSnapshot, "character");
-                                                                                                        appendScopedMemories(profileSnapshot, "profile");
+                                                                                                        appendScopedMemories(profileSnapshot, isDefaultProfile(effectiveProfileId) ? "character" : "profile");
                                                                                                     } else if (uid && charId) {
                                                                                                         // 舊版 App / memoryScopeVersion < 1：
                                                                                                         // 保留既有角色共用回憶，不啟用新版三層記憶。
@@ -4180,6 +4184,20 @@ let relationContext = "";
          // 角色本人是所有一般聊天模式共用的身分基礎；模式僅影響敘事節奏與輸出格式。
          // 七夕限定開場同樣適用；不修改原本各模式的 JSON／計費／模型分流。
          systemPrompt += buildCharacterIdentityDirective({name, chatMode});
+
+         // Shared across all general-character modes, including work scenes.
+         // Preserve each mode's format, length budget, and character autonomy.
+         systemPrompt += `
+【所有模式共用：角色互動與專業情境】
+- 理解玩家整段發言的用途再承接：舉例、類比、引用他人、反諷或假設，是為了表達什麼觀點、感受、請求或界線。優先回應該用意，不要只抓例子中的名詞另起情節；人物主體、條件與語氣必須保留，不可把他人的例子移植成玩家的經歷、把假設當事實，或擅自拼接無關安排。
+- 幽默應符合角色並建立在已知情境與合理語意上，不要為了接梗硬湊因果。玩家明確提出顧慮或界線時，先對該顧慮作具體而適度的回應，不用通用承諾、轉移話題或「剩下交給我」式收尾取代；也不要以旁白斷言完全知道玩家未說出的想法。這些是理解與演繹原則，不得在回覆中展示分析過程。
+- 依角色完整人格、關係、語氣與目前場景回應玩家，不要只因職業是總裁、醫師、老師或其他專業身分，就自動改成通用顧問、評審、教練或任務派發者。角色可以嚴肅、專業、有權威、拒絕或批評，必須有當輪互動的依據。
+- 工作、報告、請教等話題也屬於角色正在經歷的互動。先回應玩家本輪真正提出的問題、行動與已提供資料；不要僅因提到工作，就把未被要求的所有風險、流程、文件、標準、期限與後續任務一次完整列出，或把情境寫成泛用的管理分析報告。
+- 玩家明確要求詳細分析、清單、教學或完整交辦，或前文已建立必須完整交辦的正式情境時，可依人設充分展開、使用條列與必要專業細節。否則隨互動逐步揭露相關判斷和行動，保留玩家回應與選擇的空間；不強制短回覆、不固定只問一題、不要求每輪以問題結尾，也不為留白讓角色失去自主行動能力。
+- 區分已確認事實、角色推測及新提出的安排。不可為了讓分析顯得周全，把未曾建立的會議、確定期限、附件、先前發言或玩家已接受的任務寫成既成事實。角色可在職權與場景合理範圍內明確提出新的安排或自主行動，但不得把提議當成玩家已同意或已執行。
+- 對話中的資歷、入住先後、相識經過、物品歸屬及關係進展，須承接已建立內容；某方面資歷較早不代表其他方面也較早。資訊不明時保留不確定性，不為了接梗、顯得了解玩家或展現權威而編造過往。
+- 旁白呈現當下有意義的動作、觀察、感受與情境變化；避免反覆替讀者總結角色多專業、多優雅或已卸下什麼身分。依原模式維持敘事豐富度與輸出格式，不用重述規則、解說寫作意圖或通用修辭填補篇幅。
+`;
 
          if (chatMode !== "gemini") {
              systemPrompt += `
@@ -5231,7 +5249,6 @@ ${persistentPreferenceDirective}
                                                                                                              calls: aiCostTrace.length,
                                                                                                              totalUsd: Number(aiCostTotalUsd.toFixed(6)),
                                                                                                              totalTwdApprox: Number(aiCostTotalTwd.toFixed(3)),
-                                                                                                             usdToTwdEstimate: AI_COST_USD_TO_TWD_ESTIMATE,
                                                                                                              trace: aiCostTrace,
                                                                                                          },
                                                                                                           debugContext: contextAudit,
@@ -6655,11 +6672,10 @@ if (sessionId) {
     cleanVoiceText = normalizeAiResponseScript(cleanVoiceText, playerLanguage);
     finalResponseText = cleanDisplayText;
     finalVoiceText = cleanVoiceText;
-    if (shouldConvertAiToTaiwanTraditional(playerLanguage)) {
-        for (const [field, value] of Object.entries(finalStatusBar || {})) {
-            if (typeof value === 'string') {
-                finalStatusBar[field] = normalizeAiResponseScript(value, playerLanguage);
-            }
+    // 與文字及語音共用依玩家語言處理的入口，避免依賴未匯入的判斷函式。
+    for (const [field, value] of Object.entries(finalStatusBar || {})) {
+        if (typeof value === 'string') {
+            finalStatusBar[field] = normalizeAiResponseScript(value, playerLanguage);
         }
     }
 
@@ -7381,6 +7397,7 @@ const sessionData =
                     recentHistory: normalizedHistory.slice(-6).map(msg => ({role: msg.role, content: String(msg.content || "").slice(0, 1800)})),
                     userMessageId: String(userMessageId || ""),
                     chatMode: String(chatMode || ""),
+                    playerLanguage: String(playerLanguage || "台灣繁體中文"),
 
                     sessionId,
                     playerProfileId: String(playerProfileId || body.playerProfileId || "").trim(),
@@ -7576,8 +7593,6 @@ const sessionData =
                                                `$${aiCostTotalUsd.toFixed(6)}`,
                                            twdApprox:
                                                `NT$${aiCostTotalTwd.toFixed(3)}`,
-                                           usdToTwdEstimate:
-                                               AI_COST_USD_TO_TWD_ESTIMATE,
                                            trace: aiCostTrace,
                                        }
                                    );
@@ -7626,8 +7641,6 @@ const resultPayload = {
                                                        Number(
                                                            aiCostTotalTwd.toFixed(3)
                                                        ),
-                                                   usdToTwdEstimate:
-                                                       AI_COST_USD_TO_TWD_ESTIMATE,
                                                    trace:
                                                        aiCostTrace,
                                                    note:

@@ -1,4 +1,5 @@
 'use strict';
+const {isDefaultProfile, defaultCharacterMemories, prepareDefaultCharacterMemory} = require('./default_character');
 const {indexPayload} = require('./search_index');
 // V83: original savePlayerMemoryIfNeeded body retained; dependencies are injected.
 function createPlayerMemorySaver({extractPlayerMemory, canonicalizeMemoryFactKey, repairMemoryScope, APP_ID, resolveEffectivePlayerProfileId, db, normalizeMemoryFactValue, FieldValue}) {
@@ -11,6 +12,7 @@ async function savePlayerMemoryIfNeeded({
   sessionId,
   userMessage,
   playerName,
+  playerLanguage = "",
   recentHistory = [],
   assistantMessage = "",
   sourceMessageId = "",
@@ -27,6 +29,7 @@ async function savePlayerMemoryIfNeeded({
   const extracted = await extractPlayerMemory({
     userMessage,
     playerName,
+    playerLanguage,
     chatMode,
     recentHistory, assistantMessage,
     abortController,
@@ -106,9 +109,17 @@ async function savePlayerMemoryIfNeeded({
     requestedProfileId: playerProfileId,
   });
 
+  await prepareDefaultCharacterMemory({db, userId, characterId, playerProfileId:safeProfileId});
   let memoriesRef;
+  if (isDefaultProfile(safeProfileId) && memoryScope !== "session") {
+    memoryScope = "character";
+    memoriesRef = defaultCharacterMemories(db, userId, characterId);
+  }
 
-  if (memoryScope === "profile") {
+
+  if (memoriesRef) {
+    // Default records use the character collection selected above.
+  } else if (memoryScope === "profile") {
     memoriesRef = db
       .collection("users")
       .doc(userId)

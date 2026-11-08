@@ -3,6 +3,7 @@ function createMemoryExtractor({callAiWithRetry}) {
 async function extractPlayerMemory({
   userMessage,
   playerName,
+  playerLanguage = "",
   recentHistory = [],
   assistantMessage = "",
   chatMode = "",
@@ -39,6 +40,17 @@ async function extractPlayerMemory({
   const evidenceInput = `需要記憶的人名：${playerName || "對方"}\n【前文，僅供指涉理解】\n${contextText}\n【玩家本輪訊息】\n${cleanMessage}\n【角色本輪回覆】\n${String(assistantMessage || '').slice(0, 6000)}`;
   const memorySystemPrompt = `
 你是「玩家長期記憶提取器」。
+【玩家可見記憶的語言】
+- 本輪指定語言：${String(playerLanguage || "未指定：沿用玩家本輪原文的主要語言").slice(0,80)}。
+- memory 是直接顯示給玩家的完整句子，必須使用上述語言；未指定時沿用玩家本輪原文的主要語言。繁體中文不得改成英文或簡體中文；其他語系也不得強制翻成中文。
+- 玩家、角色與寵物的原始名稱原樣保留，例如棉花糖不可翻譯成 Cotton Candy。
+- factKey 仍用英文 taxonomy；factKey 的英文規則不適用於 memory。factValue 可用簡潔原語言值，不得據此把 memory 改寫為英文。
+【自然敘述、特質與職業必須分清】
+- 玩家在括號動作或普通聊天中明確透露的自身資訊也可擷取，不需要說「請記住」。例如「回房找東西，狗狗坐在門口」可保存目前世界線的養狗事實；不得推測品種、名字或數量。
+- 玩家做菜時笑稱「我可是大廚！要是還不能讓你滿意，我就要自卑了」：可保存「對自己的廚藝有信心」這項特質，使用 trait.cooking_confidence；不得保存成「職業是廚師」，也不得推斷專業資格。
+- 玩笑、暱稱、誇飾、自我打氣可以表現特質，但不能自動升格為職業或已發生的事件。
+- identity.occupation 只保存玩家明確表達的實際職業／任職事實。對照前文職業背景；角色叫玩家「大廚／醫生／老師」或玩家開玩笑自稱，均不足以變更職業。若無法確定，不產生職業記憶，其他有依據的特質仍可保留。
+
 ${["immersive", "resonance"].includes(chatMode) ? "【沉浸／共鳴模式補充】玩家明確敘述已發生的婚姻、關係變更、重要約定、時間進展、修為境界、重要 NPC、重大事件或長期情感關係中的重要承諾，屬於目前聊天室世界線可保存的劇情事實，優先使用 session 範圍與 relationship.status、relationship.event.*、important_event.* 或 worldline.event.*。僅保存玩家明確表示已發生或已確定的事件；不得把願望、假設、AI 未經確認的台詞當成事實，切勿寫入跨角色 profile。" : ""}
 
 你的工作不是聊天，也不能回應玩家。
@@ -254,6 +266,31 @@ ${["immersive", "resonance"].includes(chatMode) ? "【沉浸／共鳴模式補�
       );
     }
 
+    // Reject English-only display sentences for Chinese requests, even when
+    // the player name itself is Chinese. Retry extraction, never translate
+    // the original evidence or turn unsupported claims into facts.
+    const requestedChinese = /中文|繁體|繁体|簡體|简体|chinese|^zh(?:[-_]|$)/i.test(playerLanguage) ||
+      (!playerLanguage && /[\u3400-\u9fff]/.test(cleanMessage));
+    const wrongDisplayLanguage = value => requestedChinese &&
+      (Array.isArray(value.memories) ? value.memories : [value]).some(item => {
+        if (item.shouldRemember !== true) return false;
+        const text = String(item.memory || '').split(String(playerName || '\u0000')).join('').trim();
+        return /[a-zA-Z]{3,}/.test(text) && !/[\u3400-\u9fff]/.test(text);
+      });
+    if (wrongDisplayLanguage(parsed)) {
+      console.warn('MEMORY_DISPLAY_LANGUAGE_RETRY', {language: playerLanguage || 'source'});
+      const retry = await callAiWithRetry({
+        modelId: 'google/gemini-2.5-flash-lite',
+        fallbackModelId: 'deepseek/deepseek-v4-flash',
+        abortController, timeoutMs: 20_000,
+        requestBody: {...requestBody, messages: [
+          {role:'system',content:memorySystemPrompt + '\n【語言修正】上一輪把 memory 寫成英文。重新從原文提取，memory 必須使用指定的中文；名字及 evidence 保留原文。只回合法 JSON。'},
+          {role:'user',content:evidenceInput},
+        ]},
+      });
+      parsed = parseMemoryJson(retry?.choices?.[0]?.message?.content || '');
+      if (wrongDisplayLanguage(parsed)) throw new Error('MEMORY_DISPLAY_LANGUAGE_MISMATCH');
+    }
     const candidates = Array.isArray(parsed.memories) ? parsed.memories.slice(0, 4) : [parsed];
     const memories = candidates.map(item => ({
       shouldRemember: item.shouldRemember === true,
@@ -265,7 +302,10 @@ ${["immersive", "resonance"].includes(chatMode) ? "【沉浸／共鳴模式補�
     })).filter(item => {
       const source = item.sourceRole === 'assistant' ? String(assistantMessage || '') : cleanMessage;
       const shortConfirmation = item.sourceRole === 'user' && /^(好|嗯|對|是|行)$/.test(item.evidence) && contextText.length > 0;
-      return item.shouldRemember && (item.evidence.length >= 2 || shortConfirmation) && source.includes(item.evidence);
+      const culinaryNickname = item.factKey === 'identity.occupation' &&
+        /大[廚厨]/.test(item.evidence) &&
+        !/(職業|职业|任職|任职|受僱|受雇|餐廳|餐厅|飯店|饭店|酒店|工作是|工作就是|當廚師|当厨师|當主廚|当主厨)/.test(item.evidence);
+      return !culinaryNickname && item.shouldRemember && (item.evidence.length >= 2 || shortConfirmation) && source.includes(item.evidence);
     });
     return {shouldRemember: memories.length > 0, memories};
 

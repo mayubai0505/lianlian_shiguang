@@ -1,3 +1,4 @@
+const {isDefaultProfile, defaultCharacterMemories, prepareDefaultCharacterMemory} = require('./default_character');
 'use strict';
 
 // Extracted verbatim from V3 core.js; only dependency injection and exports added.
@@ -234,7 +235,10 @@ async function loadScopedMemoryEntries({
     return [];
   }
 
-  const profileMemoriesRef = db
+  await prepareDefaultCharacterMemory({db, userId:safeUserId, characterId:safeCharacterId, playerProfileId:safeProfileId});
+  const profileMemoriesRef = isDefaultProfile(safeProfileId)
+    ? defaultCharacterMemories(db, safeUserId, safeCharacterId)
+    : db
     .collection("users")
     .doc(safeUserId)
     .collection("profile_memories")
@@ -263,10 +267,10 @@ async function loadScopedMemoryEntries({
         .orderBy("timestamp", "desc")
         .limit(perScopeLimit)
         .get(),
-      characterMemoriesRef
+      (isDefaultProfile(safeProfileId) ? Promise.resolve({docs: []}) : characterMemoriesRef
         .orderBy("timestamp", "desc")
         .limit(perScopeLimit)
-        .get(),
+        .get()),
       sessionMemoriesRef
         .orderBy("timestamp", "desc")
         .limit(perScopeLimit)
@@ -301,7 +305,7 @@ async function loadScopedMemoryEntries({
   // 世界線事實最靠近當前聊天室，其次角色關係，最後才是玩家跨角色穩定資料。
   append(sessionSnapshot, "session");
   append(characterSnapshot, "character");
-  append(profileSnapshot, "profile");
+  append(profileSnapshot, isDefaultProfile(safeProfileId) ? "character" : "profile");
 
   return resolveMemoryConflicts(entries);
 }

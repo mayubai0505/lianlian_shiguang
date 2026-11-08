@@ -183,6 +183,7 @@ function createMemoryJobHandler({FieldValue, db, savePlayerMemoryIfNeeded}) {
                     sessionId,
                     userMessage,
                     playerName,
+                    playerLanguage: String(jobData.playerLanguage || ""),
                     chatMode,
                     assistantMessage,
                     recentHistory: jobData.recentHistory || [],
