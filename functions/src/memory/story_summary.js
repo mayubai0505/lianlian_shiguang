@@ -108,36 +108,71 @@ exports.generateStorySummary = onRequest({
             只回傳合法 JSON：{"content":"唯美摘要", "factualContent":"事實型事件紀錄"}，不得加 Markdown。
             `;
 
-            // 3. 呼叫 AI 寫作 (用便宜又聰明的模型)
-            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                method: "POST",
-                signal: AbortSignal.timeout(90000),
-                headers: {
-                    "Authorization": `Bearer ${openRouterApiKey.value()}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    model: "google/gemini-2.5-flash-lite",
-                    messages: [
-                        { role: "system", content: systemPrompt },
-                        { role: "user", content: `【上次事件紀錄（可能有誤，以較新明確對話為準）】：\n${previousFacts}\n\n【近期對話紀錄】：\n${formattedHistory}` }
-                    ],
-                    temperature: 0.2,
-                    max_tokens: 2200,
-                    response_format: {type: "json_object"},
-                })
-            });
-
-            if (!response.ok) throw new Error(`SUMMARY_PROVIDER_HTTP_${response.status}`);
-            const aiResult = await response.json();
-            const raw = String(aiResult.choices?.[0]?.message?.content || "").trim()
-                .replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
-            const parsed = JSON.parse(raw);
-            const summaryText = typeof parsed.content === 'string' ? parsed.content.trim().slice(0, 1200) : '';
-            const factualContent = typeof parsed.factualContent === 'string'
-                ? parsed.factualContent.trim().slice(0, 4000) : '';
-            if (publishChapter && !summaryText) throw new Error("AI 沒有回傳有效閱讀摘要");
-            if (typeof parsed.factualContent !== 'string') throw new Error("AI 沒有回傳事件紀錄欄位");
+            // 3. 呼叫 AI 產生摘要。僅在 JSON 無效或必要欄位缺失時補試一次，
+            //    不自動修補截斷內容，避免將不完整的事實寫入記憶。
+            //    120 秒函式上限內保留時間給 Firestore 交易。
+            const summaryMessages = [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: `【上次事件紀錄（可能有誤，以較新明確對話為準）】：\n${previousFacts}\n\n【近期對話紀錄】：\n${formattedHistory}` },
+            ];
+            let parsed = null;
+            let lastFormatError = null;
+            for (let attempt = 1; attempt <= 2; attempt++) {
+                // 一次主請求、一次格式異常時的重試；不重試 HTTP/網路錯誤。
+                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                    method: "POST",
+                    signal: AbortSignal.timeout(attempt === 1 ? 65000 : 35000),
+                    headers: {
+                        "Authorization": `Bearer ${openRouterApiKey.value()}`,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        model: "google/gemini-2.5-flash-lite",
+                        messages: attempt === 1 ? summaryMessages : [
+                            ...summaryMessages,
+                            {role: "system", content: "上一次輸出未通過 JSON 格式驗證。請重新根據原始紀錄產生完整、合法的 JSON，僅包含 content 和 factualContent 兩個字串欄位；確保引號及換行正確跳脫，內容精簡且不得省略結尾。不要輸出 Markdown。"},
+                        ],
+                        temperature: 0.2,
+                        max_tokens: 2200,
+                        response_format: {type: "json_object"},
+                    }),
+                });
+                if (!response.ok) throw new Error(`SUMMARY_PROVIDER_HTTP_${response.status}`);
+                const aiResult = await response.json();
+                const choice = aiResult.choices?.[0];
+                const raw = String(choice?.message?.content || "").trim()
+                    .replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+                const finishReason = String(choice?.finish_reason || "unknown");
+                try {
+                    const candidate = JSON.parse(raw);
+                    if (!candidate || typeof candidate !== 'object' || Array.isArray(candidate) ||
+                        typeof candidate.content !== 'string' ||
+                        typeof candidate.factualContent !== 'string' ||
+                        (publishChapter && !candidate.content.trim())) {
+                        throw new Error('SUMMARY_INVALID_FIELDS');
+                    }
+                    parsed = candidate;
+                    break;
+                } catch (formatError) {
+                    lastFormatError = formatError;
+                    // 不記錄玩家故事原文、AI 回覆或金鑰，僅記錄定位問題所需的摘要資訊。
+                    console.warn('故事摘要格式驗證失敗', {
+                        attempt,
+                        finishReason,
+                        outputLength: raw.length,
+                        completionTokens: aiResult.usage?.completion_tokens ?? null,
+                        totalTokens: aiResult.usage?.total_tokens ?? null,
+                        errorType: formatError instanceof SyntaxError ? 'INVALID_JSON' : 'INVALID_FIELDS',
+                    });
+                }
+            }
+            if (!parsed) {
+                const error = new Error('SUMMARY_INVALID_MODEL_OUTPUT');
+                error.cause = lastFormatError;
+                throw error;
+            }
+            const summaryText = parsed.content.trim().slice(0, 1200);
+            const factualContent = parsed.factualContent.trim().slice(0, 4000);
 
             // 交易避免並行更新覆蓋較新摘要；重試不重複計數或新增卡片。
             const saved = await db.runTransaction(async transaction => {
@@ -170,7 +205,7 @@ exports.generateStorySummary = onRequest({
 
         } catch (error) {
             console.error("生成摘要失敗:", error);
-            return res.status(500).json({ error: error.message });
+            return res.status(500).json({ error: "SUMMARY_GENERATION_FAILED" });
         }
     });
 });

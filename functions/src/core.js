@@ -10119,24 +10119,6 @@ exports.sendGlobalAnnouncementNotificationV2 = onDocumentCreated(
     createAnnouncementDeliveryHandler({db, normalizeNotificationLocale, getNotificationText, sendToUserDevices})
 );
 
-// =====================================================
-// 🌙 七夕限定信件排程
-// 每 5 分鐘尋找已到寄信時間的七夕聊天室。
-// =====================================================
-exports.processQixiLetters = onSchedule(
-    {
-        schedule: "every 5 minutes",
-        timeZone: "Asia/Taipei",
-        region: REGION,
-        timeoutSeconds: 540,
-        memory: "512MiB",
-        secrets: [
-            openRouterApiKey,
-        ],
-    },
-    createQixiLettersScheduler({db, APP_ID, Timestamp, FieldValue, crypto, openRouterApiKey, callAiWithRetry})
-);
-
 // ============================================================
 // 創作者申請：待審核 -> 審核通過直接開通。
 // 保留 contract_pending 僅供既有歷史案件由管理員個別處理。

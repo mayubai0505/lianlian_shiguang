@@ -2815,6 +2815,11 @@ class _ProfilePageState extends State<ProfilePage>
                           ),
                         ),
                       ),
+                      if (snapshot.hasData && snapshot.data!.exists) ...[
+                        _buildReferralSection(
+                          snapshot.data!.data() as Map<String, dynamic>,
+                        ),
+                      ],
                       const SizedBox(height: 8),
                       Wrap(
                         alignment: WrapAlignment.center,
@@ -3379,8 +3384,6 @@ class _ProfilePageState extends State<ProfilePage>
   }
 
   Widget _buildAboutMeTab() {
-    final currentUser =
-        FirebaseAuth.instance.currentUser;
     final hasProfileLinks = _profileLinks.any(
           (item) => (item['url'] ?? '').trim().isNotEmpty,
     );
@@ -3429,26 +3432,6 @@ class _ProfilePageState extends State<ProfilePage>
           ),
           const SizedBox(height: 24),
         ],
-
-        if (currentUser != null)
-          StreamBuilder<DocumentSnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('users')
-                .doc(currentUser.uid)
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData ||
-                  !snapshot.data!.exists) {
-                return const SizedBox.shrink();
-              }
-
-              final userData =
-              snapshot.data!.data()
-              as Map<String, dynamic>;
-
-              return _buildReferralSection(userData);
-            },
-          ),
 
         const SizedBox(height: 24),
 

@@ -2,6 +2,7 @@
 const {publicChatCount, recordPublicChatSend} = require('./chat_count');
 const {createWorldChatAudit} = require('./chat_count_audit');
 const storyClock = require('./story_clock');
+const {createAiCostTrace} = require('../src/ai/cost_trace');
 const {onDocumentCreated} = require('firebase-functions/v2/firestore');
 const {createWorldMemoryTools, EMBEDDING_VERSION} = require('./world_memory_worker');
 const {parseFields, lockCreatorStatus, describeCreatorTemplate, isCreatorGuidance} = require('./status_template');
@@ -13,6 +14,24 @@ function registerWorldFunctions(exports, deps) {
     openRouterApiKey, geminiApiKey, xaiApiKey, anthropicApiKey,
     callAiWithRetry, normalizeAiResponseScript,
   } = deps;
+
+  // Observation only: no new API requests, Firestore writes, or flower billing.
+  const {estimateAiCallCost, formatAiCostTraceLine} = createAiCostTrace({});
+  const logWorldAiCost = (result, requestedModel, worldMode, stage, attempt) => {
+    try {
+      const cost = estimateAiCallCost({modelId:requestedModel, result});
+      logger.info('WORLD AI COST', {
+        mode:worldMode, stage, attempt,
+        ...formatAiCostTraceLine(cost),
+        estimateOnly:cost.source === 'token_estimate_including_reasoning',
+      });
+      return cost;
+    } catch (error) {
+      logger.warn('world AI cost telemetry unavailable', {stage, attempt,
+        code:String(error?.code || 'telemetry_error').slice(0,64)});
+      return null;
+    }
+  };
 
   exports.worldAdminChatCountAudit = onCall({region:REGION, memory:'256MiB',timeoutSeconds:60,maxInstances:2},
     createWorldChatAudit({db,FieldValue,HttpsError,crypto,APP_ID,
@@ -1111,6 +1130,13 @@ exports.worldPrivateTest = onCall({
         return {parsed,reason:'ok',length:content.length,parseStrategy};
       };
       let validation;
+      // One writer turn can include multiple provider attempts. Keep only
+      // numeric costs; missing usage must not be silently treated as free.
+      const worldWriterCostItems = [];
+      const recordWorldWriterCost = (result, model, stage, attempt) => {
+        const cost = logWorldAiCost(result, model, worldMode, stage, attempt);
+        if (cost) worldWriterCostItems.push(cost);
+      };
       let actualWriterModelId = writerRoute.modelId;
       // 世界觀劇情／沉浸／共鳴使用獨立逐層備援：每層只呼叫一個模型，
       // 關閉共用 retry/fallback，避免 Gemini 內容過濾後直接卡在 DeepSeek 95 秒。
@@ -1150,6 +1176,7 @@ exports.worldPrivateTest = onCall({
               retryPrimary:false,
               timeoutMs:budget,
             });
+            recordWorldWriterCost(tierResult, targetModel, 'tiered_writer', attemptIndex + 1);
             const checked = parseWorldWriterResult(tierResult);
             if (checked.parsed) {
               validation = checked;
@@ -1197,6 +1224,7 @@ exports.worldPrivateTest = onCall({
         fallbackModelId:writerRoute.fallbackModelId || undefined,
         requestBody:writerRequestBody,retryPrimary:false,timeoutMs:95000,
       });
+      recordWorldWriterCost(primaryResult, writerRoute.modelId, 'interaction_writer', 1);
       writerStage = 'validate_writer_output';
       validation = parseWorldWriterResult(primaryResult);
       actualWriterModelId = String(primaryResult?.model || writerRoute.modelId);
@@ -1238,6 +1266,7 @@ exports.worldPrivateTest = onCall({
               modelId:fallbackModelId,
               requestBody:writerRequestBody,retryPrimary:false,timeoutMs:fallbackBudgetMs,
             });
+            recordWorldWriterCost(fallbackResult, fallbackModelId, 'structured_fallback', 2);
             const fallbackValidation = parseWorldWriterResult(fallbackResult);
             if (fallbackValidation.parsed) {
               validation = fallbackValidation;
@@ -1263,6 +1292,20 @@ exports.worldPrivateTest = onCall({
       }
       writerStage = 'validate_writer_output';
       if (!validation.parsed) throw new HttpsError('internal','AI 回傳格式異常，請重試（不會儲存失敗回覆）');
+      // Does not include failed HTTP requests without usage, internal retries
+      // hidden inside callAiWithRetry, or asynchronous RAG/summary expenses.
+      const knownWriterCosts = worldWriterCostItems.filter(item => Number.isFinite(item.usd));
+      logger.info('WORLD AI TURN COST', {
+        mode:worldMode,
+        successfulModel:actualWriterModelId,
+        observedCalls:worldWriterCostItems.length,
+        pricedCalls:knownWriterCosts.length,
+        unpricedCalls:worldWriterCostItems.length - knownWriterCosts.length,
+        usd:knownWriterCosts.reduce((total,item) => total + item.usd, 0).toFixed(6),
+        twdApprox:knownWriterCosts.reduce((total,item) => total + item.twd, 0).toFixed(3),
+        complete:worldWriterCostItems.length > 0 && knownWriterCosts.length === worldWriterCostItems.length,
+        excludes:'unobserved_failed_requests_internal_retries_background_jobs',
+      });
       writerStage = 'process_writer_output';
       const parsed = validation.parsed;
       const effectiveStoryClock = storyClock.resolveClock(

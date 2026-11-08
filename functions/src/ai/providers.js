@@ -56,22 +56,43 @@ async function callOpenRouter({
         console.log("🧪 AI HTTP STATUS:", response.status);
         console.log("🧪 AI RAW LENGTH:", rawText.length);
     } catch (err) {
+        const playerDisconnected =
+            abortController?.signal?.aborted === true;
+
+        const requestTimedOut =
+            timeoutController.signal.aborted === true;
+
         console.error("🚨 AI fetch failed:", {
             name: err?.name,
             message: err?.message,
             model: modelId,
-            playerDisconnected: abortController?.signal?.aborted === true,
+            playerDisconnected,
+            requestTimedOut,
+            timeoutMs,
         });
 
-        if (err?.name === "AbortError") {
-            if (abortController?.signal?.aborted) {
-                throw new Error("PLAYER_DISCONNECTED");
-            }
-
-            throw new Error("AI 回覆時間太久，已主動中止");
+        if (playerDisconnected) {
+            const error = new Error("PLAYER_DISCONNECTED");
+            error.code = "PLAYER_DISCONNECTED";
+            throw error;
         }
 
-        throw new Error("AI 連線暫時不穩");
+        if (
+            requestTimedOut ||
+            err?.name === "AbortError" ||
+            err?.name === "TimeoutError"
+        ) {
+            const error = new Error(
+                "AI 回覆時間太久，已主動中止"
+            );
+            error.code = "AI_TIMEOUT";
+            throw error;
+        }
+
+        const error = new Error("AI 連線暫時不穩");
+        error.code = "AI_NETWORK_ERROR";
+        error.cause = err;
+        throw error;
     } finally {
         clearTimeout(timer);
     }
