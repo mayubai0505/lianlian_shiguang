@@ -6716,7 +6716,7 @@
       }
     }
   },
-  "world_edit_tag_heading1": "主題標籤（最多 5 個）",
+  "world_edit_tag_heading1": "主題標籤",
   "world_edit_tag_max1": "最多選擇 5 個標籤",
   "world_edit_tag_custom1": "標籤（可自訂，以頓號分隔）",
   "world_edit_secret_not_ready1": "秘密篇章尚未成功讀取，為保護既有內容暫時無法發布。請確認權限並重新開啟頁面。",
@@ -7103,5 +7103,8 @@
   "store_pack_1290_name1": "摯愛禮包",
   "store_pack_1314_name1": "一生一世包",
   "store_pack_1930_name1": "誓約禮包",
-  "store_pack_2990_name1": "永恆戀人包"
+  "store_pack_2990_name1": "永恆戀人包",
+  "characterEditWorldLore": "世界觀（後台設定）",
+  "characterEditWorldLoreDescription": "供 AI 演繹參考的世界背景、規則、地點與事件；不顯示於角色介紹卡。",
+  "characterEditWorldLoreHint": "例如：世界背景、勢力與組織、特殊規則、重要事件……"
 }

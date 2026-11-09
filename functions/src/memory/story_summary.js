@@ -1,4 +1,41 @@
 'use strict';
+// Only recover a complete, single JSON object surrounded by non-JSON text.
+// Never repair malformed/truncated JSON or guess missing story facts.
+function parseSummaryJsonSafely(raw, finishReason) {
+    try {
+        return {value: JSON.parse(raw), recovered: false};
+    } catch (originalError) {
+        // A length-limited response may be truncated: do not salvage partial output.
+        if (finishReason !== 'stop') throw originalError;
+        const start = raw.indexOf('{');
+        if (start < 0 || start > 300) throw originalError;
+        let depth = 0;
+        let inString = false;
+        let escaped = false;
+        let end = -1;
+        for (let i = start; i < raw.length; i++) {
+            const ch = raw[i];
+            if (inString) {
+                if (escaped) escaped = false;
+                else if (ch === '\\') escaped = true;
+                else if (ch === '"') inString = false;
+            } else if (ch === '"') inString = true;
+            else if (ch === '{') depth++;
+            else if (ch === '}') {
+                if (--depth === 0) { end = i + 1; break; }
+                if (depth < 0) throw originalError;
+            }
+        }
+        if (end < 0 || inString) throw originalError;
+        const prefix = raw.slice(0, start).trim();
+        const suffix = raw.slice(end).trim();
+        // Refuse ambiguous multiple objects, excessive extras, or structured data after JSON.
+        if (prefix.length > 300 || suffix.length > 300 || /[{}]/u.test(prefix + suffix)) throw originalError;
+        // JSON.parse still validates escaping, types, and completion of the entire object.
+        return {value: JSON.parse(raw.slice(start, end)), recovered: true};
+    }
+}
+
 function createStorySummaryFunction({onRequest, openRouterApiKey, cors, getAuth, db, FieldValue}) {
 const exports = {};
 exports.generateStorySummary = onRequest({
@@ -144,12 +181,17 @@ exports.generateStorySummary = onRequest({
                     .replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
                 const finishReason = String(choice?.finish_reason || "unknown");
                 try {
-                    const candidate = JSON.parse(raw);
+                    const {value: candidate, recovered} = parseSummaryJsonSafely(raw, finishReason);
                     if (!candidate || typeof candidate !== 'object' || Array.isArray(candidate) ||
                         typeof candidate.content !== 'string' ||
                         typeof candidate.factualContent !== 'string' ||
                         (publishChapter && !candidate.content.trim())) {
                         throw new Error('SUMMARY_INVALID_FIELDS');
+                    }
+                    if (recovered) {
+                        console.info('故事摘要擷取單一完整 JSON 成功', {
+                            attempt, finishReason, outputLength: raw.length,
+                        });
                     }
                     parsed = candidate;
                     break;

@@ -6588,7 +6588,10 @@
       }
     }
   },
-  "world_edit_tag_heading1": "Theme tags (up to 5)",
+  "world_edit_tag_heading1": "Theme tags",
+  "characterEditWorldLore": "Latar Dunia (Pengaturan Backend)",
+  "characterEditWorldLoreDescription": "Latar belakang dunia, aturan, lokasi, dan peristiwa untuk permainan peran AI. Konten ini tidak ditampilkan pada kartu profil karakter.",
+  "characterEditWorldLoreHint": "Contoh: latar belakang dunia, faksi dan organisasi, aturan khusus, peristiwa penting…",
   "world_edit_tag_max1": "Select up to 5 tags",
   "world_edit_tag_custom1": "Tags (customizable; separate with commas)",
   "world_edit_secret_not_ready1": "Secret chapters have not loaded. Publishing is paused to protect your content. Check permissions and reopen this page.",

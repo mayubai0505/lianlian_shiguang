@@ -3989,6 +3989,10 @@ class _ChatPageState extends State<ChatPage> {
             _playerNickname,
           ),
 
+          'worldLore': _localizedCharacterText('worldLore', _currentCharacter.worldLore)
+              .replaceAll('{{玩家名字}}', _playerNickname)
+              .replaceAll('(玩家名字)', _playerNickname),
+
           'worldSetting': _localizedCharacterText('worldSetting', _currentCharacter.worldSetting)
               .replaceAll(
             '{{玩家名字}}',
@@ -6082,6 +6086,10 @@ class _ChatPageState extends State<ChatPage> {
             '(玩家名字)',
             _playerNickname,
           ),
+
+          "worldLore": _localizedCharacterText('worldLore', _currentCharacter.worldLore)
+              .replaceAll('{{玩家名字}}', _playerNickname)
+              .replaceAll('(玩家名字)', _playerNickname),
 
           "worldSetting": _localizedCharacterText('worldSetting', _currentCharacter.worldSetting)
               .replaceAll(

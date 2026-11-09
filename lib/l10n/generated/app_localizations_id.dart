@@ -12758,7 +12758,7 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get world_edit_tag_heading1 => 'Theme tags (up to 5)';
+  String get world_edit_tag_heading1 => 'Theme tags';
 
   @override
   String get world_edit_tag_max1 => 'Select up to 5 tags';
@@ -13556,4 +13556,15 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get store_pack_2990_name1 => 'Paket Kekasih Abadi';
+
+  @override
+  String get characterEditWorldLore => 'Latar Dunia (Pengaturan Backend)';
+
+  @override
+  String get characterEditWorldLoreDescription =>
+      'Latar belakang dunia, aturan, lokasi, dan peristiwa untuk permainan peran AI. Konten ini tidak ditampilkan pada kartu profil karakter.';
+
+  @override
+  String get characterEditWorldLoreHint =>
+      'Contoh: latar belakang dunia, faksi dan organisasi, aturan khusus, peristiwa penting…';
 }

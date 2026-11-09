@@ -1170,9 +1170,14 @@ exports.worldPrivateTest = onCall({
           writerStage = attemptIndex === 0 ? 'provider_request' : 'tiered_fallback';
           const tierStartedAt = Date.now();
           try {
+            // Only Kimi on OpenRouter prioritizes higher-throughput providers.
+            // Keep the shared request unchanged for Gemini, DeepSeek and Grok fallbacks.
+            const tierRequestBody = targetModel === 'moonshotai/kimi-k2.5'
+              ? {...writerRequestBody, provider:{sort:'throughput'}}
+              : writerRequestBody;
             const tierResult = await callAiWithRetry({
               modelId:targetModel,
-              requestBody:writerRequestBody,
+              requestBody:tierRequestBody,
               retryPrimary:false,
               timeoutMs:budget,
             });

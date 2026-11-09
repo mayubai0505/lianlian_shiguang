@@ -91,6 +91,7 @@ class Character {
   final List<CharacterPhoto>? gallery;
   final String createdBy;
   final String worldSetting;
+  final String worldLore;
   final String? storyModeFirstLine;
   final List<String>? identities;
   final DateTime createdAt;
@@ -146,6 +147,7 @@ class Character {
     this.gallery,
     required this.createdBy,
     required this.worldSetting,
+    this.worldLore = '',
     required this.createdAt,
     DateTime? lastChatTime,
     String? creatorName,
@@ -268,6 +270,7 @@ class Character {
     String? firstLine,
     String? coreCharacterSetting,
     String? worldSetting,
+    String? worldLore,
     String? customOutputFormat,
   }) {
     return Character(
@@ -280,6 +283,7 @@ class Character {
       createdBy: createdBy,
       worldSetting:
       worldSetting ?? this.worldSetting,
+      worldLore: worldLore ?? this.worldLore,
       createdAt: createdAt,
       lastChatTime: lastChatTime,
       creatorName: creatorName,
@@ -416,6 +420,7 @@ class Character {
       data['worldSetting']?.toString().trim().isNotEmpty == true
           ? data['worldSetting'].toString()
           : data['background']?.toString() ?? '',
+      worldLore: data['worldLore']?.toString() ?? '',
       likesCount: data['likesCount'] ?? 0,
       age: data['age'] ?? '',
       occupation: data['occupation'] ?? '',
@@ -551,7 +556,9 @@ class Character {
       worldSetting:
       data['worldSetting']?.toString().trim().isNotEmpty == true
           ? data['worldSetting'].toString()
-          : data['background']?.toString() ?? '',      likesCount: data['likesCount'] ?? 0,
+          : data['background']?.toString() ?? '',
+      worldLore: data['worldLore']?.toString() ?? '',
+      likesCount: data['likesCount'] ?? 0,
       age: data['age'] ?? '',
       occupation: data['occupation'] ?? '',
       identities: data['identities'] != null ? List<String>.from(data['identities']) : [],
@@ -633,6 +640,7 @@ class Character {
       'detailedPersonality': detailedPersonality,
       'customOutputFormat': customOutputFormat,
       'worldSetting': worldSetting,
+      'worldLore': worldLore,
       'appearance': appearance,
       'gender': gender,
       'isPublic': isPublic,

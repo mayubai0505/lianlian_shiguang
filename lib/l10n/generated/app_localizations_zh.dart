@@ -11868,7 +11868,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get world_edit_tag_heading1 => '主題標籤（最多 5 個）';
+  String get world_edit_tag_heading1 => '主題標籤';
 
   @override
   String get world_edit_tag_max1 => '最多選擇 5 個標籤';
@@ -12629,6 +12629,16 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get store_pack_2990_name1 => '永恆戀人包';
+
+  @override
+  String get characterEditWorldLore => '世界觀（後台設定）';
+
+  @override
+  String get characterEditWorldLoreDescription =>
+      '供 AI 演繹參考的世界背景、規則、地點與事件；不顯示於角色介紹卡。';
+
+  @override
+  String get characterEditWorldLoreHint => '例如：世界背景、勢力與組織、特殊規則、重要事件……';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -24031,7 +24041,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get world_edit_tag_heading1 => '主题标签（最多 5 个）';
+  String get world_edit_tag_heading1 => '主题标签';
 
   @override
   String get world_edit_tag_max1 => '最多选择 5 个标签';
@@ -36658,7 +36668,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get world_edit_tag_heading1 => '主題標籤（最多 5 個）';
+  String get world_edit_tag_heading1 => '主題標籤';
 
   @override
   String get world_edit_tag_max1 => '最多選擇 5 個標籤';
@@ -37419,4 +37429,14 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get store_pack_2990_name1 => '永恆戀人包';
+
+  @override
+  String get characterEditWorldLore => '世界觀（後台設定）';
+
+  @override
+  String get characterEditWorldLoreDescription =>
+      '供 AI 演繹參考的世界背景、規則、地點與事件；不顯示於角色介紹卡。';
+
+  @override
+  String get characterEditWorldLoreHint => '例如：世界背景、勢力與組織、特殊規則、重要事件……';
 }

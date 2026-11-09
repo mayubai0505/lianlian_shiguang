@@ -12740,7 +12740,7 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get world_edit_tag_heading1 => 'Theme tags (up to 5)';
+  String get world_edit_tag_heading1 => 'Theme tags';
 
   @override
   String get world_edit_tag_max1 => 'Select up to 5 tags';
@@ -13542,4 +13542,15 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get store_pack_2990_name1 => 'अनंत प्रेमी पैक';
+
+  @override
+  String get characterEditWorldLore => 'विश्व की रूपरेखा (बैकएंड सेटिंग)';
+
+  @override
+  String get characterEditWorldLoreDescription =>
+      'AI के भूमिका-अभिनय के लिए दुनिया की पृष्ठभूमि, नियम, स्थान और घटनाएँ। यह सामग्री पात्र के परिचय कार्ड पर नहीं दिखाई जाएगी।';
+
+  @override
+  String get characterEditWorldLoreHint =>
+      'उदाहरण: दुनिया की पृष्ठभूमि, गुट और संगठन, विशेष नियम, महत्वपूर्ण घटनाएँ…';
 }

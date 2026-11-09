@@ -173,6 +173,15 @@ const {isRoleplayInternalLeak} = require('./ai/internal_leak_detection');
 const {createMediaAnalysisHelpers} = require('./ai/media_analysis');
 const {downloadMediaAsBase64,describeImageWithGemini,transcribeAudioWithGemini} = createMediaAnalysisHelpers({admin,geminiApiKey});
 
+// 角色世界觀後台設定優先；舊角色仍使用原本展示欄位。
+// 僅供 AI Prompt 使用，前台角色介紹仍讀取 worldSetting。
+function getPreferredAiWorldLore(profile) {
+    const data = profile && typeof profile === "object" ? profile : {};
+    return [data.worldLore, data.worldSetting, data.background]
+        .map(value => String(value ?? "").trim())
+        .find(value => value.length > 0) || "";
+}
+
 const {callAiWithRetry} = createAiRetryHandler({
     getAiProviderConfig,callOpenRouter,callAnthropicDirect,
     isAiContentFiltered,hasUsableAiContent,isAiTimeoutError,recordAiHealth
@@ -2603,11 +2612,7 @@ if (
                     .join("\n\n") ||
                 "無特別設定";
             const worldSetting =
-                String(
-                    characterProfile.worldSetting ||
-                    characterProfile.background ||
-                    ""
-                ).trim() || "無特別世界觀設定";
+                getPreferredAiWorldLore(characterProfile) || "無特別世界觀設定";
 
             const rawNpcCharacters = Array.isArray(characterProfile.npcCharacters)
                 ? characterProfile.npcCharacters
@@ -5116,14 +5121,41 @@ ${persistentPreferenceDirective}
                                                                                            finalRequestBody.reasoning = { effort: "none" };
                                                                                        }
 
-                                                                                       const aiResult = await callAiWithRetry({
-                                                                                         modelId: targetModel,
-                                                                                         fallbackModelId: config.fallbackModelId || null,
-                                                                                         abortController,
-                                                                                         timeoutMs: 95_000,
-                                                                                         retryPrimary: false, // v2.4.6：失敗直接切 DeepSeek v3.2
-                                                                                         requestBody: finalRequestBody, // 帶入整理好的 payload
-                                                                                       });
+                                                                                       // xAI 餘額／月支出上限造成的 403 不在共用 retry_handler 的 retryable 清單。
+                                                                                       // 只在普通聊天室 Grok 遇到這種特定 403 時，直接使用既有 DeepSeek 備援。
+                                                                                       // 其他 403（一般權限／政策拒絕等）保持既有失敗處理。
+                                                                                       let aiResult;
+                                                                                       try {
+                                                                                           aiResult = await callAiWithRetry({
+                                                                                               modelId: targetModel,
+                                                                                               fallbackModelId: config.fallbackModelId || null,
+                                                                                               abortController,
+                                                                                               timeoutMs: 95_000,
+                                                                                               retryPrimary: false,
+                                                                                               requestBody: finalRequestBody,
+                                                                                           });
+                                                                                       } catch (writerError) {
+                                                                                           const providerErrorText = String(writerError?.result?.error || "");
+                                                                                           const isXaiQuota403 =
+                                                                                               config.writerTier === "grok_high_freedom" &&
+                                                                                               targetModel === "grok-4.6" &&
+                                                                                               writerError?.statusCode === 403 &&
+                                                                                               /used all available credits|monthly spending limit/i.test(providerErrorText) &&
+                                                                                               config.fallbackModelId === "deepseek/deepseek-v3.2";
+                                                                                           if (!isXaiQuota403) throw writerError;
+                                                                                           console.warn("🚑 xAI 額度／支出上限 403，改用既有 DeepSeek Writer 備援", {
+                                                                                               fallbackModelId: config.fallbackModelId,
+                                                                                               statusCode: 403,
+                                                                                           });
+                                                                                           aiResult = await callAiWithRetry({
+                                                                                               modelId: config.fallbackModelId,
+                                                                                               fallbackModelId: null,
+                                                                                               abortController,
+                                                                                               timeoutMs: 95_000,
+                                                                                               retryPrimary: false,
+                                                                                               requestBody: finalRequestBody,
+                                                                                           });
+                                                                                       }
 
                                                                                        // ✨ 1. 拿掉 response.status 的 log，改成印出 aiResult 是否成功拿到
                                                                                        console.log("🧪 AI CALL COMPLETED!");
@@ -7859,11 +7891,7 @@ const {momentTimestampToMillis, sanitizeMomentReplyId, extractJsonObjectText, ha
                                   ""
                               ).trim();
                               const tone = String(characterData?.toneAndStyle || "").trim();
-                              const world = String(
-                                  characterData?.worldSetting ||
-                                  characterData?.background ||
-                                  ""
-                              ).trim();
+                              const world = getPreferredAiWorldLore(characterData);
                               const relationship = String(characterData?.relationship || "").trim();
 
                               const situation = replyMode === "comment"
@@ -8754,11 +8782,7 @@ const {momentTimestampToMillis, sanitizeMomentReplyId, extractJsonObjectText, ha
                                      const characterPersona = `
                                      你是角色：${charData.name}。
                                      你的角色設定：${charData.detailedPersonality || '溫柔且神秘'}
-                                     你的世界觀設定：${
-                                       charData.worldSetting ||
-                                       charData.background ||
-                                       '無特別世界觀設定'
-                                     }
+                                     你的世界觀設定：${getPreferredAiWorldLore(charData) || '無特別世界觀設定'}
                                      你的說話風格與語氣：${charData.toneAndStyle || '自然不做作'}
                                      你喜歡的事物：${charData.likes || '秘密'}
                                      你討厭的地雷/事物：${charData.dislikes || '無'}
@@ -8934,9 +8958,7 @@ const buildCallScopedMemoryContext = createCallScopedMemoryContext({
                                     const p = data.characterProfile;
 
                                     const finalWorldSetting =
-                                        p.worldSetting ||
-                                        p.background ||
-                                        "無特別世界觀設定";
+                                        getPreferredAiWorldLore(p) || "無特別世界觀設定";
 
                                     fullSystemPrompt =
                                         `你是 ${p.name || "未知角色"}。\n` +

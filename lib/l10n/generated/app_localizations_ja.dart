@@ -12131,7 +12131,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get world_edit_tag_heading1 => 'Theme tags (up to 5)';
+  String get world_edit_tag_heading1 => 'Theme tags ';
 
   @override
   String get world_edit_tag_max1 => 'Select up to 5 tags';
@@ -12909,4 +12909,14 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get store_pack_2990_name1 => '永遠の恋人パック';
+
+  @override
+  String get characterEditWorldLore => '世界観（バックエンド設定）';
+
+  @override
+  String get characterEditWorldLoreDescription =>
+      'AIのロールプレイに使用する世界の背景、ルール、場所、出来事を設定します。キャラクター紹介カードには表示されません。';
+
+  @override
+  String get characterEditWorldLoreHint => '例：世界の背景、勢力や組織、特殊なルール、重要な出来事など…';
 }

@@ -12842,7 +12842,7 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get world_edit_tag_heading1 => 'Theme tags (up to 5)';
+  String get world_edit_tag_heading1 => 'Theme tags';
 
   @override
   String get world_edit_tag_max1 => 'Select up to 5 tags';
@@ -13642,4 +13642,16 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get store_pack_2990_name1 => 'Pacote Amantes Eternos';
+
+  @override
+  String get characterEditWorldLore =>
+      'Ambientação do Mundo (Configuração Interna)';
+
+  @override
+  String get characterEditWorldLoreDescription =>
+      'Contexto, regras, locais e acontecimentos do mundo usados pela IA na interpretação de personagens. Este conteúdo não aparece no cartão de perfil da personagem.';
+
+  @override
+  String get characterEditWorldLoreHint =>
+      'Ex.: contexto do mundo, facções e organizações, regras especiais, acontecimentos importantes…';
 }

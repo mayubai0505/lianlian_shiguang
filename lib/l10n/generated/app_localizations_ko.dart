@@ -12166,7 +12166,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get world_edit_tag_heading1 => 'Theme tags (up to 5)';
+  String get world_edit_tag_heading1 => 'Theme tags';
 
   @override
   String get world_edit_tag_max1 => 'Select up to 5 tags';
@@ -12949,4 +12949,14 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get store_pack_2990_name1 => '영원한 연인 패키지';
+
+  @override
+  String get characterEditWorldLore => '세계관 (백엔드 설정)';
+
+  @override
+  String get characterEditWorldLoreDescription =>
+      'AI 역할극에 사용할 세계의 배경, 규칙, 장소 및 사건을 설정합니다. 캐릭터 소개 카드에는 표시되지 않습니다.';
+
+  @override
+  String get characterEditWorldLoreHint => '예: 세계 배경, 세력과 조직, 특별 규칙, 주요 사건 등…';
 }

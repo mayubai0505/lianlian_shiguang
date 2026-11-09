@@ -21,6 +21,7 @@ class CharacterEditBasicTab extends StatefulWidget {
   final TextEditingController appearanceController;
   final TextEditingController customRelationshipController;
   final TextEditingController worldSettingController;
+  final TextEditingController worldLoreController;
   final TextEditingController storySummaryController;
   final TextEditingController storyController;
   final TextEditingController firstLineController;
@@ -43,6 +44,8 @@ class CharacterEditBasicTab extends StatefulWidget {
   final String Function(String key) relationshipLabelForKey;
 
   final bool isWorldSettingExpanded;
+  final bool isWorldLoreExpanded;
+  final VoidCallback onToggleWorldLoreExpanded;
   final VoidCallback onToggleWorldSettingExpanded;
   final bool isCoreCharacterSettingExpanded;
   final VoidCallback onToggleCoreCharacterSettingExpanded;
@@ -76,6 +79,7 @@ class CharacterEditBasicTab extends StatefulWidget {
     required this.appearanceController,
     required this.customRelationshipController,
     required this.worldSettingController,
+    required this.worldLoreController,
     required this.storySummaryController,
     required this.storyController,
     required this.firstLineController,
@@ -95,6 +99,8 @@ class CharacterEditBasicTab extends StatefulWidget {
     required this.onRelationshipChanged,
     required this.relationshipLabelForKey,
     required this.isWorldSettingExpanded,
+    required this.isWorldLoreExpanded,
+    required this.onToggleWorldLoreExpanded,
     required this.onToggleWorldSettingExpanded,
     required this.isCoreCharacterSettingExpanded,
     required this.onToggleCoreCharacterSettingExpanded,
@@ -117,6 +123,14 @@ class CharacterEditBasicTab extends StatefulWidget {
 }
 
 class _CharacterEditBasicTabState extends State<CharacterEditBasicTab> {
+  // 新欄位暫存翻譯；日後可統一移入各語系 ARB。
+  String _fieldLabel(String traditional, String simplified, String english) {
+    final locale = widget.l10n.localeName.toLowerCase();
+    if (locale.contains('hans') || locale == 'zh_cn') return simplified;
+    if (locale.startsWith('zh')) return traditional;
+    return english;
+  }
+
   InputDecoration _cleanInputDecoration(
       ThemeData theme, {
         String? hintText,
@@ -639,10 +653,10 @@ class _CharacterEditBasicTabState extends State<CharacterEditBasicTab> {
               const SizedBox(height: 18),
               _buildBoxedTextField(
                 widget.worldSettingController,
-                l10n.characterEditWorldview,
-                description: l10n.characterEditWorldviewDescription,
-                maxLength: 10000,
-                hintText: l10n.characterEditWorldviewHint,
+                l10n.field_background,
+                description: _fieldLabel('將顯示於前台角色介紹卡，請填寫提供給玩家閱讀的角色介紹。', '显示在角色介绍卡中，请填写供玩家阅读的角色介绍。', 'Shown on the character profile card for players.'),
+                maxLength: 5000,
+                hintText: _fieldLabel('介紹角色背景、人物故事，以及想讓玩家了解的資訊……', '介绍角色背景、人物故事及希望玩家了解的信息……', 'Introduce the character, background and story…'),
                 isRequired: true,
                 isCollapsible: true,
                 isExpanded: widget.isWorldSettingExpanded,
@@ -731,6 +745,17 @@ class _CharacterEditBasicTabState extends State<CharacterEditBasicTab> {
                 isCollapsible: true,
                 isExpanded: widget.isCoreCharacterSettingExpanded,
                 onToggleExpanded: widget.onToggleCoreCharacterSettingExpanded,
+              ),
+              const SizedBox(height: 16),
+              _buildBoxedTextField(
+                widget.worldLoreController,
+                l10n.characterEditWorldLore,
+                maxLength: 10000,
+                description: l10n.characterEditWorldLoreDescription,
+                hintText: l10n.characterEditWorldLoreHint,
+                isCollapsible: true,
+                isExpanded: widget.isWorldLoreExpanded,
+                onToggleExpanded: widget.onToggleWorldLoreExpanded,
               ),
               const SizedBox(height: 16),
               _buildBoxedTextField(

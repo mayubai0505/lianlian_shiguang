@@ -12604,7 +12604,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get world_edit_tag_heading1 => 'Theme tags (up to 5)';
+  String get world_edit_tag_heading1 => 'Theme tags ';
 
   @override
   String get world_edit_tag_max1 => 'Select up to 5 tags';
@@ -13401,4 +13401,15 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get store_pack_2990_name1 => 'حزمة العشاق الأبديين';
+
+  @override
+  String get characterEditWorldLore => 'إعدادات العالم (إعدادات خلفية)';
+
+  @override
+  String get characterEditWorldLoreDescription =>
+      'خلفية العالم وقواعده ومواقعه وأحداثه التي يستخدمها الذكاء الاصطناعي في أداء الأدوار؛ لا تظهر في بطاقة تعريف الشخصية.';
+
+  @override
+  String get characterEditWorldLoreHint =>
+      'مثال: خلفية العالم، الفصائل والمنظمات، القواعد الخاصة، الأحداث المهمة…';
 }

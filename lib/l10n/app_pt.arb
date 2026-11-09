@@ -6538,7 +6538,10 @@
       }
     }
   },
-  "world_edit_tag_heading1": "Theme tags (up to 5)",
+  "world_edit_tag_heading1": "Theme tags",
+  "characterEditWorldLore": "Ambientação do Mundo (Configuração Interna)",
+  "characterEditWorldLoreDescription": "Contexto, regras, locais e acontecimentos do mundo usados pela IA na interpretação de personagens. Este conteúdo não aparece no cartão de perfil da personagem.",
+  "characterEditWorldLoreHint": "Ex.: contexto do mundo, facções e organizações, regras especiais, acontecimentos importantes…",
   "world_edit_tag_max1": "Select up to 5 tags",
   "world_edit_tag_custom1": "Tags (customizable; separate with commas)",
   "world_edit_secret_not_ready1": "Secret chapters have not loaded. Publishing is paused to protect your content. Check permissions and reopen this page.",

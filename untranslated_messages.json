@@ -443,6 +443,9 @@
     "world_records_affinity_note1",
     "world_records_empty_characters1",
     "world_records_affinity_score_with_next1",
-    "world_records_affinity_score_only1"
+    "world_records_affinity_score_only1",
+    "characterEditWorldLore",
+    "characterEditWorldLoreDescription",
+    "characterEditWorldLoreHint"
   ]
 }

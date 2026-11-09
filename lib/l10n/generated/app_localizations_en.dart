@@ -12693,7 +12693,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get world_edit_tag_heading1 => 'Theme tags (up to 5)';
+  String get world_edit_tag_heading1 => 'Theme tags';
 
   @override
   String get world_edit_tag_max1 => 'Select up to 5 tags';
@@ -13493,4 +13493,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get store_pack_2990_name1 => 'Eternal Lovers Pack';
+
+  @override
+  String get characterEditWorldLore => 'World Setting (Backend)';
+
+  @override
+  String get characterEditWorldLoreDescription =>
+      'World background, rules, locations, and events for AI roleplay. This content is not displayed on the character profile card.';
+
+  @override
+  String get characterEditWorldLoreHint =>
+      'e.g., world background, factions and organizations, special rules, important events…';
 }

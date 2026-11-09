@@ -6538,7 +6538,10 @@
       }
     }
   },
-  "world_edit_tag_heading1": "Theme tags (up to 5)",
+  "world_edit_tag_heading1": "Theme tags",
+  "characterEditWorldLore": "Bối cảnh thế giới (Cài đặt hệ thống)",
+  "characterEditWorldLoreDescription": "Bối cảnh, quy tắc, địa điểm và sự kiện trong thế giới để AI nhập vai. Nội dung này không hiển thị trên thẻ giới thiệu nhân vật.",
+  "characterEditWorldLoreHint": "Ví dụ: bối cảnh thế giới, phe phái và tổ chức, quy tắc đặc biệt, sự kiện quan trọng…",
   "world_edit_tag_max1": "Select up to 5 tags",
   "world_edit_tag_custom1": "Tags (customizable; separate with commas)",
   "world_edit_secret_not_ready1": "Secret chapters have not loaded. Publishing is paused to protect your content. Check permissions and reopen this page.",

@@ -21765,7 +21765,7 @@ abstract class AppLocalizations {
   /// No description provided for @world_edit_tag_heading1.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'主題標籤（最多 5 個）'**
+  /// **'主題標籤'**
   String get world_edit_tag_heading1;
 
   /// No description provided for @world_edit_tag_max1.
@@ -23195,6 +23195,24 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'永恆戀人包'**
   String get store_pack_2990_name1;
+
+  /// No description provided for @characterEditWorldLore.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'世界觀（後台設定）'**
+  String get characterEditWorldLore;
+
+  /// No description provided for @characterEditWorldLoreDescription.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'供 AI 演繹參考的世界背景、規則、地點與事件；不顯示於角色介紹卡。'**
+  String get characterEditWorldLoreDescription;
+
+  /// No description provided for @characterEditWorldLoreHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'例如：世界背景、勢力與組織、特殊規則、重要事件……'**
+  String get characterEditWorldLoreHint;
 }
 
 class _AppLocalizationsDelegate

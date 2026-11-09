@@ -6424,7 +6424,7 @@
       }
     }
   },
-  "world_edit_tag_heading1": "主题标签（最多 5 个）",
+  "world_edit_tag_heading1": "主题标签",
   "world_edit_tag_max1": "最多选择 5 个标签",
   "world_edit_tag_custom1": "标签（可自订，以顿号分隔）",
   "world_edit_secret_not_ready1": "秘密篇章尚未成功读取，为保护既有内容暂时无法发布。请确认权限并重新开启页面。",

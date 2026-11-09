@@ -12639,7 +12639,7 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get world_edit_tag_heading1 => 'Theme tags (up to 5)';
+  String get world_edit_tag_heading1 => 'Theme tags';
 
   @override
   String get world_edit_tag_max1 => 'Select up to 5 tags';
@@ -13437,4 +13437,15 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get store_pack_2990_name1 => 'แพ็กคู่รักนิรันดร์';
+
+  @override
+  String get characterEditWorldLore => 'โลกทัศน์ (การตั้งค่าระบบเบื้องหลัง)';
+
+  @override
+  String get characterEditWorldLoreDescription =>
+      'กำหนดภูมิหลัง กฎ สถานที่ และเหตุการณ์ของโลกเพื่อให้ AI ใช้ในการสวมบทบาท โดยจะไม่แสดงข้อมูลนี้บนการ์ดแนะนำตัวละคร';
+
+  @override
+  String get characterEditWorldLoreHint =>
+      'เช่น ภูมิหลังของโลก กลุ่มอำนาจและองค์กร กฎพิเศษ เหตุการณ์สำคัญ…';
 }

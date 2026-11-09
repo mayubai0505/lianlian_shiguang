@@ -12770,7 +12770,7 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get world_edit_tag_heading1 => 'Theme tags (up to 5)';
+  String get world_edit_tag_heading1 => 'Theme tags';
 
   @override
   String get world_edit_tag_max1 => 'Select up to 5 tags';
@@ -13569,4 +13569,15 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get store_pack_2990_name1 => 'Gói Tình Nhân Vĩnh Cửu';
+
+  @override
+  String get characterEditWorldLore => 'Bối cảnh thế giới (Cài đặt hệ thống)';
+
+  @override
+  String get characterEditWorldLoreDescription =>
+      'Bối cảnh, quy tắc, địa điểm và sự kiện trong thế giới để AI nhập vai. Nội dung này không hiển thị trên thẻ giới thiệu nhân vật.';
+
+  @override
+  String get characterEditWorldLoreHint =>
+      'Ví dụ: bối cảnh thế giới, phe phái và tổ chức, quy tắc đặc biệt, sự kiện quan trọng…';
 }

@@ -132,6 +132,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   final _customOutputFormatController = TextEditingController();
   final _creatorMessageController = TextEditingController();
   final _worldSettingController = TextEditingController();
+  final _worldLoreController = TextEditingController();
   final _dialogueExamplesController = TextEditingController();
   final _extraInputController = TextEditingController();
   final _storySummaryController = TextEditingController();
@@ -152,6 +153,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   bool _isDeleting = false; // 刪除狀態
   bool _isCoreCharacterSettingExpanded = false;
   bool _isWorldSettingExpanded = false;
+  bool _isWorldLoreExpanded = false;
   DocumentReference? _newCharacterDocRef; // 防止新建角色重複產生多筆
   String _gender = '';
   List<String> _personalityTags = [];
@@ -235,6 +237,10 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       mapData['worldSetting']?.toString().trim().isNotEmpty == true
           ? mapData['worldSetting'].toString()
           : char.background;
+      // worldLore 是新增欄位；舊 Character model 未必包含此屬性。
+      // 從正式角色文件讀取，確保重新編輯時不會意外清空。
+      _worldLoreController.text = mapData['worldLore']?.toString() ?? '';
+      _loadExistingWorldLore(char.id, char.isPublic);
       _likesController.text = char.likes;
       _dislikesController.text = char.dislikes;
       _secretsController.text = char.secrets;
@@ -325,6 +331,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       data['worldSetting']?.toString().trim().isNotEmpty == true
           ? data['worldSetting'].toString()
           : data['background']?.toString() ?? '';
+      _worldLoreController.text = data['worldLore']?.toString() ?? '';
       _storySummaryController.text = data['storySummary'] ?? '';
       _storyController.text = data['story'] ?? '';
       _firstLineController.text = data['storyModeFirstLine'] ?? '';
@@ -510,6 +517,27 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     }
   }
 
+  Future<void> _loadExistingWorldLore(String characterId, bool isPublic) async {
+    final currentUid = FirebaseAuth.instance.currentUser?.uid;
+    if (characterId.isEmpty || (!isPublic && currentUid == null)) return;
+    try {
+      final base = _db.collection('artifacts').doc(AppConfig.appId);
+      final ref = isPublic
+          ? base.collection('public_characters').doc(characterId)
+          : base.collection('users').doc(currentUid!)
+              .collection('private_characters').doc(characterId);
+      final snapshot = await ref.get();
+      if (!mounted || !snapshot.exists) return;
+      final stored = snapshot.data()?['worldLore'];
+      // 避免網路請求回來時覆蓋創作者已經輸入的新內容。
+      if (_worldLoreController.text.isEmpty && stored is String) {
+        _worldLoreController.text = stored;
+      }
+    } catch (error) {
+      debugPrint('讀取世界觀後台設定失敗：$error');
+    }
+  }
+
   String _buildLegacyCoreCharacterSetting({
     required String detailedPersonality,
     required String toneAndStyle,
@@ -578,6 +606,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     _customOutputFormatController.dispose();
     _creatorMessageController.dispose();
     _worldSettingController.dispose();
+    _worldLoreController.dispose();
     _likesController.dispose();
     _dislikesController.dispose();
     _secretsController.dispose();
@@ -767,6 +796,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'detailedPersonality':
         _coreCharacterSettingController.text.trim(),
         'worldSetting': _worldSettingController.text.trim(),
+        'worldLore': _worldLoreController.text.trim(),
         'background': _backgroundController.text.trim(),
         'likes': _likesController.text.trim(),
         'dislikes': _dislikesController.text.trim(),
@@ -1225,8 +1255,13 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'limit': 6000,
       },
       {
-        'label': l10n.characterEditWorldview,
+        'label': '角色簡介',
         'controller': _worldSettingController,
+        'limit': 5000,
+      },
+      {
+        'label': '世界觀（後台設定）',
+        'controller': _worldLoreController,
         'limit': 10000,
       },
       {
@@ -1546,6 +1581,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'detailedPersonality':
         _coreCharacterSettingController.text.trim(),
         'worldSetting': _worldSettingController.text.trim(),
+        'worldLore': _worldLoreController.text.trim(),
 
 // 舊版相容欄位暫時保留
         'background': _backgroundController.text.trim(),
@@ -1875,6 +1911,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
           prefs.getString('temp_char_worldSetting') ??
               prefs.getString('temp_char_background') ??
               '';
+      _worldLoreController.text = prefs.getString('temp_char_worldLore') ?? '';
       _backgroundController.text = prefs.getString('temp_char_background') ?? '';
       _storyController.text = prefs.getString('temp_char_story') ?? '';
       _isPublic = prefs.getBool('temp_char_isPublic') ?? true;
@@ -1936,6 +1973,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       'temp_char_worldSetting',
       _worldSettingController.text.trim(),
     );
+    await prefs.setString('temp_char_worldLore', _worldLoreController.text.trim());
     await prefs.setString('temp_char_background', _backgroundController.text.trim());
     await prefs.setString('temp_char_story', _storyController.text.trim());
     await prefs.setBool('temp_char_isPublic', _isPublic);
@@ -2805,6 +2843,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         firstLine: _firstLineController.text.trim(),
         coreCharacterSetting: _coreCharacterSettingController.text.trim(),
         worldSetting: _worldSettingController.text.trim(),
+        worldLore: _worldLoreController.text.trim(),
         customOutputFormat: _customOutputFormatController.text.trim(),
       );
     } else {
@@ -2819,6 +2858,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         gallery: _galleryPhotos,
         createdBy: user?.uid ?? 'preview',
         worldSetting: _worldSettingController.text.trim(),
+        worldLore: _worldLoreController.text.trim(),
         createdAt: DateTime.now(),
         playCount: 0,
         age: _ageController.text.trim(),
@@ -3237,6 +3277,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                       appearanceController: _appearanceController,
                       customRelationshipController: _customRelationshipController,
                       worldSettingController: _worldSettingController,
+                      worldLoreController: _worldLoreController,
                       storySummaryController: _storySummaryController,
                       storyController: _storyController,
                       firstLineController: _firstLineController,
@@ -3275,6 +3316,12 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                         return _getTranslatedLabel(key, l10n);
                       },
                       isWorldSettingExpanded: _isWorldSettingExpanded,
+                      isWorldLoreExpanded: _isWorldLoreExpanded,
+                      onToggleWorldLoreExpanded: () {
+                        setState(() {
+                          _isWorldLoreExpanded = !_isWorldLoreExpanded;
+                        });
+                      },
                       onToggleWorldSettingExpanded: () {
                         setState(() {
                           _isWorldSettingExpanded = !_isWorldSettingExpanded;

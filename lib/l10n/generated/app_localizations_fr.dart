@@ -12938,7 +12938,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get world_edit_tag_heading1 => 'Theme tags (up to 5)';
+  String get world_edit_tag_heading1 => 'Theme tags';
 
   @override
   String get world_edit_tag_max1 => 'Select up to 5 tags';
@@ -13745,4 +13745,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get store_pack_2990_name1 => 'Pack Amants Éternels';
+
+  @override
+  String get characterEditWorldLore => 'Univers (configuration interne)';
+
+  @override
+  String get characterEditWorldLoreDescription =>
+      'Contexte, règles, lieux et événements de l’univers utilisés par l’IA pour le jeu de rôle. Ces informations ne figurent pas sur la fiche du personnage.';
+
+  @override
+  String get characterEditWorldLoreHint =>
+      'Ex. : contexte de l’univers, factions et organisations, règles particulières, événements importants…';
 }
