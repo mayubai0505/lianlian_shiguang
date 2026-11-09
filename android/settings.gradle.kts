@@ -19,8 +19,8 @@ pluginManagement {
 
 plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
-    id("com.android.application") version "8.9.1" apply false // 我將版本號更新到一個較新的穩定版
-    id("org.jetbrains.kotlin.android") version "2.1.0" apply false // 我將版本號更新到一個較新的穩定版
+    id("com.android.application") version "8.11.1" apply false // 我將版本號更新到一個較新的穩定版
+    id("org.jetbrains.kotlin.android") version "2.2.20" apply false // 我將版本號更新到一個較新的穩定版
     // ✨ 修正點一：在這裡註冊 Google 服務插件 ✨
     id("com.google.gms.google-services") version "4.4.2" apply false
 }

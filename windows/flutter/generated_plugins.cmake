@@ -5,6 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   audioplayers_windows
   cloud_firestore
+  facebook_auth_desktop
   file_selector_windows
   firebase_app_check
   firebase_auth
