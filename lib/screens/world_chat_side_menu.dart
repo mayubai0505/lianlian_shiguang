@@ -59,7 +59,6 @@ class WorldChatSideMenu extends StatelessWidget {
           Text(worldName, maxLines: 2, overflow: TextOverflow.ellipsis,
               style: GoogleFonts.notoSerifTc(fontSize: 18, fontWeight: FontWeight.w600)),
           const SizedBox(height: 6),
-          Text(l10n.world_menu_subtitle1, style: theme.textTheme.bodySmall),
           section(l10n.world_menu_chat_section1),
           tile(l10n.world_menu_search1, '搜尋對話', 'assets/images/chat/chat_menu_search_mask.png'),
           tile(l10n.world_menu_save_transcript1, '保存對話紀錄', 'assets/images/chat/chat_menu_save_mask.png'),

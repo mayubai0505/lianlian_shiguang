@@ -253,6 +253,11 @@ class _ChatPageState extends State<ChatPage> {
   final String _appId = AppConfig.appId;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final TextEditingController _textController = TextEditingController();
+  // 草稿讀取與寫入版本：避免快速退出／進入時舊草稿覆蓋已送出訊息。
+  int _draftRevision = 0;
+  static final Map<String, Future<void>> _draftWriteQueues = <String, Future<void>>{};
+  OverlayEntry? _chatNoticeEntry;
+  Timer? _chatNoticeTimer;
   final ScrollController _chatScrollController = ScrollController();
   final ScrollController _menuScrollController = ScrollController();
   // 🚀 請確保您是這樣宣告的：
@@ -903,6 +908,7 @@ class _ChatPageState extends State<ChatPage> {
     // App 被系統直接關閉時通常不會走 dispose，因此仍能保留最後所在房間。
     unawaited(_clearRememberedChatIfCurrent());
 
+    _dismissChatNotice();
     _chatScrollController.dispose();
     _menuScrollController.dispose();
     _recorder?.closeRecorder();
@@ -1018,15 +1024,22 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   // 👇 把這整段貼在 initState 的下方
-  Future<void> _loadDraft() async {
-    final prefs = await SharedPreferences.getInstance();
-    // 使用 sessionId 當作專屬鑰匙，這樣每個聊天室的草稿都是獨立的！
-    final draftKey = 'chat_draft_${widget.sessionId}';
-    final savedDraft = prefs.getString(draftKey);
+  String get _chatDraftKey => 'chat_draft_${widget.sessionId}';
 
-    if (savedDraft != null && savedDraft.isNotEmpty) {
-      // 把存好的草稿塞回妳的輸入框控制器
+  Future<void> _loadDraft() async {
+    final revisionAtStart = _draftRevision;
+    try {
+      // 等同房間尚未完成的清除／儲存寫入，避免回到聊天室讀到舊草稿。
+      final pendingWrite = _draftWriteQueues[_chatDraftKey];
+      if (pendingWrite != null) await pendingWrite;
+      final prefs = await SharedPreferences.getInstance();
+      final savedDraft = prefs.getString(_chatDraftKey) ?? '';
+      // 載入期間玩家可能已輸入或已送出，絕不能以舊草稿覆蓋。
+      if (!mounted || revisionAtStart != _draftRevision ||
+          _textController.text.isNotEmpty || savedDraft.isEmpty) return;
       _textController.text = savedDraft;
+    } catch (e) {
+      debugPrint('聊天室草稿讀取略過：$e');
     }
   }
 
@@ -1437,17 +1450,26 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   // ✨ 專屬的儲存/清除草稿功能
-  Future<void> _saveDraft(String text) async {
-    final prefs = await SharedPreferences.getInstance();
-    final draftKey = 'chat_draft_${widget.sessionId}';
-
-    if (text.trim().isEmpty) {
-      // 如果輸入框空了，就把草稿刪掉，節省空間
-      await prefs.remove(draftKey);
-    } else {
-      // 把最新的文字存起來
-      await prefs.setString(draftKey, text);
-    }
+  Future<void> _saveDraft(String text) {
+    _draftRevision++;
+    final key = _chatDraftKey;
+    // 同一聊天室所有寫入排隊進行：後送的清除動作不會被舊寫入蓋回。
+    final previous = _draftWriteQueues[key] ?? Future<void>.value();
+    final pending = previous.catchError((Object error) {
+      debugPrint('前一筆草稿操作失敗：$error');
+    }).then<void>((_) async {
+      final prefs = await SharedPreferences.getInstance();
+      if (text.trim().isEmpty) {
+        await prefs.remove(key);
+      } else {
+        await prefs.setString(key, text);
+      }
+    });
+    _draftWriteQueues[key] = pending;
+    // 避免未等待的 onChanged Future 造成未處理例外。
+    return pending.catchError((Object error) {
+      debugPrint('聊天室草稿儲存失敗：$error');
+    });
   }
 
   // 🌟 3. 實作：根據 ID 撈取真實角色資料 (通用版，不分角色)
@@ -2264,33 +2286,27 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  void _dismissChatNotice() {
+    _chatNoticeTimer?.cancel();
+    _chatNoticeTimer = null;
+    _chatNoticeEntry?.remove();
+    _chatNoticeEntry?.dispose();
+    _chatNoticeEntry = null;
+  }
+
   void _showCenterToast(
       String message, {
         bool isError = false,
         IconData? customIcon,
       }) {
     if (!mounted) return;
+    _dismissChatNotice();
 
-    showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      barrierColor: Colors.transparent,
-      useRootNavigator: true,
-      builder: (dialogContext) {
-        Future.delayed(
-          const Duration(milliseconds: 1500),
-              () {
-            if (!dialogContext.mounted) return;
-
-            Navigator.of(
-              dialogContext,
-              rootNavigator: true,
-            ).pop();
-          },
-        );
-
-        return PopScope(
-          canPop: false,
+    // 不再掛到 root navigator 的 DialogRoute：
+    // 快速離開聊天室時，舊頁面的錯誤提示不會殘留到新頁面。
+    final entry = OverlayEntry(
+      builder: (_) => Positioned.fill(
+        child: IgnorePointer(
           child: Center(
             child: Material(
               color: Colors.black.withValues(alpha: 0.8),
@@ -2305,9 +2321,7 @@ class _ChatPageState extends State<ChatPage> {
                   children: [
                     Icon(
                       customIcon ??
-                          (isError
-                              ? Icons.error_outline
-                              : Icons.check_circle_outline),
+                          (isError ? Icons.error_outline : Icons.check_circle_outline),
                       color: isError ? Colors.redAccent : Colors.white,
                       size: 20,
                     ),
@@ -2315,10 +2329,7 @@ class _ChatPageState extends State<ChatPage> {
                     Flexible(
                       child: Text(
                         message,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                        ),
+                        style: const TextStyle(color: Colors.white, fontSize: 14),
                       ),
                     ),
                   ],
@@ -2326,9 +2337,14 @@ class _ChatPageState extends State<ChatPage> {
               ),
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
+    _chatNoticeEntry = entry;
+    Overlay.of(context).insert(entry);
+    _chatNoticeTimer = Timer(const Duration(milliseconds: 1500), () {
+      if (_chatNoticeEntry == entry) _dismissChatNotice();
+    });
   }
 
   Future<void> _incrementCharacterPlayCount() async {
@@ -2656,13 +2672,8 @@ class _ChatPageState extends State<ChatPage> {
       _textController.clear();
       FocusScope.of(context).unfocus();
 
-      unawaited(
-        SharedPreferences.getInstance().then(
-              (prefs) => prefs.remove(
-            'chat_draft_${widget.sessionId}',
-          ),
-        ),
-      );
+      // 與 onChanged 儲存共用序列化佇列，避免已送出文字回到輸入框。
+      unawaited(_saveDraft(''));
 
       if (_isReferralTrackerActive) {
         await _triggerReferralCounter();

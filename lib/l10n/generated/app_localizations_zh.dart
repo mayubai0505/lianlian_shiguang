@@ -10974,22 +10974,22 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String official_studio_text_1771(String name) {
-    return '确定将「$name」移出追蹤者名单吗？对方将不再追蹤你，但未来仍可再次追蹤。';
+    return '確定將「$name」移出追蹤者名單嗎？對方將不再追蹤你，但未來仍可再次追蹤。';
   }
 
   @override
   String official_studio_text_1781(int count) {
-    return '单人私信：$count / 30 封';
+    return '單人私信：$count / 30 封';
   }
 
   @override
   String official_studio_text_1791(int count) {
-    return '全体粉丝群发：$count / 5 次';
+    return '全體粉絲群發：$count / 5 次';
   }
 
   @override
   String official_studio_text_1801(int count) {
-    return '赠送成功！$count 朵花花已寄到粉丝信箱，等待领取。';
+    return '贈送成功！$count 朵花花已寄到粉絲信箱，等待領取。';
   }
 
   @override
@@ -11009,49 +11009,49 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String official_studio_text_1841(String month) {
-    return '$month 创作奖励';
+    return '$month 創作獎勵';
   }
 
   @override
   String official_studio_text_1851(int count) {
-    return '本月进度：$count / 3 位';
+    return '本月進度：$count / 3 位';
   }
 
   @override
   String official_studio_text_1861(int count) {
-    return '尚差 $count 位公开角色';
+    return '尚差 $count 位公開角色';
   }
 
   @override
   String official_studio_text_1871(int count) {
-    return '花花余额不足，尚缺 $count 朵';
+    return '花花餘額不足，尚缺 $count 朵';
   }
 
   @override
-  String get official_studio_text_1881 => '读取信件额度失败，请稍后重試';
+  String get official_studio_text_1881 => '讀取信件額度失敗，請稍後重試';
 
   @override
-  String get official_studio_text_1891 => '寄送未确认成功，请检查紀录后重試';
+  String get official_studio_text_1891 => '寄送未確認成功，請檢查紀錄后重試';
 
   @override
-  String get official_studio_text_1901 => '連线失败，请确认紀录后再重試';
+  String get official_studio_text_1901 => '連線失敗，請確認紀錄后再重試';
 
   @override
-  String get official_studio_text_1911 => '赠送未确认成功，请先查询紀录再重試。';
+  String get official_studio_text_1911 => '贈送未確認成功，請先查詢紀錄再重試。';
 
   @override
   String official_studio_text_1921(int balance, int total, int missing) {
-    return '目前余额：$balance 朵\n本次需要：$total 朵\n尚缺少：$missing 朵\n\n可以前往商店補充花花。';
+    return '目前餘額：$balance 朵\n本次需要：$total 朵\n尚缺少：$missing 朵\n\n可以前往商店補充花花。';
   }
 
   @override
   String official_studio_text_1931(int followers, int amount, int total) {
-    return '即将赠送给 $followers 位粉丝，每人 $amount 朵，共扣除 $total 朵花花。\n赠送完成后无法自行撤回。';
+    return '即將贈送給 $followers 位粉絲，每人 $amount 朵，共扣除 $total 朵花花。\n贈送完成後無法自行撤回。';
   }
 
   @override
   String official_studio_text_1941(String mode, String status, int count) {
-    return '$mode · $status · 已投递 $count 人';
+    return '$mode · $status · 已投遞 $count 人';
   }
 
   @override
@@ -35774,22 +35774,22 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String official_studio_text_1771(String name) {
-    return '确定将「$name」移出追蹤者名单吗？对方将不再追蹤你，但未来仍可再次追蹤。';
+    return '確定將「$name」移出追蹤者名單嗎？對方將不再追蹤你，但未來仍可再次追蹤。';
   }
 
   @override
   String official_studio_text_1781(int count) {
-    return '单人私信：$count / 30 封';
+    return '單人私信：$count / 30 封';
   }
 
   @override
   String official_studio_text_1791(int count) {
-    return '全体粉丝群发：$count / 5 次';
+    return '全體粉絲群發：$count / 5 次';
   }
 
   @override
   String official_studio_text_1801(int count) {
-    return '赠送成功！$count 朵花花已寄到粉丝信箱，等待领取。';
+    return '贈送成功！$count 朵花花已寄到粉絲信箱，等待領取。';
   }
 
   @override
@@ -35809,49 +35809,49 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String official_studio_text_1841(String month) {
-    return '$month 创作奖励';
+    return '$month 創作獎勵';
   }
 
   @override
   String official_studio_text_1851(int count) {
-    return '本月进度：$count / 3 位';
+    return '本月進度：$count / 3 位';
   }
 
   @override
   String official_studio_text_1861(int count) {
-    return '尚差 $count 位公开角色';
+    return '尚差 $count 位公開角色';
   }
 
   @override
   String official_studio_text_1871(int count) {
-    return '花花余额不足，尚缺 $count 朵';
+    return '花花餘額不足，尚缺 $count 朵';
   }
 
   @override
-  String get official_studio_text_1881 => '读取信件额度失败，请稍后重試';
+  String get official_studio_text_1881 => '讀取信件額度失敗，請稍後重試';
 
   @override
-  String get official_studio_text_1891 => '寄送未确认成功，请检查紀录后重試';
+  String get official_studio_text_1891 => '寄送未確認成功，請檢查紀錄后重試';
 
   @override
-  String get official_studio_text_1901 => '連线失败，请确认紀录后再重試';
+  String get official_studio_text_1901 => '連線失敗，請確認紀錄后再重試';
 
   @override
-  String get official_studio_text_1911 => '赠送未确认成功，请先查询紀录再重試。';
+  String get official_studio_text_1911 => '贈送未確認成功，請先查詢紀錄再重試。';
 
   @override
   String official_studio_text_1921(int balance, int total, int missing) {
-    return '目前余额：$balance 朵\n本次需要：$total 朵\n尚缺少：$missing 朵\n\n可以前往商店補充花花。';
+    return '目前餘額：$balance 朵\n本次需要：$total 朵\n尚缺少：$missing 朵\n\n可以前往商店補充花花。';
   }
 
   @override
   String official_studio_text_1931(int followers, int amount, int total) {
-    return '即将赠送给 $followers 位粉丝，每人 $amount 朵，共扣除 $total 朵花花。\n赠送完成后无法自行撤回。';
+    return '即將贈送給 $followers 位粉絲，每人 $amount 朵，共扣除 $total 朵花花。\n贈送完成後無法自行撤回。';
   }
 
   @override
   String official_studio_text_1941(String mode, String status, int count) {
-    return '$mode · $status · 已投递 $count 人';
+    return '$mode · $status · 已投遞 $count 人';
   }
 
   @override

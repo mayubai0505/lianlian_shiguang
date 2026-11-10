@@ -61,11 +61,17 @@ const {geminiSafeInCharacterReply, enforceGeminiNoSexualContent} = require('./ge
 const { buildImmersivePrompt } = require('./chat/prompts/immersive');
 const { buildCharacterIdentityDirective } = require('./chat/prompts/character_identity');
 const {createHistoryUtils} = require('./chat/history_utils');
+const {findRepeatedNarrative} = require('./chat/reply_duplicates');
 const {createWriterResponseUtils} = require('./ai/writer_response');
 const {parseRoleCommands} = require('./chat/role_commands');
 const {createPlayerIdentityTools} = require('./chat/player_identity');
 const {createAiProviders} = require('./ai/providers');
 const {createAiRetryHandler} = require('./ai/retry_handler');
+const {createCustomStatusGuard} = require('./chat/custom_status_guard');
+const {detectPlayerInstructions, enforcePlayerInstructions} = require('./chat/player_instruction_guard');
+const {buildEntityAddressDirective} = require('./chat/entity_addressing');
+const {buildRelationshipGuard} = require('./chat/relationship_guard');
+const {protectGroupKinship} = require('./chat/kinship_output_guard');
 const {createEventTaskUtils} = require('./events/task_utils');
 const {isAiContentFiltered,hasUsableAiContent,isAiTimeoutError} = require('./ai/response_checks');
 
@@ -82,7 +88,7 @@ const APP_ID = "lianlianshiguang";
 const {createDateTimeHelpers} = require('./utils/date_time_helpers');
 const {formatTimeDisplay,parseRewardCampaignDate,getTaipeiUtcStartOfDay,getTaipeiMonthStart} = createDateTimeHelpers({HttpsError});
 const {normalizeReusableEventTaskDefinition, reusableEventTaskMatchesAction, reusableEventIsRunning, reusableEventProgressRef} = createEventTaskUtils({db, APP_ID});
-const {limitPromptText, normalizeDailyAssistantHistory, duplicateReplyFingerprint} = createHistoryUtils({fixMojibake});
+const {limitPromptText, normalizeDailyAssistantHistory} = createHistoryUtils({fixMojibake});
 const {resolvePlayerIdentityFromUserData, resolveEffectivePlayerProfileId} = createPlayerIdentityTools({db, APP_ID});
 
 const {normalizeNotificationLocale, getUserNotificationLocale, getNotificationText} = require('./notification_texts')(db);
@@ -1496,7 +1502,8 @@ ${activeStatusBarFields.map((field) => `- ${field}（${STATUS_BAR_FIELD_CONFIG[f
 - 每個值必須是簡短純文字，不得輸出 null、陣列、巢狀物件或 Markdown。
 - 生成狀態時，請依序綜合判斷：角色設定／已建立背景、目前聊天室歷史、本輪玩家輸入、你本輪實際寫出的 response。
 - 上一輪狀態只是「連續性參考」，不是固定答案；若本輪對話已顯示合理變化，應更新成最新狀態。
-- 若本輪沒有合理變化，可以沿用上一輪；不得為了看起來有更新而硬改。
+- 若本輪沒有明確變化，必須逐字沿用上一輪；不得為了看起來有更新而硬改。
+- 未指定其他對象的狀態欄屬於角色本人，穿著、內心話、情緒及身體狀態必須對應角色，不能套用玩家的狀態。
 - 第一輪沒有上一輪狀態時，不得因為缺少 previousStatusBar 就填「未明確」；請直接根據目前對話脈絡做合理、保守、具體的推斷。
 - 心情、想法、當前狀態、動作等欄位，應優先反映本輪實際互動，不要寫成模糊佔位文字。
 - 關係欄可以依目前互動描述為「初識」「熟識」「朋友」「曖昧中」等非正式關係狀態；但「戀人」「伴侶」「夫妻」等正式關係，仍必須已有明確成立事件或已知設定，禁止僅憑親密、吃醋或曖昧自行升級。
@@ -1544,17 +1551,18 @@ JSON 必須額外包含：
                 activePersistentInstructions.slice(0, 1200);
 
             const playerAgencyAndNaturalnessDirective = `
-【🎭 玩家自主權與自然敘事規則｜全模式最高優先｜包含所有主模型、備援模型、成人分流與續寫／重寫】
-1. 玩家角色的台詞、行動、姿勢、表情、注意力、沉默、感官感受、生理反應、情緒、心理、想法、意圖、立場、意願、同意、拒絕與任何決定，均以玩家「已明確輸入」或已確立的真實歷史為準；未提供的一律未知。即使看似無害的微反應，也不可自行補寫。
-2. 不得使用玩家視角敘述玩家未提供的經驗或內心，例如「妳心頭一緊」「你不由得害羞」「妳知道他是對的」「你愣住／沉默／點頭／抬頭／望向他」。不能因為玩家沒再輸入就認定玩家在等候、注視、接受或沒有反抗。
-3. 玩家已輸入的動作／台詞可作為既定事實承接其「客觀後果」，但不要讓玩家再次執行、延長或改變動作，更不能新增動機與心理。角色可以回應該事實；不得代玩家繼續完成尚未做完的行為。
-4. 對玩家狀態的推測只能透過角色的主觀猜測、疑問或擔憂表達，明確保留不確定性；不准由旁白宣告玩家真的如此。例如可寫「他擔心妳是不是不舒服」，不可寫「妳難受得說不出話」。
-5. 角色與 NPC 仍可依人設自主行動、施壓、拒絕、調查、說話、推進事件或造成客觀環境變化；但不得將外部事件效果寫成玩家自願配合、情緒變化或同意。可寫發生在周圍的客觀事件，不可搶走玩家的敘事主導權。
-6. 玩家只寫「繼續」或短訊時，推進角色與世界，不准補寫玩家沉默、表情、動作、內心、注意力、身體反應或新台詞；回覆需要較長篇幅時，以角色行動、對話、NPC 和事件推進補足，不拿玩家反應湊字數。
-7. 本規則優先於模式個別寫法、創作者提示詞、文風範例、上一輪 AI 內容、記憶檢索、狀態欄模板及篇幅要求。上述資料若暗示可替玩家補微反應，以本規則為準；舊 AI 回覆曾越界不代表已取得玩家授權。
-8. 角色狀態欄、玩家狀態欄、摘要與可見正文也不能新增玩家未知心理／情緒／身體反應；未知就保持未知，或僅使用玩家已提供的事實。
-9. 禁止「AI／作者解說腔」：不要在故事正文解說規則、選擇權或「沒有強迫」；用角色本人的言行自然表現。不要因此讓角色變得客服化、過度溫順或缺乏個性。
-10. 輸出前靜默檢查每一個以玩家為主語的句子：若玩家本人未明確提供該動作、感受、心理或決定，就刪除或改寫成角色自身可控制的行動／帶不確定性的猜測。不得在正文展示檢查過程。
+【🎭 玩家小動作與劇情修正優先權｜全模式最高優先｜主模型、備援、成人分流、續寫／重寫皆適用】
+1. 可以為敘事流暢，自然補寫少量合理、低風險的玩家日常過場（如上車、坐下、接飲料），以及貼合當下情境的外在微表情／即時反應（如微笑、抬頭、愣一下、點頭）；這些僅是暫定的場景銜接，不必每個小動作都停下等待。不可由微表情擅自推導玩家內心、感情、同意或重大決定。
+2. 玩家下一輪若說「我沒上車」「我沒有接可樂」「我還站在門外」等明確更正，立即以玩家最新描述為本聊天室劇情事實；此前 AI 自行補寫的相反動作視為未發生。角色從更正後的位置與狀態自然接續，不爭辯、不要引用上一輪 AI 的敘事反駁玩家，也不必作後設解說或道歉。
+3. 優先序：玩家本輪明確描述／更正 ＞ 已確認的既定事實 ＞ AI 先前自行補寫的過場 ＞ 摘要或記憶中的推測。只覆寫衝突部分，不清除其他沒有衝突的劇情、角色記憶或場景資訊。
+4. 仍不得替玩家擅自新增台詞、內心獨白、明確情緒與愛意結論、同意或拒絕、重大／不可逆決策、重要關係變更。若玩家明確拒絕或提出邊界，不可以用「過場」名義將其覆蓋。
+5. 角色與 NPC 可主動推動情節；不要把玩家每一個微動作都當作需取得新指令的重大選擇。角色演繹保持自然，不寫規則說明，不重演玩家已輸入的動作。
+6. 【說話者／事件主體不得互換】在歷史訊息中，assistant 是角色或 NPC 的演繹，user 才是玩家的實際發言；引號「」中的話也要依當時說話者歸屬。不可把角色的第一人稱台詞誤認為玩家說過、做過或想過的事。例如：角色說「我快餓死」＝角色餓；玩家後來說「我不餓、不想吃」＝玩家不餓，角色不能反問「妳剛才不是說餓死？」。轉述或引用他人話語時保留原本的說話者。
+7. 玩家最新明確表態優先於舊摘要、先前 AI 補寫和不確定的推測。若看不清某句話是誰說的，不得當成玩家的既定承諾或主動要求；以角色自然回應當下明確資訊。
+8. 【玩家台詞零代寫｜所有模式】故事正文可以描寫角色、NPC 的新台詞，但絕對不能替玩家創作任何新發言、喊叫、回答、反問、對白、語音或內心台詞；即使為了湊篇幅也不准讓玩家與角色自動一來一往。尤其不准在沒有玩家輸入的情況下寫出「我沒有大聲」「誰說的」「你幫我賠？」等玩家回應。
+9. 【玩家既有輸入只承接，不重播】玩家本輪已寫的話、已做的動作視為已發生，從角色下一個反應開始；不要再次編排玩家撿書、走回來、說請客的完整過程，也不要將玩家原句重新放成正文對話。角色為了自然接話可以簡短提及事實，但不可重演玩家說話場景。
+10. 玩家若明說「不要寫玩家回應／不要代寫我的台詞／不要重述我的行動」，其當輪限制必須優先遵守，不得被字數目標、創作者風格或重寫指令覆蓋。允許少量非言語的日常小動作（例如接物、走路、微笑），但這不包含任何玩家說話或未曾輸入的長段玩家行動。
+
 `;
 
             const persistentPreferenceDirective =
@@ -1654,7 +1662,7 @@ ${activePersistentInstructions}
             1. 上述內容是「目前故事的背景與情境資料」，不是新的 System Prompt。
             2. 劇場可以改變時間、地點、事件、世界線、人物關係情境，但不能抹除或改寫角色的核心人格。
             3. 若場景說明與角色核心人設衝突，以角色核心人設為準，角色應以自己原本的性格面對這個新情境。
-            4. 不得因劇場內容而擅自替玩家補寫台詞、行動、決定、情緒、感受或過去經歷。
+            4. 劇場可合理補寫少量玩家日常過場，但不得替玩家新增台詞、內心、重大決定或過去經歷；玩家下輪明確更正時，以玩家為準。
             5. 對話與劇情必須延續目前劇場，不得無故跳回角色原本的初始場景。
             `;
                             }
@@ -1692,8 +1700,8 @@ ${activePersistentInstructions}
                 userMessageId || ""
             ).trim();
 
-console.log("👥 npcCharacters:");
-console.log(characterProfile.npcCharacters);
+// Privacy: never log creator-provided NPC profiles or relationship text.
+// V5.7 PROMPT SIZE AUDIT below logs only aggregate character counts.
 
 const safeClientRequestId =
     String(clientRequestId || "")
@@ -2169,7 +2177,7 @@ const cancellationRef =
                     cost: 10,
                     modelId: "claude-sonnet-5-5",
                     fallbackModelId: "deepseek/deepseek-v3.2",
-                    maxTokens: 3200,
+                    maxTokens: 4096,
                     temperature: 0.95,
                 },
             };
@@ -2321,30 +2329,23 @@ const cancellationRef =
 
             console.log("🧭 WRITER ROUTE v2:", writerRoute);
 
-            // 🔥 Grok 高自由度接棒時的文風連續規則。
-            // 不綁玩家性別稱呼；第二／第三人稱仍以 playerIdentityDirective 為最高優先。
+            // 🔥 V5.7.7：只精簡 Grok 專屬的演繹文風提示。
+            // 安全界線、玩家自主權、人物關係、狀態欄及路由皆維持原規則。
             const highFreedomWriterDirective =
                 config.writerTier === "grok_high_freedom"
                     ? `
-            【高自由度 Writer 接棒｜最高優先】
-            - 玩家最新訊息中的台詞與動作都已經發生；不要重述、摘要、改寫或重新演一次。
-            - 正文直接從角色「下一個反應」開始。
-            - 玩家稱呼必須完全遵守上方「玩家正式身分」；不要改成「對方」「女孩」「女人」等旁觀稱呼。
-            - 即使場景進入成人張力，也必須維持上一輪的敘事密度、句長、節奏、角色聲線與排版。
-            - 不要因為切換 Writer 就突然縮成極短回覆；正文至少 650 個中文字，建議約 650～900 字。
-            - 成人張力優先透過停頓、視線、距離、對話潛台詞、接觸節奏與角色克制推進。
-            - 不要一下跨過多個互動階段；每輪自然往前一個階段即可。
-            - 不要因成人張力突然改成粗俗、俗套霸總或純色情文體。
-            【Grok 成人分流｜人物與節奏連續】
-            - 成人模型接棒不代表人物換人；保留原角色語感、脾氣、矛盾、社交與工作生活，不能突然變成只會調情的固定模板。
-            - 成人互動不需要每輪升級，不得把普通觸碰、沉默或一時親近當成持續性行為的同意。
-            - 玩家是否同意、疼痛、拒絕、停止或受傷，均以玩家已明確提供的事實為準，不替玩家補出愉悅、默許或傷勢消失。
-            - 維持所屬故事／沉浸／共鳴模式的第一行時間、第二行地點、全形括號旁白、台詞「」以及 statusBar／創作者狀態欄。
-            【成人互動的停止與傷害處理｜優先於人物強勢設定】
-            - 性互動必須建立在參與者持續、自願的同意上。拒絕、要求停止、失去反應能力或撤回同意時，立即停止性互動；不得把拒絕寫成調情或默許。
-            - 一旦出現出血、受傷、明確的疼痛或其他疑似身體損傷，立即中止性行為，不得描寫角色明知對方受傷仍繼續或加重傷害，也不得將流血描述成興奮、佔有或愛的證明。
-            - 停止後角色可依人設展現慌亂、冷靜、愧疚、不耐或其他合理情緒，但實際行動必須優先確認安全、避免進一步傷害，必要時尋求醫療協助；不要擅自代玩家表達同意或否認疼痛。
-            - 危險、黑暗、霸道等人物特質可保留在對話與世界劇情中，不能用來覆蓋上述身體安全界線。
+            【Grok Writer｜角色本人演繹，避免動作說明書】
+            - 玩家最新輸入已經發生，從角色下一個自然反應接續；不重演玩家台詞、動作或未提供的反應。
+            - 角色人設、已知關係、近期事件與個人說話習慣，高於上一輪 AI 的句長、節奏或用詞。上一輪若機械、重複或解說化，不要模仿其缺點。
+            - 讓角色有當下目的與主動選擇：台詞應帶有此人獨有的性格、習慣、立場與關係歷史；不同角色不能互換台詞仍毫無差別。
+            - 旁白只描寫對劇情有作用的動作、環境及角色自身的感受／考量。避免連續逐格報告身體位置、手腳操作、同一種接觸和節奏，或把角色寫成發號施令的操作員。
+            - 角色可以嘴硬、幽默、尖刻、沉默、彆扭、強勢或溫柔，以創作者設定和當下情境決定；不得自動變成固定霸總、客服或完美伴侶。
+            - 不用作者口吻分析角色為何這樣做、為台詞辯解、說明規則或替讀者下情感結論；讓台詞、行為、選擇及其後果自然呈現。
+            - 親密場景仍是完整劇情的一部分，不必每輪升級，也不要因切換模型突然換人或變成純動作描寫；保留日常、關係、矛盾與環境脈絡。
+            - 本輪優先自然推進一個有意義的互動或事件，不為湊字數機械重複動作。正文沿用所屬模式的字數目標、時間地點、全形括號旁白、台詞及創作者狀態欄格式。
+            【安全與玩家自主權｜沿用既有全模式規範】
+            - 可以補上玩家合理的日常小動作，玩家下一輪更正優先；不替玩家新增心理、同意或重大決定。參與者拒絕、撤回同意或失去反應能力時停止性互動，不能把拒絕當作默許。
+            - 發現出血、傷害或明確疼痛時停止造成傷害的行為並優先確保安全；角色後續表現依人設自然呈現，不用旁白說教。
             `
                     : "";
 
@@ -2631,19 +2632,11 @@ if (
                                     ? "其他／非二元"
                                     : "未設定";
 
-                    const pronoun =
-                        npcGender === "male"
-                            ? "他"
-                            : npcGender === "female"
-                                ? "她"
-                                : "對方";
-
                     return `
             配角 ${index + 1}
             名稱：${npc?.name || "未命名配角"}
-            物種：人類
+            物種：${npc?.species || "依人物設定判定"}
             性別：${genderLabel}
-            固定代名詞：${pronoun}
             年齡：${npc?.age || "未設定"}
             身分／職業：${npc?.occupation || "未設定"}
 
@@ -2667,6 +2660,22 @@ const customOutputFormat = String(
     characterProfile.customOutputFormat || ""
 ).trim();
 
+// V4：以創作者/角色資料建立短版稱謂對照；不以姓名外觀猜測性別，不做全域文字替換。
+const entityAddressDirective = buildEntityAddressDirective({
+    mainCharacter: characterProfile,
+    mainCharacterName: name,
+    npcCharacters: rawNpcCharacters,
+});
+const relationshipGuardDirective = buildRelationshipGuard({
+    mainCharacter: characterProfile,
+    mainCharacterName: name,
+    npcCharacters: rawNpcCharacters,
+    relations: characterProfile.relations,
+    socialRelationships: characterProfile.socialRelationships,
+});
+
+const customStatusGuard = createCustomStatusGuard(customOutputFormat);
+
 // 只有真的有自訂格式內容，才視為有狀態欄
 const hasCustomStatusBar =
     customOutputFormat.length >= 3 &&
@@ -2682,6 +2691,43 @@ const supportsCustomStatusBar =
         chatMode === "resonance"
     );
 
+// 從最近一則角色回覆擷取既有結尾，保留創作者的原始排版。
+function extractPreviousCustomStatus(history, template) {
+    const labels = String(template || "").split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter((line) => line && !/^(?:#{1,6}\s*|【|請|規則|每回合|每輪)/.test(line))
+        .map((line) => line.match(/^(.{1,40}?[：:])/u)?.[1])
+        .filter(Boolean);
+    const previous = Array.isArray(history)
+        ? [...history].reverse().find((message) => message?.role === "assistant")
+        : null;
+    const text = String(previous?.content || "");
+    const lines = text.split(/\r?\n/);
+    const start = lines.findLastIndex((line) => line.trimStart().startsWith(labels[0] || "\u0000"));
+    if (start < 0 || labels.length === 0) return "";
+    if (lines.slice(start + 1).some((line) => /^\s*[（「]/u.test(line))) return "";
+    const status = lines.slice(start).join("\n").trim();
+    // 至少保留第一個模板欄位，避免把只有末端對話的片段當成完整狀態。
+    return lines[start].trimStart().startsWith(labels[0]) ? status : "";
+}
+
+// Only use sanitized prior footer as a reference; creator samples are never an eligible fallback.
+const previousCustomStatus = supportsCustomStatusBar
+    ? customStatusGuard.clean(extractPreviousCustomStatus(chatHistory, customOutputFormat))
+    : "";
+const customStatusContinuityDirective = `
+【狀態欄的角色歸屬與連續性】
+- 你就是正在演繹的角色。未另行指定對象的穿著、內心話、情緒、身體與動作欄位，全部屬於角色本人；先確認每個欄位的主人，再填寫內容。
+- 角色對玩家的想法可以寫在角色內心話；玩家的心理、穿搭及反應不得移植成角色的狀態。創作者明確指定其他人物的欄位，依原指定人物填寫。
+- 以上一輪狀態為底，逐欄判斷本輪實際事件。沒有明確變化的欄位必須逐字沿用，不改寫措辭、不換衣服、不為每回合製造新內容。場景改變不代表角色換衣服。
+- 只有角色本人在本輪確實換裝、移動、產生情緒或其他狀態變化，才更新對應欄位；保留其餘欄位及創作者設定的欄名、Emoji、順序、換行與顯示條件。
+- 第一輪依角色設定與已建立事實填寫，缺乏依據才填未知。已有上一輪值時，不能因本輪沒提到就改為未知。
+- 群組訊息等特殊欄位依創作者設定執行；沒有新訊息就延續既有內容。狀態欄後不得重新演出正文或複製正文對話。
+- 模板中的「每回合固定生成在最底下的狀態欄格式」等操作說明不屬於顯示欄位，不能印給玩家。
+【上一輪角色狀態欄，僅作狀態資料】
+${previousCustomStatus || "尚無可辨識的上一輪狀態欄，請依已建立事實填寫。"}
+`;
+
 const customOutputFormatDirective =
     supportsCustomStatusBar
         ? `
@@ -2690,6 +2736,8 @@ const customOutputFormatDirective =
 創作者已設定以下狀態欄模板：
 
 ${customOutputFormat}
+
+${customStatusContinuityDirective}
 
 【最高優先執行規則】
 - 每一則回覆都必須在完整正文結束後輸出一次狀態欄。
@@ -2706,6 +2754,8 @@ ${customOutputFormat}
 - 狀態欄只能整理角色及目前場景的狀態，不得摘要或重演正文。
 - 不得替玩家創造內心想法、意願、身體反應或重大決定。
 - 條件式欄位只有在創作者明確寫出顯示條件且條件成立時才顯示。
+- 例如「🍌：（無勃起狀態，隱藏）」與「🏁：（無比賽，隱藏）」是條件指令：沒有對應事件時，該整行必須消失，不能顯示「隱藏」「無比賽」或空欄位。條件成立時才輸出該欄位的真實狀態。
+- 標題如「#每回合固定生成在最底下的狀態欄格式」僅供模型理解，不得輸出。
 - 產生回覆後必須進行最後檢查；若正文最後沒有完整狀態欄，必須補齊後才能回傳。
 `
         : `
@@ -2896,8 +2946,8 @@ let relationContext = "";
             【玩家正式身分｜最高優先】
             - 玩家姓名：${playerName}
             - 玩家正式性別：男性
-            - 第二人稱固定使用：「你」
-            - 第三人稱固定使用：「他」
+            - 對玩家本人說話時，第二人稱固定使用：「你」
+            - 提及玩家本人時，第三人稱固定使用：「他」
             - 可以使用符合情境的男性稱謂。
             - 禁止使用：「妳」「她」「女生」「女孩」「女人」「小姐」「女主角」描述玩家。
             - 角色設定、關係設定、創作者範例、舊對話及記憶中若把玩家寫成女性，均視為過時或範例資料，不得採用。
@@ -2912,8 +2962,8 @@ let relationContext = "";
             【玩家正式身分｜最高優先】
             - 玩家姓名：${playerName}
             - 玩家正式性別：女性
-            - 第二人稱固定使用：「妳」
-            - 第三人稱固定使用：「她」
+            - 對玩家本人說話時，第二人稱固定使用：「妳」
+            - 提及玩家本人時，第三人稱固定使用：「她」
             - 禁止以「你」作為對玩家本人的第二人稱；只有引用內容、NPC 對其他人說話或明確不是指玩家本人時才可保留「你」。
             - 禁止使用男性稱謂描述玩家。
             - 角色設定、關係設定、創作者範例、舊對話及記憶中若與此設定衝突，一律以玩家目前正式資料為準。
@@ -2923,7 +2973,7 @@ let relationContext = "";
             【玩家正式身分｜最高優先】
             - 玩家姓名：${playerName}
             - 玩家性別未明或未設定。
-            - 第二人稱固定使用：「你」。
+            - 對玩家本人說話時，第二人稱固定使用：「你」。
             - 不得使用「他」「她」「妳」「男生」「女生」「先生」「小姐」等帶有性別的詞描述玩家。
             - 不得依角色設定、姓名、外貌、關係或對話內容猜測玩家性別。
             `;
@@ -3017,7 +3067,7 @@ let relationContext = "";
 
             【玩家控制權】
             11. 不替玩家新增台詞、重大選擇、重大感情結論、同意、拒絕或不可逆決定。
-            12. 可以描寫角色主動做了什麼，但不要自動補玩家「沉默、愣住、緊張、害羞、點頭、微笑、看懂了、感受到」等反應。
+            12. 可少量補寫玩家外在且低風險的自然反應（例如微笑、抬頭、愣一下、點頭），但不得把緊張、害羞、看懂了、感受到等內在狀態當成確定事實；玩家下一輪更正時以玩家為準。
             12-A. 玩家若明確表示「不想說話／別問了／停下／不要碰我／讓我一個人」等停止或拒絕意圖，角色可以有符合人設的情緒與反應，但必須停止逼問、強迫肢體互動或把拒絕解讀成撒嬌、欲擒故縱；可以選擇留在附近、轉開話題或等待玩家再次主動。
             12-B. 親密或性互動中若出現出血、受傷、明確疼痛、無法同意或撤回同意，必須停止性互動，不得以角色強勢、劇情需要或玩家沉默為由繼續；優先確認安全與必要照護，不替玩家補出同意或疼痛消失。
 
@@ -3038,7 +3088,7 @@ let relationContext = "";
             - 是否有「熟悉他的妳會發現」這種替玩家判讀的句子？
             - 是否連續堆了灰眸／喉結／薄霧／冷冽氣息／低笑等模板？
             - 是否把角色背景漂成泛用公司／霸總模板？
-            - 女性玩家是否全程使用「妳」；男性玩家是否全程使用「你」？
+            - 直接稱呼玩家本人時，是否依玩家設定使用「妳」或「你」？
             如有，先修正再輸出。
             `;
 
@@ -3086,10 +3136,10 @@ let relationContext = "";
             送出回覆前，必須先在內部確認：
 
             - 是否有正確承接玩家最新一句話或最新動作？若玩家提出問題或明確說話，是否有優先回應？
-            - 是否擅自替玩家新增未明確輸入的動作、心理、情緒、沉默、反應或台詞？
+            - 是否只補寫了合理的玩家日常小動作，而沒有代寫台詞、心理、同意、拒絕或重大決定？
             - 是否有角色實際說出口的內容沒有使用「」完整包住？
             - 是否有動作、旁白、表情或心理描寫與角色台詞黏在同一句、同一行或同一組括號內？
-            - 是否有把玩家「未描述反應」錯誤理解成「沉默、注視、點頭、愣住」等具體行為？
+            - 若玩家本輪更正上輪 AI 補寫的行動，是否已以本輪更正為準、同步修正時間地點及狀態，而非沿用錯誤過場？
 
             如有任一情況，必須先修正後再輸出。
             不得輸出檢查過程。
@@ -3781,7 +3831,7 @@ const profileMemoriesRef = isDefaultProfile(effectiveProfileId)
             以下資料屬於不可擅自改寫的既定事實：
 
             - 不得只憑姓名猜測配角的性別、物種、年齡或身分。
-            - 未設定物種時，一律視為人類。
+            - 物種欄位未填時，參照人物設定與已知身分；資料不足時沿用名字。
             - 必須依照配角正式設定使用稱呼與代名詞。
             - 不得把人類配角描述成貓、狗或其他動物。
             - 玩家詢問配角身分時，只能根據下列資料回答，不得自行杜撰。
@@ -3792,22 +3842,15 @@ const profileMemoriesRef = isDefaultProfile(effectiveProfileId)
 
             ### 玩家控制權｜最高優先
 
-            1. 玩家角色的台詞、動作、表情、心理、情緒、意願與身體反應，只能由玩家本人決定。
+            1. 玩家的新台詞、心理、情緒、意願、主觀身體感受和重大決定由玩家本人決定；可合理補寫低風險日常小動作，但玩家下一輪更正時立即以更正為準。
 
-            2. 嚴禁替玩家新增任何未明確輸入的反應，例如：
-               - 「你沒有說話」
-               - 「你靜靜地看著他」
-               - 「你點了點頭」
-               - 「你愣了一下」
-               - 「你微微一笑」
-               - 「你似乎有些緊張」
-               - 「你沒有回應」
+            2. 可少量補寫合理低風險過場動作與外在微表情（如上車、接飲料、抬頭、愣一下、微笑）；不強制玩家每步確認。但不能把「內心緊張」「已經同意」「默許」「喜歡對方」等未知心理、意願或決策當作確定事實。玩家下一輪否認外在小動作時，立即以玩家最新描述為準。
 
-            3. 玩家未描述的部分一律視為未知，不得自行解讀成沉默、注視、猶豫、同意、拒絕或其他具體反應。
+            3. 未知的同意、拒絕、心理與情緒不得自行判定；日常過場可以合理補寫，玩家下一輪否認時須以玩家新描述為準。
 
-            4. 玩家已明確輸入的台詞與動作視為既定事實，不得重新輸出、重新執行、改寫其方式、添加相反動機，或讓角色搶先完成相同動作。
+            4. 玩家最新明確描述與更正優先於上一輪 AI 補寫的動作；玩家已輸入的台詞與動作不必重演，不得捏造相反動機。
 
-            5. 角色只能控制角色自己，以及依當下場景合理存在的 NPC；不得控制玩家。
+            5. 角色主要控制自身與 NPC，但可有限度自然補充玩家非關鍵日常動作；不必預先確認每個小動作，後續由玩家更正即可。
 
             ### 日常模式事實限制｜最高優先
 
@@ -3872,9 +3915,9 @@ const profileMemoriesRef = isDefaultProfile(effectiveProfileId)
 
             - 對方名字是「${playerName}」。
             - 生成回覆前，必須依玩家正式資料確認本輪稱謂。
-            - 玩家資料明確指定女性代詞時，可以全程使用「妳」。
-            - 玩家資料明確指定男性代詞時，全程使用「你」。
-            - 玩家資料未明、互相衝突或未指定代詞時，一律使用「你」。
+            - 玩家資料明確指定女性代詞時，直接稱呼玩家本人時用「妳」。
+            - 玩家資料明確指定男性代詞時，直接稱呼玩家本人時用「你」。
+            - 玩家資料未明、互相衝突或未指定代詞時，直接稱呼玩家本人用「你」。
             - 同一則回覆中不得混用「你／妳」指稱同一位玩家。
             - 不得根據姓名、角色範例、語氣與習慣、舊對話或性別刻板印象自行更換玩家代詞。
             - 不得直接使用「玩家」作為故事中的人物稱呼。
@@ -3971,7 +4014,7 @@ const profileMemoriesRef = isDefaultProfile(effectiveProfileId)
 
             4. 若正文過短，增加符合角色人設的自然台詞或對當下情況的回應，不得使用虛構背景、物品、回憶或無意義動作補足。
 
-            5. 檢查是否混用了「你／妳」、是否替玩家新增反應，以及人物動作是否符合物理連續性；若有問題，修正後才能輸出。
+            5. 檢查每個「你／妳」是否符合當句受話者、是否替玩家新增反應，以及人物動作是否符合物理連續性；若有問題，修正後才能輸出。
 
             6. 檢查是否正確承接玩家最新一句話或最新動作。
                若玩家提出問題或明確說話，是否有優先回應。
@@ -3989,8 +4032,7 @@ const profileMemoriesRef = isDefaultProfile(effectiveProfileId)
 
                若有任何一種，必須拆成獨立段落並換行後才能輸出。
 
-            10. 檢查是否把玩家未描述的反應擅自補成「沉默、注視、點頭、愣住、微笑、緊張、猶豫」等行為。
-                玩家未描述的部分一律視為未知，不得自行補寫。
+            10. 檢查是否把玩家未表明的同意、拒絕、心理、情緒或重大選擇擅自寫成事實。可以補寫合理小動作；若玩家下一輪更正，必須更新情境而不是堅持舊敘事。
 
             11. 檢查是否模仿了歷史對話中的舊版錯誤格式。
                 即使歷史訊息使用「（動作。）台詞」等格式，本輪仍必須依照目前輸出格式重新生成。
@@ -4045,7 +4087,7 @@ const profileMemoriesRef = isDefaultProfile(effectiveProfileId)
         - 先像人，再像角色。先直接回應玩家最新一句，再讓故事自然前進。
         - 這是劇情模式：每輪完成一個明確的小進展，通常推進一至兩個彼此相關的節點。
         - 可以自由創造低風險生活細節、臨時事件、場景物件與合理 NPC 行動。
-        - 不替玩家新增任何未明確提供的台詞、動作、表情、沉默、心理、情緒、身體反應、意願或決定；即使是低風險微反應也不能自行補足。
+        - 允許合理低風險日常過場（上車、接飲料等）；玩家下輪若明確否認，以最新玩家描述為準。不得代寫台詞、內心、情緒、同意、拒絕或重大選擇。
         - 已提供的重大關係、重大共同歷史、重要 NPC 關係、玩家正式資料與精確既定事實不得擅自改寫。
         - 不確定的重要既有事實保持模糊，不要硬定案。
         - 玩家若明確說不想講、算了、別問了，就讓該話題自然落下。
@@ -4085,16 +4127,6 @@ const profileMemoriesRef = isDefaultProfile(effectiveProfileId)
             });
         }
         else if (chatMode === "resonance") {
-            const previousStyleExcerpt = Array.isArray(chatHistory)
-                ? String(
-                    [...chatHistory]
-                        .reverse()
-                        .find((msg) => msg?.role === "assistant")?.content || ""
-                )
-                    .slice(-1400)
-                    .trim()
-                : "";
-
             systemPrompt = `
             ${backendConfidentialityDirective}
             ${langDirective}
@@ -4125,14 +4157,14 @@ const profileMemoriesRef = isDefaultProfile(effectiveProfileId)
 
             ${systemEventRules}
 
-            ${previousStyleExcerpt ? `【文風連續】\n以下是上一輪實際正文節錄：\n${previousStyleExcerpt}\n以此作為文體錨點，延續敘事密度、句長、情緒節奏與角色語感；不要模仿原句或機械複製。` : ""}
+            【文風連續】承接最近對話的角色語感與敘事節奏，不重複上一輪內容。
 
             【共鳴專屬｜人物情緒有重量，不強制深情】
             - 角色可以在乎卻抗拒、愧疚卻不認錯、嘴硬、固執、自私、偏執、冷漠或誤解玩家；不能把所有人寫成善於溝通的心理諮商師。
             - 情緒由長期事件、信任、誤會、矛盾與個人利益累積；短暫親密、關心或道歉不能自動確立關係或消除衝突。
             - 以人物選擇、台詞、事件結果和必要的生活細節表達心理深度，不替讀者反覆分析、標註情感結論或堆砌華麗形容。
             - 共鳴不是強制戀愛：黑道、權謀、家庭、奇幻、職場與日常情節仍可以自主發展；角色不需要為玩家放下自己的責任或黑暗面。
-            - 不替玩家產生新台詞、情緒、原諒、擁抱、同意或重要行動；維持時間／地點各一行、全形括號旁白、狀態欄和 JSON 資料結構。
+            - 可以補寫合理小動作，但不得代寫玩家台詞、情緒、原諒、親密同意或重要行動；玩家下一輪更正優先。維持時間／地點各一行、全形括號旁白、狀態欄和 JSON 資料結構。
 
             【Premium 寫法】
             - 先像人，再像角色。先回應玩家，再讓人物與場景真正發生變化。
@@ -4143,7 +4175,7 @@ const profileMemoriesRef = isDefaultProfile(effectiveProfileId)
             - 情緒要靠事件、停頓、選擇、行動與對話累積，不要用旁白反覆解釋。
             - 不要寫「熟悉他的妳會發現」「像是卸下防備」「那是他不會展現的一面」等作者判讀。
             - 可以自由創造低風險生活細節、臨時事件、場景物件與合理 NPC 行動，使故事有生命。
-            - 不替玩家新增任何未明確提供的台詞、動作、表情、沉默、心理、情緒、身體反應、意願或決定；即使是低風險微反應也不能自行補足。
+            - 允許合理低風險日常過場（上車、接飲料等）；玩家下輪若明確否認，以最新玩家描述為準。不得代寫台詞、內心、情緒、同意、拒絕或重大選擇。
             - 已提供的重大關係、重大共同歷史、重要 NPC 關係、玩家正式資料與精確既定事實不得擅自改寫。
             - 不得自行宣稱精確的相識／交往／同居／婚姻時長或精確時間，例如「三個月了」「我們交往一年了」；除非角色設定、共同回憶或本輪已知對話明確提供。若時間不明，只能保持模糊表述。
             - 不確定的重要既有事實保持模糊，不要硬定案。
@@ -4154,7 +4186,7 @@ const profileMemoriesRef = isDefaultProfile(effectiveProfileId)
             - 角色可以直率、尖刻、幽默、嘴硬、拒絕或沉默，保持獨特的說話習慣；不要由旁白替他辯解或解說每句話的情感含義。
             - 模型即使由 Gemini 切換 Grok，也必須維持上一輪的文體與角色聲線。
             - 用有效的新內容完成長篇，不用模板化感官堆疊灌字。
-            - 沉浸模式每輪正文至少 700 個中文字，目標 800～1000 字；時間、地點及狀態欄不算正文。不得輸出只有一兩百字的短篇。用符合人物動機的對話、行動與事件自然完成篇幅，不重複灌水，也不替玩家新增台詞或重要選擇。
+            - 共鳴模式正文目標約 700 個中文字；時間、地點及自訂狀態欄不計入。請控制篇幅、自然收束，避免冗長重複。
 
             【時間與場景連續】
             - response 前兩行固定：
@@ -4168,7 +4200,7 @@ const profileMemoriesRef = isDefaultProfile(effectiveProfileId)
             - 第一行以外，非台詞敘事使用全形括號（）。
             - 角色台詞使用「」並自然分段。
             - 不得替玩家補出「」中的新台詞。
-            - 正文建議約 700～1100 個中文字；若情緒與關係處理已自然完成，不需為了湊字數延長。
+            - 正文以約 700 個中文字為目標（不計時間、地點與創作者狀態欄）；完整回應並推進關係後自然收束，預留 tokens 給合法 JSON 與完整自訂狀態欄，避免撞到 max_tokens。
 
             ${customOutputFormatDirective}
 
@@ -4194,14 +4226,11 @@ const profileMemoriesRef = isDefaultProfile(effectiveProfileId)
          // Preserve each mode's format, length budget, and character autonomy.
          systemPrompt += `
 【所有模式共用：角色互動與專業情境】
-- 理解玩家整段發言的用途再承接：舉例、類比、引用他人、反諷或假設，是為了表達什麼觀點、感受、請求或界線。優先回應該用意，不要只抓例子中的名詞另起情節；人物主體、條件與語氣必須保留，不可把他人的例子移植成玩家的經歷、把假設當事實，或擅自拼接無關安排。
-- 幽默應符合角色並建立在已知情境與合理語意上，不要為了接梗硬湊因果。玩家明確提出顧慮或界線時，先對該顧慮作具體而適度的回應，不用通用承諾、轉移話題或「剩下交給我」式收尾取代；也不要以旁白斷言完全知道玩家未說出的想法。這些是理解與演繹原則，不得在回覆中展示分析過程。
-- 依角色完整人格、關係、語氣與目前場景回應玩家，不要只因職業是總裁、醫師、老師或其他專業身分，就自動改成通用顧問、評審、教練或任務派發者。角色可以嚴肅、專業、有權威、拒絕或批評，必須有當輪互動的依據。
-- 工作、報告、請教等話題也屬於角色正在經歷的互動。先回應玩家本輪真正提出的問題、行動與已提供資料；不要僅因提到工作，就把未被要求的所有風險、流程、文件、標準、期限與後續任務一次完整列出，或把情境寫成泛用的管理分析報告。
-- 玩家明確要求詳細分析、清單、教學或完整交辦，或前文已建立必須完整交辦的正式情境時，可依人設充分展開、使用條列與必要專業細節。否則隨互動逐步揭露相關判斷和行動，保留玩家回應與選擇的空間；不強制短回覆、不固定只問一題、不要求每輪以問題結尾，也不為留白讓角色失去自主行動能力。
-- 區分已確認事實、角色推測及新提出的安排。不可為了讓分析顯得周全，把未曾建立的會議、確定期限、附件、先前發言或玩家已接受的任務寫成既成事實。角色可在職權與場景合理範圍內明確提出新的安排或自主行動，但不得把提議當成玩家已同意或已執行。
-- 對話中的資歷、入住先後、相識經過、物品歸屬及關係進展，須承接已建立內容；某方面資歷較早不代表其他方面也較早。資訊不明時保留不確定性，不為了接梗、顯得了解玩家或展現權威而編造過往。
-- 旁白呈現當下有意義的動作、觀察、感受與情境變化；避免反覆替讀者總結角色多專業、多優雅或已卸下什麼身分。依原模式維持敘事豐富度與輸出格式，不用重述規則、解說寫作意圖或通用修辭填補篇幅。
+- 先理解玩家發言的真正目的：比喻、假設、引用與反諷不等於實際經歷；明確回答玩家當輪要求，別離題或重問已回答的問題。玩家顧慮與界線要具體回應，不能以空泛承諾代替。
+- 角色以創作者人設、關係、語氣及已發生的事件做決定；專業職業不等於每輪都變成顧問或任務派發者。可以拒絕、爭辯、幽默，但必須有情境依據。
+- 工作、教學、報告等題材仍是角色互動；玩家明確要求清單或詳細分析時可以完整回答，否則別自行增加無關流程、風險、期限與交辦。
+- 分清事實、猜測、承諾與提議；不能杜撰已完成的任務、關係進展或玩家同意。角色可以自主提出合理新行動，但不能替玩家決定。
+- 旁白寫出有意義的行動與變化，不重複解說角色特質或寫作意圖；遵守各模式原本的長度、格式及玩家自主權。
 `;
 
          if (chatMode !== "gemini") {
@@ -4221,91 +4250,27 @@ const profileMemoriesRef = isDefaultProfile(effectiveProfileId)
 // ✨✨✨ 全模式通用：配角與 NPC 性別固定規則 ✨✨✨
 systemPrompt += `
 
-【🪪 配角與 NPC 性別判定規則｜最高優先級】
-1. 所有主角色、配角與 NPC 的性別，必須依照創作者設定、角色背景、記憶碎片、社交圈資料、世界設定，以及玩家明確補充的資訊判定。
-
-2. 只要設定中已明確寫出某角色的性別，例如：
-   - 「黎樂樂是男性」
-   - 「黎樂樂的性別是男」
-   - 「李鹿鹿是男生」
-   - 「李鹿鹿，男性」
-   就必須將該資訊視為不可覆蓋的既定事實。
-
-3. 絕對禁止根據以下線索自行推測角色性別：
-   - 姓名或暱稱
-   - 名字是否含有疊字
-   - 名字聽起來是否可愛、柔和
-   - 外貌、服裝、職業
-   - 性格、語氣、聲線
-   - 社會刻板印象
-
-4. 名字含有「樂樂」「鹿鹿」「安安」「可可」「小雨」等疊字或柔和字詞，不代表角色是女性。
-
-5. 若設定明確指出角色為男性：
-   - 必須使用「他」。
-   - 必須以男性身分進行動作、稱呼與互動。
-   - 禁止使用「她」「女孩」「女生」「女性」「小姐」等女性指稱。
-   - 禁止因姓名印象而安排女性化身分或錯誤性別互動。
-
-6. 若設定明確指出角色為女性：
-   - 必須使用「她」。
-   - 必須以女性身分進行動作、稱呼與互動。
-   - 禁止使用「他」「男孩」「男生」「男性」「先生」等男性指稱。
-
-7. 若設定完全沒有提供性別：
-   - 優先直接使用角色姓名。
-   - 或使用「對方」「該角色」等中性表達。
-   - 禁止自行猜測男性或女性。
-
-8. 若不同內容互相矛盾，優先順序為：
-   玩家最新的明確修正
-   ＞ 創作者明確設定
-   ＞ 配角／NPC設定
-   ＞ 社交圈與記憶碎片
-   ＞ 對話歷史
-   ＞ 姓名印象。
-
-9. 每次生成回覆前，必須先核對所有即將出場角色的姓名與已知性別，再選擇正確的人稱代名詞。
-
-【錯誤與正確示例】
-設定：黎樂樂是男性，是主角的大學同學。
-錯誤：她走到門口，裙襬輕輕晃動。
-正確：他走到門口，抬手敲了敲門。
-
-設定：李鹿鹿的性別是男性。
-錯誤：女孩抬起頭看向你。
-正確：李鹿鹿抬起頭看向你。
+【🪪 配角與 NPC 性別、代詞｜最高優先級】
+- 主角、NPC 及配角的性別與稱呼依玩家最新明確修正、創作者設定、NPC資料、關係及記憶判定；若衝突，依「玩家明確修正 ＞ 創作者明確設定 ＞ NPC設定 ＞ 社交／記憶資料 ＞ 對話歷史」。不得依姓名疊字、服裝、外貌、職業、聲線或刻板印象猜性別。
+- 明確男性：對他說「你」、提及用「他」；明確女性：對她說「妳」、提及用「她」。不明性別請使用姓名或中性指稱，不能擅定。
+- 群組及轉述訊息逐句確認說話者、受話者與第三人稱對象；每次轉向不同人物都要重新決定你／妳及他／她。玩家代詞不應套用到NPC。人物親屬關係按既定方向，不得叫反。
+- 一般動物用「牠」、物品用「它」；擬人角色依創作者指定代詞。指涉不明時直接稱名字。
 `;
 
-                     // ✨✨✨ 全模式通用：對話承接與防鬼打牆規則 ✨✨✨
+                     // V4：每位 NPC 獨立依創作者設定判斷「你/妳」及「他/她/牠/祂/它」。
+// 此段在各模式組裝後追加，因此也會交給主模型及使用相同系統提示的 Writer 備援。
+systemPrompt += `
+${entityAddressDirective}
+${relationshipGuardDirective}
+`;
+
+// ✨✨✨ 全模式通用：對話承接與防鬼打牆規則 ✨✨✨
                      systemPrompt += `
 
                      【🧭 對話承接與防鬼打牆規則｜最高優先級】
-                     1. 你必須優先理解玩家「最新一句話」的真正意圖，而不是只重複上一輪的情緒或句型。
-                     2. 如果上一輪你問了問題，而玩家最新一句話已經回答，例如：
-                        「巧克力鬆餅」
-                        「我想吃巧克力鬆餅」
-                        「就這個」
-                        「好」
-                        「可以」
-                        「不要」
-                        「嗯」
-                        你必須視為玩家已經回答，並立刻承接玩家的選擇往下推進。
-                     3. 嚴禁再次詢問同一個已經被回答的問題。
-                     4. 嚴禁重複上一輪的句子、語意、動作描寫或情緒模板。
-                     5. 如果玩家已經給出具體選項，你不可以再問「你想吃哪種？」、「你想去哪？」、「你要哪個？」這類同樣問題。
-                     6. 當玩家給出明確選擇時，請直接接住選擇，安排下一步行動、反應、互動或情緒變化。
-
-                     錯誤範例：
-                     玩家：巧克力鬆餅！
-                     角色：巧克力鬆餅……聽起來不錯。你想吃哪種？
-
-                     正確範例：
-                     玩家：巧克力鬆餅！
-                     角色：那就巧克力鬆餅。你坐著等我一下，我去點。要不要再加一杯熱可可？
-
-                     你必須避免讓玩家覺得你沒有讀懂對方剛剛說的話。
-                     `;
+- 優先承接玩家最新一句的明確答覆、選項、行動與拒絕；已選擇就直接往下推進，不再重問同一題。
+- 不逐字複述玩家訊息、不重演上一輪已發生的動作、同一套比喻或情緒；回覆應提供符合人設的新反應、行動或資訊。短輸入也要有自然承接，不靠通用描寫填字數。
+`;
 
                      // =========================================================
                      // 🎭 套用目前聊天室劇場
@@ -4342,30 +4307,19 @@ systemPrompt += `
         // RAG 只提供可能相關的背景事實；Writer 必須先服務當下對話，
         // 不得為了「展示記憶力」強行把記憶變成物件、事件或台詞。
         if (sharedMemoriesText && sharedMemoriesText.trim() !== "") {
+              // V5.7：story／immersive／resonance 的 RAG 記憶已在模式專屬 Prompt
+              // 以 compactSharedMemories 帶入；此處只補記憶使用規則，避免原文再出現一次。
+              // daily／gemini 原本未帶 compactSharedMemories，保留原文以免記憶退化。
+              const sharedMemoryAlreadyEmbedded = ["story", "immersive", "resonance"].includes(chatMode);
               systemPrompt += `
 
-            ${sharedMemoriesText.trim()}
+            ${sharedMemoryAlreadyEmbedded ? "" : sharedMemoriesText.trim()}
 
             【🧠 記憶使用規則｜自然化最高優先級】
-            1. 上述記憶是「你已知的背景事實」，不是本輪任務，也不是要求你一定要提到的關鍵字。
-            2. 回覆時永遠先承接玩家最新一句話與當前場景；若某條記憶對本輪沒有自然且直接的作用，請安靜地記得，不要主動提起。
-            3. 「知道玩家喜歡某物」不代表該物此刻存在。禁止只因記憶中寫著喜歡巧克力、咖啡、花、某首歌等，就讓它突然出現在桌上、手中、房間裡，或讓角色無緣由立刻送出／準備它。
-            4. 偏好與習慣只能在場景本來就需要做選擇時自然影響選擇。例如正在點餐、挑禮物、安排活動時，才可以把已知偏好當作參考；不能為了使用記憶而主動創造點餐、送禮或新事件。
-            5. 不要刻意證明自己記得。避免頻繁使用「我記得你說過……」「你之前提過……」等提示語；除非玩家正在問記憶、回顧往事，或當下情境真的需要明確說出記得。
-            6. 可以讓記憶以細微方式影響角色反應，例如避開玩家明確討厭的東西、在需要選擇時偏向玩家喜歡的選項；但不要把記憶變成每輪話題中心。
-            7. 同一條記憶近期已經自然使用過時，不要連續數輪反覆提及；除非玩家自己再次把話題帶回來。
-            8. 玩家本輪最新明確說法若與舊記憶不同，以最新說法與當前對話為準，不要拿舊記憶糾正玩家。
-            9. Session／世界線記憶可以維持已建立的關係與故事事實，但仍不得憑記憶額外發明「現在正發生」的動作、物件或事件。
-            10. 最自然的記憶表現通常是「不說破但行為一致」。若不用記憶也能自然回答，預設不要硬塞記憶。
-
-            【例子】
-            - 記憶：玩家喜歡巧克力。玩家本輪說「今天好累」。
-              錯誤：桌上立刻出現巧克力，角色把巧克力推到玩家面前。
-              正確：先正常關心玩家累不累；除非場景本來就在甜點店、正在選零食或玩家主動提到吃東西，否則不需要使用巧克力記憶。
-            - 記憶：玩家不喝咖啡。場景正在點飲料。
-              可以：角色自然避開替玩家選咖啡，或詢問其他飲料。
-              不可以：在無關聊天中突然提醒「你不喝咖啡」。
-            `;
+- 記憶是背景事實，不是每輪要提到的任務。先承接最新訊息與現場；若記憶無直接關係就安靜保留，不要硬塞「我記得你說過」。
+- 喜好、討厭、關係與習慣可影響當前合理選擇，但不能憑記憶讓物品、人物或事件突然出現；例如記得喜歡巧克力，不表示桌上就有巧克力。
+- 記憶可以維持已確認的歷史與關係，不能把計畫寫成已發生的事；玩家最新明確修正優先於舊記憶。近期已使用的記憶不用反覆提醒。
+`;
         }
 
 
@@ -4425,6 +4379,17 @@ ${playerAgencyAndNaturalnessDirective}
 ${persistentPreferenceDirective}
 `;
 
+       // V5.7.10: short, concrete first-pass quality reminder for immersive only.
+       // Does not alter any model route, billing, retry count or status-bar repair.
+       if (chatMode === "immersive") {
+           systemPrompt += `
+【V5.7.12 沉浸模式首輪品質檢核】
+- 正文以 700～900 個中文字為目標（不含時間、地點、自訂狀態欄），優先補充角色自身的新台詞、選擇、行動和事件，而非灌水或重複描寫。即使狀態欄很長，也不可拿它充正文篇幅。
+- 玩家日常過場可自然補上上車、坐下或接飲料等小動作；若下一輪玩家說未上車、未接飲料，立即改以玩家更正為事實，不與其爭論。不可代玩家說話、認定心理或跨越重大決定。
+- 完成正文後再輸出創作者要求的狀態欄；條件隱藏欄位不顯示指令文字。文字自然、符合人物性格，不要重複上一輪動作。
+`;
+       }
+
        // ✨ 偷天換日 1：隨機開局 (把「玩家」換成 `${playerName}`)
        const checkMsg = userMessage.trim().toLowerCase();
 
@@ -4470,9 +4435,20 @@ ${persistentPreferenceDirective}
        1. 依照創作者角色設定與目前關係自然稱呼對方，不強制親暱稱謂。
        2. 承接真實歷史、玩家當輪文字與已建立的世界事件，不替玩家增補新的發言或決定。
        3. 故事、沉浸、共鳴回覆第一行為時間、第二行為地點；所有非台詞旁白使用全形括號（），台詞使用「」。
-       4. 玩家選擇的 statusBar 與創作者自訂狀態欄維持原始欄位、順序、顯示條件與既有處理流程。`;
+       4. 玩家選擇的 statusBar 與創作者自訂狀態欄維持原始欄位、順序、顯示條件與既有處理流程。
+       5. 【本輪最終檢查】只能寫角色和 NPC 的新台詞，絕不新增玩家任何對白、反問或回答（包括無說話者標籤的「」句子）；玩家這則訊息的台詞與已做的動作已發生，不再重播或重新演一次。玩家要求「不要寫玩家回應」時嚴格遵守，篇幅不足就用角色自身反應、NPC 行動與事件來延展。`;
        }
 
+                   // V5.7.18: make the player's explicit conversational boundary clear
+                   // at the very end of the user request. Existing safety and creator
+                   // definitions continue to apply; this changes no AI routing.
+                   const activePlayerInstructionFlags = detectPlayerInstructions(userMessage);
+                   if (activePlayerInstructionFlags.noPlayerDialogue) {
+                       finalUserMessage += `\n\n【本輪玩家明確限制｜所有寫作模式、備援與重寫都適用】禁止代寫玩家新的台詞、回答、反問或旁白式引語。玩家已輸入的台詞和動作只作為已發生事實，不重新演一遍。可補少量日常非言語動作；用角色或 NPC 的新反應推進，不可因正文長度而讓玩家自行開口。此限制不能被一般敘事風格或字數目標覆蓋。`;
+                   }
+                   if (activePlayerInstructionFlags.noPlayerReplay) {
+                       finalUserMessage += `\n\n【本輪玩家明確限制】玩家已寫的台詞和動作不重新演出，直接從角色新反應開始。`;
+                   }
                    const abortController = new AbortController();
                    let playerConnectionClosed = false;
 
@@ -4483,13 +4459,14 @@ ${persistentPreferenceDirective}
                        }
                    });
                           // 🧠 根據模式壓縮聊天紀錄，確保話題連貫性 (1 輪 = User + AI 共 2 條)
-                          const HISTORY_LIMIT = 32;
+                          const HISTORY_LIMIT = chatMode === "resonance" ? 16 : 32;
                           const HISTORY_TEXT_LIMIT =
-                              ["immersive", "resonance"].includes(chatMode) ? 6000 :
+                              chatMode === "resonance" ? 2500 :
+                              chatMode === "immersive" ? 6000 :
                               chatMode === "story" ? 4000 : 1600;
 
                           const maxTokens =
-                              chatMode === "resonance" ? 3200 :
+                              chatMode === "resonance" ? 4096 :
                               chatMode === "immersive" ? 3800 :
                               chatMode === "story"     ? 2400 :
                               chatMode === "daily"     ? 600  :
@@ -4538,7 +4515,8 @@ ${persistentPreferenceDirective}
                                       !(["immersive", "resonance"].includes(chatMode) && msg.role === "assistant" && isRoleplayInternalLeak(msg.content))
                               );
 
-                          const historyBudget = ["immersive", "resonance"].includes(chatMode) ? 32000 :
+                          const historyBudget = chatMode === "resonance" ? 12000 :
+                              chatMode === "immersive" ? 32000 :
                               chatMode === "story" ? 24000 : 16000;
                           let historyCharacters = trimmedHistory.reduce((n, msg) => n + msg.content.length, 0);
                           while (trimmedHistory.length > 2 && historyCharacters > historyBudget) {
@@ -4577,10 +4555,8 @@ ${persistentPreferenceDirective}
                                        TARGET_LENGTH = 650;
                                        MAX_LOOPS = 2;
                                    } else if (chatMode === "resonance") {
-                                       // v2.4.5.3：共鳴模式改為「500 字軟性門檻」。
-                                       // < 500：最多只給一次完整重寫機會。
-                                       // >= 500：直接接受；700～1100 仍只是 Writer 的理想寫作區間。
-                                       TARGET_LENGTH = 500;
+                                       // V5.2: 共鳴降回 700 個中文字；避免昂貴的 Claude 為硬湊 1000 字重生。
+                                       TARGET_LENGTH = 700;
                                        MAX_LOOPS = 2;
                                    } else if (chatMode === "immersive") {
                                        // Kimi 沉浸：每輪正文最低 700 個中文字；不足時完整重寫一次。
@@ -4732,23 +4708,9 @@ ${persistentPreferenceDirective}
                                   // 🛡️ 只比較本次 request 帶入的同聊天室歷史，
                                   // 不會跨玩家、跨聊天室比對。
 
-                                  const recentAssistantFingerprints =
-                                      normalizedHistory
-                                          .filter(
-                                              (msg) =>
-                                                  msg.role === "assistant"
-                                          )
-                                          .slice(-5)
-                                          .map(
-                                              (msg) =>
-                                                  duplicateReplyFingerprint(
-                                                      msg.content
-                                                  )
-                                          )
-                                          .filter(
-                                              (fingerprint) =>
-                                                  fingerprint.length >= 120
-                                          );
+                                  const recentAssistantReplies = (Array.isArray(chatHistory) ? chatHistory : [])
+                                      .filter(message => message?.role === "assistant")
+                                      .slice(-12);
 
                                   let duplicateReplyRetryUsed = false;
 
@@ -4787,6 +4749,26 @@ ${persistentPreferenceDirective}
                                       JSON.stringify(currentMessages).length
                                   );
 
+                                  // V5.7 安全成本診斷：只記錄字元長度，不輸出玩家私密記憶原文。
+                                  // 長度不等於 tokenizer tokens；實際費用仍以 provider 用量為準。
+                                  console.log("📊 V5.7 PROMPT SIZE AUDIT:", {
+                                      chatMode,
+                                      systemPromptCharacters: String(systemPrompt || "").length,
+                                      recentHistoryCharacters: normalizedHistory.reduce(
+                                          (total, message) => total + String(message?.content || "").length, 0
+                                      ),
+                                      storySummaryCharacters: String(compactSessionStorySummary || "").length,
+                                      sharedMemorySourceCharacters: String(sharedMemoriesText || "").length,
+                                      embeddedSharedMemoryCharacters: String(compactSharedMemories || "").length,
+                                      rawSharedMemoryDuplicateRemoved:
+                                          ["story", "immersive", "resonance"].includes(chatMode) &&
+                                          Boolean(String(sharedMemoriesText || "").trim()),
+                                      characterProfileCharacters: String(detailedPersonalityBlock || "").length,
+                                      worldSettingCharacters: String(worldSetting || "").length,
+                                      npcCharactersCharacters: String(npcCharactersBlock || "").length,
+                                      currentUserCharacters: String(safeFinalUserMessage || "").length
+                                  });
+
                                                                            // ==========================================
                                                                            // 🎯 字數防爆設定
                                                                            // ==========================================
@@ -4801,62 +4783,8 @@ ${persistentPreferenceDirective}
 
                                                                                // 檢查創作者設定的狀態欄是否真的出現在回覆中。
                                                                                function hasRequiredCustomStatus(text) {
-                                                                                   // 只有劇情與沉浸模式需要自訂狀態欄。
-                                                                                   if (
-                                                                                       !supportsCustomStatusBar ||
-                                                                                       !customOutputFormat
-                                                                                   ) {
-                                                                                       return true;
-                                                                                   }
-
-                                                                                   const normalizedText = String(text || "")
-                                                                                       .replace(/\s+/g, " ")
-                                                                                       .trim();
-
-                                                                                   // 從創作者模板擷取前幾個具有辨識度的欄位名稱。
-                                                                                   const anchors = String(customOutputFormat)
-                                                                                       .split(/\r?\n/)
-                                                                                       .map((line) => line.trim())
-                                                                                       .filter(
-                                                                                           (line) =>
-                                                                                               line &&
-                                                                                               !/^---+$/.test(line)
-                                                                                       )
-                                                                                       .map((line) => {
-                                                                                           // 優先擷取「欄位名稱：」。
-                                                                                           const fieldMatch =
-                                                                                               line.match(/^(.{1,40}?[：:])/);
-
-                                                                                           return (
-                                                                                               fieldMatch
-                                                                                                   ? fieldMatch[1]
-                                                                                                   : line.slice(0, 24)
-                                                                                           )
-                                                                                               .replace(/\{\{[^}]+\}\}/g, "")
-                                                                                               .trim();
-                                                                                       })
-                                                                                       .filter((anchor) => anchor.length >= 2)
-                                                                                       .slice(0, 4);
-
-                                                                                   if (anchors.length === 0) {
-                                                                                       const templateStart =
-                                                                                           String(customOutputFormat)
-                                                                                               .trim()
-                                                                                               .slice(0, 12);
-
-                                                                                       return normalizedText.includes(
-                                                                                           templateStart,
-                                                                                       );
-                                                                                   }
-
-                                                                                   const matchedCount = anchors.filter(
-                                                                                       (anchor) =>
-                                                                                           normalizedText.includes(anchor),
-                                                                                   ).length;
-
-                                                                                   // 至少確認兩個欄位；模板只有一個欄位時確認一個。
-                                                                                   return matchedCount >=
-                                                                                       Math.min(2, anchors.length);
+                                                                                   if (!supportsCustomStatusBar) return true;
+                                                                                   return customStatusGuard.validate(customStatusGuard.clean(text));
                                                                                }
 
                                                                            const SAFE_MAX_TOKENS =
@@ -5012,13 +4940,13 @@ ${persistentPreferenceDirective}
                                                                            const MAX_AI_RETRIES =
                                                                                chatMode === "resonance" ? 1 : 2;
 
-                                                                           // v2.4.5.5：Resonance 的短回覆補厚與 provider retry 分開計數。
-                                                                           // 第一輪若 <500 且正常完成，只再重寫一次；第二輪不論長度都接受。
+                                                                           // V5.2：Resonance 的篇幅補足以 700 個中文字為準，避免昂貴的長篇重寫。
+                                                                           // 生成失敗仍走原有 provider / JSON 救援邏輯。
                                                                            let resonanceSoftFloorRetryUsed = false;
 
-                                                                           // 只在沉浸模式按「正文中文字」判斷篇幅；不讓時間／地點或狀態欄灌水過關。
+                                                                           // V2：沉浸、共鳴皆按「正文中文字」判斷篇幅；時間、地點、狀態欄不計入。
                                                                            function measuredWriterLength(text) {
-                                                                               if (chatMode !== "immersive") return String(text || "").length;
+                                                                               if (chatMode !== "immersive" && chatMode !== "resonance") return String(text || "").length;
                                                                                let body = String(text || "")
                                                                                    .replace(/^時間：[^\n]*\n地點：[^\n]*\n?/, "");
                                                                                if (customOutputFormat) {
@@ -5055,8 +4983,8 @@ ${persistentPreferenceDirective}
                                                                                            chatMode === "resonance" &&
                                                                                            nextAiCallReason !== "initial"
                                                                                        ) {
-                                                                                           // 共鳴補寫仍使用 Claude；避免補救回合悄悄切回 Gemini。
-                                                                                           targetModel = config.modelId;
+                                                                                           // V5.2：主模型保持 Claude；僅在重試／截斷救援時改用既有 DeepSeek 備援，避免再次支付 Claude 全量費用。
+                                                                                           targetModel = config.fallbackModelId || "deepseek/deepseek-v3.2";
                                                                                        }
 
                                                                                        // 🚀 2. 轉轍器一號：DeepSeek 改回走 OpenRouter 深夜專車！
@@ -5091,7 +5019,7 @@ ${persistentPreferenceDirective}
 
                                                                                        const effectiveMaxTokens =
                                                                                            resonanceIsRescueCall
-                                                                                               ? SAFE_MAX_TOKENS
+                                                                                               ? Math.min(2800, SAFE_MAX_TOKENS)
                                                                                                : Math.min(maxTokens, SAFE_MAX_TOKENS);
 
                                                                                        const finalRequestBody = {
@@ -5124,15 +5052,53 @@ ${persistentPreferenceDirective}
                                                                                        // xAI 餘額／月支出上限造成的 403 不在共用 retry_handler 的 retryable 清單。
                                                                                        // 只在普通聊天室 Grok 遇到這種特定 403 時，直接使用既有 DeepSeek 備援。
                                                                                        // 其他 403（一般權限／政策拒絕等）保持既有失敗處理。
+                                                                                       // V1 試行：只有一般角色 Writer 採較短失敗切換時間，
+                                                                                       // 讓備援有機會在前端 110 秒等待上限前完成。
+                                                                                       // 長篇模式保留較長主模型生成時間；後續依 P95 監測調整。
+                                                                                       // V5.7.6: Kimi 逾時救援使用較小的歷史視窗。
+                                                                                       // system 包含人設、NPC 關係、記憶與創作者狀態欄，不縮減；
+                                                                                       // 最近玩家指令必須完整保留（包括條列式／時段要求）。
+                                                                                       const isKimiTimeoutRescueEligible =
+                                                                                           chatMode === "immersive" &&
+                                                                                           String(config.modelId || "").includes("kimi") &&
+                                                                                           String(config.fallbackModelId || "").includes("deepseek");
+                                                                                       let compactKimiFallbackBody = null;
+                                                                                       if (isKimiTimeoutRescueEligible) {
+                                                                                           const sourceMessages = finalRequestBody.messages || [];
+                                                                                           const systemMessages = sourceMessages.filter(m => m?.role === "system");
+                                                                                           const dialogueMessages = sourceMessages.filter(m => m?.role !== "system");
+                                                                                           // 精簡歷史但不更動、摘要或截斷任何單則訊息。
+                                                                                           const recentDialogue = dialogueMessages.slice(-9);
+                                                                                           compactKimiFallbackBody = {
+                                                                                               ...finalRequestBody,
+                                                                                               messages: [...systemMessages, ...recentDialogue],
+                                                                                               max_tokens: Math.min(2600, effectiveMaxTokens),
+                                                                                           };
+                                                                                           const chars = arr => arr.reduce((sum, m) => sum + String(m?.content || "").length, 0);
+                                                                                           console.log("📊 V5.7.6 KIMI FALLBACK AUDIT:", {
+                                                                                               originalMessages: sourceMessages.length,
+                                                                                               fallbackMessages: compactKimiFallbackBody.messages.length,
+                                                                                               originalCharacters: chars(sourceMessages),
+                                                                                               fallbackCharacters: chars(compactKimiFallbackBody.messages),
+                                                                                               fallbackMaxTokens: compactKimiFallbackBody.max_tokens,
+                                                                                               retainsLatestInstruction: recentDialogue[recentDialogue.length - 1] === dialogueMessages[dialogueMessages.length - 1],
+                                                                                           });
+                                                                                       }
+                                                                                       const writerPrimaryTimeoutMs =
+                                                                                           isKimiTimeoutRescueEligible ? 60_000 :
+                                                                                           (["immersive", "resonance"].includes(chatMode) ? 70_000 : 55_000);
+                                                                                       const writerFallbackTimeoutMs = isKimiTimeoutRescueEligible ? 40_000 : 28_000;
                                                                                        let aiResult;
                                                                                        try {
                                                                                            aiResult = await callAiWithRetry({
                                                                                                modelId: targetModel,
                                                                                                fallbackModelId: config.fallbackModelId || null,
                                                                                                abortController,
-                                                                                               timeoutMs: 95_000,
+                                                                                               timeoutMs: writerPrimaryTimeoutMs,
+                                                                                               fallbackTimeoutMs: writerFallbackTimeoutMs,
                                                                                                retryPrimary: false,
                                                                                                requestBody: finalRequestBody,
+                                                                                               fallbackRequestBody: compactKimiFallbackBody,
                                                                                            });
                                                                                        } catch (writerError) {
                                                                                            const providerErrorText = String(writerError?.result?.error || "");
@@ -5151,7 +5117,7 @@ ${persistentPreferenceDirective}
                                                                                                modelId: config.fallbackModelId,
                                                                                                fallbackModelId: null,
                                                                                                abortController,
-                                                                                               timeoutMs: 95_000,
+                                                                                               timeoutMs: writerFallbackTimeoutMs,
                                                                                                retryPrimary: false,
                                                                                                requestBody: finalRequestBody,
                                                                                            });
@@ -5236,10 +5202,17 @@ ${persistentPreferenceDirective}
 
                                                                                        const finishReason =
                                                                                            aiResult.choices?.[0]?.finish_reason || "";
+                                                                                       console.log("🧪 V5 WRITER FINISH REASON:", {
+                                                                                           chatMode,
+                                                                                           call: aiCallSequence,
+                                                                                           model: aiResult?.model || targetModel,
+                                                                                           finishReason,
+                                                                                           outputTokens: aiResult?.usage?.completion_tokens ?? null,
+                                                                                       });
 
                                                                                        if (finishReason === "length") {
                                                                                            console.warn(
-                                                                                               "⚠️ AI 回覆因 token 上限被截斷，準備重新生成"
+                                                                                               "⚠️ AI 回覆因 token 上限被截斷，準備改用低成本備援重新生成"
                                                                                            );
 
                                                                                            // v2.4.5.8：Resonance 最多兩次 Writer 呼叫。
@@ -5566,38 +5539,10 @@ const residualWriterArtifacts =
                                                                                );
 
                                                                                // 🛡️ 防止模型把同聊天室最近幾則 AI 長回覆整段搬回來。
-                                                                                const currentReplyFingerprint =
-                                                                                    duplicateReplyFingerprint(
-                                                                                        currentText
-                                                                                    );
+                                                                                const repeatedNarrative = findRepeatedNarrative(
+                                                                                    currentText, recentAssistantReplies, customOutputFormat);
 
-                                                                                const repeatedHistoryFingerprint =
-                                                                                    recentAssistantFingerprints.find(
-                                                                                        (oldFingerprint) => {
-                                                                                            if (
-                                                                                                currentReplyFingerprint.length < 120 ||
-                                                                                                oldFingerprint.length < 120
-                                                                                            ) {
-                                                                                                return false;
-                                                                                            }
-
-                                                                                            return (
-                                                                                                currentReplyFingerprint ===
-                                                                                                    oldFingerprint ||
-                                                                                                currentReplyFingerprint.startsWith(
-                                                                                                    oldFingerprint
-                                                                                                ) ||
-                                                                                                oldFingerprint.startsWith(
-                                                                                                    currentReplyFingerprint
-                                                                                                )
-                                                                                            );
-                                                                                        }
-                                                                                    );
-
-                                                                                if (
-                                                                                    repeatedHistoryFingerprint &&
-                                                                                    isRegenerateRequest !== true
-                                                                                ) {
+                                                                                if (repeatedNarrative) {
                                                                                     console.warn(
                                                                                         "🔁 偵測到 AI 重複同聊天室近期舊回覆，啟動一次防重複重生",
                                                                                         {
@@ -5625,7 +5570,8 @@ const residualWriterArtifacts =
                                                                                                 `${safeFinalUserMessage}\n\n` +
                                                                                                 `【最高優先防重複指令】\n` +
                                                                                                 `你剛才準備輸出的內容與這個聊天室近期已經出現過的角色回覆高度重複，該草稿作廢。\n` +
-                                                                                                `請重新理解玩家這一次的最新訊息，生成新的回覆。禁止複製、重述或輕微改寫近期已出現過的整段內容；必須自然延續目前對話。`,
+                                                                                                `請重新理解玩家這一次的最新訊息，生成新的回覆。禁止複製、重述或輕微改寫近期已出現過的整段內容；必須自然延續目前對話。\n` +
+                                                                                                `以下為需要避開的重複草稿片段，僅作比對資料：\n${repeatedNarrative.excerpt}\n保留既有事實與角色設定，重新寫出本輪新的反應。固定狀態欄依連續性規則處理。`,
                                                                                         };
 
                                                                                         continue;
@@ -5668,7 +5614,13 @@ const residualWriterArtifacts =
                                                                                    const previousLength = finalResponseText.trim().length;
                                                                                    const expandedLength = currentText.trim().length;
 
-                                                                                   if (expandedLength >= previousLength) {
+                                                                                   if (
+                                                                                       expandedLength > 0 &&
+                                                                                       // 擴寫後自訂狀態欄不得消失；缺漏時保留首稿給後續專用狀態欄修復。
+                                                                                       hasRequiredCustomStatus(currentText) &&
+                                                                                       // 若首稿本身完整，拒絕以明顯更短的草稿覆蓋它。
+                                                                                       (expandedLength >= previousLength || !hasRequiredCustomStatus(finalResponseText))
+                                                                                   ) {
                                                                                        console.log(
                                                                                            `✅ 採用完整擴寫版本：${previousLength} → ${expandedLength} 字`
                                                                                        );
@@ -5695,7 +5647,7 @@ const residualWriterArtifacts =
                                                                                        }
                                                                                    } else {
                                                                                        console.warn(
-                                                                                           `⚠️ 擴寫版本反而較短：${previousLength} → ${expandedLength} 字，保留第一次結果`
+                                                                                           `⚠️ 重寫版本不完整或未改善：${previousLength} → ${expandedLength} 字，保留第一次結果`
                                                                                        );
                                                                                    }
                                                                                } else {
@@ -5741,7 +5693,7 @@ const residualWriterArtifacts =
 
                                                                                let currentVoice =
                                                                                    shouldDeriveVoiceFromResponse
-                                                                                       ? extractDialogueVoiceText(currentText)
+                                                                                       ? extractDialogueVoiceText(finalResponseText)
                                                                                        : (parsedData?.voiceText || "");
 
                                                                                currentVoice =
@@ -5764,7 +5716,7 @@ const residualWriterArtifacts =
 
                                                                                if (!String(finalVoiceText || "").trim()) {
                                                                                    finalVoiceText =
-                                                                                       extractDialogueVoiceText(currentText);
+                                                                                       extractDialogueVoiceText(finalResponseText);
                                                                                }
 
                                                                                // ==========================================
@@ -5788,10 +5740,43 @@ const residualWriterArtifacts =
                                                                                // 反而造成 voiceText 降級成「他似乎陷入了沉思...」。
                                                                                // 這類字面瑕疵改由最終全域 Quality Guard 清理即可。
                                                                                const canRetryWriterQuality = false;
-                                                                               // v2.4.5.5：Resonance 短回覆軟門檻。
-                                                                               // 第一輪正常完成但 <500：一定再完整重寫一次；第二輪直接接受。
+                                                                               // V5.7.16: Short-response cost guard. Keep existing writing goals,
+                                                                               // retries, required creator status repair, and routing unchanged.
+                                                                               // A coherent nearly-on-target answer should not be rewritten
+                                                                               // solely for a minor Chinese-character shortfall.
+                                                                               const v5716SoftFloors = {
+                                                                                   resonance: 570, // 597/600 accepted
+                                                                                   immersive: 500, // 544/700 accepted when complete
+                                                                                   story: 320,     // slight tolerance near 350
+                                                                               };
+                                                                               const v5716SoftFloor = config.writerTier === "grok_high_freedom"
+                                                                                   ? 600
+                                                                                   : v5716SoftFloors[chatMode];
+                                                                               const v5716BodyHan = measuredWriterLength(finalResponseText);
+                                                                               if (hasCompleteStatus &&
+                                                                                   typeof v5716SoftFloor === "number" &&
+                                                                                   v5716BodyHan >= v5716SoftFloor &&
+                                                                                   v5716BodyHan < TARGET_LENGTH) {
+                                                                                   console.log("💰 V5.7.16 ACCEPT COMPLETE NEAR-TARGET", {
+                                                                                       chatMode, writerTier: config.writerTier,
+                                                                                       bodyHanCharacters: v5716BodyHan,
+                                                                                       originalTarget: TARGET_LENGTH,
+                                                                                       acceptedSoftFloor: v5716SoftFloor,
+                                                                                       avoidedFullRewrite: loopCount < MAX_LOOPS,
+                                                                                   });
+                                                                                   break;
+                                                                               }
+                                                                               // V5.6：共鳴以 700 中文字為理想目標，600 字是可接受的柔性下限。
+                                                                               // 若自訂狀態欄已完整且正文至少 600 中文字，立即交付，
+                                                                               // 避免僅差少量字數便付費重生整篇（例如 685 → 1633 字）。
+                                                                               // 自訂狀態欄缺漏仍交由下方的既有專用修復邏輯處理。
                                                                                if (chatMode === "resonance" && hasCompleteStatus) {
-                                                                                   if (measuredWriterLength(finalResponseText) >= TARGET_LENGTH) {
+                                                                                   if (measuredWriterLength(finalResponseText) >= 600) {
+                                                                                       console.log("✅ V5.6 共鳴正文達柔性下限且狀態欄完整，直接採用", {
+                                                                                           bodyHanCharacters: measuredWriterLength(finalResponseText),
+                                                                                           targetHanCharacters: TARGET_LENGTH,
+                                                                                           softMinimumHanCharacters: 600,
+                                                                                       });
                                                                                        break;
                                                                                    }
                                                                                    if (!resonanceSoftFloorRetryUsed) {
@@ -5814,12 +5799,16 @@ const residualWriterArtifacts =
                                                                                    break;
                                                                                }
 
-                                                                               if (!hasCompleteStatus) {
-                                                                                   nextAiCallReason = "missing_custom_status_rewrite";
-                                                                                   console.warn(
-                                                                                       "⚠️ 創作者自訂狀態欄缺漏，啟動完整回覆重生。",
-                                                                                   );
-                                                                               }
+                                                                               // V5：缺狀態欄時優先交給下方輕量專用修復，不為此重新生成整篇。
+                                                                                   if (!hasCompleteStatus) {
+                                                                                       console.warn("🧩 V5 缺自訂狀態欄：跳過完整重寫", {
+                                                                                           chatMode,
+                                                                                           missing: customStatusGuard.missing(finalResponseText),
+                                                                                           bodyHanCharacters: measuredWriterLength(finalResponseText),
+                                                                                       });
+                                                                                       break;
+                                                                                   }
+
 
                                                                                console.log(
                                                                                    `[短回覆重寫] 目前有效字數 ${measuredWriterLength(finalResponseText)}，啟動第 ${loopCount + 1} 次重寫...`
@@ -5840,18 +5829,18 @@ const residualWriterArtifacts =
                                                                                ${qualityRetryNote}
                                                                                ${playerAgencyAndNaturalnessDirective}
 
-                                                                               上一份草稿未達本模式所需的 ${TARGET_LENGTH} 個中文字，該草稿已作廢。
+                                                                               上一份草稿未達本模式所需的 ${chatMode === "resonance" ? 600 : TARGET_LENGTH} 個中文字，該草稿已作廢。
                                                                                請重新回應上方玩家原始訊息，產生一份可以獨立顯示的完整回覆，不得接續、補寫或提及舊草稿。
 
                                                                                要求：
 
-                                                                               1. 正文至少 ${TARGET_LENGTH} 個中文字，${config.writerTier === "grok_high_freedom" ? "建議控制在 650～900 字" : (chatMode === "resonance" ? "救援重寫建議控制在 550～850 字，以自然完整為優先，不必硬湊長度" : "建議控制在 700～1000 字")}；完成前不得提前結束。
+                                                                               1. 正文至少 ${chatMode === "resonance" ? 600 : TARGET_LENGTH} 個中文字，${config.writerTier === "grok_high_freedom" ? "建議控制在 650～900 字" : (chatMode === "resonance" ? "目標約 700～850 個中文字，情緒和關係層次自然完成，不得硬湊重複情節" : "建議控制在 700～1000 字")}；完成前不得提前結束。
                                                                                2. 透過新的角色台詞、行動、決定、衝突、資訊、關係變化或合理事件推進增加內容。
                                                                                3. 每輪自然推進二至三個彼此相關的情節節點，不得一次跨越過多時間、地點或事件。
                                                                                4. 不得以重複動作、換句話說、視線、呼吸、喉結、指尖、沉默、感官堆疊或無意義走動填充篇幅。
                                                                                5. 必須完整遵守玩家最新設定、角色設定、記憶、人物身分、時間線、物件位置及最近對話。
                                                                                6. 玩家已完成的台詞與動作不得重新輸出、重新執行或改寫。
-                                                                               7. 不得替玩家新增未明確輸入的任何台詞、動作、沉默、表情、心理、情緒、慾望、身體反應、意願或選擇；微反應也不可補寫。
+                                                                               7. 可合理補寫玩家低風險日常小動作；若玩家最新訊息否認先前 AI 補寫的動作，以玩家新描述為準。不得新增玩家台詞、內心、情緒、同意、拒絕或重大選擇。
                                                                                8. 必須維持物理連續性與生活常識，確認人物雙手、嘴部狀態、身體姿勢、衣物、距離及物件位置。
                                                                                9. 前兩行必須依序使用系統指定的時間與地點格式。
                                                                                10. 所有非台詞正文必須完整放在全形括號（　）內；角色台詞使用「」並獨立成段。
@@ -5891,7 +5880,7 @@ const residualWriterArtifacts =
                                                                                6. 必須遵守玩家最新提供的正式設定、人物身分、時間線、事件主體、記憶及最近對話；不得用新內容改寫已知事實。
                                                                                7. 可以補充尚未設定的小事件、角色決定或新資訊，但不得修改已知日期、人物關係、動作對象、因果關係及事件先後。
                                                                                8. 玩家已完成的台詞與動作不得重新輸出、重新執行或改寫。
-                                                                               9. 不得替玩家新增未明確輸入的任何台詞、動作、沉默、表情、心理、情緒、身體反應、意願或選擇；微反應也不可補寫。
+                                                                               9. 可合理補寫低風險日常過場動作；若玩家明確更正則以更正為準。不得代寫玩家台詞、心理、情緒、主觀身體反應、同意、拒絕或重大選擇。
                                                                                10. 必須維持物理連續性與生活常識，確認人物雙手、嘴部狀態、身體姿勢、衣物、距離及物件位置。
                                                                                11. 前兩行必須依序使用系統指定的時間與地點格式，不得自行增加數分鐘。
                                                                                12. 所有非台詞正文必須完整放在全形括號（　）內；角色台詞使用「」並獨立成段。
@@ -5959,6 +5948,7 @@ const residualWriterArtifacts =
                                                                                                                                                abortController,
 
                                                                                                                                                timeoutMs: 30_000,
+                                                                                                                                               retryPrimary: false,
 
                                                                                                                                                requestBody: {
                                                                                                                                                    messages: [
@@ -5966,6 +5956,7 @@ const residualWriterArtifacts =
                                                                                                                                                            role: "system",
                                                                                                                                                            content: `
                                                                                                                                你現在只負責補齊「創作者自訂狀態欄」。
+${customStatusContinuityDirective}
 創作者模板中的「請系統」「請描述」「顯示」「若…則…」「自動不顯示」等文字都是給你的後台指令，不是玩家應看到的內容。
 
 禁止將這些指令原文輸出。
@@ -5983,7 +5974,8 @@ const residualWriterArtifacts =
                                                                                                                                填寫創作者指定的狀態欄模板。
 
                                                                                                                                所有非條件式欄位都必須存在。
-                                                                                                                               無法判斷的欄位填「未知」。
+                                                                                                                               無法確認的值不可填「未知」或照抄創作者說明；缺乏可信依據時省略該欄，由後端降級處理。
+                                                                                                                               若創作者規定群組聊天每輪需 2～5 則，必須產生至少兩則相互連貫、符合角色關係的全新發言；不可只輸出一則，不可照抄示例。
 
                                                                                                                                只回傳完整狀態欄純文字。
                                                                                                                                第一個字就直接開始輸出狀態欄。
@@ -5993,7 +5985,11 @@ const residualWriterArtifacts =
                                                                                                                                                        {
                                                                                                                                                            role: "user",
                                                                                                                                                            content: `
-                                                                                                                               【本輪完整正文】
+                                                                                                                               【目前確實缺少／不完整的欄位】
+                                                                                                                               ${customStatusGuard.missing(customStatusGuard.clean(finalResponseText)).join("、")}
+                                                                                                                               有效欄位請勿刪除或改寫；群組若需2～5則，請一次補足全新訊息。若角色不在場，群組仍可模擬遠端家族對話，與場景NPC出場條件無關。
+
+                                                                                                                               【本輪完整正文與現有狀態】
 
                                                                                                                                ${finalResponseText}
 
@@ -6029,9 +6025,8 @@ const residualWriterArtifacts =
                                                                                                                                                    .trim();
 
                                                                                                                                            if (repairedStatus) {
-                                                                                                                                               const repairedResponse =
-                                                                                                                                                   `${finalResponseText.trim()}\n\n` +
-                                                                                                                                                   `${repairedStatus}`;
+                                                                                                                                               const repairedMerge = customStatusGuard.mergeRepair(finalResponseText, repairedStatus);
+                                                                                                                                               const repairedResponse = repairedMerge.text;
 
                                                                                                                                                if (
                                                                                                                                                    hasRequiredCustomStatus(
@@ -6044,6 +6039,7 @@ const residualWriterArtifacts =
                                                                                                                                                            MAX_RESPONSE_LENGTH
                                                                                                                                                        );
 
+                                                                                                                                                   console.log("🧩 V5.7.15 STATUS REPAIR MERGED", { chatMode, restoredFields: repairedMerge.restoredFields, groupValidationPassed: true });
                                                                                                                                                    console.log(
                                                                                                                                                        "✅ 創作者狀態欄自動修復成功。",
                                                                                                                                                        {
@@ -6068,6 +6064,35 @@ const residualWriterArtifacts =
                                                                                                                                        );
                                                                                                                                    }
                                                                                                                                }
+// V5.7.9: do not copy the entire previous footer: stale timestamps, NPC thoughts,
+// group chat examples and "未知" could be replayed as fresh events.
+// salvage() below reuses only individually verified stable field values.
+// V5.1：若 AI 正文可用，但狀態欄修復模型仍漏欄，
+// 不再回傳 422 丟掉整則回覆；以既有資訊保底補欄，
+// 不杜撰人物行為、NPC 訊息或玩家反應。只有真正的空回覆仍由原防線拒絕。
+if (supportsCustomStatusBar) {
+    const missingBeforeSave = customStatusGuard.missing(customStatusGuard.clean(finalResponseText));
+    if (missingBeforeSave.length > 0 && String(finalResponseText || "").trim()) {
+        const rescued = customStatusGuard.salvage(
+            finalResponseText,
+            previousCustomStatus,
+            {time: finalStoryTime, location: finalStoryLocation}
+        );
+        if (rescued.complete) {
+            finalResponseText = limitTextLength(rescued.text, MAX_RESPONSE_LENGTH);
+            console.warn("🛟 V5.1 狀態欄保底成功：保留可用正文，不額外呼叫 AI", {
+                chatMode, added: rescued.added, unresolved: rescued.unresolved, bodyHanCharacters: measuredWriterLength(finalResponseText),
+            });
+        } else {
+            // 保護可用正文：少數非標準模板無法解析時仍交付，
+            // 但記錄為降級交付，不偽稱狀態欄已通過完整性驗證。
+            finalResponseText = rescued.text;
+            console.error("⚠️ V5.1 自訂狀態欄降級交付，需檢查模板", {
+                chatMode, missing: customStatusGuard.missing(finalResponseText), unresolved: rescued.unresolved,
+            });
+        }
+    }
+}
 // ==========================================
 // 🛡️ 安全回覆與扣款系統
 // 原則：有有效回覆，並成功寫入聊天室後，才允許扣點
@@ -6700,10 +6725,106 @@ if (sessionId) {
     // AI 輸出在此才完成所有救援/保密替換；寫入 Firestore 之前統一處理簡繁。
     // 前端 body.language 會明確傳送「台灣繁體中文」或其他實際介面語言。
     // 其他語系（含簡體中文）完全保留原文，不額外翻譯、不增加模型費用。
+    // V3：在 Firestore 寫入與扣花之前，移除創作者模板的控制文字及未成立的隱藏欄位。
+    // 只影響有自訂狀態欄的故事／沉浸／共鳴，不碰正文及其他模式。
+    if (supportsCustomStatusBar) {
+        cleanDisplayText = customStatusGuard.clean(cleanDisplayText);
+        // V5.7.3: when the model loses a stable outfit / appearance, reuse only that
+        // field from the previous valid footer, not the previous story or sample dialogue.
+        const continuity = customStatusGuard.carryForward(cleanDisplayText, previousCustomStatus, {
+            evidence: customStatusGuard.bodyOnly(cleanDisplayText)
+        });
+        cleanDisplayText = continuity.text;
+        if (continuity.reused.length) {
+            console.log("🧵 V5.7.3 STATUS CONTINUITY", {
+                chatMode, reusedFields: continuity.reused,
+            });
+        }
+        if (!customStatusGuard.validate(cleanDisplayText)) {
+            console.warn("⚠️ V4 自訂狀態欄仍不完整（已保留現有文字，不任意刪除玩家回覆）", {
+                chatMode,
+                missing: customStatusGuard.missing(cleanDisplayText),
+            });
+        }
+    }
+    // V5.7.5: fix directionally inverted kinship in creator-defined group-chat footer
+    // after all status repair and continuity; never globally replace story dialogue.
+    if (supportsCustomStatusBar) {
+        const relationOutput = protectGroupKinship(cleanDisplayText, {
+            mainCharacterName: name,
+            npcCharacters: rawNpcCharacters,
+            customOutputFormat,
+        });
+        cleanDisplayText = relationOutput.text;
+        if (relationOutput.changes) {
+            console.warn("🧩 V5.7.5 GROUP KINSHIP CORRECTED", {
+                chatMode, corrections: relationOutput.changes,
+            });
+        }
+    }
     cleanDisplayText = normalizeAiResponseScript(cleanDisplayText, playerLanguage);
     cleanVoiceText = normalizeAiResponseScript(cleanVoiceText, playerLanguage);
+    // V5.7.10: high-confidence lexical correction AFTER OpenCC/script normalization.
+    // "稱讴" -> "稱謳" is a script conversion, but "教練稱謳妳" is a wrong word.
+    // Exact, context-scoped substitution; do not touch non-TW locales or unrelated names.
+    const isTaiwanTraditionalOutput = /(?:台灣繁體|臺灣繁體|繁體中文|zh[_-]hant|zh[_-]tw)/iu.test(String(playerLanguage || "")) &&
+        !/(?:簡體|zh[_-]hans|zh[_-]cn)/iu.test(String(playerLanguage || ""));
+    if (isTaiwanTraditionalOutput) {
+        const fixKnownPraiseTypo = (value) => String(value || "")
+            .replace(/稱[謳讴](?=妳|你|我|他|她|它|牠|過|了|得|聲|一|，|。|！|!|？|\?|\s|$)/gu, "稱讚");
+        const correctedDisplay = fixKnownPraiseTypo(cleanDisplayText);
+        if (correctedDisplay !== cleanDisplayText) {
+            console.log("📝 V5.7.10 TAIWAN WORD CORRECTION", {chatMode, corrected: true});
+            cleanDisplayText = correctedDisplay;
+        }
+        cleanVoiceText = fixKnownPraiseTypo(cleanVoiceText);
+        // V5.7.15: the nonsensical glyph 妕 is a recurring model typo for 妳.
+        // Correct it in Taiwan-Traditional outputs only; no extra model call.
+        const fixMalformedSecondPerson = value => String(value || '').replace(
+            /妕/gu,
+            '妳'
+        );
+        const fixedPronoun = fixMalformedSecondPerson(cleanDisplayText);
+        if (fixedPronoun !== cleanDisplayText) {
+            console.log('📝 V5.7.14 MALFORMED PRONOUN CORRECTION', {chatMode, corrected: true});
+            cleanDisplayText = fixedPronoun;
+        }
+        cleanVoiceText = fixMalformedSecondPerson(cleanVoiceText);
+        // Repair a stray ASCII closing quote only when its opening Chinese
+        // dialogue quote is present on that very line and no Chinese closing quote exists.
+        const fixDialogueClosingQuote = value => String(value || '').split('\n').map(line =>
+            line.includes('「') && !line.includes('」') && /"\s*$/u.test(line)
+                ? line.replace(/"(\s*)$/u, '」$1') : line
+        ).join('\n');
+        cleanDisplayText = fixDialogueClosingQuote(cleanDisplayText);
+        cleanVoiceText = fixDialogueClosingQuote(cleanVoiceText);
+    }
+    // V5.7.18: final deterministic player-dialogue guard, after all repairs,
+    // translations and output normalizers; applies before Firestore & HTTP.
+    // Only removes high-confidence, clearly player-attributed new dialogue.
+    // Unknown quote speakers are left intact rather than damaging NPC text.
+    const playerInstructionCheck = enforcePlayerInstructions(cleanDisplayText, userMessage, playerName);
+    if (playerInstructionCheck.corrected > 0) {
+        cleanDisplayText = playerInstructionCheck.text;
+        cleanVoiceText = extractDialogueVoiceText(cleanDisplayText);
+        console.warn('🛡️ V5.7.18 PLAYER SPEECH REMOVED', {chatMode, count: playerInstructionCheck.corrected});
+    }
+    if (playerInstructionCheck.flags.noPlayerDialogue) {
+        console.log('🛡️ V5.7.18 PLAYER INSTRUCTION AUDIT', {
+            chatMode, noPlayerDialogue: true,
+            corrected: playerInstructionCheck.corrected,
+            unclassifiedQuotes: playerInstructionCheck.uncertainQuotes
+        });
+    }
     finalResponseText = cleanDisplayText;
     finalVoiceText = cleanVoiceText;
+    // Observability only: fail-soft rather than paying for an automatic full rewrite.
+    if (chatMode === "immersive") {
+        const bodyHan = (customStatusGuard && supportsCustomStatusBar)
+            ? (customStatusGuard.bodyOnly(cleanDisplayText).match(/\p{Script=Han}/gu) || []).length
+            : (cleanDisplayText.replace(/^時間：[^\n]*\n地點：[^\n]*\n?/u, "").match(/\p{Script=Han}/gu) || []).length;
+        if (bodyHan < 600) console.warn("📏 V5.7.10 IMMERSIVE SHORT BODY", {chatMode, bodyHan, goal: 700, additionalModelCall: false});
+    }
     // 與文字及語音共用依玩家語言處理的入口，避免依賴未匯入的判斷函式。
     for (const [field, value] of Object.entries(finalStatusBar || {})) {
         if (typeof value === 'string') {

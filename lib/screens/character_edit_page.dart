@@ -1067,52 +1067,40 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     bool shouldSkipResetDeleting = false;
 
     try {
-      final batch = _db.batch();
       final characterId = widget.character!.id;
+      // 只刪角色目前所屬的正式路徑，不再依序查詢三種位置。
+      // 舊版 private_characters 的 get 權限依賴既存文件；不存在時查詢也可能
+      // permission-denied，造成正常的公開／私人角色全部無法刪除。
+      final characterRef = widget.character!.isPublic
+          ? _db.collection('artifacts').doc(AppConfig.appId)
+              .collection('public_characters').doc(characterId)
+          : _db.collection('artifacts').doc(AppConfig.appId)
+              .collection('users').doc(user.uid)
+              .collection('private_characters').doc(characterId);
 
-      final publicRef = _db
-          .collection('artifacts')
-          .doc(AppConfig.appId)
-          .collection('public_characters')
-          .doc(characterId);
-
-      final privateRef = _db
-          .collection('artifacts')
-          .doc(AppConfig.appId)
-          .collection('users')
-          .doc(user.uid)
-          .collection('private_characters')
-          .doc(characterId);
-
-      final legacyPrivateRef = _db
-          .collection('artifacts')
-          .doc(AppConfig.appId)
-          .collection('private_characters')
-          .doc(characterId);
-
-      Future<void> deleteDocAndPhotos(DocumentReference ref) async {
-        // 先確認角色文件真的存在。
-        // Firestore Rules 的 ownerExisting() 依賴 resource.data；
-        // 若對「不存在」的角色文件直接 delete，會被判定 permission-denied。
-        final parentSnapshot = await ref.get();
-
-        if (!parentSnapshot.exists) {
-          debugPrint('ℹ️ 跳過不存在的角色路徑：${ref.path}');
-          return;
-        }
-
-        final photosSnapshot = await ref.collection('photos').get();
-
-        for (final doc in photosSnapshot.docs) {
-          batch.delete(doc.reference);
-        }
-
-        batch.delete(ref);
+      debugPrint('🗑️ 角色刪除：開始檢查 ${characterRef.path}');
+      final parentSnapshot = await characterRef.get();
+      if (!parentSnapshot.exists) {
+        throw StateError('找不到角色正式文件，已停止刪除。請重新整理角色列表後再試。');
       }
 
-      await deleteDocAndPhotos(publicRef);
-      await deleteDocAndPhotos(privateRef);
-      await deleteDocAndPhotos(legacyPrivateRef);
+      final parentData = parentSnapshot.data() as Map<String, dynamic>?;
+      // 和 Firestore Rules 的擁有者條件一致；不刪除其他使用者的角色。
+      if (parentData?['createdBy'] != user.uid) {
+        throw StateError('角色擁有者與登入帳號不符，已停止刪除。');
+      }
+
+      final photosSnapshot = await characterRef.collection('photos').get();
+      // Firestore 的批次寫入有上限；超量就明確停止，避免部分刪除。
+      if (photosSnapshot.docs.length > 450) {
+        throw StateError('角色照片紀錄過多，無法使用單次操作刪除，請聯絡客服處理。');
+      }
+      final batch = _db.batch();
+      for (final photo in photosSnapshot.docs) {
+        batch.delete(photo.reference);
+      }
+      batch.delete(characterRef);
+      debugPrint('🗑️ 角色刪除：提交 ${photosSnapshot.docs.length} 筆照片與主文件');
 
       await batch.commit();
 

@@ -661,12 +661,17 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
 
     try {
       await _db.collection('reports').add({
+        // 根目錄 reports 的安全規則會判斷 type；不可省略。
+        'type': 'comment_report',
         'targetId': comment.id,
         'targetType': 'comment',
         'momentId': widget.moment.id,
         'content': comment.content,
         'authorId': comment.authorId,
+        // 保留舊欄位給既有後台，同時統一報案者身分欄位。
         'reportedBy': currentUser.uid,
+        'reporterId': currentUser.uid,
+        'createdBy': currentUser.uid,
         'createdAt': FieldValue.serverTimestamp(),
         'status': 'pending',
       });
