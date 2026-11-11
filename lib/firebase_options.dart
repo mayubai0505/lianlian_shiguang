@@ -12,6 +12,8 @@ class DefaultFirebaseOptions {
         return android;
       case TargetPlatform.iOS:
         return ios;
+      case TargetPlatform.macOS:
+        return macos;
       default:
         throw UnsupportedError(
           'DefaultFirebaseOptions are not supported for this platform.',
@@ -46,6 +48,15 @@ class DefaultFirebaseOptions {
     androidClientId: '892791360631-2764m81poj1m0pbcc8u5tdqqvtaf71f9.apps.googleusercontent.com',
     iosClientId: '892791360631-varecrkcqdis4gfsmsup6s31o13om03b.apps.googleusercontent.com',
     iosBundleId: 'com.yubaimo.lianlianshiguang',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyBuDXhce0pkX75YAIBXEzroAEhO_harlu4',
+    appId: '1:892791360631:ios:c012d38f5ac54e3bdb4a72',
+    messagingSenderId: '892791360631',
+    projectId: 'lianlianshiguang',
+    storageBucket: 'lianlianshiguang.firebasestorage.app',
+    iosBundleId: 'com.yubaimo.lianlianshiguang.mac',
   );
 
 }

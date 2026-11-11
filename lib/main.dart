@@ -345,6 +345,15 @@ Future<void> _initializeBackgroundServices() async {
       const Duration(seconds: 15),
     );
     debugPrint('✅ Firebase App Check 初始化成功');
+    try {
+      final token = await FirebaseAppCheck.instance.getToken(true);
+      debugPrint(
+        '🔐 App Check Token：'
+            '${token != null && token.isNotEmpty ? "取得成功" : "取得失敗"}',
+      );
+    } catch (e) {
+      debugPrint('❌ App Check Token 取得失敗：$e');
+    }
   } on TimeoutException {
     debugPrint('⚠️ Firebase App Check 初始化逾時');
   } catch (e, stackTrace) {
