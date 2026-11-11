@@ -6593,6 +6593,49 @@
   "characterEditWorldLore": "세계관 (백엔드 설정)",
   "characterEditWorldLoreDescription": "AI 역할극에 사용할 세계의 배경, 규칙, 장소 및 사건을 설정합니다. 캐릭터 소개 카드에는 표시되지 않습니다.",
   "characterEditWorldLoreHint": "예: 세계 배경, 세력과 조직, 특별 규칙, 주요 사건 등…",
+  "worldAboutUsTitle": "우리의 이야기",
+  "worldAboutUsAddMemory": "추억 추가",
+  "worldAboutUsEditMemory": "추억 편집",
+  "worldAboutUsAddSharedMemory": "공동 추억 추가",
+  "worldAboutUsEditSharedMemory": "공동 추억 편집",
+  "worldAboutUsMemoryHint": "이 세계의 이야기에서 기억할 만한 인물 관계나 함께 겪은 사건을 기록하세요",
+  "worldAboutUsCancel": "취소",
+  "worldAboutUsSave": "저장",
+  "worldAboutUsDelete": "삭제",
+  "worldAboutUsSaved": "공동 추억을 저장했어요",
+  "worldAboutUsSaveFailed": "저장하지 못했습니다: {error}",
+  "@worldAboutUsSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsSavePermissionHint": " (Firestore 액세스 규칙을 확인하세요.)",
+  "worldAboutUsDeleteConfirmTitle": "공동 추억을 삭제할까요?",
+  "worldAboutUsDeleteConfirmBody": "삭제하면 AI가 더 이상 이 추억을 읽을 수 없습니다.",
+  "worldAboutUsDeleted": "공동 추억을 삭제했어요",
+  "worldAboutUsDeleteFailed": "삭제하지 못했습니다: {error}",
+  "@worldAboutUsDeleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsSignInRequired": "공동 추억을 보려면 먼저 로그인하세요.",
+  "worldAboutUsDescription": "이 세계 이야기방에서 함께한 추억이 여기에 기록됩니다.",
+  "worldAboutUsLoadFailed": "추억을 불러오지 못했습니다. Firestore 권한을 확인하세요: {error}",
+  "@worldAboutUsLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsEmpty": "아직 공동 추억이 없습니다.",
+  "worldAboutUsEditTooltip": "추억 편집",
+  "worldAboutUsDeleteTooltip": "추억 삭제",
   "world_edit_tag_max1": "Select up to 5 tags",
   "world_edit_tag_custom1": "Tags (customizable; separate with commas)",
   "world_edit_secret_not_ready1": "Secret chapters have not loaded. Publishing is paused to protect your content. Check permissions and reopen this page.",

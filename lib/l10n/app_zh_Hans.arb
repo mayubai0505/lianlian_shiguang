@@ -5413,6 +5413,49 @@
   "creator_program_benefit_fans": "粉丝经营：可寄信、管理粉丝，并用自己的花花赠送粉丝福利。",
   "creator_program_benefit_exposure": "官方曝光：新角色有机会优先登上 IG 与游戏内创作者推荐。",
   "creator_program_benefit_monthly": "每月创作奖励：当月新增并公开至少 3 个全新角色，次月可获 520 朵花花。",
+  "worldAboutUsTitle": "关于我们",
+  "worldAboutUsAddMemory": "添加记忆",
+  "worldAboutUsEditMemory": "编辑记忆",
+  "worldAboutUsAddSharedMemory": "添加共同记忆",
+  "worldAboutUsEditSharedMemory": "编辑共同记忆",
+  "worldAboutUsMemoryHint": "记录这段世界剧情中值得记住的人物关系或共同事件",
+  "worldAboutUsCancel": "取消",
+  "worldAboutUsSave": "保存",
+  "worldAboutUsDelete": "删除",
+  "worldAboutUsSaved": "共同记忆已保存",
+  "worldAboutUsSaveFailed": "保存失败：{error}",
+  "@worldAboutUsSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsSavePermissionHint": "（请检查 Firestore 访问规则）",
+  "worldAboutUsDeleteConfirmTitle": "删除共同记忆？",
+  "worldAboutUsDeleteConfirmBody": "删除后，AI 将不再读取这条记忆。",
+  "worldAboutUsDeleted": "已删除共同记忆",
+  "worldAboutUsDeleteFailed": "删除失败：{error}",
+  "@worldAboutUsDeleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsSignInRequired": "请先登录，再查看共同记忆。",
+  "worldAboutUsDescription": "这里记录此世界剧情房间的共同回忆",
+  "worldAboutUsLoadFailed": "读取记忆失败，请检查 Firestore 权限：{error}",
+  "@worldAboutUsLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsEmpty": "目前还没有共同记忆。",
+  "worldAboutUsEditTooltip": "编辑记忆",
+  "worldAboutUsDeleteTooltip": "删除记忆",
   "creator_program_benefit_merch": "实体合作：旗下角色若进入官方实体商品／礼盒合作，可依合作企划获得现金创作奖励。",
   "creator_program_last_review_note": "上次审核说明：{reason}",
   "creator_program_apply_heading": "申请加入",

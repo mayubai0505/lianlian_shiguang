@@ -6648,6 +6648,49 @@
   "characterEditWorldLore": "إعدادات العالم (إعدادات خلفية)",
   "characterEditWorldLoreDescription": "خلفية العالم وقواعده ومواقعه وأحداثه التي يستخدمها الذكاء الاصطناعي في أداء الأدوار؛ لا تظهر في بطاقة تعريف الشخصية.",
   "characterEditWorldLoreHint": "مثال: خلفية العالم، الفصائل والمنظمات، القواعد الخاصة، الأحداث المهمة…",
+  "worldAboutUsTitle": "نبذة عنا",
+  "worldAboutUsAddMemory": "إضافة ذكرى",
+  "worldAboutUsEditMemory": "تعديل الذكرى",
+  "worldAboutUsAddSharedMemory": "إضافة ذكرى مشتركة",
+  "worldAboutUsEditSharedMemory": "تعديل ذكرى مشتركة",
+  "worldAboutUsMemoryHint": "سجّل العلاقات أو الأحداث المشتركة الجديرة بالتذكّر في قصة هذا العالم",
+  "worldAboutUsCancel": "إلغاء",
+  "worldAboutUsSave": "حفظ",
+  "worldAboutUsDelete": "حذف",
+  "worldAboutUsSaved": "تم حفظ الذكرى المشتركة",
+  "worldAboutUsSaveFailed": "تعذّر الحفظ: {error}",
+  "@worldAboutUsSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsSavePermissionHint": " (تحقّق من قواعد الوصول إلى Firestore.)",
+  "worldAboutUsDeleteConfirmTitle": "هل تريد حذف الذكرى المشتركة؟",
+  "worldAboutUsDeleteConfirmBody": "بعد الحذف، لن يتمكّن الذكاء الاصطناعي من قراءة هذه الذكرى.",
+  "worldAboutUsDeleted": "تم حذف الذكرى المشتركة",
+  "worldAboutUsDeleteFailed": "تعذّر الحذف: {error}",
+  "@worldAboutUsDeleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsSignInRequired": "سجّل الدخول أولاً لعرض الذكريات المشتركة.",
+  "worldAboutUsDescription": "تُعرض هنا الذكريات المشتركة في غرفة قصة هذا العالم.",
+  "worldAboutUsLoadFailed": "تعذّر تحميل الذكريات. تحقّق من أذونات Firestore: {error}",
+  "@worldAboutUsLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsEmpty": "لا توجد ذكريات مشتركة بعد.",
+  "worldAboutUsEditTooltip": "تعديل الذكرى",
+  "worldAboutUsDeleteTooltip": "حذف الذكرى",
   "world_edit_tag_max1": "Select up to 5 tags",
   "world_edit_tag_custom1": "Tags (customizable; separate with commas)",
   "world_edit_secret_not_ready1": "Secret chapters have not loaded. Publishing is paused to protect your content. Check permissions and reopen this page.",

@@ -12492,6 +12492,82 @@ class AppLocalizationsEn extends AppLocalizations {
   String get world_menu_subtitle1 => 'Open World · Features coming gradually';
 
   @override
+  String get worldAboutUsTitle => 'About Us';
+
+  @override
+  String get worldAboutUsAddMemory => 'Add Memory';
+
+  @override
+  String get worldAboutUsEditMemory => 'Edit Memory';
+
+  @override
+  String get worldAboutUsAddSharedMemory => 'Add Shared Memory';
+
+  @override
+  String get worldAboutUsEditSharedMemory => 'Edit Shared Memory';
+
+  @override
+  String get worldAboutUsMemoryHint =>
+      'Record relationships or shared events worth remembering in this world story';
+
+  @override
+  String get worldAboutUsCancel => 'Cancel';
+
+  @override
+  String get worldAboutUsSave => 'Save';
+
+  @override
+  String get worldAboutUsDelete => 'Delete';
+
+  @override
+  String get worldAboutUsSaved => 'Shared memory saved';
+
+  @override
+  String worldAboutUsSaveFailed(String error) {
+    return 'Could not save: $error';
+  }
+
+  @override
+  String get worldAboutUsSavePermissionHint =>
+      ' (Check your Firestore access rules.)';
+
+  @override
+  String get worldAboutUsDeleteConfirmTitle => 'Delete shared memory?';
+
+  @override
+  String get worldAboutUsDeleteConfirmBody =>
+      'Once deleted, this memory will no longer be available to the AI.';
+
+  @override
+  String get worldAboutUsDeleted => 'Shared memory deleted';
+
+  @override
+  String worldAboutUsDeleteFailed(String error) {
+    return 'Could not delete: $error';
+  }
+
+  @override
+  String get worldAboutUsSignInRequired => 'Sign in to view shared memories.';
+
+  @override
+  String get worldAboutUsDescription =>
+      'Shared memories from this world story room appear here.';
+
+  @override
+  String worldAboutUsLoadFailed(String error) {
+    return 'Could not load memories. Check Firestore permissions: $error';
+  }
+
+  @override
+  String get worldAboutUsEmpty => 'No shared memories yet.';
+
+  @override
+  String get worldAboutUsEditTooltip => 'Edit memory';
+
+  @override
+  String get worldAboutUsDeleteTooltip => 'Delete memory';
+
+  @override
   String get world_menu_chat_section1 => 'Chat';
 
   @override

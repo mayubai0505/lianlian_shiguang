@@ -6593,6 +6593,50 @@
   "characterEditWorldLore": "Univers (configuration interne)",
   "characterEditWorldLoreDescription": "Contexte, règles, lieux et événements de l’univers utilisés par l’IA pour le jeu de rôle. Ces informations ne figurent pas sur la fiche du personnage.",
   "characterEditWorldLoreHint": "Ex. : contexte de l’univers, factions et organisations, règles particulières, événements importants…",
+  "@@locale": "fr",
+  "worldAboutUsTitle": "À propos de nous",
+  "worldAboutUsAddMemory": "Ajouter un souvenir",
+  "worldAboutUsEditMemory": "Modifier le souvenir",
+  "worldAboutUsAddSharedMemory": "Ajouter un souvenir partagé",
+  "worldAboutUsEditSharedMemory": "Modifier un souvenir partagé",
+  "worldAboutUsMemoryHint": "Notez les relations et les événements communs à retenir dans l’histoire de ce monde",
+  "worldAboutUsCancel": "Annuler",
+  "worldAboutUsSave": "Enregistrer",
+  "worldAboutUsDelete": "Supprimer",
+  "worldAboutUsSaved": "Souvenir partagé enregistré",
+  "worldAboutUsSaveFailed": "Échec de l’enregistrement : {error}",
+  "@worldAboutUsSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsSavePermissionHint": " (Vérifiez les règles d’accès Firestore.)",
+  "worldAboutUsDeleteConfirmTitle": "Supprimer ce souvenir partagé ?",
+  "worldAboutUsDeleteConfirmBody": "Une fois supprimé, ce souvenir ne sera plus accessible à l’IA.",
+  "worldAboutUsDeleted": "Souvenir partagé supprimé",
+  "worldAboutUsDeleteFailed": "Échec de la suppression : {error}",
+  "@worldAboutUsDeleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsSignInRequired": "Connectez-vous pour consulter les souvenirs partagés.",
+  "worldAboutUsDescription": "Les souvenirs partagés de cette histoire sont conservés ici.",
+  "worldAboutUsLoadFailed": "Impossible de charger les souvenirs. Vérifiez les autorisations Firestore : {error}",
+  "@worldAboutUsLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsEmpty": "Aucun souvenir partagé pour le moment.",
+  "worldAboutUsEditTooltip": "Modifier le souvenir",
+  "worldAboutUsDeleteTooltip": "Supprimer le souvenir",
   "world_edit_tag_max1": "Select up to 5 tags",
   "world_edit_tag_custom1": "Tags (customizable; separate with commas)",
   "world_edit_secret_not_ready1": "Secret chapters have not loaded. Publishing is paused to protect your content. Check permissions and reopen this page.",

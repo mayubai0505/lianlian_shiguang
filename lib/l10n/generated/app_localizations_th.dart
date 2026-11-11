@@ -12442,6 +12442,83 @@ class AppLocalizationsTh extends AppLocalizations {
   String get world_menu_subtitle1 => 'โลกเปิด · ทยอยเปิดให้ใช้ฟีเจอร์';
 
   @override
+  String get worldAboutUsTitle => 'เกี่ยวกับเรา';
+
+  @override
+  String get worldAboutUsAddMemory => 'เพิ่มความทรงจำ';
+
+  @override
+  String get worldAboutUsEditMemory => 'แก้ไขความทรงจำ';
+
+  @override
+  String get worldAboutUsAddSharedMemory => 'เพิ่มความทรงจำร่วมกัน';
+
+  @override
+  String get worldAboutUsEditSharedMemory => 'แก้ไขความทรงจำร่วมกัน';
+
+  @override
+  String get worldAboutUsMemoryHint =>
+      'บันทึกความสัมพันธ์หรือเหตุการณ์ร่วมกันที่ควรจดจำในเรื่องราวของโลกนี้';
+
+  @override
+  String get worldAboutUsCancel => 'ยกเลิก';
+
+  @override
+  String get worldAboutUsSave => 'บันทึก';
+
+  @override
+  String get worldAboutUsDelete => 'ลบ';
+
+  @override
+  String get worldAboutUsSaved => 'บันทึกความทรงจำร่วมกันแล้ว';
+
+  @override
+  String worldAboutUsSaveFailed(String error) {
+    return 'บันทึกไม่สำเร็จ: $error';
+  }
+
+  @override
+  String get worldAboutUsSavePermissionHint =>
+      ' (โปรดตรวจสอบกฎการเข้าถึง Firestore)';
+
+  @override
+  String get worldAboutUsDeleteConfirmTitle => 'ลบความทรงจำร่วมกันหรือไม่?';
+
+  @override
+  String get worldAboutUsDeleteConfirmBody =>
+      'เมื่อลบแล้ว AI จะไม่สามารถอ่านความทรงจำนี้ได้อีก';
+
+  @override
+  String get worldAboutUsDeleted => 'ลบความทรงจำร่วมกันแล้ว';
+
+  @override
+  String worldAboutUsDeleteFailed(String error) {
+    return 'ลบไม่สำเร็จ: $error';
+  }
+
+  @override
+  String get worldAboutUsSignInRequired =>
+      'โปรดเข้าสู่ระบบก่อนดูความทรงจำร่วมกัน';
+
+  @override
+  String get worldAboutUsDescription =>
+      'ความทรงจำร่วมกันในห้องเรื่องราวของโลกนี้จะถูกบันทึกไว้ที่นี่';
+
+  @override
+  String worldAboutUsLoadFailed(String error) {
+    return 'โหลดความทรงจำไม่สำเร็จ โปรดตรวจสอบสิทธิ์ Firestore: $error';
+  }
+
+  @override
+  String get worldAboutUsEmpty => 'ยังไม่มีความทรงจำร่วมกัน';
+
+  @override
+  String get worldAboutUsEditTooltip => 'แก้ไขความทรงจำ';
+
+  @override
+  String get worldAboutUsDeleteTooltip => 'ลบความทรงจำ';
+
+  @override
   String get world_menu_chat_section1 => 'แชต';
 
   @override

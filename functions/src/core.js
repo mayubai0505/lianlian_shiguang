@@ -2691,6 +2691,20 @@ const supportsCustomStatusBar =
         chatMode === "resonance"
     );
 
+// V5.10: long creator-defined footers (including family/group chat) have priority
+// over narrative length. This only changes eligible creator-customized modes.
+const hasLongCreatorFooter = supportsCustomStatusBar &&
+    (customOutputFormat.length >= 350 || /家族群|群組訊息|群聊|家族聊天/u.test(customOutputFormat));
+const creatorFooterBodyTarget = hasLongCreatorFooter
+    ? (chatMode === "story" ? 240 : 420) : null;
+// V5.11: shared narrative floor, independent of creator footer size.
+// Count *body only* after stripping the footer; do not let 20 fields
+// masquerade as narrative. No extra characters are invented to satisfy it.
+const creatorNarrativeMinimumHan = supportsCustomStatusBar
+    ? (chatMode === "story" ? 120 : chatMode === "immersive" ? 180 : 160)
+    : 0;
+
+
 // 從最近一則角色回覆擷取既有結尾，保留創作者的原始排版。
 function extractPreviousCustomStatus(history, template) {
     const labels = String(template || "").split(/\r?\n/)
@@ -3629,18 +3643,42 @@ const profileMemoriesRef = isDefaultProfile(effectiveProfileId)
                         return content && !isRoleplayInternalLeak(content)
                             ? `${facts ? "[事件紀錄]" : "[文學摘要／玩家編輯內容，僅供參考]"} ${content}` : "";
                     }).filter(Boolean);
-                    // 優先保留較新的完整紀錄，不把最新進度截掉。
+                    // V5.9：不要把重要章節在任意字元位置硬切斷。
+                    // 同時排除全文完全相同的摘要，保留不同章節的既有事實。
+                    // 最近事實由獨立來源保留，避免較舊文學摘要吃光預算。
                     const selected = [];
+                    const seenSummaries = new Set();
                     let used = 0;
+                    const chapterBudget = 5500;
                     for (const summary of summaries) {
-                        if (used + summary.length > 10000) break;
-                        selected.push(summary);
-                        used += summary.length;
+                        const clean = String(summary || '').trim();
+                        if (!clean || seenSummaries.has(clean)) continue;
+                        seenSummaries.add(clean);
+                        if (selected.length >= 4) break;
+                        const remaining = chapterBudget - used;
+                        if (remaining < 250) break;
+                        // 保留完整摘要；過長時只在完整段落／句子結尾截取，
+                        // 不切斷句中重要關係或日期。找不到安全邊界則跳過。
+                        let piece = clean;
+                        if (piece.length > remaining) {
+                            const sample = piece.slice(0, remaining);
+                            const separators = ['\n', '。', '！', '？', '.', '!', '?'];
+                            const cut = Math.max(...separators.map(mark => sample.lastIndexOf(mark)));
+                            piece = cut >= 200 ? sample.slice(0, cut + 1).trim() : '';
+                        }
+                        if (!piece) continue;
+                        selected.push(piece);
+                        used += piece.length;
                     }
                     compactSessionStorySummary = selected.reverse().join("\n\n");
                     if (recentFacts && !isRoleplayInternalLeak(recentFacts)) {
-                        compactSessionStorySummary = compactSessionStorySummary.slice(-6000) +
-                            "\n\n[最新滾動事件紀錄；較新明確對話優先]\n" + recentFacts.slice(0, 4000);
+                        const latestFacts = recentFacts.slice(0, 4000);
+                        // 完全相同的 recentFacts 不必再傳送第二份。
+                        if (!selected.some(summary => summary.includes(latestFacts) && latestFacts.length >= 100)) {
+                            compactSessionStorySummary = (compactSessionStorySummary
+                                ? compactSessionStorySummary + "\n\n" : "") +
+                                "[最新滾動事件紀錄；較新明確對話優先]\n" + latestFacts;
+                        }
                     }
                 }
             } catch (summaryReadError) {
@@ -4313,7 +4351,7 @@ ${relationshipGuardDirective}
               const sharedMemoryAlreadyEmbedded = ["story", "immersive", "resonance"].includes(chatMode);
               systemPrompt += `
 
-            ${sharedMemoryAlreadyEmbedded ? "" : sharedMemoriesText.trim()}
+            ${sharedMemoryAlreadyEmbedded ? "" : limitPromptText(sharedMemoriesText.trim(), 2800)}
 
             【🧠 記憶使用規則｜自然化最高優先級】
 - 記憶是背景事實，不是每輪要提到的任務。先承接最新訊息與現場；若記憶無直接關係就安靜保留，不要硬塞「我記得你說過」。
@@ -4390,6 +4428,28 @@ ${persistentPreferenceDirective}
 `;
        }
 
+       // V5.10: the last instruction supersedes older fixed 700–900-character
+       // narrative guidelines only when creator requires a long custom footer.
+       if (hasLongCreatorFooter) {
+           systemPrompt += `
+【V5.10 長版創作者狀態欄優先｜最高優先】
+本輪正文建議約 ${creatorFooterBodyTarget} 個中文字，正常承接玩家輸入後自然收束；
+不必為達到舊的 700～900 字目標而增加場景敘述。
+但創作者指定的非條件式狀態欄、家族群／群組區塊與必要的欄位內容必須完整輸出，
+不得刪減家族群等欄位以湊正文，禁止複製既有群組對話冒充新訊息。
+先留足狀態欄輸出空間，再寫劇情正文；狀態欄只能在正文最後出現一次。
+`;
+       }
+
+       if (supportsCustomStatusBar) {
+           systemPrompt += `
+【V5.11 全角色共用｜正文最低量與自訂狀態欄並重】
+- 每輪必須先輸出有實質互動的劇情正文，至少 ${creatorNarrativeMinimumHan} 個中文字（不計時間／地點標頭與任何狀態欄）。不得以群組對話、任務表、心聲欄位充當正文。
+- 自訂狀態欄固定欄位要完整；條件欄位依創作者規則決定是否顯示。欄位很多時可縮短正文，但不能低於以上最低量。
+- 狀態欄只能出現在正文最後，保留創作者原本的欄名、圖案、順序及群組訊息數要求。
+`;
+       }
+
        // ✨ 偷天換日 1：隨機開局 (把「玩家」換成 `${playerName}`)
        const checkMsg = userMessage.trim().toLowerCase();
 
@@ -4459,11 +4519,11 @@ ${persistentPreferenceDirective}
                        }
                    });
                           // 🧠 根據模式壓縮聊天紀錄，確保話題連貫性 (1 輪 = User + AI 共 2 條)
-                          const HISTORY_LIMIT = chatMode === "resonance" ? 16 : 32;
+                          const HISTORY_LIMIT = chatMode === "resonance" ? 16 : 24;
                           const HISTORY_TEXT_LIMIT =
-                              chatMode === "resonance" ? 2500 :
-                              chatMode === "immersive" ? 6000 :
-                              chatMode === "story" ? 4000 : 1600;
+                              chatMode === "resonance" ? 2200 :
+                              chatMode === "immersive" ? 4200 :
+                              chatMode === "story" ? 3000 : 1400;
 
                           const maxTokens =
                               chatMode === "resonance" ? 4096 :
@@ -4515,9 +4575,11 @@ ${persistentPreferenceDirective}
                                       !(["immersive", "resonance"].includes(chatMode) && msg.role === "assistant" && isRoleplayInternalLeak(msg.content))
                               );
 
-                          const historyBudget = chatMode === "resonance" ? 12000 :
-                              chatMode === "immersive" ? 32000 :
-                              chatMode === "story" ? 24000 : 16000;
+                          // V5.8：採用每模式歷史字元預算，保留最新訊息，移除最舊上下文。
+                          // 不變更回覆 max_tokens，也不裁剪創作者人設或玩家最新輸入。
+                          const historyBudget = chatMode === "resonance" ? 10000 :
+                              chatMode === "immersive" ? 20000 :
+                              chatMode === "story" ? 16000 : 10000;
                           let historyCharacters = trimmedHistory.reduce((n, msg) => n + msg.content.length, 0);
                           while (trimmedHistory.length > 2 && historyCharacters > historyBudget) {
                               historyCharacters -= trimmedHistory.shift().content.length;
@@ -4571,6 +4633,10 @@ ${persistentPreferenceDirective}
                                    } else if (chatMode === "gemini") {
                                        TARGET_LENGTH = 40;
                                        MAX_LOOPS = 1;
+                                   }
+                                   // V5.10: reserve output space for creator's long footer.
+                                   if (hasLongCreatorFooter && creatorFooterBodyTarget != null) {
+                                       TARGET_LENGTH = Math.min(TARGET_LENGTH, creatorFooterBodyTarget);
                                    }
 
                                   // ==========================================
@@ -4751,13 +4817,19 @@ ${persistentPreferenceDirective}
 
                                   // V5.7 安全成本診斷：只記錄字元長度，不輸出玩家私密記憶原文。
                                   // 長度不等於 tokenizer tokens；實際費用仍以 provider 用量為準。
-                                  console.log("📊 V5.7 PROMPT SIZE AUDIT:", {
+                                  console.log("📊 V5.9 PROMPT SIZE AUDIT:", {
                                       chatMode,
                                       systemPromptCharacters: String(systemPrompt || "").length,
                                       recentHistoryCharacters: normalizedHistory.reduce(
                                           (total, message) => total + String(message?.content || "").length, 0
                                       ),
                                       storySummaryCharacters: String(compactSessionStorySummary || "").length,
+                                      historyBudgetCharacters: historyBudget,
+                                      summaryChapterBudgetCharacters: 5500,
+                                      summaryRecentFactsBudgetCharacters: 4000,
+                                      costOptimizationVersion: "V5.10",
+                                      creatorFooterPriority: hasLongCreatorFooter,
+                                      creatorTemplateCharacters: customOutputFormat.length,
                                       sharedMemorySourceCharacters: String(sharedMemoriesText || "").length,
                                       embeddedSharedMemoryCharacters: String(compactSharedMemories || "").length,
                                       rawSharedMemoryDuplicateRemoved:
@@ -4800,6 +4872,17 @@ ${persistentPreferenceDirective}
                                                                            function limitTextLength(text, maxLength) {
                                                                                if (!text || typeof text !== "string") return text;
                                                                                if (text.length <= maxLength) return text;
+                                                                               // V5.10: Never discard a *verified complete* creator footer
+                                                                               // because of the narrative char cap. Model tokens are
+                                                                               // controlled separately; prioritise an intact reply here.
+                                                                               if (supportsCustomStatusBar &&
+                                                                                   customStatusGuard.validate(customStatusGuard.clean(text))) {
+                                                                                   console.log("🛡️ V5.10 FULL STATUS PRESERVED", {
+                                                                                       chatMode, totalCharacters: text.length,
+                                                                                       oldResponseLimit: maxLength,
+                                                                                   });
+                                                                                   return text;
+                                                                               }
 
                                                                                // ==================================================
                                                                                // 🛡️ 劇情／沉浸模式：優先保留創作者自訂狀態欄
@@ -4946,6 +5029,14 @@ ${persistentPreferenceDirective}
 
                                                                            // V2：沉浸、共鳴皆按「正文中文字」判斷篇幅；時間、地點、狀態欄不計入。
                                                                            function measuredWriterLength(text) {
+                                                                               // V5.11: all creator-customized modes measure narrative only.
+                                                                               // A long group chat/status footer never satisfies the story
+                                                                               // minimum or stops the normal writer early.
+                                                                               if (supportsCustomStatusBar) {
+                                                                                   const body = customStatusGuard.bodyOnly(text)
+                                                                                       .replace(/^\s*(?:時間|日期|地點|位置)[：:][^\n]*$/gmu, "");
+                                                                                   return (body.match(/\p{Script=Han}/gu) || []).length;
+                                                                               }
                                                                                if (chatMode !== "immersive" && chatMode !== "resonance") return String(text || "").length;
                                                                                let body = String(text || "")
                                                                                    .replace(/^時間：[^\n]*\n地點：[^\n]*\n?/, "");
@@ -5771,7 +5862,7 @@ const residualWriterArtifacts =
                                                                                // 避免僅差少量字數便付費重生整篇（例如 685 → 1633 字）。
                                                                                // 自訂狀態欄缺漏仍交由下方的既有專用修復邏輯處理。
                                                                                if (chatMode === "resonance" && hasCompleteStatus) {
-                                                                                   if (measuredWriterLength(finalResponseText) >= 600) {
+                                                                                   if (measuredWriterLength(finalResponseText) >= (hasLongCreatorFooter ? TARGET_LENGTH : 600)) {
                                                                                        console.log("✅ V5.6 共鳴正文達柔性下限且狀態欄完整，直接採用", {
                                                                                            bodyHanCharacters: measuredWriterLength(finalResponseText),
                                                                                            targetHanCharacters: TARGET_LENGTH,
@@ -5829,12 +5920,12 @@ const residualWriterArtifacts =
                                                                                ${qualityRetryNote}
                                                                                ${playerAgencyAndNaturalnessDirective}
 
-                                                                               上一份草稿未達本模式所需的 ${chatMode === "resonance" ? 600 : TARGET_LENGTH} 個中文字，該草稿已作廢。
+                                                                               上一份草稿未達本模式所需的 ${hasLongCreatorFooter ? TARGET_LENGTH : (chatMode === "resonance" ? 600 : TARGET_LENGTH)} 個中文字，該草稿已作廢。
                                                                                請重新回應上方玩家原始訊息，產生一份可以獨立顯示的完整回覆，不得接續、補寫或提及舊草稿。
 
                                                                                要求：
 
-                                                                               1. 正文至少 ${chatMode === "resonance" ? 600 : TARGET_LENGTH} 個中文字，${config.writerTier === "grok_high_freedom" ? "建議控制在 650～900 字" : (chatMode === "resonance" ? "目標約 700～850 個中文字，情緒和關係層次自然完成，不得硬湊重複情節" : "建議控制在 700～1000 字")}；完成前不得提前結束。
+                                                                               1. 正文至少 ${hasLongCreatorFooter ? TARGET_LENGTH : (chatMode === "resonance" ? 600 : TARGET_LENGTH)} 個中文字，${hasLongCreatorFooter ? `正文約 ${creatorFooterBodyTarget} 字即可，完整自訂狀態欄優先` : (config.writerTier === "grok_high_freedom" ? "建議控制在 650～900 字" : (chatMode === "resonance" ? "目標約 700～850 個中文字，情緒和關係層次自然完成，不得硬湊重複情節" : "建議控制在 700～1000 字"))}；完成前不得提前結束。
                                                                                2. 透過新的角色台詞、行動、決定、衝突、資訊、關係變化或合理事件推進增加內容。
                                                                                3. 每輪自然推進二至三個彼此相關的情節節點，不得一次跨越過多時間、地點或事件。
                                                                                4. 不得以重複動作、換句話說、視線、呼吸、喉結、指尖、沉默、感官堆疊或無意義走動填充篇幅。
@@ -6006,7 +6097,9 @@ ${customStatusContinuityDirective}
                                                                                                                                                        },
                                                                                                                                                    ],
 
-                                                                                                                                                   max_tokens: 1000,
+                                                                                                                                                   // V5.10: 1000 was too small for multi-section family/group footers.
+                                                                                                                                                   // Repair calls happen only after the first response is incomplete.
+                                                                                                                                                   max_tokens: Math.min(3000, Math.max(1500, Math.ceil(customOutputFormat.length * 2))),
 
                                                                                                                                                    temperature: 0.2,
                                                                                                                                                },
@@ -6829,6 +6922,34 @@ if (sessionId) {
     for (const [field, value] of Object.entries(finalStatusBar || {})) {
         if (typeof value === 'string') {
             finalStatusBar[field] = normalizeAiResponseScript(value, playerLanguage);
+        }
+    }
+
+    // V5.11: Final shared narrative floor. The footer, including any
+    // group-chat transcript, does not count as story prose. A shorter body
+    // is rejected before Firestore write and before flower billing.
+    if (supportsCustomStatusBar && creatorNarrativeMinimumHan > 0) {
+        const narrativeOnly = customStatusGuard.bodyOnly(cleanDisplayText)
+            .replace(/^\s*(?:時間|日期|地點|位置)[：:][^\n]*$/gmu, "");
+        const bodyHan = (narrativeOnly.match(/\p{Script=Han}/gu) || []).length;
+        const missingFields = customStatusGuard.missing(cleanDisplayText);
+        console.log("V5.11 CREATOR OUTPUT AUDIT", {
+            chatMode, bodyHan, minimumBodyHan: creatorNarrativeMinimumHan,
+            missingFields, totalChars: cleanDisplayText.length,
+        });
+        if (bodyHan < creatorNarrativeMinimumHan || missingFields.length > 0) {
+            console.warn("V5.11 CREATOR OUTPUT INCOMPLETE", {
+                chatMode, bodyHan, minimumBodyHan: creatorNarrativeMinimumHan,
+                missingFields,
+            });
+            const payload = {
+                status: "error", errorCode: bodyHan < creatorNarrativeMinimumHan
+                    ? "CREATOR_NARRATIVE_TOO_SHORT" : "CREATOR_STATUS_INCOMPLETE",
+                errorMessage: "這次 AI 回覆的劇情或創作者狀態欄不完整，未儲存也未扣除花花，請重新嘗試。",
+                charged: false, cost: 0,
+            };
+            if (!res.writableEnded && !res.destroyed) return res.status(200).json(payload);
+            return;
         }
     }
 

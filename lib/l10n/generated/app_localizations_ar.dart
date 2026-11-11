@@ -12407,6 +12407,83 @@ class AppLocalizationsAr extends AppLocalizations {
   String get world_menu_subtitle1 => 'عالم مفتوح · ستتوفر الميزات تدريجيًا';
 
   @override
+  String get worldAboutUsTitle => 'نبذة عنا';
+
+  @override
+  String get worldAboutUsAddMemory => 'إضافة ذكرى';
+
+  @override
+  String get worldAboutUsEditMemory => 'تعديل الذكرى';
+
+  @override
+  String get worldAboutUsAddSharedMemory => 'إضافة ذكرى مشتركة';
+
+  @override
+  String get worldAboutUsEditSharedMemory => 'تعديل ذكرى مشتركة';
+
+  @override
+  String get worldAboutUsMemoryHint =>
+      'سجّل العلاقات أو الأحداث المشتركة الجديرة بالتذكّر في قصة هذا العالم';
+
+  @override
+  String get worldAboutUsCancel => 'إلغاء';
+
+  @override
+  String get worldAboutUsSave => 'حفظ';
+
+  @override
+  String get worldAboutUsDelete => 'حذف';
+
+  @override
+  String get worldAboutUsSaved => 'تم حفظ الذكرى المشتركة';
+
+  @override
+  String worldAboutUsSaveFailed(String error) {
+    return 'تعذّر الحفظ: $error';
+  }
+
+  @override
+  String get worldAboutUsSavePermissionHint =>
+      ' (تحقّق من قواعد الوصول إلى Firestore.)';
+
+  @override
+  String get worldAboutUsDeleteConfirmTitle => 'هل تريد حذف الذكرى المشتركة؟';
+
+  @override
+  String get worldAboutUsDeleteConfirmBody =>
+      'بعد الحذف، لن يتمكّن الذكاء الاصطناعي من قراءة هذه الذكرى.';
+
+  @override
+  String get worldAboutUsDeleted => 'تم حذف الذكرى المشتركة';
+
+  @override
+  String worldAboutUsDeleteFailed(String error) {
+    return 'تعذّر الحذف: $error';
+  }
+
+  @override
+  String get worldAboutUsSignInRequired =>
+      'سجّل الدخول أولاً لعرض الذكريات المشتركة.';
+
+  @override
+  String get worldAboutUsDescription =>
+      'تُعرض هنا الذكريات المشتركة في غرفة قصة هذا العالم.';
+
+  @override
+  String worldAboutUsLoadFailed(String error) {
+    return 'تعذّر تحميل الذكريات. تحقّق من أذونات Firestore: $error';
+  }
+
+  @override
+  String get worldAboutUsEmpty => 'لا توجد ذكريات مشتركة بعد.';
+
+  @override
+  String get worldAboutUsEditTooltip => 'تعديل الذكرى';
+
+  @override
+  String get worldAboutUsDeleteTooltip => 'حذف الذكرى';
+
+  @override
   String get world_menu_chat_section1 => 'الدردشة';
 
   @override

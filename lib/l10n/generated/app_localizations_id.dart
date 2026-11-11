@@ -12558,6 +12558,83 @@ class AppLocalizationsId extends AppLocalizations {
   String get world_menu_subtitle1 => 'Dunia Terbuka · Fitur dirilis bertahap';
 
   @override
+  String get worldAboutUsTitle => 'Tentang Kita';
+
+  @override
+  String get worldAboutUsAddMemory => 'Tambah Kenangan';
+
+  @override
+  String get worldAboutUsEditMemory => 'Edit Kenangan';
+
+  @override
+  String get worldAboutUsAddSharedMemory => 'Tambah Kenangan Bersama';
+
+  @override
+  String get worldAboutUsEditSharedMemory => 'Edit Kenangan Bersama';
+
+  @override
+  String get worldAboutUsMemoryHint =>
+      'Catat hubungan atau peristiwa bersama yang patut diingat dalam kisah dunia ini';
+
+  @override
+  String get worldAboutUsCancel => 'Batal';
+
+  @override
+  String get worldAboutUsSave => 'Simpan';
+
+  @override
+  String get worldAboutUsDelete => 'Hapus';
+
+  @override
+  String get worldAboutUsSaved => 'Kenangan bersama disimpan';
+
+  @override
+  String worldAboutUsSaveFailed(String error) {
+    return 'Gagal menyimpan: $error';
+  }
+
+  @override
+  String get worldAboutUsSavePermissionHint =>
+      ' (Periksa aturan akses Firestore.)';
+
+  @override
+  String get worldAboutUsDeleteConfirmTitle => 'Hapus kenangan bersama?';
+
+  @override
+  String get worldAboutUsDeleteConfirmBody =>
+      'Setelah dihapus, kenangan ini tidak lagi dapat dibaca AI.';
+
+  @override
+  String get worldAboutUsDeleted => 'Kenangan bersama dihapus';
+
+  @override
+  String worldAboutUsDeleteFailed(String error) {
+    return 'Gagal menghapus: $error';
+  }
+
+  @override
+  String get worldAboutUsSignInRequired =>
+      'Masuk terlebih dahulu untuk melihat kenangan bersama.';
+
+  @override
+  String get worldAboutUsDescription =>
+      'Kenangan bersama dari ruang cerita dunia ini tersimpan di sini.';
+
+  @override
+  String worldAboutUsLoadFailed(String error) {
+    return 'Gagal memuat kenangan. Periksa izin Firestore: $error';
+  }
+
+  @override
+  String get worldAboutUsEmpty => 'Belum ada kenangan bersama.';
+
+  @override
+  String get worldAboutUsEditTooltip => 'Edit kenangan';
+
+  @override
+  String get worldAboutUsDeleteTooltip => 'Hapus kenangan';
+
+  @override
   String get world_menu_chat_section1 => 'Obrolan';
 
   @override

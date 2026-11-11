@@ -11680,6 +11680,78 @@ class AppLocalizationsZh extends AppLocalizations {
   String get world_menu_subtitle1 => '開放世界 · 功能逐步開放';
 
   @override
+  String get worldAboutUsTitle => '關於我們';
+
+  @override
+  String get worldAboutUsAddMemory => '新增記憶';
+
+  @override
+  String get worldAboutUsEditMemory => '編輯記憶';
+
+  @override
+  String get worldAboutUsAddSharedMemory => '新增共同記憶';
+
+  @override
+  String get worldAboutUsEditSharedMemory => '編輯共同記憶';
+
+  @override
+  String get worldAboutUsMemoryHint => '記錄這段世界劇情中值得記住的人物關係或共同事件';
+
+  @override
+  String get worldAboutUsCancel => '取消';
+
+  @override
+  String get worldAboutUsSave => '儲存';
+
+  @override
+  String get worldAboutUsDelete => '刪除';
+
+  @override
+  String get worldAboutUsSaved => '共同記憶已儲存';
+
+  @override
+  String worldAboutUsSaveFailed(String error) {
+    return '儲存失敗：$error';
+  }
+
+  @override
+  String get worldAboutUsSavePermissionHint => '（請確認 Firestore 存取規則）';
+
+  @override
+  String get worldAboutUsDeleteConfirmTitle => '刪除共同記憶？';
+
+  @override
+  String get worldAboutUsDeleteConfirmBody => '刪除後這筆記憶不會再供 AI 讀取。';
+
+  @override
+  String get worldAboutUsDeleted => '已刪除共同記憶';
+
+  @override
+  String worldAboutUsDeleteFailed(String error) {
+    return '刪除失敗：$error';
+  }
+
+  @override
+  String get worldAboutUsSignInRequired => '請先登入，再查看共同記憶。';
+
+  @override
+  String get worldAboutUsDescription => '這裡記錄此世界劇情房間的共同回憶';
+
+  @override
+  String worldAboutUsLoadFailed(String error) {
+    return '記憶讀取失敗，請檢查 Firestore 權限：$error';
+  }
+
+  @override
+  String get worldAboutUsEmpty => '目前還沒有共同記憶。';
+
+  @override
+  String get worldAboutUsEditTooltip => '編輯記憶';
+
+  @override
+  String get worldAboutUsDeleteTooltip => '刪除記憶';
+
+  @override
   String get world_menu_chat_section1 => '聊天';
 
   @override
@@ -23851,6 +23923,78 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get world_menu_subtitle1 => '开放世界 · 功能逐步开放';
+
+  @override
+  String get worldAboutUsTitle => '关于我们';
+
+  @override
+  String get worldAboutUsAddMemory => '添加记忆';
+
+  @override
+  String get worldAboutUsEditMemory => '编辑记忆';
+
+  @override
+  String get worldAboutUsAddSharedMemory => '添加共同记忆';
+
+  @override
+  String get worldAboutUsEditSharedMemory => '编辑共同记忆';
+
+  @override
+  String get worldAboutUsMemoryHint => '记录这段世界剧情中值得记住的人物关系或共同事件';
+
+  @override
+  String get worldAboutUsCancel => '取消';
+
+  @override
+  String get worldAboutUsSave => '保存';
+
+  @override
+  String get worldAboutUsDelete => '删除';
+
+  @override
+  String get worldAboutUsSaved => '共同记忆已保存';
+
+  @override
+  String worldAboutUsSaveFailed(String error) {
+    return '保存失败：$error';
+  }
+
+  @override
+  String get worldAboutUsSavePermissionHint => '（请检查 Firestore 访问规则）';
+
+  @override
+  String get worldAboutUsDeleteConfirmTitle => '删除共同记忆？';
+
+  @override
+  String get worldAboutUsDeleteConfirmBody => '删除后，AI 将不再读取这条记忆。';
+
+  @override
+  String get worldAboutUsDeleted => '已删除共同记忆';
+
+  @override
+  String worldAboutUsDeleteFailed(String error) {
+    return '删除失败：$error';
+  }
+
+  @override
+  String get worldAboutUsSignInRequired => '请先登录，再查看共同记忆。';
+
+  @override
+  String get worldAboutUsDescription => '这里记录此世界剧情房间的共同回忆';
+
+  @override
+  String worldAboutUsLoadFailed(String error) {
+    return '读取记忆失败，请检查 Firestore 权限：$error';
+  }
+
+  @override
+  String get worldAboutUsEmpty => '目前还没有共同记忆。';
+
+  @override
+  String get worldAboutUsEditTooltip => '编辑记忆';
+
+  @override
+  String get worldAboutUsDeleteTooltip => '删除记忆';
 
   @override
   String get world_menu_chat_section1 => '聊天';
@@ -36478,6 +36622,78 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get world_menu_subtitle1 => '開放世界 · 功能逐步開放';
+
+  @override
+  String get worldAboutUsTitle => '關於我們';
+
+  @override
+  String get worldAboutUsAddMemory => '新增記憶';
+
+  @override
+  String get worldAboutUsEditMemory => '編輯記憶';
+
+  @override
+  String get worldAboutUsAddSharedMemory => '新增共同記憶';
+
+  @override
+  String get worldAboutUsEditSharedMemory => '編輯共同記憶';
+
+  @override
+  String get worldAboutUsMemoryHint => '記錄這段世界劇情中值得記住的人物關係或共同事件';
+
+  @override
+  String get worldAboutUsCancel => '取消';
+
+  @override
+  String get worldAboutUsSave => '儲存';
+
+  @override
+  String get worldAboutUsDelete => '刪除';
+
+  @override
+  String get worldAboutUsSaved => '共同記憶已儲存';
+
+  @override
+  String worldAboutUsSaveFailed(String error) {
+    return '儲存失敗：$error';
+  }
+
+  @override
+  String get worldAboutUsSavePermissionHint => '（請確認 Firestore 存取規則）';
+
+  @override
+  String get worldAboutUsDeleteConfirmTitle => '刪除共同記憶？';
+
+  @override
+  String get worldAboutUsDeleteConfirmBody => '刪除後這筆記憶不會再供 AI 讀取。';
+
+  @override
+  String get worldAboutUsDeleted => '已刪除共同記憶';
+
+  @override
+  String worldAboutUsDeleteFailed(String error) {
+    return '刪除失敗：$error';
+  }
+
+  @override
+  String get worldAboutUsSignInRequired => '請先登入，再查看共同記憶。';
+
+  @override
+  String get worldAboutUsDescription => '這裡記錄此世界劇情房間的共同回憶';
+
+  @override
+  String worldAboutUsLoadFailed(String error) {
+    return '記憶讀取失敗，請檢查 Firestore 權限：$error';
+  }
+
+  @override
+  String get worldAboutUsEmpty => '目前還沒有共同記憶。';
+
+  @override
+  String get worldAboutUsEditTooltip => '編輯記憶';
+
+  @override
+  String get worldAboutUsDeleteTooltip => '刪除記憶';
 
   @override
   String get world_menu_chat_section1 => '聊天';

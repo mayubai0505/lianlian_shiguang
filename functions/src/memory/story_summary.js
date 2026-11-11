@@ -1,11 +1,53 @@
 'use strict';
-// Only recover a complete, single JSON object surrounded by non-JSON text.
-// Never repair malformed/truncated JSON or guess missing story facts.
+// Recover only a complete JSON object, and only escape literal control characters
+// within JSON strings. Never guess missing facts, fix broken quotes, or salvage truncation.
+function escapeSummaryJsonStringControls(jsonText) {
+    let inString = false;
+    let escaped = false;
+    let repairedControls = 0;
+    let output = '';
+    for (let i = 0; i < jsonText.length; i++) {
+        const ch = jsonText[i];
+        if (inString) {
+            if (escaped) {
+                escaped = false;
+                output += ch;
+                continue;
+            }
+            if (ch === '\\') {
+                escaped = true;
+                output += ch;
+                continue;
+            }
+            if (ch === '"') {
+                inString = false;
+                output += ch;
+                continue;
+            }
+            const code = jsonText.charCodeAt(i);
+            if (code < 0x20) {
+                // JSON requires literal newlines/tabs/control characters inside a
+                // string to be escaped. No semantic rewriting is performed.
+                output += code === 10 ? '\\n' : code === 13 ? '\\r' :
+                    code === 9 ? '\\t' : `\\u${code.toString(16).padStart(4, '0')}`;
+                repairedControls++;
+                continue;
+            }
+        } else if (ch === '"') {
+            inString = true;
+        }
+        output += ch;
+    }
+    // A dangling string/escape is malformed or truncated and cannot be rescued.
+    if (inString || escaped) return {text: jsonText, repairedControls: 0};
+    return {text: output, repairedControls};
+}
+
 function parseSummaryJsonSafely(raw, finishReason) {
     try {
-        return {value: JSON.parse(raw), recovered: false};
+        return {value: JSON.parse(raw), recovered: false, repairedControls: 0};
     } catch (originalError) {
-        // A length-limited response may be truncated: do not salvage partial output.
+        // Do not salvage incomplete model output, especially length-limited output.
         if (finishReason !== 'stop') throw originalError;
         const start = raw.indexOf('{');
         if (start < 0 || start > 300) throw originalError;
@@ -29,10 +71,18 @@ function parseSummaryJsonSafely(raw, finishReason) {
         if (end < 0 || inString) throw originalError;
         const prefix = raw.slice(0, start).trim();
         const suffix = raw.slice(end).trim();
-        // Refuse ambiguous multiple objects, excessive extras, or structured data after JSON.
+        // Refuse ambiguous multiple objects or excessive non-JSON content.
         if (prefix.length > 300 || suffix.length > 300 || /[{}]/u.test(prefix + suffix)) throw originalError;
-        // JSON.parse still validates escaping, types, and completion of the entire object.
-        return {value: JSON.parse(raw.slice(start, end)), recovered: true};
+        const json = raw.slice(start, end);
+        try {
+            return {value: JSON.parse(json), recovered: true, repairedControls: 0};
+        } catch (extractedError) {
+            const repaired = escapeSummaryJsonStringControls(json);
+            if (repaired.repairedControls === 0) throw extractedError;
+            // Still require strict JSON syntax and original required-field checks.
+            return {value: JSON.parse(repaired.text), recovered: true,
+                repairedControls: repaired.repairedControls};
+        }
     }
 }
 
@@ -181,7 +231,7 @@ exports.generateStorySummary = onRequest({
                     .replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
                 const finishReason = String(choice?.finish_reason || "unknown");
                 try {
-                    const {value: candidate, recovered} = parseSummaryJsonSafely(raw, finishReason);
+                    const {value: candidate, recovered, repairedControls} = parseSummaryJsonSafely(raw, finishReason);
                     if (!candidate || typeof candidate !== 'object' || Array.isArray(candidate) ||
                         typeof candidate.content !== 'string' ||
                         typeof candidate.factualContent !== 'string' ||
@@ -189,8 +239,8 @@ exports.generateStorySummary = onRequest({
                         throw new Error('SUMMARY_INVALID_FIELDS');
                     }
                     if (recovered) {
-                        console.info('故事摘要擷取單一完整 JSON 成功', {
-                            attempt, finishReason, outputLength: raw.length,
+                        console.info('故事摘要 JSON 安全復原成功', {
+                            attempt, finishReason, outputLength: raw.length, repairedControls,
                         });
                     }
                     parsed = candidate;

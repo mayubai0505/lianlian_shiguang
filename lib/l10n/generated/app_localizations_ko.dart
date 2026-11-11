@@ -11976,6 +11976,79 @@ class AppLocalizationsKo extends AppLocalizations {
   String get world_menu_subtitle1 => '오픈 월드 · 기능 순차 공개';
 
   @override
+  String get worldAboutUsTitle => '우리의 이야기';
+
+  @override
+  String get worldAboutUsAddMemory => '추억 추가';
+
+  @override
+  String get worldAboutUsEditMemory => '추억 편집';
+
+  @override
+  String get worldAboutUsAddSharedMemory => '공동 추억 추가';
+
+  @override
+  String get worldAboutUsEditSharedMemory => '공동 추억 편집';
+
+  @override
+  String get worldAboutUsMemoryHint =>
+      '이 세계의 이야기에서 기억할 만한 인물 관계나 함께 겪은 사건을 기록하세요';
+
+  @override
+  String get worldAboutUsCancel => '취소';
+
+  @override
+  String get worldAboutUsSave => '저장';
+
+  @override
+  String get worldAboutUsDelete => '삭제';
+
+  @override
+  String get worldAboutUsSaved => '공동 추억을 저장했어요';
+
+  @override
+  String worldAboutUsSaveFailed(String error) {
+    return '저장하지 못했습니다: $error';
+  }
+
+  @override
+  String get worldAboutUsSavePermissionHint => ' (Firestore 액세스 규칙을 확인하세요.)';
+
+  @override
+  String get worldAboutUsDeleteConfirmTitle => '공동 추억을 삭제할까요?';
+
+  @override
+  String get worldAboutUsDeleteConfirmBody => '삭제하면 AI가 더 이상 이 추억을 읽을 수 없습니다.';
+
+  @override
+  String get worldAboutUsDeleted => '공동 추억을 삭제했어요';
+
+  @override
+  String worldAboutUsDeleteFailed(String error) {
+    return '삭제하지 못했습니다: $error';
+  }
+
+  @override
+  String get worldAboutUsSignInRequired => '공동 추억을 보려면 먼저 로그인하세요.';
+
+  @override
+  String get worldAboutUsDescription => '이 세계 이야기방에서 함께한 추억이 여기에 기록됩니다.';
+
+  @override
+  String worldAboutUsLoadFailed(String error) {
+    return '추억을 불러오지 못했습니다. Firestore 권한을 확인하세요: $error';
+  }
+
+  @override
+  String get worldAboutUsEmpty => '아직 공동 추억이 없습니다.';
+
+  @override
+  String get worldAboutUsEditTooltip => '추억 편집';
+
+  @override
+  String get worldAboutUsDeleteTooltip => '추억 삭제';
+
+  @override
   String get world_menu_chat_section1 => '채팅';
 
   @override

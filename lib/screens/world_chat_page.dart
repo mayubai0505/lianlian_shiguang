@@ -26,6 +26,7 @@ import 'world_scene_page_full.dart';
 import 'world_secret_chapters_page.dart';
 import 'world_chat_side_menu.dart';
 import 'world_about_me_page.dart';
+import 'world_about_us_page.dart';
 import 'world_chat_search_page.dart';
 import 'world_chat_transcript_book_page.dart';
 import 'world_chat_records_pages.dart';
@@ -66,6 +67,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
   bool _sending = false;
   final Set<String> _cancelledLocalRequests = <String>{};
   bool _stoppingGeneration = false;
+  bool _resettingWorldRoom = false;
   String _name = '開放世界';
   // 只允許正式世界名稱進入畫面；世界 ID 僅用於資料查詢。
   String _safeWorldName(Object? value) {
@@ -1406,6 +1408,15 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       case '與我相關':
         _openWorldAboutMe();
         break;
+      case '關於我們':
+        _openWorldAboutUs();
+        break;
+      case '重製記憶':
+      case '重置記憶':
+      case '重置世界進度':
+      case '重新開始世界劇情':
+        unawaited(_resetWorldMemory());
+        break;
       case '人物關係':
         _openWorldRelationships();
         break;
@@ -1421,6 +1432,79 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       default:
         _notReady(action);
     }
+  }
+
+  // 同一般角色聊天室：取消／僅對話／完全重置。重置由後端授權並清除本房間資料。
+  Future<void> _resetWorldMemory() async {
+    if (_resettingWorldRoom || _sending || _loading || _stoppingGeneration) {
+      _showCenterNotice('請先等目前的回覆完成，再重製記憶。');
+      return;
+    }
+    final l10n = AppLocalizations.of(context)!;
+    final resetType = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.chat_reset_title),
+        content: Text(l10n.chat_reset_desc),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.cancelButton)),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, 'chat_only'),
+            child: Text(l10n.chat_reset_only_chat,
+              style: const TextStyle(fontWeight: FontWeight.bold))),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+            onPressed: () => Navigator.pop(dialogContext, 'full_reset'),
+            child: Text(l10n.chat_reset_full,
+              style: const TextStyle(color: Colors.white))),
+        ],
+      ),
+    );
+    if (resetType == null || !mounted || _resettingWorldRoom || _sending || _loading) return;
+    setState(() => _resettingWorldRoom = true);
+    try {
+      final result = await _api.call({
+        'action': 'resetMemory', 'worldId': widget.worldId,
+        if (widget.sessionId != null) 'sessionId': widget.sessionId,
+        'resetType': resetType,
+      });
+      if (!mounted) return;
+      final data = result.data;
+      if (data is! Map || data['ok'] != true) throw StateError('重製記憶沒有成功完成');
+      // 既有房間不變，丟棄前端舊訊息快取，讓即時監聽與 callable 重新載入開場。
+      _roomCache.remove(_roomCacheKey);
+      setState(() {
+        _hasStreamData = false;
+        _messages = [];
+        _characterAffinity = {};
+        _regenerateFreeRemaining = 3;
+        _selectedMessageIds.clear();
+        _worldSelectionMode = false;
+        _worldDeleteMode = false;
+      });
+      await _run('load', silent: true);
+      if (!mounted) return;
+      _showCenterNotice(resetType == 'full_reset'
+          ? l10n.chat_reset_full_msg : l10n.chat_reset_chat_msg);
+    } on FirebaseFunctionsException catch (e) {
+      if (mounted) _showCenterNotice('重製記憶失敗：${e.message ?? '請稍後再試'}', isError: true);
+    } catch (e) {
+      debugPrint('開放世界重製記憶失敗：$e');
+      if (mounted) _showCenterNotice('重製記憶失敗，請稍後再試。', isError: true);
+    } finally {
+      if (mounted) setState(() => _resettingWorldRoom = false);
+    }
+  }
+
+  Future<void> _openWorldAboutUs() async {
+    final sid = _sessionId;
+    if (FirebaseAuth.instance.currentUser == null || sid == null || sid.isEmpty) {
+      _showCenterNotice(AppLocalizations.of(context)!.world_chat_loading1);
+      return;
+    }
+    await Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => WorldAboutUsPage(worldId: widget.worldId, sessionId: sid),
+    ));
   }
 
   Future<void> _openWorldAboutMe() async {

@@ -12536,6 +12536,83 @@ class AppLocalizationsHi extends AppLocalizations {
       'खुली दुनिया · सुविधाएँ धीरे-धीरे उपलब्ध होंगी';
 
   @override
+  String get worldAboutUsTitle => 'हमारे बारे में';
+
+  @override
+  String get worldAboutUsAddMemory => 'स्मृति जोड़ें';
+
+  @override
+  String get worldAboutUsEditMemory => 'स्मृति संपादित करें';
+
+  @override
+  String get worldAboutUsAddSharedMemory => 'साझा स्मृति जोड़ें';
+
+  @override
+  String get worldAboutUsEditSharedMemory => 'साझा स्मृति संपादित करें';
+
+  @override
+  String get worldAboutUsMemoryHint =>
+      'इस दुनिया की कहानी में याद रखने योग्य रिश्तों या साझा घटनाओं को दर्ज करें';
+
+  @override
+  String get worldAboutUsCancel => 'रद्द करें';
+
+  @override
+  String get worldAboutUsSave => 'सहेजें';
+
+  @override
+  String get worldAboutUsDelete => 'हटाएँ';
+
+  @override
+  String get worldAboutUsSaved => 'साझा स्मृति सहेजी गई';
+
+  @override
+  String worldAboutUsSaveFailed(String error) {
+    return 'सहेजा नहीं जा सका: $error';
+  }
+
+  @override
+  String get worldAboutUsSavePermissionHint =>
+      ' (Firestore के एक्सेस नियम जाँचें।)';
+
+  @override
+  String get worldAboutUsDeleteConfirmTitle => 'साझा स्मृति हटाएँ?';
+
+  @override
+  String get worldAboutUsDeleteConfirmBody =>
+      'हटाने के बाद AI इस स्मृति को नहीं पढ़ पाएगा।';
+
+  @override
+  String get worldAboutUsDeleted => 'साझा स्मृति हटा दी गई';
+
+  @override
+  String worldAboutUsDeleteFailed(String error) {
+    return 'हटाया नहीं जा सका: $error';
+  }
+
+  @override
+  String get worldAboutUsSignInRequired =>
+      'साझा स्मृतियाँ देखने के लिए पहले साइन इन करें।';
+
+  @override
+  String get worldAboutUsDescription =>
+      'इस दुनिया की कहानी के साझा अनुभव यहाँ दर्ज हैं।';
+
+  @override
+  String worldAboutUsLoadFailed(String error) {
+    return 'स्मृतियाँ लोड नहीं हो सकीं। Firestore की अनुमतियाँ जाँचें: $error';
+  }
+
+  @override
+  String get worldAboutUsEmpty => 'अभी कोई साझा स्मृति नहीं है।';
+
+  @override
+  String get worldAboutUsEditTooltip => 'स्मृति संपादित करें';
+
+  @override
+  String get worldAboutUsDeleteTooltip => 'स्मृति हटाएँ';
+
+  @override
   String get world_menu_chat_section1 => 'चैट';
 
   @override

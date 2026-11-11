@@ -12663,6 +12663,84 @@ class AppLocalizationsEs extends AppLocalizations {
       'Mundo abierto · Funciones disponibles próximamente';
 
   @override
+  String get worldAboutUsTitle => 'Sobre nosotros';
+
+  @override
+  String get worldAboutUsAddMemory => 'Añadir recuerdo';
+
+  @override
+  String get worldAboutUsEditMemory => 'Editar recuerdo';
+
+  @override
+  String get worldAboutUsAddSharedMemory => 'Añadir recuerdo compartido';
+
+  @override
+  String get worldAboutUsEditSharedMemory => 'Editar recuerdo compartido';
+
+  @override
+  String get worldAboutUsMemoryHint =>
+      'Registra relaciones o sucesos compartidos que merezca la pena recordar en la historia de este mundo';
+
+  @override
+  String get worldAboutUsCancel => 'Cancelar';
+
+  @override
+  String get worldAboutUsSave => 'Guardar';
+
+  @override
+  String get worldAboutUsDelete => 'Eliminar';
+
+  @override
+  String get worldAboutUsSaved => 'Recuerdo compartido guardado';
+
+  @override
+  String worldAboutUsSaveFailed(String error) {
+    return 'No se pudo guardar: $error';
+  }
+
+  @override
+  String get worldAboutUsSavePermissionHint =>
+      ' (Comprueba las reglas de acceso de Firestore).';
+
+  @override
+  String get worldAboutUsDeleteConfirmTitle =>
+      '¿Eliminar el recuerdo compartido?';
+
+  @override
+  String get worldAboutUsDeleteConfirmBody =>
+      'Una vez eliminado, la IA ya no podrá consultar este recuerdo.';
+
+  @override
+  String get worldAboutUsDeleted => 'Recuerdo compartido eliminado';
+
+  @override
+  String worldAboutUsDeleteFailed(String error) {
+    return 'No se pudo eliminar: $error';
+  }
+
+  @override
+  String get worldAboutUsSignInRequired =>
+      'Inicia sesión para ver los recuerdos compartidos.';
+
+  @override
+  String get worldAboutUsDescription =>
+      'Aquí se guardan los recuerdos compartidos de esta sala de historia.';
+
+  @override
+  String worldAboutUsLoadFailed(String error) {
+    return 'No se pudieron cargar los recuerdos. Comprueba los permisos de Firestore: $error';
+  }
+
+  @override
+  String get worldAboutUsEmpty => 'Todavía no hay recuerdos compartidos.';
+
+  @override
+  String get worldAboutUsEditTooltip => 'Editar recuerdo';
+
+  @override
+  String get worldAboutUsDeleteTooltip => 'Eliminar recuerdo';
+
+  @override
   String get world_menu_chat_section1 => 'Chat';
 
   @override

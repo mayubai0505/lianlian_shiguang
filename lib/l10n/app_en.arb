@@ -6578,6 +6578,49 @@
   "characterEditWorldLore": "World Setting (Backend)",
   "characterEditWorldLoreDescription": "World background, rules, locations, and events for AI roleplay. This content is not displayed on the character profile card.",
   "characterEditWorldLoreHint": "e.g., world background, factions and organizations, special rules, important events…",
+  "worldAboutUsTitle": "About Us",
+  "worldAboutUsAddMemory": "Add Memory",
+  "worldAboutUsEditMemory": "Edit Memory",
+  "worldAboutUsAddSharedMemory": "Add Shared Memory",
+  "worldAboutUsEditSharedMemory": "Edit Shared Memory",
+  "worldAboutUsMemoryHint": "Record relationships or shared events worth remembering in this world story",
+  "worldAboutUsCancel": "Cancel",
+  "worldAboutUsSave": "Save",
+  "worldAboutUsDelete": "Delete",
+  "worldAboutUsSaved": "Shared memory saved",
+  "worldAboutUsSaveFailed": "Could not save: {error}",
+  "@worldAboutUsSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsSavePermissionHint": " (Check your Firestore access rules.)",
+  "worldAboutUsDeleteConfirmTitle": "Delete shared memory?",
+  "worldAboutUsDeleteConfirmBody": "Once deleted, this memory will no longer be available to the AI.",
+  "worldAboutUsDeleted": "Shared memory deleted",
+  "worldAboutUsDeleteFailed": "Could not delete: {error}",
+  "@worldAboutUsDeleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsSignInRequired": "Sign in to view shared memories.",
+  "worldAboutUsDescription": "Shared memories from this world story room appear here.",
+  "worldAboutUsLoadFailed": "Could not load memories. Check Firestore permissions: {error}",
+  "@worldAboutUsLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsEmpty": "No shared memories yet.",
+  "worldAboutUsEditTooltip": "Edit memory",
+  "worldAboutUsDeleteTooltip": "Delete memory",
   "world_edit_tag_max1": "Select up to 5 tags",
   "world_edit_tag_custom1": "Tags (customizable; separate with commas)",
   "world_edit_secret_not_ready1": "Secret chapters have not loaded. Publishing is paused to protect your content. Check permissions and reopen this page.",

@@ -11528,6 +11528,7 @@ class _ChatPageState extends State<ChatPage> {
               MaterialPageRoute(
                 builder: (context) => AboutMePage(
                   character: _currentCharacter,
+                  sessionId: _sessionId ?? widget.sessionId,
                 ),
               ),
             );

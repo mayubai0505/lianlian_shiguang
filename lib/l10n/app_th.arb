@@ -6542,6 +6542,49 @@
   "characterEditWorldLore": "โลกทัศน์ (การตั้งค่าระบบเบื้องหลัง)",
   "characterEditWorldLoreDescription": "กำหนดภูมิหลัง กฎ สถานที่ และเหตุการณ์ของโลกเพื่อให้ AI ใช้ในการสวมบทบาท โดยจะไม่แสดงข้อมูลนี้บนการ์ดแนะนำตัวละคร",
   "characterEditWorldLoreHint": "เช่น ภูมิหลังของโลก กลุ่มอำนาจและองค์กร กฎพิเศษ เหตุการณ์สำคัญ…",
+  "worldAboutUsTitle": "เกี่ยวกับเรา",
+  "worldAboutUsAddMemory": "เพิ่มความทรงจำ",
+  "worldAboutUsEditMemory": "แก้ไขความทรงจำ",
+  "worldAboutUsAddSharedMemory": "เพิ่มความทรงจำร่วมกัน",
+  "worldAboutUsEditSharedMemory": "แก้ไขความทรงจำร่วมกัน",
+  "worldAboutUsMemoryHint": "บันทึกความสัมพันธ์หรือเหตุการณ์ร่วมกันที่ควรจดจำในเรื่องราวของโลกนี้",
+  "worldAboutUsCancel": "ยกเลิก",
+  "worldAboutUsSave": "บันทึก",
+  "worldAboutUsDelete": "ลบ",
+  "worldAboutUsSaved": "บันทึกความทรงจำร่วมกันแล้ว",
+  "worldAboutUsSaveFailed": "บันทึกไม่สำเร็จ: {error}",
+  "@worldAboutUsSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsSavePermissionHint": " (โปรดตรวจสอบกฎการเข้าถึง Firestore)",
+  "worldAboutUsDeleteConfirmTitle": "ลบความทรงจำร่วมกันหรือไม่?",
+  "worldAboutUsDeleteConfirmBody": "เมื่อลบแล้ว AI จะไม่สามารถอ่านความทรงจำนี้ได้อีก",
+  "worldAboutUsDeleted": "ลบความทรงจำร่วมกันแล้ว",
+  "worldAboutUsDeleteFailed": "ลบไม่สำเร็จ: {error}",
+  "@worldAboutUsDeleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsSignInRequired": "โปรดเข้าสู่ระบบก่อนดูความทรงจำร่วมกัน",
+  "worldAboutUsDescription": "ความทรงจำร่วมกันในห้องเรื่องราวของโลกนี้จะถูกบันทึกไว้ที่นี่",
+  "worldAboutUsLoadFailed": "โหลดความทรงจำไม่สำเร็จ โปรดตรวจสอบสิทธิ์ Firestore: {error}",
+  "@worldAboutUsLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsEmpty": "ยังไม่มีความทรงจำร่วมกัน",
+  "worldAboutUsEditTooltip": "แก้ไขความทรงจำ",
+  "worldAboutUsDeleteTooltip": "ลบความทรงจำ",
   "world_edit_tag_max1": "Select up to 5 tags",
   "world_edit_tag_custom1": "Tags (customizable; separate with commas)",
   "world_edit_secret_not_ready1": "Secret chapters have not loaded. Publishing is paused to protect your content. Check permissions and reopen this page.",

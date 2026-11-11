@@ -6542,6 +6542,49 @@
   "characterEditWorldLore": "Ambientação do Mundo (Configuração Interna)",
   "characterEditWorldLoreDescription": "Contexto, regras, locais e acontecimentos do mundo usados pela IA na interpretação de personagens. Este conteúdo não aparece no cartão de perfil da personagem.",
   "characterEditWorldLoreHint": "Ex.: contexto do mundo, facções e organizações, regras especiais, acontecimentos importantes…",
+  "worldAboutUsTitle": "Sobre nós",
+  "worldAboutUsAddMemory": "Adicionar memória",
+  "worldAboutUsEditMemory": "Editar memória",
+  "worldAboutUsAddSharedMemory": "Adicionar memória compartilhada",
+  "worldAboutUsEditSharedMemory": "Editar memória compartilhada",
+  "worldAboutUsMemoryHint": "Registre relacionamentos ou acontecimentos compartilhados que mereçam ser lembrados na história deste mundo",
+  "worldAboutUsCancel": "Cancelar",
+  "worldAboutUsSave": "Salvar",
+  "worldAboutUsDelete": "Excluir",
+  "worldAboutUsSaved": "Memória compartilhada salva",
+  "worldAboutUsSaveFailed": "Não foi possível salvar: {error}",
+  "@worldAboutUsSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsSavePermissionHint": " (Verifique as regras de acesso do Firestore.)",
+  "worldAboutUsDeleteConfirmTitle": "Excluir memória compartilhada?",
+  "worldAboutUsDeleteConfirmBody": "Após a exclusão, a IA não poderá mais consultar esta memória.",
+  "worldAboutUsDeleted": "Memória compartilhada excluída",
+  "worldAboutUsDeleteFailed": "Não foi possível excluir: {error}",
+  "@worldAboutUsDeleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsSignInRequired": "Entre na sua conta para ver as memórias compartilhadas.",
+  "worldAboutUsDescription": "As memórias compartilhadas desta sala de história ficam aqui.",
+  "worldAboutUsLoadFailed": "Não foi possível carregar as memórias. Verifique as permissões do Firestore: {error}",
+  "@worldAboutUsLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsEmpty": "Ainda não há memórias compartilhadas.",
+  "worldAboutUsEditTooltip": "Editar memória",
+  "worldAboutUsDeleteTooltip": "Excluir memória",
   "world_edit_tag_max1": "Select up to 5 tags",
   "world_edit_tag_custom1": "Tags (customizable; separate with commas)",
   "world_edit_secret_not_ready1": "Secret chapters have not loaded. Publishing is paused to protect your content. Check permissions and reopen this page.",

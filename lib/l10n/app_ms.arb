@@ -6542,6 +6542,49 @@
   "characterEditWorldLore": "Latar Dunia (Tetapan Bahagian Belakang)",
   "characterEditWorldLoreDescription": "Latar belakang dunia, peraturan, lokasi dan peristiwa untuk lakonan peranan AI. Kandungan ini tidak dipaparkan pada kad profil watak.",
   "characterEditWorldLoreHint": "Contoh: latar belakang dunia, puak dan organisasi, peraturan khas, peristiwa penting…",
+  "worldAboutUsTitle": "Tentang Kita",
+  "worldAboutUsAddMemory": "Tambah Kenangan",
+  "worldAboutUsEditMemory": "Edit Kenangan",
+  "worldAboutUsAddSharedMemory": "Tambah Kenangan Bersama",
+  "worldAboutUsEditSharedMemory": "Edit Kenangan Bersama",
+  "worldAboutUsMemoryHint": "Catat hubungan atau peristiwa bersama yang wajar diingati dalam kisah dunia ini",
+  "worldAboutUsCancel": "Batal",
+  "worldAboutUsSave": "Simpan",
+  "worldAboutUsDelete": "Padam",
+  "worldAboutUsSaved": "Kenangan bersama disimpan",
+  "worldAboutUsSaveFailed": "Gagal menyimpan: {error}",
+  "@worldAboutUsSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsSavePermissionHint": " (Semak peraturan akses Firestore.)",
+  "worldAboutUsDeleteConfirmTitle": "Padam kenangan bersama?",
+  "worldAboutUsDeleteConfirmBody": "Selepas dipadam, AI tidak lagi boleh membaca kenangan ini.",
+  "worldAboutUsDeleted": "Kenangan bersama dipadam",
+  "worldAboutUsDeleteFailed": "Gagal memadam: {error}",
+  "@worldAboutUsDeleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsSignInRequired": "Log masuk dahulu untuk melihat kenangan bersama.",
+  "worldAboutUsDescription": "Kenangan bersama daripada bilik cerita dunia ini direkodkan di sini.",
+  "worldAboutUsLoadFailed": "Gagal memuatkan kenangan. Semak kebenaran Firestore: {error}",
+  "@worldAboutUsLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsEmpty": "Belum ada kenangan bersama.",
+  "worldAboutUsEditTooltip": "Edit kenangan",
+  "worldAboutUsDeleteTooltip": "Padam kenangan",
   "world_edit_tag_max1": "Select up to 5 tags",
   "world_edit_tag_custom1": "Tags (customizable; separate with commas)",
   "world_edit_secret_not_ready1": "Secret chapters have not loaded. Publishing is paused to protect your content. Check permissions and reopen this page.",

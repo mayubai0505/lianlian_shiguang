@@ -261,9 +261,35 @@ function createCustomStatusGuard(template) {
           block.push(lines[i++]);
         }
         const chunk = block.join('\n');
-        // The status guard checks 2-5 message requirements; a partial group
-        // never replaces another group's valid complete content.
-        if (!missing(chunk).includes(field.label)) found.set(key, chunk);
+         // Validate this field independently: missing(chunk) checks *all*
+         // required fields and would reject a valid isolated repair block.
+         // Keep group message-count checks, placeholders and hidden directives.
+         const cleanedChunk = clean(chunk);
+         const chunkLines = cleanedChunk.split(/\r?\n/);
+         const header = chunkLines.find(line => {
+           const item = extractLabel(line);
+           return item && canonicalLabel(item.label) === key;
+         });
+         if (!header) continue;
+         const headerValue = extractLabel(header).value;
+         let usable = Boolean(headerValue && !unknownValue(headerValue) &&
+           !isPlaceholder(headerValue) && !INLINE_META.test(headerValue));
+         if (!usable) usable = chunkLines.some(line => {
+           if (line === header || !line.trim() || META_LINE.test(line) || INLINE_META.test(line)) return false;
+           const item = extractLabel(line);
+           return item ? Boolean(item.value && !unknownValue(item.value) && !isPlaceholder(item.value)) :
+             !sampleLines.has(normalizeSample(line));
+         });
+         if (isGroupField(field.label) && groupMinimum > 1) {
+           const speakerCount = chunkLines.slice(1).filter(line => {
+             const item = extractLabel(line);
+             return item && item.label.length <= 24 && item.value &&
+               !unknownValue(item.value) && !isPlaceholder(item.value) &&
+               !INLINE_META.test(item.value) && !sampleLines.has(normalizeSample(line));
+           }).length;
+           usable = usable && speakerCount >= groupMinimum;
+         }
+         if (usable) found.set(key, cleanedChunk);
       }
       return found;
     }

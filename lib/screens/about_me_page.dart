@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -14,63 +15,144 @@ class Memory {
   final String text;
   final DateTime timestamp;
   final bool isFavorite;
+  // This reference is the actual Firestore location of this memory.
+  // Never assume all memories belong to the legacy character collection.
+  final DocumentReference<Map<String, dynamic>> reference;
+  final String scope;
 
   Memory({
     required this.id,
     required this.text,
     required this.timestamp,
+    required this.reference,
+    required this.scope,
     this.isFavorite = false,
   });
 
-  factory Memory.fromFirestore(DocumentSnapshot doc) {
-    Map data = doc.data() as Map<String, dynamic>;
+  factory Memory.fromFirestore(
+    QueryDocumentSnapshot<Map<String, dynamic>> doc,
+    String scope,
+  ) {
+    final data = doc.data();
+    final time = data['timestamp'];
     return Memory(
       id: doc.id,
-      text: data['text'] ?? '',
-      timestamp: (data['timestamp'] as Timestamp).toDate(),
-      isFavorite: data['isFavorite'] ?? false,
+      reference: doc.reference,
+      scope: scope,
+      text: (data['text'] ?? '').toString(),
+      timestamp: time is Timestamp ? time.toDate() : DateTime.fromMillisecondsSinceEpoch(0),
+      isFavorite: data['isFavorite'] == true,
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'text': text,
-      'timestamp': Timestamp.fromDate(timestamp),
-    };
   }
 }
 
 class AboutMePage extends StatefulWidget {
   final Character character;
-  const AboutMePage({super.key, required this.character});
+  // Pass the current room ID from chat_page.dart so the page can resolve
+  // the same profile as the memory reader/writer, not a guessed profile.
+  final String? sessionId;
+  const AboutMePage({super.key, required this.character, this.sessionId});
 
   @override
   State<AboutMePage> createState() => _AboutMePageState();
 }
 
 class _AboutMePageState extends State<AboutMePage> {
-  late final Stream<QuerySnapshot> _memoriesStream;
-  late final CollectionReference _memoriesCollection;
+  late final Stream<List<Memory>> _memoriesStream;
 
   @override
   void initState() {
     super.initState();
-    final userId = FirebaseAuth.instance.currentUser?.uid;
-    if (userId != null) {
-      _memoriesCollection = FirebaseFirestore.instance
-          .collection('users').doc(userId)
-          .collection('characters').doc(widget.character.id)
-          .collection('memories');
-      _memoriesStream = _memoriesCollection
-          .orderBy('timestamp', descending: true)
-          .snapshots();
-    } else {
-      _memoriesStream = const Stream.empty();
-      _memoriesCollection = FirebaseFirestore.instance.collection('dummy');
-    }
+    _memoriesStream = _watchMemories();
   }
 
-  Future<void> _deleteMemory(String memoryId) async {
+  Stream<List<Memory>> _watchMemories() async* {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) {
+      yield <Memory>[];
+      return;
+    }
+    final userRef = FirebaseFirestore.instance.collection('users').doc(uid);
+    final roomId = widget.sessionId?.trim() ?? '';
+    final sources = <String, CollectionReference<Map<String, dynamic>>>{};
+
+    if (roomId.isNotEmpty) {
+      final session = FirebaseFirestore.instance
+          .collection('artifacts').doc('lianlianshiguang')
+          .collection('chat_sessions').doc(roomId);
+      final snap = await session.get();
+      final data = snap.data();
+      if (!snap.exists || data == null || data['userId'] != uid ||
+          data['characterId']?.toString() != widget.character.id) {
+        throw StateError('聊天室與目前玩家／角色不相符，無法讀取記憶。');
+      }
+      final profileId = (data['playerProfileId'] ?? '').toString().trim();
+      if (profileId.isEmpty) {
+        throw StateError('聊天室尚未綁定拾光檔案，無法確認記憶範圍。');
+      }
+      // Session facts include scene-specific appointments/relationship events.
+      sources['session'] = session.collection('memories');
+      if (profileId == 'default') {
+        // Legacy/default persona: don't intermingle unrelated custom personas.
+        sources['legacy'] = userRef.collection('characters')
+            .doc(widget.character.id).collection('memories');
+      } else {
+        final profile = userRef.collection('profile_memories').doc(profileId);
+        sources['profile'] = profile.collection('memories');
+        sources['character'] = profile.collection('characters')
+            .doc(widget.character.id).collection('memories');
+      }
+    } else {
+      // Compatibility until chat_page.dart passes sessionId.
+      // Deliberately don't guess the most recent profile or show other personas.
+      sources['legacy'] = userRef.collection('characters')
+          .doc(widget.character.id).collection('memories');
+    }
+
+    final controller = StreamController<List<Memory>>();
+    final subscriptions = <StreamSubscription<QuerySnapshot<Map<String, dynamic>>>>[];
+    final latest = <String, List<Memory>>{};
+    final ready = <String>{};
+
+    void emitIfReady() {
+      if (ready.length != sources.length || controller.isClosed) return;
+      final seen = <String>{};
+      final all = <Memory>[];
+      for (final list in latest.values) {
+        for (final memory in list) {
+          if (seen.add(memory.reference.path)) all.add(memory);
+        }
+      }
+      all.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+      controller.add(all);
+    }
+
+    for (final entry in sources.entries) {
+      final sub = entry.value.orderBy('timestamp', descending: true)
+          .snapshots().listen((snapshot) {
+        latest[entry.key] = snapshot.docs
+            .where((doc) => doc.data()['active'] != false &&
+                doc.data()['deletedByUser'] != true &&
+                (doc.data()['text'] ?? '').toString().trim().isNotEmpty)
+            .map((doc) => Memory.fromFirestore(doc, entry.key))
+            .toList();
+        ready.add(entry.key);
+        emitIfReady();
+      }, onError: (Object error, StackTrace stack) {
+        if (!controller.isClosed) controller.addError(error, stack);
+      });
+      subscriptions.add(sub);
+    }
+
+    controller.onCancel = () async {
+      for (final sub in subscriptions) {
+        await sub.cancel();
+      }
+    };
+    yield* controller.stream;
+  }
+
+  Future<void> _deleteMemory(Memory memory) async {
     final l10n = AppLocalizations.of(context)!;
     final bool? confirmDelete = await showDialog<bool>(
       context: context,
@@ -96,7 +178,17 @@ class _AboutMePageState extends State<AboutMePage> {
 
     if (confirmDelete == true) {
       try {
-        await _memoriesCollection.doc(memoryId).delete();
+        if (memory.scope == 'legacy') {
+          await memory.reference.delete();
+        } else {
+          // Soft delete: prevents a retrieved memory from resurfacing in RAG.
+          await memory.reference.update({
+            'active': false,
+            'deletedByUser': true,
+            'retrievalTerms': <String>[],
+            'updatedAt': FieldValue.serverTimestamp(),
+          });
+        }
         if (mounted) {
           ToastUtils.showCenterToast(
             context,
@@ -152,7 +244,7 @@ class _AboutMePageState extends State<AboutMePage> {
 
     if (newText != null && newText.trim().isNotEmpty && newText.trim() != memory.text) {
       try {
-        await _memoriesCollection.doc(memory.id).update({'text': newText.trim()});
+        await memory.reference.update({'text': newText.trim(), 'updatedAt': FieldValue.serverTimestamp()});
         if (mounted) {
           ToastUtils.showCenterToast(
             context,
@@ -175,7 +267,7 @@ class _AboutMePageState extends State<AboutMePage> {
   Future<void> _toggleFavoriteStatus(Memory memory) async {
     final l10n = AppLocalizations.of(context)!;
     try {
-      await _memoriesCollection.doc(memory.id).update({
+      await memory.reference.update({
         'isFavorite': !memory.isFavorite
       });
     } catch (e) {
@@ -273,11 +365,11 @@ class _AboutMePageState extends State<AboutMePage> {
             ),
           ),
 
-          StreamBuilder<QuerySnapshot>(
+          StreamBuilder<List<Memory>>(
             stream: _memoriesStream,
             builder: (
                 BuildContext context,
-                AsyncSnapshot<QuerySnapshot> snapshot,
+                AsyncSnapshot<List<Memory>> snapshot,
                 ) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(
@@ -304,7 +396,7 @@ class _AboutMePageState extends State<AboutMePage> {
                 );
               }
 
-              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              if (!snapshot.hasData || snapshot.data!.isEmpty) {
                 return Center(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -326,9 +418,7 @@ class _AboutMePageState extends State<AboutMePage> {
                 );
               }
 
-              final List<Memory> memories = snapshot.data!.docs
-                  .map((doc) => Memory.fromFirestore(doc))
-                  .toList();
+              final List<Memory> memories = snapshot.data!;
 
               final List<dynamic> groupedItems =
               _groupMemoriesByDate(memories);
@@ -508,7 +598,7 @@ class _AboutMePageState extends State<AboutMePage> {
 
                     IconButton(
                       tooltip: l10n.delete_btn,
-                      onPressed: () => _deleteMemory(memory.id),
+                      onPressed: () => _deleteMemory(memory),
                       icon: Image.asset(
                         'assets/images/chat/chat_msg_delete_mask.webp',
                         width: 20,

@@ -21419,6 +21419,138 @@ abstract class AppLocalizations {
   /// **'開放世界 · 功能逐步開放'**
   String get world_menu_subtitle1;
 
+  /// No description provided for @worldAboutUsTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'關於我們'**
+  String get worldAboutUsTitle;
+
+  /// No description provided for @worldAboutUsAddMemory.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'新增記憶'**
+  String get worldAboutUsAddMemory;
+
+  /// No description provided for @worldAboutUsEditMemory.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'編輯記憶'**
+  String get worldAboutUsEditMemory;
+
+  /// No description provided for @worldAboutUsAddSharedMemory.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'新增共同記憶'**
+  String get worldAboutUsAddSharedMemory;
+
+  /// No description provided for @worldAboutUsEditSharedMemory.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'編輯共同記憶'**
+  String get worldAboutUsEditSharedMemory;
+
+  /// No description provided for @worldAboutUsMemoryHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'記錄這段世界劇情中值得記住的人物關係或共同事件'**
+  String get worldAboutUsMemoryHint;
+
+  /// No description provided for @worldAboutUsCancel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'取消'**
+  String get worldAboutUsCancel;
+
+  /// No description provided for @worldAboutUsSave.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'儲存'**
+  String get worldAboutUsSave;
+
+  /// No description provided for @worldAboutUsDelete.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除'**
+  String get worldAboutUsDelete;
+
+  /// No description provided for @worldAboutUsSaved.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'共同記憶已儲存'**
+  String get worldAboutUsSaved;
+
+  /// No description provided for @worldAboutUsSaveFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'儲存失敗：{error}'**
+  String worldAboutUsSaveFailed(String error);
+
+  /// No description provided for @worldAboutUsSavePermissionHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'（請確認 Firestore 存取規則）'**
+  String get worldAboutUsSavePermissionHint;
+
+  /// No description provided for @worldAboutUsDeleteConfirmTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除共同記憶？'**
+  String get worldAboutUsDeleteConfirmTitle;
+
+  /// No description provided for @worldAboutUsDeleteConfirmBody.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除後這筆記憶不會再供 AI 讀取。'**
+  String get worldAboutUsDeleteConfirmBody;
+
+  /// No description provided for @worldAboutUsDeleted.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已刪除共同記憶'**
+  String get worldAboutUsDeleted;
+
+  /// No description provided for @worldAboutUsDeleteFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除失敗：{error}'**
+  String worldAboutUsDeleteFailed(String error);
+
+  /// No description provided for @worldAboutUsSignInRequired.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先登入，再查看共同記憶。'**
+  String get worldAboutUsSignInRequired;
+
+  /// No description provided for @worldAboutUsDescription.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這裡記錄此世界劇情房間的共同回憶'**
+  String get worldAboutUsDescription;
+
+  /// No description provided for @worldAboutUsLoadFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'記憶讀取失敗，請檢查 Firestore 權限：{error}'**
+  String worldAboutUsLoadFailed(String error);
+
+  /// No description provided for @worldAboutUsEmpty.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前還沒有共同記憶。'**
+  String get worldAboutUsEmpty;
+
+  /// No description provided for @worldAboutUsEditTooltip.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'編輯記憶'**
+  String get worldAboutUsEditTooltip;
+
+  /// No description provided for @worldAboutUsDeleteTooltip.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除記憶'**
+  String get worldAboutUsDeleteTooltip;
+
   /// No description provided for @world_menu_chat_section1.
   ///
   /// In zh_Hant, this message translates to:

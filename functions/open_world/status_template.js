@@ -181,11 +181,100 @@ function lockCreatorStatus(template, generated, options={}) {
     if (CONTROL.test(line)) continue;
     if (isCreatorGuidance(line)) continue;
     // Don't print unfilled template lines verbatim. Preserve purely decorative lines.
-    if (templateLines.has(trimmed) && (PLACEHOLDER.test(trimmed) || /(?:請|描述|顯示|根據|根據劇情|讀取過去劇情|二十字|一百字|字內|違反規則：讀取)/u.test(trimmed))) continue;
+    if (templateLines.has(trimmed) && (PLACEHOLDER.test(trimmed) ||
+      isCreatorGuidance(trimmed) ||
+      /^(?:範例|填寫規則|輸出規則|格式要求|備註)\s*[:：]/u.test(trimmed))) continue;
     // Reject copied format placeholders only when they're evidently still unfilled.
     if (PLACEHOLDER.test(trimmed) && /(?:根據劇情|YYYY|HH\s*[:：]\s*MM)/iu.test(trimmed)) continue;
     out.push(line);
   }
   return applyServerStatusTime(template, protectCreatorStatusSymbols(template, out.join('\n').trim()), options.timeText).slice(0,10000);
 }
-module.exports={parseFields, lockCreatorStatus, describeCreatorTemplate, isCreatorGuidance, protectCreatorStatusSymbols};
+
+// Final presentation guard: the room's persisted story clock is authoritative.
+// Only recognized status time/calendar rows are updated, never dialogue,
+// locations, durations or another NPC's independent schedule.
+function enforceModernStatusTime(status, timeText) {
+  const source = String(status || '');
+  const clock = String(timeText || '').trim();
+  const exact = clock.match(/(?:^|[\s，,])([01]?\d|2[0-3])[:：]([0-5]\d)\s*$/u);
+  if (!source || !exact) return source;
+  const hhmm = `${exact[1].padStart(2, '0')}:${exact[2]}`;
+  const fictionalDay = clock.match(/^第([零〇一二兩三四五六七八九十百千\d]{1,8})[日天][，,、\s]+/u)?.[1];
+  const rowHeader = /^\s*(?:(?:[\p{Extended_Pictographic}\u2600-\u27BF]\uFE0F?\s*)?(?:時間|時刻|故事時間|目前時間|當前時間|現在時間|日期時間|📅|📆|🗓️?|⏰|🕒)\s*[:：]|(?:📅|📆|🗓️?|⏰|🕒)\s*[:：])/u;
+  return source.split('\n').map(line => {
+    const m = line.match(rowHeader);
+    if (!m) return line;
+    const prefix = m[0];
+    let body = line.slice(prefix.length);
+    const partition = body.match(/^([^｜|]*)([｜|].*)?$/u);
+    if (!partition) return line;
+    let head = partition[1];
+    const tail = partition[2] || '';
+    const timeToken = /(?:[01]?\d|2[0-3])[:：][0-5]\d/u;
+    if (fictionalDay) {
+      head = head.replace(/第[零〇一二兩三四五六七八九十百千\d]{1,8}([日天])/u,
+        (_all, unit) => `第${fictionalDay}${unit}`);
+    }
+    if (timeToken.test(head)) {
+      head = head.replace(timeToken, hhmm);
+    } else if (/^\s*(?:(?:第[零〇一二兩三四五六七八九十百千\d]{1,8}[日天][，,、\s]+))?(?:上午|早上|下午|晚上|凌晨|中午|傍晚|清晨|半夜)\s*$/u.test(head)) {
+      head = head.replace(/(?:上午|早上|下午|晚上|凌晨|中午|傍晚|清晨|半夜)/u, hhmm);
+    } else {
+      return line;
+    }
+    return prefix + head + tail;
+  }).join('\n');
+}
+
+// Only creator-authored date/time rows are updated. The story calendar comes
+// from the room's authoritative clock, not the model's guessed wall-clock date.
+// Never invent a new row, icon, or calendar for worlds without a date field.
+function protectCreatorCalendarDisplay(template, generated, authoritativeTime='') {
+  const source=String(generated||'');
+  const creator=String(template||'');
+  if(!source)return source;
+  const ownsAlarm=creator.includes('⏰');
+  const ownsClock=creator.includes('🕒');
+  // Canonical modern clock contains a real fictional date initialized once.
+  // Older rooms without a date may still produce HH:MM; do not manufacture a
+  // date in those rooms merely to make a UI field appear complete.
+  const match=String(authoritativeTime).trim().match(/^(?:(?:(\d{4})\/)?(\d{1,2})\/(\d{1,2})\s+)?([01]?\d|2[0-3])[:：]([0-5]\d)$/u);
+  const knownDate=Boolean(match && match[2] && match[3]);
+  const year=knownDate ? (match[1]||'') : '';
+  const month=knownDate ? String(Number(match[2])) : '';
+  const day=knownDate ? String(Number(match[3])) : '';
+  const hhmm=match ? `${match[4].padStart(2,'0')}:${match[5]}` : '';
+  const isoDate=knownDate ? `${year ? year+'/' : ''}${String(Number(month)).padStart(2,'0')}/${String(Number(day)).padStart(2,'0')}` : '';
+  const zhDate=knownDate ? `${year ? year+'年' : ''}${month}月${day}日` : '';
+  const numericDate=/(?:\d{4}\s*年\s*(?:\d{1,2}|[xXＸ])\s*月\s*(?:\d{1,2}|[xXＸ])\s*[日號]?|\d{4}[\/.-](?:\d{1,2}|[xXＸ])[\/.-](?:\d{1,2}|[xXＸ])|(?:\d{1,2}|[xXＸ])\s*月\s*(?:\d{1,2}|[xXＸ])\s*[日號]?|(?:\d{1,2}|[xXＸ])[\/.-](?:\d{1,2}|[xXＸ]))/u;
+  const datePlaceholder=/(?:日期未確認|年月日未確認|YYYY\s*[\/.-]\s*MM\s*[\/.-]\s*(?:DD|NN)|YYYY\s*年\s*MM\s*月\s*DD\s*日)/iu;
+  const templateHasDateRow=creator.split('\n').some(line=>/^(?:\s*[^\n：:]{0,48}(?:日期|年月日|📅|📆|🗓️)[^\n：:]{0,48}[：:])/u.test(line));
+  return source.split('\n').map(line=>{
+    if(/^\s*⏰\s*[:：]/u.test(line) && !ownsAlarm)return null;
+    if(/^\s*🕒\s*[:：]/u.test(line) && !ownsClock)return null;
+    const m=line.match(/^(\s*[^\n：:]{1,48}[：:]\s*)(.*)$/u);
+    if(!m)return line;
+    const prefix=m[1],value=m[2];
+    const isDateRow=/(?:日期|年月日|📅|📆|🗓️)/u.test(prefix);
+    const isTimeRow=/(?:時間|時刻|⏰|🕒)/u.test(prefix);
+    if(!isDateRow && !isTimeRow)return line;
+    // Avoid adding a date to a clock-only template. Conversely, a creator's
+    // date row may use either Chinese or numeric date presentation.
+    if(!knownDate || !(isDateRow || templateHasDateRow))return line;
+    const templateFormat=creator.split('\n').find(t=>t.trim().startsWith(prefix.trim().split(/[：:]/u)[0]))||'';
+    const creatorUsesSlashes=/(?:YYYY|\d{4})\s*[\/.-]\s*(?:MM|\d{1,2})\s*[\/.-]\s*(?:DD|NN|\d{1,2})/iu.test(templateFormat);
+    const creatorUsesChinese=/(?:YYYY|\d{4})\s*年|(?:MM|\d{1,2})\s*月/iu.test(templateFormat);
+    const useChinese=creatorUsesChinese || (!creatorUsesSlashes && /(?:\d{4}\s*年|YYYY\s*年|\d{1,2}\s*月|MM\s*月)/iu.test(value));
+    const replacement=useChinese ? zhDate : isoDate;
+    if(numericDate.test(value))return prefix+value.replace(numericDate,replacement);
+    if(datePlaceholder.test(value))return prefix+value.replace(datePlaceholder,replacement);
+    if(isDateRow && /^\s*(?:尚未確認|未確認|未知|待確認)\s*$/u.test(value)) return prefix+replacement;
+    if(isDateRow && !value.trim()) return prefix+replacement;
+    // If only time is present on a date row, include the date (with the
+    // existing HH:MM untouched), never a fresh field or emoji.
+    if(isDateRow && hhmm && /^\s*(?:[01]?\d|2[0-3])[:：][0-5]\d\s*$/u.test(value))return prefix+replacement+' '+value.trim();
+    return line;
+  }).filter(line=>line!==null).join('\n');
+}
+module.exports={parseFields, lockCreatorStatus, describeCreatorTemplate, isCreatorGuidance, protectCreatorStatusSymbols, enforceModernStatusTime, protectCreatorCalendarDisplay};

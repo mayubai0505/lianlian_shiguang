@@ -12564,6 +12564,83 @@ class AppLocalizationsMs extends AppLocalizations {
       'Dunia Terbuka · Ciri dibuka secara berperingkat';
 
   @override
+  String get worldAboutUsTitle => 'Tentang Kita';
+
+  @override
+  String get worldAboutUsAddMemory => 'Tambah Kenangan';
+
+  @override
+  String get worldAboutUsEditMemory => 'Edit Kenangan';
+
+  @override
+  String get worldAboutUsAddSharedMemory => 'Tambah Kenangan Bersama';
+
+  @override
+  String get worldAboutUsEditSharedMemory => 'Edit Kenangan Bersama';
+
+  @override
+  String get worldAboutUsMemoryHint =>
+      'Catat hubungan atau peristiwa bersama yang wajar diingati dalam kisah dunia ini';
+
+  @override
+  String get worldAboutUsCancel => 'Batal';
+
+  @override
+  String get worldAboutUsSave => 'Simpan';
+
+  @override
+  String get worldAboutUsDelete => 'Padam';
+
+  @override
+  String get worldAboutUsSaved => 'Kenangan bersama disimpan';
+
+  @override
+  String worldAboutUsSaveFailed(String error) {
+    return 'Gagal menyimpan: $error';
+  }
+
+  @override
+  String get worldAboutUsSavePermissionHint =>
+      ' (Semak peraturan akses Firestore.)';
+
+  @override
+  String get worldAboutUsDeleteConfirmTitle => 'Padam kenangan bersama?';
+
+  @override
+  String get worldAboutUsDeleteConfirmBody =>
+      'Selepas dipadam, AI tidak lagi boleh membaca kenangan ini.';
+
+  @override
+  String get worldAboutUsDeleted => 'Kenangan bersama dipadam';
+
+  @override
+  String worldAboutUsDeleteFailed(String error) {
+    return 'Gagal memadam: $error';
+  }
+
+  @override
+  String get worldAboutUsSignInRequired =>
+      'Log masuk dahulu untuk melihat kenangan bersama.';
+
+  @override
+  String get worldAboutUsDescription =>
+      'Kenangan bersama daripada bilik cerita dunia ini direkodkan di sini.';
+
+  @override
+  String worldAboutUsLoadFailed(String error) {
+    return 'Gagal memuatkan kenangan. Semak kebenaran Firestore: $error';
+  }
+
+  @override
+  String get worldAboutUsEmpty => 'Belum ada kenangan bersama.';
+
+  @override
+  String get worldAboutUsEditTooltip => 'Edit kenangan';
+
+  @override
+  String get worldAboutUsDeleteTooltip => 'Padam kenangan';
+
+  @override
   String get world_menu_chat_section1 => 'Sembang';
 
   @override
