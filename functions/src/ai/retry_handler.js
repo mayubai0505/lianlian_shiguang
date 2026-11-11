@@ -6,8 +6,10 @@ async function callAiWithRetry({
   modelId,
   fallbackModelId,
   requestBody,
+  fallbackRequestBody = null,
   abortController,
   timeoutMs = 95_000,
+  fallbackTimeoutMs = timeoutMs,
   retryPrimary = true,
 }) {
   const startedAt = Date.now();
@@ -17,7 +19,9 @@ async function callAiWithRetry({
   let finalModelId = modelId;
 
   async function callCurrentAiModel(
-    targetModelId
+    targetModelId,
+    attemptTimeoutMs = timeoutMs,
+    attemptRequestBody = requestBody
   ) {
     apiAttempts++;
 
@@ -46,7 +50,7 @@ async function callAiWithRetry({
     // 每一次嘗試都依「實際 provider」重建 reasoning 設定，
     // 這樣 primary / retry / fallback 換供應商時不會沿用錯誤參數。
     const providerRequestBody = {
-      ...requestBody,
+      ...attemptRequestBody,
     };
 
     delete providerRequestBody.reasoning;
@@ -68,7 +72,7 @@ async function callAiWithRetry({
           modelId: providerConfig.modelIdForRequest,
           requestBody: providerRequestBody,
           abortController,
-          timeoutMs,
+          timeoutMs: attemptTimeoutMs,
         })
       : await callOpenRouter({
           apiUrl: providerConfig.apiUrl,
@@ -76,7 +80,7 @@ async function callAiWithRetry({
           modelId: providerConfig.modelIdForRequest,
           requestBody: providerRequestBody,
           abortController,
-          timeoutMs,
+          timeoutMs: attemptTimeoutMs,
         });
 
     // HTTP 200 不代表模型真的成功產生內容。
@@ -218,8 +222,9 @@ async function callAiWithRetry({
       );
     } catch (error) {
       if (
-        error.message ===
-        "PLAYER_DISCONNECTED"
+        error?.message === "PLAYER_DISCONNECTED" ||
+        error?.code === "PLAYER_DISCONNECTED" ||
+        abortController?.signal?.aborted
       ) {
         return await finishFailure(
           error
@@ -227,6 +232,8 @@ async function callAiWithRetry({
       }
 
       const retryable =
+        error?.code === "AI_NETWORK_ERROR" ||
+        error?.code === "AI_TIMEOUT" ||
         error.statusCode === 429 ||
         error.statusCode === 500 ||
         error.statusCode === 502 ||
@@ -270,6 +277,11 @@ async function callAiWithRetry({
           );
         }
 
+        if (abortController?.signal?.aborted) {
+          const cancelled = new Error("PLAYER_DISCONNECTED");
+          cancelled.code = "PLAYER_DISCONNECTED";
+          return await finishFailure(cancelled);
+        }
         usedFallback = true;
         finalModelId =
           fallbackModelId;
@@ -293,7 +305,9 @@ async function callAiWithRetry({
         try {
           const fallbackResult =
             await callCurrentAiModel(
-              fallbackModelId
+              fallbackModelId,
+              fallbackTimeoutMs,
+              fallbackRequestBody || requestBody
             );
 
           return await finishSuccess(
@@ -353,8 +367,9 @@ async function callAiWithRetry({
         );
       } catch (retryError) {
         if (
-          retryError.message ===
-          "PLAYER_DISCONNECTED"
+          retryError?.message === "PLAYER_DISCONNECTED" ||
+          retryError?.code === "PLAYER_DISCONNECTED" ||
+          abortController?.signal?.aborted
         ) {
           return await finishFailure(
             retryError
@@ -367,6 +382,11 @@ async function callAiWithRetry({
           );
         }
 
+        if (abortController?.signal?.aborted) {
+          const cancelled = new Error("PLAYER_DISCONNECTED");
+          cancelled.code = "PLAYER_DISCONNECTED";
+          return await finishFailure(cancelled);
+        }
         usedFallback = true;
         finalModelId =
           fallbackModelId;
@@ -385,7 +405,9 @@ async function callAiWithRetry({
         try {
           const fallbackResult =
             await callCurrentAiModel(
-              fallbackModelId
+              fallbackModelId,
+              fallbackTimeoutMs,
+              fallbackRequestBody || requestBody
             );
 
           return await finishSuccess(

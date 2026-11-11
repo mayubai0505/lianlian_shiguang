@@ -12638,6 +12638,83 @@ class AppLocalizationsPt extends AppLocalizations {
       'Mundo aberto · Recursos liberados gradualmente';
 
   @override
+  String get worldAboutUsTitle => 'Sobre nós';
+
+  @override
+  String get worldAboutUsAddMemory => 'Adicionar memória';
+
+  @override
+  String get worldAboutUsEditMemory => 'Editar memória';
+
+  @override
+  String get worldAboutUsAddSharedMemory => 'Adicionar memória compartilhada';
+
+  @override
+  String get worldAboutUsEditSharedMemory => 'Editar memória compartilhada';
+
+  @override
+  String get worldAboutUsMemoryHint =>
+      'Registre relacionamentos ou acontecimentos compartilhados que mereçam ser lembrados na história deste mundo';
+
+  @override
+  String get worldAboutUsCancel => 'Cancelar';
+
+  @override
+  String get worldAboutUsSave => 'Salvar';
+
+  @override
+  String get worldAboutUsDelete => 'Excluir';
+
+  @override
+  String get worldAboutUsSaved => 'Memória compartilhada salva';
+
+  @override
+  String worldAboutUsSaveFailed(String error) {
+    return 'Não foi possível salvar: $error';
+  }
+
+  @override
+  String get worldAboutUsSavePermissionHint =>
+      ' (Verifique as regras de acesso do Firestore.)';
+
+  @override
+  String get worldAboutUsDeleteConfirmTitle => 'Excluir memória compartilhada?';
+
+  @override
+  String get worldAboutUsDeleteConfirmBody =>
+      'Após a exclusão, a IA não poderá mais consultar esta memória.';
+
+  @override
+  String get worldAboutUsDeleted => 'Memória compartilhada excluída';
+
+  @override
+  String worldAboutUsDeleteFailed(String error) {
+    return 'Não foi possível excluir: $error';
+  }
+
+  @override
+  String get worldAboutUsSignInRequired =>
+      'Entre na sua conta para ver as memórias compartilhadas.';
+
+  @override
+  String get worldAboutUsDescription =>
+      'As memórias compartilhadas desta sala de história ficam aqui.';
+
+  @override
+  String worldAboutUsLoadFailed(String error) {
+    return 'Não foi possível carregar as memórias. Verifique as permissões do Firestore: $error';
+  }
+
+  @override
+  String get worldAboutUsEmpty => 'Ainda não há memórias compartilhadas.';
+
+  @override
+  String get worldAboutUsEditTooltip => 'Editar memória';
+
+  @override
+  String get worldAboutUsDeleteTooltip => 'Excluir memória';
+
+  @override
   String get world_menu_chat_section1 => 'Chat';
 
   @override

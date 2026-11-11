@@ -12568,6 +12568,83 @@ class AppLocalizationsVi extends AppLocalizations {
       'Thế giới mở · Các tính năng sẽ được mở dần';
 
   @override
+  String get worldAboutUsTitle => 'Về chúng ta';
+
+  @override
+  String get worldAboutUsAddMemory => 'Thêm kỷ niệm';
+
+  @override
+  String get worldAboutUsEditMemory => 'Sửa kỷ niệm';
+
+  @override
+  String get worldAboutUsAddSharedMemory => 'Thêm kỷ niệm chung';
+
+  @override
+  String get worldAboutUsEditSharedMemory => 'Sửa kỷ niệm chung';
+
+  @override
+  String get worldAboutUsMemoryHint =>
+      'Ghi lại các mối quan hệ hoặc sự kiện chung đáng nhớ trong câu chuyện của thế giới này';
+
+  @override
+  String get worldAboutUsCancel => 'Hủy';
+
+  @override
+  String get worldAboutUsSave => 'Lưu';
+
+  @override
+  String get worldAboutUsDelete => 'Xóa';
+
+  @override
+  String get worldAboutUsSaved => 'Đã lưu kỷ niệm chung';
+
+  @override
+  String worldAboutUsSaveFailed(String error) {
+    return 'Không thể lưu: $error';
+  }
+
+  @override
+  String get worldAboutUsSavePermissionHint =>
+      ' (Hãy kiểm tra quy tắc truy cập Firestore.)';
+
+  @override
+  String get worldAboutUsDeleteConfirmTitle => 'Xóa kỷ niệm chung?';
+
+  @override
+  String get worldAboutUsDeleteConfirmBody =>
+      'Sau khi xóa, AI sẽ không thể đọc kỷ niệm này nữa.';
+
+  @override
+  String get worldAboutUsDeleted => 'Đã xóa kỷ niệm chung';
+
+  @override
+  String worldAboutUsDeleteFailed(String error) {
+    return 'Không thể xóa: $error';
+  }
+
+  @override
+  String get worldAboutUsSignInRequired =>
+      'Vui lòng đăng nhập để xem kỷ niệm chung.';
+
+  @override
+  String get worldAboutUsDescription =>
+      'Các kỷ niệm chung của phòng truyện thế giới này được lưu tại đây.';
+
+  @override
+  String worldAboutUsLoadFailed(String error) {
+    return 'Không thể tải kỷ niệm. Hãy kiểm tra quyền Firestore: $error';
+  }
+
+  @override
+  String get worldAboutUsEmpty => 'Chưa có kỷ niệm chung nào.';
+
+  @override
+  String get worldAboutUsEditTooltip => 'Sửa kỷ niệm';
+
+  @override
+  String get worldAboutUsDeleteTooltip => 'Xóa kỷ niệm';
+
+  @override
   String get world_menu_chat_section1 => 'Trò chuyện';
 
   @override

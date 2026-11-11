@@ -26,6 +26,7 @@ async function callOpenRouter({
 
     let response;
     let rawText = "";
+    const requestStartedAt = Date.now();
 
     try {
         const finalBody = {
@@ -53,6 +54,12 @@ async function callOpenRouter({
 
         rawText = await response.text();
 
+        console.log("⏱️ V5.7.6 PROVIDER RESPONSE:", {
+            model: modelId,
+            latencyMs: Date.now() - requestStartedAt,
+            status: response.status,
+            responseBytes: Buffer.byteLength(rawText, "utf8"),
+        });
         console.log("🧪 AI HTTP STATUS:", response.status);
         console.log("🧪 AI RAW LENGTH:", rawText.length);
     } catch (err) {
@@ -69,6 +76,7 @@ async function callOpenRouter({
             playerDisconnected,
             requestTimedOut,
             timeoutMs,
+            elapsedMs: Date.now() - requestStartedAt,
         });
 
         if (playerDisconnected) {
@@ -218,9 +226,26 @@ async function callAnthropicDirect({modelId, requestBody, abortController, timeo
             }],
         };
     } catch (err) {
-        if (err?.name === "AbortError") {
-            if (abortController?.signal?.aborted) throw new Error("PLAYER_DISCONNECTED");
-            throw new Error("AI 回覆時間太久，已主動中止");
+        // 取消生成絕不能進備援；供應商 timeout 則可由 retry_handler 切備援。
+        if (abortController?.signal?.aborted) {
+            const cancelled = new Error("PLAYER_DISCONNECTED");
+            cancelled.code = "PLAYER_DISCONNECTED";
+            throw cancelled;
+        }
+        if (timeoutController.signal.aborted || err?.name === "AbortError" || err?.name === "TimeoutError") {
+            const timedOut = new Error("AI 回覆時間太久，已主動中止");
+            timedOut.code = "AI_TIMEOUT";
+            throw timedOut;
+        }
+        // 僅將 fetch 連線階段的 TypeError / socket error 視為暫時性網路錯誤。
+        // 不吞掉 HTTP 400 / 401 / 403 等具有 statusCode 的供應商錯誤。
+        const code = String(err?.cause?.code || err?.code || "");
+        if (!err?.statusCode && (err instanceof TypeError ||
+            ["ECONNRESET", "ETIMEDOUT", "EAI_AGAIN", "ECONNREFUSED", "UND_ERR_CONNECT_TIMEOUT", "UND_ERR_SOCKET"].includes(code))) {
+            const networkError = new Error("AI 連線暫時不穩");
+            networkError.code = "AI_NETWORK_ERROR";
+            networkError.cause = err;
+            throw networkError;
         }
         throw err;
     } finally {

@@ -6593,6 +6593,49 @@
   "characterEditWorldLore": "विश्व की रूपरेखा (बैकएंड सेटिंग)",
   "characterEditWorldLoreDescription": "AI के भूमिका-अभिनय के लिए दुनिया की पृष्ठभूमि, नियम, स्थान और घटनाएँ। यह सामग्री पात्र के परिचय कार्ड पर नहीं दिखाई जाएगी।",
   "characterEditWorldLoreHint": "उदाहरण: दुनिया की पृष्ठभूमि, गुट और संगठन, विशेष नियम, महत्वपूर्ण घटनाएँ…",
+  "worldAboutUsTitle": "हमारे बारे में",
+  "worldAboutUsAddMemory": "स्मृति जोड़ें",
+  "worldAboutUsEditMemory": "स्मृति संपादित करें",
+  "worldAboutUsAddSharedMemory": "साझा स्मृति जोड़ें",
+  "worldAboutUsEditSharedMemory": "साझा स्मृति संपादित करें",
+  "worldAboutUsMemoryHint": "इस दुनिया की कहानी में याद रखने योग्य रिश्तों या साझा घटनाओं को दर्ज करें",
+  "worldAboutUsCancel": "रद्द करें",
+  "worldAboutUsSave": "सहेजें",
+  "worldAboutUsDelete": "हटाएँ",
+  "worldAboutUsSaved": "साझा स्मृति सहेजी गई",
+  "worldAboutUsSaveFailed": "सहेजा नहीं जा सका: {error}",
+  "@worldAboutUsSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsSavePermissionHint": " (Firestore के एक्सेस नियम जाँचें।)",
+  "worldAboutUsDeleteConfirmTitle": "साझा स्मृति हटाएँ?",
+  "worldAboutUsDeleteConfirmBody": "हटाने के बाद AI इस स्मृति को नहीं पढ़ पाएगा।",
+  "worldAboutUsDeleted": "साझा स्मृति हटा दी गई",
+  "worldAboutUsDeleteFailed": "हटाया नहीं जा सका: {error}",
+  "@worldAboutUsDeleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsSignInRequired": "साझा स्मृतियाँ देखने के लिए पहले साइन इन करें।",
+  "worldAboutUsDescription": "इस दुनिया की कहानी के साझा अनुभव यहाँ दर्ज हैं।",
+  "worldAboutUsLoadFailed": "स्मृतियाँ लोड नहीं हो सकीं। Firestore की अनुमतियाँ जाँचें: {error}",
+  "@worldAboutUsLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsEmpty": "अभी कोई साझा स्मृति नहीं है।",
+  "worldAboutUsEditTooltip": "स्मृति संपादित करें",
+  "worldAboutUsDeleteTooltip": "स्मृति हटाएँ",
   "world_edit_tag_max1": "Select up to 5 tags",
   "world_edit_tag_custom1": "Tags (customizable; separate with commas)",
   "world_edit_secret_not_ready1": "Secret chapters have not loaded. Publishing is paused to protect your content. Check permissions and reopen this page.",

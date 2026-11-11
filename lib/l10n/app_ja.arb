@@ -6593,6 +6593,49 @@
   "characterEditWorldLore": "世界観（バックエンド設定）",
   "characterEditWorldLoreDescription": "AIのロールプレイに使用する世界の背景、ルール、場所、出来事を設定します。キャラクター紹介カードには表示されません。",
   "characterEditWorldLoreHint": "例：世界の背景、勢力や組織、特殊なルール、重要な出来事など…",
+  "worldAboutUsTitle": "私たちについて",
+  "worldAboutUsAddMemory": "思い出を追加",
+  "worldAboutUsEditMemory": "思い出を編集",
+  "worldAboutUsAddSharedMemory": "共有の思い出を追加",
+  "worldAboutUsEditSharedMemory": "共有の思い出を編集",
+  "worldAboutUsMemoryHint": "この世界の物語で覚えておきたい人物関係や共有した出来事を記録します",
+  "worldAboutUsCancel": "キャンセル",
+  "worldAboutUsSave": "保存",
+  "worldAboutUsDelete": "削除",
+  "worldAboutUsSaved": "共有の思い出を保存しました",
+  "worldAboutUsSaveFailed": "保存できませんでした：{error}",
+  "@worldAboutUsSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsSavePermissionHint": "（Firestore のアクセスルールを確認してください）",
+  "worldAboutUsDeleteConfirmTitle": "共有の思い出を削除しますか？",
+  "worldAboutUsDeleteConfirmBody": "削除すると、AI はこの思い出を参照できなくなります。",
+  "worldAboutUsDeleted": "共有の思い出を削除しました",
+  "worldAboutUsDeleteFailed": "削除できませんでした：{error}",
+  "@worldAboutUsDeleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsSignInRequired": "共有の思い出を見るにはログインしてください。",
+  "worldAboutUsDescription": "この世界のストーリールームで共有した思い出を記録します。",
+  "worldAboutUsLoadFailed": "思い出を読み込めませんでした。Firestore の権限を確認してください：{error}",
+  "@worldAboutUsLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsEmpty": "共有の思い出はまだありません。",
+  "worldAboutUsEditTooltip": "思い出を編集",
+  "worldAboutUsDeleteTooltip": "思い出を削除",
   "world_edit_tag_max1": "Select up to 5 tags",
   "world_edit_tag_custom1": "Tags (customizable; separate with commas)",
   "world_edit_secret_not_ready1": "Secret chapters have not loaded. Publishing is paused to protect your content. Check permissions and reopen this page.",

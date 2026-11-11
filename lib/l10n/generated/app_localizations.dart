@@ -20132,25 +20132,25 @@ abstract class AppLocalizations {
   /// No description provided for @official_studio_text_1771.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'确定将「{name}」移出追蹤者名单吗？对方将不再追蹤你，但未来仍可再次追蹤。'**
+  /// **'確定將「{name}」移出追蹤者名單嗎？對方將不再追蹤你，但未來仍可再次追蹤。'**
   String official_studio_text_1771(String name);
 
   /// No description provided for @official_studio_text_1781.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'单人私信：{count} / 30 封'**
+  /// **'單人私信：{count} / 30 封'**
   String official_studio_text_1781(int count);
 
   /// No description provided for @official_studio_text_1791.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'全体粉丝群发：{count} / 5 次'**
+  /// **'全體粉絲群發：{count} / 5 次'**
   String official_studio_text_1791(int count);
 
   /// No description provided for @official_studio_text_1801.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'赠送成功！{count} 朵花花已寄到粉丝信箱，等待领取。'**
+  /// **'贈送成功！{count} 朵花花已寄到粉絲信箱，等待領取。'**
   String official_studio_text_1801(int count);
 
   /// No description provided for @official_studio_text_1811.
@@ -20174,67 +20174,67 @@ abstract class AppLocalizations {
   /// No description provided for @official_studio_text_1841.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'{month} 创作奖励'**
+  /// **'{month} 創作獎勵'**
   String official_studio_text_1841(String month);
 
   /// No description provided for @official_studio_text_1851.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'本月进度：{count} / 3 位'**
+  /// **'本月進度：{count} / 3 位'**
   String official_studio_text_1851(int count);
 
   /// No description provided for @official_studio_text_1861.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'尚差 {count} 位公开角色'**
+  /// **'尚差 {count} 位公開角色'**
   String official_studio_text_1861(int count);
 
   /// No description provided for @official_studio_text_1871.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'花花余额不足，尚缺 {count} 朵'**
+  /// **'花花餘額不足，尚缺 {count} 朵'**
   String official_studio_text_1871(int count);
 
   /// No description provided for @official_studio_text_1881.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'读取信件额度失败，请稍后重試'**
+  /// **'讀取信件額度失敗，請稍後重試'**
   String get official_studio_text_1881;
 
   /// No description provided for @official_studio_text_1891.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'寄送未确认成功，请检查紀录后重試'**
+  /// **'寄送未確認成功，請檢查紀錄后重試'**
   String get official_studio_text_1891;
 
   /// No description provided for @official_studio_text_1901.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'連线失败，请确认紀录后再重試'**
+  /// **'連線失敗，請確認紀錄后再重試'**
   String get official_studio_text_1901;
 
   /// No description provided for @official_studio_text_1911.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'赠送未确认成功，请先查询紀录再重試。'**
+  /// **'贈送未確認成功，請先查詢紀錄再重試。'**
   String get official_studio_text_1911;
 
   /// No description provided for @official_studio_text_1921.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'目前余额：{balance} 朵\n本次需要：{total} 朵\n尚缺少：{missing} 朵\n\n可以前往商店補充花花。'**
+  /// **'目前餘額：{balance} 朵\n本次需要：{total} 朵\n尚缺少：{missing} 朵\n\n可以前往商店補充花花。'**
   String official_studio_text_1921(int balance, int total, int missing);
 
   /// No description provided for @official_studio_text_1931.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'即将赠送给 {followers} 位粉丝，每人 {amount} 朵，共扣除 {total} 朵花花。\n赠送完成后无法自行撤回。'**
+  /// **'即將贈送給 {followers} 位粉絲，每人 {amount} 朵，共扣除 {total} 朵花花。\n贈送完成後無法自行撤回。'**
   String official_studio_text_1931(int followers, int amount, int total);
 
   /// No description provided for @official_studio_text_1941.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'{mode} · {status} · 已投递 {count} 人'**
+  /// **'{mode} · {status} · 已投遞 {count} 人'**
   String official_studio_text_1941(String mode, String status, int count);
 
   /// No description provided for @official_studio_text_1951.
@@ -21418,6 +21418,138 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'開放世界 · 功能逐步開放'**
   String get world_menu_subtitle1;
+
+  /// No description provided for @worldAboutUsTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'關於我們'**
+  String get worldAboutUsTitle;
+
+  /// No description provided for @worldAboutUsAddMemory.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'新增記憶'**
+  String get worldAboutUsAddMemory;
+
+  /// No description provided for @worldAboutUsEditMemory.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'編輯記憶'**
+  String get worldAboutUsEditMemory;
+
+  /// No description provided for @worldAboutUsAddSharedMemory.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'新增共同記憶'**
+  String get worldAboutUsAddSharedMemory;
+
+  /// No description provided for @worldAboutUsEditSharedMemory.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'編輯共同記憶'**
+  String get worldAboutUsEditSharedMemory;
+
+  /// No description provided for @worldAboutUsMemoryHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'記錄這段世界劇情中值得記住的人物關係或共同事件'**
+  String get worldAboutUsMemoryHint;
+
+  /// No description provided for @worldAboutUsCancel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'取消'**
+  String get worldAboutUsCancel;
+
+  /// No description provided for @worldAboutUsSave.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'儲存'**
+  String get worldAboutUsSave;
+
+  /// No description provided for @worldAboutUsDelete.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除'**
+  String get worldAboutUsDelete;
+
+  /// No description provided for @worldAboutUsSaved.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'共同記憶已儲存'**
+  String get worldAboutUsSaved;
+
+  /// No description provided for @worldAboutUsSaveFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'儲存失敗：{error}'**
+  String worldAboutUsSaveFailed(String error);
+
+  /// No description provided for @worldAboutUsSavePermissionHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'（請確認 Firestore 存取規則）'**
+  String get worldAboutUsSavePermissionHint;
+
+  /// No description provided for @worldAboutUsDeleteConfirmTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除共同記憶？'**
+  String get worldAboutUsDeleteConfirmTitle;
+
+  /// No description provided for @worldAboutUsDeleteConfirmBody.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除後這筆記憶不會再供 AI 讀取。'**
+  String get worldAboutUsDeleteConfirmBody;
+
+  /// No description provided for @worldAboutUsDeleted.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已刪除共同記憶'**
+  String get worldAboutUsDeleted;
+
+  /// No description provided for @worldAboutUsDeleteFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除失敗：{error}'**
+  String worldAboutUsDeleteFailed(String error);
+
+  /// No description provided for @worldAboutUsSignInRequired.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先登入，再查看共同記憶。'**
+  String get worldAboutUsSignInRequired;
+
+  /// No description provided for @worldAboutUsDescription.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這裡記錄此世界劇情房間的共同回憶'**
+  String get worldAboutUsDescription;
+
+  /// No description provided for @worldAboutUsLoadFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'記憶讀取失敗，請檢查 Firestore 權限：{error}'**
+  String worldAboutUsLoadFailed(String error);
+
+  /// No description provided for @worldAboutUsEmpty.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前還沒有共同記憶。'**
+  String get worldAboutUsEmpty;
+
+  /// No description provided for @worldAboutUsEditTooltip.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'編輯記憶'**
+  String get worldAboutUsEditTooltip;
+
+  /// No description provided for @worldAboutUsDeleteTooltip.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除記憶'**
+  String get worldAboutUsDeleteTooltip;
 
   /// No description provided for @world_menu_chat_section1.
   ///

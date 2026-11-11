@@ -10974,22 +10974,22 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String official_studio_text_1771(String name) {
-    return '确定将「$name」移出追蹤者名单吗？对方将不再追蹤你，但未来仍可再次追蹤。';
+    return '確定將「$name」移出追蹤者名單嗎？對方將不再追蹤你，但未來仍可再次追蹤。';
   }
 
   @override
   String official_studio_text_1781(int count) {
-    return '单人私信：$count / 30 封';
+    return '單人私信：$count / 30 封';
   }
 
   @override
   String official_studio_text_1791(int count) {
-    return '全体粉丝群发：$count / 5 次';
+    return '全體粉絲群發：$count / 5 次';
   }
 
   @override
   String official_studio_text_1801(int count) {
-    return '赠送成功！$count 朵花花已寄到粉丝信箱，等待领取。';
+    return '贈送成功！$count 朵花花已寄到粉絲信箱，等待領取。';
   }
 
   @override
@@ -11009,49 +11009,49 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String official_studio_text_1841(String month) {
-    return '$month 创作奖励';
+    return '$month 創作獎勵';
   }
 
   @override
   String official_studio_text_1851(int count) {
-    return '本月进度：$count / 3 位';
+    return '本月進度：$count / 3 位';
   }
 
   @override
   String official_studio_text_1861(int count) {
-    return '尚差 $count 位公开角色';
+    return '尚差 $count 位公開角色';
   }
 
   @override
   String official_studio_text_1871(int count) {
-    return '花花余额不足，尚缺 $count 朵';
+    return '花花餘額不足，尚缺 $count 朵';
   }
 
   @override
-  String get official_studio_text_1881 => '读取信件额度失败，请稍后重試';
+  String get official_studio_text_1881 => '讀取信件額度失敗，請稍後重試';
 
   @override
-  String get official_studio_text_1891 => '寄送未确认成功，请检查紀录后重試';
+  String get official_studio_text_1891 => '寄送未確認成功，請檢查紀錄后重試';
 
   @override
-  String get official_studio_text_1901 => '連线失败，请确认紀录后再重試';
+  String get official_studio_text_1901 => '連線失敗，請確認紀錄后再重試';
 
   @override
-  String get official_studio_text_1911 => '赠送未确认成功，请先查询紀录再重試。';
+  String get official_studio_text_1911 => '贈送未確認成功，請先查詢紀錄再重試。';
 
   @override
   String official_studio_text_1921(int balance, int total, int missing) {
-    return '目前余额：$balance 朵\n本次需要：$total 朵\n尚缺少：$missing 朵\n\n可以前往商店補充花花。';
+    return '目前餘額：$balance 朵\n本次需要：$total 朵\n尚缺少：$missing 朵\n\n可以前往商店補充花花。';
   }
 
   @override
   String official_studio_text_1931(int followers, int amount, int total) {
-    return '即将赠送给 $followers 位粉丝，每人 $amount 朵，共扣除 $total 朵花花。\n赠送完成后无法自行撤回。';
+    return '即將贈送給 $followers 位粉絲，每人 $amount 朵，共扣除 $total 朵花花。\n贈送完成後無法自行撤回。';
   }
 
   @override
   String official_studio_text_1941(String mode, String status, int count) {
-    return '$mode · $status · 已投递 $count 人';
+    return '$mode · $status · 已投遞 $count 人';
   }
 
   @override
@@ -11678,6 +11678,78 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get world_menu_subtitle1 => '開放世界 · 功能逐步開放';
+
+  @override
+  String get worldAboutUsTitle => '關於我們';
+
+  @override
+  String get worldAboutUsAddMemory => '新增記憶';
+
+  @override
+  String get worldAboutUsEditMemory => '編輯記憶';
+
+  @override
+  String get worldAboutUsAddSharedMemory => '新增共同記憶';
+
+  @override
+  String get worldAboutUsEditSharedMemory => '編輯共同記憶';
+
+  @override
+  String get worldAboutUsMemoryHint => '記錄這段世界劇情中值得記住的人物關係或共同事件';
+
+  @override
+  String get worldAboutUsCancel => '取消';
+
+  @override
+  String get worldAboutUsSave => '儲存';
+
+  @override
+  String get worldAboutUsDelete => '刪除';
+
+  @override
+  String get worldAboutUsSaved => '共同記憶已儲存';
+
+  @override
+  String worldAboutUsSaveFailed(String error) {
+    return '儲存失敗：$error';
+  }
+
+  @override
+  String get worldAboutUsSavePermissionHint => '（請確認 Firestore 存取規則）';
+
+  @override
+  String get worldAboutUsDeleteConfirmTitle => '刪除共同記憶？';
+
+  @override
+  String get worldAboutUsDeleteConfirmBody => '刪除後這筆記憶不會再供 AI 讀取。';
+
+  @override
+  String get worldAboutUsDeleted => '已刪除共同記憶';
+
+  @override
+  String worldAboutUsDeleteFailed(String error) {
+    return '刪除失敗：$error';
+  }
+
+  @override
+  String get worldAboutUsSignInRequired => '請先登入，再查看共同記憶。';
+
+  @override
+  String get worldAboutUsDescription => '這裡記錄此世界劇情房間的共同回憶';
+
+  @override
+  String worldAboutUsLoadFailed(String error) {
+    return '記憶讀取失敗，請檢查 Firestore 權限：$error';
+  }
+
+  @override
+  String get worldAboutUsEmpty => '目前還沒有共同記憶。';
+
+  @override
+  String get worldAboutUsEditTooltip => '編輯記憶';
+
+  @override
+  String get worldAboutUsDeleteTooltip => '刪除記憶';
 
   @override
   String get world_menu_chat_section1 => '聊天';
@@ -23853,6 +23925,78 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get world_menu_subtitle1 => '开放世界 · 功能逐步开放';
 
   @override
+  String get worldAboutUsTitle => '关于我们';
+
+  @override
+  String get worldAboutUsAddMemory => '添加记忆';
+
+  @override
+  String get worldAboutUsEditMemory => '编辑记忆';
+
+  @override
+  String get worldAboutUsAddSharedMemory => '添加共同记忆';
+
+  @override
+  String get worldAboutUsEditSharedMemory => '编辑共同记忆';
+
+  @override
+  String get worldAboutUsMemoryHint => '记录这段世界剧情中值得记住的人物关系或共同事件';
+
+  @override
+  String get worldAboutUsCancel => '取消';
+
+  @override
+  String get worldAboutUsSave => '保存';
+
+  @override
+  String get worldAboutUsDelete => '删除';
+
+  @override
+  String get worldAboutUsSaved => '共同记忆已保存';
+
+  @override
+  String worldAboutUsSaveFailed(String error) {
+    return '保存失败：$error';
+  }
+
+  @override
+  String get worldAboutUsSavePermissionHint => '（请检查 Firestore 访问规则）';
+
+  @override
+  String get worldAboutUsDeleteConfirmTitle => '删除共同记忆？';
+
+  @override
+  String get worldAboutUsDeleteConfirmBody => '删除后，AI 将不再读取这条记忆。';
+
+  @override
+  String get worldAboutUsDeleted => '已删除共同记忆';
+
+  @override
+  String worldAboutUsDeleteFailed(String error) {
+    return '删除失败：$error';
+  }
+
+  @override
+  String get worldAboutUsSignInRequired => '请先登录，再查看共同记忆。';
+
+  @override
+  String get worldAboutUsDescription => '这里记录此世界剧情房间的共同回忆';
+
+  @override
+  String worldAboutUsLoadFailed(String error) {
+    return '读取记忆失败，请检查 Firestore 权限：$error';
+  }
+
+  @override
+  String get worldAboutUsEmpty => '目前还没有共同记忆。';
+
+  @override
+  String get worldAboutUsEditTooltip => '编辑记忆';
+
+  @override
+  String get worldAboutUsDeleteTooltip => '删除记忆';
+
+  @override
   String get world_menu_chat_section1 => '聊天';
 
   @override
@@ -35774,22 +35918,22 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String official_studio_text_1771(String name) {
-    return '确定将「$name」移出追蹤者名单吗？对方将不再追蹤你，但未来仍可再次追蹤。';
+    return '確定將「$name」移出追蹤者名單嗎？對方將不再追蹤你，但未來仍可再次追蹤。';
   }
 
   @override
   String official_studio_text_1781(int count) {
-    return '单人私信：$count / 30 封';
+    return '單人私信：$count / 30 封';
   }
 
   @override
   String official_studio_text_1791(int count) {
-    return '全体粉丝群发：$count / 5 次';
+    return '全體粉絲群發：$count / 5 次';
   }
 
   @override
   String official_studio_text_1801(int count) {
-    return '赠送成功！$count 朵花花已寄到粉丝信箱，等待领取。';
+    return '贈送成功！$count 朵花花已寄到粉絲信箱，等待領取。';
   }
 
   @override
@@ -35809,49 +35953,49 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String official_studio_text_1841(String month) {
-    return '$month 创作奖励';
+    return '$month 創作獎勵';
   }
 
   @override
   String official_studio_text_1851(int count) {
-    return '本月进度：$count / 3 位';
+    return '本月進度：$count / 3 位';
   }
 
   @override
   String official_studio_text_1861(int count) {
-    return '尚差 $count 位公开角色';
+    return '尚差 $count 位公開角色';
   }
 
   @override
   String official_studio_text_1871(int count) {
-    return '花花余额不足，尚缺 $count 朵';
+    return '花花餘額不足，尚缺 $count 朵';
   }
 
   @override
-  String get official_studio_text_1881 => '读取信件额度失败，请稍后重試';
+  String get official_studio_text_1881 => '讀取信件額度失敗，請稍後重試';
 
   @override
-  String get official_studio_text_1891 => '寄送未确认成功，请检查紀录后重試';
+  String get official_studio_text_1891 => '寄送未確認成功，請檢查紀錄后重試';
 
   @override
-  String get official_studio_text_1901 => '連线失败，请确认紀录后再重試';
+  String get official_studio_text_1901 => '連線失敗，請確認紀錄后再重試';
 
   @override
-  String get official_studio_text_1911 => '赠送未确认成功，请先查询紀录再重試。';
+  String get official_studio_text_1911 => '贈送未確認成功，請先查詢紀錄再重試。';
 
   @override
   String official_studio_text_1921(int balance, int total, int missing) {
-    return '目前余额：$balance 朵\n本次需要：$total 朵\n尚缺少：$missing 朵\n\n可以前往商店補充花花。';
+    return '目前餘額：$balance 朵\n本次需要：$total 朵\n尚缺少：$missing 朵\n\n可以前往商店補充花花。';
   }
 
   @override
   String official_studio_text_1931(int followers, int amount, int total) {
-    return '即将赠送给 $followers 位粉丝，每人 $amount 朵，共扣除 $total 朵花花。\n赠送完成后无法自行撤回。';
+    return '即將贈送給 $followers 位粉絲，每人 $amount 朵，共扣除 $total 朵花花。\n贈送完成後無法自行撤回。';
   }
 
   @override
   String official_studio_text_1941(String mode, String status, int count) {
-    return '$mode · $status · 已投递 $count 人';
+    return '$mode · $status · 已投遞 $count 人';
   }
 
   @override
@@ -36478,6 +36622,78 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get world_menu_subtitle1 => '開放世界 · 功能逐步開放';
+
+  @override
+  String get worldAboutUsTitle => '關於我們';
+
+  @override
+  String get worldAboutUsAddMemory => '新增記憶';
+
+  @override
+  String get worldAboutUsEditMemory => '編輯記憶';
+
+  @override
+  String get worldAboutUsAddSharedMemory => '新增共同記憶';
+
+  @override
+  String get worldAboutUsEditSharedMemory => '編輯共同記憶';
+
+  @override
+  String get worldAboutUsMemoryHint => '記錄這段世界劇情中值得記住的人物關係或共同事件';
+
+  @override
+  String get worldAboutUsCancel => '取消';
+
+  @override
+  String get worldAboutUsSave => '儲存';
+
+  @override
+  String get worldAboutUsDelete => '刪除';
+
+  @override
+  String get worldAboutUsSaved => '共同記憶已儲存';
+
+  @override
+  String worldAboutUsSaveFailed(String error) {
+    return '儲存失敗：$error';
+  }
+
+  @override
+  String get worldAboutUsSavePermissionHint => '（請確認 Firestore 存取規則）';
+
+  @override
+  String get worldAboutUsDeleteConfirmTitle => '刪除共同記憶？';
+
+  @override
+  String get worldAboutUsDeleteConfirmBody => '刪除後這筆記憶不會再供 AI 讀取。';
+
+  @override
+  String get worldAboutUsDeleted => '已刪除共同記憶';
+
+  @override
+  String worldAboutUsDeleteFailed(String error) {
+    return '刪除失敗：$error';
+  }
+
+  @override
+  String get worldAboutUsSignInRequired => '請先登入，再查看共同記憶。';
+
+  @override
+  String get worldAboutUsDescription => '這裡記錄此世界劇情房間的共同回憶';
+
+  @override
+  String worldAboutUsLoadFailed(String error) {
+    return '記憶讀取失敗，請檢查 Firestore 權限：$error';
+  }
+
+  @override
+  String get worldAboutUsEmpty => '目前還沒有共同記憶。';
+
+  @override
+  String get worldAboutUsEditTooltip => '編輯記憶';
+
+  @override
+  String get worldAboutUsDeleteTooltip => '刪除記憶';
 
   @override
   String get world_menu_chat_section1 => '聊天';

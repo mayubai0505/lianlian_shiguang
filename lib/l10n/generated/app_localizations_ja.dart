@@ -11941,6 +11941,78 @@ class AppLocalizationsJa extends AppLocalizations {
   String get world_menu_subtitle1 => 'オープンワールド・機能は順次公開';
 
   @override
+  String get worldAboutUsTitle => '私たちについて';
+
+  @override
+  String get worldAboutUsAddMemory => '思い出を追加';
+
+  @override
+  String get worldAboutUsEditMemory => '思い出を編集';
+
+  @override
+  String get worldAboutUsAddSharedMemory => '共有の思い出を追加';
+
+  @override
+  String get worldAboutUsEditSharedMemory => '共有の思い出を編集';
+
+  @override
+  String get worldAboutUsMemoryHint => 'この世界の物語で覚えておきたい人物関係や共有した出来事を記録します';
+
+  @override
+  String get worldAboutUsCancel => 'キャンセル';
+
+  @override
+  String get worldAboutUsSave => '保存';
+
+  @override
+  String get worldAboutUsDelete => '削除';
+
+  @override
+  String get worldAboutUsSaved => '共有の思い出を保存しました';
+
+  @override
+  String worldAboutUsSaveFailed(String error) {
+    return '保存できませんでした：$error';
+  }
+
+  @override
+  String get worldAboutUsSavePermissionHint => '（Firestore のアクセスルールを確認してください）';
+
+  @override
+  String get worldAboutUsDeleteConfirmTitle => '共有の思い出を削除しますか？';
+
+  @override
+  String get worldAboutUsDeleteConfirmBody => '削除すると、AI はこの思い出を参照できなくなります。';
+
+  @override
+  String get worldAboutUsDeleted => '共有の思い出を削除しました';
+
+  @override
+  String worldAboutUsDeleteFailed(String error) {
+    return '削除できませんでした：$error';
+  }
+
+  @override
+  String get worldAboutUsSignInRequired => '共有の思い出を見るにはログインしてください。';
+
+  @override
+  String get worldAboutUsDescription => 'この世界のストーリールームで共有した思い出を記録します。';
+
+  @override
+  String worldAboutUsLoadFailed(String error) {
+    return '思い出を読み込めませんでした。Firestore の権限を確認してください：$error';
+  }
+
+  @override
+  String get worldAboutUsEmpty => '共有の思い出はまだありません。';
+
+  @override
+  String get worldAboutUsEditTooltip => '思い出を編集';
+
+  @override
+  String get worldAboutUsDeleteTooltip => '思い出を削除';
+
+  @override
   String get world_menu_chat_section1 => 'チャット';
 
   @override

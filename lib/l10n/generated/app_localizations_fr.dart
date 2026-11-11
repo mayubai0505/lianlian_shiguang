@@ -12734,6 +12734,84 @@ class AppLocalizationsFr extends AppLocalizations {
       'Monde ouvert · Fonctionnalités ajoutées progressivement';
 
   @override
+  String get worldAboutUsTitle => 'À propos de nous';
+
+  @override
+  String get worldAboutUsAddMemory => 'Ajouter un souvenir';
+
+  @override
+  String get worldAboutUsEditMemory => 'Modifier le souvenir';
+
+  @override
+  String get worldAboutUsAddSharedMemory => 'Ajouter un souvenir partagé';
+
+  @override
+  String get worldAboutUsEditSharedMemory => 'Modifier un souvenir partagé';
+
+  @override
+  String get worldAboutUsMemoryHint =>
+      'Notez les relations et les événements communs à retenir dans l’histoire de ce monde';
+
+  @override
+  String get worldAboutUsCancel => 'Annuler';
+
+  @override
+  String get worldAboutUsSave => 'Enregistrer';
+
+  @override
+  String get worldAboutUsDelete => 'Supprimer';
+
+  @override
+  String get worldAboutUsSaved => 'Souvenir partagé enregistré';
+
+  @override
+  String worldAboutUsSaveFailed(String error) {
+    return 'Échec de l’enregistrement : $error';
+  }
+
+  @override
+  String get worldAboutUsSavePermissionHint =>
+      ' (Vérifiez les règles d’accès Firestore.)';
+
+  @override
+  String get worldAboutUsDeleteConfirmTitle =>
+      'Supprimer ce souvenir partagé ?';
+
+  @override
+  String get worldAboutUsDeleteConfirmBody =>
+      'Une fois supprimé, ce souvenir ne sera plus accessible à l’IA.';
+
+  @override
+  String get worldAboutUsDeleted => 'Souvenir partagé supprimé';
+
+  @override
+  String worldAboutUsDeleteFailed(String error) {
+    return 'Échec de la suppression : $error';
+  }
+
+  @override
+  String get worldAboutUsSignInRequired =>
+      'Connectez-vous pour consulter les souvenirs partagés.';
+
+  @override
+  String get worldAboutUsDescription =>
+      'Les souvenirs partagés de cette histoire sont conservés ici.';
+
+  @override
+  String worldAboutUsLoadFailed(String error) {
+    return 'Impossible de charger les souvenirs. Vérifiez les autorisations Firestore : $error';
+  }
+
+  @override
+  String get worldAboutUsEmpty => 'Aucun souvenir partagé pour le moment.';
+
+  @override
+  String get worldAboutUsEditTooltip => 'Modifier le souvenir';
+
+  @override
+  String get worldAboutUsDeleteTooltip => 'Supprimer le souvenir';
+
+  @override
   String get world_menu_chat_section1 => 'Discussion';
 
   @override

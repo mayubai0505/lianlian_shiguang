@@ -6593,6 +6593,49 @@
   "characterEditWorldLore": "Ambientación del mundo (configuración interna)",
   "characterEditWorldLoreDescription": "Trasfondo, reglas, lugares y acontecimientos del mundo para la interpretación de la IA. No se muestra en la ficha del personaje.",
   "characterEditWorldLoreHint": "Ej.: trasfondo del mundo, facciones y organizaciones, reglas especiales, acontecimientos importantes…",
+  "worldAboutUsTitle": "Sobre nosotros",
+  "worldAboutUsAddMemory": "Añadir recuerdo",
+  "worldAboutUsEditMemory": "Editar recuerdo",
+  "worldAboutUsAddSharedMemory": "Añadir recuerdo compartido",
+  "worldAboutUsEditSharedMemory": "Editar recuerdo compartido",
+  "worldAboutUsMemoryHint": "Registra relaciones o sucesos compartidos que merezca la pena recordar en la historia de este mundo",
+  "worldAboutUsCancel": "Cancelar",
+  "worldAboutUsSave": "Guardar",
+  "worldAboutUsDelete": "Eliminar",
+  "worldAboutUsSaved": "Recuerdo compartido guardado",
+  "worldAboutUsSaveFailed": "No se pudo guardar: {error}",
+  "@worldAboutUsSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsSavePermissionHint": " (Comprueba las reglas de acceso de Firestore).",
+  "worldAboutUsDeleteConfirmTitle": "¿Eliminar el recuerdo compartido?",
+  "worldAboutUsDeleteConfirmBody": "Una vez eliminado, la IA ya no podrá consultar este recuerdo.",
+  "worldAboutUsDeleted": "Recuerdo compartido eliminado",
+  "worldAboutUsDeleteFailed": "No se pudo eliminar: {error}",
+  "@worldAboutUsDeleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsSignInRequired": "Inicia sesión para ver los recuerdos compartidos.",
+  "worldAboutUsDescription": "Aquí se guardan los recuerdos compartidos de esta sala de historia.",
+  "worldAboutUsLoadFailed": "No se pudieron cargar los recuerdos. Comprueba los permisos de Firestore: {error}",
+  "@worldAboutUsLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsEmpty": "Todavía no hay recuerdos compartidos.",
+  "worldAboutUsEditTooltip": "Editar recuerdo",
+  "worldAboutUsDeleteTooltip": "Eliminar recuerdo",
   "world_edit_tag_max1": "Select up to 5 tags",
   "world_edit_tag_custom1": "Tags (customizable; separate with commas)",
   "world_edit_secret_not_ready1": "Secret chapters have not loaded. Publishing is paused to protect your content. Check permissions and reopen this page.",

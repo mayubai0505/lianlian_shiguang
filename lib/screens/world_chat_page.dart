@@ -26,6 +26,7 @@ import 'world_scene_page_full.dart';
 import 'world_secret_chapters_page.dart';
 import 'world_chat_side_menu.dart';
 import 'world_about_me_page.dart';
+import 'world_about_us_page.dart';
 import 'world_chat_search_page.dart';
 import 'world_chat_transcript_book_page.dart';
 import 'world_chat_records_pages.dart';
@@ -66,6 +67,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
   bool _sending = false;
   final Set<String> _cancelledLocalRequests = <String>{};
   bool _stoppingGeneration = false;
+  bool _resettingWorldRoom = false;
   String _name = '開放世界';
   // 只允許正式世界名稱進入畫面；世界 ID 僅用於資料查詢。
   String _safeWorldName(Object? value) {
@@ -186,6 +188,9 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
   bool _paidRegenerateConfirmed = false;
   Map<String, int> _characterAffinity = {};
   Timer? _draftTimer;
+  // Serialize writes from old/new page instances to the same draft key.
+  static final Map<String, Future<void>> _draftWriteQueues = {};
+  int _draftEditRevision = 0;
   String? _sessionId;
   String? _pendingRequestId;
   String? _pendingRequestText;
@@ -343,23 +348,82 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     _focus.requestFocus();
   }
 
+  Future<void> _writeDraftInOrder(String value) {
+    final key = _draftKey;
+    final previous = _draftWriteQueues[key] ?? Future<void>.value();
+    final next = previous.catchError((Object error) {
+      debugPrint('世界聊天室草稿前次寫入失敗：$error');
+    }).then<void>((_) async {
+      final prefs = await SharedPreferences.getInstance();
+      if (value.isEmpty) {
+        await prefs.remove(key);
+      } else {
+        await prefs.setString(key, value);
+      }
+    });
+    _draftWriteQueues[key] = next;
+    // Cleanup only after this particular write; a newer write keeps its queue.
+    unawaited(next.then<void>((_) {
+      if (identical(_draftWriteQueues[key], next)) _draftWriteQueues.remove(key);
+    }, onError: (Object error) {
+      debugPrint('世界聊天室草稿儲存失敗：$error');
+      if (identical(_draftWriteQueues[key], next)) _draftWriteQueues.remove(key);
+    }));
+    return next;
+  }
+
   Future<void> _restoreDraft() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (!mounted || _input.text.isNotEmpty) return;
-    final draft = prefs.getString(_draftKey) ?? '';
-    if (draft.isNotEmpty) _input.text = draft;
+    final revision = _draftEditRevision;
+    final key = _draftKey;
+    try {
+      final pending = _draftWriteQueues[key];
+      if (pending != null) await pending;
+      final prefs = await SharedPreferences.getInstance();
+      final draft = prefs.getString(key) ?? '';
+      if (!mounted || revision != _draftEditRevision || _input.text.isNotEmpty) return;
+      if (draft.isNotEmpty) _input.text = draft;
+    } catch (e) {
+      debugPrint('世界聊天室草稿還原失敗：$e');
+    }
   }
 
   void _scheduleDraftSave(String value) {
+    _draftEditRevision++;
     _draftTimer?.cancel();
-    _draftTimer = Timer(const Duration(milliseconds: 350), () async {
-      final prefs = await SharedPreferences.getInstance();
-      if (value.isEmpty) {
-        await prefs.remove(_draftKey);
-      } else {
-        await prefs.setString(_draftKey, value);
-      }
+    _draftTimer = Timer(const Duration(milliseconds: 350), () {
+      unawaited(_writeDraftInOrder(value).catchError((Object e) {
+        debugPrint('世界聊天室草稿寫入失敗：$e');
+      }));
     });
+  }
+
+  void _clearDraftNow() {
+    _draftEditRevision++;
+    _draftTimer?.cancel();
+    unawaited(_writeDraftInOrder('').catchError((Object e) {
+      debugPrint('世界聊天室清除已送出草稿失敗：$e');
+    }));
+  }
+
+  bool _hasCommittedAiReply(String? requestId) {
+    if (requestId == null || requestId.isEmpty) return false;
+    return _messages.any((m) => m is Map &&
+        m['id'] == 'ai_$requestId' && m['sender'] == 'ai');
+  }
+
+  void _confirmPendingMessageFromServer(String requestId) {
+    if (_pendingRequestId != requestId || !_hasCommittedAiReply(requestId)) return;
+    final submittedText = _pendingRequestText;
+    if (submittedText != null && _input.text == submittedText) {
+      _input.clear();
+      _clearDraftNow();
+    }
+    _pendingRequestId = null;
+    _pendingRequestText = null;
+    _pendingVisible = false;
+    _pendingFailed = false;
+    _sending = false;
+    _error = '';
   }
 
   void _listenFlowerPoints() {
@@ -612,6 +676,59 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     if (_roomCache.length > 4) _roomCache.remove(_roomCache.keys.first);
   }
 
+  // Diagnostic only: compare each AI message body between Callable and Firestore.
+  // Enable with --dart-define=WORLD_TEXT_DIAGNOSTICS=true when reproducing missing glyphs.
+  // Never print chat text; only the message ID and a length/checksum.
+  static const bool _worldTextDiagnostics =
+      bool.fromEnvironment('WORLD_TEXT_DIAGNOSTICS', defaultValue: false);
+  final Map<String, Map<String, String>> _worldTextFingerprints = {};
+
+  String _worldMessageFingerprint(Map message) {
+    final buffer = StringBuffer();
+    if (message['sender'] == 'ai') {
+      for (final segment in (message['segments'] as List? ?? const [])) {
+        if (segment is Map) {
+          final text = (segment['text'] ?? '').toString();
+          buffer.write(text.length);
+          buffer.write(':');
+          buffer.write(text);
+          buffer.write('\u0000');
+        }
+      }
+    } else {
+      buffer.write((message['text'] ?? '').toString());
+    }
+    final raw = buffer.toString();
+    var hash = 0x811c9dc5;
+    for (final unit in raw.codeUnits) {
+      hash = ((hash ^ unit) * 0x01000193) & 0xffffffff;
+    }
+    return '${raw.length}:${hash.toRadixString(16).padLeft(8, '0')}';
+  }
+
+  void _traceWorldText(String source, List<dynamic> messages) {
+    if (!_worldTextDiagnostics) return;
+    for (final raw in messages) {
+      if (raw is! Map || raw['sender'] != 'ai') continue;
+      final id = (raw['id'] ?? '').toString();
+      if (id.isEmpty) continue;
+      final fingerprint = _worldMessageFingerprint(raw);
+      final seen = _worldTextFingerprints.putIfAbsent(id, () => {});
+      if (seen[source] == fingerprint) continue;
+      seen[source] = fingerprint;
+      debugPrint('[WORLD_TEXT] source=$source id=$id fingerprint=$fingerprint');
+      final firestore = seen['firestore'];
+      final callable = seen['callable'];
+      if (firestore != null && callable != null && firestore != callable) {
+        debugPrint('[WORLD_TEXT_MISMATCH] id=$id firestore=$firestore callable=$callable');
+      }
+    }
+    // Keep the diagnostic cache bounded in long chat sessions.
+    while (_worldTextFingerprints.length > 250) {
+      _worldTextFingerprints.remove(_worldTextFingerprints.keys.first);
+    }
+  }
+
   void _listenMessages(String sessionId) {
     if (widget.sessionId != null && widget.sessionId!.isNotEmpty && sessionId != widget.sessionId) {
       debugPrint('拒絕監聽其他世界觀房間: expected=${widget.sessionId}, requested=$sessionId');
@@ -641,8 +758,12 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       });
       final next = docs.where((d) => d.data()['sender'] != 'control')
           .map((d) => <String,dynamic>{'id':d.id, ...d.data()}).toList();
+      _traceWorldText('firestore', next);
       setState(() {
         _messages = next;
+        if (_pendingRequestId != null) {
+          _confirmPendingMessageFromServer(_pendingRequestId!);
+        }
         _hasStreamData = true;
         _error = '';
         // The server has committed this exact request. Do not show two user bubbles.
@@ -714,9 +835,8 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     // Persist the latest text even when leaving before the debounce timer fires.
     final lastDraft = _input.text;
     final lastDraftKey = _draftKey;
-    unawaited(SharedPreferences.getInstance().then((prefs) async {
-      if (lastDraft.trim().isEmpty) { await prefs.remove(lastDraftKey); }
-      else { await prefs.setString(lastDraftKey, lastDraft); }
+    unawaited(_writeDraftInOrder(lastDraft).catchError((Object error) {
+      debugPrint('世界聊天室離開時儲存草稿失敗 ($lastDraftKey)：$error');
     }));
     _messageSubscription?.cancel();
     _flowerSubscription?.cancel();
@@ -844,6 +964,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       });
       final data=Map<String,dynamic>.from(result.data as Map);
       final isMessageDelta = data['responseMode'] == 'delta_v1';
+      _traceWorldText('callable', List<dynamic>.from(data['messages'] as List? ?? []));
       if (!mounted || (requestIdAtStart != null && _cancelledLocalRequests.contains(requestIdAtStart))) return;
       // Explicitly opened rooms MUST never silently fall back to the legacy world room.
       // Reject the response before preloading images, applying messages or switching listeners.
@@ -931,6 +1052,11 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
           });
         }
         // The input was cleared immediately on send. Never clear text typed afterwards.
+        if (action == 'send' && _pendingRequestText != null &&
+            _input.text == _pendingRequestText) {
+          _input.clear();
+          _clearDraftNow();
+        }
         _pendingRequestId = null;
         _pendingRequestText = null;
         _pendingFailed = false;
@@ -938,6 +1064,11 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       _scrollToLatest();
     } on FirebaseFunctionsException catch(e) {
       if(!mounted || (requestIdAtStart != null && _cancelledLocalRequests.contains(requestIdAtStart)))return;
+      // Firestore may have committed the reply after the HTTP connection dropped.
+      if (_hasCommittedAiReply(requestIdAtStart)) {
+        setState(() => _confirmPendingMessageFromServer(requestIdAtStart!));
+        return;
+      }
       setState((){
         _loading=false;_error=e.message ?? AppLocalizations.of(context)!.world_chat_connection_failed1;
         if (action == 'send' || action == 'interact') {
@@ -954,6 +1085,11 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       if (!silent) _showCenterNotice(_error, isError: true);
     } catch(e) {
       if(!mounted || (requestIdAtStart != null && _cancelledLocalRequests.contains(requestIdAtStart)))return;
+      // Firestore may have committed the reply after the HTTP connection dropped.
+      if (_hasCommittedAiReply(requestIdAtStart)) {
+        setState(() => _confirmPendingMessageFromServer(requestIdAtStart!));
+        return;
+      }
       setState((){
         _loading=false;_error=AppLocalizations.of(context)!.world_chat_network_failed1;
         if (action == 'send' || action == 'interact') {
@@ -1041,7 +1177,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
     // Clear the composer immediately, while keeping the message visible on the right.
     // The backend alone stores the authoritative message.
     _input.clear();
-    _scheduleDraftSave('');
+    _clearDraftNow();
     setState(() { _pendingVisible = true; _pendingFailed = false; });
     _scrollToLatest(immediately: true);
     // 世界觀模式由後端決定價格、模型及成功後扣花花。
@@ -1272,6 +1408,15 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       case '與我相關':
         _openWorldAboutMe();
         break;
+      case '關於我們':
+        _openWorldAboutUs();
+        break;
+      case '重製記憶':
+      case '重置記憶':
+      case '重置世界進度':
+      case '重新開始世界劇情':
+        unawaited(_resetWorldMemory());
+        break;
       case '人物關係':
         _openWorldRelationships();
         break;
@@ -1287,6 +1432,79 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       default:
         _notReady(action);
     }
+  }
+
+  // 同一般角色聊天室：取消／僅對話／完全重置。重置由後端授權並清除本房間資料。
+  Future<void> _resetWorldMemory() async {
+    if (_resettingWorldRoom || _sending || _loading || _stoppingGeneration) {
+      _showCenterNotice('請先等目前的回覆完成，再重製記憶。');
+      return;
+    }
+    final l10n = AppLocalizations.of(context)!;
+    final resetType = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.chat_reset_title),
+        content: Text(l10n.chat_reset_desc),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.cancelButton)),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, 'chat_only'),
+            child: Text(l10n.chat_reset_only_chat,
+              style: const TextStyle(fontWeight: FontWeight.bold))),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+            onPressed: () => Navigator.pop(dialogContext, 'full_reset'),
+            child: Text(l10n.chat_reset_full,
+              style: const TextStyle(color: Colors.white))),
+        ],
+      ),
+    );
+    if (resetType == null || !mounted || _resettingWorldRoom || _sending || _loading) return;
+    setState(() => _resettingWorldRoom = true);
+    try {
+      final result = await _api.call({
+        'action': 'resetMemory', 'worldId': widget.worldId,
+        if (widget.sessionId != null) 'sessionId': widget.sessionId,
+        'resetType': resetType,
+      });
+      if (!mounted) return;
+      final data = result.data;
+      if (data is! Map || data['ok'] != true) throw StateError('重製記憶沒有成功完成');
+      // 既有房間不變，丟棄前端舊訊息快取，讓即時監聽與 callable 重新載入開場。
+      _roomCache.remove(_roomCacheKey);
+      setState(() {
+        _hasStreamData = false;
+        _messages = [];
+        _characterAffinity = {};
+        _regenerateFreeRemaining = 3;
+        _selectedMessageIds.clear();
+        _worldSelectionMode = false;
+        _worldDeleteMode = false;
+      });
+      await _run('load', silent: true);
+      if (!mounted) return;
+      _showCenterNotice(resetType == 'full_reset'
+          ? l10n.chat_reset_full_msg : l10n.chat_reset_chat_msg);
+    } on FirebaseFunctionsException catch (e) {
+      if (mounted) _showCenterNotice('重製記憶失敗：${e.message ?? '請稍後再試'}', isError: true);
+    } catch (e) {
+      debugPrint('開放世界重製記憶失敗：$e');
+      if (mounted) _showCenterNotice('重製記憶失敗，請稍後再試。', isError: true);
+    } finally {
+      if (mounted) setState(() => _resettingWorldRoom = false);
+    }
+  }
+
+  Future<void> _openWorldAboutUs() async {
+    final sid = _sessionId;
+    if (FirebaseAuth.instance.currentUser == null || sid == null || sid.isEmpty) {
+      _showCenterNotice(AppLocalizations.of(context)!.world_chat_loading1);
+      return;
+    }
+    await Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => WorldAboutUsPage(worldId: widget.worldId, sessionId: sid),
+    ));
   }
 
   Future<void> _openWorldAboutMe() async {
@@ -2371,15 +2589,25 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
                     final total = _messages.length + (_pendingVisible ? 1 : 0) + (_sending ? 1 : 0);
                     final messageIndex = total - 1 - index;
                     if (messageIndex == _messages.length && _pendingVisible) {
-                      return _pendingUserBubble(theme);
+                      return KeyedSubtree(
+                        key: const ValueKey('world_pending_user'),
+                        child: _pendingUserBubble(theme),
+                      );
                     }
                     if (messageIndex == _messages.length + (_pendingVisible ? 1 : 0) && _sending) {
-                      return _generatingBubble(theme);
+                      return KeyedSubtree(
+                        key: const ValueKey('world_generating'),
+                        child: _generatingBubble(theme),
+                      );
                     }
                     final raw = _messages[messageIndex];
                     if (raw is! Map) return const SizedBox.shrink();
                     final data = Map<String,dynamic>.from(raw);
-                    if (data['sender'] == 'user') return _wrapWorldMessage(data, Align(
+                    final stableMessageKey = ValueKey<String>(
+                        'world_${_sessionId ?? widget.worldId}_${(data['id'] ?? messageIndex).toString()}');
+                    if (data['sender'] == 'user') return KeyedSubtree(
+                      key: stableMessageKey,
+                      child: _wrapWorldMessage(data, Align(
                       alignment: Alignment.centerRight,
                       child: Container(
                         margin: const EdgeInsets.symmetric(vertical: 8),
@@ -2392,13 +2620,17 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
                             style: TextStyle(height: 1.55,
                                 color: theme.brightness == Brightness.dark ? Colors.black : theme.colorScheme.onPrimaryContainer)),
                       ),
-                    ));
-                    return _wrapWorldMessage(data, Column(children: [
+                    )),
+                    );
+                    return KeyedSubtree(
+                      key: stableMessageKey,
+                      child: _wrapWorldMessage(data, Column(children: [
                       for (var segmentIndex = 0; segmentIndex < (data['segments'] as List? ?? []).length; segmentIndex++)
                         if ((data['segments'] as List)[segmentIndex] is Map)
                           _segment(Map<String,dynamic>.from((data['segments'] as List)[segmentIndex] as Map),theme,data,segmentIndex),
                       if (data['sender'] == 'ai') _worldNpcStatusCards(data, theme),
-                    ]));
+                    ])),
+                    );
                   },
                 )),
                 if (_worldSelectionMode)

@@ -11,7 +11,7 @@ async function extractPlayerMemory({
 }) {
   const cleanMessage = String(userMessage || "").trim();
 
-  if (!cleanMessage && !String(assistantMessage || "").trim()) {
+  if (!cleanMessage) {
     return {
       shouldRemember: false,
       memory: "",
@@ -22,10 +22,9 @@ async function extractPlayerMemory({
 
   // 系統續寫指令、圖片失敗提示等內容不做記憶分析
   if (
-    !String(assistantMessage || "").trim() && (
     cleanMessage.startsWith("【續寫指令】") ||
     cleanMessage.startsWith("【系統事件】") ||
-    cleanMessage.startsWith("[玩家傳來"))
+    cleanMessage.startsWith("[玩家傳來")
   ) {
     return {
       shouldRemember: false,
@@ -37,7 +36,7 @@ async function extractPlayerMemory({
 
   const contextText = (Array.isArray(recentHistory) ? recentHistory : []).slice(-6)
     .map(msg => `${msg.role === 'assistant' ? '角色' : '玩家'}：${String(msg.content || msg.text || '').slice(0, 1800)}`).join('\n');
-  const evidenceInput = `需要記憶的人名：${playerName || "對方"}\n【前文，僅供指涉理解】\n${contextText}\n【玩家本輪訊息】\n${cleanMessage}\n【角色本輪回覆】\n${String(assistantMessage || '').slice(0, 6000)}`;
+  const evidenceInput = `需要記憶的人名：${playerName || "對方"}\n【前文，僅供指涉理解，不可直接當成新記憶證據】\n${contextText}\n【玩家本輪訊息，唯一允許的記憶來源】\n${cleanMessage}`;
   const memorySystemPrompt = `
 你是「玩家長期記憶提取器」。
 【玩家可見記憶的語言】
@@ -45,6 +44,11 @@ async function extractPlayerMemory({
 - memory 是直接顯示給玩家的完整句子，必須使用上述語言；未指定時沿用玩家本輪原文的主要語言。繁體中文不得改成英文或簡體中文；其他語系也不得強制翻成中文。
 - 玩家、角色與寵物的原始名稱原樣保留，例如棉花糖不可翻譯成 Cotton Candy。
 - factKey 仍用英文 taxonomy；factKey 的英文規則不適用於 memory。factValue 可用簡潔原語言值，不得據此把 memory 改寫為英文。
+【核心限制：只記錄玩家本人確認的資訊】
+- 所有記憶項目只能引用【玩家本輪訊息】的原文；不從角色回覆、角色的內心、角色的行程或角色單方面的台詞建立記憶。
+- 「與我相關」每一條 memory 都必須以需要記憶的人名作為敘述主體；例如「默語白早上 7:50 上駕訓班」，不可變成「角色提醒默語白上課」，也不可寫「玩家早上 7:50...」。
+- 明確的未來安排、上課/駕訓班時間、約定的時間和地點屬於應保存的事件，即使不是永久偏好；如「我早上 7:50 上駕訓班」，保存為 important_event.driving_class，scope=session，含準確時刻。既有儲存器會將 important_event.* 固定為 session，跨聊天室固定課程另需設計獨立鍵與分類；不得憑空補日期、星期、地點。
+- 只保存玩家明確說過、確認過或更正過的內容；角色單方面提議不等於玩家接受。
 【自然敘述、特質與職業必須分清】
 - 玩家在括號動作或普通聊天中明確透露的自身資訊也可擷取，不需要說「請記住」。例如「回房找東西，狗狗坐在門口」可保存目前世界線的養狗事實；不得推測品種、名字或數量。
 - 玩家做菜時笑稱「我可是大廚！要是還不能讓你滿意，我就要自卑了」：可保存「對自己的廚藝有信心」這項特質，使用 trait.cooking_confidence；不得保存成「職業是廚師」，也不得推斷專業資格。
@@ -70,7 +74,7 @@ ${["immersive", "resonance"].includes(chatMode) ? "【沉浸／共鳴模式補�
 
 4. 對玩家具有長期意義的重要事件：
    - 例如：下週要面試、最近剛失戀、正在準備重要考試。
-   - 只有明顯會影響後續關心與陪伴時才記住。
+   - 玩家明確提供的未來時間安排、課程與重要約定即使只是單次事件，也應優先記住，直到玩家更正、取消或確認完成。
 
 【不應該記住】
 1. 純粹當下狀態：
@@ -86,13 +90,13 @@ ${["immersive", "resonance"].includes(chatMode) ? "【沉浸／共鳴模式補�
 
 【重要規則】
 - 玩家自身事實必須由玩家明確表達，不得從角色回覆臆測玩家的偏好、身體狀態、身分、動作或同意。
-- 可保存角色自己明確說出的承諾或已敘述的自身行動，但只存session並保留來源。提議不等於雙方約定，承諾不等於已完成；玩家明確接受後才記為雙方約定。
-- 每項必須附evidence（引用本輪原文的連續片段，一般至少2字；玩家只回「好／嗯／對／是／行」且前文指涉明確時可用該單字）、sourceRole（user或assistant）。若玩家本輪明確確認，以user為證據。
-- assistant來源必須為session，category=important_event，factKey使用worldline.event.<subject>或relationship.event.<subject>；不可從角色回覆推導跨角色玩家事實。
+- 不保存角色自行宣稱的承諾、想法、行動或演繹。只有玩家在本輪確認的雙方約定，才可作為玩家相關事件保存。
+- 每項必須附evidence（引用玩家本輪原文的連續片段，一般至少2字；玩家只回「好／嗯／對／是／行」且前文指涉明確時可用該單字）；sourceRole 一律是 user。
+- 禁止輸出 sourceRole=assistant；角色回覆和角色所說的話不屬於玩家記憶。
 - 假設、疑問、演繹內的猜測或未完成的玩家動作不能保存為完成事實。取消、更正必須更新同一主題鍵並寫清新狀態。
 - 不得補充、推測或改寫成更誇張的內容。
-- 記憶中的玩家稱呼，必須使用系統提供的玩家名稱。
-- 例如玩家名稱是「妮妮」，就寫「妮妮喜歡吃草莓蛋糕」。
+- 記憶中的玩家稱呼，必須使用系統提供的人設名稱，禁止猜測別名、暱稱或沿用前文的其他名稱。
+- 例如系統提供的人設名稱是「小滿」，就寫「小滿喜歡吃草莓蛋糕」；不可自行創造其他名字。
 - 絕對不要使用「玩家喜歡……」這種系統式稱呼。
 - 一次最多提取4項不同的重要事實，不要為湊數提取。
 - 若沒有值得長期保存的資訊，shouldRemember 必須是 false。
@@ -297,15 +301,15 @@ ${["immersive", "resonance"].includes(chatMode) ? "【沉浸／共鳴模式補�
       memory: String(item.memory || '').trim(), scope: String(item.scope || 'none').trim().toLowerCase(),
       category: String(item.category || 'none').trim(), factKey: String(item.factKey || '').trim(),
       factValue: String(item.factValue || '').trim(), confidence: Number(item.confidence || 0),
-      sourceRole: item.sourceRole === 'assistant' ? 'assistant' : 'user',
+      sourceRole: String(item.sourceRole || 'user') === 'user' ? 'user' : 'assistant',
       evidence: String(item.evidence || '').trim(),
     })).filter(item => {
-      const source = item.sourceRole === 'assistant' ? String(assistantMessage || '') : cleanMessage;
+      const source = cleanMessage;
       const shortConfirmation = item.sourceRole === 'user' && /^(好|嗯|對|是|行)$/.test(item.evidence) && contextText.length > 0;
       const culinaryNickname = item.factKey === 'identity.occupation' &&
         /大[廚厨]/.test(item.evidence) &&
         !/(職業|职业|任職|任职|受僱|受雇|餐廳|餐厅|飯店|饭店|酒店|工作是|工作就是|當廚師|当厨师|當主廚|当主厨)/.test(item.evidence);
-      return !culinaryNickname && item.shouldRemember && (item.evidence.length >= 2 || shortConfirmation) && source.includes(item.evidence);
+      return item.sourceRole === 'user' && !culinaryNickname && item.shouldRemember && (item.evidence.length >= 2 || shortConfirmation) && source.includes(item.evidence);
     });
     return {shouldRemember: memories.length > 0, memories};
 

@@ -6162,24 +6162,67 @@
   "official_studio_text_1741": "上一步",
   "official_studio_text_1751": "完成",
   "official_studio_text_1761": "下一步",
-  "official_studio_text_1771": "确定将「{name}」移出追蹤者名单吗？对方将不再追蹤你，但未来仍可再次追蹤。",
-  "official_studio_text_1781": "单人私信：{count} / 30 封",
-  "official_studio_text_1791": "全体粉丝群发：{count} / 5 次",
-  "official_studio_text_1801": "赠送成功！{count} 朵花花已寄到粉丝信箱，等待领取。",
+  "worldAboutUsTitle": "關於我們",
+  "worldAboutUsAddMemory": "新增記憶",
+  "worldAboutUsEditMemory": "編輯記憶",
+  "worldAboutUsAddSharedMemory": "新增共同記憶",
+  "worldAboutUsEditSharedMemory": "編輯共同記憶",
+  "worldAboutUsMemoryHint": "記錄這段世界劇情中值得記住的人物關係或共同事件",
+  "worldAboutUsCancel": "取消",
+  "worldAboutUsSave": "儲存",
+  "worldAboutUsDelete": "刪除",
+  "worldAboutUsSaved": "共同記憶已儲存",
+  "worldAboutUsSaveFailed": "儲存失敗：{error}",
+  "@worldAboutUsSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsSavePermissionHint": "（請確認 Firestore 存取規則）",
+  "worldAboutUsDeleteConfirmTitle": "刪除共同記憶？",
+  "worldAboutUsDeleteConfirmBody": "刪除後這筆記憶不會再供 AI 讀取。",
+  "worldAboutUsDeleted": "已刪除共同記憶",
+  "worldAboutUsDeleteFailed": "刪除失敗：{error}",
+  "@worldAboutUsDeleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsSignInRequired": "請先登入，再查看共同記憶。",
+  "worldAboutUsDescription": "這裡記錄此世界劇情房間的共同回憶",
+  "worldAboutUsLoadFailed": "記憶讀取失敗，請檢查 Firestore 權限：{error}",
+  "@worldAboutUsLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsEmpty": "目前還沒有共同記憶。",
+  "worldAboutUsEditTooltip": "編輯記憶",
+  "worldAboutUsDeleteTooltip": "刪除記憶",
+  "official_studio_text_1771": "確定將「{name}」移出追蹤者名單嗎？對方將不再追蹤你，但未來仍可再次追蹤。",
+  "official_studio_text_1781": "單人私信：{count} / 30 封",
+  "official_studio_text_1791": "全體粉絲群發：{count} / 5 次",
+  "official_studio_text_1801": "贈送成功！{count} 朵花花已寄到粉絲信箱，等待領取。",
   "official_studio_text_1811": "{count} 朵 🌸",
   "official_studio_text_1821": "{count} 位",
   "official_studio_text_1831": "{count} 朵",
-  "official_studio_text_1841": "{month} 创作奖励",
-  "official_studio_text_1851": "本月进度：{count} / 3 位",
-  "official_studio_text_1861": "尚差 {count} 位公开角色",
-  "official_studio_text_1871": "花花余额不足，尚缺 {count} 朵",
-  "official_studio_text_1881": "读取信件额度失败，请稍后重試",
-  "official_studio_text_1891": "寄送未确认成功，请检查紀录后重試",
-  "official_studio_text_1901": "連线失败，请确认紀录后再重試",
-  "official_studio_text_1911": "赠送未确认成功，请先查询紀录再重試。",
-  "official_studio_text_1921": "目前余额：{balance} 朵\n本次需要：{total} 朵\n尚缺少：{missing} 朵\n\n可以前往商店補充花花。",
-  "official_studio_text_1931": "即将赠送给 {followers} 位粉丝，每人 {amount} 朵，共扣除 {total} 朵花花。\n赠送完成后无法自行撤回。",
-  "official_studio_text_1941": "{mode} · {status} · 已投递 {count} 人",
+  "official_studio_text_1841": "{month} 創作獎勵",
+  "official_studio_text_1851": "本月進度：{count} / 3 位",
+  "official_studio_text_1861": "尚差 {count} 位公開角色",
+  "official_studio_text_1871": "花花餘額不足，尚缺 {count} 朵",
+  "official_studio_text_1881": "讀取信件額度失敗，請稍後重試",
+  "official_studio_text_1891": "寄送未確認成功，請檢查紀錄后重試",
+  "official_studio_text_1901": "連線失敗，請確認紀錄后再重試",
+  "official_studio_text_1911": "贈送未確認成功，請先查詢紀錄再重試。",
+  "official_studio_text_1921": "目前餘額：{balance} 朵\n本次需要：{total} 朵\n尚缺少：{missing} 朵\n\n可以前往商店補充花花。",
+  "official_studio_text_1931": "即將贈送給 {followers} 位粉絲，每人 {amount} 朵，共扣除 {total} 朵花花。\n贈送完成後無法自行撤回。",
+  "official_studio_text_1941": "{mode} · {status} · 已投遞 {count} 人",
   "official_studio_text_1951": "公開角色",
   "official_studio_text_1961": "讀取中…",
   "official_studio_text_1971": "選擇粉絲",

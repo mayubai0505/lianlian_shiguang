@@ -6542,6 +6542,50 @@
   "characterEditWorldLore": "Bối cảnh thế giới (Cài đặt hệ thống)",
   "characterEditWorldLoreDescription": "Bối cảnh, quy tắc, địa điểm và sự kiện trong thế giới để AI nhập vai. Nội dung này không hiển thị trên thẻ giới thiệu nhân vật.",
   "characterEditWorldLoreHint": "Ví dụ: bối cảnh thế giới, phe phái và tổ chức, quy tắc đặc biệt, sự kiện quan trọng…",
+  "@@locale": "vi",
+  "worldAboutUsTitle": "Về chúng ta",
+  "worldAboutUsAddMemory": "Thêm kỷ niệm",
+  "worldAboutUsEditMemory": "Sửa kỷ niệm",
+  "worldAboutUsAddSharedMemory": "Thêm kỷ niệm chung",
+  "worldAboutUsEditSharedMemory": "Sửa kỷ niệm chung",
+  "worldAboutUsMemoryHint": "Ghi lại các mối quan hệ hoặc sự kiện chung đáng nhớ trong câu chuyện của thế giới này",
+  "worldAboutUsCancel": "Hủy",
+  "worldAboutUsSave": "Lưu",
+  "worldAboutUsDelete": "Xóa",
+  "worldAboutUsSaved": "Đã lưu kỷ niệm chung",
+  "worldAboutUsSaveFailed": "Không thể lưu: {error}",
+  "@worldAboutUsSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsSavePermissionHint": " (Hãy kiểm tra quy tắc truy cập Firestore.)",
+  "worldAboutUsDeleteConfirmTitle": "Xóa kỷ niệm chung?",
+  "worldAboutUsDeleteConfirmBody": "Sau khi xóa, AI sẽ không thể đọc kỷ niệm này nữa.",
+  "worldAboutUsDeleted": "Đã xóa kỷ niệm chung",
+  "worldAboutUsDeleteFailed": "Không thể xóa: {error}",
+  "@worldAboutUsDeleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsSignInRequired": "Vui lòng đăng nhập để xem kỷ niệm chung.",
+  "worldAboutUsDescription": "Các kỷ niệm chung của phòng truyện thế giới này được lưu tại đây.",
+  "worldAboutUsLoadFailed": "Không thể tải kỷ niệm. Hãy kiểm tra quyền Firestore: {error}",
+  "@worldAboutUsLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "worldAboutUsEmpty": "Chưa có kỷ niệm chung nào.",
+  "worldAboutUsEditTooltip": "Sửa kỷ niệm",
+  "worldAboutUsDeleteTooltip": "Xóa kỷ niệm",
   "world_edit_tag_max1": "Select up to 5 tags",
   "world_edit_tag_custom1": "Tags (customizable; separate with commas)",
   "world_edit_secret_not_ready1": "Secret chapters have not loaded. Publishing is paused to protect your content. Check permissions and reopen this page.",

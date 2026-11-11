@@ -26,9 +26,35 @@ async function savePlayerMemoryIfNeeded({
     return null;
   }
 
+  // V5.15: Resolve the profile BEFORE extraction. Never let the model or an
+  // account nickname replace the selected custom-profile identity.
+  const safeAppId = String(appId || APP_ID).trim() || APP_ID;
+  const safeSessionId = String(sessionId || '').trim();
+  const safeProfileId = await resolveEffectivePlayerProfileId({
+    appId: safeAppId, userId, characterId, sessionId: safeSessionId,
+    requestedProfileId: playerProfileId,
+  });
+  const ownerSnapshot = await db.collection('users').doc(userId).get();
+  const ownerData = ownerSnapshot.data() || {};
+  const knownProfiles = Array.isArray(ownerData.profiles) ? ownerData.profiles : [];
+  const boundProfile = knownProfiles.find(item => item &&
+    String(item.id || '').trim() === String(safeProfileId || '').trim());
+  const boundName = String(boundProfile?.name || '').trim();
+  const isDefault = isDefaultProfile(safeProfileId);
+  const canonicalPlayerName = isDefault
+    ? String(ownerData.nickname || playerName || '').trim()
+    : boundName;
+  if (!canonicalPlayerName || (!isDefault && !boundProfile)) {
+    console.warn('MEMORY_PROFILE_NAME_UNRESOLVED_SKIP', {
+      profileId: safeProfileId, sessionId: safeSessionId,
+      defaultProfile: isDefault,
+    });
+    return null; // Never write a memory under an unverified custom-profile name.
+  }
+
   const extracted = await extractPlayerMemory({
     userMessage,
-    playerName,
+    playerName: canonicalPlayerName,
     playerLanguage,
     chatMode,
     recentHistory, assistantMessage,
@@ -36,17 +62,48 @@ async function savePlayerMemoryIfNeeded({
   });
 
   const items = Array.isArray(extracted.memories) ? extracted.memories.slice(0, 4) : [extracted];
+  // A narrow, deterministic fallback for a plainly stated drink preference.
+  // It never reads assistantMessage or infers a preference from character dialogue.
+  const message = String(userMessage || '').trim();
+  const drinkMatch = message.match(/(?:^|[\s（(，。！!\n])我(?:很|非常|超級|超|最)?喜歡喝(?:的)?[：: ]*([^，。！!？?；;\n）)\r]{1,32})/u);
+  if (drinkMatch && !items.some(item => item && item.shouldRemember === true &&
+      String(item.factKey || '').startsWith('preference.drink.'))) {
+    const drink = drinkMatch[1].trim().replace(/(?:喔|啦|呀|啊|欸)$/u, '').trim();
+    if (drink && !/^(?:什麼|什么|這個|那个|那個|飲料|饮料)$/u.test(drink)) {
+      const evidence = drinkMatch[0].trim().replace(/^[（(，。！!\s]+/u, '');
+      items.push({
+        shouldRemember: true, memory: `喜歡喝${drink}`,
+        scope: 'profile', category: 'preference',
+        factKey: 'preference.drink.' +
+          require('crypto').createHash('sha256').update(drink).digest('hex').slice(0, 12),
+        factValue: `喜歡喝${drink}`, confidence: 0.99,
+        sourceRole: 'user', evidence,
+      });
+      console.log('MEMORY_EXPLICIT_DRINK_PREFERENCE_FALLBACK', {
+        sessionId: safeSessionId, profileId: safeProfileId,
+      });
+    }
+  }
   const results = [];
-  for (const item of items) {
+  for (const item of (items.length > 4 ? [...items.slice(0, 3), items[items.length - 1]] : items)) {
     const result = await persistMemory(item);
     if (result) results.push(result);
   }
-  return results.length ? {...results[0], ids: results.map(item => item.id), savedCount: results.length} : null;
+  return results.length ? {
+    ...results[0],
+    ids: results.map(item => item.id),
+    savedCount: results.length,
+    scopes: results.map(item => item.scope),
+    paths: results.map(item => item.path),
+    resolvedProfileId: results[0].resolvedProfileId,
+  } : null;
 
   async function persistMemory(extracted) {
-  const sourceRole = extracted.sourceRole === 'assistant' ? 'assistant' : 'user';
+  // Player-facing memory must be anchored in this user's own message.
+  if (extracted.sourceRole === 'assistant') return null;
+  const sourceRole = 'user';
   const evidenceText = String(extracted.evidence || '').trim();
-  const evidenceSource = sourceRole === 'assistant' ? String(assistantMessage || '') : String(userMessage || '');
+  const evidenceSource = String(userMessage || '');
   // Old callers retain single-player extraction compatibility; contextual records require quoted evidence.
   const shortConfirmation = sourceRole === 'user' && /^(好|嗯|對|是|行)$/.test(evidenceText) && recentHistory.length > 0;
   if ((assistantMessage || recentHistory.length) &&
@@ -66,16 +123,24 @@ async function savePlayerMemoryIfNeeded({
     factKey,
     userMessage: String(userMessage || evidenceText || ""),
   });
-  if (sourceRole === "assistant") {
-    if (!/^(worldline\.event\.|relationship\.event\.)/.test(factKey)) return null;
-    memoryScope = "session";
-  }
   if (/^(relationship\.|worldline\.|important_event\.)/.test(factKey)) memoryScope = "session";
 
-  const safeMemoryName =
-      String(playerName || "對方").trim() || "對方";
-
-  memoryText = memoryText.replace(/^玩家/, safeMemoryName);
+  // Display names come from Firestore's selected profile, never AI output.
+  // Reject unexplained third-person names instead of silently changing a fact.
+  const safeMemoryName = canonicalPlayerName;
+  memoryText = memoryText.replace(/^(?:玩家|對方|我)(?=的|是|在|會|要|有|喜歡|不|早|晚|每|今|明|後|已|正|，|：|\s)/u, '').trim();
+  if (!memoryText.startsWith(safeMemoryName)) {
+    // A fabricated subject like 「妮妮喜歡...」 must not be saved as personal truth.
+    if (/^[\p{Script=Han}]{2,8}(?=喜歡|討厭|不喜歡|承諾|認為|知道|需要|想要|打算|會去|要去|早上|下午|晚上|今天|明天|昨天|每週|每周)/u.test(memoryText)) {
+      console.warn('MEMORY_SUBJECT_MISMATCH_REJECTED', {
+        profileId: safeProfileId, factKey,
+      });
+      return null;
+    }
+    memoryText = /^(?:喜歡|討厭|不喜歡|不喝|不吃|會|要|在|有|早上|下午|晚上|今天|明天|每週|每周)/u.test(memoryText)
+      ? `${safeMemoryName}${memoryText}`
+      : `${safeMemoryName}：${memoryText}`;
+  }
 
   if (!["profile", "character", "session"].includes(memoryScope)) {
     memoryScope = "none";
@@ -99,15 +164,6 @@ async function savePlayerMemoryIfNeeded({
     return null;
   }
 
-  const safeSessionId = String(sessionId || "").trim();
-  const safeAppId = String(appId || APP_ID).trim() || APP_ID;
-  const safeProfileId = await resolveEffectivePlayerProfileId({
-    appId: safeAppId,
-    userId,
-    characterId,
-    sessionId: safeSessionId,
-    requestedProfileId: playerProfileId,
-  });
 
   await prepareDefaultCharacterMemory({db, userId, characterId, playerProfileId:safeProfileId});
   let memoriesRef;
@@ -194,7 +250,12 @@ async function savePlayerMemoryIfNeeded({
         active: false, retrievalTerms: [], searchIndexVersion: 1,
         supersededBy: primaryRef.id, supersededAt: FieldValue.serverTimestamp(),
       }, {merge:true});
-      return {id: primaryRef.id, ...extracted, scope: memoryScope, refreshed: Boolean(same)};
+      return {
+        id: primaryRef.id, ...extracted, scope: memoryScope,
+        resolvedProfileId: safeProfileId,
+        path: primaryRef.path,
+        refreshed: Boolean(same),
+      };
     });
 
   } catch (error) {
