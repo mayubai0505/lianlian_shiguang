@@ -26,6 +26,14 @@ function canonicalLabel(label) {
     .replace(/[：:]+$/u, "")
     .trim();
 }
+// Repair models sometimes expand an emoji-only label (e.g. 🎩 -> 🎩服裝).
+// Match only these explicit aliases, never arbitrary emoji-prefixed labels.
+function canonicalStatusLabel(label, knownLabels) {
+  const key = canonicalLabel(label);
+  if (knownLabels && knownLabels.has(key)) return key;
+  if (knownLabels && knownLabels.has("🎩") && /^🎩(?:服裝|服饰|服飾|衣著|穿著|穿搭)$/u.test(key)) return "🎩";
+  return key;
+}
 function parseTemplate(template) {
   const fields = [];
   let insideNpcDetailSection = false;
@@ -102,14 +110,14 @@ function createCustomStatusGuard(template) {
     const result = [];
     for (let i=0;i<lines.length;) {
       const field=extractLabel(lines[i]);
-      if (!field || !labels.has(canonicalLabel(field.label)) || !isGroupField(field.label)) {
+      if (!field || !labels.has(canonicalStatusLabel(field.label, labels)) || !isGroupField(field.label)) {
         result.push(lines[i++]);
         continue;
       }
       const block=[lines[i++]];
       while (i<lines.length) {
         const other=extractLabel(lines[i]);
-        if (other && labels.has(canonicalLabel(other.label))) break;
+        if (other && labels.has(canonicalStatusLabel(other.label, labels))) break;
         block.push(lines[i++]);
       }
       // Only actual speaker:message pairs count, never examples, blank lines, or instructions.
@@ -129,7 +137,7 @@ function createCustomStatusGuard(template) {
     const hits = [];
     for (let i = 0; i < lines.length; i++) {
       const part = extractLabel(lines[i]);
-      if (part && labels.has(canonicalLabel(part.label))) hits.push(i);
+      if (part && labels.has(canonicalStatusLabel(part.label, labels))) hits.push(i);
     }
     if (!hits.length) return -1;
     // V5.18.2: An opening story header may share labels with the creator footer.
@@ -149,7 +157,7 @@ function createCustomStatusGuard(template) {
       const narrativeEvidence = lines.findIndex((line, i) => {
         if (i < firstHit) return false;
         const part = extractLabel(line);
-        if (part && labels.has(canonicalLabel(part.label))) {
+        if (part && labels.has(canonicalStatusLabel(part.label, labels))) {
           // A location line can end with narrative text on the SAME line.
           if (/^(?:時間|日期|地點|位置)$/u.test(canonicalLabel(part.label)) &&
               /[（(「『][^\n]{8,}/u.test(part.value)) return true;
@@ -189,7 +197,7 @@ function createCustomStatusGuard(template) {
     const tail = lines.slice(cleanStart);
     return required.filter(f => !tail.some((line, i) => {
       const value = extractLabel(line);
-      if (!value || canonicalLabel(value.label) !== canonicalLabel(f.label)) return false;
+      if (!value || canonicalStatusLabel(value.label, labels) !== canonicalLabel(f.label)) return false;
       if (value.value && !unknownValue(value.value) && !isPlaceholder(value.value) && !INLINE_META.test(value.value)) return true;
       // 群組/內心標題常見「💭內心：\n溫梨：...」；下一行有真正內容即算完整。
       if (value.value && (unknownValue(value.value) || isPlaceholder(value.value))) return false;
@@ -197,7 +205,7 @@ function createCustomStatusGuard(template) {
         const next=tail[j].trim();
         if (!next) continue;
         const nextField=extractLabel(next);
-        if (nextField && labels.has(canonicalLabel(nextField.label))) break;
+        if (nextField && labels.has(canonicalStatusLabel(nextField.label, labels))) break;
         if (DIRECTIVE_HEADING.test(next) || GENERIC_INSTRUCTION.test(next) || META_LINE.test(next) || INLINE_META.test(next) || sampleLines.has(normalizeSample(next))) continue;
         return true;
       }
@@ -224,10 +232,10 @@ function createCustomStatusGuard(template) {
       }
       if (DIRECTIVE_HEADING.test(stripped) || GENERIC_INSTRUCTION.test(stripped)) continue;
       const part=extractLabel(raw);
-      if (part && labels.has(canonicalLabel(part.label))) {
+      if (part && labels.has(canonicalStatusLabel(part.label, labels))) {
         inExample=false;
         suppressedConditional=false;
-        const field=fields.find(f => canonicalLabel(f.label)===canonicalLabel(part.label));
+        const field=fields.find(f => canonicalLabel(f.label)===canonicalStatusLabel(part.label, labels));
         const value=part.value;
         // Unknown is not a confirmed state: remove the placeholder rather than publishing it.
         if (unknownValue(value)) { suppressedConditional=true; continue; }
@@ -251,7 +259,10 @@ function createCustomStatusGuard(template) {
           suppressedConditional=true;
           continue;
         }
-        next.push(explanatory ? `${part.label}：` : raw);
+        const matchedKey = canonicalStatusLabel(part.label, labels);
+        const canonicalField = fields.find(f => canonicalLabel(f.label) === matchedKey);
+        const renderedLabel = canonicalField ? canonicalField.label : part.label;
+        next.push(explanatory ? `${renderedLabel}：` : (renderedLabel === part.label ? raw : `${renderedLabel}：${value}`));
         continue;
       }
       if (suppressedConditional) {
@@ -284,12 +295,12 @@ function createCustomStatusGuard(template) {
       if (start < 0) return found;
       for (let i = start; i < lines.length;) {
         const field = extractLabel(lines[i]);
-        const key = field ? canonicalLabel(field.label) : '';
+        const key = field ? canonicalStatusLabel(field.label, labels) : '';
         if (!field || !labels.has(key)) { i++; continue; }
         const block = [lines[i++]];
         while (i < lines.length) {
           const next = extractLabel(lines[i]);
-          if (next && labels.has(canonicalLabel(next.label))) break;
+          if (next && labels.has(canonicalStatusLabel(next.label, labels))) break;
           block.push(lines[i++]);
         }
         const chunk = block.join('\n');
@@ -325,7 +336,7 @@ function createCustomStatusGuard(template) {
       const wanted = canonicalLabel(label);
       for (let i = lines.length - 1; i >= 0; i--) {
         const field = extractLabel(lines[i]);
-        if (!field || canonicalLabel(field.label) !== wanted || isPlaceholder(field.value)) continue;
+        if (!field || canonicalStatusLabel(field.label, labels) !== wanted || isPlaceholder(field.value)) continue;
         if (field.value) return field.value;
         const replies = [];
         for (let j = i + 1; j < lines.length; j++) {
@@ -371,12 +382,12 @@ function createCustomStatusGuard(template) {
     const priorFields = new Map();
     for (let i = priorStart; i < priorLines.length; i++) {
       const f = extractLabel(priorLines[i]);
-      if (!f || !labels.has(canonicalLabel(f.label))) continue;
+      if (!f || !labels.has(canonicalStatusLabel(f.label, labels))) continue;
       const value = f.value.trim();
       if (!value || isPlaceholder(value) || INLINE_META.test(value) || META_LINE.test(value)
           || /^(?:未知|不明|未設定|無資料|待確認|N\/A|無法判斷)$/iu.test(value)
           || sampleLines.has(normalizeSample(priorLines[i]))) continue;
-      priorFields.set(canonicalLabel(f.label), value);
+      priorFields.set(canonicalStatusLabel(f.label, labels), value);
     }
     const evidence = String(context.evidence || "");
     // Only explicit narrative changes justify changing a previously established outfit.
@@ -388,7 +399,7 @@ function createCustomStatusGuard(template) {
     for (let i = currentStart; i < currentLines.length; i++) {
       const currentField = extractLabel(currentLines[i]);
       if (!currentField) continue;
-      const key = canonicalLabel(currentField.label);
+      const key = canonicalStatusLabel(currentField.label, labels);
       if (!labels.has(key) || !priorFields.has(key)) continue;
       if (/^(?:📅|📍|時間|日期|地點|位置)$/u.test(key)) continue;
       // Do not overwrite chat messages, character thoughts, relationship scores or dynamic events.
