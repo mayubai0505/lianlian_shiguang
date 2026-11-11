@@ -132,6 +132,38 @@ function createCustomStatusGuard(template) {
       if (part && labels.has(canonicalLabel(part.label))) hits.push(i);
     }
     if (!hits.length) return -1;
+    // V5.18.2: An opening story header may share labels with the creator footer.
+    // A story is never a footer simply because it begins with 時間/地點.
+    // Locate narrative prose EVEN when prose starts on the same physical line
+    // as 地點, or is separated by blank lines (older versions missed those).
+    const firstHit = hits[0];
+    // V5.18.3: Don't inspect a fixed four-line window. A short story can
+    // legitimately put the creator footer within four lines of the opening,
+    // so including that footer here misclassifies all narrative as footer.
+    // Recognize the initial 時間/地點 heading on its own merits; locate the
+    // actual narrative below before deciding where the footer starts.
+    const firstField = extractLabel(lines[firstHit]);
+    const openingIsTimePlace = firstHit <= 2 && firstField &&
+      /^(?:時間|日期|地點|位置)$/u.test(canonicalLabel(firstField.label));
+    if (openingIsTimePlace) {
+      const narrativeEvidence = lines.findIndex((line, i) => {
+        if (i < firstHit) return false;
+        const part = extractLabel(line);
+        if (part && labels.has(canonicalLabel(part.label))) {
+          // A location line can end with narrative text on the SAME line.
+          if (/^(?:時間|日期|地點|位置)$/u.test(canonicalLabel(part.label)) &&
+              /[（(「『][^\n]{8,}/u.test(part.value)) return true;
+          return false;
+        }
+        return /[（(「『][^\n]{8,}/u.test(line);
+      });
+      if (narrativeEvidence >= 0) {
+        // Do not treat opening labels as footer. If no later footer exists,
+        // return -1 so repairs APPEND a footer without removing narrative.
+        const footerHits = hits.filter(i => i > narrativeEvidence);
+        return footerHits.length ? footerHits[0] : -1;
+      }
+    }
     // 檢查最後區段以避免誤把正文內的「時間：」當作結尾狀態欄。
     const last = hits[hits.length - 1];
     let start = hits[0];
@@ -261,35 +293,9 @@ function createCustomStatusGuard(template) {
           block.push(lines[i++]);
         }
         const chunk = block.join('\n');
-         // Validate this field independently: missing(chunk) checks *all*
-         // required fields and would reject a valid isolated repair block.
-         // Keep group message-count checks, placeholders and hidden directives.
-         const cleanedChunk = clean(chunk);
-         const chunkLines = cleanedChunk.split(/\r?\n/);
-         const header = chunkLines.find(line => {
-           const item = extractLabel(line);
-           return item && canonicalLabel(item.label) === key;
-         });
-         if (!header) continue;
-         const headerValue = extractLabel(header).value;
-         let usable = Boolean(headerValue && !unknownValue(headerValue) &&
-           !isPlaceholder(headerValue) && !INLINE_META.test(headerValue));
-         if (!usable) usable = chunkLines.some(line => {
-           if (line === header || !line.trim() || META_LINE.test(line) || INLINE_META.test(line)) return false;
-           const item = extractLabel(line);
-           return item ? Boolean(item.value && !unknownValue(item.value) && !isPlaceholder(item.value)) :
-             !sampleLines.has(normalizeSample(line));
-         });
-         if (isGroupField(field.label) && groupMinimum > 1) {
-           const speakerCount = chunkLines.slice(1).filter(line => {
-             const item = extractLabel(line);
-             return item && item.label.length <= 24 && item.value &&
-               !unknownValue(item.value) && !isPlaceholder(item.value) &&
-               !INLINE_META.test(item.value) && !sampleLines.has(normalizeSample(line));
-           }).length;
-           usable = usable && speakerCount >= groupMinimum;
-         }
-         if (usable) found.set(key, cleanedChunk);
+        // The status guard checks 2-5 message requirements; a partial group
+        // never replaces another group's valid complete content.
+        if (!missing(chunk).includes(field.label)) found.set(key, chunk);
       }
       return found;
     }

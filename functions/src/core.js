@@ -1349,6 +1349,25 @@ exports.markEventMemoryViewed = onCall(
 );
 
 
+// V5.18.5: Detect a regression where the response cleaner duplicates the
+// *same* already-generated narrative. Do not rely on time/location headers:
+// creator footers legitimately repeat those labels.
+function cleanupDuplicatedNarrative(originalText, cleanedText) {
+    const source = String(originalText || "").trim();
+    const cleaned = String(cleanedText || "").trim();
+    if (source.length < 220 || cleaned.length < source.length * 1.2) {
+        return false;
+    }
+    // An anchored excerpt from the real narrative, not a generic header.
+    // Require a substantial, exactly repeated passage in CLEANED that occurred
+    // only once in the original model response.
+    const start = source.search(/[（(「『]/u);
+    if (start < 0 || source.length - start < 120) return false;
+    const anchor = source.slice(start, start + 120);
+    const count = (s) => s.split(anchor).length - 1;
+    return count(source) === 1 && count(cleaned) >= 2;
+}
+
 exports.getAiResponse = onRequest({
     region: REGION,
     minInstances: 0,
@@ -4079,16 +4098,8 @@ const profileMemoriesRef = isDefaultProfile(effectiveProfileId)
             `;
         }
     else if (chatMode === "story") {
-        const previousStyleExcerpt = Array.isArray(chatHistory)
-            ? String(
-                [...chatHistory]
-                    .reverse()
-                    .find((msg) => msg?.role === "assistant")?.content || ""
-            )
-                .slice(-900)
-                .trim()
-            : "";
-
+        // V5.19: 最近對話歷史已包含上一輪 assistant 原文，
+        // 不再將同一段文風節錄重複塞進 system prompt。
         systemPrompt = `
         ${backendConfidentialityDirective}
         ${langDirective}
@@ -4118,8 +4129,6 @@ const profileMemoriesRef = isDefaultProfile(effectiveProfileId)
         ${limitPromptText(contextBriefing || "", 2000)}
 
         ${systemEventRules}
-
-        ${previousStyleExcerpt ? `【上一輪文風參考】\n${previousStyleExcerpt}\n請延續其敘事密度、句長與角色語感，但不要重複原句。` : ""}
 
         【寫法】
         - 先像人，再像角色。先直接回應玩家最新一句，再讓故事自然前進。
@@ -4224,7 +4233,6 @@ const profileMemoriesRef = isDefaultProfile(effectiveProfileId)
             - 角色可以直率、尖刻、幽默、嘴硬、拒絕或沉默，保持獨特的說話習慣；不要由旁白替他辯解或解說每句話的情感含義。
             - 模型即使由 Gemini 切換 Grok，也必須維持上一輪的文體與角色聲線。
             - 用有效的新內容完成長篇，不用模板化感官堆疊灌字。
-            - 共鳴模式正文目標約 700 個中文字；時間、地點及自訂狀態欄不計入。請控制篇幅、自然收束，避免冗長重複。
 
             【時間與場景連續】
             - response 前兩行固定：
@@ -4263,27 +4271,15 @@ const profileMemoriesRef = isDefaultProfile(effectiveProfileId)
          // Shared across all general-character modes, including work scenes.
          // Preserve each mode's format, length budget, and character autonomy.
          systemPrompt += `
-【所有模式共用：角色互動與專業情境】
-- 先理解玩家發言的真正目的：比喻、假設、引用與反諷不等於實際經歷；明確回答玩家當輪要求，別離題或重問已回答的問題。玩家顧慮與界線要具體回應，不能以空泛承諾代替。
-- 角色以創作者人設、關係、語氣及已發生的事件做決定；專業職業不等於每輪都變成顧問或任務派發者。可以拒絕、爭辯、幽默，但必須有情境依據。
-- 工作、教學、報告等題材仍是角色互動；玩家明確要求清單或詳細分析時可以完整回答，否則別自行增加無關流程、風險、期限與交辦。
-- 分清事實、猜測、承諾與提議；不能杜撰已完成的任務、關係進展或玩家同意。角色可以自主提出合理新行動，但不能替玩家決定。
-- 旁白寫出有意義的行動與變化，不重複解說角色特質或寫作意圖；遵守各模式原本的長度、格式及玩家自主權。
+【共用：角色互動與專業情境】
+- 辨別比喻、反諷、假設與真實經歷；直接回應玩家最新意圖、顧慮及界線，不重問已答內容。
+- 依創作者人設、關係與既有事實反應；角色可以有依據地拒絕、爭辯、幽默。職業設定不代表每輪都要提供顧問式清單。
+- 工作／教學等題材仍是角色互動；只有玩家要求才展開專業分析，不自行派任務或添加無關期限。
+- 區分事實、猜測、提議、承諾與完成；角色能主動行動，但不能替玩家決定。遵守原模式的篇幅、格式與玩家自主權。
 `;
 
-         if (chatMode !== "gemini") {
-             systemPrompt += `
-
-         ### 角色獨立性與防重複規則
-
-         1. 角色不必總是同意玩家。請依人設、關係與當下情境，自然表現同意、拒絕、懷疑、猶豫、反駁或轉移話題。
-         2. 回覆前先參考最近的 assistant 回覆，避免重複相同的開場、動作、句型、比喻、情緒轉折與結尾方式。
-         3. 不要只是把玩家的話換句話說。回覆應增加新的反應、資訊、行動或關係變化。
-         4. 不要用另一組固定動作取代舊的固定動作；描寫必須來自當下場景與角色自身習慣。
-         5. 玩家輸入很短時，不得用大量通用描寫填滿篇幅。若目前為沉浸模式，仍須遵守沉浸模式的篇幅要求，改以符合人設的新台詞、角色行動、事件、資訊或關係變化形成完整回覆；其他模式則可以簡短但有個性地回應。
-         6. 若某個動作或情緒確實需要延續，請推進其結果，不要重新描述它的發生過程。
-         `;
-         }
+         // V5.19: 上述寫法已由各模式 Writer、角色互動共用規則與玩家自主權指令涵蓋；
+         // 不再追加重複的「角色獨立性與防重複」段落。
 
 // ✨✨✨ 全模式通用：配角與 NPC 性別固定規則 ✨✨✨
 systemPrompt += `
@@ -4302,13 +4298,8 @@ ${entityAddressDirective}
 ${relationshipGuardDirective}
 `;
 
-// ✨✨✨ 全模式通用：對話承接與防鬼打牆規則 ✨✨✨
-                     systemPrompt += `
-
-                     【🧭 對話承接與防鬼打牆規則｜最高優先級】
-- 優先承接玩家最新一句的明確答覆、選項、行動與拒絕；已選擇就直接往下推進，不再重問同一題。
-- 不逐字複述玩家訊息、不重演上一輪已發生的動作、同一套比喻或情緒；回覆應提供符合人設的新反應、行動或資訊。短輸入也要有自然承接，不靠通用描寫填字數。
-`;
+// V5.19: 對話承接已由「玩家小動作與劇情修正優先權」第 2、3、9 點涵蓋；
+// 移除重複的短段，保留完整且高優先的玩家主導規則。
 
                      // =========================================================
                      // 🎭 套用目前聊天室劇場
@@ -5034,7 +5025,7 @@ ${persistentPreferenceDirective}
                                                                                // minimum or stops the normal writer early.
                                                                                if (supportsCustomStatusBar) {
                                                                                    const body = customStatusGuard.bodyOnly(text)
-                                                                                       .replace(/^\s*(?:時間|日期|地點|位置)[：:][^\n]*$/gmu, "");
+                                                                                       .replace(/^\s*(?:時間|日期|地點|位置)[：:][^\n]*$/gmu, (line) => /[（(「『]/u.test(line) ? line : "");
                                                                                    return (body.match(/\p{Script=Han}/gu) || []).length;
                                                                                }
                                                                                if (chatMode !== "immersive" && chatMode !== "resonance") return String(text || "").length;
@@ -5554,8 +5545,22 @@ try {
                                                                                // ==========================================
                                                                                let currentText = parsedData?.response || "";
 
+                                                                               // Keep an independently sanitized copy of the model's one-story output.
+                                                                               // If the cleaner reproduces that whole narrative twice, use
+                                                                               // this original rather than sending two identical stories.
+                                                                               const modelNarrativeBeforeCleanup = sanitizeWriterArtifacts(
+                                                                                   fixMojibake(currentText)
+                                                                               );
                                                                                currentText = cleanAiResponseText(currentText, safePlayerName);
                                                                                currentText = sanitizeWriterArtifacts(fixMojibake(currentText));
+                                                                               if (cleanupDuplicatedNarrative(modelNarrativeBeforeCleanup, currentText)) {
+                                                                                   console.warn("V5.18.5 DUPLICATED CLEANUP NARRATIVE RESTORED", {
+                                                                                       chatMode,
+                                                                                       beforeChars: modelNarrativeBeforeCleanup.length,
+                                                                                       afterChars: currentText.length,
+                                                                                   });
+                                                                                   currentText = modelNarrativeBeforeCleanup;
+                                                                               }
 const residualWriterArtifacts =
                                                                                    findResidualWriterArtifacts(currentText);
 
@@ -5840,9 +5845,21 @@ const residualWriterArtifacts =
                                                                                    immersive: 500, // 544/700 accepted when complete
                                                                                    story: 320,     // slight tolerance near 350
                                                                                };
-                                                                               const v5716SoftFloor = config.writerTier === "grok_high_freedom"
-                                                                                   ? 600
-                                                                                   : v5716SoftFloors[chatMode];
+                                                                               // V5.16: When a creator supplies a long footer, the writer
+                                                                               // target is already reduced to leave room for that footer.
+                                                                               // Treat >=85% of the reduced resonance target as a near-target
+                                                                               // result. Never let the footer itself count toward body length.
+                                                                               // The creator footer must be complete; missing fields still use
+                                                                               // the existing dedicated footer repair instead of a full rewrite.
+                                                                               const resonanceLongFooterSoftFloor =
+                                                                                   chatMode === "resonance" && hasLongCreatorFooter
+                                                                                       ? Math.max(creatorNarrativeMinimumHan, Math.ceil(TARGET_LENGTH * 0.85))
+                                                                                       : null;
+                                                                               const v5716SoftFloor = resonanceLongFooterSoftFloor != null
+                                                                                   ? resonanceLongFooterSoftFloor
+                                                                                   : config.writerTier === "grok_high_freedom"
+                                                                                       ? 600
+                                                                                       : v5716SoftFloors[chatMode];
                                                                                const v5716BodyHan = measuredWriterLength(finalResponseText);
                                                                                if (hasCompleteStatus &&
                                                                                    typeof v5716SoftFloor === "number" &&
@@ -6121,7 +6138,30 @@ ${customStatusContinuityDirective}
                                                                                                                                                const repairedMerge = customStatusGuard.mergeRepair(finalResponseText, repairedStatus);
                                                                                                                                                const repairedResponse = repairedMerge.text;
 
+                                                                                                                                               // V5.18: A footer-only repair must never erase a valid narrative.
+                                                                                                                                               // Protect all creator footer formats (including 時間/地點).
+                                                                                                                                               const bodyBeforeFooterRepair = measuredWriterLength(finalResponseText);
+                                                                                                                                               const bodyAfterFooterRepair = measuredWriterLength(repairedResponse);
+                                                                                                                                               // Use an independent raw narrative fingerprint: the status parser
+                                                                                                                                               // itself can mistakenly report 0 for a valid story.
+                                                                                                                                               const rawNarrativeMarkers = /[（(「『][^\n]{10,}/u.test(finalResponseText);
+                                                                                                                                               const rawNarrativeBefore = String(finalResponseText || '').length;
+                                                                                                                                               const rawNarrativeAfter = String(repairedResponse || '').length;
+                                                                                                                                               const rawNarrativePreserved = !rawNarrativeMarkers ||
+                                                                                                                                                   rawNarrativeBefore < 160 ||
+                                                                                                                                                   rawNarrativeAfter >= Math.floor(rawNarrativeBefore * 0.7);
+                                                                                                                                               const preservedNarrative = rawNarrativePreserved &&
+                                                                                                                                                   (bodyBeforeFooterRepair === 0 ||
+                                                                                                                                                    bodyAfterFooterRepair >= Math.max(1, Math.floor(bodyBeforeFooterRepair * 0.8)));
+                                                                                                                                               if (!preservedNarrative) {
+                                                                                                                                                   console.error('V5.18 FOOTER REPAIR BODY LOSS BLOCKED', {
+                                                                                                                                                       chatMode, bodyBeforeFooterRepair, bodyAfterFooterRepair,
+                                                                                                                                                       originalLength: finalResponseText.length, repairedLength: repairedResponse.length,
+                                                                                                                                                       rawNarrativePreserved,
+                                                                                                                                                   });
+                                                                                                                                               }
                                                                                                                                                if (
+                                                                                                                                                   preservedNarrative &&
                                                                                                                                                    hasRequiredCustomStatus(
                                                                                                                                                        repairedResponse
                                                                                                                                                    )
@@ -6171,7 +6211,16 @@ if (supportsCustomStatusBar) {
             previousCustomStatus,
             {time: finalStoryTime, location: finalStoryLocation}
         );
-        if (rescued.complete) {
+        // V5.18.1: The salvage path must not bypass the same body-preservation invariant.
+        const rescueOriginal = String(finalResponseText || '');
+        const rescueResult = String(rescued.text || '');
+        const rescueHasNarrative = /[（(「『][^\n]{10,}/u.test(rescueOriginal);
+        if (rescueHasNarrative && rescueOriginal.length >= 160 &&
+            rescueResult.length < Math.floor(rescueOriginal.length * 0.7)) {
+            console.error('V5.18.1 SALVAGE BODY LOSS BLOCKED', {
+                chatMode, originalLength: rescueOriginal.length, rescuedLength: rescueResult.length
+            });
+        } else if (rescued.complete) {
             finalResponseText = limitTextLength(rescued.text, MAX_RESPONSE_LENGTH);
             console.warn("🛟 V5.1 狀態欄保底成功：保留可用正文，不額外呼叫 AI", {
                 chatMode, added: rescued.added, unresolved: rescued.unresolved, bodyHanCharacters: measuredWriterLength(finalResponseText),
@@ -6344,29 +6393,21 @@ if (sessionId) {
     }
 
     // ==================================================
-    // 防止模型在同一個 response 內重複產生完整正文
-    // 劇情／沉浸模式只允許開頭前兩行出現一組時間與地點
+    // V5.18.2: Do NOT trim a reply simply because it contains two 時間/地點
+    // pairs. The first pair is the narrative header; the last may be the
+    // creator's custom footer, and removing the first destroys the story.
+    // Explicitly duplicated narrative remains handled by the paragraph-based
+    // duplicate guard below (requires identical substantive story text).
     // ==================================================
-    if ((chatMode === "story" || chatMode === "immersive" || chatMode === "resonance")) {
-        const storyHeaderRegex =
-            /^時間\s*[：:][^\r\n]*(?:\r?\n)地點\s*[：:][^\r\n]*/gm;
-
-        const storyHeaders = [
-            ...cleanDisplayText.matchAll(storyHeaderRegex),
-        ];
-
-        if (storyHeaders.length > 1) {
-            const lastHeaderIndex =
-                storyHeaders[storyHeaders.length - 1].index ?? 0;
-
-            console.warn(
-                `⚠️ 偵測到 ${storyHeaders.length} 個正文時間標頭，` +
-                "只保留最後一份完整回覆。"
-            );
-
-            cleanDisplayText = cleanDisplayText
-                .slice(lastHeaderIndex)
-                .trim();
+    if (chatMode === "story" || chatMode === "immersive" || chatMode === "resonance") {
+        const headerPairs = [...cleanDisplayText.matchAll(
+            /^時間\s*[：:][^\r\n]*(?:\r?\n)地點\s*[：:][^\r\n]*/gm
+        )];
+        if (headerPairs.length > 1) {
+            console.log("V5.18.2 STORY HEADER PAIRS PRESERVED", {
+                chatMode, count: headerPairs.length,
+                reason: "creator_footer_may_repeat_time_and_location"
+            });
         }
     }
 
@@ -6930,7 +6971,7 @@ if (sessionId) {
     // is rejected before Firestore write and before flower billing.
     if (supportsCustomStatusBar && creatorNarrativeMinimumHan > 0) {
         const narrativeOnly = customStatusGuard.bodyOnly(cleanDisplayText)
-            .replace(/^\s*(?:時間|日期|地點|位置)[：:][^\n]*$/gmu, "");
+            .replace(/^\s*(?:時間|日期|地點|位置)[：:][^\n]*$/gmu, (line) => /[（(「『]/u.test(line) ? line : "");
         const bodyHan = (narrativeOnly.match(/\p{Script=Han}/gu) || []).length;
         const missingFields = customStatusGuard.missing(cleanDisplayText);
         console.log("V5.11 CREATOR OUTPUT AUDIT", {
