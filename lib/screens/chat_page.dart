@@ -3692,6 +3692,7 @@ class _ChatPageState extends State<ChatPage> {
   Future<bool> _regenerateAIResponse(
       String aiMessageId,
       String lastUserText,
+      String lastUserMessageId,
       ) async {
     final currentUser = FirebaseAuth.instance.currentUser;
 
@@ -3719,6 +3720,7 @@ class _ChatPageState extends State<ChatPage> {
       final List<Map<String, String>> actualChatHistory = [];
       String regenerateStartTime = _currentStoryTime ?? '';
       String regenerateStartLocation = _currentStoryLocation ?? '';
+      String regenerateOriginalResponse = '';
 
       if (_messagesCollection != null) {
         final historySnapshot = await _messagesCollection!
@@ -3744,6 +3746,9 @@ class _ChatPageState extends State<ChatPage> {
           oldAiDoc.data() as Map<String, dynamic>?;
 
           if (oldAiData != null) {
+            // Only for backend duplicate comparison, not prompt history.
+            regenerateOriginalResponse =
+                oldAiData['text']?.toString().trim() ?? '';
             final savedStartTime =
                 oldAiData['storyStartTime']?.toString().trim() ?? '';
 
@@ -3767,8 +3772,9 @@ class _ChatPageState extends State<ChatPage> {
         final docsList = historySnapshot.docs.reversed.toList();
 
         for (final doc in docsList) {
-          // 不要把準備重新生成的舊 AI 回覆送進歷史
-          if (doc.id == aiMessageId) {
+          // 重新生成的舊 AI 不可當成既成劇情；最新玩家訊息也會
+          // 由後端以 userMessage 加在 history 末尾，避免重複送兩次。
+          if (doc.id == aiMessageId || doc.id == lastUserMessageId) {
             continue;
           }
 
@@ -3907,6 +3913,7 @@ class _ChatPageState extends State<ChatPage> {
         'persistentInstructions': _persistentInstructions,
 // 告訴後端這是重新生成；免費或按模式扣點由後端判斷。
         'isRegenerate': true,
+        'regenerateOriginalResponse': regenerateOriginalResponse,
         'regeneratePaidConfirmed': _freeRegenerateCount <= 0,
         'isBirthdayFreebie': false,
         'overrideSystemPrompt': '',
@@ -4073,7 +4080,9 @@ class _ChatPageState extends State<ChatPage> {
         body: jsonEncode(requestBody),
       )
           .timeout(
-        const Duration(seconds: 45),
+        // Backend supports a 300s generation/repair path; 45s caused
+        // premature client failure while the server could still finish.
+        const Duration(seconds: 300),
       );
 
       // 玩家已停止，安靜結束，不扣除次數
@@ -11809,6 +11818,7 @@ class _ChatPageState extends State<ChatPage> {
       final regenerateSucceeded = await _regenerateAIResponse(
         aiMessageId,
         userMessageText,
+        querySnapshot.docs[1].id,
       );
 
       if (!regenerateSucceeded) return;

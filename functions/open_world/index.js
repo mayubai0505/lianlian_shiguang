@@ -8,6 +8,159 @@ const {onDocumentCreated} = require('firebase-functions/v2/firestore');
 const {createWorldMemoryTools, EMBEDDING_VERSION} = require('./world_memory_worker');
 const {parseFields, lockCreatorStatus, describeCreatorTemplate, isCreatorGuidance, enforceModernStatusTime, protectCreatorCalendarDisplay} = require('./status_template');
 
+// V1 conditional creator status display: enforce only unambiguous, explicitly
+// command-gated status fields. Never infer permission from AI-generated text.
+// Free-form conditional prose remains creator guidance, not executable rules.
+function creatorConditionalStatusRules(template) {
+  const lines=String(template||'').replace(/\r\n?/g,'\n').split('\n');
+  const fieldHeader=/^\s*([^\n：:]{1,55})\s*[：:]\s*/u;
+  const gated=/(?:只有|僅(?:在|當|限)?|必須|需要|須|當|若|如果)[^\n]{0,95}(?:輸入|發送|傳送|說出|下達|使用|觸發)[^\n]{0,95}(?:才|才能|方可|之後|後|時|便)[^\n]{0,70}(?:顯示|出現|展開|揭露|解鎖|開啟)|(?:輸入|發送|傳送|說出|下達)[^\n]{0,75}(?:才|才能|後|時)[^\n]{0,75}(?:顯示|出現|展開|揭露|解鎖|開啟)/u;
+  const extractCommand=line=>{
+    const tail=String(line).match(/(?:輸入|發送|傳送|說出|下達|使用|觸發)([^\n]{0,85})/u)?.[1]||'';
+    const quote=tail.match(/[「『“`"]([^」』”`"]{1,55})[」』”`"]/u);
+    if(quote)return quote[1].trim();
+    const plain=tail.match(/^\s*(?:指令|暗號|口令)?\s*[：:]?\s*([^，。；;、\s]{2,32}?)(?=才|才能|後|時|方可|即|便|\s|$)/u);
+    return plain?.[1]?.trim()||'';
+  };
+  const fields=[];
+  for(let i=0;i<lines.length;i++) {
+    const line=lines[i];
+    if(!gated.test(line))continue;
+    const command=extractCommand(line);
+    // When a creator explicitly marks a field as conditional but the command
+    // cannot be parsed, hide it rather than accidentally revealing it.
+    // Inline conditional on a labelled row; otherwise nearest adjacent label.
+    const inline=line.match(fieldHeader);
+    const previous=i>0?lines[i-1].match(fieldHeader):null;
+    const next=i+1<lines.length?lines[i+1].match(fieldHeader):null;
+    const label=(inline?.[1]||previous?.[1]||next?.[1]||'').trim();
+    if(!label||/(?:範例|備註|顯示條件|觸發條件|使用說明|輸出規則)/u.test(label))continue;
+    fields.push({label,command});
+  }
+  return fields;
+}
+function creatorCommandWasIssued(playerMessage,command) {
+  const message=String(playerMessage||'').trim();
+  const word=String(command||'').trim();
+  if(!word||!message)return false;
+  // Deliberate, current-turn command only. Merely mentioning a trigger in
+  // dialogue, a quoted past event or a status template is not authorization.
+  const simplified=value=>value.replace(/[\s，。！!？?、:：]+/gu,'').trim();
+  const normalized=simplified(message);
+  const key=simplified(word);
+  return normalized===key || normalized===`/${key}` || normalized===`指令${key}` || normalized===`請${key}`;
+}
+function enforceCreatorConditionalStatus(template,generated,playerMessage) {
+  const rules=creatorConditionalStatusRules(template);
+  if(!rules.length)return {status:generated, protectedCount:0, removedCount:0};
+  const denied=rules.filter(r=>!creatorCommandWasIssued(playerMessage,r.command));
+  if(!denied.length)return {status:generated, protectedCount:rules.length, removedCount:0};
+  const lines=String(generated||'').replace(/\r\n?/g,'\n').split('\n');
+  const templateHeaders=new Set(String(template||'').replace(/\r\n?/g,'\n').split('\n')
+    .map(line=>line.match(/^\s*([^\n：:]{1,55})\s*[：:]/u)?.[1]?.trim()).filter(Boolean));
+  const isHeading=line=>{
+    const prefix=line.match(/^\s*([^\n：:]{1,55})\s*[：:]/u)?.[1]?.trim();
+    return Boolean(prefix&&templateHeaders.has(prefix));
+  };
+  let remove=false,removed=0;
+  const output=[];
+  for(const line of lines){
+    const heading=line.match(/^\s*([^\n：:]{1,55})\s*[：:]/u)?.[1]?.trim()||'';
+    // Only hide exact creator-authored field names, not unrelated prose or NPC dialogue.
+    if(denied.some(rule=>rule.label===heading)){remove=true;removed++;continue;}
+    if(remove&&isHeading(line))remove=false;
+    if(remove)continue;
+    output.push(line);
+  }
+  return {status:output.join('\n').trim(),protectedCount:rules.length,removedCount:removed};
+}
+
+
+// Creator query-only status policy: this is a presentation visibility rule,
+// independent of model compliance. Activate ONLY for an explicit creator
+// template that hides all non-world-status data until a player query.
+// Never delete internal tracking; query results are generated separately.
+function creatorHasQueryOnlyHiddenStatusPolicy(template) {
+  const text = String(template || '');
+  return /(?:隱藏狀態資料|HIDDEN\s+STATUS)/iu.test(text) &&
+    /(?:除基本資訊以外|除(?:日期|時間|地點)[^\n]{0,55}(?:以外|之外))[^\n]{0,120}(?:全部隱藏|一律隱藏|均(?:須|需|應)?隱藏)/u.test(text) &&
+    /(?:固定顯示|每次回覆)[^\n]{0,85}(?:日期|時間|世界狀態)/u.test(text) &&
+    /(?:查詢指令|STATUS\s+COMMAND|查詢回覆格式)/iu.test(text);
+}
+
+// Only the explicitly public world-status heading and date/time/location rows
+// may survive in a *normal* creator status bar. Queries have their own
+// server-generated, current-turn-only display, appended AFTER this guard.
+// Do not trust model-created HIDDEN STATUS / QUERY RESULT sections.
+function enforceCreatorQueryOnlyVisibleStatus(template, generated) {
+  if (!creatorHasQueryOnlyHiddenStatusPolicy(template)) return generated;
+  const lines = String(generated || '').replace(/\r\n?/g, '\n').split('\n');
+  const publicHeading = /^\s*【\s*(?:WORLD\s+STATUS\s*[｜|]\s*世界狀態|世界狀態\s*[｜|]\s*WORLD\s+STATUS|世界狀態)\s*】\s*$/iu;
+  const publicRow = /^\s*(?:日期(?:\s+DATE)?|DATE(?:\s+日期)?|時間(?:\s+TIME)?|TIME(?:\s+時間)?|地點(?:\s+LOCATION)?|LOCATION(?:\s+地點)?)\s*[：:]/iu;
+  return lines.filter(line => publicHeading.test(line) || publicRow.test(line)).join('\n').trim();
+}
+
+// Emoji-first, colon-free creator status directives are display instructions,
+// not literal status values. Build a bounded field checklist for the writer;
+// never create status text on the server or override hidden/query-only policies.
+function worldEmojiDirectiveStatusHint(template) {
+  const entries=[];
+  for (const raw of String(template||'').replace(/\r\n?/g,'\n').split('\n')) {
+    const line=raw.trim();
+    const match=line.match(/^((?:[\p{Extended_Pictographic}\u2600-\u27BF\uFE0F\u200D]{1,8}))\s*請(?:系統)?(?:詳細)?(?:描述|顯示|列出|記錄|呈現|更新)([^\n]{1,450})/u);
+    if (!match) continue;
+    const symbol=match[1];
+    const instruction=match[2];
+    // Preserve conditional sections without declaring that their condition is met.
+    const conditional=/(?:若|如果|只有|僅在|當)[^\n]{0,160}(?:才顯示|才輸出|不顯示|不輸出|隱藏|自動不顯示)|(?:若無|沒有)[^\n]{0,90}(?:不顯示|隱藏)/u.test(instruction);
+    entries.push({symbol,conditional});
+    if (entries.length>=16) break;
+  }
+  if (!entries.length) return '';
+  return [
+    '【創作者 Emoji 自然語言狀態欄｜欄位辨識補充】',
+    '創作者以 Emoji 加「請描述／請顯示」定義了以下狀態區塊。這些句子是輸出規則，不是要顯示的數值。',
+    ...entries.map((entry,i)=>`${i+1}. ${entry.symbol}：${entry.conditional?'條件區塊；僅條件成立時顯示，否則完全省略':'固定區塊；每輪依創作者原句及本輪已知資訊填寫'}`),
+    '在 statusBar 中保留每個應顯示區塊的原始 Emoji 與順序，填入具體狀態，不要原樣複製「請系統」指令。',
+    '不要輸出範例、備註、隱藏欄位或未符合條件的資料；也不要把未公開的角色秘密、玩家內心或其他 NPC 不知道的私訊當成已知事實。',
+    '缺少可靠資訊時不可編造；此補充不新增伺服器欄位，也不要求重新生成已完成的劇情。',
+  ].join('\n');
+}
+
+// Final display-only cleanup for a duplicate 📅 row. Only activate when the
+// creator defined exactly one calendar-emoji row; never merge unrelated dates,
+// status sections, secret/query content, or intentionally multiple date rows.
+function dedupeCreatorCalendarRows(template, status) {
+  const source=String(status||'');
+  const templateRows=String(template||'').replace(/\r\n?/g,'\n').split('\n');
+  const requestedCalendarRows=templateRows.filter(line => /^\s*📅/u.test(line));
+  if(requestedCalendarRows.length!==1) return source;
+  const lines=source.replace(/\r\n?/g,'\n').split('\n');
+  const prefix=/^\s*📅\s*[:：]?\s*/u;
+  const calendarKey=line=>{
+    if(!prefix.test(line)) return '';
+    const value=line.replace(prefix,'');
+    const date=value.match(/(?:\d{4})[\/-](?:\d{1,2})[\/-](?:\d{1,2})/u);
+    const hour=value.match(/(?:^|\D)(\d{1,2})\s*[:：]\s*(\d{2})(?!\d)/u);
+    if(!date || !hour) return '';
+    const parts=date[0].split(/[\/-]/u).map(Number);
+    const h=Number(hour[1]),m=Number(hour[2]);
+    if(parts[1]<1||parts[1]>12||parts[2]<1||parts[2]>31||h>23||m>59)return '';
+    return `${parts[0]}-${parts[1]}-${parts[2]} ${h}:${m}`;
+  };
+  let first='';
+  let removed=0;
+  const kept=lines.filter(line=>{
+    const key=calendarKey(line);
+    if(!key)return true;
+    if(!first){first=key;return true;}
+    if(key!==first)return true; // distinct time may be an intentional detail
+    removed++;
+    return false;
+  });
+  return removed?kept.join('\n').trim():source;
+}
+
 // 世界觀邏輯集中管理；依賴由 functions/index.js 注入，避免重複初始化 Firebase Admin。
 function registerWorldFunctions(exports, deps) {
   const {
@@ -183,6 +336,11 @@ const WORLD_PERSONHOOD_DIRECTIVE = [
   '【角色本人演繹：適用所有世界觀模式】世界中的每一位 NPC 都是具有自身意志、記憶與人格的當事人，不是替玩家服務的 AI、演員、主持人或旁白代言人。',
   '每位 NPC 只能依自己的性格、價值觀、立場、已知消息、當下所見所聞與過往經歷作出選擇；可以主動行動、提問、拒絕、猶豫、誤解或改變主意，但不得憑空知道其他人的秘密。',
   'NPC 的感情與關係須由雙方實際互動自然累積；不同 NPC 不得共用人格、口吻或同一種戀愛反應，也不可無理由圍繞玩家集體示好。',
+  '【NPC 私人資訊權限｜所有模式】聊天歷史、記憶檢索和全世界人設是寫作參考，不是每一位 NPC 都知道的情報。A 私下寄給玩家的文字訊息、電話、私聊、密談與只有 A 對玩家說出的秘密，預設只有當事人 A 與玩家知道；未在場的 B 不能引用、回覆、暗示、猜到訊息原文或內容，也不得突然知道私訊已發生。',
+  '即使 A、B 是好友、同伴、親人，或玩家在另一場景與 B 同處，也不等於 B 讀過 A 的私人訊息。B 必須有劇情中確實發生的轉告、截圖分享、公開揭露、實際偷看到/聽到等明確證據，才能知道相應內容；僅見玩家表情不能推斷訊息細節。人物獨白、旁白、狀態欄與 relationshipUpdates 同樣不得偷偷傳播私密資訊。',
+  '【可見動作不等於私人內容】B 即使親眼看到玩家拿手機、點開通知、打字、笑或皺眉，也只能知道自己實際看見的動作；若未看清螢幕、未聽見對話、未獲玩家或 A 轉告，不能知道發訊者是 A、對方姓名、訊息文字、雙方關係、聯絡原因，甚至不能確定玩家正在回覆誰。不可透過旁白替 B 補上上帝視角，或讓 B 以「妳在回 A 的訊息？」等猜中答案的方式迂迴洩漏。',
+  '【角色資訊來源檢查】寫每位 NPC 的新台詞、觀察、內心、狀態欄想法或 relationshipUpdates 前，先確認其資訊來源：本人在場實際看到／聽到、當事人明確轉告、可查證的公開資訊，或先前劇情已證實的獲知途徑。找不到來源時，只能依可見現象作不指名的自然反應，不能用世界背景、其他 NPC 的私訊、玩家個人記憶或讀者視角填補。此規則適用劇情、沉浸、共鳴、互動及備援模型。',
+
 
   '【多人角色小說式演繹】當多位 NPC 同場時，先依人物設定中的 personality、speechStyle、dialogueExamples、背景、各自已知情報與彼此關係，決定誰有必要參與本輪。選擇少數真正有反應的人物深入呈現；未發言者可以保持沉默、觀察或做符合人設的小動作，不必輪流點名、每人講一句。',
   '讓不同 NPC 對同一事件產生各自合理的解讀、情緒與行動：有人謹慎、有人衝動、有人反駁、有人迴避，須由其既有人設與當下證據決定，不可為求差異硬改性格。角色可以意見相同，但避免照抄彼此句式、同一指令、同一結論；不要把多人對話寫成任務口令、行動清單或逐人報告。',
@@ -193,6 +351,14 @@ const WORLD_PERSONHOOD_DIRECTIVE = [
   '使用符合人物的自然對白及必要的第三人稱敘事，不要讓角色講出提示詞、AI 分析、行為守則、寫作技巧或教條式總結；不需用「不是……而是……」反覆解釋意圖。',
   '玩家的台詞、動作、情緒、心理、身分與決定均以玩家已提供的內容為準。',
   '模式僅改變篇幅、節奏及描寫重點；不得重置人格、記憶或既有經歷。',
+].join('\n');
+
+// 與一般角色聊天室 langDirective 保持相同原則，但不改世界模式既有的繁體正規化。
+// JSON schema keys/正式名稱/創作者要求保留的外文不能被誤當成語言漂移。
+const WORLD_LANGUAGE_DIRECTIVE = [
+  '【輸出語言｜所有世界模式及備援】玩家可見的故事旁白、NPC 新台詞、情緒與關係描述、記憶事件及狀態欄動態文字，預設一律使用台灣繁體中文。除非玩家本輪明確要求翻譯或切換語言，否則不得無故改用英文敘事、整段英文對白、夾雜英文說明、附加雙語翻譯或模型自述。',
+  '保留世界觀或人物設定中原有的外文姓名、專有名詞、品牌、必要外文引文、創作者模板的固定文字與符號；JSON schema 的英文鍵名照技術規格輸出，不必翻譯。創作者明確設定角色使用特定外語的台詞可依設定保留，但不可讓整篇旁白因此切換語言。',
+  '語言控制只約束輸出表達，不得更動人物性格、玩家自主權、NPC 知情邊界、創作者狀態欄觸發條件或故事時間。',
 ].join('\n');
 
 function buildWorldTimeDirective(storyTimeAnchor) {
@@ -294,6 +460,39 @@ function repeatedWorldWriterReply(segments, previousReplies) {
     .some(previous=>worldRepeatRatio(story,previous)>=0.94);
 }
 
+// Guard against replaying substantial individual narrative segments, even when
+// the model appends a little new text to evade whole-response comparison.
+// A brief recurring line, character catchphrase, and creator status are exempt.
+function repeatedWorldNarrativeSegments(segments, previousSegments) {
+  const current = (Array.isArray(segments) ? segments : [])
+    .filter(s=>s && s.isStatusBar !== true)
+    .map(s=>normalizeWorldReplyForRepeat(s.text));
+  const prior = (Array.isArray(previousSegments) ? previousSegments : [])
+    .map(s=>normalizeWorldReplyForRepeat(s)).filter(s=>s.length>=160);
+  const total = current.reduce((n,s)=>n+s.length,0);
+  if (total<160 || prior.length===0) return false;
+  let replayed=0;
+  for (const item of current) {
+    if (item.length<160) continue;
+    if (prior.some(old=>worldRepeatRatio(item,old)>=0.98)) replayed+=item.length;
+  }
+  // Reject only when the majority of substantial narrative is copied.
+  return replayed>=160 && replayed/total>=0.65;
+}
+
+// Regeneration is intentionally an alternative answer to the SAME player input.
+// Compare against the answer being replaced with a stricter threshold than
+// ordinary turns; do not treat repeated time/status fields as narrative reuse.
+function repeatedWorldRegeneration(segments, originalReply) {
+  const candidate = (Array.isArray(segments) ? segments : [])
+    .filter(s => s && s.isStatusBar !== true)
+    .map(s => String(s.text || '')).join('\n');
+  if (!String(originalReply || '').trim()) return false;
+  // Existing comparator already requires substantial text and similar lengths.
+  // Threshold is regeneration-only: a new answer should not be an 80% replay.
+  return worldRepeatRatio(candidate, originalReply) >= 0.80;
+}
+
 // 世界觀房間專屬的低成本事件檢索；不跨玩家、世界或房間共用。
 // 本版不使用向量資料庫；僅為詞組匹配與重要狀態優先的輕量檢索。
 const WORLD_MEMORY_KEYWORDS = Object.freeze({
@@ -313,10 +512,33 @@ function worldMemoryTokens(input) {
   }
   return tokens;
 }
+// V2: only explicit invalidations are hidden; a newer story event does not
+// automatically erase an older historical event.
+function isReadableWorldEvent(data) {
+  return data?.active !== false && data?.deletedByUser !== true && !data?.supersededBy;
+}
+// Conservative cross-turn de-duplication. Never collapse separate event kinds,
+// subjects or NPCs; never infer that similar wording means the same event.
+function worldEventIdentity(event) {
+  const clean = value => String(value || '').normalize('NFKC').toLowerCase()
+    .replace(/[\p{P}\p{Z}\p{C}]/gu, '').trim();
+  return [clean(event?.kind),clean(event?.subject),clean(event?.npcId),clean(event?.fact)].join('\u0001');
+}
+function uniqueNewWorldEvents(events, priorDocs) {
+  const existing = new Set(priorDocs.map(doc => doc.data() || {})
+    .filter(isReadableWorldEvent).map(worldEventIdentity));
+  return events.filter(event => {
+    const key = worldEventIdentity(event);
+    if (existing.has(key)) return false;
+    existing.add(key);
+    return true;
+  });
+}
 function selectWorldMemoryEvents(docs, query, maxItems=4, maxChars=1350) {
   const q = worldMemoryTokens(query);
   const ranked = docs.map((doc, index) => {
     const item = doc.data() || {};
+    if (!isReadableWorldEvent(item)) return null;
     const detail = String(item.fact || '').trim().slice(0, 280);
     const terms = worldMemoryTokens(detail + ' ' + String(item.subject || ''));
     let matches = 0;
@@ -325,7 +547,7 @@ function selectWorldMemoryEvents(docs, query, maxItems=4, maxChars=1350) {
     const pinned = ['relationship','identity','world_state'].includes(kind);
     return {detail, subject:String(item.subject||'').slice(0,60), kind,
       score:matches * 5 + (pinned ? 3 : 0) + Math.max(0,4-Math.floor(index/8)),matches};
-  }).filter(x => x.detail);
+  }).filter(x => x && x.detail);
   ranked.sort((a,b) => b.score-a.score);
   const chosen=[]; let length=0;
   for (const item of ranked) {
@@ -371,6 +593,7 @@ function semanticWorldMemoryEvents(docs, query, queryVector, maxItems=4, maxChar
   const queryTerms=worldMemoryTokens(query);
   const ranked=docs.map((doc,index)=>{
     const data=doc.data()||{};
+    if (!isReadableWorldEvent(data)) return null;
     const fact=String(data.fact||'').trim().slice(0,280);
     const v=data.embedding;
     let semantic=null;
@@ -386,7 +609,7 @@ function semanticWorldMemoryEvents(docs, query, queryVector, maxItems=4, maxChar
     // 結合向量語意、明確關鍵字與核心狀態；舊資料無向量時仍可被取回。
     const score=(semantic===null?0:semantic*12)+(Math.min(hits,5)*2)+(pinned?3:0)+Math.max(0,2-index/20);
     return {fact,subject:String(data.subject||'').slice(0,60),kind:String(data.kind||'event'),score,semantic,hits,pinned};
-  }).filter(x=>x.fact);
+  }).filter(x=>x && x.fact);
   ranked.sort((a,b)=>b.score-a.score);
   const chosen=[];let used=0;
   for(const x of ranked) {
@@ -405,14 +628,15 @@ function selectWorldAboutFacts(docs, query, queryVector, maxItems=4, maxChars=95
   const terms=worldMemoryTokens(query);
   const ranked=docs.map((doc,index)=>{
     const d=doc.data()||{};
-    const content=String(d.content||'').trim().slice(0,500);
+    // Shared memories use `content`; auto-extracted room facts use `text`.
+    const content=String(d.content||d.text||'').trim().slice(0,500);
     if (!content || d.active===false || d.deletedByUser===true) return null;
     const memoryTerms=worldMemoryTokens(content);
     let hits=0;
     for (const term of terms) if (memoryTerms.has(term)) hits++;
     let semantic=null;
     const v=d.embedding;
-    if (queryVector && d.embeddingVersion===EMBEDDING_VERSION && d.embeddingContent===d.content && Array.isArray(v) && v.length===768) {
+    if (queryVector && d.embeddingVersion===EMBEDDING_VERSION && d.embeddingContent===(d.content||d.text) && Array.isArray(v) && v.length===768) {
       let sum=0,valid=true;
       for(let i=0;i<v.length;i++){if(!Number.isFinite(v[i])){valid=false;break;}sum+=v[i]*queryVector[i];}
       if(valid)semantic=sum;
@@ -423,7 +647,7 @@ function selectWorldAboutFacts(docs, query, queryVector, maxItems=4, maxChars=95
   for(const m of ranked){
     if(picked.length>=maxItems)break;
     if(m.hits===0 && (m.semantic===null || m.semantic<0.40))continue;
-    if(used+m.content.length>maxChars)continue;
+    if(used+m.content.length>maxChars || picked.includes(m.content))continue;
     picked.push(m.content);used+=m.content.length;
   }
   // 沒有命中時，保留一筆最近的手動共同記憶作為低成本備援。
@@ -997,6 +1221,19 @@ exports.worldPrivateTest = onCall({
           .filter(s => s?.isStatusBar !== true)
           .map(s => String(s?.text || '')).join('\n'))
         .filter(Boolean);
+      // The replaced AI message is excluded from model history, but remains a
+      // required comparison baseline: the same input can elicit the same answer.
+      const regenerateOriginalReply = action === 'regenerate'
+        ? (recent.docs.find(d => d.id === regenerateTargetId)?.data()?.segments || [])
+            .filter(s => s?.isStatusBar !== true)
+            .map(s => String(s?.text || '')).join('\n')
+        : '';
+      const previousNarrativeSegments = recent.docs
+        .filter(d=>d.data()?.sender === 'ai' && d.id !== 'opening')
+        .slice(0,5)
+        .flatMap(d=>(Array.isArray(d.data()?.segments) ? d.data().segments : [])
+          .filter(s=>s?.isStatusBar !== true).map(s=>String(s?.text||'')))
+        .filter(Boolean);
       const allowed = (Array.isArray(world.npcCharacters) ? world.npcCharacters : [])
         .slice(0,35).map(n => ({
           id:String(n.id || ''),kind:String(n.kind||'npc'),
@@ -1032,14 +1269,21 @@ exports.worldPrivateTest = onCall({
       // 不再查 world_memory_rollout 或 allowedUserIds 測試名單。
       const aboutMemoriesRef = db.collection('users').doc(uid).collection('worlds')
         .doc(worldId).collection('sessions').doc(sessionId).collection('shared_memories');
-      const aboutMemorySnap = await aboutMemoriesRef.orderBy('timestamp','desc').limit(60).get();
+      // The independent world fact worker writes to `memories`, while the editable
+      // "關於我們" collection is `shared_memories`. Read both within the same room.
+      // No new AI requests: both collections share one retrieval embedding and budget.
+      const autoMemoriesRef = aboutMemoriesRef.parent.collection('memories');
+      const [aboutMemorySnap, autoMemorySnap] = await Promise.all([
+        aboutMemoriesRef.orderBy('timestamp','desc').limit(60).get(),
+        autoMemoriesRef.orderBy('timestamp','desc').limit(60).get(),
+      ]);
       const worldMemoryQuery = `${rawMessage}\n${history.slice(-900)}`;
-      const queryEmbedding = worldEventSnapshot.empty && aboutMemorySnap.empty ? null : await embedWorldText(
+      const queryEmbedding = worldEventSnapshot.empty && aboutMemorySnap.empty && autoMemorySnap.empty ? null : await embedWorldText(
         worldMemoryQuery,'RETRIEVAL_QUERY',geminiApiKey.value());
       const retrievedWorldEvents = semanticWorldMemoryEvents(
         worldEventSnapshot.docs, worldMemoryQuery, queryEmbedding, 4, 1350);
       const retrievedWorldAboutFacts = selectWorldAboutFacts(
-        aboutMemorySnap.docs,worldMemoryQuery,queryEmbedding,4,950);
+        [...aboutMemorySnap.docs, ...autoMemorySnap.docs],worldMemoryQuery,queryEmbedding,4,950);
       const roomConfig = (await room.get()).data() || {};
       const playerTimeAnchor = action === 'send' ? extractWorldStoryTimeAnchor(rawMessage) : '';
       const currentStoryTimeAnchor = playerTimeAnchor || String(roomConfig.storyTimeAnchor || '');
@@ -1112,6 +1356,13 @@ exports.worldPrivateTest = onCall({
           (!previousStoryClock || !previousStoryClock.dateKnown)) {
         previousStoryClock = storyClock.initialStoryClock(world, sessionId, previousStoryClock);
       }
+      // A creator may use ancient branches without a parsable date in the status.
+      // Keep an arithmetic-only clock so normal turns/continue still advance.
+      // Do not expose a fabricated Gregorian date in an ancient world.
+      if (!modernWorldClock && !previousStoryClock && !previousFictionalClock) {
+        previousStoryClock = storyClock.normalize({year:2000,month:1,day:1,
+          hour:8,minute:0,yearKnown:false,dateKnown:false});
+      }
       const displayStoryTime = clock => storyClock.displayTime(clock,world);
       const creatorTimePolicy = storyClock.creatorTimePolicy(world);
       const worldDefaultAdvance = storyClock.advanceForWorld(world,3);
@@ -1176,14 +1427,17 @@ exports.worldPrivateTest = onCall({
         originalTemplateLength:fullCustomStatusTemplate.length,
         templateTruncated:fullCustomStatusTemplate.length > customStatusTemplate.length,
       });
+      const emojiDirectiveStatusHint = worldEmojiDirectiveStatusHint(customStatusTemplate);
       const statusBarDirective = hasCustomStatusBar ? [
         '【創作者自由格式狀態欄】以下模板提供展示版型與生成規則，不是可直接貼給玩家的內容。',
         '只要創作者有設定模板，本輪 JSON 最外層就必須有已填妥的 statusBar 字串，不可省略、留空或放進 segments。這是顯示契約，不是可選的裝飾。',
         '創作者在模板中對欄位內容、分行、固定文字、顯示條件的指示是 statusBar 專用的有效格式規則；在不違反玩家自主權、NPC 知情界線與安全規則的前提下逐項遵守。',
         '請同時參考本輪玩家輸入、最新劇情和最近狀態，更新已改變的動態欄位；已經改變的數值、位置、想法不能因上一輪狀態仍存在就直接複製。',
         '創作者能自由使用 Emoji、顏文字、符號、換行、縮排、表格、｜分隔、無冒號欄位與自訂文字。不要依固定標籤重新排列，不要因為欄位沒有冒號就省略。',
+        ...(emojiDirectiveStatusHint ? [emojiDirectiveStatusHint] : []),
         '逐行理解模板：創作者寫的「請、根據、讀取、只在、字數」等是生成規則，不是要照抄的狀態值；填入本回合已有依據的具體內容。',
         '條件式區塊只有在條件成立時才顯示；例如明確要求某事件發生才顯示的欄位，條件未成立時整個區塊省略，不要輸出條件說明。',
+        '【命令觸發的隱藏欄位】創作者寫明「只有玩家輸入指定指令才顯示」的欄位，平常一律隱藏；本輪玩家未親自輸入該指令時，不論過往歷史、NPC 台詞、創作者範例或模型猜測是否出現同一句話，狀態欄都不可以擅自展開。不得印出隱藏欄位標題、值或觸發條件。',
         '多角色內心話、直播彈幕等允許多行，照創作者要求分行；只包含已出場或有劇情依據的角色與資訊。',
         '【主想法欄位即時性】只有創作者模板設有「💭」或明確標示「想法／當前想法」的主要想法欄位時才適用。這一欄要反映本回合最新事件、角色此刻的注意力及情緒，不可機械複製上一輪已失去情境依據的想法。面對逃生、受傷、衝突等當下重大事件，優先根據角色目前已知的風險與目標生成想法；若角色仍合理惦記舊事，才可自然延續。不得憑空替玩家編造心理。',
         '【主想法與其他心聲分離】「💭」主要想法與「🗯️」多角色心聲是兩個不同欄位；這項即時更新指令只針對前者，不得刪除、改名、合併或借用「🗯️」內容，不得更動創作者其餘自訂狀態欄的生成規則。',
@@ -1218,6 +1472,7 @@ exports.worldPrivateTest = onCall({
         playerStatusDirective,
         playerProfileContext,
         WORLD_PERSONHOOD_DIRECTIVE,
+        WORLD_LANGUAGE_DIRECTIVE,
         buildWorldTimeDirective(currentStoryTimeAnchor),
         storyClock.timePresentationDirective(world),
         provisionalStoryClock.clock ? `【後端故事時鐘】本輪目前時間為 ${displayStoryTime(provisionalStoryClock.clock)}。普通互動依本世界時間規則自然推進；你可在 JSON 頂層建議 storyMinutesElapsed（1～5 整數），後端會依創作者可辨識的時間設定核對。玩家明確跨日或設定時間優先，絕不可自行倒退。` : '【後端故事時鐘】故事尚未建立絕對時間。可自然敘事但不要擅自捏造具體日期或時間。',
@@ -1229,6 +1484,9 @@ exports.worldPrivateTest = onCall({
         retrievedWorldAboutFacts ? `【關於我們：本房間相關玩家記憶】下列是玩家在本世界線保留或編輯的記憶，可能僅是私下說過的話。僅可用於敘事連續性；沒有劇情證據證明 NPC 已知時，禁止讓該 NPC 憑空知道或主動提起：\n${retrievedWorldAboutFacts}` : '',
         '【連續性】維持已確認的關係、身分、修為、傷勢、承諾及知識邊界；不捏造未確認資訊，不讓 NPC 知悉他人秘密。',
         '【禁止重播前一輪】最近對話是已發生的歷史，不是本輪回覆範本。先辨認本輪玩家新增的資訊、問題或行動，再寫角色對此的新反應；絕不可把上一輪的完整台詞、旁白或事件原封不動重播。人物可自然使用習慣用語或簡短回應，情勢未變時也可有合理停頓，但不能整段照抄舊回覆。',
+        ...(action === 'regenerate' ? [
+          '【本輪是重新生成】玩家輸入與既有場景不變，但必須重新構思角色當下的自然反應、台詞和敘事節奏，產生與上一版明顯不同的新回覆；不可重播舊版正文或只是替換少數同義詞。保持人設、既定事實、玩家自主權與故事時間不變，不為了求不同憑空新增重大事件。',
+        ] : []),
         '你是互動敘事引擎；玩家自行控制其角色。',
         `目前敘事模式：${worldMode}；互動動作請以指定 NPC 為核心，不代替其他人做出選擇。`,
         '【玩家敘事主權與輸出段落】本輪玩家輸入中的台詞、動作、推測及想法都已經發生；不要重新敘述、改寫、擴寫或借玩家第一人稱說第二次。segments 的 npc 只能是世界正式 NPC 或真正獨立於玩家的臨時 NPC；不准將玩家暱稱當成 NPC，沒有頭像不代表可以代演玩家。',
@@ -1452,7 +1710,9 @@ exports.worldPrivateTest = onCall({
         }
         // Catch repeated complete AI story output before Firestore and billing.
         // Never use template/statusBar repetition as a reason for rejection.
-        if (repeatedWorldWriterReply(candidates,previousAiReplies)) {
+        if (repeatedWorldWriterReply(candidates,previousAiReplies) ||
+            repeatedWorldNarrativeSegments(candidates,previousNarrativeSegments) ||
+            (action === 'regenerate' && repeatedWorldRegeneration(candidates,regenerateOriginalReply))) {
           return {parsed:null,reason:'repeated_story_output',length:content.length};
         }
         // A missing creator statusBar must not invalidate otherwise safe story segments.
@@ -1722,8 +1982,14 @@ exports.worldPrivateTest = onCall({
         mode:worldMode, modelId:actualWriterModelId,
         ...auditWorldNpcNarrative(segments, history),
       });
-      const memoryEvents = action === 'regenerate' ? [] : validatedWorldMemoryEvents(
+      const proposedMemoryEvents = action === 'regenerate' ? [] : validatedWorldMemoryEvents(
         parsed.memoryEvents, rawMessage, segments, new Set(allowed.map(n=>n.id).filter(Boolean)));
+      // Reuse the 40 room-scoped candidates already loaded for RAG; no extra query.
+      // A repeated confirmed event is not saved twice in subsequent turns.
+      const memoryEvents = uniqueNewWorldEvents(proposedMemoryEvents,worldEventSnapshot.docs);
+      if (proposedMemoryEvents.length !== memoryEvents.length) logger.info('WORLD MEMORY DUPLICATE SKIPPED', {
+        skipped:proposedMemoryEvents.length-memoryEvents.length,
+      });
       // 每筆新事件只計算一次向量，失敗時仍會保存文字供關鍵字檢索。
       if (memoryEvents.length) {
         const embeddings = await Promise.all(memoryEvents.map(e =>
@@ -1777,15 +2043,36 @@ exports.worldPrivateTest = onCall({
           mode:worldMode, action, clockType:finalStoryClock ? 'calendar' : savedFictionalClock ? 'fictional' : 'unknown',
           initSource:fictionalClockSource === 'unknown' && initialFictionalClock ? 'generated_daypart_or_time' : fictionalClockSource,
           hasTimeText:Boolean(serverTimeText),
+          advanced:action !== 'regenerate' && Boolean(
+            (finalStoryClock && previousStoryClock &&
+              (finalStoryClock.year!==previousStoryClock.year || finalStoryClock.month!==previousStoryClock.month ||
+               finalStoryClock.day!==previousStoryClock.day || finalStoryClock.hour!==previousStoryClock.hour ||
+               finalStoryClock.minute!==previousStoryClock.minute)) ||
+            (savedFictionalClock && previousFictionalClock &&
+              (savedFictionalClock.day!==previousFictionalClock.day ||
+               savedFictionalClock.hour!==previousFictionalClock.hour ||
+               savedFictionalClock.minute!==previousFictionalClock.minute))
+          ),
           // Do not log world or player text, date, user ID, or precise clock.
         });
         const lockedStatus = lockCreatorStatus(customStatusTemplate, renderedStatus,
           {timeText: serverTimeText});
         if (lockedStatus) {
-          newCreatorStatusForPersistence = lockedStatus;
-          const timeAlignedStatus = modernWorldClock
-            ? enforceModernStatusTime(lockedStatus,serverTimeText) : lockedStatus;
-          statusParts.push(protectCreatorCalendarDisplay(customStatusTemplate,timeAlignedStatus,serverTimeText));
+          // Sync a recognizable numeric creator time to the authoritative clock
+          // for fictional-day AND modern rooms. Ancient branch-only labels remain
+          // untouched because enforceModernStatusTime only accepts HH:MM clocks.
+          const timeAlignedStatus = enforceModernStatusTime(lockedStatus,serverTimeText);
+          const displayedStatus = protectCreatorCalendarDisplay(
+            customStatusTemplate,timeAlignedStatus,serverTimeText);
+          const gatedStatus=enforceCreatorConditionalStatus(customStatusTemplate,displayedStatus,rawMessage);
+          const visibleCreatorStatus = dedupeCreatorCalendarRows(customStatusTemplate,
+            enforceCreatorQueryOnlyVisibleStatus(customStatusTemplate,gatedStatus.status));
+          newCreatorStatusForPersistence = visibleCreatorStatus;
+          if(visibleCreatorStatus)statusParts.push(visibleCreatorStatus);
+          if(gatedStatus.protectedCount)logger.info('WORLD CREATOR CONDITIONAL STATUS GUARD',{
+            mode:worldMode,protectedCount:gatedStatus.protectedCount,removedCount:gatedStatus.removedCount,
+            // No player message, hidden status value, or secret trigger in logs.
+          });
         } else if (persistedCreatorStatus || latestStatusText.trim()) {
           // Restore the latest validated creator-only status; legacy rooms may
           // have only a combined isStatusBar segment in recent history.
@@ -1798,9 +2085,12 @@ exports.worldPrivateTest = onCall({
           );
           if (previousSafeStatus) {
             const safeRecoveredStatus = markRecoveredPrimaryThoughtUnknown(previousSafeStatus);
-            const timeAlignedRecovered = modernWorldClock
-              ? enforceModernStatusTime(safeRecoveredStatus,serverTimeText) : safeRecoveredStatus;
-            statusParts.push(protectCreatorCalendarDisplay(customStatusTemplate,timeAlignedRecovered,serverTimeText));
+            const timeAlignedRecovered = enforceModernStatusTime(safeRecoveredStatus,serverTimeText);
+            const recoveredStatus=protectCreatorCalendarDisplay(customStatusTemplate,timeAlignedRecovered,serverTimeText);
+            const gatedRecovered=enforceCreatorConditionalStatus(customStatusTemplate,recoveredStatus,rawMessage);
+            const visibleRecovered = dedupeCreatorCalendarRows(customStatusTemplate,
+              enforceCreatorQueryOnlyVisibleStatus(customStatusTemplate,gatedRecovered.status));
+            if(visibleRecovered)statusParts.push(visibleRecovered);
             reusedPriorStatusBar = true;
             logger.warn('world status bar safely restored from same room', {
               worldMode, parseStrategy:validation.parseStrategy,
@@ -1934,7 +2224,7 @@ exports.worldPrivateTest = onCall({
       const publicCountRef = db.collection('artifacts').doc(APP_ID)
         .collection('public_worlds').doc(worldId);
       writerStage = 'commit_firestore_transaction';
-      await db.runTransaction(async tx => {
+      const billingAudit = await db.runTransaction(async tx => {
         const [roomState, existing, userSnap, regenUsageSnap, counterWorldSnap, publicCountSnap, ...affinitySnaps] = await Promise.all([
           tx.get(room),
           tx.get(msgs.doc(requestId)),tx.get(userRef),
@@ -1950,7 +2240,7 @@ exports.worldPrivateTest = onCall({
             roomState.data()?.processing !== true) {
           throw new HttpsError('cancelled','這次生成已被停止');
         }
-        if (existing.exists) return; // 不重複扣款
+        if (existing.exists) return {committed:false}; // 不重複扣款，也不輸出成功收費紀錄
         if (action === 'regenerate') {
           const current = await tx.get(msgs.doc(regenerateTargetId));
           if (!current.exists || current.data()?.sender !== 'ai')
@@ -1979,7 +2269,7 @@ exports.worldPrivateTest = onCall({
               lastCreatorStatus:newCreatorStatusForPersistence,
               lastCreatorStatusTemplateHash:creatorStatusTemplateHash,
             } : {})});
-          return;
+          return {committed:true,chargedFlowers:effectiveCost, balanceBefore:Number(userSnap.data()?.flowerPoints || 0)};
         }
         if (!userSnap.exists) throw new HttpsError('failed-precondition','玩家帳號不存在');
         const balance = Number(userSnap.data()?.flowerPoints || 0);
@@ -2040,7 +2330,35 @@ exports.worldPrivateTest = onCall({
         recordPublicChatSend({tx, action, room:roomState.data(),
           world:counterWorldSnap.exists ? counterWorldSnap.data() : null,
           worldRef:worldSnap.ref, publicRef:publicCountRef, publicExists:publicCountSnap.exists});
+        return {committed:true,chargedFlowers:chargeCost,balanceBefore:balance};
       });
+      // Audit only after a successful Firestore commit. Firestore may retry the
+      // transaction callback; logging inside it could falsely claim a charge.
+      // Never include full chat transcripts, world secrets, or API prompts here.
+      if (billingAudit?.committed === true) {
+        const redactLogPreview = (text, max=350) => String(text || '')
+          .replace(/https?:\/\/[^\s]+/giu, '[連結已隱藏]')
+          .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/giu, '[信箱已隱藏]')
+          .replace(/(?<!\d)(?:\+?886[- ]?)?0?9\d{2}[- ]?\d{3}[- ]?\d{3}(?!\d)/gu, '[電話已隱藏]')
+          .slice(0, max);
+        const responseText = (Array.isArray(segments) ? segments : [])
+          .filter(segment => segment?.isStatusBar !== true)
+          .map(segment => String(segment?.text || '')).join('\n');
+        const charged = billingAudit.chargedFlowers;
+        logger.info('WORLD CHAT BILLING SUCCESS', {
+          userId:uid, worldId, worldName:String(world.name || '未命名世界').slice(0,80),
+          sessionId, requestId, action, chatMode:worldMode, billingType:action === 'regenerate' ? 'regenerate' : billingType,
+          modelId:actualWriterModelId, chargedFlowers:charged,
+          balanceBefore:billingAudit.balanceBefore, balanceAfter:billingAudit.balanceBefore - charged,
+          freeRegenerate:action === 'regenerate' && charged === 0,
+          interactionNpcId:interactionNpcId || null, interactionType:interactionType || null, giftType:giftType || null,
+          playerMessagePreview:action === 'continue' ? '[續寫指令]' : redactLogPreview(rawMessage),
+          playerMessageCharacters:rawMessage.length,
+          replyPreview:redactLogPreview(responseText), replyCharacters:responseText.length,
+          messageId:action === 'regenerate' ? regenerateTargetId : `ai_${requestId}`,
+          // Deliberately no payment details, full user message, or complete character profile.
+        });
+      }
       // 舊事件漸進補索引：每次成功聊天最多 2 筆，不需一次性大量重建。
       // 更新前再核對原事實，避免覆蓋玩家修改過的事件。
       if (queryEmbedding) {

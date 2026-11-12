@@ -10,6 +10,31 @@ function normalize(clock){
 }
 function label(clock){const c=normalize(clock);if(!c)return '尚未確認';const date=c.dateKnown?`${c.yearKnown?c.year+'/':''}${PAD(c.month)}/${PAD(c.day)} `:'';return `${date}${PAD(c.hour)}:${PAD(c.minute)}`;}
 function addMinutes(clock,mins){const c=normalize(clock);if(!c)return null;const t=Date.UTC(c.year,c.month-1,c.day,c.hour,c.minute)+Math.max(0,Math.trunc(mins))*60000;const d=new Date(t);return {...c,year:d.getUTCFullYear(),month:d.getUTCMonth()+1,day:d.getUTCDate(),hour:d.getUTCHours(),minute:d.getUTCMinutes()};}
+// Only treat a next-day phrase as a scene transition when the player actually
+// directs the scene forward. Future warnings, plans and hypothetical mentions
+// (e.g. "隔天被我發現誰受傷") are not time commands.
+function explicitNextDayTransition(player) {
+ const text=String(player||'').trim();
+ const day='(?:隔天|第二天|翌日|次日)';
+ const part='(凌晨|清晨|早上|上午|一早|中午|下午|傍晚|晚上|深夜|半夜)?';
+ const front='(?:^|[\n。！？!?；;])\s*[（(]?\s*';
+ // Direct time / scene commands, including parenthesized roleplay instructions.
+ const directive=new RegExp(front+'(?:故事時間|時間|劇情|場景|畫面)\s*(?:來到|跳到|跳至|推進到|切到|進入)\s*'+day+'(?:的)?\s*'+part,'u');
+ const commanded=text.match(directive);
+ if(commanded)return {period:commanded[1]||''};
+ // A new-scene opening (not a future-tense mention buried in dialogue).
+ const opening=new RegExp(front+day+'(?:的)?\s*'+part+'(?=\s*(?:$|[，,。、）)]|我(?:醒來|起床|睜開)|醒來|起床|天亮))','u');
+ const opened=text.match(opening);
+ if(opened)return {period:opened[1]||''};
+ // A completed overnight transition in narration.
+ const overnight=new RegExp('(?:^|[\n。！？!?；;])\s*[（(]?\s*(?:一夜過去|過了一晚|睡了一晚|睡了一夜|一覺睡到)\s*[，, ]*'+day+'(?:的)?\s*'+part,'u');
+ const slept=text.match(overnight);
+ if(slept)return {period:slept[1]||''};
+ // "我睡了一晚，隔天醒來" (completed action, not a future warning).
+ if(/(?:睡了一晚|睡了一夜|睡過一晚|一覺睡醒)\s*[，,]\s*(?:隔天|第二天|翌日|次日)(?:的)?\s*(?:醒來|起床|睜開)/u.test(text) &&
+    !/(?:如果|假如|假設|萬一|要是|不准|不能|別|打算|計畫)\s*[^。！？!?；;\n]{0,28}(?:睡了一晚|睡了一夜|睡過一晚|一覺睡醒)/u.test(text))return {period:''};
+ return null;
+}
 function resolveClock(previous, player, advanceMinutes=3, maxNaturalMinutes=5){
  const base=normalize(previous);const text=String(player||'').trim();
  // A report or hypothetical about past events does not reset the present.
@@ -32,12 +57,12 @@ function resolveClock(previous, player, advanceMinutes=3, maxNaturalMinutes=5){
   if(date){let h=Number(date[5]);const mer=date[4]||'';if(['下午','晚上','傍晚'].includes(mer)&&h<12)h+=12;if(['凌晨','上午','早上'].includes(mer)&&h===12)h=0;let y=date[1]?Number(date[1]):base?.year||2000;const m=Number(date[2]),day=Number(date[3]),minute=Number(date[6]||0);const explicit=normalize({year:y,month:m,day,hour:h,minute,yearKnown:Boolean(date[1])||Boolean(base?.yearKnown),dateKnown:true});if(explicit)return {clock:explicit,reason:'player_absolute'};}
   const time=text.match(/(?:現在(?:的)?時間\s*(?:是|為)?\s*|時間\s*[:：]\s*|(?:改成|跳到|來到)\s*)(?:(早上|上午|下午|晚上|凌晨|中午|傍晚)\s*)?(\d{1,2})(?:[:：點時](\d{1,2}))?/u);
   if(time){let h=Number(time[2]);const mer=time[1]||'';if(['下午','晚上','傍晚'].includes(mer)&&h<12)h+=12;if(['凌晨','早上','上午'].includes(mer)&&h===12)h=0;if(h<24&&Number(time[3]||0)<60){const seed=base||{year:2000,month:1,day:1,yearKnown:false,dateKnown:false};return {clock:{...seed,hour:h,minute:Number(time[3]||0)},reason:'player_time_override'};}}
-  if(base){const nextDay=/(?:隔天|第二天|翌日|次日)(?:的)?(?:早上|上午|清晨|一早|中午|下午|晚上|凌晨)?/u.test(text);
+  if(base){const nextDay=explicitNextDayTransition(text);
    if(nextDay){const next=addMinutes(base,24*60);let hour=next.hour,minute=next.minute;
-     if(/早上|上午|清晨|一早/u.test(text)){hour=7;minute=10;}
-     else if(/中午/u.test(text)){hour=12;minute=0;}
-     else if(/下午/u.test(text)){hour=15;minute=0;}
-     else if(/晚上/u.test(text)){hour=20;minute=0;}
+     if(/早上|上午|清晨|一早/u.test(nextDay.period)){hour=7;minute=10;}
+     else if(/中午/u.test(nextDay.period)){hour=12;minute=0;}
+     else if(/下午/u.test(nextDay.period)){hour=15;minute=0;}
+     else if(/晚上|夜晚/u.test(nextDay.period)){hour=20;minute=0;}
      else {hour=base.hour;minute=base.minute;}
      return {clock:{...next,hour,minute},reason:'player_next_day'};
    }
@@ -246,12 +271,13 @@ function displayFictionalClock(clock) {
 function resolveFictionalClock(previous,player,minutes=3) {
  const base=normalizeFictionalClock(previous);if(!base)return null;
  const input=String(player||'');
- if(/(?:隔天|第二天|翌日|次日)/u.test(input)) {
+ const nextDay=explicitNextDayTransition(input);
+ if(nextDay) {
   const next=addFictionalMinutes(base,1440);
-  if(/早上|上午|清晨|一早/u.test(input))return {...next,hour:7,minute:10};
-  if(/中午/u.test(input))return {...next,hour:12,minute:0};
-  if(/下午/u.test(input))return {...next,hour:15,minute:0};
-  if(/晚上/u.test(input))return {...next,hour:20,minute:0};
+  if(/早上|上午|清晨|一早/u.test(nextDay.period))return {...next,hour:7,minute:10};
+  if(/中午/u.test(nextDay.period))return {...next,hour:12,minute:0};
+  if(/下午/u.test(nextDay.period))return {...next,hour:15,minute:0};
+  if(/晚上|夜晚/u.test(nextDay.period))return {...next,hour:20,minute:0};
   return next;
  }
  const elapsed=input.match(/(?:過了|經過|時間過了|時間推進)\s*(\d{1,3})\s*(分鐘|分|小時|個小時|天|日)/u);

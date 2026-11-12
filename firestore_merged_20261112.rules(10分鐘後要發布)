@@ -918,6 +918,47 @@ match /followers/{followerId} {
     allow read, write: if signedIn();
   }
 
+  // V5.13：一般角色聊天室的 Session Memory。
+  // 僅聊天室擁有者可讀取；AI 記憶寫入仍由 Admin SDK 負責。
+  match /memories/{memoryId} {
+    allow get, list: if signedIn()
+      && get(
+        /databases/$(database)/documents/artifacts/$(appId)/chat_sessions/$(sessionId)
+      ).data.userId == request.auth.uid;
+
+    allow create: if false;
+
+    // 「與我相關」僅能修改文字與收藏狀態，不能改記憶所屬人設、來源與索引。
+    allow update: if signedIn()
+      && get(
+        /databases/$(database)/documents/artifacts/$(appId)/chat_sessions/$(sessionId)
+      ).data.userId == request.auth.uid
+      && request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['text', 'isFavorite'])
+      && request.resource.data.get('text', '') is string
+      && request.resource.data.get('text', '').size() <= 900
+      && request.resource.data.get('isFavorite', false) is bool;
+
+    // V5.14.1: owner may soft-delete only, without changing facts or ownership.
+    // about_me_page.dart writes active=false, deletedByUser=true,
+    // retrievalTerms=[], updatedAt=serverTimestamp().
+    allow update: if signedIn()
+      && get(
+        /databases/$(database)/documents/artifacts/$(appId)/chat_sessions/$(sessionId)
+      ).data.userId == request.auth.uid
+      && request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['active', 'deletedByUser', 'retrievalTerms', 'updatedAt'])
+      && request.resource.data.get('active', true) == false
+      && request.resource.data.get('deletedByUser', false) == true
+      && request.resource.data.get('retrievalTerms', []) == []
+      && request.resource.data.get('updatedAt', request.time) == request.time;
+
+    allow delete: if signedIn()
+      && get(
+        /databases/$(database)/documents/artifacts/$(appId)/chat_sessions/$(sessionId)
+      ).data.userId == request.auth.uid;
+  }
+
   // =========================
   // 玩家自行創建劇場
   // 只屬於這一間聊天室

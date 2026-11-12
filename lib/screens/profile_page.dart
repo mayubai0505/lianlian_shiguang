@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -560,8 +561,15 @@ class _ProfilePageState extends State<ProfilePage>
     }
   }
 
+  // 與首頁每日贈禮共用台灣 UTC+8 日界線（不受裝置時區影響）。
+  String get _checkInDayKey => DateFormat('yyyy-MM-dd').format(
+      DateTime.now().toUtc().add(const Duration(hours: 8)));
+
+  String _checkInDayOf(Timestamp stamp) => DateFormat('yyyy-MM-dd').format(
+      stamp.toDate().toUtc().add(const Duration(hours: 8)));
+
   Future<void> _performCheckIn() async {
-    // 1. 防禦機制：如果正在處理中，或今天領過了，直接擋掉
+    // 避免重複點擊；最終領取資格仍以 Firestore 交易驗證為準。
     if (_isClaimingCheckIn || _hasCheckedInToday) return;
 
     setState(() {
@@ -573,49 +581,19 @@ class _ProfilePageState extends State<ProfilePage>
       if (user == null) return;
 
       final l10n = AppLocalizations.of(context)!;
-      final userDocRef =
-      FirebaseFirestore.instance.collection('users').doc(user.uid);
-
       final int rewardAmount = AppConfig.dailyCheckIn;
-      final todayString = DateFormat('yyyy-MM-dd').format(DateTime.now());
-
-      // 2. Transaction：真正防止重複簽到
-      await FirebaseFirestore.instance.runTransaction((transaction) async {
-        final snapshot = await transaction.get(userDocRef);
-
-        if (!snapshot.exists) {
-          throw Exception('找不到玩家資料');
-        }
-
-        final data = snapshot.data() as Map<String, dynamic>? ?? {};
-        final lastCheckInTimestamp = data['lastCheckInDate'] as Timestamp?;
-
-        if (lastCheckInTimestamp != null) {
-          final lastCheckInString = DateFormat('yyyy-MM-dd').format(
-            lastCheckInTimestamp.toDate(),
-          );
-
-          if (lastCheckInString == todayString) {
-            throw Exception('今天已經簽到過了');
-          }
-        }
-
-        transaction.update(userDocRef, {
-          'flowerPoints': FieldValue.increment(rewardAmount),
-          'lastCheckInDate': FieldValue.serverTimestamp(),
-        });
-      });
-
-      // 3. 寫入收支明細
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .collection('flower_logs')
-          .add({
-        'title': l10n.title_daily_check_in,
-        'amount': rewardAmount,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
+      // 改由 Cloud Functions 驗證每日領取、加花花與建立固定 ID 明細。
+      // 不再由個人主頁直接寫入 flowerPoints。
+      final result = await FirebaseFunctions.instanceFor(
+        region: 'asia-east1',
+      ).httpsCallable('claimDailyCheckIn').call();
+      final claimData = Map<String, dynamic>.from(result.data as Map);
+      if (claimData['alreadyClaimed'] == true) {
+        throw StateError('今天已經簽到過了');
+      }
+      if (claimData['claimed'] != true) {
+        throw StateError('簽到未完成');
+      }
 
       // 4. 更新畫面狀態
       if (!mounted) return;
@@ -701,10 +679,30 @@ class _ProfilePageState extends State<ProfilePage>
       if (!mounted) return;
 
       final errorText = e.toString();
-      final bool alreadyCheckedIn = errorText.contains('今天已經簽到過了');
+      bool alreadyCheckedIn = errorText.contains('今天已經簽到過了');
+      // 兼容首頁或其他裝置剛好已領取的情況，向伺服器二次核對。
+      if (!alreadyCheckedIn && FirebaseAuth.instance.currentUser != null) {
+        try {
+          final currentUser = FirebaseAuth.instance.currentUser!;
+          final userRef = FirebaseFirestore.instance
+              .collection('users').doc(currentUser.uid);
+          final latest = await userRef.get(const GetOptions(source: Source.server));
+          final last = latest.data()?['lastCheckInDate'];
+          alreadyCheckedIn = last is Timestamp &&
+              _checkInDayOf(last) == _checkInDayKey;
+          if (!alreadyCheckedIn) {
+            final log = await userRef.collection('flower_logs')
+                .doc('daily_check_in_${_checkInDayKey.replaceAll('-', '')}')
+                .get(const GetOptions(source: Source.server));
+            alreadyCheckedIn = log.exists;
+          }
+        } catch (verifyError) {
+          debugPrint('手動簽到狀態二次核對失敗: $verifyError');
+        }
+      }
+      if (!mounted) return;
 
       if (alreadyCheckedIn) {
-        final todayString = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
         setState(() {
           _hasCheckedInToday = true;
@@ -814,39 +812,19 @@ class _ProfilePageState extends State<ProfilePage>
     final l10n = AppLocalizations.of(context)!;
 
     try {
-      await _db.runTransaction((transaction) async {
-        final userSnapshot = await transaction.get(userDocRef);
-
-        if (!userSnapshot.exists) {
-          throw Exception('找不到玩家資料');
-        }
-
-        final data = userSnapshot.data() ?? {};
-        final dailyTasks =
-        Map<String, dynamic>.from(data['dailyTasks'] ?? {});
-
-        final bool alreadyClaimed = dailyTasks[claimedField] == true;
-
-        // 🔒 Firebase 層級防重複領取
-        if (alreadyClaimed) {
-          throw Exception(l10n.task_reward_already_claimed);
-        }
-
-        // 1. 增加花花
-        transaction.update(userDocRef, {
-          'flowerPoints': FieldValue.increment(rewardAmount),
-          'dailyTasks.$claimedField': true,
-        });
-
-        // 2. 寫入花花明細
-        final logRef = userDocRef.collection('flower_logs').doc();
-
-        transaction.set(logRef, {
-          'title': l10n.task_completed(taskName),
-          'amount': rewardAmount,
-          'createdAt': FieldValue.serverTimestamp(),
-        });
+      // 不接受客戶端指定的花花數量；後端依 taskKey 決定固定獎勵。
+      final result = await FirebaseFunctions.instanceFor(
+        region: 'asia-east1',
+      ).httpsCallable('claimHeartbeatTaskReward').call({
+        'taskKey': claimedField,
       });
+      final data = Map<String, dynamic>.from(result.data as Map);
+      if (data['alreadyClaimed'] == true) {
+        throw StateError(l10n.task_reward_already_claimed);
+      }
+      if (data['claimed'] != true) {
+        throw StateError('任務領取未完成');
+      }
 
       if (!mounted) return;
 
@@ -1014,25 +992,26 @@ class _ProfilePageState extends State<ProfilePage>
 
 
   Future<void> _checkDailyCheckInStatus() async {
-    if (_userId == null) return;
-    final userDocRef = _db.collection('users').doc(_userId);
-    final doc = await userDocRef.get();
-    if (!doc.exists || !mounted) return;
-
-    final data = doc.data()!;
-    final lastCheckInTimestamp = data['lastCheckInDate'] as Timestamp?;
-
-    if (lastCheckInTimestamp == null) {
-      setState(() => _hasCheckedInToday = false); // 從未簽到過
-      return;
+    final uid = _userId;
+    if (uid == null) return;
+    final userDocRef = _db.collection('users').doc(uid);
+    try {
+      final doc = await userDocRef.get(const GetOptions(source: Source.server));
+      if (!doc.exists || !mounted || _userId != uid) return;
+      final last = doc.data()?['lastCheckInDate'];
+      bool claimed = last is Timestamp && _checkInDayOf(last) == _checkInDayKey;
+      if (!claimed) {
+        final log = await userDocRef.collection('flower_logs')
+            .doc('daily_check_in_${_checkInDayKey.replaceAll('-', '')}')
+            .get(const GetOptions(source: Source.server));
+        claimed = log.exists;
+      }
+      if (!mounted || _userId != uid) return;
+      setState(() => _hasCheckedInToday = claimed);
+    } catch (error) {
+      // 無法向伺服器確認時，不以本機猜測覆蓋領取狀態。
+      debugPrint('個人主頁簽到狀態檢查失敗: $error');
     }
-
-    final todayString = DateFormat('yyyy-MM-dd').format(DateTime.now());
-    final lastCheckInDateString = DateFormat('yyyy-MM-dd').format(lastCheckInTimestamp.toDate());
-
-    setState(() {
-      _hasCheckedInToday = (lastCheckInDateString == todayString);
-    });
   }
 
 

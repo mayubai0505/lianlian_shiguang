@@ -204,6 +204,7 @@ exports.generateStorySummary = onRequest({
             ];
             let parsed = null;
             let lastFormatError = null;
+            let lastFinishReason = '';
             for (let attempt = 1; attempt <= 2; attempt++) {
                 // 一次主請求、一次格式異常時的重試；不重試 HTTP/網路錯誤。
                 const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -217,10 +218,14 @@ exports.generateStorySummary = onRequest({
                         model: "google/gemini-2.5-flash-lite",
                         messages: attempt === 1 ? summaryMessages : [
                             ...summaryMessages,
-                            {role: "system", content: "上一次輸出未通過 JSON 格式驗證。請重新根據原始紀錄產生完整、合法的 JSON，僅包含 content 和 factualContent 兩個字串欄位；確保引號及換行正確跳脫，內容精簡且不得省略結尾。不要輸出 Markdown。"},
+                            {role: "system", content: lastFinishReason === 'length'
+                                ? "上一次輸出因長度限制而截斷。請重新根據原始紀錄輸出完整 JSON，僅包含 content 和 factualContent 兩個字串欄位。factualContent 請濃縮至約 300～500 字，優先保留確定事件、關係變化及未完成事項，不得捏造或省略關鍵事實。請確保 JSON 正確結束，不輸出 Markdown。"
+                                : "上一次輸出未通過 JSON 格式驗證。請重新根據原始紀錄產生完整、合法的 JSON，僅包含 content 和 factualContent 兩個字串欄位；確保引號及換行正確跳脫，內容精簡且不得省略結尾。不要輸出 Markdown。"},
                         ],
                         temperature: 0.2,
-                        max_tokens: 2200,
+                        // Only lift the retry limit when the first output hit the token cap.
+                        // Ordinary requests and other JSON-format retries keep the original cost ceiling.
+                        max_tokens: attempt === 2 && lastFinishReason === 'length' ? 3200 : 2200,
                         response_format: {type: "json_object"},
                     }),
                 });
@@ -247,6 +252,7 @@ exports.generateStorySummary = onRequest({
                     break;
                 } catch (formatError) {
                     lastFormatError = formatError;
+                    lastFinishReason = finishReason;
                     // 不記錄玩家故事原文、AI 回覆或金鑰，僅記錄定位問題所需的摘要資訊。
                     console.warn('故事摘要格式驗證失敗', {
                         attempt,

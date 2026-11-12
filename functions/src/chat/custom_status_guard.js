@@ -34,16 +34,27 @@ function canonicalStatusLabel(label, knownLabels) {
   if (knownLabels && knownLabels.has("🎩") && /^🎩(?:服裝|服饰|服飾|衣著|穿著|穿搭)$/u.test(key)) return "🎩";
   return key;
 }
+// Some creators author status slots as "📅請系統描述..." rather than "📅：...".
+// Only an emoji followed immediately by a creator instruction qualifies as a
+// template slot. Do not interpret arbitrary prose, examples or notes as slots.
+const EMOJI_HEAD = /^(\p{Extended_Pictographic}(?:[\uFE0E\uFE0F]|\u200D\p{Extended_Pictographic})*)(.*)$/u;
+const CREATOR_SLOT_INSTRUCTION = /^(?:請系統|請描述|請依|請輸出|請填寫|請列出|顯示目前|描述當前)/u;
+function directiveEmojiSlot(line) {
+  const match = String(line || '').trim().match(EMOJI_HEAD);
+  if (!match || !CREATOR_SLOT_INSTRUCTION.test(match[2].trim())) return null;
+  return {label:match[1], instruction:match[2].trim()};
+}
 function parseTemplate(template) {
   const fields = [];
   let insideNpcDetailSection = false;
   for (const sourceLine of String(template || "").split(/\r?\n/)) {
     const line = sourceLine.trim();
     if (!line || DIRECTIVE_HEADING.test(line) || /^[-=—_]{3,}$/.test(line)) continue;
-    const match = line.match(FIELD);
-    if (!match) continue;
-    const label = match[1].trim();
-    const sample = match[2].trim();
+    const directive = directiveEmojiSlot(line);
+    const match = directive ? null : line.match(FIELD);
+    if (!directive && !match) continue;
+    const label = directive ? directive.label : match[1].trim();
+    const sample = directive ? directive.instruction : match[2].trim();
     // 「💭內心：」和「📱群組：」底下常有 NPC 名稱當範例，
     // 並非創作者要求每輪所有 NPC 都逐一發言／提供內心話。
     // 僅在這類區塊中忽略非 Emoji 的 NPC 子行，不影響一般文字欄位。
@@ -57,15 +68,30 @@ function parseTemplate(template) {
         continue;
       }
     }
-    if (!label || /^\s*(?:規則|範例|說明|格式)/.test(label)) continue;
+    // Creator notes/examples are instructions, not required footer fields.
+    // Normalize a leading wrapper so "（範例：..." cannot become field "（範例".
+    // Match only metadata headings; preserve ordinary creator-defined labels.
+    const metaLabel = label.replace(/^[\s（(【\[]+/u, '').replace(/[\s）)】\]]+$/u, '').trim();
+    if (!label || /^(?:規則|範例|示範|說明|格式)/u.test(metaLabel) ||
+        /^(?:備註|注意事項|補充說明)$/u.test(metaLabel)) continue;
     const optional = CONDITIONAL.test(sample);
     if (!fields.some(f => canonicalLabel(f.label) === canonicalLabel(label))) fields.push({label, optional});
   }
   return fields;
 }
-function extractLabel(line) {
+function extractLabelBase(line) {
+  // A colon in HH:mm is NOT the creator field separator. Without this,
+  // "📅2024/06/07 星期五 09:00" becomes the false label "📅2024/...09".
+  const directDate = String(line).trim().match(/^(📅)(?![：:])\s*((?:\d{4}[\/.-]\d{1,2}[\/.-]\d{1,2}|\d{4}年\d{1,2}月\d{1,2}日).*?)\s*$/u);
+  if (directDate) return {label:directDate[1],value:directDate[2].trim()};
   const match = String(line).match(FIELD);
-  return match ? {label: match[1].trim(), value: match[2].trim()} : null;
+  if (match) return {label: match[1].trim(), value: match[2].trim()};
+  // Models may emit "📅 2026/11/12..." without a colon. The match is
+  // anchored: a stray emoji in narrative text is not a status slot unless
+  // it matches one of the creator's declared fields downstream.
+  const emoji = String(line).trim().match(EMOJI_HEAD);
+  if (!emoji || !emoji[2].trim() || CREATOR_SLOT_INSTRUCTION.test(emoji[2].trim())) return null;
+  return {label:emoji[1], value:emoji[2].trim()};
 }
 function isPlaceholder(value) {
   const v = String(value || "").trim();
@@ -74,11 +100,25 @@ function isPlaceholder(value) {
   return isHideInstruction(plain) || TEMPLATE_INSTRUCTION.test(plain) || /^無.{0,32}(?:隱藏|不顯示|不輸出)$/u.test(plain);
 }
 // Only for creator-defined footer text. Do not strip normal story/dialogue.
-const META_LINE = /^(?:範例(?:[⬇↓:]|$)|示範(?:對話|如下|[：:]|$)|(?:[-•]\s*)?(?:成員固定為|依劇情生成|每次顯示|不必四人|可包含|可發貼圖|男性請使用|女性用|不得重複|禁止全部|嚴禁顯示|若無NPC|若無比賽|限\d+字|\(?\{char\}內心話))/u;
+const META_LINE = /^(?:[（(]?範例(?:[⬇↓：:]|$)|備註[：:]|示範(?:對話|如下|[：:]|$)|(?:[-•]\s*)?(?:成員固定為|依劇情生成|每次顯示|不必四人|可包含|可發貼圖|男性請使用|女性用|不得重複|禁止全部|嚴禁顯示|若無NPC|若無比賽|限\d+字|\(?\{char\}內心話))/u;
 const INLINE_META = /(?:若無.{0,30}(?:不顯示|隱藏)|若沒有.{0,30}(?:不顯示|隱藏)|無.{0,20}則不顯示|(?:比賽進度即時更新|當前場景在場所有角色心裡話|每人一段禁止|禁止全部疊在一起|嚴禁顯示|\{char\}內心話|限\d+字內|每次顯示\d+|成員固定為|依劇情生成|不得重複一樣的話題))/u;
 const normalizeSample = str => String(str || "").normalize("NFKC").replace(/\s+/gu, "").trim();
 function createCustomStatusGuard(template) {
   const fields = parseTemplate(template);
+  const labels = new Set(fields.map(f => canonicalLabel(f.label)));
+  // Emoji-only creator directives accept both "💭：想法" and
+  // "💭姚戰梟：想法". The latter colon separates NPC name from the
+  // content; it is not the field label separator. Only creator-declared
+  // emoji-only slots receive this treatment.
+  function extractLabel(line) {
+    const raw = String(line || '').trim();
+    const emoji = raw.match(EMOJI_HEAD);
+    if (emoji && labels.has(canonicalLabel(emoji[1])) &&
+        !CREATOR_SLOT_INSTRUCTION.test(emoji[2].trim())) {
+      return {label: emoji[1], value: emoji[2].replace(/^\s*[：:]\s*/u, '').trim()};
+    }
+    return extractLabelBase(line);
+  }
   // Template examples are reference material, not dialogue to publish verbatim.
   const sampleLines = new Set();
   let insideExample = false;
@@ -98,7 +138,6 @@ function createCustomStatusGuard(template) {
     if (META_LINE.test(line)) groupSample = false;
     if ((insideExample || groupSample) && line && !META_LINE.test(line)) sampleLines.add(normalizeSample(line));
   }
-  const labels = new Set(fields.map(f => canonicalLabel(f.label)));
   const required = fields.filter(f => !f.optional);
   // Creator-defined multi-message chat requirements are structural, not merely a nonempty field.
   // E.g. 「每次顯示2–5則訊息」: one isolated message is an incomplete group footer.
@@ -215,6 +254,37 @@ function createCustomStatusGuard(template) {
   function validate(text) {
     return !missing(clean(text)).length;
   }
+  // V5.20.6: Creator declared only one 📅 slot -> at most one 📅 output
+  // inside the creator footer, even when generated dates/times differ.
+  // Earlier exact-timestamp-only dedupe let model hallucinations slip through.
+  // Never inspect or alter story headers and narration before footerStart().
+  const singleEmojiDateSlot = fields.filter(f => canonicalLabel(f.label) === "📅").length === 1;
+  function dedupeSameEmojiDate(lines) {
+    if (!singleEmojiDateSlot) return lines;
+    const start = footerStart(lines);
+    if (start < 0) return lines;
+    const indices = [];
+    for (let i = start; i < lines.length; i++) {
+      const field = extractLabel(lines[i]);
+      if (field && canonicalStatusLabel(field.label, labels) === "📅") indices.push(i);
+    }
+    if (indices.length <= 1) return lines;
+    // Choose the richest real calendar entry: date+time, weekday/weather,
+    // then content length. Tie goes to earlier original line.
+    const score = (line) => {
+      const value = extractLabel(line)?.value || "";
+      const dated = /\d{4}(?:[\/.-]\d{1,2}[\/.-]\d{1,2}|年\d{1,2}月\d{1,2}日)/u.test(value);
+      const timed = /(?:^|\D)\d{1,2}[：:]\d{2}(?!\d)/u.test(value);
+      const extra = /(?:星期[一二三四五六日天]|週[一二三四五六日天]|晴|陰|雨|雪|雲|風|氣溫|天氣)/u.test(value);
+      return (dated ? 10000 : 0) + (timed ? 1000 : 0) + (extra ? 100 : 0) + Math.min(value.length, 99);
+    };
+    let keep = indices[0];
+    for (const index of indices.slice(1)) {
+      if (score(lines[index]) > score(lines[keep])) keep = index;
+    }
+    const duplicates = new Set(indices.filter(i => i !== keep));
+    return lines.filter((_, index) => !duplicates.has(index));
+  }
   function clean(text) {
     const {lines,start} = statusParts(text);
     if (start < 0) return String(text || "").trim();
@@ -279,7 +349,7 @@ function createCustomStatusGuard(template) {
       if (sampleLines.has(normalizeSample(stripped))) continue;
       next.push(raw);
     }
-    return pruneIncompleteGroupBlocks(next).join("\n").replace(/\n{3,}/g,"\n\n").trim();
+    return dedupeSameEmojiDate(pruneIncompleteGroupBlocks(next)).join("\n").replace(/\n{3,}/g,"\n\n").trim();
   }
   // V5.7.15: merge individually validated new footer blocks with valid old
   // blocks. A repair must not erase a legitimate relation or inner thought just
@@ -420,6 +490,11 @@ function createCustomStatusGuard(template) {
     const start = footerStart(lines);
     return (start < 0 ? lines : lines.slice(0, start)).join("\n");
   }
-  return {fields,missing,validate,clean,salvage,carryForward,bodyOnly,mergeRepair};
+  const emojiDirectiveLabels = new Set(String(template || '').split(/\r?\n/)
+    .map(directiveEmojiSlot).filter(Boolean).map(slot => canonicalLabel(slot.label)));
+  return {fields,missing,validate,clean,salvage,carryForward,bodyOnly,mergeRepair,
+    hasEmojiDirectiveSlots: emojiDirectiveLabels.size > 0,
+    isPureEmojiDirectiveTemplate: fields.length > 0 && fields.every(field =>
+      emojiDirectiveLabels.has(canonicalLabel(field.label)))};
 }
 module.exports={createCustomStatusGuard};

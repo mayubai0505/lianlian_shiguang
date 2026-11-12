@@ -213,15 +213,21 @@ function enforceModernStatusTime(status, timeText) {
     const tail = partition[2] || '';
     const timeToken = /(?:[01]?\d|2[0-3])[:：][0-5]\d/u;
     if (fictionalDay) {
-      head = head.replace(/第[零〇一二兩三四五六七八九十百千\d]{1,8}([日天])/u,
+      // The model can prepend a world-specific era (e.g. 末日第 1 天).
+      // Keep the era/field layout but align its numbered day with the server.
+      head = head.replace(/第\s*[零〇一二兩三四五六七八九十百千\dNＮnｎ]{1,8}\s*([日天])/u,
         (_all, unit) => `第${fictionalDay}${unit}`);
     }
     if (timeToken.test(head)) {
       head = head.replace(timeToken, hhmm);
-    } else if (/^\s*(?:(?:第[零〇一二兩三四五六七八九十百千\d]{1,8}[日天][，,、\s]+))?(?:上午|早上|下午|晚上|凌晨|中午|傍晚|清晨|半夜)\s*$/u.test(head)) {
-      head = head.replace(/(?:上午|早上|下午|晚上|凌晨|中午|傍晚|清晨|半夜)/u, hhmm);
+    } else if (/^\s*(?:[^，,、｜|\n]{0,18}?第\s*[零〇一二兩三四五六七八九十百千\dNＮnｎ]{1,8}\s*[日天]\s*[,，、]\s*)?(?:上午|早上|下午|晚上|夜晚|深夜|凌晨|中午|傍晚|清晨|半夜)[。．.!！]?\s*$/u.test(head)) {
+      // Replace a bare daypart only when the whole calendar/time value is a
+      // recognizable clock expression; never touch narrative or a later field.
+      head = head.replace(/(?:上午|早上|下午|晚上|夜晚|深夜|凌晨|中午|傍晚|清晨|半夜)/u, hhmm);
     } else {
-      return line;
+      // Unrecognized time wording must not undo a validated server-day correction.
+      // If the day was unchanged, reconstructing the row is a no-op.
+      return prefix + head + tail;
     }
     return prefix + head + tail;
   }).join('\n');
@@ -236,45 +242,57 @@ function protectCreatorCalendarDisplay(template, generated, authoritativeTime=''
   if(!source)return source;
   const ownsAlarm=creator.includes('⏰');
   const ownsClock=creator.includes('🕒');
-  // Canonical modern clock contains a real fictional date initialized once.
-  // Older rooms without a date may still produce HH:MM; do not manufacture a
-  // date in those rooms merely to make a UI field appear complete.
   const match=String(authoritativeTime).trim().match(/^(?:(?:(\d{4})\/)?(\d{1,2})\/(\d{1,2})\s+)?([01]?\d|2[0-3])[:：]([0-5]\d)$/u);
   const knownDate=Boolean(match && match[2] && match[3]);
   const year=knownDate ? (match[1]||'') : '';
   const month=knownDate ? String(Number(match[2])) : '';
   const day=knownDate ? String(Number(match[3])) : '';
   const hhmm=match ? `${match[4].padStart(2,'0')}:${match[5]}` : '';
-  const isoDate=knownDate ? `${year ? year+'/' : ''}${String(Number(month)).padStart(2,'0')}/${String(Number(day)).padStart(2,'0')}` : '';
+  const isoDate=knownDate ? `${year ? year+'/' : ''}${month.padStart(2,'0')}/${day.padStart(2,'0')}` : '';
   const zhDate=knownDate ? `${year ? year+'年' : ''}${month}月${day}日` : '';
   const numericDate=/(?:\d{4}\s*年\s*(?:\d{1,2}|[xXＸ])\s*月\s*(?:\d{1,2}|[xXＸ])\s*[日號]?|\d{4}[\/.-](?:\d{1,2}|[xXＸ])[\/.-](?:\d{1,2}|[xXＸ])|(?:\d{1,2}|[xXＸ])\s*月\s*(?:\d{1,2}|[xXＸ])\s*[日號]?|(?:\d{1,2}|[xXＸ])[\/.-](?:\d{1,2}|[xXＸ]))/u;
   const datePlaceholder=/(?:日期未確認|年月日未確認|YYYY\s*[\/.-]\s*MM\s*[\/.-]\s*(?:DD|NN)|YYYY\s*年\s*MM\s*月\s*DD\s*日)/iu;
-  const templateHasDateRow=creator.split('\n').some(line=>/^(?:\s*[^\n：:]{0,48}(?:日期|年月日|📅|📆|🗓️)[^\n：:]{0,48}[：:])/u.test(line));
+  const rowPattern=/^(\s*[^\n：:]{1,48}[：:]\s*)(.*)$/u;
+  // Match the exact creator-authored field label. A model-created date row
+  // or another character's birthday/appointment must not become 'today'.
+  const creatorRows=new Map();
+  for(const line of creator.split(/\r?\n/u)) {
+    const row=line.match(rowPattern);
+    if(row && !creatorRows.has(row[1].replace(/\s*[：:]\s*$/u,'').trim()))
+      creatorRows.set(row[1].replace(/\s*[：:]\s*$/u,'').trim(),row[2]);
+  }
   return source.split('\n').map(line=>{
     if(/^\s*⏰\s*[:：]/u.test(line) && !ownsAlarm)return null;
     if(/^\s*🕒\s*[:：]/u.test(line) && !ownsClock)return null;
-    const m=line.match(/^(\s*[^\n：:]{1,48}[：:]\s*)(.*)$/u);
-    if(!m)return line;
-    const prefix=m[1],value=m[2];
-    const isDateRow=/(?:日期|年月日|📅|📆|🗓️)/u.test(prefix);
-    const isTimeRow=/(?:時間|時刻|⏰|🕒)/u.test(prefix);
+    if(!knownDate)return line;
+    const row=line.match(rowPattern);
+    if(!row)return line;
+    const prefix=row[1],value=row[2];
+    const label=prefix.replace(/\s*[：:]\s*$/u,'').trim();
+    if(!creatorRows.has(label))return line;
+    const isDateRow=/(?:日期|年月日|📅|📆|🗓️)/u.test(label);
+    const isTimeRow=/(?:時間|時刻|⏰|🕒)/u.test(label);
     if(!isDateRow && !isTimeRow)return line;
-    // Avoid adding a date to a clock-only template. Conversely, a creator's
-    // date row may use either Chinese or numeric date presentation.
-    if(!knownDate || !(isDateRow || templateHasDateRow))return line;
-    const templateFormat=creator.split('\n').find(t=>t.trim().startsWith(prefix.trim().split(/[：:]/u)[0]))||'';
-    const creatorUsesSlashes=/(?:YYYY|\d{4})\s*[\/.-]\s*(?:MM|\d{1,2})\s*[\/.-]\s*(?:DD|NN|\d{1,2})/iu.test(templateFormat);
-    const creatorUsesChinese=/(?:YYYY|\d{4})\s*年|(?:MM|\d{1,2})\s*月/iu.test(templateFormat);
-    const useChinese=creatorUsesChinese || (!creatorUsesSlashes && /(?:\d{4}\s*年|YYYY\s*年|\d{1,2}\s*月|MM\s*月)/iu.test(value));
+    // Only the leading value belongs to this field. Preserve compound rows
+    // after ｜ or |, such as location, another character's plans, or notes.
+    const authoredHead=creatorRows.get(label).split(/[｜|]/u)[0];
+    const split=value.match(/^([^｜|]*)([｜|].*)?$/u);
+    if(!split)return line;
+    let head=split[1];
+    const tail=split[2]||'';
+    const creatorHasDate=numericDate.test(authoredHead)||datePlaceholder.test(authoredHead);
+    if(!isDateRow && !creatorHasDate)return line;
+    // Do not promote a clock-only or narrative-only date field to a calendar.
+    const creatorUsesSlashes=/(?:YYYY|\d{4})\s*[\/.-]\s*(?:MM|\d{1,2})\s*[\/.-]\s*(?:DD|NN|\d{1,2})/iu.test(authoredHead);
+    const creatorUsesChinese=/(?:YYYY|\d{4})\s*年|(?:MM|\d{1,2})\s*月/iu.test(authoredHead);
+    const useChinese=creatorUsesChinese || (!creatorUsesSlashes && /(?:\d{4}\s*年|YYYY\s*年|\d{1,2}\s*月|MM\s*月)/iu.test(head));
     const replacement=useChinese ? zhDate : isoDate;
-    if(numericDate.test(value))return prefix+value.replace(numericDate,replacement);
-    if(datePlaceholder.test(value))return prefix+value.replace(datePlaceholder,replacement);
-    if(isDateRow && /^\s*(?:尚未確認|未確認|未知|待確認)\s*$/u.test(value)) return prefix+replacement;
-    if(isDateRow && !value.trim()) return prefix+replacement;
-    // If only time is present on a date row, include the date (with the
-    // existing HH:MM untouched), never a fresh field or emoji.
-    if(isDateRow && hhmm && /^\s*(?:[01]?\d|2[0-3])[:：][0-5]\d\s*$/u.test(value))return prefix+replacement+' '+value.trim();
-    return line;
+    if(numericDate.test(head))head=head.replace(numericDate,replacement);
+    else if(datePlaceholder.test(head))head=head.replace(datePlaceholder,replacement);
+    else if(isDateRow && /^\s*(?:尚未確認|未確認|未知|待確認)\s*$/u.test(head))head=replacement;
+    else if(isDateRow && !head.trim())head=replacement;
+    else if(isDateRow && hhmm && /^\s*(?:[01]?\d|2[0-3])[:：][0-5]\d\s*$/u.test(head))head=replacement+' '+head.trim();
+    return prefix+head+tail;
   }).filter(line=>line!==null).join('\n');
 }
 module.exports={parseFields, lockCreatorStatus, describeCreatorTemplate, isCreatorGuidance, protectCreatorStatusSymbols, enforceModernStatusTime, protectCreatorCalendarDisplay};

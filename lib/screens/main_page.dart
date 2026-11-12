@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
@@ -365,28 +366,17 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                             throw StateError('登入帳號已變更，請重新進入頁面');
                           }
                           final todayString = _checkInDayKey;
-                          // 固定每日明細 ID，交易重試也只建立一筆明細。
-                          final logRef = userDocRef.collection('flower_logs')
-                              .doc('daily_check_in_${todayString.replaceAll('-', '')}');
-                          await FirebaseFirestore.instance.runTransaction((transaction) async {
-                            final snapshot = await transaction.get(userDocRef);
-                            if (!snapshot.exists) throw StateError('找不到玩家資料');
-                            final data = snapshot.data() as Map<String, dynamic>? ?? {};
-                            final last = data['lastCheckInDate'];
-                            if (last is Timestamp && _checkInDayOf(last) == todayString) {
-                              throw StateError('今天已經簽到過了');
-                            }
-                            // 使用同一筆交易：點數與花花明細共同成功或共同失敗。
-                            transaction.update(userDocRef, {
-                              'flowerPoints': FieldValue.increment(rewardAmount),
-                              'lastCheckInDate': FieldValue.serverTimestamp(),
-                            });
-                            transaction.set(logRef, {
-                              'title': l10n.title_daily_check_in,
-                              'amount': rewardAmount,
-                              'createdAt': FieldValue.serverTimestamp(),
-                            });
-                          });
+                          // 花花發點與領取資格交由後端驗證；不傳入任何獎勵金額。
+                          final result = await FirebaseFunctions.instanceFor(
+                            region: 'asia-east1',
+                          ).httpsCallable('claimDailyCheckIn').call();
+                          final claimData = Map<String, dynamic>.from(result.data as Map);
+                          if (claimData['alreadyClaimed'] == true) {
+                            throw StateError('今天已經簽到過了');
+                          }
+                          if (claimData['claimed'] != true) {
+                            throw StateError('簽到未完成');
+                          }
 
                           if (!mounted) return;
 
