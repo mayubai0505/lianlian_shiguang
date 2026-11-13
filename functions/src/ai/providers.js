@@ -203,11 +203,32 @@ async function callAnthropicDirect({modelId, requestBody, abortController, timeo
         });
         const raw = await response.text();
         let data;
-        try { data = JSON.parse(raw); } catch (_) { throw new Error("Anthropic 回傳格式異常"); }
+        try {
+            data = JSON.parse(raw);
+        } catch (_) {
+            // Only log metadata; provider bodies may contain sensitive user content.
+            console.warn("ANTHROPIC_INVALID_RESPONSE", {
+                model: modelId,
+                httpStatus: response.status,
+                contentType: response.headers?.get("content-type") || null,
+                responseBytes: Buffer.byteLength(raw, "utf8"),
+            });
+            const error = new Error("Anthropic 回傳格式異常");
+            error.code = "AI_INVALID_RESPONSE";
+            error.statusCode = response.status;
+            throw error;
+        }
         if (!response.ok) {
             const error = new Error(data?.error?.message || `Anthropic HTTP ${response.status}`);
             error.statusCode = response.status;
             error.result = data;
+            throw error;
+        }
+        // A valid JSON literal such as null is not a valid Messages API response.
+        if (!data || typeof data !== "object" || Array.isArray(data)) {
+            const error = new Error("Anthropic 回傳格式異常");
+            error.code = "AI_INVALID_RESPONSE";
+            error.statusCode = response.status;
             throw error;
         }
         const content = Array.isArray(data.content)

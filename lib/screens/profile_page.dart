@@ -403,6 +403,13 @@ class _ProfilePageState extends State<ProfilePage>
         _nickname = data['nickname'] ?? _nickname;
         _avatarPath = data['avatarPath'] ?? _avatarPath;
         _flowerPoints = data['flowerPoints'] ?? 0;
+        // 後端可能已成功發點，但 callable 的回應在 Web 端失敗。
+        // 使用既有 users 文件即時監聽同步簽到狀態，讓日曆立刻切換成已簽到圖。
+        final lastCheckIn = data['lastCheckInDate'];
+        if (lastCheckIn is Timestamp &&
+            _checkInDayOf(lastCheckIn) == _checkInDayKey) {
+          _hasCheckedInToday = true;
+        }
         _bio = data['bio']?.toString().trim() ?? '';
         _isVerifiedCreator = CreatorVerifiedBadge.isVerifiedCreator(data);
 
@@ -462,8 +469,13 @@ class _ProfilePageState extends State<ProfilePage>
       return;
     }
 
+    // 本機快取只用來加速畫面，不能代表其他玩家也能看到框圖。
+    // 舊資料若缺少公開 imageUrl，仍須用本人的持有清單驗證並補齊。
+    final publishedImageUrl =
+        (equipped['imageUrl'] ?? '').toString().trim();
     if (_equippedAvatarFrameKey == key &&
-        _equippedAvatarFrameImageUrl.isNotEmpty) {
+        _equippedAvatarFrameImageUrl.isNotEmpty &&
+        publishedImageUrl == _equippedAvatarFrameImageUrl) {
       return;
     }
 
@@ -514,6 +526,32 @@ class _ProfilePageState extends State<ProfilePage>
           imageUrl: resolvedImageUrl,
           name: resolvedName,
         );
+        // 只同步「目前裝備的框圖網址」，不公開 event_progress 持有清單。
+        // 使用 transaction 再核對裝備 ID，避免另一台裝置剛切換頭像框時
+        // 把舊框的網址錯誤寫入新框。
+        if (publishedImageUrl != resolvedImageUrl &&
+            FirebaseAuth.instance.currentUser?.uid == user.uid) {
+          try {
+            final userRef = _db.collection('users').doc(user.uid);
+            await _db.runTransaction<void>((transaction) async {
+              final latest = await transaction.get(userRef);
+              final latestRaw = latest.data()?['equippedAvatarFrame'];
+              if (latestRaw is! Map) return;
+              final latestFrame = Map<String, dynamic>.from(latestRaw);
+              if ((latestFrame['eventId'] ?? '').toString().trim() != eventId ||
+                  (latestFrame['itemId'] ?? '').toString().trim() != itemId ||
+                  (latestFrame['imageUrl'] ?? '').toString().trim() == resolvedImageUrl) {
+                return;
+              }
+              transaction.update(userRef, {
+                'equippedAvatarFrame.imageUrl': resolvedImageUrl,
+              });
+            });
+          } catch (error) {
+            // 公開同步失敗不得影響玩家自己裝備的頭像框。
+            debugPrint('⚠️ 頭像框公開圖片同步失敗：$error');
+          }
+        }
       } else {
         await _clearAvatarFrameCache(user.uid);
       }
@@ -589,7 +627,14 @@ class _ProfilePageState extends State<ProfilePage>
       ).httpsCallable('claimDailyCheckIn').call();
       final claimData = Map<String, dynamic>.from(result.data as Map);
       if (claimData['alreadyClaimed'] == true) {
-        throw StateError('今天已經簽到過了');
+        // 伺服器已確認領取，不當成失敗；讓畫面與日曆同步。
+        if (!mounted) return;
+        setState(() => _hasCheckedInToday = true);
+        ToastUtils.showCenterToast(
+          context,
+          l10n.profilePageAlreadyCheckedIn,
+        );
+        return;
       }
       if (claimData['claimed'] != true) {
         throw StateError('簽到未完成');
@@ -700,9 +745,26 @@ class _ProfilePageState extends State<ProfilePage>
           debugPrint('手動簽到狀態二次核對失敗: $verifyError');
         }
       }
+      // 若 callable 回應先於 Firestore 可見更新，短暫等待後僅重讀狀態。
+      // 絕不再次呼叫 claimDailyCheckIn，以免重複領取。
+      if (!alreadyCheckedIn && FirebaseAuth.instance.currentUser != null) {
+        await Future<void>.delayed(const Duration(milliseconds: 450));
+        if (!mounted) return;
+        try {
+          final currentUser = FirebaseAuth.instance.currentUser!;
+          final userRef = FirebaseFirestore.instance
+              .collection('users').doc(currentUser.uid);
+          final latest = await userRef.get(const GetOptions(source: Source.server));
+          final last = latest.data()?['lastCheckInDate'];
+          alreadyCheckedIn = last is Timestamp &&
+              _checkInDayOf(last) == _checkInDayKey;
+        } catch (verifyError) {
+          debugPrint('手動簽到重試核對失敗: $verifyError');
+        }
+      }
       if (!mounted) return;
 
-      if (alreadyCheckedIn) {
+      if (alreadyCheckedIn || _hasCheckedInToday) {
 
         setState(() {
           _hasCheckedInToday = true;
@@ -711,7 +773,6 @@ class _ProfilePageState extends State<ProfilePage>
         ToastUtils.showCenterToast(
           context,
           l10n.profilePageAlreadyCheckedIn,
-          isError: true,
         );
 
         return;
@@ -2144,6 +2205,20 @@ class _ProfilePageState extends State<ProfilePage>
       GoogleFonts.notoSerifTcTextTheme(theme.primaryTextTheme),
     );
 
+    // Desktop Web has its own composition; mobile keeps the original NestedScrollView.
+    final desktopWeb = kIsWeb && MediaQuery.sizeOf(context).width >= 760;
+    if (desktopWeb) {
+      return Theme(
+        data: profileTheme,
+        child: Container(
+          decoration: themeNotifier.currentBackground,
+          child: _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _buildDesktopProfile(),
+        ),
+      );
+    }
+
     return Theme(
       data: profileTheme,
       child: Container(
@@ -2303,6 +2378,190 @@ class _ProfilePageState extends State<ProfilePage>
           ),
         ),
       ),
+    );
+  }
+
+  // Desktop-only profile layout. Reuses the mobile widgets and callbacks,
+  // but does not nest an extra vertical scroll view around the tab's own scroll.
+  Widget _buildDesktopProfile() {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final color = theme.colorScheme.primary;
+    final onSurface = theme.colorScheme.onSurface;
+    final isDark = theme.brightness == Brightness.dark;
+    final panelColor = theme.colorScheme.surface.withValues(alpha: isDark ? 0.94 : 0.89);
+    // Keep the two-column web layout at medium widths instead of switching
+    // to the full-width mobile profile when the browser gets narrower.
+    final viewportWidth = MediaQuery.sizeOf(context).width;
+    final compactDesktop = viewportWidth < 1100;
+
+    Widget assetAction(String asset, String tooltip, VoidCallback action) {
+      return IconButton(
+        tooltip: tooltip,
+        onPressed: action,
+        icon: _buildTintedProfileAsset(
+          maskAsset: asset,
+          size: 40,
+          color: color,
+          opacity: 0.62,
+        ),
+      );
+    }
+
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 1280),
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(compactDesktop ? 12 : 24, 16, compactDesktop ? 12 : 24, 20),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Existing header includes live profile identity, avatar frame,
+              // verified badge, referral, stats, sign-in, and diary shortcuts.
+              SizedBox(
+                width: compactDesktop ? 220 : 292,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: panelColor,
+                    borderRadius: BorderRadius.circular(22),
+                    border: Border.all(color: color.withValues(alpha: 0.12)),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(22),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          _buildEditorialProfileHeader(),
+                          const SizedBox(height: 6),
+                          const Divider(indent: 18, endIndent: 18, height: 1),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(12, 12, 12, 18),
+                            child: Column(
+                              children: [
+                                _desktopProfileSideItem(l10n.profilePageTabCharacters, 0),
+                                _desktopProfileSideItem(l10n.profile_page_world_tab1, 1),
+                                _desktopProfileSideItem(l10n.profilePageTabMoments, 2),
+                                _desktopProfileSideItem(l10n.profilePageTabBio, 3),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: compactDesktop ? 12 : 20),
+              Expanded(
+                child: Column(
+                  children: [
+                    // 網頁版「我的拾光旅程」無文字橫幅；手機版不受影響。
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(22),
+                      child: SizedBox(
+                        height: 134,
+                        width: double.infinity,
+                        child: Image.asset(
+                          'assets/images/banners/profile_journey_banner_no_text.png',
+                          fit: BoxFit.cover,
+                          alignment: Alignment.center,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        assetAction('assets/images/profile/announcement_mask.webp', l10n.profile_tooltip_announcement,
+                                () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AnnouncementListPage()))),
+                        assetAction('assets/icons/icon_profile_collection.png',
+                            l10n.event_memory_collection_show_collection_intro_if_needed_message_collection,
+                                () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EventMemoryCollectionPage()))),
+                        assetAction('assets/images/profile/top_settings_mask.webp', l10n.profile_tooltip_settings,
+                                () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage()))),
+                      ],
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: panelColor,
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+                      ),
+                      child: TabBar(
+                        controller: _profileTabController,
+                        isScrollable: false,
+                        labelColor: color,
+                        unselectedLabelColor: onSurface.withValues(alpha: 0.53),
+                        indicatorColor: color,
+                        dividerColor: color.withValues(alpha: 0.10),
+                        labelStyle: GoogleFonts.notoSerifTc(fontSize: 14, fontWeight: FontWeight.w600),
+                        tabs: [
+                          Tab(text: l10n.profilePageTabCharacters),
+                          Tab(text: l10n.profile_page_world_tab1),
+                          Tab(text: l10n.profilePageTabMoments),
+                          Tab(text: l10n.profilePageTabBio),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(18)),
+                        child: ColoredBox(
+                          color: panelColor,
+                          child: TabBarView(
+                            controller: _profileTabController,
+                            children: [
+                              _buildCharactersTab(),
+                              _buildWorldsTab(),
+                              _buildMomentsTab(),
+                              _buildAboutMeTab(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _desktopProfileSideItem(String label, int index) {
+    final theme = Theme.of(context);
+    return AnimatedBuilder(
+      animation: _profileTabController,
+      builder: (context, _) {
+        final selected = _profileTabController.index == index;
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2),
+          child: Material(
+            color: selected
+                ? theme.colorScheme.primary.withValues(alpha: 0.13)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () => _profileTabController.animateTo(index),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 12),
+                child: Row(
+                  children: [
+                    Expanded(child: Text(label,
+                        maxLines: 1, overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.notoSerifTc(
+                          color: selected ? theme.colorScheme.primary : theme.colorScheme.onSurface,
+                          fontSize: 13, fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                        ))),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -2682,7 +2941,13 @@ class _ProfilePageState extends State<ProfilePage>
                         theme.colorScheme.primary.withValues(alpha: 0.07),
                         backgroundImage: getAvatarImageProvider(_avatarPath),
                         onBackgroundImageError: (exception, stackTrace) {
-                          debugPrint('⚠️ 個人檔案大頭貼載入失敗');
+                          if (kDebugMode) {
+                            debugPrint('❌ [PROFILE_AVATAR] 個人檔案大頭貼載入失敗');
+                            debugPrint('❌ [PROFILE_AVATAR] 來源：${_profileImageDebugSource(_avatarPath)}');
+                            debugPrint('❌ [PROFILE_AVATAR] 錯誤類型：${exception.runtimeType}');
+                            // 部分網路錯誤會把帶有存取 token 的完整 URL 放進訊息；
+                            // 因此只記錄類型與去識別來源，避免在 Console 洩漏 token。
+                          }
                         },
                       ),
                       if (_equippedAvatarFrameImageUrl.isNotEmpty)
@@ -2777,11 +3042,16 @@ class _ProfilePageState extends State<ProfilePage>
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
-                                '@$displayID',
-                                style: GoogleFonts.notoSerifTc(
-                                  fontSize: 12.5,
-                                  color: secondaryColor,
+                              Flexible(
+                                child: Text(
+                                  '@$displayID',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  softWrap: false,
+                                  style: GoogleFonts.notoSerifTc(
+                                    fontSize: 12.5,
+                                    color: secondaryColor,
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 5),
@@ -3502,7 +3772,26 @@ class _ProfilePageState extends State<ProfilePage>
                   Text(AppLocalizations.of(context)!.profile_page_worlds_empty_hint1),
                 ]),
               ),
-            for (final doc in docs) _buildMyWorldCard(doc, theme),
+            if (kIsWeb && MediaQuery.sizeOf(context).width >= 760)
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  const spacing = 14.0;
+                  final itemWidth = (constraints.maxWidth - spacing) / 2;
+                  return Wrap(
+                    spacing: spacing,
+                    runSpacing: 2,
+                    children: [
+                      for (final doc in docs)
+                        SizedBox(
+                          width: itemWidth,
+                          child: _buildMyWorldCard(doc, theme),
+                        ),
+                    ],
+                  );
+                },
+              )
+            else
+              for (final doc in docs) _buildMyWorldCard(doc, theme),
           ],
         );
       },
@@ -3608,7 +3897,7 @@ class _ProfilePageState extends State<ProfilePage>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  TextButton.icon(
+                  TextButton(
                     onPressed: () async {
                       final result = await Navigator.push<bool>(
                         context,
@@ -3621,12 +3910,7 @@ class _ProfilePageState extends State<ProfilePage>
                         await _refreshData();
                       }
                     },
-                    icon: Icon(
-                      Icons.lock_outline_rounded,
-                      size: 14,
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.52),
-                    ),
-                    label: Text(
+                    child: Text(
                       l10n.enter_secret_studio,
                       style: TextStyle(
                         fontSize: 12.5,
@@ -3695,12 +3979,11 @@ class _ProfilePageState extends State<ProfilePage>
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(18, 8, 18, 24),
               sliver: SliverGrid(
-                gridDelegate:
-                const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: kIsWeb && MediaQuery.sizeOf(context).width >= 1100 ? 3 : 2,
+                  crossAxisSpacing: kIsWeb && MediaQuery.sizeOf(context).width >= 1100 ? 16 : 10,
                   mainAxisSpacing: 12,
-                  childAspectRatio: 0.62,
+                  childAspectRatio: kIsWeb && MediaQuery.sizeOf(context).width >= 1100 ? 0.82 : 0.62,
                 ),
                 delegate: SliverChildBuilderDelegate(
                       (context, index) {
@@ -3760,11 +4043,65 @@ class _ProfilePageState extends State<ProfilePage>
     }
   }
 
+  // 只診斷「我的角色」卡片圖片；不改圖片來源、備援順序與顯示方式。
+  // 不輸出 Firebase Storage URL 的 query token。
+  String _profileImageDebugSource(String path) {
+    final uri = Uri.tryParse(path);
+    if (uri == null || !uri.hasScheme) return path;
+    final lastSegment = uri.pathSegments.isEmpty ? '' : uri.pathSegments.last;
+    return '${uri.scheme}://${uri.host}/.../$lastSegment';
+  }
+
+  Widget _buildMyCharacterImageWithFallback(
+      List<String> candidates,
+      ThemeData theme, [
+        int index = 0,
+      ]) {
+    if (index >= candidates.length) {
+      if (kDebugMode && kIsWeb) {
+        debugPrint('🖼️ [PROFILE_IMAGE] 所有圖片來源皆載入失敗');
+      }
+      return ColoredBox(
+        color: theme.colorScheme.primary.withValues(alpha: 0.07),
+        child: const SizedBox.expand(),
+      );
+    }
+
+    final imagePath = candidates[index];
+    return Image(
+      // Web 單獨測試 Flutter 原生 NetworkImage，避開 cached_network_image
+      // 的網頁圖片提供者；手機仍沿用原本的快取行為。
+      image: kIsWeb && (imagePath.startsWith('https://') || imagePath.startsWith('http://'))
+          ? NetworkImage(imagePath)
+          : getAvatarImageProvider(imagePath),
+      fit: BoxFit.cover,
+      filterQuality: FilterQuality.medium,
+      gaplessPlayback: true,
+      frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+        if (kDebugMode && kIsWeb && frame == 0 && !wasSynchronouslyLoaded) {
+          debugPrint('✅ [PROFILE_IMAGE] 圖片已解碼 (${index + 1}/${candidates.length}): '
+              '${_profileImageDebugSource(imagePath)}');
+        }
+        return child;
+      },
+      errorBuilder: (_, error, __) {
+        if (kDebugMode && kIsWeb) {
+          debugPrint('❌ [PROFILE_IMAGE] 圖片載入失敗 (${index + 1}/${candidates.length}): '
+              '${_profileImageDebugSource(imagePath)}，錯誤：$error');
+        }
+        return _buildMyCharacterImageWithFallback(candidates, theme, index + 1);
+      },
+    );
+  }
+
   Widget _buildMyCharacterCard(Character character) {
     final theme = Theme.of(context);
-    final imagePath = character.avatarPath.trim().isNotEmpty
-        ? character.avatarPath
-        : 'assets/images/avatar1.webp';
+    // 網頁上 avatar 可能是舊網址；失敗時依序嘗試角色圖庫與預設頭像。
+    final imageCandidates = <String>[
+      character.avatarPath.trim(),
+      ...character.galleryPaths.map((url) => url.trim()),
+      'assets/images/avatar1.webp',
+    ].where((url) => url.isNotEmpty).toSet().toList();
 
     return InkWell(
       onTap: () => _openMyCharacterEditor(character),
@@ -3774,15 +4111,7 @@ class _ProfilePageState extends State<ProfilePage>
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image(
-                image: getAvatarImageProvider(imagePath),
-                fit: BoxFit.cover,
-                filterQuality: FilterQuality.high,
-                errorBuilder: (_, __, ___) => Container(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.07),
-                  child: const SizedBox.shrink(),
-                )
-            ),
+            _buildMyCharacterImageWithFallback(imageCandidates, theme),
             Positioned.fill(
               child: DecoratedBox(
                 decoration: BoxDecoration(

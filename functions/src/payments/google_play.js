@@ -27,6 +27,12 @@ function createFulfillHandler({db, FieldValue, HttpsError, verifyPurchase, now =
     if (!info || typeof purchaseToken !== 'string' || !purchaseToken || purchaseToken.length > 8192) {
       throw new HttpsError('invalid-argument', '購買資料不完整。');
     }
+    // Register only the signed-in Firebase user; allows future RTDN recovery
+    // to resolve Play's obfuscatedExternalAccountId even if this verify fails.
+    // Binding errors must not prevent a real purchase from being fulfilled.
+    try {
+      await require('./google_play_offline').registerAccountBinding(db, uid, FieldValue);
+    } catch (_) { console.warn('GOOGLE_PLAY_BINDING_REGISTRATION_FAILED'); }
     // Google alone decides whether the transaction is paid.
     const verified = await verifyPurchase(productId, purchaseToken);
     if (verified.purchaseState !== 0) {
@@ -118,8 +124,15 @@ function createGooglePlayPurchaseFunction({onCall, HttpsError, db, FieldValue}) 
   const {GoogleAuth} = require('google-auth-library');
   const auth = new GoogleAuth({scopes:['https://www.googleapis.com/auth/androidpublisher']});
   const verifyPurchase = async (productId, token) => {
+    let phase = 'google_auth';
+    let clientType = null;
     try {
       const client = await auth.getClient();
+      const type = client?.constructor?.name;
+      clientType = ['Compute', 'JWT', 'UserRefreshClient', 'Impersonated', 'IdentityPoolClient',
+        'BaseExternalAccountClient', 'ExternalAccountAuthorizedUserClient'].includes(type)
+        ? type : 'other';
+      phase = 'android_publisher_api';
       const segment = encodeURIComponent;
       const response = await client.request({
         url:`https://androidpublisher.googleapis.com/androidpublisher/v3/applications/${segment(packageName.value())}/purchases/products/${segment(productId)}/tokens/${segment(token)}`,
@@ -127,8 +140,36 @@ function createGooglePlayPurchaseFunction({onCall, HttpsError, db, FieldValue}) 
       });
       return response.data;
     } catch (error) {
-      // Do not log raw HTTP errors: their URL contains a secret purchase token.
+      // Never log the raw error or request URL: both may expose the purchase token.
+      // Keep diagnostics to a fixed set of non-sensitive fields only.
       const status = error.response?.status;
+      const httpStatus = Number.isInteger(status) && status >= 100 && status <= 599
+        ? status : null;
+      const safeGoogleStatus = error.response?.data?.error?.status;
+      const googleStatus = typeof safeGoogleStatus === 'string' &&
+        /^[A-Z][A-Z0-9_]{0,47}$/.test(safeGoogleStatus) ? safeGoogleStatus : null;
+      const rawCode = error.code;
+      const errorCode = typeof rawCode === 'string' &&
+        /^[A-Z][A-Z0-9_]{0,47}$/.test(rawCode) ? rawCode : null;
+      // Only allowlisted OAuth error codes are recorded. Never log response
+      // bodies, authentication headers, access tokens or purchase tokens.
+      const responseHeaders = error.response?.headers;
+      const challenge = typeof responseHeaders?.get === 'function'
+        ? responseHeaders.get('www-authenticate')
+        : responseHeaders?.['www-authenticate'];
+      const oauthErrorMatch = typeof challenge === 'string'
+        ? challenge.match(/(?:^|[\s,])error=\"?(invalid_token|insufficient_scope|invalid_request)\"?(?=[\s,]|$)/i)
+        : null;
+      const oauthError = oauthErrorMatch ? oauthErrorMatch[1].toLowerCase() : null;
+      const apiErrors = error.response?.data?.error?.errors;
+      const apiReasonRaw = Array.isArray(apiErrors) ? apiErrors[0]?.reason : null;
+      const apiReason = typeof apiReasonRaw === 'string' &&
+        /^(?:authError|insufficientPermissions|forbidden|accessNotConfigured|backendError|rateLimitExceeded)$/u.test(apiReasonRaw)
+        ? apiReasonRaw : null;
+      const authClient = clientType;
+      console.warn('GOOGLE_PLAY_VERIFY_FAILURE', {
+        phase, httpStatus, googleStatus, errorCode, oauthError, apiReason, authClient,
+      });
       if (status === 400 || status === 404 || status === 410) {
         throw new HttpsError('failed-precondition', 'Google 無法確認此訂單，請客服核對。');
       }

@@ -3,7 +3,10 @@
 // 未成立的條件欄位不屬於必填；無條件的欄位必須全部保留（不再只檢查前兩欄）。
 const DIRECTIVE_HEADING = /^\s*(?:#{1,6}\s*)?(?:每回合|每輪|以下為|狀態欄格式|固定生成|【?狀態欄規則)/u;
 const FIELD = /^\s*([^\r\n：:]{1,48})\s*[：:]\s*(.*)$/u;
-const CONDITIONAL = /(?:隱藏|不顯示|不輸出|省略該欄|不要顯示|才顯示|才輸出|有(?:比賽|賽事|勃起|事件)時)/u;
+// Explicit conditional display language is optional, not a required field.
+// No JavaScript/eval/branch execution: only the creator's literal text is read.
+const CONDITIONAL = /(?:隱藏|不顯示|不輸出|省略該欄|不要顯示|才(?:會|可|能)?顯示|才輸出|有(?:比賽|賽事|勃起|事件)時|僅在[^\n]{0,100}(?:時|才|顯示|輸出)|只有[^\n]{0,100}(?:時|才|顯示|輸出)|(?:if|when)[^\n]{0,90}(?:show|display|hide|omit))/iu;
+const CONDITIONAL_FOLLOWUP = /^\s*(?:[-•*]\s*)?(?:若|如果|當|僅在|只有|if\b|when\b)[^\n]{0,120}(?:顯示|輸出|隱藏|省略|不顯示|不輸出|才|show|display|hide|omit)/iu;
 // A creator's condition can be rephrased by the model; these are never player-facing state values.
 const HIDE_DIRECTIVE = /(?:未勃起|無勃起|沒有勃起|無其他\s*NPC|沒有其他\s*NPC|無\s*NPC|沒有\s*NPC|無人(?:在場|發言)|(?:自動|應|需|請)?\s*(?:隱藏|不顯示|不輸出|省略))(?:.{0,25}(?:隱藏|不顯示|不輸出))?/iu;
 const PURE_NO_NPC = /^[（(]?\s*(?:無|沒有)(?:其他)?\s*NPC(?:在場|發言|出現)?\s*[）)]?$/iu;
@@ -47,7 +50,9 @@ function directiveEmojiSlot(line) {
 function parseTemplate(template) {
   const fields = [];
   let insideNpcDetailSection = false;
-  for (const sourceLine of String(template || "").split(/\r?\n/)) {
+  const templateLines = String(template || "").split(/\r?\n/);
+  for (let lineIndex = 0; lineIndex < templateLines.length; lineIndex++) {
+    const sourceLine = templateLines[lineIndex];
     const line = sourceLine.trim();
     if (!line || DIRECTIVE_HEADING.test(line) || /^[-=—_]{3,}$/.test(line)) continue;
     const directive = directiveEmojiSlot(line);
@@ -74,7 +79,11 @@ function parseTemplate(template) {
     const metaLabel = label.replace(/^[\s（(【\[]+/u, '').replace(/[\s）)】\]]+$/u, '').trim();
     if (!label || /^(?:規則|範例|示範|說明|格式)/u.test(metaLabel) ||
         /^(?:備註|注意事項|補充說明)$/u.test(metaLabel)) continue;
-    const optional = CONDITIONAL.test(sample);
+    // An immediately following conditional note belongs to this field only.
+    // Never classify a later field heading as the previous field's condition.
+    const nextLine = String(templateLines[lineIndex+1] || '').trim();
+    const hasAttachedCondition = nextLine && !FIELD.test(nextLine) && CONDITIONAL_FOLLOWUP.test(nextLine);
+    const optional = CONDITIONAL.test(sample) || Boolean(hasAttachedCondition);
     if (!fields.some(f => canonicalLabel(f.label) === canonicalLabel(label))) fields.push({label, optional});
   }
   return fields;

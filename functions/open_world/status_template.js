@@ -295,4 +295,85 @@ function protectCreatorCalendarDisplay(template, generated, authoritativeTime=''
     return prefix+head+tail;
   }).filter(line=>line!==null).join('\n');
 }
-module.exports={parseFields, lockCreatorStatus, describeCreatorTemplate, isCreatorGuidance, protectCreatorStatusSymbols, enforceModernStatusTime, protectCreatorCalendarDisplay};
+
+// V3: best-effort completeness observability for simple literal creator rows.
+// Free prose, query examples, hidden/conditional sections and emoji instructions
+// are NOT a reliably machine-readable schema, so do not count or reconstruct them.
+function inspectCreatorStatusCompleteness(template, visible, options={}) {
+  const original=String(visible||'');
+  const lines=original.replace(/\r\n?/gu,'\n').split('\n');
+  const source=String(template||'').replace(/\r\n?/gu,'\n').split('\n');
+  const result={status:original, eligibleFields:0, presentFields:0, missingFields:0,
+    repairedFields:0, skippedAmbiguous:true};
+  // These templates are instruction manuals containing example lines, not a
+  // list of public, always-visible rows. Never synthesize their hidden content.
+  if (/(?:HIDDEN\s+STATUS|隱藏狀態資料|QUERY\s+DISPLAY|查詢回覆格式|查詢指令|STATUS\s+COMMAND)/iu.test(template)) return result;
+  const row=/^\s*([^\n：:]{1,45})\s*([：:])\s*(.*)$/u;
+  const excluded=/(?:範例|觸發詞|查詢|條件|當|若|如果|僅|只有|隱藏|秘密|備註|規則|請|不得|不可|必須|格式要求|說明|輸出規則|選項|使用方式|狀態指令|回覆格式)/u;
+  const rows=[];
+  const seen=new Set();
+  for (const raw of source) {
+    const match=raw.match(row);
+    if(!match || isCreatorGuidance(raw))continue;
+    const label=match[1].trim(), value=match[3].trim();
+    // An explicit conditional or an instructional value is not a mandatory field.
+    if(!label || excluded.test(label) || /(?:只有|僅在|當|若|如果|條件|觸發|才顯示|不顯示|隱藏)/u.test(value) ||
+      /^(?:請|根據|依照|應|必須|不得|不可)/u.test(value) || value.length>160)continue;
+    if(seen.has(label))continue;
+    seen.add(label);
+    rows.push({label,separator:match[2]});
+  }
+  if(!rows.length)return result;
+  // Reliable labels must be present as their own field row. Do not match a
+  // narrative mention or another NPC's sentence containing the same label.
+  const findRow=(label, list)=>list.findIndex(line=>{
+    const match=line.match(row);
+    return Boolean(match&&match[1].trim()===label);
+  });
+  const missing=rows.filter(item=>findRow(item.label,lines)<0);
+  result.eligibleFields=rows.length;
+  result.presentFields=rows.length-missing.length;
+  result.missingFields=missing.length;
+  result.skippedAmbiguous=false;
+  if(options.allowRepair===false || !original.trim() || !missing.length)return result;
+  // Only the authoritative server story clock is safe to fill. Do not reuse
+  // old locations, moods, thoughts, positions, affinity or character secrets.
+  const clock=String(options.authoritativeTime||'').trim();
+  const match=clock.match(/^(?:(\d{4})\/(\d{1,2})\/(\d{1,2})\s+)?([01]?\d|2[0-3]):([0-5]\d)$/u);
+  if(!match)return result;
+  const hhmm=`${match[4].padStart(2,'0')}:${match[5]}`;
+  const date=match[1]?`${match[1]}年${String(match[2]).padStart(2,'0')}月${String(match[3]).padStart(2,'0')}日`:'';
+  const repaired=new Map();
+  for(const item of missing) {
+    if(/^(?:時間|時刻|故事時間|目前時間|當前時間|現在時間|時間\s+TIME|TIME\s+時間)$/iu.test(item.label))repaired.set(item.label,hhmm);
+    if(date && /^(?:日期|故事日期|目前日期|日期\s+DATE|DATE\s+日期)$/iu.test(item.label))repaired.set(item.label,date);
+  }
+  if(!repaired.size)return result;
+  // Keep other rows and the author's ordering. Insert immediately before the
+  // next surviving literal row, otherwise after the last surviving row.
+  const output=lines.slice();
+  for(let i=rows.length-1;i>=0;i--) {
+    const item=rows[i], value=repaired.get(item.label);
+    if(!value)continue;
+    let insertAt=-1;
+    for(let j=i+1;j<rows.length;j++) {
+      const pos=findRow(rows[j].label,output);
+      if(pos>=0){insertAt=pos;break;}
+    }
+    if(insertAt<0){
+      for(let j=i-1;j>=0;j--) {
+        const pos=findRow(rows[j].label,output);
+        if(pos>=0){insertAt=pos+1;break;}
+      }
+    }
+    if(insertAt<0)continue;
+    output.splice(insertAt,0,`${item.label}${item.separator}${value}`);
+    result.repairedFields++;
+  }
+  result.status=output.join('\n');
+  result.presentFields+=result.repairedFields;
+  result.missingFields-=result.repairedFields;
+  return result;
+}
+
+module.exports={inspectCreatorStatusCompleteness, parseFields, lockCreatorStatus, describeCreatorTemplate, isCreatorGuidance, protectCreatorStatusSymbols, enforceModernStatusTime, protectCreatorCalendarDisplay};

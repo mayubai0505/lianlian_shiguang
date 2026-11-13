@@ -2939,6 +2939,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
     // ✨ 1. 取得螢幕寬度並判斷是否為大螢幕
     final screenWidth = MediaQuery.of(context).size.width;
     final isDesktop = screenWidth > 600;
+    // V3: only desktop Web uses the wide split profile; native/mobile stays unchanged.
+    final bool desktopWeb = kIsWeb && screenWidth >= 1000;
 
     // ✨ 2. 把原本的 Stack (包含滾動內容與底部按鈕) 提取出來，準備進行寬度限制
     Widget mainContent = Stack(
@@ -2948,10 +2950,12 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
               SliverAppBar(
-                expandedHeight: 400.0,
+                // Desktop portrait lives in the left column instead of the header.
+                expandedHeight: desktopWeb ? kToolbarHeight : 400.0,
                 pinned: true,
-                backgroundColor:
-                theme.scaffoldBackgroundColor.withValues(alpha: 0.9),
+                backgroundColor: desktopWeb
+                    ? theme.scaffoldBackgroundColor.withValues(alpha: 0.9)
+                    : theme.scaffoldBackgroundColor.withValues(alpha: 0.9),
                 elevation: 0,
                 leading: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -3102,12 +3106,60 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                     ),
                   ),
                 ],
-                flexibleSpace: FlexibleSpaceBar(
-                  background: _buildHeaderPhotoCarousel(
-                    isDesktop: isDesktop,
+                flexibleSpace: desktopWeb
+                    ? null
+                    : FlexibleSpaceBar(
+                        background: _buildHeaderPhotoCarousel(
+                          isDesktop: isDesktop,
+                        ),
+                      ),
+              ),
+              if (desktopWeb)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 22, 24, 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.character.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.notoSerifTc(
+                            fontSize: 30,
+                            fontWeight: FontWeight.w700,
+                            color: theme.colorScheme.onSurface,
+                          ),
+                        ),
+                        if (widget.character.occupation.trim().isNotEmpty) ...[
+                          const SizedBox(height: 6),
+                          Text(
+                            _translatedText(
+                              'occupation', widget.character.occupation),
+                            style: GoogleFonts.notoSerifTc(
+                              fontSize: 14,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                        ],
+                        if (widget.character.firstLine.trim().isNotEmpty) ...[
+                          const SizedBox(height: 12),
+                          Text(
+                            widget.character.firstLine.trim(),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.notoSerifTc(
+                              fontSize: 14,
+                              height: 1.55,
+                              color: theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.76),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
               // ✨ 吸頂的三個頁籤 TabBar
               SliverPersistentHeader(
                 pinned: true,
@@ -3239,14 +3291,58 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
           backgroundColor: Colors.transparent,
           body: Container(
             decoration: themeNotifier.currentBackground, // 保留您精美的全螢幕背景
-            child: isDesktop
+            child: desktopWeb
                 ? Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 500),
-                child: mainContent,
-              ),
-            )
-                : mainContent,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 1240),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 20),
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            final double portraitWidth =
+                                (constraints.maxWidth * 0.34).clamp(280.0, 390.0);
+                            return Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  width: portraitWidth,
+                                  child: SizedBox(
+                                    height: (portraitWidth / 0.70)
+                                        .clamp(280.0, constraints.maxHeight),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: _buildHeaderPhotoCarousel(
+                                        isDesktop: true,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 24),
+                                Expanded(
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(20),
+                                    child: ColoredBox(
+                                      color: theme.scaffoldBackgroundColor,
+                                      child: mainContent,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  )
+                : isDesktop
+                    ? Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 500),
+                          child: mainContent,
+                        ),
+                      )
+                    : mainContent,
           ),
         );
       },

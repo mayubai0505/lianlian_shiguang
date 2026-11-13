@@ -35,6 +35,41 @@ class PurchaseService extends ChangeNotifier with WidgetsBindingObserver {
   bool _disposed = false;
   Timer? _retryTimer;
   final Set<String> _reportedIssues = {};
+  // An order rejected as non-retryable still belongs to the store until
+  // support resolves it. Keep it intact; only suppress automatic retries
+  // for this app session (a fresh launch checks again).
+  final Set<String> _ordersAwaitingReview = <String>{};
+
+  String _purchaseRetryKey(PurchaseDetails purchase, String uid) {
+    // The fingerprint never goes to logs; raw purchase tokens are never stored.
+    final proof = purchase.verificationData.serverVerificationData;
+    final stableProof = proof.isNotEmpty
+        ? proof
+        : '${purchase.purchaseID ?? ''}:${purchase.transactionDate ?? ''}';
+    final fingerprint = sha256.convert(utf8.encode(stableProof)).toString();
+    return '$uid:${purchase.productID}:$fingerprint';
+  }
+
+  bool _requiresManualReview(FirebaseFunctionsException e) =>
+      e.code == 'failed-precondition' ||
+      e.code == 'invalid-argument' ||
+      e.code == 'permission-denied';
+  // Prevent multiple native payment-sheet launches from rapid taps.
+  // Keep this lock until StoreKit/Play sends a purchase event; buyConsumable
+  // may return before the native sheet or its transaction finishes.
+  bool _purchaseLaunchInProgress = false;
+  String? _launchingProductId;
+  bool get isPurchaseLaunching => _purchaseLaunchInProgress;
+  String? get launchingProductId => _launchingProductId;
+
+  void _releasePurchaseLaunch(String productId) {
+    if (_launchingProductId != productId) return;
+    _purchaseLaunchInProgress = false;
+    _launchingProductId = null;
+    final wrapper = products.where((p) => p.productDetails.id == productId).firstOrNull;
+    if (wrapper != null) wrapper.isPending = false;
+    if (!_disposed) notifyListeners();
+  }
 
   String _accountId(String uid) => sha256.convert(utf8.encode(uid)).toString();
 
@@ -189,7 +224,12 @@ class PurchaseService extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   Future<void> buyProduct(ProductDetails productDetails) async {
+    // Synchronous guard, before the first await: also protects two different
+    // product cards and the monthly card from repeated native sheet launches.
+    if (_purchaseLaunchInProgress || _disposed) return;
     final wrapper = products.firstWhere((p) => p.productDetails.id == productDetails.id);
+    _purchaseLaunchInProgress = true;
+    _launchingProductId = productDetails.id;
     wrapper.isPending = true;
     notifyListeners();
 
@@ -201,15 +241,14 @@ class PurchaseService extends ChangeNotifier with WidgetsBindingObserver {
               applicationUserName: _accountId(user.uid))
           : Sk2PurchaseParam(productDetails: productDetails,
               applicationUserName: _appleAccountToken(user.uid));
-      // 🌟 依然使用 buyConsumable，讓玩家能無限疊加
+      // Keep the native sheet lock even after this Future returns true.
+      // A later purchaseStream event releases it.
       final started = await _inAppPurchase.buyConsumable(
         purchaseParam: purchaseParam, autoConsume: !Platform.isAndroid);
       if (!started) throw StateError('商店未啟動購買');
     } catch (e) {
-      // 🚨 如果呼叫 Google 結帳面板失敗 (例如被阻擋)，立刻關閉轉圈圈
-      debugPrint("❌ 呼叫購買面板失敗: $e");
-      wrapper.isPending = false;
-      notifyListeners();
+      debugPrint('呼叫購買面板失敗: ${e.runtimeType}');
+      _releasePurchaseLaunch(productDetails.id);
     }
   }
 
@@ -220,12 +259,23 @@ class PurchaseService extends ChangeNotifier with WidgetsBindingObserver {
         if (wrapper != null) wrapper.isPending = purchase.status == PurchaseStatus.pending;
         if (purchase.status == PurchaseStatus.pending) continue;
         if (purchase.status == PurchaseStatus.error) {
+          _releasePurchaseLaunch(purchase.productID);
           if (purchase.error != null) _handleError(purchase.error!);
           continue;
         }
-        if (purchase.status == PurchaseStatus.canceled) continue;
+        if (purchase.status == PurchaseStatus.canceled) {
+          _releasePurchaseLaunch(purchase.productID);
+          continue;
+        }
         if (purchase.status == PurchaseStatus.purchased ||
             (purchase.status == PurchaseStatus.restored)) {
+          final uid = FirebaseAuth.instance.currentUser?.uid;
+          if (uid != null &&
+              _ordersAwaitingReview.contains(_purchaseRetryKey(purchase, uid))) {
+            // Do not hammer a permanently rejected order every minute.
+            // Never consume/finish an unfulfilled transaction.
+            continue;
+          }
           if (Platform.isAndroid) {
             await _deliverGooglePurchase(purchase);
           } else {
@@ -253,7 +303,18 @@ class PurchaseService extends ChangeNotifier with WidgetsBindingObserver {
         }
 
       } catch (e) {
-        debugPrint('交易尚未完成，等待重試: ${e.runtimeType}');
+        if (e is FirebaseFunctionsException) {
+          final uid = FirebaseAuth.instance.currentUser?.uid;
+          if (uid != null && _requiresManualReview(e)) {
+            _ordersAwaitingReview.add(_purchaseRetryKey(purchase, uid));
+            debugPrint('交易需人工核對，暫停本次執行期間自動重試: ${e.code}');
+          } else {
+            // Includes unavailable (503): allow the next recovery attempt.
+            debugPrint('交易暫時未完成，保留待重試: ${e.code}');
+          }
+        } else {
+          debugPrint('交易尚未完成，保留待重試: ${e.runtimeType}');
+        }
         if (e is FirebaseFunctionsException && !_disposed &&
             _reportedIssues.add('${purchase.purchaseID}:${e.code}')) {
           final context = navigatorKey.currentContext;
@@ -268,6 +329,13 @@ class PurchaseService extends ChangeNotifier with WidgetsBindingObserver {
               )));
             }
           }
+        }
+      } finally {
+        // The native purchase flow has produced a terminal event. If backend
+        // fulfillment failed, the purchase stays unfinished and retryable.
+        if (purchase.status == PurchaseStatus.purchased ||
+            purchase.status == PurchaseStatus.restored) {
+          _releasePurchaseLaunch(purchase.productID);
         }
       }
     }

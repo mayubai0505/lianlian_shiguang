@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -699,6 +700,11 @@ class RecommendationPageState extends State<RecommendationPage> {
       );
     }
 
+    // Desktop Web is a separate layout; the original mobile tree remains unchanged.
+    if (kIsWeb && MediaQuery.sizeOf(context).width >= 900) {
+      return _buildDesktopRecommendations(context);
+    }
+
     return RefreshIndicator(
       color: colors.primary,
       onRefresh: () => _loadRecommendations(refresh: true, full: true),
@@ -884,6 +890,148 @@ class RecommendationPageState extends State<RecommendationPage> {
               ),
             ),
         ],
+      ),
+    );
+  }
+
+  // WEB DESKTOP V2: bounded content, consistent cards, no changes to ranking or taps.
+  Widget _buildDesktopRecommendations(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final featuredColumns = screenWidth >= 1180 ? 4 : 3;
+    final exploreColumns = screenWidth >= 1180 ? 4 : 3;
+
+    Widget section(String title, String subtitle) => Padding(
+      padding: const EdgeInsets.only(top: 24, bottom: 14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: GoogleFonts.notoSerifTc(
+            fontSize: 21, fontWeight: FontWeight.w700,
+            color: colors.onSurface,
+          )),
+          const SizedBox(height: 4),
+          Text(subtitle, style: GoogleFonts.notoSerifTc(
+            fontSize: 12.5, color: colors.onSurface.withValues(alpha: 0.60),
+          )),
+        ],
+      ),
+    );
+
+    return RefreshIndicator(
+      color: colors.primary,
+      onRefresh: () => _loadRecommendations(refresh: true, full: true),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1180),
+          child: ListView(
+            key: const PageStorageKey<String>('recommendation_desktop_scroll'),
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(24, 28, 24, 48),
+            children: [
+              Text(l10n.recommendation_title, style: GoogleFonts.notoSerifTc(
+                fontSize: 28, fontWeight: FontWeight.w700, color: colors.onSurface,
+              )),
+              const SizedBox(height: 18),
+              const _ActiveEventEntry(),
+              if (_preferredTags.isNotEmpty) ...[
+                const SizedBox(height: 14),
+                Wrap(
+                  spacing: 8, runSpacing: 8,
+                  children: _preferredTags.map((tag) => Chip(
+                    label: Text('#${_preferenceTagLabel(tag, l10n)}',
+                      style: GoogleFonts.notoSerifTc(fontSize: 11)),
+                    visualDensity: VisualDensity.compact,
+                    side: BorderSide(color: colors.primary.withValues(alpha: 0.12)),
+                  )).toList(),
+                ),
+              ],
+              if (_featuredItems.isNotEmpty) ...[
+                section(l10n.recommendation_featured_title,
+                    l10n.recommendation_featured_subtitle),
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: featuredColumns,
+                    mainAxisSpacing: 16, crossAxisSpacing: 16,
+                    mainAxisExtent: 342,
+                  ),
+                  itemCount: _featuredItems.length,
+                  itemBuilder: (context, index) {
+                    final item = _featuredItems[index];
+                    return _FeaturedRecommendationCard(
+                      item: item,
+                      imageUrl: _imageUrl(item.character),
+                      reasonText: item.reasonText(_phase,
+                        _prettyBehaviorHint(item.character), l10n,
+                        (tag) => _preferenceTagLabel(tag, l10n)),
+                      onTap: () => _openCharacter(item.character),
+                    );
+                  },
+                ),
+              ],
+              if (_matchedItems.isNotEmpty) ...[
+                section(
+                  _phase.useBehaviorPreference
+                      ? l10n.recommendation_matched_behavior_title
+                      : l10n.recommendation_matched_initial_title,
+                  _phase.useBehaviorPreference
+                      ? l10n.recommendation_matched_behavior_subtitle
+                      : l10n.recommendation_matched_initial_subtitle,
+                ),
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2, mainAxisSpacing: 12,
+                    crossAxisSpacing: 16, mainAxisExtent: 154,
+                  ),
+                  itemCount: _matchedItems.length,
+                  itemBuilder: (context, index) {
+                    final item = _matchedItems[index];
+                    return _CompactRecommendationCard(
+                      item: item,
+                      imageUrl: _imageUrl(item.character),
+                      reasonText: item.reasonText(_phase,
+                        _prettyBehaviorHint(item.character), l10n,
+                        (tag) => _preferenceTagLabel(tag, l10n)),
+                      onTap: () => _openCharacter(item.character),
+                    );
+                  },
+                ),
+              ],
+              if (_exploreItems.isNotEmpty) ...[
+                section(l10n.recommendation_explore_title,
+                    l10n.recommendation_explore_subtitle),
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: exploreColumns,
+                    mainAxisSpacing: 16, crossAxisSpacing: 16,
+                    mainAxisExtent: 318,
+                  ),
+                  itemCount: _exploreItems.length,
+                  itemBuilder: (context, index) {
+                    final item = _exploreItems[index];
+                    return _ExploreRecommendationCard(
+                      item: item,
+                      imageUrl: _imageUrl(item.character),
+                      onTap: () => _openCharacter(item.character),
+                    );
+                  },
+                ),
+              ],
+              if (_isRefreshing)
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Center(child: Text(l10n.recommendation_refreshing)),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }

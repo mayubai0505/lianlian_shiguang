@@ -8,7 +8,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lianlian_shiguang/l10n/app_l10n.dart';
 //主題切換
 
@@ -313,29 +312,27 @@ class ThemeNotifier extends ChangeNotifier {
   }
 
   ThemeData _applySelectedFont(ThemeData baseTheme) {
-    final TextTheme textTheme;
-    final TextTheme primaryTextTheme;
-
+    // 使用 pubspec.yaml 宣告的本機字型；不改動各主題的顏色與字級。
+    // 系統字型保留 Flutter 原有的字型回退行為。
+    final String? selectedFamily;
     switch (_currentFont) {
       case AppFont.notoSerifTc:
-        textTheme = GoogleFonts.notoSerifTcTextTheme(baseTheme.textTheme);
-        primaryTextTheme =
-            GoogleFonts.notoSerifTcTextTheme(baseTheme.primaryTextTheme);
+        selectedFamily = 'LianlianSerifTC';
         break;
       case AppFont.notoSansTc:
-        textTheme = GoogleFonts.notoSansTcTextTheme(baseTheme.textTheme);
-        primaryTextTheme =
-            GoogleFonts.notoSansTcTextTheme(baseTheme.primaryTextTheme);
+        selectedFamily = 'LianlianSansTC';
         break;
       case AppFont.system:
-        textTheme = baseTheme.textTheme;
-        primaryTextTheme = baseTheme.primaryTextTheme;
+        selectedFamily = null;
         break;
     }
 
+    if (selectedFamily == null) return baseTheme;
+
     return baseTheme.copyWith(
-      textTheme: textTheme,
-      primaryTextTheme: primaryTextTheme,
+      textTheme: baseTheme.textTheme.apply(fontFamily: selectedFamily),
+      primaryTextTheme:
+          baseTheme.primaryTextTheme.apply(fontFamily: selectedFamily),
     );
   }
 

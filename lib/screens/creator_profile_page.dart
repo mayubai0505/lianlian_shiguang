@@ -1,5 +1,6 @@
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // 🌟 記得加這個來判斷身分
 import 'package:cached_network_image/cached_network_image.dart'; // 🌟 讀取雲端圖片用
@@ -739,14 +740,20 @@ class CreatorProfilePage extends StatelessWidget {
       ThemeData theme,
       AppLocalizations l10n,
       ) {
-    return Stack(
+    final desktop = kIsWeb && MediaQuery.sizeOf(context).width >= 850;
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 1072),
+        child: Stack(
       alignment: Alignment.bottomCenter,
       children: [
         TabBar(
           labelColor: theme.colorScheme.primary,
           unselectedLabelColor:
           theme.colorScheme.onSurface.withValues(alpha: 0.48),
-          indicatorColor: Colors.transparent,
+          indicatorColor: desktop ? theme.colorScheme.primary : Colors.transparent,
+          indicatorWeight: desktop ? 3 : 2,
+          indicatorSize: TabBarIndicatorSize.label,
           dividerColor: Colors.transparent,
           overlayColor: const WidgetStatePropertyAll(Colors.transparent),
           labelStyle: GoogleFonts.notoSerifTc(
@@ -764,7 +771,7 @@ class CreatorProfilePage extends StatelessWidget {
             Tab(text: l10n.creator_profile_open_worlds),
           ],
         ),
-        Positioned(
+        if (!desktop) Positioned(
           bottom: 0,
           child: IgnorePointer(
             child: Opacity(
@@ -779,6 +786,8 @@ class CreatorProfilePage extends StatelessWidget {
           ),
         ),
       ],
+        ),
+      ),
     );
   }
 
@@ -792,6 +801,10 @@ class CreatorProfilePage extends StatelessWidget {
     final primary = theme.colorScheme.primary;
     final textColor = theme.colorScheme.onSurface;
 
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final desktopInset = kIsWeb && screenWidth >= 850
+        ? ((screenWidth - 1000) / 2).clamp(24.0, 500.0).toDouble() : 18.0;
+
     final visibleLinks = profileLinks
         .where((item) => (item['url'] ?? '').trim().isNotEmpty)
         .toList();
@@ -799,7 +812,9 @@ class CreatorProfilePage extends StatelessWidget {
     if (creatorBio.trim().isEmpty && visibleLinks.isEmpty) {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(24, 34, 24, 40),
+        padding: EdgeInsets.fromLTRB(
+            kIsWeb && screenWidth >= 850 ? desktopInset : 24,
+            34, kIsWeb && screenWidth >= 850 ? desktopInset : 24, 40),
         children: [
           const SizedBox(height: 34),
           Center(
@@ -836,7 +851,7 @@ class CreatorProfilePage extends StatelessWidget {
 
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(18, 22, 18, 42),
+      padding: EdgeInsets.fromLTRB(desktopInset, 22, desktopInset, 42),
       children: [
         Container(
           width: double.infinity,
@@ -1250,7 +1265,11 @@ class CreatorProfilePage extends StatelessWidget {
                       final moment =
                       filteredMoments[index];
 
-                      return MomentCard(
+                      return Center(child: ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth:
+                          kIsWeb && MediaQuery.sizeOf(context).width >= 850
+                              ? 760 : double.infinity),
+                        child: MomentCard(
                         key: ValueKey(moment.id),
                         moment: moment,
                         currentUserId:
@@ -1298,7 +1317,8 @@ class CreatorProfilePage extends StatelessWidget {
                             characters: characters,
                           );
                         },
-                      );
+                      ),
+                      ));
                     },
                   );
                 },
@@ -1542,16 +1562,32 @@ class CreatorProfilePage extends StatelessWidget {
     final textColor = theme.colorScheme.onSurface;
     final subTextColor = textColor.withValues(alpha: 0.52);
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
-      child: Column(
+    final desktop = kIsWeb && MediaQuery.sizeOf(context).width >= 850;
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 1120),
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(desktop ? 24 : 18, desktop ? 28 : 18,
+              desktop ? 24 : 18, desktop ? 18 : 16),
+          child: Container(
+            padding: desktop ? const EdgeInsets.fromLTRB(28, 26, 28, 24) : EdgeInsets.zero,
+            decoration: desktop ? BoxDecoration(
+              color: theme.colorScheme.surface.withValues(alpha: 0.88),
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(color: primaryColor.withValues(alpha: 0.16)),
+              boxShadow: [BoxShadow(
+                color: primaryColor.withValues(alpha: 0.07),
+                blurRadius: 24, offset: const Offset(0, 8),
+              )],
+            ) : null,
+            child: Column(
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                width: 104,
-                height: 104,
+                width: desktop ? 124 : 104,
+                height: desktop ? 124 : 104,
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: [
@@ -1575,8 +1611,8 @@ class CreatorProfilePage extends StatelessWidget {
                           key: ValueKey('creator_header_$creatorId'),
                           userId: creatorId,
                           avatarImage: imageProvider,
-                          size: 104,
-                          avatarRadius: 46,
+                          size: desktop ? 124 : 104,
+                          avatarRadius: desktop ? 55 : 46,
                           backgroundColor:
                           primaryColor.withValues(alpha: 0.08),
                           fallbackChild: Icon(
@@ -1604,7 +1640,7 @@ class CreatorProfilePage extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 18),
+              SizedBox(width: desktop ? 28 : 18),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1618,7 +1654,7 @@ class CreatorProfilePage extends StatelessWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.notoSerifTc(
-                              fontSize: 23,
+                              fontSize: desktop ? 26 : 23,
                               fontWeight: FontWeight.w700,
                               color: textColor,
                               letterSpacing: 0.2,
@@ -1706,14 +1742,15 @@ class CreatorProfilePage extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 22),
+          SizedBox(height: desktop ? 26 : 22),
           Container(
             padding: const EdgeInsets.symmetric(
               horizontal: 8,
               vertical: 14,
             ),
             decoration: BoxDecoration(
-              color: theme.scaffoldBackgroundColor.withValues(alpha: 0.86),
+              color: desktop ? primaryColor.withValues(alpha: 0.045)
+                  : theme.scaffoldBackgroundColor.withValues(alpha: 0.86),
               borderRadius: BorderRadius.circular(18),
               border: Border.all(
                 color: primaryColor.withValues(alpha: 0.10),
@@ -1760,6 +1797,9 @@ class CreatorProfilePage extends StatelessWidget {
             ),
           ),
         ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -2026,9 +2066,13 @@ class CreatorProfilePage extends StatelessWidget {
       );
     }
 
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final desktop = kIsWeb && screenWidth >= 850;
+    final sideInset = desktop
+        ? ((screenWidth - 1100) / 2).clamp(24.0, 500.0).toDouble() : 16.0;
     return MasonryGridView.count(
-      padding: const EdgeInsets.all(16),
-      crossAxisCount: 2,
+      padding: EdgeInsets.fromLTRB(sideInset, 22, sideInset, 32),
+      crossAxisCount: desktop ? (screenWidth >= 1180 ? 3 : 2) : 2,
       mainAxisSpacing: 16,
       crossAxisSpacing: 16,
       itemCount: characters.length,
@@ -2037,7 +2081,7 @@ class CreatorProfilePage extends StatelessWidget {
         characters[index];
 
         final double cardHeight =
-        index.isEven ? 240 : 300;
+        desktop ? (screenWidth >= 1180 ? 300 : 280) : (index.isEven ? 240 : 300);
 
         final String safeAvatar =
         characterObj.avatarPath.trim();
@@ -2068,8 +2112,8 @@ class CreatorProfilePage extends StatelessWidget {
               BorderRadius.circular(18),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black
-                      .withValues(alpha: 0.1),
+                  color: theme.colorScheme.primary
+                      .withValues(alpha: 0.10),
                   blurRadius: 10,
                   offset: const Offset(0, 5),
                 ),
@@ -2290,10 +2334,12 @@ class _CreatorOpenWorldsTabState extends State<_CreatorOpenWorldsTab> {
         }
         return RefreshIndicator(
           onRefresh: _refresh,
-          child: ListView.builder(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-            itemCount: worlds.length,
-            itemBuilder: (context, i) {
+          child: LayoutBuilder(builder: (context, constraints) {
+            final desktop = kIsWeb && MediaQuery.sizeOf(context).width >= 850;
+            final width = constraints.maxWidth;
+            final sideInset = desktop
+                ? ((width - 1100) / 2).clamp(24.0, 500.0).toDouble() : 16.0;
+            Widget worldCard(BuildContext context, int i) {
               final world = worlds[i];
               final worldId = (world['id'] ?? '').toString();
               final name = (world['name'] ?? l10n.creator_profile_unnamed_world).toString();
@@ -2343,8 +2389,33 @@ class _CreatorOpenWorldsTabState extends State<_CreatorOpenWorldsTab> {
                   ]),
                 ),
               );
-            },
-          ),
+            }
+            if (!desktop) {
+              // 手機端保留原有的直式世界清單。
+              return ListView.builder(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+                itemCount: worlds.length,
+                itemBuilder: worldCard,
+              );
+            }
+            final columns = width >= 1050 ? 3 : 2;
+            // The cover uses 16:9. A fixed grid height can clip the title,
+            // pitch and tags when cards grow wider or web text is enlarged.
+            final cardWidth = (width - sideInset * 2 - (columns - 1) * 16) / columns;
+            final cardHeight = cardWidth * 9 / 16 + 190;
+            return GridView.builder(
+              padding: EdgeInsets.fromLTRB(sideInset, 18, sideInset, 32),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: columns,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 12,
+                mainAxisExtent: cardHeight > (columns == 3 ? 340 : 420)
+                    ? cardHeight : (columns == 3 ? 340.0 : 420.0),
+              ),
+              itemCount: worlds.length,
+              itemBuilder: worldCard,
+            );
+          }),
         );
       },
     );

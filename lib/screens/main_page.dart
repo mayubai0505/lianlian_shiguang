@@ -149,8 +149,11 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
         });
       }
 
-      // 只有「上次主分頁 = 聊天」時才嘗試回到最後聊天室。
+      // 電腦版的聊天室由 ChatHomePage 的左右雙欄承載。
+      // F5 還原時不能在 MainPage 之上再 push 全螢幕聊天室。
+      // ChatHomePage 會在載入後，從同一組偏好還原右側房間。
       if (savedIndex != 2) return;
+      if (kIsWeb && MediaQuery.sizeOf(context).width >= 900) return;
 
       // 世界觀房間是獨立類型，不能誤當成角色聊天室路由。
       final lastType = prefs.getString('last_chat_type_$uid') ?? '';
@@ -688,30 +691,98 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
     unawaited(_saveLastMainTab(index));
   }
 
+  // Desktop-only navigation: existing five tabs and their behavior remain unchanged.
+  Widget _buildDesktopWebNavigation(BuildContext context, AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    final labels = [
+      l10n.nav_recommend,
+      l10n.nav_encounter,
+      l10n.mode_chat,
+      l10n.nav_moments,
+      l10n.title_personal_homepage,
+    ];
+    return Container(
+      height: 68,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface.withValues(alpha: 0.94),
+        border: Border(bottom: BorderSide(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.35),
+        )),
+      ),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1180),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Row(children: [
+              Text(l10n.app_name,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 22, fontWeight: FontWeight.w700,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+              const Spacer(),
+              ...List.generate(labels.length, (index) {
+                final selected = index == _selectedIndex;
+                return Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: TextButton(
+                    onPressed: () => _onItemTapped(index),
+                    style: TextButton.styleFrom(
+                      foregroundColor: selected
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.onSurfaceVariant,
+                      backgroundColor: selected
+                          ? theme.colorScheme.primary.withValues(alpha: 0.09)
+                          : Colors.transparent,
+                      padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: Text(labels[index], style: GoogleFonts.notoSerifTc(
+                      fontSize: 14,
+                      fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                    )),
+                  ),
+                );
+              }),
+            ]),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeNotifier>(
       builder: (context, themeNotifier, child) {
         final theme = Theme.of(context);
         final l10n = AppLocalizations.of(context)!;
+        final isDesktopWeb = kIsWeb && MediaQuery.sizeOf(context).width >= 1000;
         return Container(
           decoration: themeNotifier.currentBackground,
           child: Scaffold(
             backgroundColor: Colors.transparent,
             body: SafeArea(
               top: false,
-              child: IndexedStack(
-                index: _selectedIndex,
-                children: List.generate(_pages.length, (index) {
-                  // ✨ 這裡微調一下邏輯
-                  // 如果這頁曾經被啟動過，就永遠保持它的存在，不要讓它變回 SizedBox
-                  return _isPageActivated[index]
-                      ? _pages[index]
-                      : const SizedBox.shrink();
-                }),
+              child: Column(
+                children: [
+                  if (isDesktopWeb) _buildDesktopWebNavigation(context, l10n),
+                  Expanded(
+                    child: IndexedStack(
+                      index: _selectedIndex,
+                      children: List.generate(_pages.length, (index) {
+                        // Keep every previously activated tab alive, as before.
+                        return _isPageActivated[index]
+                            ? _pages[index]
+                            : const SizedBox.shrink();
+                      }),
+                    ),
+                  ),
+                ],
               ),
             ),
-            bottomNavigationBar: BottomNavigationBar(
+            bottomNavigationBar: isDesktopWeb ? null : BottomNavigationBar(
               backgroundColor: Colors.transparent,
               elevation: 0,
               type: BottomNavigationBarType.fixed,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../services/theme_notifier.dart';
@@ -631,6 +632,8 @@ class _FeedbackPageState
     final textColor = theme.colorScheme.onSurface;
     final double screenWidth = mediaQuery.size.width;
     final double screenHeight = mediaQuery.size.height;
+    // 桌面網頁使用信箋式表單；窄視窗與手機沿用原版。
+    final bool isWebDesktop = kIsWeb && screenWidth >= 850;
 
     // 以目前 390px 寬手機上的位置為基準，依裝置尺寸等比例縮放。
     // clamp 避免小手機裝飾太小，也避免平板上的花草被放得過大。
@@ -710,14 +713,14 @@ class _FeedbackPageState
                   keyboardDismissBehavior:
                   ScrollViewKeyboardDismissBehavior.onDrag,
                   padding: EdgeInsets.fromLTRB(
-                    22,
-                    10,
-                    22,
+                    isWebDesktop ? 28 : 22,
+                    isWebDesktop ? 22 : 10,
+                    isWebDesktop ? 28 : 22,
                     42 + mediaQuery.viewInsets.bottom,
                   ),
                   child: Center(
                     child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 720),
+                      constraints: BoxConstraints(maxWidth: isWebDesktop ? 850 : 720),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -733,18 +736,21 @@ class _FeedbackPageState
                               size: 25,
                             ),
                           ),
-                          const SizedBox(height: 18),
-                          Text(
+                          SizedBox(height: isWebDesktop ? 8 : 18),
+                          Align(
+                            alignment: isWebDesktop ? Alignment.center : Alignment.centerLeft,
+                            child: Text(
                             l10n.title_contact_us,
                             style: GoogleFonts.notoSerifTc(
                               color: textColor,
-                              fontSize: 34,
+                              fontSize: isWebDesktop ? 38 : 34,
                               fontWeight: FontWeight.w600,
                               letterSpacing: 3.2,
                               height: 1.15,
                             ),
                           ),
-                          const SizedBox(height: 30),
+                          ),
+                          SizedBox(height: isWebDesktop ? 24 : 30),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
@@ -778,6 +784,7 @@ class _FeedbackPageState
                           const SizedBox(height: 8),
                           Text(
                             l10n.desc_contact_us_body,
+                            textAlign: TextAlign.start,
                             style: GoogleFonts.notoSerifTc(
                               color: textColor.withValues(alpha: 0.64),
                               fontSize: 14,
@@ -785,7 +792,33 @@ class _FeedbackPageState
                               letterSpacing: 0.7,
                             ),
                           ),
-                          const SizedBox(height: 30),
+                          SizedBox(height: isWebDesktop ? 24 : 30),
+                          Container(
+                            width: double.infinity,
+                            padding: isWebDesktop
+                                ? const EdgeInsets.fromLTRB(32, 30, 32, 30)
+                                : EdgeInsets.zero,
+                            decoration: isWebDesktop
+                                ? BoxDecoration(
+                                    color: theme.colorScheme.surface.withValues(
+                                      alpha: isDarkMode ? 0.90 : 0.86,
+                                    ),
+                                    borderRadius: BorderRadius.circular(26),
+                                    border: Border.all(
+                                      color: primary.withValues(alpha: 0.18),
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: primary.withValues(alpha: 0.075),
+                                        blurRadius: 28,
+                                        offset: const Offset(0, 12),
+                                      ),
+                                    ],
+                                  )
+                                : null,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                           _buildContactSectionTitle(
                             theme,
                             l10n.feedback_category_section_title,
@@ -973,6 +1006,9 @@ class _FeedbackPageState
                                     height: 1.5,
                                   ),
                                 ),
+                              ],
+                            ),
+                          ),
                               ],
                             ),
                           ),

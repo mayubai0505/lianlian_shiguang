@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:card_swiper/card_swiper.dart';
-import 'dart:ui';
 import 'dart:math';
 import 'character_model.dart';
 import 'character_profile_page.dart';
@@ -33,13 +32,21 @@ ImageProvider _encounterImageProvider(
   final String normalizedUrl = imageUrl.trim();
   final String cacheKey = '$cacheWidth::$normalizedUrl';
 
-  return _encounterImageProviderCache.putIfAbsent(
-    cacheKey,
-        () => ResizeImage(
-      CachedNetworkImageProvider(normalizedUrl),
-      width: cacheWidth,
-    ),
-  );
+  return _encounterImageProviderCache.putIfAbsent(cacheKey, () {
+    // 明確指定共用型別，避免 Web / 手機不同 ImageProvider 類別被推斷成 Object。
+    final ImageProvider provider;
+    if (kIsWeb) {
+      // Web：避免快取 Provider 的額外尺寸解碼。
+      provider = NetworkImage(normalizedUrl);
+    } else {
+      // Android / iOS：保留原本的快取與縮圖行為。
+      provider = ResizeImage(
+        CachedNetworkImageProvider(normalizedUrl),
+        width: cacheWidth,
+      );
+    }
+    return provider;
+  });
 }
 
 Widget _buildEncounterCachedImage(
@@ -89,7 +96,12 @@ Widget _buildEncounterCachedImage(
             alignment: alignment,
           );
     },
-    errorBuilder: (context, error, stackTrace) => fallback,
+    errorBuilder: (context, error, stackTrace) {
+      if (kIsWeb) {
+        debugPrint('❌ [ENCOUNTER_IMAGE] 網頁圖片載入失敗：$error；URL=$normalizedUrl');
+      }
+      return fallback;
+    },
   );
 }
 
@@ -1105,8 +1117,8 @@ class _LatestTabState extends State<_LatestTab> {
     final l10n = AppLocalizations.of(context)!;
     final bool useDesktopLayout = kIsWeb && screenWidth >= 800;
 
-    final double pageHorizontalPadding = useDesktopLayout ? 32 : 16;
-    final double maxContentWidth = useDesktopLayout ? 1280 : double.infinity;
+    final double pageHorizontalPadding = useDesktopLayout ? 24 : 16;
+    final double maxContentWidth = useDesktopLayout ? 1180 : double.infinity;
 
     final List<Character> bannerList = _shuffledBannerCharacters;
     final List<Object> filteredEntries = _filteredEntries;
@@ -1644,8 +1656,11 @@ class _LatestTabState extends State<_LatestTab> {
         required bool useDesktopLayout,
       }) {
     return SizedBox(
-      height: useDesktopLayout ? 360 : 250,
+      height: useDesktopLayout ? 270 : 250,
       child: Swiper(
+        // Web 避免 card_swiper 無限循環的超大虛擬索引造成浮點精度斷言。
+        // 原生 Android/iOS 維持既有循環行為。
+        loop: !kIsWeb,
         itemCount: bannerList.length,
         autoplay: bannerList.length > 1,
         autoplayDelay: 4500,
@@ -1658,8 +1673,8 @@ class _LatestTabState extends State<_LatestTab> {
             activeSize: 7,
           ),
         ),
-        viewportFraction: useDesktopLayout ? 0.82 : 1.0,
-        scale: useDesktopLayout ? 0.92 : 1.0,
+        viewportFraction: useDesktopLayout ? 0.88 : 1.0,
+        scale: useDesktopLayout ? 0.96 : 1.0,
         itemBuilder: (context, index) {
           final char = bannerList[index];
 
@@ -1824,58 +1839,19 @@ class _LatestTabState extends State<_LatestTab> {
       ),
     );
   }
-  List<Widget> _buildDesktopBannerImage(
-      String bannerImg,
-      ) {
+  // Web desktop: a single full-width cover. No blurred duplicate, no thin portrait stripe.
+  List<Widget> _buildDesktopBannerImage(String bannerImg) {
     if (bannerImg.isEmpty) {
-      return [
-        Image.asset(
-          'assets/images/blank_avatar.webp',
-          fit: BoxFit.cover,
-        ),
-      ];
+      return [Image.asset('assets/images/blank_avatar.webp', fit: BoxFit.cover)];
     }
-
     return [
       _buildEncounterCachedImage(
         context,
         imageUrl: bannerImg,
         fit: BoxFit.cover,
-        alignment: Alignment.center,
-        cacheWidth: 1600,
-        placeholder: Container(
-          color: Colors.black12,
-        ),
-        errorWidget: Container(
-          color: Colors.black12,
-        ),
-      ),
-
-      BackdropFilter(
-        filter: ImageFilter.blur(
-          sigmaX: 18,
-          sigmaY: 18,
-        ),
-        child: Container(
-          color: Colors.black.withValues(
-            alpha: 0.35,
-          ),
-        ),
-      ),
-
-      Center(
-        child: _buildEncounterCachedImage(
-          context,
-          imageUrl: bannerImg,
-          fit: BoxFit.contain,
-          alignment: Alignment.center,
-          cacheWidth: 1400,
-          placeholder: const SizedBox.shrink(),
-          errorWidget: Image.asset(
-            'assets/images/blank_avatar.webp',
-            fit: BoxFit.contain,
-          ),
-        ),
+        alignment: const Alignment(0, -0.18),
+        cacheWidth: 1400,
+        placeholder: Container(color: Theme.of(context).colorScheme.surfaceContainerHighest),
       ),
     ];
   }
@@ -1950,15 +1926,15 @@ class _LatestTabState extends State<_LatestTab> {
       builder: (context, constraints) {
         final int columnCount;
 
-        if (constraints.maxWidth >= 1200) {
+        if (constraints.maxWidth >= 1000) {
           columnCount = 4;
-        } else if (constraints.maxWidth >= 850) {
+        } else if (constraints.maxWidth >= 760) {
           columnCount = 3;
         } else {
           columnCount = 2;
         }
 
-        const double spacing = 18;
+        const double spacing = 16;
 
         final double cardWidth =
             (constraints.maxWidth -
@@ -2037,6 +2013,65 @@ class _LatestTabState extends State<_LatestTab> {
     char.galleryPaths.isNotEmpty
         ? char.galleryPaths.first
         : '';
+
+    if (isDesktop) {
+      final theme = Theme.of(context);
+      return MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => CharacterProfilePage(
+              character: char, characterId: char.id,
+            )),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface.withValues(alpha: 0.92),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.38)),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AspectRatio(
+                  aspectRatio: 1.13,
+                  child: Stack(fit: StackFit.expand, children: [
+                    if (imageUrl.isNotEmpty)
+                      _buildEncounterCachedImage(
+                        context, imageUrl: imageUrl, fit: BoxFit.cover,
+                        alignment: Alignment.topCenter, cacheWidth: 620,
+                        placeholder: Container(color: theme.colorScheme.surfaceContainerHighest),
+                      )
+                    else
+                      Image.asset('assets/images/blank_avatar.webp', fit: BoxFit.cover),
+                    Positioned(
+                      top: 9, right: 9,
+                      child: IgnorePointer(child: _characterPlayBadge(char.playCount, isDesktop: true)),
+                    ),
+                  ]),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(13, 10, 13, 12),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(char.name, maxLines: 1, overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700,
+                            color: theme.colorScheme.onSurface)),
+                    const SizedBox(height: 3),
+                    Text(char.occupation.trim().isEmpty ? ' ' : char.occupation,
+                        maxLines: 1, overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurfaceVariant)),
+                  ]),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
@@ -2813,3 +2848,4 @@ class _TagFilteredCharactersPageState
     );
   }
 }
+

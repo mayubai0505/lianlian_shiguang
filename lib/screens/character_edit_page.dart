@@ -525,7 +525,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       final ref = isPublic
           ? base.collection('public_characters').doc(characterId)
           : base.collection('users').doc(currentUid!)
-              .collection('private_characters').doc(characterId);
+          .collection('private_characters').doc(characterId);
       final snapshot = await ref.get();
       if (!mounted || !snapshot.exists) return;
       final stored = snapshot.data()?['worldLore'];
@@ -1073,10 +1073,10 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       // permission-denied，造成正常的公開／私人角色全部無法刪除。
       final characterRef = widget.character!.isPublic
           ? _db.collection('artifacts').doc(AppConfig.appId)
-              .collection('public_characters').doc(characterId)
+          .collection('public_characters').doc(characterId)
           : _db.collection('artifacts').doc(AppConfig.appId)
-              .collection('users').doc(user.uid)
-              .collection('private_characters').doc(characterId);
+          .collection('users').doc(user.uid)
+          .collection('private_characters').doc(characterId);
 
       debugPrint('🗑️ 角色刪除：開始檢查 ${characterRef.path}');
       final parentSnapshot = await characterRef.get();
@@ -3101,6 +3101,117 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     );
   }
 
+  // 僅寬版網頁採用工作室雙／三欄；表單本身、儲存和手機版保持原樣。
+  Widget _webCharacterWorkspace(
+      BuildContext context,
+      TabController controller,
+      Widget editor,
+      AppLocalizations l10n,
+      String firstTabLabel,
+      ) {
+    final theme = Theme.of(context);
+    final width = MediaQuery.sizeOf(context).width;
+    final showPreview = width >= 1220;
+    final labels = <String>[
+      firstTabLabel, l10n.tab_voice, l10n.tab_relationship,
+      l10n.characterEditSupportingCharacters,
+    ];
+    final icons = <IconData>[
+      Icons.badge_outlined, Icons.graphic_eq_rounded,
+      Icons.favorite_border_rounded, Icons.people_outline_rounded,
+    ];
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, _) => Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1560),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 18, 20, 12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(
+                  width: width < 1050 ? 176 : 210,
+                  child: Card(
+                    elevation: 0,
+                    color: theme.colorScheme.surfaceContainerLow,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(10),
+                      itemCount: labels.length,
+                      itemBuilder: (context, index) => Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        child: ListTile(
+                          dense: true,
+                          selected: controller.index == index,
+                          selectedTileColor: theme.colorScheme.primary.withValues(alpha: .10),
+                          selectedColor: theme.colorScheme.primary,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          leading: Icon(icons[index], size: 19),
+                          title: Text(labels[index], maxLines: 2,
+                              overflow: TextOverflow.ellipsis),
+                          onTap: () => controller.animateTo(index),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(child: ClipRRect(
+                  borderRadius: BorderRadius.circular(18),
+                  child: ColoredBox(color: theme.colorScheme.surfaceContainerLowest,
+                      child: editor),
+                )),
+                if (showPreview) ...[
+                  const SizedBox(width: 16),
+                  SizedBox(width: 250, child: Card(
+                    elevation: 0,
+                    color: theme.colorScheme.surfaceContainerLow,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(14),
+                      child: ListView(children: [
+                        Text(l10n.character_edit_tab_character_settings,
+                            style: theme.textTheme.titleMedium),
+                        const SizedBox(height: 14),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(14),
+                          child: AspectRatio(
+                            aspectRatio: 3 / 4,
+                            child: _galleryPhotos.isNotEmpty &&
+                                _galleryPhotos.first.imageUrl.startsWith('http')
+                                ? Image.network(_galleryPhotos.first.imageUrl,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) =>
+                                    Image.asset('assets/images/avatar1.webp', fit: BoxFit.cover))
+                                : Image.asset('assets/images/avatar1.webp', fit: BoxFit.cover),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        ValueListenableBuilder<TextEditingValue>(
+                          valueListenable: _nameController,
+                          builder: (_, value, __) => Text(value.text.trim().isEmpty
+                              ? l10n.createCharacterTitle : value.text,
+                              maxLines: 2, overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.titleMedium),
+                        ),
+                        const SizedBox(height: 8),
+                        Wrap(spacing: 6, runSpacing: 6,
+                            children: _personalityTags.take(4).map((tag) =>
+                                Chip(label: Text(tag, maxLines: 1,
+                                    overflow: TextOverflow.ellipsis))).toList()),
+                      ]),
+                    ),
+                  )),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -3227,7 +3338,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                     ],
                   ),
               ],
-              bottom: TabBar(
+              bottom: (kIsWeb && MediaQuery.sizeOf(context).width >= 900) ? null : TabBar(
                 labelColor: theme.colorScheme.primary,
                 unselectedLabelColor:
                 theme.colorScheme.onSurface.withValues(alpha: 0.46),
@@ -3249,11 +3360,13 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                 ],
               ),
             ),
-            body: ColoredBox(
-              color: theme.scaffoldBackgroundColor,
-              child: TabBarView(
-                children: [
-                  CharacterEditBasicTab(
+            body: Builder(builder: (tabContext) {
+              final tabController = DefaultTabController.of(tabContext);
+              final editor = ColoredBox(
+                color: theme.scaffoldBackgroundColor,
+                child: TabBarView(
+                  children: [
+                    CharacterEditBasicTab(
                       l10n: l10n,
                       bannerSection: _buildBannerImageSection(),
                       imageGallerySection: _buildImageGallery(),
@@ -3358,79 +3471,84 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                           ),
                         ],
                       ),
-                  ),
-                  CharacterEditVoiceTab(
-                    voiceSamples: _voiceSamples,
-                    isGeneratingVoice: _isGeneratingVoice,
-                    generatedVoiceId: _generatedVoiceId,
-                    selectedSampleIndex: _selectedSampleIndex,
-                    playingSampleIndex: _playingSampleIndex,
-                    loadingSampleIndex: _loadingSampleIndex,
-                    isTestingSettings: _isTestingSettings,
-                    voiceStability: _voiceStability,
-                    voiceStyle: _voiceStyle,
-                    onSampleSelected: (index, voiceId) {
-                      setState(() {
-                        _selectedSampleIndex = index;
-                        _selectedVoiceId = voiceId;
-                      });
-                    },
-                    onPreviewVoiceSample: _previewVoiceSample,
-                    onRetryVoiceSamples: () {
-                      setState(() {
-                        _voiceSamples = [];
-                        _selectedSampleIndex = null;
-                        _playingSampleIndex = null;
-                      });
-                      _audioPlayer.stop();
-                    },
-                    onConfirmVoiceSelection: _confirmVoiceSelection,
-                    onShowVoiceGenerationDialog: _showVoiceGenerationDialog,
-                    onRemakeVoice: () {
-                      setState(() {
-                        _generatedVoiceId = null;
-                        _selectedVoiceId = null;
-                        _voiceSamples = [];
-                        _selectedSampleIndex = null;
-                        _playingSampleIndex = null;
-                        _finalAudioBytes = null;
-                        _finalVoicePreviewUrl = null;
-                      });
-                      _showVoiceGenerationDialog();
-                    },
-                    onVoiceStabilityChanged: (value) {
-                      setState(() => _voiceStability = value);
-                    },
-                    onVoiceStyleChanged: (value) {
-                      setState(() => _voiceStyle = value);
-                    },
-                    onTestVoiceSettings: _testVoiceSettings,
-                  ),
-                  CharacterEditRelationshipTab(
-                    isLoading: _isLoadingMyCharacters,
-                    myCharacters: _myCharacters,
-                    relationships: _relationships,
-                    onAddRelationship: _showAddRelationshipDialog,
-                    onEditRelationship: _showEditRelationshipDialog,
-                    onDeleteRelationship: (targetId) {
-                      setState(() {
-                        _relationships.remove(targetId);
-                      });
-                    },
-                  ),
-                  CharacterNpcTab(
-                    npcCharacters: _npcCharacters,
-                    onAddNpc: _showAddNpcDialog,
-                    onEditNpc: _showEditNpcDialog,
-                    onDeleteNpc: (index) {
-                      setState(() {
-                        _npcCharacters.removeAt(index);
-                      });
-                    },
-                  ),
-                ],
-              ),
-            ),
+                    ),
+                    CharacterEditVoiceTab(
+                      voiceSamples: _voiceSamples,
+                      isGeneratingVoice: _isGeneratingVoice,
+                      generatedVoiceId: _generatedVoiceId,
+                      selectedSampleIndex: _selectedSampleIndex,
+                      playingSampleIndex: _playingSampleIndex,
+                      loadingSampleIndex: _loadingSampleIndex,
+                      isTestingSettings: _isTestingSettings,
+                      voiceStability: _voiceStability,
+                      voiceStyle: _voiceStyle,
+                      onSampleSelected: (index, voiceId) {
+                        setState(() {
+                          _selectedSampleIndex = index;
+                          _selectedVoiceId = voiceId;
+                        });
+                      },
+                      onPreviewVoiceSample: _previewVoiceSample,
+                      onRetryVoiceSamples: () {
+                        setState(() {
+                          _voiceSamples = [];
+                          _selectedSampleIndex = null;
+                          _playingSampleIndex = null;
+                        });
+                        _audioPlayer.stop();
+                      },
+                      onConfirmVoiceSelection: _confirmVoiceSelection,
+                      onShowVoiceGenerationDialog: _showVoiceGenerationDialog,
+                      onRemakeVoice: () {
+                        setState(() {
+                          _generatedVoiceId = null;
+                          _selectedVoiceId = null;
+                          _voiceSamples = [];
+                          _selectedSampleIndex = null;
+                          _playingSampleIndex = null;
+                          _finalAudioBytes = null;
+                          _finalVoicePreviewUrl = null;
+                        });
+                        _showVoiceGenerationDialog();
+                      },
+                      onVoiceStabilityChanged: (value) {
+                        setState(() => _voiceStability = value);
+                      },
+                      onVoiceStyleChanged: (value) {
+                        setState(() => _voiceStyle = value);
+                      },
+                      onTestVoiceSettings: _testVoiceSettings,
+                    ),
+                    CharacterEditRelationshipTab(
+                      isLoading: _isLoadingMyCharacters,
+                      myCharacters: _myCharacters,
+                      relationships: _relationships,
+                      onAddRelationship: _showAddRelationshipDialog,
+                      onEditRelationship: _showEditRelationshipDialog,
+                      onDeleteRelationship: (targetId) {
+                        setState(() {
+                          _relationships.remove(targetId);
+                        });
+                      },
+                    ),
+                    CharacterNpcTab(
+                      npcCharacters: _npcCharacters,
+                      onAddNpc: _showAddNpcDialog,
+                      onEditNpc: _showEditNpcDialog,
+                      onDeleteNpc: (index) {
+                        setState(() {
+                          _npcCharacters.removeAt(index);
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              );
+              return kIsWeb && MediaQuery.sizeOf(context).width >= 900
+                  ? _webCharacterWorkspace(tabContext, tabController, editor,
+                  l10n, firstTabLabel)
+                  : editor;
+            }),
             bottomNavigationBar: _buildBottomActionBar(theme, l10n),
           ),
         ),

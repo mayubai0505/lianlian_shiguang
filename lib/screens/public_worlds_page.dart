@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -140,6 +141,10 @@ class _PublicWorldsPageState extends State<PublicWorldsPage> with WidgetsBinding
         if(worlds.isEmpty) return Center(child:Text(l10n.public_worlds_empty1));
         // 橫向/平板限制卡片寬度與封面高度，避免封面隨螢幕寬度無限制放大。
         final isLandscape = MediaQuery.orientationOf(context) == Orientation.landscape;
+        // Desktop only: use a bounded responsive grid; keep the original mobile list.
+        if (kIsWeb && MediaQuery.sizeOf(context).width >= 900) {
+          return _buildDesktopWorlds(context, worlds, l10n);
+        }
         return RefreshIndicator(onRefresh:_refresh,child:ListView.builder(
             padding:const EdgeInsets.all(12),itemCount:worlds.length,itemBuilder:(context,index){
           final w=worlds[index], id=(w['id']??'').toString();
@@ -175,6 +180,117 @@ class _PublicWorldsPageState extends State<PublicWorldsPage> with WidgetsBinding
                   ])))));
         }));
       }),
+    );
+  }
+
+  // WEB DESKTOP V2: public catalog cards only; keep data, badges and navigation.
+  Widget _buildDesktopWorlds(
+    BuildContext context,
+    List<Map<String, dynamic>> worlds,
+    AppLocalizations l10n,
+  ) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final columns = screenWidth >= 1240 ? 3 : 2;
+    return RefreshIndicator(
+      onRefresh: _refresh,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1180),
+          child: GridView.builder(
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 36),
+            physics: const AlwaysScrollableScrollPhysics(),
+            itemCount: worlds.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: columns,
+              mainAxisSpacing: 18,
+              crossAxisSpacing: 18,
+              mainAxisExtent: 390, // Desktop V2.1: extra space for localized text and tags; fixes 8px overflow.
+            ),
+            itemBuilder: (context, index) {
+              final world = worlds[index];
+              final id = (world['id'] ?? '').toString();
+              final cover = (world['coverImage'] ?? '').toString();
+              final tags = (world['tags'] as List? ?? [])
+                  .map((v) => v.toString()).join(' · ');
+              return Card(
+                margin: EdgeInsets.zero,
+                clipBehavior: Clip.antiAlias,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: InkWell(
+                  onTap: id.isEmpty ? null : () async {
+                    await Navigator.push(context, MaterialPageRoute(
+                      builder: (_) => WorldDiscoveryPage(worldId: id),
+                    ));
+                    if (mounted) unawaited(_refreshSilently());
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 190,
+                        width: double.infinity,
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            if (cover.isNotEmpty)
+                              CachedNetworkImage(
+                                imageUrl: cover,
+                                fit: BoxFit.cover,
+                                memCacheWidth: 960,
+                                placeholder: (_, __) => const Center(
+                                  child: CircularProgressIndicator(strokeWidth: 2)),
+                                errorWidget: (_, __, ___) =>
+                                    const Center(child: Icon(Icons.public)),
+                              )
+                            else
+                              ColoredBox(
+                                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                                child: const Center(child: Icon(Icons.public, size: 36)),
+                              ),
+                            _worldPlayBadge(world['playCount']),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(14),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                (world['name'] ?? l10n.public_worlds_unnamed1).toString(),
+                                maxLines: 1, overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                              const SizedBox(height: 7),
+                              if ((world['shortPitch'] ?? '').toString().trim().isNotEmpty)
+                                Text((world['shortPitch'] ?? '').toString(),
+                                  maxLines: 2, overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(context).textTheme.bodyMedium),
+                              const SizedBox(height: 5),
+                              Text((world['summary'] ?? '').toString(),
+                                maxLines: 2, overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.bodySmall),
+                              if (tags.isNotEmpty) ...[
+                                const Spacer(),
+                                Text(tags, maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(context).textTheme.bodySmall),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../services/locale_notifier.dart'; // 引入我們的語言大腦
@@ -57,6 +58,7 @@ class LanguageSelectionPage extends StatelessWidget {
     final textColor = theme.colorScheme.onSurface;
     final isDarkMode = theme.brightness == Brightness.dark;
     final double screenWidth = mediaQuery.size.width;
+    final bool isWideWeb = kIsWeb && screenWidth >= 850;
 
     // 以目前調好的 390px 寬手機為基準，讓花草跟著裝置寬度縮放。
     // 限制縮放範圍，避免小手機太小、平板又顯得過大。
@@ -64,119 +66,8 @@ class LanguageSelectionPage extends StatelessWidget {
     final double botanicalWidth =
     (screenWidth * 0.48).clamp(154.0, 242.0);
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: themeNotifier.currentBackground,
-        child: Stack(
-          children: [
-            Positioned(
-              // 花草避開狀態列，並比原本再往下放一些。
-              top: mediaQuery.padding.top + (28 * layoutScale),
-              right: -5 * layoutScale,
-              width: botanicalWidth,
-              child: IgnorePointer(
-                child: Opacity(
-                  opacity: isDarkMode ? 0.09 : 0.22,
-                  child: ColorFiltered(
-                    colorFilter: ColorFilter.mode(
-                      primary,
-                      BlendMode.srcIn,
-                    ),
-                    child: Image.asset(
-                      'assets/images/language/language_top_right_botanical.webp',
-                      fit: BoxFit.contain,
-                      errorBuilder: (_, __, ___) =>
-                      const SizedBox.shrink(),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            SafeArea(
-              child: CustomScrollView(
-                physics: const BouncingScrollPhysics(),
-                slivers: [
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(22, 10, 22, 0),
-                    sliver: SliverToBoxAdapter(
-                      child: Center(
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 680),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                    width: 40,
-                                    height: 48,
-                                    child: IconButton(
-                                      tooltip:
-                                      MaterialLocalizations.of(context)
-                                          .backButtonTooltip,
-                                      onPressed: () =>
-                                          Navigator.maybePop(context),
-                                      padding: EdgeInsets.zero,
-                                      alignment: Alignment.topLeft,
-                                      visualDensity: VisualDensity.compact,
-                                      icon: Icon(
-                                        Icons.arrow_back_ios_new_rounded,
-                                        color: textColor.withValues(alpha: 0.82),
-                                        size: 25,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          l10n.title_language_settings,
-                                          style: GoogleFonts.notoSerifTc(
-                                            color: textColor,
-                                            fontSize: 28,
-                                            fontWeight: FontWeight.w600,
-                                            letterSpacing: 2.2,
-                                            height: 1.2,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 5),
-                                        Text(
-                                          l10n.languageSelectionSubtitle,
-                                          style: GoogleFonts.notoSerifTc(
-                                            color: textColor.withValues(
-                                              alpha: 0.55,
-                                            ),
-                                            fontSize: 14,
-                                            letterSpacing: 0.9,
-                                            height: 1.5,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 26),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(22, 0, 22, 38),
-                    sliver: SliverList.separated(
-                      itemCount: supportedLanguages.length,
-                      separatorBuilder: (_, __) =>
-                      const SizedBox(height: 12),
-                      itemBuilder: (context, index) {
+    // 共用同一份語言選項與切換邏輯，桌面雙欄和手機單欄僅改排版。
+    Widget buildLanguageTile(BuildContext context, int index) {
                         final lang = supportedLanguages[index];
                         final currentLocale = localeNotifier.locale;
                         final isSelected =
@@ -339,9 +230,149 @@ class LanguageSelectionPage extends StatelessWidget {
                             ),
                           ),
                         );
-                      },
+    }
+
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: themeNotifier.currentBackground,
+        child: Stack(
+          children: [
+            Positioned(
+              // 花草避開狀態列，並比原本再往下放一些。
+              top: mediaQuery.padding.top + (28 * layoutScale),
+              right: -5 * layoutScale,
+              width: botanicalWidth,
+              child: IgnorePointer(
+                child: Opacity(
+                  opacity: isDarkMode ? 0.09 : 0.22,
+                  child: ColorFiltered(
+                    colorFilter: ColorFilter.mode(
+                      primary,
+                      BlendMode.srcIn,
+                    ),
+                    child: Image.asset(
+                      'assets/images/language/language_top_right_botanical.webp',
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, __, ___) =>
+                      const SizedBox.shrink(),
                     ),
                   ),
+                ),
+              ),
+            ),
+            SafeArea(
+              child: CustomScrollView(
+                physics: const BouncingScrollPhysics(),
+                slivers: [
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(22, 10, 22, 0),
+                    sliver: SliverToBoxAdapter(
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(maxWidth: isWideWeb ? 1000 : 680),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    width: 40,
+                                    height: 48,
+                                    child: IconButton(
+                                      tooltip:
+                                      MaterialLocalizations.of(context)
+                                          .backButtonTooltip,
+                                      onPressed: () =>
+                                          Navigator.maybePop(context),
+                                      padding: EdgeInsets.zero,
+                                      alignment: Alignment.topLeft,
+                                      visualDensity: VisualDensity.compact,
+                                      icon: Icon(
+                                        Icons.arrow_back_ios_new_rounded,
+                                        color: textColor.withValues(alpha: 0.82),
+                                        size: 25,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                      isWideWeb ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          l10n.title_language_settings,
+                                          textAlign: isWideWeb ? TextAlign.center : TextAlign.start,
+                                          style: GoogleFonts.notoSerifTc(
+                                            color: textColor,
+                                            fontSize: 28,
+                                            fontWeight: FontWeight.w600,
+                                            letterSpacing: 2.2,
+                                            height: 1.2,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 5),
+                                        Text(
+                                          l10n.languageSelectionSubtitle,
+                                          textAlign: isWideWeb ? TextAlign.center : TextAlign.start,
+                                          style: GoogleFonts.notoSerifTc(
+                                            color: textColor.withValues(
+                                              alpha: 0.55,
+                                            ),
+                                            fontSize: 14,
+                                            letterSpacing: 0.9,
+                                            height: 1.5,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  if (isWideWeb) const SizedBox(width: 52),
+                                ],
+                              ),
+                              const SizedBox(height: 26),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (isWideWeb)
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(22, 0, 22, 38),
+                      sliver: SliverToBoxAdapter(
+                        child: Center(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 1000),
+                            child: GridView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                mainAxisSpacing: 14,
+                                crossAxisSpacing: 18,
+                                mainAxisExtent: 82,
+                              ),
+                              itemCount: supportedLanguages.length,
+                              itemBuilder: buildLanguageTile,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  else
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(22, 0, 22, 38),
+                      sliver: SliverList.separated(
+                        itemCount: supportedLanguages.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 12),
+                        itemBuilder: buildLanguageTile,
+                      ),
+                    ),
                 ],
               ),
             ),

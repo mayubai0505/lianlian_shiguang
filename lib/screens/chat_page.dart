@@ -129,6 +129,8 @@ class ChatPage extends StatefulWidget {
   final bool forceNewRoom;
   final String? initialText;
   final String characterId;
+  // 僅桌面雙欄的右側內嵌聊天室隱藏返回鍵。
+  final bool embeddedInDesktopPane;
 
   const ChatPage({
     super.key,
@@ -141,6 +143,7 @@ class ChatPage extends StatefulWidget {
     this.initialText,
     this.forceNewRoom = false,
     required this.characterId,
+    this.embeddedInDesktopPane = false,
   }) : assert(chatMode != null || sessionId != null,
   'Either chatMode or sessionId must be provided');
 
@@ -9229,9 +9232,10 @@ class _ChatPageState extends State<ChatPage> {
                     topRight: Radius.circular(30),
                   ),
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
                     // 拖曳條
                     Container(
                       width: 42,
@@ -9427,7 +9431,8 @@ class _ChatPageState extends State<ChatPage> {
                         ),
                       ),
                     ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             );
@@ -11435,8 +11440,8 @@ class _ChatPageState extends State<ChatPage> {
     final l10n = AppLocalizations.of(context)!;
 
     Future<void> closeThen(Future<void> Function() action) async {
-      if (Navigator.of(context).canPop()) {
-        Navigator.of(context).pop();
+      if (Navigator.of(context, rootNavigator: true).canPop()) {
+        Navigator.of(context, rootNavigator: true).pop();
       }
       await Future<void>.delayed(const Duration(milliseconds: 120));
       if (!mounted) return;
@@ -11600,8 +11605,8 @@ class _ChatPageState extends State<ChatPage> {
         },
 
         onReset: () {
-          if (Navigator.of(context).canPop()) {
-            Navigator.of(context).pop();
+          if (Navigator.of(context, rootNavigator: true).canPop()) {
+            Navigator.of(context, rootNavigator: true).pop();
           }
           Future<void>.delayed(const Duration(milliseconds: 120), () {
             if (mounted) _resetChat();
@@ -11903,6 +11908,7 @@ class _ChatPageState extends State<ChatPage> {
             appBar: PreferredSize(
               preferredSize: const Size.fromHeight(62),
               child: ChatHeader(
+                showBackButton: !widget.embeddedInDesktopPane,
                 characterName: _currentCharacter.name,
                 friendship: _currentFriendship,
                 nextThreshold: nextStageThreshold,
@@ -12698,6 +12704,8 @@ class _ChatPageState extends State<ChatPage> {
                       context,
                       _injectAiStatusLines(message, displayText),
                       normalStyle,
+                      isCasual: _currentMode == ChatMode.gemini ||
+                          _currentMode == ChatMode.daily,
                     ),
                   ],
                 ),
@@ -13060,109 +13068,76 @@ Future<void> _deleteMessagesFromDB(
   }
 }
 
-// ✨ AI 專屬文字掃描器：引號內維持正常色，括號（）與其他旁白強制漆成灰色
-// AI 訊息顯示規則：
-// 1. 「對話」使用主題色
-// 2. （動作）使用主要文字色，並隱藏外層括號
-// 3. 狀態欄與其他普通文字維持主要文字色
+// 一般角色 AI 訊息統一顯示規則（網頁與手機共用）：
+// 閒聊是純台詞；其他模式的敘述／動作另起段落，與對話間隔一個空行。
+// 淺色主題：動作使用主題色、台詞使用深色；深色主題：全部白字。
+// 只影響畫面排版，不改 Firestore 原始訊息與 AI 回覆。
 Widget _buildStyledAiMessage(
-    BuildContext context,
-    String message,
-    TextStyle baseDialogueStyle,
-    ) {
-  if (message.trim().isEmpty) {
-    return const SizedBox.shrink();
-  }
+  BuildContext context,
+  String message,
+  TextStyle baseDialogueStyle, {
+  bool isCasual = false,
+}) {
+  if (message.trim().isEmpty) return const SizedBox.shrink();
 
   final theme = Theme.of(context);
-
-  // 台詞文字要跟著目前主題的可讀文字色切換：
-  // 淺色主題為深色字、深色主題自動改成淺色字，避免黑底黑字。
+  final isDark = theme.brightness == Brightness.dark;
   final dialogueStyle = baseDialogueStyle.copyWith(
-    color: theme.colorScheme.onSurface,
+    color: isDark ? Colors.white : Colors.black,
     height: 1.55,
   );
-
   final actionStyle = baseDialogueStyle.copyWith(
-    color: theme.colorScheme.primary,
+    color: isDark ? Colors.white : theme.colorScheme.primary,
     height: 1.55,
   );
 
-  final RegExp mixedRegex = RegExp(
+  // 閒聊不推測動作：沒有額外的敘述／台詞分色或分段。
+  if (isCasual) return Text(message, style: dialogueStyle);
+
+  // 只有明確的引號才視為台詞；括號和台詞之外的敘述視為動作。
+  // 沒有任何標記的舊訊息仍當作台詞，避免歷史訊息被誤判。
+  final tokenRegex = RegExp(
     r'(「.*?」|“.*?”|".*?"|（.*?）|\(.*?\))',
     dotAll: true,
   );
+  final matches = tokenRegex.allMatches(message).toList();
+  if (matches.isEmpty) return Text(message, style: dialogueStyle);
 
-  final matches = mixedRegex.allMatches(message);
-
-  if (matches.isEmpty) {
-    // 沒有標記時，視為一般對話文字。
-    return Text(
-      message,
-      style: dialogueStyle,
-    );
-  }
-
-  final List<TextSpan> spans = [];
-  int currentIndex = 0;
-
+  final parts = <({String value, bool action})>[];
+  var cursor = 0;
   for (final match in matches) {
-    final String matchedText = match.group(0) ?? '';
-
-    // 引號或括號前後的普通文字視為旁白／敘述。
-    if (match.start > currentIndex) {
-      spans.add(
-        TextSpan(
-          text: message.substring(
-            currentIndex,
-            match.start,
-          ),
-          style: actionStyle,
-        ),
-      );
+    if (match.start > cursor) {
+      final narrative = message.substring(cursor, match.start).trim();
+      if (narrative.isNotEmpty) parts.add((value: narrative, action: true));
     }
+    final token = match.group(0) ?? '';
+    final isAction = token.startsWith('（') || token.startsWith('(');
+    final value = (isAction && token.length >= 2)
+        ? token.substring(1, token.length - 1).trim()
+        : token.trim();
+    if (value.isNotEmpty) parts.add((value: value, action: isAction));
+    cursor = match.end;
+  }
+  if (cursor < message.length) {
+    final narrative = message.substring(cursor).trim();
+    if (narrative.isNotEmpty) parts.add((value: narrative, action: true));
+  }
+  if (parts.isEmpty) return Text(message, style: dialogueStyle);
 
-    final bool isAction =
-        matchedText.startsWith('（') || matchedText.startsWith('(');
-
-    if (isAction) {
-      final String actionText = matchedText.length >= 2
-          ? matchedText.substring(
-        1,
-        matchedText.length - 1,
-      )
-          : matchedText;
-
-      spans.add(
-        TextSpan(
-          text: actionText,
-          style: actionStyle,
-        ),
-      );
-    } else {
-      spans.add(
-        TextSpan(
-          text: matchedText,
-          style: dialogueStyle,
-        ),
-      );
+  final spans = <TextSpan>[];
+  bool? previousWasAction;
+  for (final part in parts) {
+    if (previousWasAction != null) {
+      // 動作與台詞之間一定空一行，同種類的連續片段只換行。
+      spans.add(TextSpan(text: previousWasAction == part.action ? '\n' : '\n\n'));
     }
-
-    currentIndex = match.end;
+    spans.add(TextSpan(
+      text: part.value,
+      style: part.action ? actionStyle : dialogueStyle,
+    ));
+    previousWasAction = part.action;
   }
-
-  if (currentIndex < message.length) {
-    spans.add(
-      TextSpan(
-        text: message.substring(currentIndex),
-        style: actionStyle,
-      ),
-    );
-  }
-
-  return Text.rich(
-    TextSpan(children: spans),
-  );
+  return Text.rich(TextSpan(children: spans));
 }
 
 // 🌟 總裁專屬：高級去殼過濾器 (Flutter 端)

@@ -22,6 +22,7 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
   final int nextThreshold;
   final int flowerPoints;
   final VoidCallback onBack;
+  final bool showBackButton;
   final VoidCallback onFlowerTap;
   final VoidCallback onMenuTap;
   final String currentModeId;
@@ -40,6 +41,7 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
     required this.nextThreshold,
     required this.flowerPoints,
     required this.onBack,
+    this.showBackButton = true,
     required this.onFlowerTap,
     required this.onMenuTap,
     required this.currentModeId,
@@ -106,22 +108,23 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
                 padding: const EdgeInsets.only(right: 46),
                 child: Row(
                   children: [
-                    IconButton(
-                      tooltip:
-                      MaterialLocalizations.of(context).backButtonTooltip,
-                      onPressed: onBack,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(
-                        minWidth: 36,
-                        minHeight: 38,
+                    if (showBackButton) ...[
+                      IconButton(
+                        tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                        onPressed: onBack,
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(
+                          minWidth: 36,
+                          minHeight: 38,
+                        ),
+                        icon: Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          color: onSurface,
+                          size: 20,
+                        ),
                       ),
-                      icon: Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        color: onSurface,
-                        size: 20,
-                      ),
-                    ),
-                    const SizedBox(width: 3),
+                      const SizedBox(width: 3),
+                    ],
 
                     // 角色名字
                     // 角色名字：縮小、減輕字重，並保留最基本顯示空間。

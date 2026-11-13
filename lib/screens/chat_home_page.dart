@@ -1,5 +1,6 @@
 import '../services/tutorial_seen_sync.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -32,6 +33,76 @@ class _ChatHomePageState extends State<ChatHomePage> {
   Stream<QuerySnapshot>? _sessionsStream;
   Stream<QuerySnapshot>? _worldSessionsStream;
   int _selectedChatCategory = 0; // 0：角色聊天，1：開放世界
+  // 桌面版：兩種分類各自記住最後選取的房間。
+  // 切換分頁時不清空選取，避免返回後又出現「選擇一個聊天室吧！」。
+  // 只渲染目前分類的聊天室，避免未顯示的聊天室仍在背景執行。
+  final Map<int, String> _desktopSelectedRoomKeys = <int, String>{};
+  final Map<int, Widget> _desktopSelectedRooms = <int, Widget>{};
+  bool _desktopSelectionTouched = false;
+
+  // 只在桌面網頁使用：F5 後還原最後的右側聊天室，避免整頁覆蓋雙欄。
+  Future<void> _restoreDesktopRoomAfterRefresh() async {
+    if (_currentUser == null || !mounted || !_useDesktopChatLayout(context)) return;
+    final uid = _currentUser.uid;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (!mounted || _desktopSelectionTouched ||
+          FirebaseAuth.instance.currentUser?.uid != uid ||
+          prefs.getInt('last_main_tab_$uid') != 2) return;
+
+      final lastType = prefs.getString('last_chat_type_$uid') ?? '';
+      if (lastType == 'world') {
+        final worldId = (prefs.getString('last_chat_world_$uid') ?? '').trim();
+        final sessionId = (prefs.getString('last_chat_world_session_$uid') ?? '').trim();
+        if (worldId.isEmpty || sessionId.isEmpty) return;
+        final room = await FirebaseFirestore.instance
+            .collection('artifacts').doc(_appId)
+            .collection('world_chat_sessions').doc(sessionId).get();
+        if (!mounted || _desktopSelectionTouched || !room.exists ||
+            FirebaseAuth.instance.currentUser?.uid != uid ||
+            room.data()?['userId'] != uid ||
+            (room.data()?['worldId'] ?? '').toString() != worldId) return;
+        setState(() => _selectedChatCategory = 1);
+        _selectDesktopWorldRoom(worldId, sessionId);
+        return;
+      }
+      if (lastType != 'character') return;
+      final characterId = (prefs.getString('last_chat_character_$uid') ?? '').trim();
+      final sessionId = (prefs.getString('last_chat_session_$uid') ?? '').trim();
+      if (characterId.isEmpty || sessionId.isEmpty) return;
+      final room = await FirebaseFirestore.instance
+          .collection('artifacts').doc(_appId)
+          .collection('chat_sessions').doc(sessionId).get();
+      if (!mounted || _desktopSelectionTouched || !room.exists ||
+          FirebaseAuth.instance.currentUser?.uid != uid ||
+          room.data()?['userId'] != uid ||
+          (room.data()?['characterId'] ?? '').toString() != characterId) return;
+      setState(() => _selectedChatCategory = 0);
+      await _navigateToChat(
+        sessionId, characterId,
+        (room.data()?['characterAvatarPath'] ?? '').toString(),
+      );
+    } catch (error) {
+      debugPrint('⚠️ 桌面聊天右側房間還原略過：$error');
+    }
+  }
+
+  String? get _desktopSelectedRoomKey =>
+      _desktopSelectedRoomKeys[_selectedChatCategory];
+  Widget? get _desktopSelectedRoom =>
+      _desktopSelectedRooms[_selectedChatCategory];
+
+  bool _useDesktopChatLayout(BuildContext context) =>
+      kIsWeb && MediaQuery.sizeOf(context).width >= 900;
+
+  void _selectDesktopWorldRoom(String worldId, String sessionId) {
+    _desktopSelectionTouched = true;
+    if (_desktopSelectedRoomKey == 'world:$sessionId') return;
+    setState(() {
+      _desktopSelectedRoomKeys[1] = 'world:$sessionId';
+      _desktopSelectedRooms[1] = WorldChatPage(worldId: worldId, sessionId: sessionId, showBackButton: false);
+    });
+  }
   bool _isNavigatingToChat = false;
   bool _isOpeningTopAction = false;
   final String _appId = AppConfig.appId;
@@ -54,6 +125,9 @@ class _ChatHomePageState extends State<ChatHomePage> {
     super.initState();
 
     _checkChatHomeTutorial();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) unawaited(_restoreDesktopRoomAfterRefresh());
+    });
 
     if (_currentUser != null) {
       _sessionsStream = FirebaseFirestore.instance
@@ -671,6 +745,42 @@ class _ChatHomePageState extends State<ChatHomePage> {
       String characterId,
       String avatarUrl,
       ) async {
+    if (!mounted) return;
+    if (_useDesktopChatLayout(context)) {
+      _desktopSelectionTouched = true;
+      // 右側的 Navigator 承載原有 ChatPage，讓其內部的路由與返回不影響左欄。
+      if (_desktopSelectedRoomKey == 'character:$sessionId') return;
+      final cached = _characterCache[characterId];
+      final l10n = AppLocalizations.of(context)!;
+      final Widget room = cached != null
+          ? ChatPage(
+              character: cached,
+              sessionId: sessionId,
+              chatMode: 'daily',
+              selectedLanguage: l10n.ai_chat_language,
+              characterId: cached.id,
+              embeddedInDesktopPane: true,
+            )
+          : _ChatEntryLoader(
+              characterFuture: _getCharacterById(characterId),
+              sessionId: sessionId,
+              characterId: characterId,
+              selectedLanguage: l10n.ai_chat_language,
+              embeddedInDesktopPane: true,
+              onCharacterLoaded: (character) {
+                _characterCache[character.id] = character;
+              },
+            );
+      if (avatarUrl.trim().isNotEmpty) {
+        unawaited(_precacheCharacterImage(avatarUrl));
+      }
+      setState(() {
+        _desktopSelectedRoomKeys[0] = 'character:$sessionId';
+        _desktopSelectedRooms[0] = room;
+      });
+      return;
+    }
+
     if (_isNavigatingToChat || !mounted) return;
 
     setState(() {
@@ -1044,8 +1154,11 @@ class _ChatHomePageState extends State<ChatHomePage> {
               final worldId = (data['worldId'] ?? '').toString();
               final worldPinned = data['isPinned'] == true;
               return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                color: theme.cardColor,
+                margin: EdgeInsets.only(bottom: _useDesktopChatLayout(context) ? 6 : 12),
+                color: _useDesktopChatLayout(context) &&
+                        _desktopSelectedRoomKey == 'world:${docs[index].id}'
+                    ? theme.colorScheme.primaryContainer.withValues(alpha: 0.55)
+                    : theme.cardColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                   side: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.13)),
@@ -1058,9 +1171,13 @@ class _ChatHomePageState extends State<ChatHomePage> {
                   onTap: () {
                     final worldId = (data['worldId'] ?? '').toString();
                     if (worldId.isEmpty) return;
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => WorldChatPage(worldId: worldId, sessionId: docs[index].id),
-                    ));
+                    if (_useDesktopChatLayout(context)) {
+                      _selectDesktopWorldRoom(worldId, docs[index].id);
+                    } else {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) => WorldChatPage(worldId: worldId, sessionId: docs[index].id),
+                      ));
+                    }
                   },
                   child: Stack(
                       children: [
@@ -1135,6 +1252,36 @@ class _ChatHomePageState extends State<ChatHomePage> {
     );
   }
 
+  Widget _buildDesktopConversationPane(ThemeData theme) {
+    final room = _desktopSelectedRoom;
+    final roomKey = _desktopSelectedRoomKey;
+    if (room == null || roomKey == null) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('選擇一個聊天室吧！',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.onSurface,
+                )),
+          ],
+        ),
+      );
+    }
+
+    // 單獨的 Navigator 隔離聊天室內部 Navigator.pop/push，
+    // 左側列表不會因為聊天室的返回/二級頁面而消失。
+    return Navigator(
+      key: ValueKey<String>('desktop-chat-$roomKey'),
+      onGenerateRoute: (settings) => MaterialPageRoute<dynamic>(
+        settings: settings,
+        builder: (_) => room,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -1142,6 +1289,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     final bool isDefaultTheme =
         themeNotifier.currentThemeEnum == AppTheme.light;
+    final bool isDesktop = _useDesktopChatLayout(context);
     // 🌟 1. 最外層包上總指揮中心
     return ShowCaseWidget(
         builder: (context) {
@@ -1154,9 +1302,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
             _hasChatHomeTipsShown = true;
           }
 
-          return Scaffold(
-            backgroundColor: Colors.transparent, // 底色交給 Stack 裡的 Container
-            body: Stack(
+          final listContent = Stack(
               children: [
                 // 🌟 1. 妳原本的漸層背景層
                 Container(
@@ -1173,8 +1319,8 @@ class _ChatHomePageState extends State<ChatHomePage> {
                       backgroundColor: theme.scaffoldBackgroundColor.withOpacity(0.95),
                       elevation: 0.0,
                       foregroundColor: theme.colorScheme.onBackground,
-                      floating: true,
-                      pinned: false,
+                      floating: !isDesktop,
+                      pinned: isDesktop,
                       actions: [
                         // (原封不動) 耳機按鈕
                         Showcase(
@@ -1259,7 +1405,12 @@ class _ChatHomePageState extends State<ChatHomePage> {
                                 selected: <int>{_selectedChatCategory},
                                 onSelectionChanged: (selection) {
                                   if (selection.isNotEmpty) {
-                                    setState(() => _selectedChatCategory = selection.first);
+                                    setState(() {
+                                      if (_selectedChatCategory != selection.first) {
+                                        _desktopSelectionTouched = true;
+                                        _selectedChatCategory = selection.first;
+                                      }
+                                    });
                                   }
                                 },
                               ),
@@ -1381,9 +1532,9 @@ class _ChatHomePageState extends State<ChatHomePage> {
                                     sessionData['isPinned'] == true;
 
                                 return Container(
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 6,
+                                  margin: EdgeInsets.symmetric(
+                                    horizontal: isDesktop ? 9 : 16,
+                                    vertical: isDesktop ? 4 : 6,
                                   ),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),
@@ -1396,9 +1547,12 @@ class _ChatHomePageState extends State<ChatHomePage> {
                                     ],
                                   ),
                                   child: Material(
-                                    color: isDefaultTheme
-                                        ? Colors.white.withValues(alpha: 0.98)
-                                        : theme.cardColor.withValues(alpha: 0.88),
+                                    color: isDesktop &&
+                                            _desktopSelectedRoomKey == 'character:$sessionId'
+                                        ? theme.colorScheme.primaryContainer.withValues(alpha: 0.58)
+                                        : isDefaultTheme
+                                            ? Colors.white.withValues(alpha: 0.98)
+                                            : theme.cardColor.withValues(alpha: 0.88),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(20),
                                       side: BorderSide(
@@ -1437,11 +1591,11 @@ class _ChatHomePageState extends State<ChatHomePage> {
                                               ),
                                             ),
                                           Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                              20,
-                                              18,
-                                              18,
-                                              18,
+                                            padding: EdgeInsets.fromLTRB(
+                                              isDesktop ? 11 : 20,
+                                              isDesktop ? 12 : 18,
+                                              isDesktop ? 10 : 18,
+                                              isDesktop ? 12 : 18,
                                             ),
                                             child: Row(
                                               crossAxisAlignment:
@@ -1489,7 +1643,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
                                                       ),
                                                   ],
                                                 ),
-                                                const SizedBox(width: 16),
+                                                SizedBox(width: isDesktop ? 10 : 16),
                                                 Expanded(
                                                   child: Column(
                                                     crossAxisAlignment:
@@ -1625,7 +1779,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
                                                       ),
                                                     ),
                                                     const SizedBox(height: 12),
-                                                    if (sessionData[
+                                                    if (!isDesktop && sessionData[
                                                     'friendshipScore'] !=
                                                         null)
                                                       Text(
@@ -1667,7 +1821,32 @@ class _ChatHomePageState extends State<ChatHomePage> {
 
 
               ],
-            ),
+            );
+
+          // 網頁寬版左右雙欄；手機/窄螢幕維持原本完整畫面。
+          return Scaffold(
+            backgroundColor: Colors.transparent,
+            body: isDesktop
+                ? Row(
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.sizeOf(context).width >= 1200 ? 365 : 315,
+                        child: ClipRect(child: listContent),
+                      ),
+                      VerticalDivider(
+                        width: 1,
+                        thickness: 1,
+                        color: theme.colorScheme.outline.withValues(alpha: 0.25),
+                      ),
+                      Expanded(
+                        child: ColoredBox(
+                          color: theme.colorScheme.surface.withValues(alpha: 0.55),
+                          child: _buildDesktopConversationPane(theme),
+                        ),
+                      ),
+                    ],
+                  )
+                : listContent,
           );
         }
     );
@@ -1680,6 +1859,7 @@ class _ChatEntryLoader extends StatelessWidget {
   final String characterId;
   final String selectedLanguage;
   final ValueChanged<Character> onCharacterLoaded;
+  final bool embeddedInDesktopPane;
 
   const _ChatEntryLoader({
     required this.characterFuture,
@@ -1687,6 +1867,7 @@ class _ChatEntryLoader extends StatelessWidget {
     required this.characterId,
     required this.selectedLanguage,
     required this.onCharacterLoaded,
+    this.embeddedInDesktopPane = false,
   });
 
   @override
@@ -1704,6 +1885,7 @@ class _ChatEntryLoader extends StatelessWidget {
             child: Scaffold(
               backgroundColor: Colors.transparent,
               appBar: AppBar(
+                automaticallyImplyLeading: !embeddedInDesktopPane,
                 backgroundColor: Colors.transparent,
                 surfaceTintColor: Colors.transparent,
                 elevation: 0,
@@ -1731,6 +1913,7 @@ class _ChatEntryLoader extends StatelessWidget {
             child: Scaffold(
               backgroundColor: Colors.transparent,
               appBar: AppBar(
+                automaticallyImplyLeading: !embeddedInDesktopPane,
                 backgroundColor: Colors.transparent,
                 surfaceTintColor: Colors.transparent,
                 elevation: 0,
@@ -1765,6 +1948,7 @@ class _ChatEntryLoader extends StatelessWidget {
           chatMode: 'daily',
           selectedLanguage: selectedLanguage,
           characterId: character.id,
+          embeddedInDesktopPane: embeddedInDesktopPane,
         );
       },
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
@@ -69,6 +70,7 @@ class ChatSideMenu extends StatefulWidget {
       }) {
     return showGeneralDialog<void>(
       context: context,
+      useRootNavigator: true,
       barrierDismissible: true,
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
       barrierColor: Colors.black.withValues(alpha: 0.32),
@@ -77,9 +79,17 @@ class ChatSideMenu extends StatefulWidget {
         return SafeArea(
           child: Align(
             alignment: Alignment.centerRight,
-            child: FractionallySizedBox(
-              widthFactor: 0.88,
-              child: menu,
+            child: Builder(
+              builder: (dialogContext) {
+                final width = MediaQuery.sizeOf(dialogContext).width;
+                final isDesktopWeb = kIsWeb && width >= 900;
+                return isDesktopWeb
+                    ? SizedBox(width: 370, child: menu)
+                    : FractionallySizedBox(
+                        widthFactor: 0.88,
+                        child: menu,
+                      );
+              },
             ),
           ),
         );

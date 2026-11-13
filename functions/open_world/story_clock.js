@@ -84,12 +84,15 @@ function creatorInitialCalendar(world={}) {
  const template=String(world.customOutputFormat||'').slice(0,16000);
  const explicitSources=[String(world.timeSystem||''),String(world.calendarSystem||''),
   String(world.timeFormat||'')];
+ // An era consisting of just a year is an explicit calendar setting.
+ const eraText=String(world.era||'').trim();
+ const eraYear=eraText.match(/^(?:(?:西元|公元)\s*)?((?:1[6-9]|20|21)\d{2})\s*年?$/u);
  const relevant=template.split(/\r?\n/u).filter(line=>
   /(?:^|[：:\s])(?:起始(?:日期|時間|年份|年分)|故事(?:起始|開始)(?:日期|時間|年份|年分)?|日期|年月日|故事日期|📅|📆|🗓️)/u.test(line)
   || /(?:從|自|始於|設定為|起始於|開始於)\s*\d{4}\s*年/u.test(line));
  const creatorSettingLines=String(world.worldSetting||'').slice(0,5000).split(/\r?\n/u)
   .filter(line => /(?:故事|劇情|世界|時代|背景|開局|起始|開始|設定)/u.test(line) &&
-    /(?:起始|開始|始於|設定於|發生於|從\s*\d{4}\s*年|西元\s*\d{4}\s*年)/u.test(line));
+    /(?:起始|開始|始於|設定於|設定在|發生於|發生在|從\s*\d{4}\s*年|西元\s*\d{4}\s*年)/u.test(line));
  const lines=[...explicitSources,...relevant,...creatorSettingLines];
  const exactDate=/(?:^|[^\d])((?:1[6-9]|20|21)\d{2})\s*(?:年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*[日號]?|[\/.-](\d{1,2})[\/.-](\d{1,2}))(?!\d)/u;
  const explicitYear=/(?:起始(?:年份|年分|日期|時間)|故事(?:起始|開始)(?:於|在|年份|年分|日期|時間)?|開始於|始於|從|自|設定為|日期\s*[:：]|📅\s*[:：])[^\n\d]{0,24}((?:1[6-9]|20|21)\d{2})\s*年/u;
@@ -103,16 +106,21 @@ function creatorInitialCalendar(world={}) {
   if(y)return {year:Number(y[1])};
   const startYear=line.match(/((?:1[6-9]|20|21)\d{2})\s*年\s*(?:開始|開局|起始|作為故事起點)/u);
   if(startYear)return {year:Number(startYear[1])};
+  // Accept an explicitly labelled current story setting, not incidental history.
+  const settingYear=line.match(/(?:故事|劇情|世界)(?:\s*(?:背景|時間|年代|年份|起點))?\s*(?:設定|發生)\s*(?:在|於)\s*((?:1[6-9]|20|21)\d{2})\s*年/u);
+  if(settingYear)return {year:Number(settingYear[1])};
  }
- return {};
+ return eraYear ? {year:Number(eraYear[1])} : {};
 }
 function initialStoryClock(world={},roomId='',previous=null) {
  const prior=normalize(previous);
+ // Existing confirmed story date wins even if creator settings have changed.
+ if(prior?.dateKnown)return prior;
  const chosen=creatorInitialCalendar(world);
  const crypto=require('node:crypto');
  const digest=crypto.createHash('sha256').update('fictional-world-date-v10:'+String(roomId)).digest();
  const seededYear=2000+digest.readUInt32BE(0)%50; // 2000-2049, not the device date.
- const year=chosen.year||seededYear;
+ const year=chosen.year||(prior?.yearKnown ? prior.year : seededYear);
  const month=chosen.month||1+digest.readUInt16BE(4)%12;
  const daysInMonth=new Date(Date.UTC(year,month,0)).getUTCDate();
  const day=chosen.day||1+digest.readUInt16BE(6)%daysInMonth;

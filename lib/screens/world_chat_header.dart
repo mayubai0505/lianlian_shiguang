@@ -37,6 +37,7 @@ class WorldChatHeader extends StatelessWidget implements PreferredSizeWidget {
     required this.onModeSelected,
     required this.onBack,
     required this.onMenuTap,
+    this.showBackButton = true,
   });
   final String worldName;
   final String modeId;
@@ -45,6 +46,7 @@ class WorldChatHeader extends StatelessWidget implements PreferredSizeWidget {
   final ValueChanged<String> onModeSelected;
   final VoidCallback onBack;
   final VoidCallback onMenuTap;
+  final bool showBackButton;
 
   @override
   Size get preferredSize => const Size.fromHeight(62);
@@ -67,13 +69,15 @@ class WorldChatHeader extends StatelessWidget implements PreferredSizeWidget {
           padding: const EdgeInsets.fromLTRB(6, 3, 6, 4),
           decoration: BoxDecoration(border: Border(bottom: BorderSide(color: primary.withValues(alpha: .08)))),
           child: Row(children: [
-            IconButton(
-              onPressed: onBack, tooltip: l10n.world_chat_back1,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(minWidth: 36, minHeight: 38),
-              icon: Icon(Icons.arrow_back_ios_new_rounded, color: onSurface, size: 20),
-            ),
-            const SizedBox(width: 3),
+            if (showBackButton) ...[
+              IconButton(
+                onPressed: onBack, tooltip: l10n.world_chat_back1,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 36, minHeight: 38),
+                icon: Icon(Icons.arrow_back_ios_new_rounded, color: onSurface, size: 20),
+              ),
+              const SizedBox(width: 3),
+            ],
             Expanded(child: Text(worldName,
               maxLines: 1, overflow: TextOverflow.ellipsis,
               style: GoogleFonts.notoSerifTc(fontSize: 15, fontWeight: FontWeight.w500, color: onSurface),

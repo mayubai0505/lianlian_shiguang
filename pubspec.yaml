@@ -135,6 +135,14 @@ flutter:
     - assets/images/qixi_chat_badge.png
     - assets/images/qixi_progress_off.webp
     - assets/images/qixi_progress_on.webp
+  fonts:
+    - family: LianlianSerifTC
+      fonts:
+        - asset: assets/google_fonts/Noto_Serif_TC/NotoSerifTC-VariableFont_wght.ttf
+
+    - family: LianlianSansTC
+      fonts:
+        - asset: assets/google_fonts/Noto_Sans_TC/NotoSansTC-VariableFont_wght.ttf
 
 
 flutter_launcher_icons:

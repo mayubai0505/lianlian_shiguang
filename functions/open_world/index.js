@@ -6,7 +6,7 @@ const {findCreatorStatusCommand,makeStatusCommandDisplay} = require('./status_co
 const {createAiCostTrace} = require('../src/ai/cost_trace');
 const {onDocumentCreated} = require('firebase-functions/v2/firestore');
 const {createWorldMemoryTools, EMBEDDING_VERSION} = require('./world_memory_worker');
-const {parseFields, lockCreatorStatus, describeCreatorTemplate, isCreatorGuidance, enforceModernStatusTime, protectCreatorCalendarDisplay} = require('./status_template');
+const {inspectCreatorStatusCompleteness, parseFields, lockCreatorStatus, describeCreatorTemplate, isCreatorGuidance, enforceModernStatusTime, protectCreatorCalendarDisplay} = require('./status_template');
 
 // V1 conditional creator status display: enforce only unambiguous, explicitly
 // command-gated status fields. Never infer permission from AI-generated text.
@@ -98,6 +98,86 @@ function enforceCreatorQueryOnlyVisibleStatus(template, generated) {
   const publicHeading = /^\s*【\s*(?:WORLD\s+STATUS\s*[｜|]\s*世界狀態|世界狀態\s*[｜|]\s*WORLD\s+STATUS|世界狀態)\s*】\s*$/iu;
   const publicRow = /^\s*(?:日期(?:\s+DATE)?|DATE(?:\s+日期)?|時間(?:\s+TIME)?|TIME(?:\s+時間)?|地點(?:\s+LOCATION)?|LOCATION(?:\s+地點)?)\s*[：:]/iu;
   return lines.filter(line => publicHeading.test(line) || publicRow.test(line)).join('\n').trim();
+}
+
+// Shared creator layout policy. Interpret only affirmative instructions about
+// where the display status belongs; do not infer a position from examples or
+// prohibitions ("不得在結尾再次顯示" is not an end-position request).
+// Unspecified or contradictory instructions retain the existing end placement.
+function creatorStatusPlacement(template) {
+  const lines=String(template||'').replace(/\r\n?/g,'\n').split('\n');
+  let opening=false,ending=false;
+  for(const raw of lines) {
+    const line=raw.trim();
+    if(!line || /^(?:範例|例如|示例|觸發詞|查詢類型|查詢對象)/u.test(line))continue;
+    if(/(?:不得|不可|禁止|不應|不要|避免)[^\n]{0,40}(?:顯示|放在|出現|呈現)/u.test(line))continue;
+    const openingRule =
+      /(?:狀態欄|世界狀態|WORLD\s+STATUS)[^\n]{0,45}(?:最開頭|開頭|最前方|最前面|置頂|正文之前|正文前|故事前)/iu.test(line) ||
+      /(?:最開頭|開頭|最前方|最前面|置頂|正文之前|正文前|故事前)[^\n]{0,45}(?:狀態欄|世界狀態|WORLD\s+STATUS)/iu.test(line) ||
+      /(?:第一部分|第一段|第一區塊|第[一1]部分|第[一1]段)[：:\s]*(?:固定)?(?:世界)?狀態欄/iu.test(line);
+    const endingRule =
+      /(?:狀態欄|世界狀態|WORLD\s+STATUS)[^\n]{0,45}(?:最結尾|結尾|最後|文末|正文之後|正文後|故事後)/iu.test(line) ||
+      /(?:最結尾|結尾|最後|文末|正文之後|正文後|故事後)[^\n]{0,45}(?:狀態欄|世界狀態|WORLD\s+STATUS)/iu.test(line) ||
+      /(?:最後部分|最後一段|第二部分|第[二2]部分)[：:\s]*(?:固定)?(?:世界)?狀態欄/iu.test(line);
+    if(openingRule)opening=true;
+    if(endingRule)ending=true;
+  }
+  if(opening&&!ending)return 'start';
+  return 'end'; // existing default and conflicting creator prose
+}
+
+// Only remove a whole status block at a narrator boundary. Unstructured
+// sentences merely mentioning a date/place are part of the story and are safe.
+// This is deliberately conservative for arbitrary creator-designed layouts.
+function removeDuplicateBoundaryStatus(segments, visibleStatus) {
+  if(!Array.isArray(segments)||!segments.length||!String(visibleStatus||'').trim())return 0;
+  const normalize=s=>String(s||'').replace(/\r\n?/g,'\n').trim();
+  const heading=/^【\s*(?:(?:WORLD\s+STATUS\s*[｜|]\s*世界狀態)|(?:世界狀態\s*[｜|]\s*WORLD\s+STATUS)|世界狀態)\s*】$/iu;
+  const row=/^\s*(?:日期(?:\s+DATE)?|DATE(?:\s+日期)?|時間(?:\s+TIME)?|TIME(?:\s+時間)?|地點(?:\s+LOCATION)?|LOCATION(?:\s+地點)?)\s*[：:]/iu;
+  let removed=0;
+  for(const boundary of ['start','end']) {
+    if(!segments.length)break;
+    const index=boundary==='start'?0:segments.length-1;
+    const segment=segments[index];
+    if(segment?.kind!=='narrator'||segment.isStatusBar)continue;
+    const original=normalize(segment.text);
+    const status=normalize(visibleStatus);
+    if(original===status){segments.splice(index,1);removed++;continue;}
+    const lines=original.split('\n');
+    if(boundary==='start') {
+      let i=0;
+      while(i<lines.length&&!lines[i].trim())i++;
+      const withHeading=heading.test(lines[i]?.trim()||'');
+      let cursor=i+(withHeading?1:0);
+      let fields=0;
+      while(cursor<lines.length) {
+        if(!lines[cursor].trim()&&row.test(lines[cursor+1]||'')){cursor++;continue;}
+        if(!row.test(lines[cursor]))break;
+        fields++;cursor++;
+      }
+      if(fields<(withHeading?2:3))continue;
+      while(cursor<lines.length&&!lines[cursor].trim())cursor++;
+      const remain=lines.slice(cursor).join('\n').trim();
+      if(remain)segment.text=remain;else segments.splice(index,1);
+      removed++;
+    } else {
+      let last=lines.length-1;
+      while(last>=0&&!lines[last].trim())last--;
+      let cursor=last,fields=0;
+      while(cursor>=0) {
+        if(!lines[cursor].trim()&&row.test(lines[cursor-1]||'')){cursor--;continue;}
+        if(!row.test(lines[cursor]))break;
+        fields++;cursor--;
+      }
+      const withHeading=heading.test(lines[cursor]?.trim()||'');
+      if(fields<(withHeading?2:3))continue;
+      const firstBlock=withHeading?cursor:cursor+1;
+      const remain=lines.slice(0,firstBlock).join('\n').trim();
+      if(remain)segment.text=remain;else segments.splice(index,1);
+      removed++;
+    }
+  }
+  return removed;
 }
 
 // Emoji-first, colon-free creator status directives are display instructions,
@@ -229,11 +309,13 @@ function chooseWorldWriterRoute(mode, latestMessage, historyText, npcCharacters 
     const num=age.match(/^(\d{1,3})(?:\s*歲)?$/u);
     return Boolean(num && Number(num[1])<18);
   })) return {...unchanged,routeReason:'minor_npc'};
+  // Match the ordinary character chat router: ambiguous wet/weather/bedroom
+  // language must not switch providers by itself.
   const explicit = [
-    /做愛|性交|性愛|發生關係|上床/u,
+    /做愛|性交|性愛|發生關係|(?:跟|和|與)[^。！？]{0,8}上床|上床(?:做愛|發生關係)/u,
     /插入|抽插|進入(?:她|他|妳|你)?(?:的)?身體/u,
     /陰莖|陰道|龜頭|陰蒂|睪丸|精液|射精|內射|口交|手交/u,
-    /乳頭|下體|私處|濕透|淫水/u,
+    /乳頭|下體|私處|淫水/u,
     /脫(?:掉|下)?[^。！？]{0,12}(?:內褲|內衣|胸罩)|解開[^。！？]{0,12}(?:內衣|內褲)/u,
   ];
   const transition = [
@@ -244,11 +326,16 @@ function chooseWorldWriterRoute(mode, latestMessage, historyText, npcCharacters 
     /喘息|喘得|呼吸凌亂|情慾|慾望/u,
     /床上|床邊|臥室/u,
   ];
+  const intimateEscalation =
+    /脫衣|脫(?:掉|下)?(?:衣服|上衣|襯衫|裙子|褲子)|解開(?:襯衫|扣子|皮帶)|扯開衣|拉開衣|壓在(?:床|沙發|身下)|跨坐|騎在|抱上床|手(?:伸進|探進)[^。！？]{0,16}(?:衣|裙|褲)|情慾|慾望/u;
   const exit = /隔天|第二天|早上|早餐|起床|睡醒|洗完澡|結束後|事後|出門|去上班/u;
+  const continuingIntimacy =
+    /(?:繼續|接著)(?:剛才|剛剛|那件事|親|吻|脫|摸)|(?:再|還想)(?:親|吻|做一次)|不要停|別停/u;
+  const transitionCount = transition.filter(re => re.test(latest)).length;
   let reason='';
   if (explicit.some(re => re.test(latest))) reason='explicit_adult';
-  else if (transition.filter(re => re.test(latest)).length>=2) reason='adult_tension_transition';
-  else if (explicit.some(re => re.test(recent)) && !exit.test(latest)) reason='adult_scene_continuity';
+  else if (transitionCount>=2 && intimateEscalation.test(latest)) reason='adult_tension_transition';
+  else if (explicit.some(re => re.test(recent)) && continuingIntimacy.test(latest) && !exit.test(latest)) reason='adult_scene_continuity';
   return reason ? {...unchanged,modelId:'xai/grok-4.6',
     fallbackModelId: ['immersive','resonance'].includes(mode)
       ? 'google/gemini-3-flash-preview' : 'deepseek/deepseek-v3.2',routeReason:reason} : unchanged;
@@ -455,9 +542,17 @@ function repeatedWorldWriterReply(segments, previousReplies) {
   const story = (Array.isArray(segments)?segments:[])
     .filter(s=>!s?.isStatusBar)
     .map(s=>String(s?.text||'')).join('\n');
-  if(normalizeWorldReplyForRepeat(story).length<70)return false;
+  const normalized = normalizeWorldReplyForRepeat(story);
+  // Short complete replies were previously skipped (<70 chars), allowing an
+  // identical short scene to be saved again on a normal send. Compare only
+  // exact normalized text for 24-69 chars to avoid rejecting natural short
+  // dialogue, catchphrases or partial overlaps. Longer replies keep the
+  // existing near-duplicate threshold. Status bars are excluded above.
+  if (normalized.length < 24) return false;
   return (Array.isArray(previousReplies)?previousReplies:[])
-    .some(previous=>worldRepeatRatio(story,previous)>=0.94);
+    .some(previous => normalized.length < 70
+      ? normalizeWorldReplyForRepeat(previous) === normalized
+      : worldRepeatRatio(story, previous) >= 0.94);
 }
 
 // Guard against replaying substantial individual narrative segments, even when
@@ -2067,8 +2162,20 @@ exports.worldPrivateTest = onCall({
           const gatedStatus=enforceCreatorConditionalStatus(customStatusTemplate,displayedStatus,rawMessage);
           const visibleCreatorStatus = dedupeCreatorCalendarRows(customStatusTemplate,
             enforceCreatorQueryOnlyVisibleStatus(customStatusTemplate,gatedStatus.status));
-          newCreatorStatusForPersistence = visibleCreatorStatus;
-          if(visibleCreatorStatus)statusParts.push(visibleCreatorStatus);
+          // V3: missing creator fields are advisory; no rejected AI reply or
+          // extra model call. Only a known server clock may fill an explicit
+          // absent time/date row in an unambiguous, public literal template.
+          const completeness=inspectCreatorStatusCompleteness(customStatusTemplate,
+            visibleCreatorStatus,{authoritativeTime:serverTimeText});
+          logger.info('WORLD CREATOR STATUS COMPLETENESS',{
+            mode:worldMode, eligibleFields:completeness.eligibleFields,
+            presentFields:completeness.presentFields,
+            missingFields:completeness.missingFields,
+            repairedFields:completeness.repairedFields,
+            skippedAmbiguous:completeness.skippedAmbiguous, replyAccepted:true,
+          });
+          newCreatorStatusForPersistence = completeness.status;
+          if(completeness.status)statusParts.push(completeness.status);
           if(gatedStatus.protectedCount)logger.info('WORLD CREATOR CONDITIONAL STATUS GUARD',{
             mode:worldMode,protectedCount:gatedStatus.protectedCount,removedCount:gatedStatus.removedCount,
             // No player message, hidden status value, or secret trigger in logs.
@@ -2090,7 +2197,17 @@ exports.worldPrivateTest = onCall({
             const gatedRecovered=enforceCreatorConditionalStatus(customStatusTemplate,recoveredStatus,rawMessage);
             const visibleRecovered = dedupeCreatorCalendarRows(customStatusTemplate,
               enforceCreatorQueryOnlyVisibleStatus(customStatusTemplate,gatedRecovered.status));
-            if(visibleRecovered)statusParts.push(visibleRecovered);
+            const completeness=inspectCreatorStatusCompleteness(customStatusTemplate,
+              visibleRecovered,{authoritativeTime:serverTimeText});
+            logger.info('WORLD CREATOR STATUS COMPLETENESS',{
+              mode:worldMode, eligibleFields:completeness.eligibleFields,
+              presentFields:completeness.presentFields,
+              missingFields:completeness.missingFields,
+              repairedFields:completeness.repairedFields,
+              skippedAmbiguous:completeness.skippedAmbiguous,
+              recoveredWholeStatus:true, replyAccepted:true,
+            });
+            if(completeness.status)statusParts.push(completeness.status);
             reusedPriorStatusBar = true;
             logger.warn('world status bar safely restored from same room', {
               worldMode, parseStrategy:validation.parseStrategy,
@@ -2157,7 +2274,16 @@ exports.worldPrivateTest = onCall({
         });
       }
       if (statusParts.length) {
-        segments.push({kind:'narrator',npcId:'',name:'',text:statusParts.join('\n\n'),isStatusBar:true});
+        const placement = hasCustomStatusBar ? creatorStatusPlacement(customStatusTemplate) : 'end';
+        // Only remove clear duplicates at narrator boundaries. The creator's
+        // status is already validated by the existing status visibility guards.
+        if (hasCustomStatusBar && statusParts[0]) {
+          const removed = removeDuplicateBoundaryStatus(segments,statusParts[0]);
+          if (removed) logger.info('WORLD CREATOR STATUS BOUNDARY DEDUPED', {mode:worldMode,removed});
+        }
+        const statusSegment = {kind:'narrator',npcId:'',name:'',text:statusParts.join('\n\n'),isStatusBar:true};
+        if (placement === 'start') segments.unshift(statusSegment);
+        else segments.push(statusSegment);
       }
 
       // AI may *suggest* changes, but only server-approved IDs and small deltas count.

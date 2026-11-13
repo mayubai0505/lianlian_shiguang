@@ -40,9 +40,10 @@ import '../services/theme_notifier.dart';
 /// 私人試玩；所有訊息經 Cloud Function 授權、讀取與儲存。
 /// 目前僅限世界創作者私人試玩；世界觀付費模式與互動由 Cloud Functions 計費。
 class WorldChatPage extends StatefulWidget {
-  const WorldChatPage({super.key, required this.worldId, this.sessionId});
+  const WorldChatPage({super.key, required this.worldId, this.sessionId, this.showBackButton = true});
   final String? sessionId;
   final String worldId;
+  final bool showBackButton;
   @override
   State<WorldChatPage> createState() => _WorldChatPageState();
 }
@@ -708,6 +709,26 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
 
   void _traceWorldText(String source, List<dynamic> messages) {
     if (!_worldTextDiagnostics) return;
+    // Distinguish a new AI document duplicating content from a UI re-display of
+    // the SAME document. Never log player text or AI prose.
+    String? previousId;
+    String? previousBody;
+    for (final raw in messages) {
+      if (raw is! Map || raw['sender'] != 'ai') continue;
+      final id = (raw['id'] ?? '').toString();
+      final body = (raw['segments'] as List? ?? const [])
+          .whereType<Map>()
+          .where((segment) => segment['isStatusBar'] != true)
+          .map((segment) => (segment['text'] ?? '').toString().trim())
+          .join('\n');
+      if (previousId != null && previousId != id && body.length >= 70 &&
+          body == previousBody) {
+        debugPrint('[WORLD_DUPLICATE_AI_BODY] source=$source '
+            'previousId=$previousId currentId=$id length=${body.length}');
+      }
+      previousId = id;
+      previousBody = body;
+    }
     for (final raw in messages) {
       if (raw is! Map || raw['sender'] != 'ai') continue;
       final id = (raw['id'] ?? '').toString();
@@ -791,23 +812,27 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
   bool _scrollImmediately = false;
 
   void _scrollToLatest({bool immediately = false}) {
-    // Several updates (optimistic bubble, generating state, Firestore stream)
-    // can arrive in the same frame. Combine them instead of stacking animations.
-    _scrollImmediately |= immediately || _pendingVisible || _sending;
+    // Only an explicit user action may force a jump. Firestore updates, screenshot
+    // preparation and app resume must not interrupt reading older messages.
+    _scrollImmediately |= immediately;
     if (_scrollUpdateScheduled) return;
     _scrollUpdateScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollUpdateScheduled = false;
-      final snap = _scrollImmediately;
+      final forceScroll = _scrollImmediately;
       _scrollImmediately = false;
       if (!mounted || !_scroll.hasClients) return;
-      // The list is reversed, so its newest message is at offset zero.
-      final end = _scroll.position.minScrollExtent;
-      if (_needsInitialScroll || snap) {
-        _scroll.jumpTo(end); // Do not animate during send / loading.
+
+      // The list is reversed: its newest message is at minScrollExtent (zero).
+      final latestOffset = _scroll.position.minScrollExtent;
+      final distanceFromLatest = (_scroll.offset - latestOffset).abs();
+      if (_needsInitialScroll || forceScroll) {
+        _scroll.jumpTo(latestOffset);
         _needsInitialScroll = false;
-      } else if ((_scroll.offset - end).abs() > 1) {
-        _scroll.animateTo(end,
+      } else if (distanceFromLatest <= 80 && distanceFromLatest > 1) {
+        // Keep following new replies only when the reader is already near the
+        // newest message. Never move someone reading earlier conversation.
+        _scroll.animateTo(latestOffset,
             duration: const Duration(milliseconds: 180), curve: Curves.easeOut);
       }
     });
@@ -966,6 +991,15 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       final isMessageDelta = data['responseMode'] == 'delta_v1';
       _traceWorldText('callable', List<dynamic>.from(data['messages'] as List? ?? []));
       if (!mounted || (requestIdAtStart != null && _cancelledLocalRequests.contains(requestIdAtStart))) return;
+      // Firestore may confirm turn A before its callable returns. If the player
+      // already started turn B, A's late response must not clear B's pending ID,
+      // hide B's bubble, or apply an older message snapshot over B.
+      if (requestIdAtStart != null && _pendingRequestId != null &&
+          _pendingRequestId != requestIdAtStart) {
+        debugPrint('[WORLD_STALE_CALLABLE_IGNORED] action=$action '
+            'oldRequest=$requestIdAtStart activeRequest=$_pendingRequestId');
+        return;
+      }
       // Explicitly opened rooms MUST never silently fall back to the legacy world room.
       // Reject the response before preloading images, applying messages or switching listeners.
       final expectedRoomId = widget.sessionId?.trim() ?? '';
@@ -982,6 +1016,20 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
         });
         debugPrint('世界觀房間不一致: expected=$expectedRoomId, returned=$returnedRoomId, action=$action');
         return;
+      }
+      // A successful `continue` must contain this request's newly committed AI
+      // message. A stale delta with only the previous turn is NOT a new reply.
+      // Firestore may already have delivered the matching reply first.
+      if (action == 'continue' && requestIdAtStart != null) {
+        final returned = List<dynamic>.from(data['messages'] as List? ?? []);
+        final expectedAiId = 'ai_$requestIdAtStart';
+        final replyInResponse = returned.any((m) =>
+            m is Map && m['id'] == expectedAiId && m['sender'] == 'ai');
+        if (!replyInResponse && !_hasCommittedAiReply(requestIdAtStart)) {
+          debugPrint('[WORLD_CONTINUE_UNCONFIRMED] requestId=$requestIdAtStart '
+              'returnedMessages=${returned.length}');
+          throw const FormatException('尚未確認本輪新回覆，請重試同一筆請求以避免重複扣花。');
+        }
       }
       final npcs = <String,String>{};
       final names = <String,String>{};
@@ -1039,7 +1087,15 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
         // Remove optimistic bubble only once the returned result contains the saved request.
         // This works even when the Firestore listener is temporarily unavailable.
         final serverMessages = List<dynamic>.from(data['messages'] as List? ?? []);
-        final confirmed = (action == 'regenerate' || action == 'continue') || serverMessages.any((m) => m is Map && m['id'] == _pendingRequestId);
+        // `continue` has to confirm its own AI message, not merely any old
+        // history. Regeneration legitimately updates an existing AI message.
+        final confirmed = action == 'regenerate' ||
+            (action == 'continue'
+                ? (requestIdAtStart != null &&
+                    (serverMessages.any((m) => m is Map &&
+                        m['id'] == 'ai_$requestIdAtStart' && m['sender'] == 'ai') ||
+                     _hasCommittedAiReply(requestIdAtStart)))
+                : serverMessages.any((m) => m is Map && m['id'] == requestIdAtStart));
         if (confirmed) {
           setState(() {
             _pendingVisible = false;
@@ -1057,13 +1113,17 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
           _input.clear();
           _clearDraftNow();
         }
-        _pendingRequestId = null;
-        _pendingRequestText = null;
-        _pendingFailed = false;
+        if (confirmed) {
+          _pendingRequestId = null;
+          _pendingRequestText = null;
+          _pendingFailed = false;
+        }
       }
       _scrollToLatest();
     } on FirebaseFunctionsException catch(e) {
       if(!mounted || (requestIdAtStart != null && _cancelledLocalRequests.contains(requestIdAtStart)))return;
+      if (requestIdAtStart != null && _pendingRequestId != null &&
+          _pendingRequestId != requestIdAtStart) return;
       // Firestore may have committed the reply after the HTTP connection dropped.
       if (_hasCommittedAiReply(requestIdAtStart)) {
         setState(() => _confirmPendingMessageFromServer(requestIdAtStart!));
@@ -1071,6 +1131,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       }
       setState((){
         _loading=false;_error=e.message ?? AppLocalizations.of(context)!.world_chat_connection_failed1;
+        if (action == 'continue') _pendingFailed = true;
         if (action == 'send' || action == 'interact') {
           _pendingFailed = true;
           // Restore the unsent text if the request failed, so the player can retry.
@@ -1085,13 +1146,17 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       if (!silent) _showCenterNotice(_error, isError: true);
     } catch(e) {
       if(!mounted || (requestIdAtStart != null && _cancelledLocalRequests.contains(requestIdAtStart)))return;
+      if (requestIdAtStart != null && _pendingRequestId != null &&
+          _pendingRequestId != requestIdAtStart) return;
       // Firestore may have committed the reply after the HTTP connection dropped.
       if (_hasCommittedAiReply(requestIdAtStart)) {
         setState(() => _confirmPendingMessageFromServer(requestIdAtStart!));
         return;
       }
       setState((){
-        _loading=false;_error=AppLocalizations.of(context)!.world_chat_network_failed1;
+        _loading=false;
+        _error=e is FormatException ? e.message : AppLocalizations.of(context)!.world_chat_network_failed1;
+        if (action == 'continue') _pendingFailed = true;
         if (action == 'send' || action == 'interact') {
           _pendingFailed = true;
           // Restore the unsent text if the request failed, so the player can retry.
@@ -1108,7 +1173,8 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       // A successful call clears _pendingRequestId before reaching finally.
       // Comparing it with requestIdAtStart here leaves _sending stuck at true.
       if (mounted && (action == 'send' || action == 'interact' ||
-          action == 'regenerate' || action == 'continue')) {
+          action == 'regenerate' || action == 'continue') &&
+          (_pendingRequestId == null || _pendingRequestId == requestIdAtStart)) {
         setState(() => _sending = false);
       }
     }
@@ -1161,7 +1227,12 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       _showCenterNotice('花花不足，需要 $price 朵', isError: true);
       return;
     }
-    _pendingRequestId = 'c_${DateTime.now().microsecondsSinceEpoch}';
+    // On an uncertain network result retry the SAME request ID, so the
+    // backend can return the committed turn without charging the player twice.
+    if (!_pendingFailed || _pendingRequestId == null ||
+        !_pendingRequestId!.startsWith('c_')) {
+      _pendingRequestId = 'c_${DateTime.now().microsecondsSinceEpoch}';
+    }
     _pendingRequestText = null;
     await _run('continue');
   }
@@ -2540,6 +2611,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
         .collection('chatRoomBackgrounds').doc(ThemeNotifier.worldBackgroundKey(widget.worldId));
     return Scaffold(
       appBar: WorldChatHeader(
+        showBackButton: widget.showBackButton,
         worldName: _name == '開放世界' ? AppLocalizations.of(context)!.world_chat_open_world1 : _name,
         flowerPoints: _flowerPoints,
         onFlowerTap: _openFlowerStore,

@@ -8,6 +8,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:image_picker/image_picker.dart';
 
 import '../services/app_constants.dart';
@@ -709,6 +710,97 @@ class _WorldEditPageState extends State<WorldEditPage>
     ],
   );
 
+  // 世界編輯器的桌面工作室排版，既有三個 Tab 與儲存流程完全保留。
+  Widget _webWorldWorkspace(Widget editor) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final wide = MediaQuery.sizeOf(context).width >= 1220;
+    final labels = <String>[
+      l10n.world_edit_basic_tab1,
+      l10n.world_edit_characters_tab1,
+      l10n.world_edit_story_tab1,
+    ];
+    final icons = <IconData>[
+      Icons.public_rounded, Icons.people_outline_rounded,
+      Icons.auto_stories_outlined,
+    ];
+    return AnimatedBuilder(
+      animation: _tabs,
+      builder: (context, _) => Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1560),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 18, 20, 12),
+            child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              SizedBox(width: 210, child: Card(
+                elevation: 0,
+                color: theme.colorScheme.surfaceContainerLow,
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(10),
+                  itemCount: labels.length,
+                  itemBuilder: (context, i) => Padding(
+                    padding: const EdgeInsets.only(bottom: 6),
+                    child: ListTile(
+                      dense: true, selected: _tabs.index == i,
+                      selectedTileColor: theme.colorScheme.primary.withValues(alpha: .10),
+                      selectedColor: theme.colorScheme.primary,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      leading: Icon(icons[i], size: 20),
+                      title: Text(labels[i]),
+                      onTap: () => _tabs.animateTo(i),
+                    ),
+                  ),
+                ),
+              )),
+              const SizedBox(width: 16),
+              Expanded(child: ClipRRect(
+                borderRadius: BorderRadius.circular(18),
+                child: ColoredBox(color: theme.colorScheme.surfaceContainerLowest,
+                  child: editor),
+              )),
+              if (wide) ...[
+                const SizedBox(width: 16),
+                SizedBox(width: 250, child: Card(
+                  elevation: 0, color: theme.colorScheme.surfaceContainerLow,
+                  child: Padding(padding: const EdgeInsets.all(14),
+                    child: ListView(children: [
+                      Text(l10n.world_edit_world_images1,
+                          style: theme.textTheme.titleMedium),
+                      const SizedBox(height: 12),
+                      ClipRRect(borderRadius: BorderRadius.circular(12),
+                        child: AspectRatio(aspectRatio: 4 / 3,
+                          child: _images.isNotEmpty && _images.first.url.startsWith('http')
+                            ? Image.network(_images.first.url, fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => ColoredBox(
+                                  color: theme.colorScheme.surfaceContainerHighest,
+                                  child: const Icon(Icons.image_outlined)))
+                            : ColoredBox(color: theme.colorScheme.surfaceContainerHighest,
+                                child: const Icon(Icons.image_outlined)),
+                        )),
+                      const SizedBox(height: 12),
+                      ValueListenableBuilder<TextEditingValue>(
+                        valueListenable: _name,
+                        builder: (_, value, __) => Text(
+                          value.text.trim().isEmpty
+                              ? l10n.world_edit_create_world1 : value.text,
+                          maxLines: 2, overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.titleMedium),
+                      ),
+                      const SizedBox(height: 10),
+                      Text('${_npcs.length} NPC', style: theme.textTheme.bodyMedium),
+                      Text('${_secretChapters.length} / 12',
+                          style: theme.textTheme.bodyMedium),
+                    ]),
+                  ),
+                )),
+              ],
+            ]),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -720,7 +812,7 @@ class _WorldEditPageState extends State<WorldEditPage>
             onPressed: _busy ? null : _exit,
           ),
           title: Text(AppLocalizations.of(context)!.world_edit_create_world1),
-          bottom: TabBar(
+          bottom: (kIsWeb && MediaQuery.sizeOf(context).width >= 900) ? null : TabBar(
             controller: _tabs,
             tabs: [
               Tab(text: AppLocalizations.of(context)!.world_edit_basic_tab1),
@@ -738,9 +830,13 @@ class _WorldEditPageState extends State<WorldEditPage>
               // TextField、按鈕等子元件自己的點擊手勢優先處理。
               behavior: HitTestBehavior.deferToChild,
               onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-              child: TabBarView(controller: _tabs, children: [
-                _basicTab(), _npcTab(), _storyTab(),
-              ]),
+              child: kIsWeb && MediaQuery.sizeOf(context).width >= 900
+                  ? _webWorldWorkspace(TabBarView(controller: _tabs, children: [
+                      _basicTab(), _npcTab(), _storyTab(),
+                    ]))
+                  : TabBarView(controller: _tabs, children: [
+                      _basicTab(), _npcTab(), _storyTab(),
+                    ]),
             ),
           ),
           SafeArea(

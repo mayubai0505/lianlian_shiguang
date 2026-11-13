@@ -231,7 +231,15 @@ async function callAiWithRetry({
         );
       }
 
+      // Non-JSON 2xx/429/5xx responses may be transient. Never retry or
+      // fallback for malformed 4xx requests or authentication failures.
+      const invalidResponseRetryable = error?.code === "AI_INVALID_RESPONSE" &&
+        (error?.statusCode == null ||
+          (error.statusCode >= 200 && error.statusCode < 300) ||
+          error.statusCode === 429 || error.statusCode >= 500);
+
       const retryable =
+        invalidResponseRetryable ||
         error?.code === "AI_NETWORK_ERROR" ||
         error?.code === "AI_TIMEOUT" ||
         error.statusCode === 429 ||

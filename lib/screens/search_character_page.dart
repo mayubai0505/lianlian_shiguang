@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../services/theme_notifier.dart';
@@ -219,12 +220,13 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
+    final isDesktop = MediaQuery.sizeOf(context).width >= 850;
 
     return Container(
       decoration: themeNotifier.currentBackground,
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(
+        appBar: isDesktop ? null : AppBar(
           title: Text(
             l10n.search_companion_title,
             style: GoogleFonts.notoSerifTc(
@@ -253,12 +255,55 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
                 ),
               ),
             ),
+            // 網頁寬版原本隱藏 AppBar，額外提供返回鍵；不影響置中的標題。
+            if (kIsWeb && isDesktop)
+              Positioned(
+                top: 23,
+                left: 20,
+                child: IconButton(
+                  tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                  onPressed: () => Navigator.of(context).maybePop(),
+                  icon: Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    color: theme.colorScheme.onSurface,
+                    size: 24,
+                  ),
+                ),
+              ),
             Column(
               children: [
+                if (isDesktop)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 24, bottom: 14),
+                    child: Column(
+                      children: [
+                        Text(
+                          l10n.search_companion_title,
+                          style: GoogleFonts.notoSerifTc(
+                            fontSize: 34,
+                            fontWeight: FontWeight.w700,
+                            color: theme.colorScheme.onSurface,
+                            letterSpacing: 2,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Container(
+                          width: 230,
+                          height: 1,
+                          color: theme.colorScheme.primary.withValues(alpha: 0.30),
+                        ),
+                      ],
+                    ),
+                  ),
                 // 🔍 搜尋框
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                  child: TextField(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isDesktop ? 24 : 16,
+                    vertical: isDesktop ? 12 : 8,
+                  ),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: isDesktop ? 830 : double.infinity),
+                    child: TextField(
                     controller: _searchController,
                     style: TextStyle(color: theme.colorScheme.onSurface),
                     decoration: InputDecoration(
@@ -277,14 +322,14 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
                         },
                       ),
                       filled: true,
-                      fillColor: theme.cardColor.withValues(alpha:isDarkMode ? 0.6 : 0.4),
+                      fillColor: theme.cardColor.withValues(alpha:isDarkMode ? 0.70 : 0.75),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
                         borderSide: BorderSide(color: theme.colorScheme.primary.withValues(alpha:0.2)),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide(color: theme.colorScheme.primary.withValues(alpha:0.1)),
+                        borderSide: BorderSide(color: theme.colorScheme.primary.withValues(alpha:0.30)),
                       ),
                     ),
                     textInputAction: TextInputAction.search,
@@ -302,11 +347,17 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
                       _searchSaveDebounce?.cancel();
                       _saveRecentSearch(value);
                     },
+                    ),
                   ),
                 ),
 
                 if (_searchQuery.isEmpty && _recentSearches.isNotEmpty)
-                  _buildRecentSearches(theme),
+                  Center(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: isDesktop ? 1180 : double.infinity),
+                      child: _buildRecentSearches(theme),
+                    ),
+                  ),
 
                 // 📜 雙排格網結果
                 Expanded(
@@ -586,6 +637,10 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
           }).toList();
         }
 
+        if (MediaQuery.sizeOf(context).width >= 850) {
+          return _buildDesktopResults(theme, allDocs, docs, keyword, l10n);
+        }
+
         if (docs.isEmpty) {
           return Center(
             child: Text(
@@ -657,6 +712,203 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
           ],
         );
       },
+    );
+  }
+
+  // Desktop-only presentation; mobile cards and all search/filter logic remain intact.
+  Widget _buildDesktopResults(
+    ThemeData theme,
+    List<QueryDocumentSnapshot> allDocs,
+    List<QueryDocumentSnapshot> docs,
+    String keyword,
+    AppLocalizations l10n,
+  ) {
+    final popular = keyword.isEmpty ? docs.take(5).toList() : <QueryDocumentSnapshot>[];
+    final popularIds = popular.map((doc) => doc.id).toSet();
+    final results = keyword.isEmpty
+        ? allDocs.where((doc) => !popularIds.contains(doc.id)).take(15).toList()
+        : docs;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final contentWidth = (constraints.maxWidth - 40).clamp(0.0, 1240.0).toDouble();
+        final columns = contentWidth >= 1050 ? 5 : (contentWidth >= 760 ? 4 : 3);
+        final gap = 18.0;
+        final cardWidth = (contentWidth - gap * (columns - 1)) / columns;
+
+        return SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 42),
+          child: Center(
+            child: SizedBox(
+              width: contentWidth,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (keyword.isEmpty && popular.isNotEmpty) ...[
+                    _desktopSectionHeading(
+                      theme, Icons.local_fire_department_rounded,
+                      l10n.search_character_popular,
+                    ),
+                    const SizedBox(height: 16),
+                    _desktopCardWrap(theme, popular, cardWidth, gap),
+                    const SizedBox(height: 32),
+                  ],
+                  if (results.isNotEmpty) ...[
+                    _desktopSectionHeading(
+                      theme, Icons.search_rounded,
+                      keyword.isEmpty
+                          ? l10n.search_character_result_count(results.length)
+                          : l10n.search_character_result_count(docs.length),
+                    ),
+                    const SizedBox(height: 16),
+                    _desktopCardWrap(theme, results, cardWidth, gap),
+                  ] else if (popular.isEmpty)
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 48),
+                        child: Text(l10n.search_no_match_hint,
+                            style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: .65))),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _desktopSectionHeading(ThemeData theme, IconData icon, String label) {
+    return Row(
+      children: [
+        Icon(icon, color: theme.colorScheme.primary, size: 24),
+        const SizedBox(width: 9),
+        Text(label, style: GoogleFonts.notoSerifTc(
+          color: theme.colorScheme.onSurface,
+          fontSize: 21,
+          fontWeight: FontWeight.w700,
+        )),
+      ],
+    );
+  }
+
+  Widget _desktopCardWrap(ThemeData theme, List<QueryDocumentSnapshot> docs,
+      double width, double gap) {
+    return Wrap(
+      spacing: gap,
+      runSpacing: gap,
+      children: docs.map((doc) => SizedBox(
+        width: width,
+        child: _buildDesktopCharacterCard(doc, theme),
+      )).toList(),
+    );
+  }
+
+  Widget _buildDesktopCharacterCard(DocumentSnapshot doc, ThemeData theme) {
+    final data = doc.data() as Map<String, dynamic>;
+    final primary = theme.colorScheme.primary;
+    final isDark = theme.brightness == Brightness.dark;
+    final imageUrl = (data['avatar'] ?? data['avatarPath'] ?? '').toString().trim();
+    final tags = <String>[];
+    for (final key in ['identities', 'personalityTags']) {
+      final value = data[key];
+      if (value is List) {
+        for (final item in value) {
+          final tag = item.toString().trim();
+          if (tag.isNotEmpty && !tags.contains(tag) && tags.length < 2) tags.add(tag);
+        }
+      }
+    }
+    if (tags.isEmpty) {
+      final occupation = data['occupation']?.toString().trim() ?? '';
+      if (occupation.isNotEmpty) tags.add(occupation);
+    }
+    return Material(
+      color: theme.cardColor.withValues(alpha: isDark ? .92 : .90),
+      elevation: 3,
+      shadowColor: primary.withValues(alpha: .12),
+      borderRadius: BorderRadius.circular(18),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () async {
+          if (_searchQuery.isNotEmpty) await _saveRecentSearch(_searchQuery);
+          final target = await Character.fromFirestoreAsync(doc);
+          if (!context.mounted) return;
+          await CharacterNavigator.open(context,
+            characterId: target.id, fallbackName: target.name);
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            AspectRatio(
+              aspectRatio: 1.15,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  if (imageUrl.isNotEmpty)
+                    CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      fit: BoxFit.cover,
+                      alignment: const Alignment(0, -0.15),
+                      memCacheWidth: 640,
+                      errorWidget: (_, __, ___) => _buildCharacterImageFallback(theme),
+                      placeholder: (_, __) => _buildCharacterImageFallback(theme),
+                    )
+                  else
+                    _buildCharacterImageFallback(theme),
+                  Positioned(
+                    top: 9, right: 9,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: .65),
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      child: Row(mainAxisSize: MainAxisSize.min, children: [
+                        const Icon(Icons.favorite, color: Colors.white, size: 14),
+                        const SizedBox(width: 4),
+                        Text('${_parseLikesCount(data['likesCount'])}',
+                          style: const TextStyle(color: Colors.white, fontSize: 12)),
+                      ]),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 9, 12, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(data['name']?.toString() ?? '',
+                    maxLines: 1, overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.notoSerifTc(
+                      color: theme.colorScheme.onSurface,
+                      fontSize: 18, fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 7),
+                  SizedBox(
+                    height: 25,
+                    child: Row(children: [
+                      for (final tag in tags)
+                        Flexible(child: Container(
+                          margin: const EdgeInsets.only(right: 5),
+                          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: primary.withValues(alpha: isDark ? .22 : .09),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Text(tag, maxLines: 1, overflow: TextOverflow.ellipsis,
+                            style: TextStyle(color: primary, fontSize: 12)),
+                        )),
+                    ]),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

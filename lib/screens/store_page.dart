@@ -20,8 +20,6 @@ class StorePage extends StatefulWidget {
   State<StorePage> createState() => _StorePageState();
 }
 class _StorePageState extends State<StorePage> {
-  bool _isTapPayProcessing = false;
-
   Future<void> _buyStoreProductByPlatform(
       BuildContext context,
       dynamic productWrapper,
@@ -34,6 +32,7 @@ class _StorePageState extends State<StorePage> {
       listen: false,
     );
 
+    if (purchaseService.isPurchaseLaunching || productWrapper.isPending) return;
     await purchaseService.buyProduct(
       productWrapper.productDetails,
     );
@@ -511,6 +510,7 @@ class _StorePageState extends State<StorePage> {
             productWrapper: monthlyCard,
             daysRemaining: daysRemaining,
             isLimitReached: isLimitReached,
+            purchaseLaunching: service.isPurchaseLaunching,
             onPurchase: () async {
               await _buyStoreProductByPlatform(
                 context,
@@ -848,6 +848,7 @@ class _StorePageState extends State<StorePage> {
                       return ProductCard(
                         productWrapper: p,
                         isFirstPurchase: isFirst,
+                        purchaseLaunching: service.isPurchaseLaunching,
                         onPurchase: () async {
                           await _buyStoreProductByPlatform(
                             context,
@@ -954,6 +955,7 @@ class MonthlyCardBanner extends StatelessWidget {
   final dynamic productWrapper;
   final int daysRemaining;
   final bool isLimitReached;
+  final bool purchaseLaunching;
   final Future<void> Function() onPurchase;
 
   const MonthlyCardBanner({
@@ -961,6 +963,7 @@ class MonthlyCardBanner extends StatelessWidget {
     required this.productWrapper,
     required this.daysRemaining,
     required this.isLimitReached,
+    required this.purchaseLaunching,
     required this.onPurchase,
   });
 
@@ -970,7 +973,7 @@ class MonthlyCardBanner extends StatelessWidget {
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
     final bool canPurchase =
-        !isLimitReached && !productWrapper.isPending;
+        !isLimitReached && !purchaseLaunching && !productWrapper.isPending;
 
     return Container(
       width: double.infinity,
@@ -1300,12 +1303,14 @@ class _PerkTile extends StatelessWidget {
 class ProductCard extends StatelessWidget {
   final dynamic productWrapper;
   final bool isFirstPurchase;
+  final bool purchaseLaunching;
   final Future<void> Function() onPurchase;
 
   const ProductCard({
     super.key,
     required this.productWrapper,
     this.isFirstPurchase = false,
+    required this.purchaseLaunching,
     required this.onPurchase,
   });
 
@@ -1383,9 +1388,9 @@ class ProductCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         borderRadius: BorderRadius.circular(22),
-        onTap: () async {
-          await onPurchase();
-        },
+        onTap: (purchaseLaunching || productWrapper.isPending)
+            ? null
+            : () async { await onPurchase(); },
         child: Ink(
           decoration: BoxDecoration(
             color: theme.colorScheme.surface.withValues(alpha: 0.97),
