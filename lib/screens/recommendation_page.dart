@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:async';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -10,6 +11,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../services/app_constants.dart';
 import 'character_model.dart';
 import 'character_profile_page.dart';
+import 'creator_profile_page.dart';
 import 'event_page.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:lianlian_shiguang/l10n/app_l10n.dart';
@@ -1037,8 +1039,32 @@ class RecommendationPageState extends State<RecommendationPage> {
   }
 }
 
-class _ActiveEventEntry extends StatelessWidget {
+class _ActiveEventEntry extends StatefulWidget {
   const _ActiveEventEntry();
+
+  @override
+  State<_ActiveEventEntry> createState() => _ActiveEventEntryState();
+}
+
+class _ActiveEventEntryState extends State<_ActiveEventEntry> {
+  late final Stream<QuerySnapshot<Map<String, dynamic>>> _eventsStream;
+  Timer? _clockRefresh;
+
+  @override
+  void initState() {
+    super.initState();
+    _eventsStream = _eventsRef().limit(20).snapshots();
+    // 活動即使沒有 Firestore 更新，開始／結束時間到達也要切換入口。
+    _clockRefresh = Timer.periodic(const Duration(minutes: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _clockRefresh?.cancel();
+    super.dispose();
+  }
 
   CollectionReference<Map<String, dynamic>> _eventsRef() =>
       FirebaseFirestore.instance
@@ -1076,7 +1102,7 @@ class _ActiveEventEntry extends StatelessWidget {
       // 測試階段先不要在 query 層加 isActive 條件。
       // 直接讀 events 後由前端判斷，可同時避開資料型別/欄位異常造成完全查不到，
       // 並讓 log 能看見實際讀到哪些活動。
-      stream: _eventsRef().limit(20).snapshots(),
+      stream: _eventsStream,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           debugPrint(
@@ -1112,7 +1138,7 @@ class _ActiveEventEntry extends StatelessWidget {
 
         if (docs.isEmpty) {
           debugPrint('⚠️ 活動入口：目前沒有符合顯示條件的活動');
-          return const SizedBox.shrink();
+          return const _CreatorPromotionEntry();
         }
 
         docs.sort((a, b) {
@@ -1245,6 +1271,204 @@ class _ActiveEventEntry extends StatelessWidget {
       },
     );
   }
+}
+
+// 只在沒有進行中的限定活動時顯示。宣傳資料由管理端建立，不能直接由玩家認證欄位推斷可推薦。
+class _CreatorPromotionEntry extends StatefulWidget {
+  const _CreatorPromotionEntry();
+
+  @override
+  State<_CreatorPromotionEntry> createState() => _CreatorPromotionEntryState();
+}
+
+class _CreatorPromotionEntryState extends State<_CreatorPromotionEntry> {
+  late final Stream<QuerySnapshot<Map<String, dynamic>>> _promotionStream;
+  Future<List<_CreatorPromotion>>? _verifiedPromotions;
+  String? _lastPromotionSignature;
+
+  @override
+  void initState() {
+    super.initState();
+    _promotionStream = FirebaseFirestore.instance
+        .collection('artifacts')
+        .doc(AppConfig.appId)
+        .collection('creator_promo_banners')
+        .snapshots();
+  }
+
+  // 每週一台灣時間 00:00 換一批。同一週每位玩家的排序一致。
+  int _weekNumber() {
+    final today = DateTime.now().toUtc().add(const Duration(hours: 8));
+    final day = DateTime.utc(today.year, today.month, today.day);
+    final monday = day.subtract(Duration(days: day.weekday - DateTime.monday));
+    return monday.difference(DateTime.utc(2020, 1, 6)).inDays ~/ 7;
+  }
+
+  Future<List<_CreatorPromotion>> _loadVerifiedPromotions(
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> docs,
+  ) async {
+    final candidateMap = <String, _CreatorPromotion>{};
+    for (final doc in docs) {
+      final data = doc.data();
+      if (data['enabled'] != true) continue;
+      final uid = (data['creatorId'] ?? '').toString().trim();
+      final imageUrl = (data['bannerImageUrl'] ?? '').toString().trim();
+      if (uid.isEmpty || !(imageUrl.startsWith('https://') || imageUrl.startsWith('http://'))) continue;
+      candidateMap.putIfAbsent(uid, () => _CreatorPromotion(
+        creatorId: uid,
+        creatorName: (data['creatorName'] ?? '').toString().trim(),
+        bannerImageUrl: imageUrl,
+      ));
+    }
+    final candidates = candidateMap.values.toList()
+      ..sort((a, b) => a.creatorId.compareTo(b.creatorId));
+    if (candidates.isEmpty) return const [];
+
+    // 管理端核准宣傳圖不等於帳號永遠保有認證；畫面顯示前再確認目前資格。
+    final checks = await Future.wait(candidates.map((entry) async {
+      try {
+        final user = await FirebaseFirestore.instance
+            .collection('users').doc(entry.creatorId).get();
+        final data = user.data();
+        if (data == null ||
+            data['creatorStatus'] != 'approved' ||
+            data['creatorVerified'] != true ||
+            data['creatorDashboardEnabled'] != true) {
+          return null;
+        }
+        final latestName = (data['nickname'] ?? '').toString().trim();
+        return _CreatorPromotion(
+          creatorId: entry.creatorId,
+          creatorName: latestName.isNotEmpty ? latestName : entry.creatorName,
+          bannerImageUrl: entry.bannerImageUrl,
+        );
+      } catch (error) {
+        debugPrint('⚠️ 創作者宣傳資格驗證失敗：${entry.creatorId} $error');
+        return null;
+      }
+    }));
+    return checks.whereType<_CreatorPromotion>().toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: _promotionStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          debugPrint('⚠️ 創作者宣傳橫幅讀取失敗：${snapshot.error}');
+          return const SizedBox.shrink();
+        }
+        if (!snapshot.hasData) return const SizedBox.shrink();
+        final docs = snapshot.data!.docs;
+        // 同一份快照沿用相同 Future，避免頁面重建時重複查詢帳號。
+        final signature = docs.map((doc) {
+          final d = doc.data();
+          return '${doc.id}:${d['enabled']}:${d['creatorId']}:${d['creatorName']}:${d['bannerImageUrl']}';
+        }).join('|');
+        if (_verifiedPromotions == null || _lastPromotionSignature != signature) {
+          _lastPromotionSignature = signature;
+          _verifiedPromotions = _loadVerifiedPromotions(docs);
+        }
+        return FutureBuilder<List<_CreatorPromotion>>(
+          future: _verifiedPromotions,
+          builder: (context, verifiedSnapshot) {
+            final eligible = verifiedSnapshot.data;
+            if (eligible == null || eligible.isEmpty) return const SizedBox.shrink();
+            final offset = _weekNumber() % eligible.length;
+            final weekly = <_CreatorPromotion>[
+              ...eligible.skip(offset),
+              ...eligible.take(offset),
+            ].take(5).toList();
+            final colors = Theme.of(context).colorScheme;
+            return SizedBox(
+              height: 136,
+              child: PageView.builder(
+                key: ValueKey('creator_promo_week_${_weekNumber()}'),
+                controller: PageController(viewportFraction: weekly.length == 1 ? 1 : 0.94),
+                itemCount: weekly.length,
+                itemBuilder: (context, index) {
+                  final promo = weekly[index];
+                  return Padding(
+                    padding: EdgeInsets.only(right: weekly.length == 1 ? 0 : 8),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(22),
+                        onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                          builder: (_) => CreatorProfilePage(
+                            creatorId: promo.creatorId,
+                            creatorName: promo.creatorName,
+                          ),
+                        )),
+                        child: Ink(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(22),
+                            color: colors.primary.withValues(alpha: 0.055),
+                            border: Border.all(color: colors.primary.withValues(alpha: 0.12)),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(22),
+                            child: Stack(fit: StackFit.expand, children: [
+                              _buildRecommendationCachedImage(
+                                context,
+                                imageUrl: promo.bannerImageUrl,
+                                fit: BoxFit.cover,
+                                cacheWidth: 900,
+                                fallback: const SizedBox.shrink(),
+                              ),
+                              DecoratedBox(decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [Colors.black.withValues(alpha: 0.55), Colors.transparent],
+                                ),
+                              )),
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(AppLocalizations.of(context)!.profilePageCreator, style: GoogleFonts.notoSerifTc(
+                                      fontSize: 11, color: Colors.white.withValues(alpha: 0.9))),
+                                    const SizedBox(height: 6),
+                                    Text(promo.creatorName,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: GoogleFonts.notoSerifTc(
+                                        fontSize: 20, fontWeight: FontWeight.w700, color: Colors.white)),
+                                  ],
+                                ),
+                              ),
+                              const Positioned(right: 16, bottom: 16,
+                                child: Icon(Icons.arrow_forward_rounded, color: Colors.white)),
+                            ]),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class _CreatorPromotion {
+  final String creatorId;
+  final String creatorName;
+  final String bannerImageUrl;
+
+  const _CreatorPromotion({
+    required this.creatorId,
+    required this.creatorName,
+    required this.bannerImageUrl,
+  });
 }
 
 class _EventMiniPill extends StatelessWidget {

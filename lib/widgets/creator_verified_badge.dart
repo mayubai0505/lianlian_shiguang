@@ -20,7 +20,7 @@ class CreatorVerifiedBadge extends StatelessWidget {
     this.size = 20,
   }) : assert(userId != null || verified != null);
 
-  /// 與合作創作者工作室的權限條件一致；目前不要求簽署合約。
+  // 與合作創作者工作室的權限條件一致；目前不要求簽署合約。
   static bool isVerifiedCreator(Map<String, dynamic> data) =>
       data['creatorStatus'] == 'approved' &&
       data['creatorVerified'] == true &&

@@ -10539,10 +10539,11 @@ exports.requestCharacterVoice = onCall({
 
 // V50: Creator studio handlers; Firebase callable options stay in core.js.
 const {createCreatorStudioHandlers} = require('./creator/studio_handlers');
-const creatorStudioHandlers = createCreatorStudioHandlers({db,HttpsError,creatorFanMailVerified,APP_ID,FieldValue,crypto});
+const creatorStudioHandlers = createCreatorStudioHandlers({db,HttpsError,creatorFanMailVerified,APP_ID,FieldValue,crypto,requireRewardCampaignAdmin});
 exports.removeCreatorFollower = onCall({region: REGION, timeoutSeconds: 30}, creatorStudioHandlers.removeCreatorFollowerHandler);
 exports.updateCreatorPortfolio = onCall({region: REGION, timeoutSeconds: 30}, creatorStudioHandlers.updateCreatorPortfolioHandler);
 exports.updateCreatorBanner = onCall({region: REGION, timeoutSeconds: 90, memory: '512MiB'}, creatorStudioHandlers.updateCreatorBannerHandler);
+exports.manageCreatorPromotion = onCall({region: REGION, timeoutSeconds: 30}, creatorStudioHandlers.manageCreatorPromotionHandler);
 
 // === Creator support cases v1: all reads/writes through authenticated callables. ===
 // Creator support pure utilities; injected HttpsError retains existing error codes.

@@ -38,10 +38,6 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
     _worldFuture = _fetchWorld();
   }
   Future<DocumentSnapshot<Map<String, dynamic>>> _fetchWorld() {
-    // worlds contains private prompts, NPC settings and creator-only data.
-    // Never fetch it for regular players: Firestore Rules only permit its owner.
-    // Owner preview keeps using the full document; everyone else reads the
-    // backend-maintained, publicly readable projection.
     final collection = widget.creatorPreview
         ? 'worlds'
         : 'public_worlds';

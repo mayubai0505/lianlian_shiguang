@@ -42,6 +42,8 @@ function createWorldMemoryTools({db, APP_ID, crypto, FieldValue, logger, callAiW
       '角色扮演情境中的事實只適用本世界聊天室；不要當成玩家在真實生活中的全域資訊。',
       '臨時動作、當下想法、推測、玩笑、單次感受及普通劇情台詞不記住。',
       '記憶要用提供的玩家名稱作主詞，不能擅自推斷。最多一項。',
+      '【已入選記憶的細節保真】不改變上述是否值得記住的判斷；只有 shouldRemember=true 時，memory 才須保留玩家原文明確說出的事件主體、當時地點、當時時間及關鍵物品／行為（若有）。例如「我在育幼院吃草莓蛋糕」若判定值得記住，應記「玩家名稱曾在育幼院吃草莓蛋糕」，不得省略「育幼院」或改成「教室」。',
+      '原文未提到的地點、時間、同行者不得補造；當前場景地點不可倒填進過去事件。玩家的心聲、推測不得改寫為已對 NPC 說出口的話；仍僅記玩家本人明確提供且達到原本門檻的事實。',
       '世界觀記憶一律 scope=session；無記憶則 scope=none。',
       '若 shouldRemember=true，memory、factKey、factValue、confidence 必須齊全。',
       'factKey 用語意鍵：preference.food.<英文slug>、preference.drink.<英文slug>、preference.other.<英文slug>、habit.<英文slug>、trait.<英文slug>、identity.occupation、identity.birthday、identity.pet、interaction.preferred_address、relationship.status、important_event.<英文slug>、worldline.event.<英文slug>。',
@@ -210,6 +212,8 @@ function createWorldMemoryTools({db, APP_ID, crypto, FieldValue, logger, callAiW
       const prompt = [
         '你是世界觀記憶檔案管理員。使用臺灣繁體中文，將既有摘要與本次「尚未整理的新對話」增量合併。',
         '200～500字；優先保存人物身份、長期關係、約定、關鍵事件、目前地點、已確定故事時間和未完成目標。',
+        '【事件完整性】當已入選的重要事件明確包含人物、事件發生當時的地點／時間或關鍵物品時，摘要必須把這些資訊綁在同一件事上保存；例如「曾在育幼院吃草莓蛋糕」不可壓縮成「吃過草莓蛋糕」，更不能將目前教室的位置倒填成過去吃蛋糕的地點。',
+        '目前所在地與過去事件發生地是不同欄位概念；若原文沒有說明事件地點／時間就不要推測，不得把 NPC 猜測或玩家心聲寫成公開對話。維持原本摘要長度優先序，不要求保存每件日常小事。',
         '以新對話中的確定事實修正過時資訊；不要將猜測、NPC 誤解或未經玩家確認的事情寫成玩家事實。',
         '每個 NPC 分開記錄；不要替玩家寫心理、行動或臺詞；不擅自推進日期。',
         '僅輸出合併後的摘要文字，勿輸出分析、標題或 JSON。',

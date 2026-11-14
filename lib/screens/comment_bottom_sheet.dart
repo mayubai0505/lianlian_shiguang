@@ -758,15 +758,28 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
       child: GestureDetector(
         onLongPress: () => _showCommentOptions(comment),
         child: ListTile(
-          leading: UserAvatarWithFrame(
-            key: ValueKey('comment_avatar_${comment.authorId}'),
-            userId: comment.authorId,
-            avatarImage: getAvatarImageProvider(displayAvatar),
-            size: 44,
-            avatarRadius: 20,
-            backgroundColor:
-            Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
-          ),
+          // 只有玩家本人留言才顯示其裝備頭像框；角色留言保留原頭像。
+          leading: (_commentIsPersonalAuthor[comment.id] == true || isMe)
+              ? UserAvatarWithFrame(
+                  key: ValueKey('comment_avatar_${comment.authorId}'),
+                  userId: comment.authorId,
+                  avatarImage: getAvatarImageProvider(displayAvatar),
+                  size: 44,
+                  avatarRadius: 20,
+                  backgroundColor: Theme.of(context)
+                      .colorScheme.primary.withValues(alpha: 0.08),
+                )
+              : SizedBox.square(
+                  dimension: 44,
+                  child: Center(
+                    child: CircleAvatar(
+                      radius: 20,
+                      backgroundImage: getAvatarImageProvider(displayAvatar),
+                      backgroundColor: Theme.of(context)
+                          .colorScheme.primary.withValues(alpha: 0.08),
+                    ),
+                  ),
+                ),
           title: Row(
             children: [
               Flexible(

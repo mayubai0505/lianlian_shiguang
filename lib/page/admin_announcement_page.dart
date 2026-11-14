@@ -9383,6 +9383,172 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     );
   }
 
+
+  // 創作者推薦橫幅：僅管理員後台操作，實際寫入由 callable 二次驗證權限。
+  Future<void> _manageCreatorPromo(String uid, String action) async {
+    final reasonController = TextEditingController();
+    try {
+      final reason = action == 'restore' ? '' : await showDialog<String>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(action == 'ban' ? '取消未來推薦資格' : '下架橫幅並通知創作者'),
+          content: TextField(controller: reasonController, maxLength: 500,
+            minLines: 3, maxLines: 5,
+            decoration: const InputDecoration(labelText: '請填寫具體原因', border: OutlineInputBorder())),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('取消')),
+            FilledButton(onPressed: () => Navigator.pop(dialogContext, reasonController.text.trim()),
+              child: const Text('確認')),
+          ],
+        ),
+      );
+      if (!mounted) return;
+      if (action != 'restore' && (reason == null || reason.length < 3)) {
+        if (reason != null) ToastUtils.showCenterToast(context, '請填寫至少 3 字的原因', isError: true);
+        return;
+      }
+      if (action == 'restore') {
+        final confirm = await showDialog<bool>(context: context,
+          builder: (ctx) => AlertDialog(title: const Text('恢復推薦資格'),
+            content: const Text('確定要解除推薦資格限制嗎？先前被下架的圖片不會恢復曝光；創作者必須上傳不同的新圖片才能重新參與推薦。'),
+            actions: [TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('取消')),
+              FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('恢復'))]));
+        if (confirm != true || !mounted) return;
+      }
+      await _functions.httpsCallable('manageCreatorPromotion').call({
+        'creatorId':uid, 'action':action, 'reason':reason ?? '',
+      });
+      if (mounted) ToastUtils.showCenterToast(context, '推薦橫幅管理已更新');
+    } on FirebaseFunctionsException catch (e) {
+      if (mounted) ToastUtils.showCenterToast(context, e.message ?? '操作失敗', isError: true);
+    } catch (e) {
+      if (mounted) ToastUtils.showCenterToast(context, '操作失敗：$e', isError: true);
+    } finally { reasonController.dispose(); }
+  }
+
+  // 管理紀錄僅管理員可讀；不影響創作者公開橫幅與一般信箱。
+  Future<void> _showCreatorPromoHistory(String uid, String creatorName) async {
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text('$creatorName・推薦處理紀錄'),
+        content: SizedBox(
+          width: 520,
+          height: 360,
+          child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+            stream: FirebaseFirestore.instance
+                .collection('artifacts').doc(AppConfig.appId)
+                .collection('creator_promo_banners').doc(uid)
+                .collection('moderation_logs')
+                .orderBy('createdAt', descending: true)
+                .limit(30)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return const Center(child: Text('讀取紀錄失敗，請確認管理員權限與 Firestore 規則'));
+              }
+              if (!snapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.data!.docs.isEmpty) {
+                return const Center(child: Text('目前沒有處理紀錄'));
+              }
+              return ListView.separated(
+                shrinkWrap: true,
+                itemCount: snapshot.data!.docs.length,
+                separatorBuilder: (_, __) => const Divider(height: 16),
+                itemBuilder: (context, index) {
+                  final data = snapshot.data!.docs[index].data();
+                  final action = (data['action'] ?? '').toString();
+                  final label = switch (action) {
+                    'remove' => '下架並通知',
+                    'ban' => '取消推薦資格',
+                    'restore' => '解除限制',
+                    _ => action,
+                  };
+                  final when = data['createdAt'];
+                  final time = when is Timestamp
+                      ? DateFormat('yyyy/MM/dd HH:mm').format(when.toDate())
+                      : '時間未記錄';
+                  final reason = (data['reason'] ?? '').toString().trim();
+                  final adminUid = (data['adminUid'] ?? '').toString();
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
+                    subtitle: Text('$time\n${reason.isEmpty ? '無附加原因' : '原因：$reason'}\n操作管理員：$adminUid'),
+                    isThreeLine: true,
+                  );
+                },
+              );
+            },
+          ),
+        ),
+        actions: [TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('關閉'))],
+      ),
+    );
+  }
+
+  Widget _buildCreatorPromoManagement() {
+    final theme = Theme.of(context);
+    return Card(
+      child: Padding(padding: const EdgeInsets.all(14), child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Text('推薦橫幅管理', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+          const SizedBox(height: 5),
+          const Text('免申請自動入選；下架會通知創作者修改，反覆違規可取消推薦資格。',
+            style: TextStyle(fontSize: 12)),
+          const SizedBox(height: 12),
+          StreamBuilder<QuerySnapshot<Map<String,dynamic>>>(
+            stream: FirebaseFirestore.instance.collection('artifacts').doc(AppConfig.appId)
+              .collection('creator_promo_banners').snapshots(),
+            builder: (context, snap) {
+              if (snap.hasError) return const Text('讀取宣傳橫幅失敗，請確認 Firestore 規則');
+              if (!snap.hasData) return const LinearProgressIndicator();
+              final docs = snap.data!.docs;
+              if (docs.isEmpty) return const Text('暫無推薦橫幅；創作者重新上傳圖片後將自動建立候選資料。');
+              return Column(children: [for (final doc in docs) Builder(builder: (context) {
+                final data = doc.data();
+                final url = (data['bannerImageUrl'] ?? '').toString();
+                final uid = (data['creatorId'] ?? doc.id).toString();
+                final banned = data['banned'] == true;
+                final enabled = data['enabled'] == true;
+                final nickname = (data['creatorName'] ?? uid).toString();
+                final violations = (data['violationCount'] as num?)?.toInt() ?? 0;
+                return Padding(padding: const EdgeInsets.only(bottom: 8), child: Container(
+                  decoration: BoxDecoration(border: Border.all(color: theme.colorScheme.outlineVariant),
+                    borderRadius: BorderRadius.circular(12)),
+                  padding: const EdgeInsets.all(10),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    if (url.startsWith('https://') || url.startsWith('http://'))
+                      AspectRatio(aspectRatio: 2.5, child: ClipRRect(borderRadius: BorderRadius.circular(8),
+                        child: Image.network(url, fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => const Center(child: Text('圖片無法載入'))))),
+                    const SizedBox(height: 6),
+                    Text(nickname, style: const TextStyle(fontWeight: FontWeight.w600)),
+                    Text('UID：$uid', style: const TextStyle(fontSize: 11)),
+                    Text(banned ? '已取消推薦資格 · 違規紀錄 $violations 次' :
+                      enabled ? '推薦候選中 · 違規紀錄 $violations 次' : '目前未展示 · 違規紀錄 $violations 次'),
+                    const SizedBox(height: 8),
+                    Wrap(spacing: 8, runSpacing: 6, children: [
+                      OutlinedButton(onPressed: () => _showCreatorPromoHistory(uid, nickname),
+                        child: const Text('查看處理紀錄')),
+                      if (enabled && !banned) OutlinedButton(onPressed: () => _manageCreatorPromo(uid, 'remove'),
+                        child: const Text('下架並通知')),
+                      if (!banned) OutlinedButton(onPressed: () => _manageCreatorPromo(uid, 'ban'),
+                        child: const Text('取消推薦資格')),
+                      if (banned || !enabled) OutlinedButton(onPressed: () => _manageCreatorPromo(uid, 'restore'),
+                        child: const Text('解除限制')),
+                    ]),
+                  ]),
+                ));
+              })]);
+            },
+          ),
+        ],
+      )),
+    );
+  }
+
   Widget _buildCreatorAdminTab() {
     final theme = Theme.of(context);
     final filtered = _creatorAdminFilter == 'all'
@@ -9448,6 +9614,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
             ],
           ),
           const SizedBox(height: 16),
+          _buildCreatorPromoManagement(),
+          const SizedBox(height: 14),
           _buildManualCreatorVerificationCard(theme),
           const SizedBox(height: 18),
           if (_creatorApplicationLoadError != null)
