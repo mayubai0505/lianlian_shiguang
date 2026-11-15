@@ -234,6 +234,7 @@ class SelectChatPageState extends State<SelectChatPage> {
               '角色數：${characters.length}',
         );
 
+        await _warmInitialEncounterImages(characters);
         return characters;
       }
 
@@ -250,6 +251,7 @@ class SelectChatPageState extends State<SelectChatPage> {
             '角色數：${characters.length}',
       );
 
+      await _warmInitialEncounterImages(characters);
       return characters;
     } finally {
       stopwatch.stop();
@@ -284,33 +286,81 @@ class SelectChatPageState extends State<SelectChatPage> {
     return (character.avatarPath ?? '').trim();
   }
 
-  void _precacheCharacterImages(
-      BuildContext context,
-      List<Character> characters,
-      ) {
-    for (final character in characters.take(8)) {
-      final urls = <String>{
-        _profileHeaderImageUrl(character),
-        character.bannerImagePath.trim(),
-      }..removeWhere((url) => url.isEmpty);
+  // 邂逅清單先預載首屏圖片，其餘圖片以小批次在背景暖機。
+  // 已成功下載的圖片沿用 CachedNetworkImageProvider 的磁碟快取；
+  // 不強制把所有角色圖片永久鎖進 RAM，避免大量角色造成記憶體不足。
+  int _imageWarmupGeneration = 0;
+  String? _lastWarmupSignature;
+  final Set<String> _loadingImageUrls = <String>{};
 
-      for (final imageUrl in urls) {
-        final cacheKey = '720::$imageUrl';
-        if (_preloadedImageUrls.contains(cacheKey)) continue;
-
-        _preloadedImageUrls.add(cacheKey);
-
-        final provider = _encounterImageProvider(
-          imageUrl,
-          cacheWidth: 720,
-        );
-
-        precacheImage(provider, context).catchError((error) {
-          _preloadedImageUrls.remove(cacheKey);
-          debugPrint('預載邂逅角色圖片失敗：$error');
-        });
-      }
+  List<String> _encounterImageUrls(List<Character> characters) {
+    final urls = <String>{};
+    for (final character in characters) {
+      final galleryUrl = _profileHeaderImageUrl(character);
+      if (galleryUrl.isNotEmpty) urls.add(galleryUrl);
+      final bannerUrl = character.bannerImagePath.trim().isNotEmpty
+          ? character.bannerImagePath.trim()
+          : galleryUrl;
+      if (bannerUrl.isNotEmpty) urls.add(bannerUrl);
     }
+    return urls.toList();
+  }
+
+  Future<void> _warmEncounterImage(String imageUrl) async {
+    // 網頁及行動端沿用卡片實際使用的 provider／解碼尺寸。
+    const cacheWidth = 720;
+    final cacheKey = '$cacheWidth::$imageUrl';
+    if (_preloadedImageUrls.contains(cacheKey) ||
+        !_loadingImageUrls.add(cacheKey)) return;
+    try {
+      if (!mounted) return;
+      var failed = false;
+      await precacheImage(
+        _encounterImageProvider(imageUrl, cacheWidth: cacheWidth),
+        context,
+        onError: (error, stackTrace) {
+          failed = true;
+          debugPrint('⚠️ 預載邂逅角色圖片失敗：$error');
+        },
+      );
+      if (!failed) _preloadedImageUrls.add(cacheKey);
+    } catch (error) {
+      debugPrint('⚠️ 預載邂逅角色圖片失敗：$error');
+    } finally {
+      _loadingImageUrls.remove(cacheKey);
+    }
+  }
+
+  Future<void> _warmInitialEncounterImages(List<Character> characters) async {
+    final mostRecent = List<Character>.from(characters)
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    final initialUrls = _encounterImageUrls(<Character>[
+      ...characters.take(8),
+      ...mostRecent.take(4),
+    ]);
+    // 平行數量有上限，避免首次進入時同時開太多下載。
+    for (var i = 0; i < initialUrls.length; i += 4) {
+      if (!mounted) return;
+      final batch = initialUrls.skip(i).take(4).toList();
+      await Future.wait(batch.map(_warmEncounterImage));
+    }
+  }
+
+  void _precacheCharacterImages(List<Character> characters) {
+    final urls = _encounterImageUrls(characters);
+    final signature = urls.join('\u0001');
+    if (_lastWarmupSignature == signature) return;
+    _lastWarmupSignature = signature;
+    final generation = ++_imageWarmupGeneration;
+    // 首屏已在資料 Future 完成前處理，剩餘圖片背景分批預載。
+    Future<void>(() async {
+      for (var i = 0; i < urls.length; i += 4) {
+        if (!mounted || generation != _imageWarmupGeneration) return;
+        await Future.wait(urls.skip(i).take(4).map(_warmEncounterImage));
+        // 讓出事件迴圈，避免大量圖片預載阻塞滑動與頁面繪製。
+        await Future<void>.delayed(const Duration(milliseconds: 40));
+      }
+    });
   }
 
   Future<void> _loadBlockedCharacterIds() async {
@@ -470,7 +520,7 @@ class SelectChatPageState extends State<SelectChatPage> {
 
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!mounted) return;
-            _precacheCharacterImages(context, characters);
+            _precacheCharacterImages(characters);
           });
 
           return _DiscoveryHallView(
@@ -1494,7 +1544,7 @@ class _LatestTabState extends State<_LatestTab> {
                           imageUrl: imageUrl,
                           fit: BoxFit.cover,
                           alignment: Alignment.topCenter,
-                          cacheWidth: useDesktopLayout ? 700 : 520,
+                          cacheWidth: 720,
                           placeholder: Container(
                             color: Theme.of(context)
                                 .colorScheme
@@ -2010,9 +2060,9 @@ class _LatestTabState extends State<_LatestTab> {
         required bool isDesktop,
       }) {
     final String imageUrl =
-    char.galleryPaths.isNotEmpty
-        ? char.galleryPaths.first
-        : '';
+        char.galleryPaths.isNotEmpty && char.galleryPaths.first.trim().isNotEmpty
+            ? char.galleryPaths.first.trim()
+            : char.avatarPath.trim();
 
     if (isDesktop) {
       final theme = Theme.of(context);
@@ -2043,7 +2093,7 @@ class _LatestTabState extends State<_LatestTab> {
                     if (imageUrl.isNotEmpty)
                       _buildEncounterCachedImage(
                         context, imageUrl: imageUrl, fit: BoxFit.cover,
-                        alignment: Alignment.topCenter, cacheWidth: 620,
+                        alignment: Alignment.topCenter, cacheWidth: 720,
                         placeholder: Container(color: theme.colorScheme.surfaceContainerHighest),
                       )
                     else

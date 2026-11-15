@@ -11,6 +11,9 @@ async function recordAiHealth({
   cancelled = false,
   result = null,
   modelId = "",
+  failureCode = "",
+  failureStatusCode = null,
+  failureMessage = "",
 }) {
   try {
     const dateKey =
@@ -24,6 +27,27 @@ async function recordAiHealth({
 
     const usage =
       extractAiUsage(result);
+
+    // 僅統計最終失敗原因；不記錄原始玩家訊息或供應商回傳內容。
+    // 403 不等於確定的內容審查；獨立歸為 HTTP 拒絕。
+    const code = String(failureCode || "");
+    const status = Number(failureStatusCode) || 0;
+    const message = String(failureMessage || "");
+    const failureType = success || cancelled ? "" : (
+      status === 403 ? "http403" :
+      status === 429 ? "http429" :
+      status === 401 ? "http401" :
+      (status >= 500 && status <= 599) ? "http5xx" :
+      code === "AI_TIMEOUT" || /AI 回覆時間太久/.test(message) ? "timeout" :
+      code === "AI_NETWORK_ERROR" ? "network" :
+      code === "AI_CONTENT_FILTERED" ? "contentFiltered" :
+      code === "AI_EMPTY_RESPONSE" ? "emptyResponse" :
+      code === "AI_INVALID_RESPONSE" || /AI 回傳格式異常/.test(message) ? "invalidResponse" :
+      "other"
+    );
+    // Firestore map key 需避開模型 ID 內的斜線及句點。
+    const failedModelKey = String(modelId || "unknown")
+      .replace(/[^a-zA-Z0-9_-]/g, "_").slice(0, 120) || "unknown";
 
     const update = {
       dateKey,
@@ -88,6 +112,14 @@ async function recordAiHealth({
         FieldValue.increment(
           usage.totalTokens
         ),
+
+      // 新增計數與原有成功率公式獨立，舊資料無需回填。
+      ...(failureType ? {
+        failureReasonCounts: { [failureType]: FieldValue.increment(1) },
+        failureModelCounts: { [failedModelKey]: FieldValue.increment(1) },
+        lastFailureModelId: String(modelId || "").slice(0, 300),
+        lastFailureType: failureType,
+      } : {}),
 
       lastModelId:
         String(modelId || "")

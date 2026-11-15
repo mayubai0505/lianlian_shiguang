@@ -115,6 +115,15 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   final TextEditingController _rewardDescriptionController =
   TextEditingController();
   final TextEditingController _rewardAmountController = TextEditingController();
+  final TextEditingController _rewardItemNameController = TextEditingController();
+  final TextEditingController _rewardItemImageController = TextEditingController();
+  final TextEditingController _rewardStickerNameController = TextEditingController();
+  final TextEditingController _rewardStickerTagsController = TextEditingController();
+  final TextEditingController _rewardStickerEmotionController = TextEditingController();
+  final TextEditingController _rewardStickerDescriptionController = TextEditingController();
+  String _rewardType = 'flowerPoints';
+  bool _isAnalyzingRewardSticker = false;
+  bool _rewardStickerAiAnalyzed = false;
 
   DateTime _rewardStartAt = DateTime.now();
   DateTime _rewardEndAt = DateTime.now().add(
@@ -167,6 +176,10 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
 
   bool _eventIsActive = true;
   bool _eventHasTasks = true;
+  bool _eventHasCheckIn = false;
+  String _eventCheckInRewardType = 'eventCurrency';
+  final TextEditingController _eventCheckInRewardAmountController =
+      TextEditingController(text: '10');
   bool _eventHasMilestones = true;
   bool _eventHasShop = true;
   bool _eventHasMemory = true;
@@ -295,7 +308,14 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     _rewardTitleController.dispose();
     _rewardDescriptionController.dispose();
     _rewardAmountController.dispose();
+    _rewardItemNameController.dispose();
+    _rewardItemImageController.dispose();
+    _rewardStickerNameController.dispose();
+    _rewardStickerTagsController.dispose();
+    _rewardStickerEmotionController.dispose();
+    _rewardStickerDescriptionController.dispose();
     _rewardCampaignViewRevision.dispose();
+    _eventCheckInRewardAmountController.dispose();
     _eventIdController.dispose();
     _eventNameController.dispose();
     _eventSubtitleController.dispose();
@@ -1460,12 +1480,21 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       return;
     }
 
-    if (rewardAmount == null || rewardAmount <= 0 || rewardAmount > 10000) {
-      ToastUtils.showCenterToast(
-        context,
-        '花花數量請輸入 1～10000 的整數',
-        isError: true,
-      );
+    if (_rewardType == 'flowerPoints' &&
+        (rewardAmount == null || rewardAmount <= 0 || rewardAmount > 10000)) {
+      ToastUtils.showCenterToast(context, '花花數量請輸入 1～10000 的整數', isError: true);
+      return;
+    }
+    if (_rewardType != 'flowerPoints' &&
+        (_rewardItemNameController.text.trim().isEmpty ||
+         !_rewardItemImageController.text.trim().startsWith('https://'))) {
+      ToastUtils.showCenterToast(context, '請輸入禮物名稱並上傳圖片', isError: true);
+      return;
+    }
+    if (_rewardType == 'sticker' &&
+        (_rewardStickerNameController.text.trim().isEmpty ||
+         _rewardStickerDescriptionController.text.trim().isEmpty)) {
+      ToastUtils.showCenterToast(context, '貼紙請先完成 AI 分析或手動填入名稱與圖像描述', isError: true);
       return;
     }
 
@@ -1487,7 +1516,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
           title: const Text('發布活動禮物'),
           content: Text(
             '活動：$title\n'
-                '獎勵：$rewardAmount 朵花花\n'
+                '獎勵：${_rewardType == 'flowerPoints' ? '$rewardAmount 朵花花' : '${_rewardType == 'sticker' ? '貼紙' : '頭像框'}・${_rewardItemNameController.text.trim()}'}\n'
                 '開始：${_formatRewardDateTime(_rewardStartAt)}\n'
                 '結束：${_formatRewardDateTime(_rewardEndAt)}\n\n'
                 '發布後，符合資格的玩家開啟戀戀信箱即可看到這份禮物。',
@@ -1532,8 +1561,21 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       await callable.call({
         'title': title,
         'description': description,
-        'rewardType': 'flowerPoints',
-        'rewardAmount': rewardAmount,
+        'rewardType': _rewardType,
+        'rewardAmount': _rewardType == 'flowerPoints' ? rewardAmount : 0,
+        if (_rewardType != 'flowerPoints') 'rewardItem': <String, dynamic>{
+          'itemType': _rewardType,
+          'name': _rewardItemNameController.text.trim(),
+          'imageUrl': _rewardItemImageController.text.trim(),
+          if (_rewardType == 'sticker') ...{
+            'stickerName': _rewardStickerNameController.text.trim(),
+            'visualTags': _rewardStickerTagsController.text.split(RegExp(r'[,，、\n]+'))
+                .map((e) => e.trim()).where((e) => e.isNotEmpty).take(12).toList(),
+            'baseEmotion': _rewardStickerEmotionController.text.trim(),
+            'visualDescription': _rewardStickerDescriptionController.text.trim(),
+            'analysisSource': _rewardStickerAiAnalyzed ? 'ai' : 'manual',
+          },
+        },
         'audience': _rewardAudience,
         'startAt': _rewardStartAt.toUtc().toIso8601String(),
         'endAt': _rewardEndAt.toUtc().toIso8601String(),
@@ -1544,6 +1586,13 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       _rewardTitleController.clear();
       _rewardDescriptionController.clear();
       _rewardAmountController.clear();
+      _rewardItemNameController.clear();
+      _rewardItemImageController.clear();
+      _rewardStickerNameController.clear();
+      _rewardStickerTagsController.clear();
+      _rewardStickerEmotionController.clear();
+      _rewardStickerDescriptionController.clear();
+      _rewardStickerAiAnalyzed = false;
 
       setState(() {
         _rewardStartAt = DateTime.now();
@@ -1551,6 +1600,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
           const Duration(days: 7),
         );
         _rewardAudience = 'admin_only';
+        _rewardType = 'flowerPoints';
       });
 
       ToastUtils.showCenterToast(
@@ -1725,7 +1775,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    '玩家開啟戀戀信箱後，即可看到並領取活動花花。',
+                    '玩家開啟戀戀信箱後，即可看到並領取活動禮物。',
                     style: TextStyle(
                       color: Colors.grey,
                       fontSize: 13,
@@ -1759,19 +1809,103 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                     ),
                   ),
                   const SizedBox(height: 14),
-                  TextField(
-                    controller: _rewardAmountController,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: '花花數量',
-                      hintText: '例如：20',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(
-                        Icons.local_florist_outlined,
-                        color: Colors.pinkAccent,
-                      ),
-                    ),
+                  DropdownButtonFormField<String>(
+                    value: _rewardType,
+                    decoration: const InputDecoration(labelText: '禮物類型', border: OutlineInputBorder()),
+                    items: const [
+                      DropdownMenuItem(value: 'flowerPoints', child: Text('🌸 花花點數')),
+                      DropdownMenuItem(value: 'avatar_frame', child: Text('🖼️ 頭像框')),
+                      DropdownMenuItem(value: 'sticker', child: Text('🎨 貼紙')),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) setState(() => _rewardType = value);
+                    },
                   ),
+                  const SizedBox(height: 14),
+                  if (_rewardType == 'flowerPoints')
+                    TextField(
+                      controller: _rewardAmountController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(labelText: '花花數量', border: OutlineInputBorder()),
+                    )
+                  else ...[
+                    TextField(
+                      controller: _rewardItemNameController,
+                      decoration: const InputDecoration(labelText: '禮物名稱', border: OutlineInputBorder()),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(children: [
+                      Expanded(child: TextField(
+                        controller: _rewardItemImageController,
+                        onChanged: (_) { if (_rewardType == 'sticker') _rewardStickerAiAnalyzed = false; },
+                        decoration: const InputDecoration(labelText: '圖片網址（HTTPS）', border: OutlineInputBorder()),
+                      )),
+                      const SizedBox(width: 8),
+                      OutlinedButton.icon(
+                        onPressed: _uploadingEventImageSlot != null ? null : () async {
+                          final url = await _pickAndUploadReusableEventImage(
+                            slot: _rewardType == 'avatar_frame' ? 'shop_frame' : 'shop',
+                          );
+                          if (url != null && mounted) {
+                            setState(() {
+                              _rewardItemImageController.text = url;
+                              _rewardStickerAiAnalyzed = false;
+                            });
+                          }
+                        },
+                        icon: const Icon(Icons.image_outlined),
+                        label: const Text('上傳'),
+                      ),
+                    ]),
+                    if (_rewardItemImageController.text.trim().isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      SizedBox(height: 100, child: Image.network(
+                        _rewardItemImageController.text.trim(),
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, __, ___) => const Text('圖片預覽失敗'),
+                      )),
+                    ],
+                    if (_rewardType == 'sticker') ...[
+                      const SizedBox(height: 14),
+                      FilledButton.tonalIcon(
+                        onPressed: _isAnalyzingRewardSticker ? null : () async {
+                          setState(() => _isAnalyzingRewardSticker = true);
+                          try {
+                            final analysis = await _analyzeEventStickerImage(_rewardItemImageController.text);
+                            if (analysis != null && mounted) {
+                              setState(() {
+                                _rewardStickerNameController.text = (analysis['stickerName'] ?? '').toString();
+                                final rawTags = analysis['visualTags'];
+                                _rewardStickerTagsController.text = rawTags is List ? rawTags.join('、') : '';
+                                _rewardStickerEmotionController.text = (analysis['baseEmotion'] ?? '').toString();
+                                _rewardStickerDescriptionController.text = (analysis['visualDescription'] ?? '').toString();
+                                _rewardStickerAiAnalyzed = true;
+                              });
+                            }
+                          } finally {
+                            if (mounted) setState(() => _isAnalyzingRewardSticker = false);
+                          }
+                        },
+                        icon: const Icon(Icons.auto_awesome_rounded),
+                        label: Text(_isAnalyzingRewardSticker ? '分析中…' : 'AI 分析貼紙'),
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(controller: _rewardStickerNameController,
+                        decoration: const InputDecoration(labelText: '貼紙名稱', border: OutlineInputBorder())),
+                      const SizedBox(height: 8),
+                      TextField(controller: _rewardStickerTagsController,
+                        decoration: const InputDecoration(labelText: '視覺標籤（頓號分隔）', border: OutlineInputBorder())),
+                      const SizedBox(height: 8),
+                      TextField(controller: _rewardStickerEmotionController,
+                        decoration: const InputDecoration(labelText: '基礎情緒', border: OutlineInputBorder())),
+                      const SizedBox(height: 8),
+                      TextField(controller: _rewardStickerDescriptionController, maxLines: 3,
+                        decoration: const InputDecoration(labelText: '貼紙視覺描述', border: OutlineInputBorder())),
+                      const SizedBox(height: 8),
+                      const Text('AI 只分析圖片的視覺與基礎情緒；玩家實際語意由聊天上下文判斷。',
+                        style: TextStyle(fontSize: 12)),
+                    ],
+                  ],
                   const SizedBox(height: 16),
                   const SizedBox(height: 14),
                   DropdownButtonFormField<String>(
@@ -2023,19 +2157,21 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                         const SizedBox(height: 12),
                         Row(
                           children: [
-                            const Icon(
-                              Icons.local_florist_rounded,
-                              size: 17,
-                              color: Colors.pinkAccent,
+                            Icon(
+                              campaign['rewardType'] == 'sticker' ? Icons.emoji_emotions_outlined
+                                  : campaign['rewardType'] == 'avatar_frame' ? Icons.crop_square_rounded
+                                  : Icons.local_florist_rounded,
+                              size: 17, color: theme.colorScheme.primary,
                             ),
                             const SizedBox(width: 5),
-                            Text(
-                              '$rewardAmount 朵花花',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.pinkAccent,
-                              ),
-                            ),
+                            Expanded(child: Text(
+                              campaign['rewardType'] == 'sticker'
+                                ? '貼紙・${(campaign['rewardItem'] is Map ? campaign['rewardItem']['name'] : '') ?? ''}'
+                                : campaign['rewardType'] == 'avatar_frame'
+                                  ? '頭像框・${(campaign['rewardItem'] is Map ? campaign['rewardItem']['name'] : '') ?? ''}'
+                                  : '$rewardAmount 朵花花',
+                              style: TextStyle(fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
+                            )),
                           ],
                         ),
                         if (startAt != null) ...[
@@ -6599,6 +6735,15 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         if (startAt != null) _eventStartAt = startAt;
         if (endAt != null) _eventEndAt = endAt;
         _eventIsActive = data['isActive'] == true;
+        final checkIn = data['dailyCheckIn'] is Map
+            ? Map<String, dynamic>.from(data['dailyCheckIn'] as Map)
+            : <String, dynamic>{};
+        _eventHasCheckIn = checkIn['enabled'] == true;
+        _eventCheckInRewardType = checkIn['rewardType'] == 'flowerPoints'
+            ? 'flowerPoints' : 'eventCurrency';
+        _eventCheckInRewardAmountController.text =
+            (checkIn['rewardAmount'] is num && checkIn['rewardAmount'] > 0)
+                ? checkIn['rewardAmount'].toString() : '10';
         _eventHasTasks = data['hasTasks'] != false;
         _eventHasMilestones = data['hasMilestones'] != false;
         _eventHasShop = data['hasShop'] != false;
@@ -6668,6 +6813,9 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       _eventStartAt = DateTime.now();
       _eventEndAt = DateTime.now().add(const Duration(days: 14));
       _eventIsActive = true;
+      _eventHasCheckIn = false;
+      _eventCheckInRewardType = 'eventCurrency';
+      _eventCheckInRewardAmountController.text = '10';
       _eventHasTasks = true;
       _eventHasMilestones = true;
       _eventHasShop = true;
@@ -6862,6 +7010,13 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       return;
     }
 
+    final checkInAmount = int.tryParse(_eventCheckInRewardAmountController.text.trim());
+    if (_eventHasCheckIn && (checkInAmount == null || checkInAmount < 1 ||
+        checkInAmount > (_eventCheckInRewardType == 'flowerPoints' ? 10000 : 100000))) {
+      ToastUtils.showCenterToast(context, '每日簽到獎勵數量不正確', isError: true);
+      return;
+    }
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -6874,7 +7029,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
               '任務：${_eventTaskDrafts.length} 個\n'
               '里程碑：${_eventMilestoneDrafts.length} 個\n'
               '商品：${_eventShopDrafts.length} 個\n'
-              '限定回憶：${_eventMemoryDrafts.length} 篇\n\n'
+              '限定回憶：${_eventMemoryDrafts.length} 篇\n'
+              '每日簽到：${_eventHasCheckIn ? '${checkInAmount ?? 0} ${_eventCheckInRewardType == 'flowerPoints' ? '朵花花' : currencyName}' : '關閉'}\n\n'
               '儲存後 App 會依 isActive 與活動期間自動判斷是否顯示。',
         ),
         actions: [
@@ -6989,6 +7145,11 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
           'shopFeatureImageUrl': _eventShopCardImageUrlController.text.trim(),
           'currencyName': currencyName,
           'currencyIcon': currencyIcon,
+          'dailyCheckIn': <String, dynamic>{
+            'enabled': _eventHasCheckIn,
+            'rewardType': _eventCheckInRewardType,
+            'rewardAmount': _eventHasCheckIn ? checkInAmount : 0,
+          },
           'hasTasks': _eventHasTasks,
           'hasMilestones': _eventHasMilestones,
           'hasShop': _eventHasShop,
@@ -8142,6 +8303,46 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                         setState(() => _eventIsActive = value);
                       },
                     ),
+                    const SizedBox(height: 12),
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text('活動每日簽到'),
+                      subtitle: const Text('獨立於一般每日簽到；台灣時間每日 00:00 重置。'),
+                      value: _eventHasCheckIn,
+                      onChanged: (value) => setState(() => _eventHasCheckIn = value),
+                    ),
+                    if (_eventHasCheckIn) ...[
+                      const SizedBox(height: 8),
+                      DropdownButtonFormField<String>(
+                        value: _eventCheckInRewardType,
+                        decoration: const InputDecoration(
+                          labelText: '每日簽到獎勵類型',
+                          border: OutlineInputBorder(),
+                        ),
+                        items: const [
+                          DropdownMenuItem(value: 'eventCurrency', child: Text('活動貨幣')),
+                          DropdownMenuItem(value: 'flowerPoints', child: Text('花花點數')),
+                        ],
+                        onChanged: (value) {
+                          if (value != null) setState(() => _eventCheckInRewardType = value);
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      TextField(
+                        controller: _eventCheckInRewardAmountController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          labelText: '每天領取數量',
+                          helperText: _eventCheckInRewardType == 'flowerPoints'
+                              ? '每位玩家每天 1～10000 朵花花'
+                              : '每位玩家每天 1～100000 單位活動貨幣',
+                          border: const OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      const Text('發布後修改獎勵數量，只影響尚未簽到的日期。',
+                          style: TextStyle(fontSize: 12)),
+                    ],
                     Wrap(
                       spacing: 8,
                       runSpacing: 4,
@@ -8783,6 +8984,13 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                             ?.toInt() ??
                             0;
 
+                    // 新增的最終失敗原因統計；舊後端未提供時顯示 0。
+                    final failureReasons = data['failureReasonCounts'] is Map
+                        ? Map<String, dynamic>.from(data['failureReasonCounts'] as Map)
+                        : <String, dynamic>{};
+                    int failedBy(String key) =>
+                        (failureReasons[key] as num?)?.toInt() ?? 0;
+
                     final totalTokens =
                         (data['totalTokens']
                         as num?)
@@ -8994,6 +9202,28 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                                     .token_outlined,
                               ),
                             ],
+                          ),
+                          const SizedBox(height: 12),
+                          Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text('今日 AI 最終失敗原因',
+                                    style: TextStyle(fontWeight: FontWeight.bold)),
+                                  const SizedBox(height: 8),
+                                  Text('逾時：${failedBy('timeout')} 次｜網路：${failedBy('network')} 次'),
+                                  Text('HTTP 403 拒絕：${failedBy('http403')} 次｜HTTP 429 限流：${failedBy('http429')} 次'),
+                                  Text('HTTP 401 權限：${failedBy('http401')} 次｜HTTP 5xx：${failedBy('http5xx')} 次'),
+                                  Text('內容過濾：${failedBy('contentFiltered')} 次｜空回覆：${failedBy('emptyResponse')} 次'),
+                                  Text('格式異常：${failedBy('invalidResponse')} 次｜其他：${failedBy('other')} 次'),
+                                  const SizedBox(height: 6),
+                                  const Text('此區僅統計新版部署後的最終失敗；不包含主模型失敗但備援成功的情況。',
+                                    style: TextStyle(fontSize: 12)),
+                                ],
+                              ),
+                            ),
                           ),
                         ],
                       ),

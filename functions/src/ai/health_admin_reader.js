@@ -44,6 +44,10 @@ const getAdminSystemHealthHandler = async (request) => {
         averageLatencyMs: 0,
 
         lastModelId: "",
+        failureReasonCounts: {},
+        failureModelCounts: {},
+        lastFailureModelId: "",
+        lastFailureType: "",
       };
     }
 
@@ -163,6 +167,13 @@ const getAdminSystemHealthHandler = async (request) => {
         String(
           data.lastModelId || ""
         ),
+      // 新增診斷資料，不改動原有 successRate / failureRate 計算。
+      failureReasonCounts: data.failureReasonCounts && typeof data.failureReasonCounts === "object"
+        ? data.failureReasonCounts : {},
+      failureModelCounts: data.failureModelCounts && typeof data.failureModelCounts === "object"
+        ? data.failureModelCounts : {},
+      lastFailureModelId: String(data.lastFailureModelId || ""),
+      lastFailureType: String(data.lastFailureType || ""),
     };
   };
 return getAdminSystemHealthHandler;

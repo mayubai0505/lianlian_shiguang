@@ -1381,76 +1381,72 @@ class _CreatorPromotionEntryState extends State<_CreatorPromotionEntry> {
               ...eligible.take(offset),
             ].take(5).toList();
             final colors = Theme.of(context).colorScheme;
-            return SizedBox(
-              height: 136,
-              child: PageView.builder(
-                key: ValueKey('creator_promo_week_${_weekNumber()}'),
-                controller: PageController(viewportFraction: weekly.length == 1 ? 1 : 0.94),
-                itemCount: weekly.length,
-                itemBuilder: (context, index) {
-                  final promo = weekly[index];
-                  return Padding(
-                    padding: EdgeInsets.only(right: weekly.length == 1 ? 0 : 8),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(22),
-                        onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                          builder: (_) => CreatorProfilePage(
-                            creatorId: promo.creatorId,
-                            creatorName: promo.creatorName,
-                          ),
-                        )),
-                        child: Ink(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(22),
-                            color: colors.primary.withValues(alpha: 0.055),
-                            border: Border.all(color: colors.primary.withValues(alpha: 0.12)),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(22),
-                            child: Stack(fit: StackFit.expand, children: [
-                              _buildRecommendationCachedImage(
-                                context,
-                                imageUrl: promo.bannerImageUrl,
-                                fit: BoxFit.cover,
-                                cacheWidth: 900,
-                                fallback: const SizedBox.shrink(),
-                              ),
-                              DecoratedBox(decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.centerLeft,
-                                  end: Alignment.centerRight,
-                                  colors: [Colors.black.withValues(alpha: 0.55), Colors.transparent],
-                                ),
-                              )),
-                              Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(AppLocalizations.of(context)!.profilePageCreator, style: GoogleFonts.notoSerifTc(
-                                      fontSize: 11, color: Colors.white.withValues(alpha: 0.9))),
-                                    const SizedBox(height: 6),
-                                    Text(promo.creatorName,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: GoogleFonts.notoSerifTc(
-                                        fontSize: 20, fontWeight: FontWeight.w700, color: Colors.white)),
-                                  ],
-                                ),
-                              ),
-                              const Positioned(right: 16, bottom: 16,
-                                child: Icon(Icons.arrow_forward_rounded, color: Colors.white)),
-                            ]),
-                          ),
+            // 本週推薦標題只在創作者橫幅可顯示時出現；活動進行時由上層改顯示活動入口。
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Row(
+                    children: [
+                      Icon(Icons.auto_awesome_rounded, size: 17, color: colors.primary),
+                      const SizedBox(width: 8),
+                      Text(
+                        '本週推薦',
+                        style: GoogleFonts.notoSerifTc(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: colors.onSurface,
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 136,
+                  child: PageView.builder(
+                    key: ValueKey('creator_promo_week_${_weekNumber()}'),
+                    controller: PageController(viewportFraction: weekly.length == 1 ? 1 : 0.94),
+                    itemCount: weekly.length,
+                    itemBuilder: (context, index) {
+                      final promo = weekly[index];
+                      return Padding(
+                        padding: EdgeInsets.only(right: weekly.length == 1 ? 0 : 8),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(22),
+                            onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                              builder: (_) => CreatorProfilePage(
+                                creatorId: promo.creatorId,
+                                creatorName: promo.creatorName,
+                              ),
+                            )),
+                            child: Ink(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(22),
+                                color: colors.primary.withValues(alpha: 0.055),
+                                border: Border.all(color: colors.primary.withValues(alpha: 0.12)),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(22),
+                                child: _buildRecommendationCachedImage(
+                                  context,
+                                  imageUrl: promo.bannerImageUrl,
+                                  fit: BoxFit.cover,
+                                  cacheWidth: 900,
+                                  fallback: const SizedBox.shrink(),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             );
           },
         );

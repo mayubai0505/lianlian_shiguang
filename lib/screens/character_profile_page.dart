@@ -58,7 +58,10 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
   // ✨ 總裁新增：用來控制「加好友」狀態與讀取動畫
   bool _isFriend = false;
   bool _isFriendLoading = false;
-  bool _isTogglingLike = false;
+  // 連點立即更新愛心 UI；後端呼叫序列化，永遠以最後一次點選為準。
+  bool _likeSyncInFlight = false;
+  bool _likeUserInteracted = false;
+  bool? _lastConfirmedLike;
   bool _hasLiked = false;
   bool _isNavigating = false;
   bool _isFollowing = false; // 放在 State 類別的最上方
@@ -765,7 +768,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
     if (user == null) return;
 
     try {
-      // 去角色的肚子裡，找一個叫做 likers (按讚者) 的名單，看這玩家在不在裡面
       final doc = await FirebaseFirestore.instance
           .collection('artifacts')
           .doc(AppConfig.appId)
@@ -774,14 +776,16 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
           .collection('likers')
           .doc(user.uid)
           .get();
-
-      if (doc.exists && mounted) {
+      if (!mounted) return;
+      // 讀取回來時玩家可能已經按過愛心，不要用舊讀取覆蓋即時狀態。
+      if (!_likeUserInteracted) {
         setState(() {
-          _hasLiked = true; // 名單裡有他！把愛心亮起來！
+          _hasLiked = doc.exists;
+          _lastConfirmedLike = doc.exists;
         });
       }
     } catch (e) {
-      print("檢查按讚狀態失敗: $e");
+      debugPrint('檢查按讚狀態失敗: $e');
     }
   }
 
@@ -1502,127 +1506,65 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
     }
   }
 
-  void _handleLike() async {
+  void _handleLike() {
     final l10n = AppLocalizations.of(context)!;
-    final user = FirebaseAuth.instance.currentUser;
-
-    if (user == null) return;
-
-    // 防止連點造成重複寫入
-    if (_isTogglingLike) return;
-
+    if (FirebaseAuth.instance.currentUser == null) return;
     if (_isCreator) {
-      ToastUtils.showCenterToast(
-        context,
-        l10n.like_own_char_warning,
-      );
+      ToastUtils.showCenterToast(context, l10n.like_own_char_warning);
       return;
     }
 
-    final bool wasLiked = _hasLiked;
-
+    // 不因網路呼叫而鎖住按鈕，連續按下仍然立即切換畫面。
     setState(() {
-      _isTogglingLike = true;
-      _hasLiked = !wasLiked;
+      _likeUserInteracted = true;
+      _hasLiked = !_hasLiked;
     });
+    _syncCharacterLike();
+  }
 
+  Future<void> _syncCharacterLike() async {
+    // 同一時間最多一個 request；在請求期間繼續點擊只變更目標狀態。
+    if (_likeSyncInFlight) return;
+    _likeSyncInFlight = true;
     try {
-      final charRef = FirebaseFirestore.instance
-          .collection('artifacts')
-          .doc(AppConfig.appId)
-          .collection('public_characters')
-          .doc(widget.character.id);
-
-      final likerRef = charRef.collection('likers').doc(user.uid);
-
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
-
-      final playerName = userDoc.data()?['nickname'] ??
-          user.displayName ??
-          l10n.chat_mysterious_player;
-
-      // 固定通知 ID：同一個玩家對同一個角色按讚，只會有一封通知
-      final notificationId =
-          'character_like_${widget.character.id}_${user.uid}';
-
-      final notificationRef = FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.character.createdBy)
-          .collection('mailbox')
-          .doc(notificationId);
-
-      final bool nowLiked = await FirebaseFirestore.instance
-          .runTransaction<bool>((transaction) async {
-        final likerSnapshot = await transaction.get(likerRef);
-
-        final bool alreadyLikedInDb = likerSnapshot.exists;
-
-        if (!alreadyLikedInDb) {
-          transaction.update(charRef, {
-            'likesCount': FieldValue.increment(1),
-          });
-
-          transaction.set(likerRef, {
-            'timestamp': FieldValue.serverTimestamp(),
-          });
-
-          transaction.set(
-            notificationRef,
-            {
-              'type': 'like',
-              'title': l10n.char_exclusive_guardian,
-              'body': l10n.mailbox_like_body(
-                playerName,
-                widget.character.name,
-              ),
-              'fromUserId': user.uid,
-              'fromName': playerName,
-              'characterId': widget.character.id,
-              'isRead': false,
-              'createdAt': FieldValue.serverTimestamp(),
-            },
-            SetOptions(merge: true),
-          );
-
-          return true;
-        } else {
-          transaction.update(charRef, {
-            'likesCount': FieldValue.increment(-1),
-          });
-
-          transaction.delete(likerRef);
-
-          return false;
+      final callable = FirebaseFunctions.instanceFor(region: 'us-central1')
+          .httpsCallable('setCharacterLike');
+      while (true) {
+        final wanted = _hasLiked;
+        final result = await callable.call(<String, dynamic>{
+          'characterId': widget.character.id,
+          'liked': wanted,
+        });
+        final response = result.data is Map
+            ? Map<String, dynamic>.from(result.data as Map)
+            : <String, dynamic>{};
+        if (response['success'] != true || response['liked'] is! bool) {
+          throw StateError('無法確認角色喜歡狀態');
         }
-      });
+        final confirmed = response['liked'] as bool;
+        _lastConfirmedLike = confirmed;
 
-      if (!mounted) return;
+        if (mounted && response['notificationCreated'] == true) {
+          // 只有首次真正寄送成功才顯示「已傳送給創作者」的成功提示。
+          ToastUtils.showCenterToast(
+            context, AppLocalizations.of(context)!.like_success_msg,
+          );
+        }
 
-      setState(() {
-        _hasLiked = nowLiked;
-      });
-
-      ToastUtils.showCenterToast(
-        context,
-        nowLiked ? l10n.like_success_msg : l10n.unlike_success_msg,
-      );
+        // 玩家按得再快，也以最後一次選擇為準，不用舊的回傳覆蓋愛心。
+        if (_hasLiked == confirmed) break;
+      }
     } catch (e) {
+      debugPrint('按讚狀態同步失敗: $e');
       if (mounted) {
-        setState(() {
-          _hasLiked = wasLiked;
-        });
+        setState(() => _hasLiked = _lastConfirmedLike ?? !_hasLiked);
+        ToastUtils.showCenterToast(
+          context, AppLocalizations.of(context)!.common_operation_failed_retry,
+          isError: true,
+        );
       }
-
-      debugPrint("按讚切換失敗: $e");
     } finally {
-      if (mounted) {
-        setState(() {
-          _isTogglingLike = false;
-        });
-      }
+      _likeSyncInFlight = false;
     }
   }
 

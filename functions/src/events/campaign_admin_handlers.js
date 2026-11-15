@@ -62,22 +62,41 @@ const targetUserIds =
       );
     }
 
-    if (rewardType !== "flowerPoints") {
-      throw new HttpsError(
-        "invalid-argument",
-        "目前僅支援花花點數"
-      );
+    if (!["flowerPoints", "avatar_frame", "sticker"].includes(rewardType)) {
+      throw new HttpsError("invalid-argument", "不支援此禮物類型");
     }
 
-    if (
-      !Number.isInteger(rewardAmount) ||
-      rewardAmount <= 0 ||
-      rewardAmount > 10000
-    ) {
-      throw new HttpsError(
-        "invalid-argument",
-        "花花數量必須是 1～10000 的整數"
-      );
+    const rewardItemRaw = data.rewardItem && typeof data.rewardItem === "object"
+      && !Array.isArray(data.rewardItem) ? data.rewardItem : {};
+    const itemName = String(rewardItemRaw.name || "").trim().slice(0, 100);
+    const imageUrl = String(rewardItemRaw.imageUrl || "").trim();
+    const visualTags = Array.isArray(rewardItemRaw.visualTags)
+      ? rewardItemRaw.visualTags.map(x => String(x).trim()).filter(Boolean).slice(0, 12)
+      : [];
+    const rewardItem = rewardType === "flowerPoints" ? null : {
+      itemType: rewardType,
+      name: itemName,
+      imageUrl,
+      ...(rewardType === "sticker" ? {
+        stickerName: String(rewardItemRaw.stickerName || itemName).trim().slice(0, 100),
+        visualTags,
+        baseEmotion: String(rewardItemRaw.baseEmotion || "").trim().slice(0, 100),
+        visualDescription: String(rewardItemRaw.visualDescription || "").trim().slice(0, 1200),
+        analysisSource: String(rewardItemRaw.analysisSource || "manual").trim() === "ai" ? "ai" : "manual",
+      } : {}),
+    };
+    if (rewardType === "flowerPoints") {
+      if (!Number.isInteger(rewardAmount) || rewardAmount <= 0 || rewardAmount > 10000) {
+        throw new HttpsError("invalid-argument", "花花數量必須是 1～10000 的整數");
+      }
+    } else {
+      if (!itemName || !/^https:\/\//i.test(imageUrl) || imageUrl.length > 2048) {
+        throw new HttpsError("invalid-argument", "請填寫禮物名稱並上傳有效的 HTTPS 圖片");
+      }
+      if (rewardType === "sticker" &&
+          (!rewardItem.stickerName || !rewardItem.visualDescription)) {
+        throw new HttpsError("invalid-argument", "貼紙需要名稱與圖像描述，請先執行 AI 分析或手動補齊");
+      }
     }
 
     if (endAt <= startAt) {
@@ -96,8 +115,9 @@ const targetUserIds =
     await campaignRef.set({
       title,
       description,
-      rewardType,
-      rewardAmount,
+       rewardType,
+       rewardAmount: rewardType === "flowerPoints" ? rewardAmount : 0,
+       ...(rewardItem ? { rewardItem } : {}),
 
       audienceType,
       targetUserIds,
@@ -205,10 +225,12 @@ const targetUserIds =
               "flowerPoints"
             ),
 
-          rewardAmount:
-            Number(
-              data.rewardAmount || 0
-            ),
+           rewardAmount:
+             Number(
+               data.rewardAmount || 0
+             ),
+
+           rewardItem: data.rewardItem || null,
 
           audienceType:
             String(

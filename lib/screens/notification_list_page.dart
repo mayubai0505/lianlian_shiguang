@@ -1274,7 +1274,7 @@ class _RewardCampaignDetailPage extends StatefulWidget {
 class _RewardCampaignDetailPageState
     extends State<_RewardCampaignDetailPage> {
   final FirebaseFunctions _functions = FirebaseFunctions.instanceFor(
-    region: 'asia-east1',
+    region: 'us-central1',
   );
 
   bool _isClaiming = false;
@@ -1310,7 +1310,7 @@ class _RewardCampaignDetailPageState
 
     try {
       final result = await _functions
-          .httpsCallable('claimRewardCampaign')
+          .httpsCallable('claimRewardCampaignUs')
           .call({
         'campaignId': widget.campaignId,
       });

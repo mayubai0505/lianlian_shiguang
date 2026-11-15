@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -362,6 +363,23 @@ class _EventContent extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(16, 14, 16, 36),
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
+                    if (data['dailyCheckIn'] is Map &&
+                        (data['dailyCheckIn'] as Map)['enabled'] == true) ...[
+                      const SizedBox(height: 14),
+                      _RichSectionShell(
+                        style: style,
+                        title: '每日活動簽到',
+                        subtitle: '每天簽到領取活動專屬獎勵（台灣時間 00:00 重置）',
+                        child: _EventDailyCheckInCard(
+                          eventId: eventId,
+                          progressRef: progressRef,
+                          configuration: Map<String, dynamic>.from(data['dailyCheckIn'] as Map),
+                          currencyName: currencyName,
+                          currencyIcon: currencyIcon,
+                          style: style,
+                        ),
+                      ),
+                    ],
                     if (hasTasks) ...[
                       const SizedBox(height: 14),
                       _RichSectionShell(
@@ -515,6 +533,135 @@ class _EventContent extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+// Activity-only check-in. Claim state is always server-authoritative.
+class _EventDailyCheckInCard extends StatefulWidget {
+  final String eventId;
+  final DocumentReference<Map<String, dynamic>>? progressRef;
+  final Map<String, dynamic> configuration;
+  final String currencyName;
+  final String currencyIcon;
+  final _EventVisualStyle style;
+
+  const _EventDailyCheckInCard({
+    required this.eventId,
+    required this.progressRef,
+    required this.configuration,
+    required this.currencyName,
+    required this.currencyIcon,
+    required this.style,
+  });
+
+  @override
+  State<_EventDailyCheckInCard> createState() => _EventDailyCheckInCardState();
+}
+
+class _EventDailyCheckInCardState extends State<_EventDailyCheckInCard> {
+  bool _claiming = false;
+  Timer? _dayRefresh;
+
+  @override
+  void initState() {
+    super.initState();
+    _dayRefresh = Timer.periodic(const Duration(minutes: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _dayRefresh?.cancel();
+    super.dispose();
+  }
+
+  String _taipeiDay() {
+    final now = DateTime.now().toUtc().add(const Duration(hours: 8));
+    return '${now.year.toString().padLeft(4, '0')}-'
+        '${now.month.toString().padLeft(2, '0')}-'
+        '${now.day.toString().padLeft(2, '0')}';
+  }
+
+  int _amount(dynamic raw) => raw is num ? raw.toInt() : int.tryParse('$raw') ?? 0;
+
+  Future<void> _claim() async {
+    if (_claiming) return;
+    setState(() => _claiming = true);
+    try {
+      final callable = FirebaseFunctions.instanceFor(region: 'us-central1')
+          .httpsCallable('claimEventDailyCheckInUs');
+      final result = await callable.call(<String, dynamic>{'eventId': widget.eventId});
+      final data = result.data is Map
+          ? Map<String, dynamic>.from(result.data as Map)
+          : <String, dynamic>{};
+      if (!mounted) return;
+      final rewardType = data['rewardType']?.toString();
+      final amount = _amount(data['rewardAmount']);
+      final rewardName = rewardType == 'flowerPoints' ? '朵花花' : widget.currencyName;
+      ToastUtils.showCenterToast(context, '簽到成功，獲得 $amount $rewardName！');
+    } on FirebaseFunctionsException catch (error) {
+      if (!mounted) return;
+      final message = error.code == 'already-exists'
+          ? '今天已經簽到囉！'
+          : error.code == 'failed-precondition'
+              ? '活動簽到目前未開放'
+              : '簽到失敗，請稍後再試';
+      ToastUtils.showCenterToast(context, message, isError: true);
+    } catch (_) {
+      if (!mounted) return;
+      ToastUtils.showCenterToast(context, '簽到失敗，請稍後再試', isError: true);
+    } finally {
+      if (mounted) setState(() => _claiming = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final rewardType = widget.configuration['rewardType']?.toString();
+    final amount = _amount(widget.configuration['rewardAmount']);
+    final rewardText = rewardType == 'flowerPoints'
+        ? '🌸 花花 ×$amount'
+        : '${widget.currencyIcon} ${widget.currencyName} ×$amount';
+    if (widget.progressRef == null) {
+      return const Text('請先登入才能領取活動簽到獎勵');
+    }
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: widget.progressRef!.snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) return const Text('簽到紀錄讀取失敗');
+        if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+        final progress = snapshot.data?.data() ?? <String, dynamic>{};
+        final claimed = progress['lastCheckInDate']?.toString() == _taipeiDay();
+        final days = _amount(progress['checkInDays']);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('今日獎勵：$rewardText', style: GoogleFonts.notoSerifTc(
+              fontWeight: FontWeight.w700, color: widget.style.textPrimaryColor)),
+            const SizedBox(height: 6),
+            Text('本活動累計簽到 $days 天', style: GoogleFonts.notoSerifTc(
+              fontSize: 12, color: widget.style.textSecondaryColor)),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: claimed || _claiming ? null : _claim,
+                icon: _claiming
+                    ? const SizedBox.square(dimension: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2))
+                    : Icon(claimed ? Icons.check_circle_outline : Icons.card_giftcard_outlined),
+                label: Text(claimed ? '今日已簽到' : (_claiming ? '領取中…' : '領取今日簽到獎勵')),
+                style: FilledButton.styleFrom(
+                  backgroundColor: widget.style.accent,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -977,8 +1124,8 @@ class _TaskListState extends State<_TaskList> {
 
     try {
       final callable = FirebaseFunctions.instanceFor(
-        region: 'asia-east1',
-      ).httpsCallable('claimEventTaskReward');
+        region: 'us-central1',
+      ).httpsCallable('claimEventTaskRewardUs');
 
       final result = await callable.call(<String, dynamic>{
         'eventId': widget.eventId,
@@ -1726,8 +1873,8 @@ class _EventShopPageState extends State<EventShopPage> {
 
     try {
       final callable = FirebaseFunctions.instanceFor(
-        region: 'asia-east1',
-      ).httpsCallable('redeemEventShopItem');
+        region: 'us-central1',
+      ).httpsCallable('redeemEventShopItemUs');
 
       final result = await callable.call(<String, dynamic>{
         'eventId': widget.eventId,

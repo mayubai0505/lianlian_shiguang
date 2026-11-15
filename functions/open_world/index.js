@@ -5,6 +5,7 @@ const storyClock = require('./story_clock');
 const {findCreatorStatusCommand,makeStatusCommandDisplay} = require('./status_command');
 const {createAiCostTrace} = require('../src/ai/cost_trace');
 const {onDocumentCreated} = require('firebase-functions/v2/firestore');
+const {createWorldReplyNotificationHandler} = require('./world_reply_notification');
 const {createWorldMemoryTools, EMBEDDING_VERSION} = require('./world_memory_worker');
 const {inspectCreatorStatusCompleteness, parseFields, lockCreatorStatus, describeCreatorTemplate, isCreatorGuidance, enforceModernStatusTime, protectCreatorCalendarDisplay} = require('./status_template');
 
@@ -241,13 +242,52 @@ function dedupeCreatorCalendarRows(template, status) {
   return removed?kept.join('\n').trim():source;
 }
 
+// Only mask the creator's main 💭 thought when feeding LAST TURN status back to
+// the writer, or when recovering a missing status. Preserve every other custom
+// field, its formatting, and persistent stats. No database migration.
+function maskPreviousWorldPrimaryThought(status, {recovery = false} = {}) {
+  const lines = String(status || '').replace(/\r\n?/g, '\n').split('\n');
+  const result = [];
+  let afterThoughtHeading = false;
+  const thoughtHeader = /^\s*💭(?:\s*(?:人物心聲|角色心聲|(?:當前|目前)?想法|心聲))?(?:\s*[｜|][^：:\n]{1,65})?\s*(?:[：:]\s*.*)?$/u;
+  const explicitThoughtHeader = /^\s*(?:人物心聲|角色心聲|(?:當前|目前)?想法)\s*(?:[｜|][^：:\n]{1,65})?\s*[：:]\s*.*$/u;
+  const newField = /^\s*(?:[\p{Extended_Pictographic}\u2600-\u27BF]|【|\[[^\]]+\]|[^\s]{1,24}\s*[：:])/u;
+  const mask = recovery ? '未確認' : '（上一輪心聲不提供，請依本輪情節重新生成）';
+  for (const line of lines) {
+    if (thoughtHeader.test(line) || explicitThoughtHeader.test(line)) {
+      const colon = line.match(/^(.{0,90}?[：:])\s*(.*)$/u);
+      result.push(colon ? `${colon[1]} ${mask}` : line);
+      if (!colon) result.push(mask);
+      afterThoughtHeading = true;
+      continue;
+    }
+    if (afterThoughtHeading && line.trim() === '') {
+      result.push(line);
+      afterThoughtHeading = false;
+      continue;
+    }
+    if (afterThoughtHeading && newField.test(line)) afterThoughtHeading = false;
+    if (afterThoughtHeading && /^[\s「『“"（(]/u.test(line)) continue;
+    result.push(line);
+  }
+  return result.join('\n');
+}
+
 // 世界觀邏輯集中管理；依賴由 functions/index.js 注入，避免重複初始化 Firebase Admin。
 function registerWorldFunctions(exports, deps) {
   const {
     onCall, HttpsError, REGION, db, APP_ID, crypto, FieldValue, logger,
     openRouterApiKey, geminiApiKey, xaiApiKey, anthropicApiKey,
-    callAiWithRetry, normalizeAiResponseScript,
+    callAiWithRetry, normalizeAiResponseScript, sendToUserDevices,
+    worldPushAllowedUids,
   } = deps;
+
+  // 🌍 Only new, committed AI reply documents send a push. Re-generation
+  // updates an existing document, so it does not create a second push.
+  exports.notifyWorldNewMessage = onDocumentCreated({
+    document:'artifacts/{appId}/world_chat_sessions/{sessionId}/messages/{messageId}',
+    region:REGION, memory:'256MiB',timeoutSeconds:60,
+  }, createWorldReplyNotificationHandler({db, APP_ID, sendToUserDevices, logger, worldPushAllowedUids}));
 
   // Observation only: no new API requests, Firestore writes, or flower billing.
   const {estimateAiCallCost, formatAiCostTraceLine} = createAiCostTrace({});
@@ -432,6 +472,7 @@ const WORLD_PERSONHOOD_DIRECTIVE = [
   'NPC 的感情與關係須由雙方實際互動自然累積；不同 NPC 不得共用人格、口吻或同一種戀愛反應，也不可無理由圍繞玩家集體示好。',
   '【玩家心聲與 NPC 知情邊界｜所有模式及備援】玩家以「心想／心裡想／心聲／內心／暗想／OS／默默想」、心理獨白、內心引號或括號寫出的內容，只是玩家未說出口的想法，不是實際說出的台詞、傳送的訊息或可被 NPC 聽見的聲音；即使它出現在最新玩家訊息、歷史、摘要、RAG、關於我或狀態欄，也不能自動變成 NPC 知道的事。',
   'NPC 不得回答玩家只在心裡提出的問題、引用或複述心聲原文、直接點破玩家隱藏的意圖，也不得用「妳是不是在想……」恰好猜中心聲內容的方式變相讀心。可依角色實際看見的表情、行動或聽見的言語作合理且不確定的觀察，但不能藉此精準得知心聲。',
+  '【私下教學與製作來源】若玩家曾私下教甲 NPC 技巧，乙 NPC 即使看見成品、嚐到食物或參加成果發表，也只能知道成品可見的性質，不得自動知道教學者、技術名稱、私下對話或製作方法。必須由明確轉告、當場目睹或可靠公開揭露取得該資訊；這個限制同樣約束乙 NPC 的心聲及狀態欄。',
   '若玩家明確說出口、主動告知、留下能被看見的文字，或世界設定中已確立特定 NPC 具讀心能力且當下確實使用該能力，才允許該 NPC 在其合理能力範圍內知悉相應內容；其他 NPC 不連帶共享。旁白可依敘事需求保留玩家已親自寫出的內心獨白，但不得把它改成 NPC 的台詞、感知或 relationshipUpdates／currentThought 中的已知資訊。',
   '【NPC 私人資訊權限｜所有模式】聊天歷史、記憶檢索和全世界人設是寫作參考，不是每一位 NPC 都知道的情報。A 私下寄給玩家的文字訊息、電話、私聊、密談與只有 A 對玩家說出的秘密，預設只有當事人 A 與玩家知道；未在場的 B 不能引用、回覆、暗示、猜到訊息原文或內容，也不得突然知道私訊已發生。',
   '即使 A、B 是好友、同伴、親人，或玩家在另一場景與 B 同處，也不等於 B 讀過 A 的私人訊息。B 必須有劇情中確實發生的轉告、截圖分享、公開揭露、實際偷看到/聽到等明確證據，才能知道相應內容；僅見玩家表情不能推斷訊息細節。人物獨白、旁白、狀態欄與 relationshipUpdates 同樣不得偷偷傳播私密資訊。',
@@ -1317,6 +1358,53 @@ exports.worldPrivateTest = onCall({
       reserved = true;
     });
     let writerStage = 'prepare_context';
+    // Diagnostic only: one request ID ties together all writer logs. No transcript or secrets.
+    const traceBase = {userId:uid, worldId, sessionId, requestId, action, chatMode:worldMode};
+    // 僅改善日誌顯示：原英文欄位完整保留供 Cloud Logging 查詢使用。
+    // 不輸出玩家對話、Prompt 原文、模型回覆或 API 金鑰。
+    const worldTraceLabels = Object.freeze({
+      userId:'玩家 UID', worldId:'世界 ID', sessionId:'聊天室 ID', requestId:'本輪請求 ID',
+      action:'操作', chatMode:'聊天模式', plannedFlowers:'預計花花',
+      playerMessageCharacters:'玩家訊息字數', modelId:'模型', routeReason:'模型路由原因',
+      historyCharacters:'歷史字數', storySummaryCharacters:'劇情摘要字數',
+      eventMemoryCandidates:'記憶事件候選筆數', retrievedEventCharacters:'檢索事件字數',
+      aboutMemoryCandidates:'關於我候選筆數', retrievedAboutCharacters:'關於我檢索字數',
+      systemPromptCharacters:'系統提示詞字數', userPromptCharacters:'使用者提示詞字數',
+      totalPromptCharacters:'提示詞總字數', maxTokens:'輸出 Token 上限',
+      tier:'模型順位', timeoutMs:'逾時上限（毫秒）', actualModelId:'實際回覆模型',
+      latencyMs:'模型耗時（毫秒）', valid:'格式驗證通過',
+      validationReason:'驗證原因', parseStrategy:'解析方式', finishReason:'模型結束原因',
+      inputTokens:'輸入 Token', outputTokens:'輸出 Token',
+      providerReportedUsd:'供應商回報成本（美元）', chargedFlowers:'實扣花花',
+      elapsedMs:'本輪總耗時（毫秒）', writerCallsWithUsage:'已紀錄成本的模型次數',
+      stage:'失敗階段', code:'錯誤代碼',
+    });
+    const worldTraceModeNames = {story:'劇情', immersive:'沉浸', resonance:'共鳴', interaction:'互動'};
+    const worldTraceStageNames = {prepare_context:'準備上下文', provider_request:'模型請求',
+      tiered_fallback:'分層備援'};
+    const worldTraceActionNames = {send:'送出訊息', regenerate:'重新生成', continue:'繼續'};
+    const formatWorldTraceValue = (key, value) => {
+      if (key === 'chatMode') return worldTraceModeNames[value] || value;
+      if (key === 'stage') return worldTraceStageNames[value] || value;
+      if (key === 'action') return worldTraceActionNames[value] || value;
+      if (key === 'valid') return value ? '是' : '否';
+      if (key === 'validationReason' && (value === null || value === undefined || value === '')) return '無';
+      return value;
+    };
+    const logWorldTrace = (level, phase, data) => {
+      const chineseFields = {};
+      for (const [key, value] of Object.entries(data)) {
+        if (Object.prototype.hasOwnProperty.call(worldTraceLabels, key)) {
+          chineseFields[worldTraceLabels[key]] = formatWorldTraceValue(key, value);
+        }
+      }
+      // 中文欄位方便人閱讀；保留原本英文字段方便排查及舊查詢相容。
+      logger[level](`🌸 世界觀聊天｜${phase}`, {...data, 中文資訊:chineseFields});
+    };
+    if (reserved) logWorldTrace('info', '開始', {
+      ...traceBase, plannedFlowers:chargeCost,
+      playerMessageCharacters:rawMessage.length,
+    });
     if (reserved) try {
       // 最近 16 則已完成訊息，並排除被識別的模型內部分析文字，避免污染後續劇情。
       const recent = await msgs.orderBy('timestamp','desc').limit(18).get();
@@ -1547,6 +1635,21 @@ exports.worldPrivateTest = onCall({
       const persistedCreatorStatus = roomConfig.lastCreatorStatusTemplateHash === creatorStatusTemplateHash
         ? String(roomConfig.lastCreatorStatus || '').slice(0,10000) : '';
       const hasCustomStatusBar = Boolean(customStatusTemplate);
+      // Same-room, same-template continuity reference for the writer only.
+      // Never read status from another room, restore a mismatched template, or
+      // turn a previously hidden/conditional field into a mandatory visible row.
+      // Bound the extra context; this does not alter Firestore state or billing.
+      const previousCreatorStatusContext = hasCustomStatusBar && persistedCreatorStatus.trim()
+        ? [
+          '【本房間上一輪已保存的創作者狀態｜只供連續性比較，不直接輸出】',
+          '下列內容來自這位玩家、這個世界、這個聊天室與同一份創作者模板已確認的上一輪狀態，不是新的故事事件。',
+          '宮中聲望、修為、金錢、累積進度、已獲得的秘密線索等持續性欄位，沒有本輪確切劇情依據時，保持上一輪的值與既有事實；不可隨機重算、倒退、憑空新增或移除。',
+          '若本輪有實際事件造成變動，應依創作者規則合理更新。角色的即時心情、想法、所在位置等則依本輪劇情更新，不能機械沿用舊內容。',
+          '上一輪狀態僅是比較基準，不是所有 NPC 都知道的情報；不得讓未在場 NPC 因此知道玩家秘密、心聲或私訊。',
+          '上一輪曾顯示的條件欄位不代表本輪也符合顯示條件；創作者設定的隱藏、指定指令與查詢限定仍須重新判定，不得直接照貼。',
+          '日期／時間以後端故事時鐘為準；上一輪狀態只協助維持自訂欄位一致，不能覆蓋後端時間。',
+          `上一輪狀態（動態心聲已遮蔽，僅供持續欄位比較）：\n${maskPreviousWorldPrimaryThought(persistedCreatorStatus).slice(0,3500)}`,
+        ].join('\n') : '';
       const statusCommand = action === 'send' || action === 'regenerate'
         ? findCreatorStatusCommand([customStatusTemplate,String(world.worldSetting||'')].join('\n'), rawMessage)
         : null;
@@ -1562,14 +1665,15 @@ exports.worldPrivateTest = onCall({
         '【創作者自由格式狀態欄】以下模板提供展示版型與生成規則，不是可直接貼給玩家的內容。',
         '只要創作者有設定模板，本輪 JSON 最外層就必須有已填妥的 statusBar 字串，不可省略、留空或放進 segments。這是顯示契約，不是可選的裝飾。',
         '創作者在模板中對欄位內容、分行、固定文字、顯示條件的指示是 statusBar 專用的有效格式規則；在不違反玩家自主權、NPC 知情界線與安全規則的前提下逐項遵守。',
-        '請同時參考本輪玩家輸入、最新劇情和最近狀態，更新已改變的動態欄位；已經改變的數值、位置、想法不能因上一輪狀態仍存在就直接複製。',
+        '請同時參考本輪玩家輸入、最新劇情和上一輪已保存狀態；沒有新事件依據時持續性數值及已取得線索保持不變，確實發生變化的數值、位置、想法則依本輪更新。',
+        ...(previousCreatorStatusContext ? [previousCreatorStatusContext] : []),
         '創作者能自由使用 Emoji、顏文字、符號、換行、縮排、表格、｜分隔、無冒號欄位與自訂文字。不要依固定標籤重新排列，不要因為欄位沒有冒號就省略。',
         ...(emojiDirectiveStatusHint ? [emojiDirectiveStatusHint] : []),
         '逐行理解模板：創作者寫的「請、根據、讀取、只在、字數」等是生成規則，不是要照抄的狀態值；填入本回合已有依據的具體內容。',
         '條件式區塊只有在條件成立時才顯示；例如明確要求某事件發生才顯示的欄位，條件未成立時整個區塊省略，不要輸出條件說明。',
         '【命令觸發的隱藏欄位】創作者寫明「只有玩家輸入指定指令才顯示」的欄位，平常一律隱藏；本輪玩家未親自輸入該指令時，不論過往歷史、NPC 台詞、創作者範例或模型猜測是否出現同一句話，狀態欄都不可以擅自展開。不得印出隱藏欄位標題、值或觸發條件。',
         '多角色內心話、直播彈幕等允許多行，照創作者要求分行；只包含已出場或有劇情依據的角色與資訊。',
-        '【主想法欄位即時性】只有創作者模板設有「💭」或明確標示「想法／當前想法」的主要想法欄位時才適用。這一欄要反映本回合最新事件、角色此刻的注意力及情緒，不可機械複製上一輪已失去情境依據的想法。面對逃生、受傷、衝突等當下重大事件，優先根據角色目前已知的風險與目標生成想法；若角色仍合理惦記舊事，才可自然延續。不得憑空替玩家編造心理。',
+        '【主想法欄位即時性】只有創作者模板設有「💭」或明確標示「想法／當前想法」的主要想法欄位時才適用。這一欄必須根據玩家本輪實際行動、這位 NPC 本輪實際見聞、當下注意力及情緒重新產生；禁止照貼上一輪心聲原文（包括換行續句），即使仍維持同一情緒也要表達當下具體的新反應。上一輪動態心聲已從持續性狀態參考中遮蔽，不是遺失角色設定。面對逃生、受傷、衝突等重大事件，以角色目前已知的風險與目標為準；不得憑空替玩家編造心理。',
         '【主想法與其他心聲分離】「💭」主要想法與「🗯️」多角色心聲是兩個不同欄位；這項即時更新指令只針對前者，不得刪除、改名、合併或借用「🗯️」內容，不得更動創作者其餘自訂狀態欄的生成規則。',
         '可保留模板的純裝飾、Emoji、顏文字和固定標題；不可複製模板裡的選項清單、範例佔位符、生成指令、玩家身分 JSON 或後端秘密。',
         '創作者原始模板中各欄位的固定符號、Emoji、顏文字、欄位名稱、分隔符號應逐字保留，不要翻譯成英文（例如不要把 Emoji 改寫成英文名稱）。只有冒號後的動態狀態值可以依劇情改變。',
@@ -1718,6 +1822,20 @@ exports.worldPrivateTest = onCall({
           namedHistory.slice(-12500).length - rawMessage.length,
         userTotal:writerRequestBody.messages[1].content.length,
         total:system.length + writerRequestBody.messages[1].content.length,
+      });
+      logWorldTrace('info', '上下文與提示詞', {
+        ...traceBase,
+        modelId:writerRoute.modelId, routeReason:writerRoute.routeReason,
+        historyCharacters:namedHistory.slice(-12500).length,
+        storySummaryCharacters:rememberedStory.length,
+        eventMemoryCandidates:worldEventSnapshot.size,
+        retrievedEventCharacters:retrievedWorldEvents.length,
+        aboutMemoryCandidates:aboutMemorySnap.size + autoMemorySnap.size,
+        retrievedAboutCharacters:retrievedWorldAboutFacts.length,
+        systemPromptCharacters:system.length,
+        userPromptCharacters:writerRequestBody.messages[1].content.length,
+        totalPromptCharacters:system.length + writerRequestBody.messages[1].content.length,
+        maxTokens:writerRoute.maxTokens,
       });
       // Reject AI-created player speech *before* accepting any model response.
       // A model can invent a temporary NPC by using npcId='', so checking only IDs
@@ -1888,10 +2006,14 @@ exports.worldPrivateTest = onCall({
           const tierLimitMs = isKimi ? 65000 : defaultTierLimitMs;
           const budget = Math.min(tierLimitMs, remaining);
           if (budget < 8000) {
-            logger.warn('world writer tier budget exhausted', {mode:worldMode, tier:attemptIndex + 1});
+            logger.warn('world writer tier budget exhausted', {...traceBase, mode:worldMode, tier:attemptIndex + 1});
             break;
           }
           writerStage = attemptIndex === 0 ? 'provider_request' : 'tiered_fallback';
+          logWorldTrace('info', '呼叫模型', {
+            ...traceBase, tier:attemptIndex + 1, modelId:targetModel,
+            timeoutMs:budget, maxTokens:writerRoute.maxTokens,
+          });
           const tierStartedAt = Date.now();
           try {
             // Prefer AtlasCloud for Kimi while allowing provider fallback.
@@ -1907,6 +2029,19 @@ exports.worldPrivateTest = onCall({
             });
             recordWorldWriterCost(tierResult, targetModel, 'tiered_writer', attemptIndex + 1);
             const checked = parseWorldWriterResult(tierResult);
+            const usage = tierResult?.usage || {};
+            logWorldTrace('info', '模型回覆', {
+              ...traceBase, tier:attemptIndex + 1, modelId:targetModel,
+              actualModelId:String(tierResult?.model || targetModel).slice(0,100),
+              latencyMs:Date.now() - tierStartedAt,
+              valid: Boolean(checked.parsed), validationReason:checked.reason,
+              parseStrategy:checked.parseStrategy || null,
+              finishReason:String(tierResult?.choices?.[0]?.finish_reason || 'unknown').slice(0,32),
+              inputTokens:Number.isFinite(usage.prompt_tokens) ? usage.prompt_tokens : null,
+              outputTokens:Number.isFinite(usage.completion_tokens) ? usage.completion_tokens : null,
+              providerReportedUsd:Number.isFinite(usage.cost) ? usage.cost : null,
+              // Usage is null when provider omits it; do not treat missing usage as free.
+            });
             if (checked.parsed) {
               validation = checked;
               actualWriterModelId = String(tierResult?.model || targetModel);
@@ -1933,7 +2068,7 @@ exports.worldPrivateTest = onCall({
             if (tierError?.message === 'PLAYER_DISCONNECTED') throw tierError;
             lastProviderError = tierError;
             logger.warn('world writer tier request failed', {
-              mode:worldMode, modelId:targetModel, tier:attemptIndex + 1,
+              ...traceBase, mode:worldMode, modelId:targetModel, tier:attemptIndex + 1,
               latencyMs:Date.now() - tierStartedAt,
               statusCode:Number(tierError?.statusCode) || null,
               code:String(tierError?.code || 'unknown').slice(0,64),
@@ -1942,7 +2077,7 @@ exports.worldPrivateTest = onCall({
         }
         if (!validation?.parsed) {
           logger.warn('world writer all tiers exhausted', {
-            mode:worldMode, hasProviderError:Boolean(lastProviderError),
+            ...traceBase, mode:worldMode, hasProviderError:Boolean(lastProviderError),
           });
           throw new HttpsError('internal','AI 回覆重複或格式異常，請重試（不會儲存失敗回覆）');
         }
@@ -2025,7 +2160,7 @@ exports.worldPrivateTest = onCall({
       // hidden inside callAiWithRetry, or asynchronous RAG/summary expenses.
       const knownWriterCosts = worldWriterCostItems.filter(item => Number.isFinite(item.usd));
       logger.info('WORLD AI TURN COST', {
-        mode:worldMode,
+        ...traceBase, mode:worldMode,
         successfulModel:actualWriterModelId,
         observedCalls:worldWriterCostItems.length,
         pricedCalls:knownWriterCosts.length,
@@ -2229,7 +2364,8 @@ exports.worldPrivateTest = onCall({
             {timeText: serverTimeText}
           );
           if (previousSafeStatus) {
-            const safeRecoveredStatus = markRecoveredPrimaryThoughtUnknown(previousSafeStatus);
+            const safeRecoveredStatus = markRecoveredPrimaryThoughtUnknown(
+              maskPreviousWorldPrimaryThought(previousSafeStatus, {recovery: true}));
             const timeAlignedRecovered = enforceModernStatusTime(safeRecoveredStatus,serverTimeText);
             const recoveredStatus=protectCreatorCalendarDisplay(customStatusTemplate,timeAlignedRecovered,serverTimeText);
             const gatedRecovered=enforceCreatorConditionalStatus(customStatusTemplate,recoveredStatus,rawMessage);
@@ -2500,6 +2636,12 @@ exports.worldPrivateTest = onCall({
       // transaction callback; logging inside it could falsely claim a charge.
       // Never include full chat transcripts, world secrets, or API prompts here.
       if (billingAudit?.committed === true) {
+        logWorldTrace('info', '完成與扣花', {
+          ...traceBase, modelId:actualWriterModelId,
+          chargedFlowers:billingAudit.chargedFlowers,
+          elapsedMs:Date.now() - functionStartedAt,
+          writerCallsWithUsage:worldWriterCostItems.length,
+        });
         const redactLogPreview = (text, max=350) => String(text || '')
           .replace(/https?:\/\/[^\s]+/giu, '[連結已隱藏]')
           .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/giu, '[信箱已隱藏]')
@@ -2553,6 +2695,10 @@ exports.worldPrivateTest = onCall({
         // HttpsError 原本會直接重新拋出，部分 HTTP 500 沒有可追查的錯誤分類。
         // 僅記錄後端固定的錯誤分類，不記錄玩家輸入、模型輸出或 API 金鑰。
         if (err.code === 'internal') {
+          logWorldTrace('error', '失敗', {
+            ...traceBase, stage:writerStage,
+            code:err.code, elapsedMs:Date.now() - functionStartedAt,
+          });
           const knownInternalReasons = new Map([
             ['AI 回傳格式異常，請重試（不會儲存失敗回覆）', 'invalid_writer_json'],
             ['AI 回覆為空', 'empty_writer_segments'],
@@ -2566,6 +2712,11 @@ exports.worldPrivateTest = onCall({
         }
         throw err;
       }
+      logWorldTrace('error', '失敗', {
+        ...traceBase, stage:writerStage,
+        code:String(err?.code || 'unknown').slice(0,64),
+        elapsedMs:Date.now() - functionStartedAt,
+      });
       logger.error('worldPrivateTest send failed', {
         action,mode:worldMode,sessionId,stage:writerStage,
         code:String(err?.code || 'unknown').slice(0,64),

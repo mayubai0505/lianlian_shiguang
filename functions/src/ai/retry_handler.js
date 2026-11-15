@@ -124,6 +124,26 @@ async function callAiWithRetry({
       error.modelId = targetModelId;
       error.finishReasons = finishReasons;
 
+      // Google/OpenAI-compatible 可能回傳 HTTP 200 + 空 content。
+      // 僅記錄安全的結構資訊，避免輸出玩家對話、模型回覆或隱藏推理。
+      const choices = Array.isArray(result?.choices) ? result.choices : [];
+      console.warn("AI_PROVIDER_EMPTY_DIAGNOSTIC", {
+        provider: providerConfig.provider,
+        modelId: targetModelId,
+        choicesCount: choices.length,
+        finishReasons,
+        promptBlockReason: String(result?.promptFeedback?.blockReason || "").slice(0, 80),
+        candidateContentTypes: choices.slice(0, 3).map(choice => {
+          const content = choice?.message?.content;
+          return Array.isArray(content) ? "array" : typeof content;
+        }),
+        candidateContentLengths: choices.slice(0, 3).map(choice => {
+          const content = choice?.message?.content;
+          return typeof content === "string" ? content.length :
+            (Array.isArray(content) ? content.length : 0);
+        }),
+        candidateHasRefusal: choices.slice(0, 3).map(choice => Boolean(choice?.message?.refusal)),
+      });
       console.warn(
         "🫥 AI provider 回傳空內容，改走 fallback:",
         {
@@ -201,6 +221,11 @@ async function callAiWithRetry({
 
       result:
         error?.result || null,
+
+      // 診斷資料：只記錄最終錯誤，不改變原本的重試／備援判斷。
+      failureCode: String(error?.code || ""),
+      failureStatusCode: Number(error?.statusCode) || null,
+      failureMessage: String(error?.message || ""),
 
       modelId:
         finalModelId,

@@ -135,8 +135,8 @@ class _EventMemoryCollectionPageState
 
     try {
       final callable = FirebaseFunctions.instanceFor(
-        region: 'asia-east1',
-      ).httpsCallable('backfillEventOwnedItemAcquiredAt');
+        region: 'us-central1',
+      ).httpsCallable('backfillEventOwnedItemAcquiredAtUs');
 
       await callable.call();
     } on FirebaseFunctionsException catch (e) {
@@ -526,8 +526,8 @@ class _EventItemCardState extends State<_EventItemCard> {
 
     try {
       final callable = FirebaseFunctions.instanceFor(
-        region: 'asia-east1',
-      ).httpsCallable('deleteEventOwnedItem');
+        region: 'us-central1',
+      ).httpsCallable('deleteEventOwnedItemUs');
 
       final result = await callable.call(<String, dynamic>{
         'eventId': item.eventId,

@@ -140,10 +140,16 @@ async function callOpenRouter({
     }
 
     if (!data?.choices || data.choices.length === 0) {
-        console.error("🚨 AI 沒有 choices:", {
+        // 只記錄供應商回應結構，不寫出原始 JSON／玩家內容。
+        console.error("AI_PROVIDER_NO_CHOICES", {
+            model: modelId,
             status: response.status,
-            data,
-            rawText: rawText.slice(0, 2000),
+            responseBytes: Buffer.byteLength(rawText, "utf8"),
+            responseType: Array.isArray(data) ? "array" : typeof data,
+            choicesType: Array.isArray(data?.choices) ? "array" : typeof data?.choices,
+            choicesCount: Array.isArray(data?.choices) ? data.choices.length : null,
+            promptBlockReason: String(data?.promptFeedback?.blockReason || "").slice(0, 80),
+            errorCode: String(data?.error?.code || "").slice(0, 80),
         });
 
         throw new Error(

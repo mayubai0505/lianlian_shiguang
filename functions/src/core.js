@@ -78,6 +78,8 @@ const {buildEntityAddressDirective} = require('./chat/entity_addressing');
 const {buildRelationshipGuard} = require('./chat/relationship_guard');
 const {protectGroupKinship} = require('./chat/kinship_output_guard');
 const {createEventTaskUtils} = require('./events/task_utils');
+const {createCharacterLikeHandler} = require('./characters/like_handler');
+const {createEventDailyCheckInHandler} = require('./events/event_daily_checkin');
 const {isAiContentFiltered,hasUsableAiContent,isAiTimeoutError} = require('./ai/response_checks');
 
 const openRouterApiKey = defineSecret("OPENROUTER_API_KEY");
@@ -98,6 +100,7 @@ const {resolvePlayerIdentityFromUserData, resolveEffectivePlayerProfileId} = cre
 
 const {normalizeNotificationLocale, getUserNotificationLocale, getNotificationText} = require('./notification_texts')(db);
 const {createDeviceDelivery} = require('./notifications/device_delivery');
+const {createAdminSupportReportNotification} = require('./notifications/admin_support_report_notification');
 const {getUserFcmTokens, sendToUserDevices} = createDeviceDelivery({db, getMessaging});
 const {createEventEndingText} = require('./notifications/event_ending_text');
 const {getEventEndingNotificationText} = createEventEndingText({normalizeNotificationLocale});
@@ -212,11 +215,23 @@ const {callAiWithRetry} = createAiRetryHandler({
 
 
 
+// 角色喜歡：玩家可以頻繁切換，創作者通知每玩家／每角色只建立一次。
+exports.setCharacterLike = onCall({
+    region: 'us-central1', timeoutSeconds: 30, memory: '256MiB',
+}, createCharacterLikeHandler({db, APP_ID, FieldValue, HttpsError}));
+
 // ============================================================
 // 🎃 通用活動系統 1.0：任務進度 / 活動貨幣
 // ============================================================
 
 // Event task helper functions are now in ./events/task_utils.js.
+// 活動每日簽到：獨立於普通每日簽到，伺服器交易防止同日重領。
+exports.claimEventDailyCheckIn = onCall({
+    region: 'asia-east1', timeoutSeconds: 30, memory: '256MiB',
+}, createEventDailyCheckInHandler({db, APP_ID, FieldValue, HttpsError, reusableEventIsRunning}));
+exports.claimEventDailyCheckInUs = onCall({
+    region: 'us-central1', timeoutSeconds: 30, memory: '256MiB',
+}, createEventDailyCheckInHandler({db, APP_ID, FieldValue, HttpsError, reusableEventIsRunning}));
 // V81: preserve original progress transactions and idempotency in a dedicated module.
 const {createTaskProgressRecorder} = require('./events/task_progress_recorder');
 const recordReusableEventTaskProgress = createTaskProgressRecorder({
@@ -224,13 +239,8 @@ const recordReusableEventTaskProgress = createTaskProgressRecorder({
     normalizeReusableEventTaskDefinition,reusableEventTaskMatchesAction,reusableEventProgressRef
 });
 
-exports.claimEventTaskReward = onCall(
-    {
-        region: "asia-east1",
-        timeoutSeconds: 30,
-        memory: "256MiB",
-    },
-    async (request) => {
+// Shared implementation: keep Asia endpoint during App rollout; new clients use US.
+const _claimEventTaskRewardHandler = async (request) => {
         const userId = request.auth?.uid;
 
         if (!userId) {
@@ -457,8 +467,17 @@ exports.claimEventTaskReward = onCall(
             success: true,
             ...result,
         };
-    }
-);
+    };
+exports.claimEventTaskReward = onCall({
+        region: "asia-east1",
+        timeoutSeconds: 30,
+        memory: "256MiB",
+    }, _claimEventTaskRewardHandler);
+exports.claimEventTaskRewardUs = onCall({
+        region: "us-central1",
+        timeoutSeconds: 30,
+        memory: "256MiB",
+    }, _claimEventTaskRewardHandler);
 
 
 // =====================================================
@@ -469,13 +488,8 @@ exports.claimEventTaskReward = onCall(
 // - 其他商品先記錄到 event_progress.ownedEventItems，
 //   後續頭像框 / 稱號 / 特殊背景 / 回憶卡可直接接這份所有權資料。
 // =====================================================
-exports.redeemEventShopItem = onCall(
-    {
-        region: "asia-east1",
-        timeoutSeconds: 30,
-        memory: "256MiB",
-    },
-    async (request) => {
+// Shared implementation: keep Asia endpoint during App rollout; new clients use US.
+const _redeemEventShopItemHandler = async (request) => {
         const userId = request.auth?.uid;
 
         if (!userId) {
@@ -934,8 +948,17 @@ exports.redeemEventShopItem = onCall(
             success: true,
             ...result,
         };
-    }
-);
+    };
+exports.redeemEventShopItem = onCall({
+        region: "asia-east1",
+        timeoutSeconds: 30,
+        memory: "256MiB",
+    }, _redeemEventShopItemHandler);
+exports.redeemEventShopItemUs = onCall({
+        region: "us-central1",
+        timeoutSeconds: 30,
+        memory: "256MiB",
+    }, _redeemEventShopItemHandler);
 
 
 // =====================================================
@@ -945,13 +968,8 @@ exports.redeemEventShopItem = onCall(
 // - 保留 redeemedShopItems：刪除後不能再次兌換限兌一次商品
 // - 若物品正在使用中，同步解除裝備
 // =====================================================
-exports.deleteEventOwnedItem = onCall(
-    {
-        region: "asia-east1",
-        timeoutSeconds: 30,
-        memory: "256MiB",
-    },
-    async (request) => {
+// Shared implementation: keep Asia endpoint during App rollout; new clients use US.
+const _deleteEventOwnedItemHandler = async (request) => {
         const userId = request.auth?.uid;
 
         if (!userId) {
@@ -1202,8 +1220,17 @@ exports.deleteEventOwnedItem = onCall(
             success: true,
             ...result,
         };
-    }
-);
+    };
+exports.deleteEventOwnedItem = onCall({
+        region: "asia-east1",
+        timeoutSeconds: 30,
+        memory: "256MiB",
+    }, _deleteEventOwnedItemHandler);
+exports.deleteEventOwnedItemUs = onCall({
+        region: "us-central1",
+        timeoutSeconds: 30,
+        memory: "256MiB",
+    }, _deleteEventOwnedItemHandler);
 
 
 
@@ -1223,13 +1250,8 @@ exports.deleteEventOwnedItem = onCall(
 // - 跳過演出不應呼叫
 // - viewedAt 保留第一次完整觀看時間
 // =====================================================
-exports.markEventMemoryViewed = onCall(
-    {
-        region: "asia-east1",
-        timeoutSeconds: 30,
-        memory: "256MiB",
-    },
-    async (request) => {
+// Shared implementation: keep Asia endpoint during App rollout; new clients use US.
+const _markEventMemoryViewedHandler = async (request) => {
         const userId = request.auth?.uid;
 
         if (!userId) {
@@ -1350,8 +1372,17 @@ exports.markEventMemoryViewed = onCall(
             alreadyViewed:
                 result.alreadyViewed === true,
         };
-    }
-);
+    };
+exports.markEventMemoryViewed = onCall({
+        region: "asia-east1",
+        timeoutSeconds: 30,
+        memory: "256MiB",
+    }, _markEventMemoryViewedHandler);
+exports.markEventMemoryViewedUs = onCall({
+        region: "us-central1",
+        timeoutSeconds: 30,
+        memory: "256MiB",
+    }, _markEventMemoryViewedHandler);
 
 
 // V5.18.5: Detect a regression where the response cleaner duplicates the
@@ -10296,6 +10327,20 @@ const getAdminDashboardStatsHandler = createAdminDashboardStatsHandler({
   adminDateFromDynamic, getTaipeiDayIndex, HttpsError,
 });
 // 台灣舊版入口已停用；保留共用 Handler 給美國入口使用。
+// 📩 新的一般客服案件：僅 Firestore 新增時推播管理員。
+exports.notifyAdminNewSupportReport = onDocumentCreated(
+  {
+    region: 'us-central1',
+    document: 'reports/{reportId}',
+    timeoutSeconds: 60,
+    memory: '256MiB',
+  },
+  createAdminSupportReportNotification({
+    db, FieldValue, adminUids: REWARD_CAMPAIGN_ADMIN_UIDS,
+    sendToUserDevices, logger,
+  }),
+);
+
 exports.getAdminDashboardStatsUsTest = onCall({...{
     region: "asia-east1",
     timeoutSeconds: 120,
@@ -10422,6 +10467,10 @@ exports.claimRewardCampaign = onCall(
     timeoutSeconds: 60,
     memory: "256MiB",
   },
+  rewardCampaignPlayerHandlers.claimRewardCampaign
+);
+exports.claimRewardCampaignUs = onCall(
+  {region: "us-central1", timeoutSeconds: 60, memory: "256MiB"},
   rewardCampaignPlayerHandlers.claimRewardCampaign
 );
 
@@ -10598,7 +10647,8 @@ exports.manageCreatorSupportMessage = onCall({region:REGION,timeoutSeconds:30},a
 require('../open_world').registerWorldFunctions(exports, {
   onCall, HttpsError, REGION, db, APP_ID, crypto, FieldValue, logger,
   openRouterApiKey, geminiApiKey, xaiApiKey, anthropicApiKey,
-  callAiWithRetry, normalizeAiResponseScript,
+  callAiWithRetry, normalizeAiResponseScript, sendToUserDevices,
+  worldPushAllowedUids: REWARD_CAMPAIGN_ADMIN_UIDS,
 });
 
 

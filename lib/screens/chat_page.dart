@@ -6268,6 +6268,9 @@ class _ChatPageState extends State<ChatPage> {
               : <String, dynamic>{};
 
           if (aiResponseText.isEmpty) {
+            // A successful HTTP response with an empty AI body is distinct from
+            // upstream congestion. Keep only a diagnostic code, not chat text.
+            debugPrint('[AI_REPLY_FAILURE] http=200 kind=empty_success_body');
             generatingRooms.remove(_roomLockKey);
 
             if (mounted) {
@@ -6445,13 +6448,21 @@ class _ChatPageState extends State<ChatPage> {
           }
           _scheduleStorySummary();
         } else {
+          // The backend also returns HTTP 200 for safe, non-charged failures.
+          // Do not mislabel a failed Firestore commit as provider congestion.
+          final errorCode = (responseData['errorCode'] ?? '').toString();
+          final responseStatus = (responseData['status'] ?? '').toString();
+          debugPrint('[AI_REPLY_FAILURE] http=200 status=$responseStatus '
+              'code=${errorCode.isEmpty ? "unspecified" : errorCode} '
+              'charged=${responseData['charged'] == true}');
           generatingRooms.remove(_roomLockKey);
           if (mounted) {
             setState(() {
               _isGenerating = false;
               _isLoading = false;
             });
-            // ✨ 總裁級：伺服器忙碌，輕量錯誤提示
+            // Keep the original player-facing text; never expose internal codes
+            // or backend errorMessage in the chat UI.
             _showCenterToast(l10n.error_system_busy, isError: true);
           }
         }
@@ -6514,6 +6525,7 @@ class _ChatPageState extends State<ChatPage> {
           debugPrint('⚠️ 解析付費確認 409 回覆失敗：$e');
         }
 
+        debugPrint('[AI_REPLY_FAILURE] http=409 kind=non_free_chat_limit');
         if (mounted) {
           setState(() {
             _isGenerating = false;

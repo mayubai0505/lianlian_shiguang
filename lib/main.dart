@@ -29,6 +29,7 @@ import 'services/reminder_notification_service.dart';
 import 'package:home_widget/home_widget.dart';
 import 'screens/notification_list_page.dart';
 import 'screens/world_chat_memos_page.dart';
+import 'screens/world_chat_page.dart';
 
 // 僅供本機 Web Debug 測試，正式版與一般 Debug 皆維持原本 Firebase 連線。
 const bool _worldEmulatorRequested = bool.fromEnvironment(
@@ -42,6 +43,59 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 Map<String, String>? _pendingWorldMemo;
 String? _lastWorldMemoTapKey;
 bool _worldMemoOpening = false;
+// Keep a notification tap until Firebase Auth and the Navigator are ready.
+Map<String,String>? _pendingWorldChat;
+String? _lastWorldChatTapKey;
+bool _worldChatOpening = false;
+
+void _queueWorldChatNotification(RemoteMessage message) {
+  final worldId = (message.data['worldId'] ?? '').toString().trim();
+  final sessionId = (message.data['sessionId'] ?? '').toString().trim();
+  final validId = RegExp(r'^[A-Za-z0-9_-]{1,160}$');
+  if (!validId.hasMatch(worldId) || !validId.hasMatch(sessionId)) {
+    debugPrint('⚠️ 開放世界推播缺少有效的 worldId / sessionId');
+    return;
+  }
+  final key = message.messageId ?? '${worldId}_${sessionId}_${message.sentTime?.millisecondsSinceEpoch ?? 0}';
+  if (_lastWorldChatTapKey == key) return;
+  _lastWorldChatTapKey = key;
+  _pendingWorldChat = {'worldId': worldId, 'sessionId': sessionId};
+  _tryOpenPendingWorldChat();
+}
+
+void _tryOpenPendingWorldChat() {
+  if (_worldChatOpening || _pendingWorldChat == null) return;
+  final user = FirebaseAuth.instance.currentUser;
+  if (user == null || navigatorKey.currentState == null) return;
+  _worldChatOpening = true;
+  WidgetsBinding.instance.addPostFrameCallback((_) async {
+    final nav = navigatorKey.currentState;
+    final target = _pendingWorldChat;
+    if (nav == null || target == null || FirebaseAuth.instance.currentUser == null) {
+      _worldChatOpening = false;
+      return;
+    }
+    _pendingWorldChat = null;
+    try {
+      // Open the exact room. WorldChatPage checks its sessionId against the
+      // callable result; the server enforces room ownership before loading.
+      // Do not issue an extra client Firestore room read (rules may deny it).
+      if (FirebaseAuth.instance.currentUser?.uid != user.uid) return;
+      nav.pushAndRemoveUntil(
+        MaterialPageRoute<void>(builder: (_) => WorldChatPage(
+          worldId: target['worldId']!, sessionId: target['sessionId']!,
+        )),
+        (route) => route.isFirst,
+      );
+    } catch (error) {
+      debugPrint('⚠️ 開放世界推播跳轉失敗：$error');
+    } finally {
+      _worldChatOpening = false;
+      if (_pendingWorldChat != null) _tryOpenPendingWorldChat();
+    }
+  });
+}
+
 
 void _queueWorldMemoNotification(RemoteMessage message) {
   final worldId = (message.data['worldId'] ?? '').toString().trim();
@@ -432,7 +486,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       _accountAuthSubscription = FirebaseAuth.instance.authStateChanges().listen(
             (user) {
           _accountSync?.bindAccount(user?.uid);
-          if (user != null) _tryOpenPendingWorldMemo();
+          if (user != null) {
+            _tryOpenPendingWorldMemo();
+            _tryOpenPendingWorldChat();
+          }
         },
       );
     });
@@ -452,6 +509,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       // 這些都不是顯示首頁的必要條件，全部留在第一幀之後背景處理。
       unawaited(_initializeAfterAppStarted());
       unawaited(_checkInitialHomeWidgetLaunch());
+      _tryOpenPendingWorldChat();
 
       unawaited(
         _initializeBackgroundServices().catchError((e, stackTrace) {
@@ -876,6 +934,11 @@ void _handleNotificationClick(RemoteMessage message) {
   ].map((value) => value?.toString().trim() ?? '')
       .firstWhere((value) => value.isNotEmpty, orElse: () => '');
   debugPrint('🚨 收到推播點擊：type=$type, postId=$postId');
+
+  if (type == 'world_chat') {
+    _queueWorldChatNotification(message);
+    return;
+  }
 
   if (type == 'world_memo_reminder') {
     _queueWorldMemoNotification(message);

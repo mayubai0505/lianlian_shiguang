@@ -326,8 +326,8 @@ class _EventMemoryPerformancePageState
 
     try {
       final callable = FirebaseFunctions.instanceFor(
-        region: 'asia-east1',
-      ).httpsCallable('markEventMemoryViewed');
+        region: 'us-central1',
+      ).httpsCallable('markEventMemoryViewedUs');
 
       await callable.call(<String, dynamic>{
         'eventId': widget.eventId,

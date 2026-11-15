@@ -41,7 +41,7 @@ class FeedbackPage extends StatefulWidget {
 
   final String? momentId;
 
-  /// 例如：被檢舉的 AI 訊息內容
+  // 例如：被檢舉的 AI 訊息內容
   final String? reportedContent;
 
   const FeedbackPage({

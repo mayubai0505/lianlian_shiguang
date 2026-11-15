@@ -122,6 +122,8 @@ function createRewardCampaignPlayerHandlers({db, APP_ID, FieldValue, HttpsError}
         rewardAmount:
           campaign.rewardAmount,
 
+         rewardItem: campaign.rewardItem || null,
+
         endAt:
           campaign.endAt,
 
@@ -193,6 +195,11 @@ function createRewardCampaignPlayerHandlers({db, APP_ID, FieldValue, HttpsError}
       .doc(
         `reward_campaign_${campaignId}`
       );
+
+    const eventProgressRef = db
+      .collection("artifacts").doc(APP_ID)
+      .collection("event_progress").doc(userId)
+      .collection("events").doc(`reward_campaign_${campaignId}`);
 
     const result = await db.runTransaction(
       async (transaction) => {
@@ -291,81 +298,73 @@ function createRewardCampaignPlayerHandlers({db, APP_ID, FieldValue, HttpsError}
           }
         }
 
-        if (
-          campaign.rewardType !==
-          "flowerPoints"
-        ) {
-          throw new HttpsError(
-            "failed-precondition",
-            "目前無法領取這種獎勵"
-          );
+        const rewardType = String(campaign.rewardType || "flowerPoints");
+        const rewardAmount = Number(campaign.rewardAmount || 0);
+        let newFlowerPoints = null;
+        let rewardedItem = null;
+        if (rewardType === "flowerPoints") {
+          if (!Number.isInteger(rewardAmount) || rewardAmount <= 0 || rewardAmount > 10000) {
+            throw new HttpsError("failed-precondition", "活動獎勵設定異常");
+          }
+          const currentFlowerPoints = Number(userSnapshot.data()?.flowerPoints || 0);
+          newFlowerPoints = currentFlowerPoints + rewardAmount;
+          transaction.update(userRef, {
+            flowerPoints: FieldValue.increment(rewardAmount),
+          });
+          transaction.set(flowerLogRef, {
+            title: campaign.title || "活動禮物",
+            amount: rewardAmount,
+            reason: "官方活動獎勵",
+            campaignId,
+            type: "reward_campaign",
+            createdAt: FieldValue.serverTimestamp(),
+          });
+        } else if (["avatar_frame", "sticker"].includes(rewardType)) {
+          const rawItem = campaign.rewardItem || {};
+          const imageUrl = String(rawItem.imageUrl || "").trim();
+          const itemName = String(rawItem.name || "").trim();
+          if (!itemName || !/^https:\/\//i.test(imageUrl)) {
+            throw new HttpsError("failed-precondition", "禮物圖片或名稱設定異常");
+          }
+          // Same ownedEventItems format read by avatar-frame and chat-sticker screens.
+          rewardedItem = {
+            eventId: `reward_campaign_${campaignId}`,
+            itemId: `gift_${campaignId}`,
+            itemType: rewardType,
+            name: itemName,
+            imageUrl,
+            description: String(campaign.description || ""),
+            count: 1,
+            acquiredAt: FieldValue.serverTimestamp(),
+            ...(rewardType === "sticker" ? {
+              stickerName: String(rawItem.stickerName || itemName),
+              visualTags: Array.isArray(rawItem.visualTags) ? rawItem.visualTags : [],
+              baseEmotion: String(rawItem.baseEmotion || ""),
+              visualDescription: String(rawItem.visualDescription || ""),
+              analysisSource: String(rawItem.analysisSource || "manual"),
+            } : {}),
+          };
+          transaction.set(eventProgressRef, {
+            ownedEventItems: { [rewardedItem.itemId]: rewardedItem },
+            updatedAt: FieldValue.serverTimestamp(),
+          }, { merge: true });
+        } else {
+          throw new HttpsError("failed-precondition", "目前無法領取這種獎勵");
         }
-
-        const rewardAmount = Number(
-          campaign.rewardAmount || 0
-        );
-
-        if (
-          !Number.isInteger(rewardAmount) ||
-          rewardAmount <= 0 ||
-          rewardAmount > 10000
-        ) {
-          throw new HttpsError(
-            "failed-precondition",
-            "活動獎勵設定異常"
-          );
-        }
-
-        const currentFlowerPoints =
-          Number(
-            userSnapshot.data()
-              ?.flowerPoints || 0
-          );
-
-        const newFlowerPoints =
-          currentFlowerPoints +
-          rewardAmount;
-
-        transaction.update(userRef, {
-          flowerPoints:
-            FieldValue.increment(
-              rewardAmount
-            ),
-        });
 
         transaction.set(claimRef, {
           userId,
           campaignId,
-
-          rewardType:
-            campaign.rewardType,
-
-          rewardAmount,
-
-          campaignTitle:
-            campaign.title || "活動禮物",
-
-          claimedAt:
-            FieldValue.serverTimestamp(),
-        });
-
-        transaction.set(flowerLogRef, {
-          title:
-            campaign.title ||
-            "活動禮物",
-
-          amount: rewardAmount,
-
-          reason:
-            "官方活動獎勵",
-
-          campaignId,
-
-          type:
-            "reward_campaign",
-
-          createdAt:
-            FieldValue.serverTimestamp(),
+          rewardType,
+          rewardAmount: rewardType === "flowerPoints" ? rewardAmount : 0,
+          ...(rewardedItem ? { rewardItem: {
+            itemType: rewardedItem.itemType,
+            itemId: rewardedItem.itemId,
+            eventId: rewardedItem.eventId,
+            name: rewardedItem.name,
+          } } : {}),
+          campaignTitle: campaign.title || "活動禮物",
+          claimedAt: FieldValue.serverTimestamp(),
         });
 
         transaction.set(
@@ -382,11 +381,15 @@ function createRewardCampaignPlayerHandlers({db, APP_ID, FieldValue, HttpsError}
         );
 
         return {
-          rewardAmount,
+          rewardType,
+          rewardAmount: rewardType === "flowerPoints" ? rewardAmount : 0,
           newFlowerPoints,
-          campaignTitle:
-            campaign.title ||
-            "活動禮物",
+          ...(rewardedItem ? { rewardItem: {
+            itemType: rewardedItem.itemType,
+            name: rewardedItem.name,
+            imageUrl: rewardedItem.imageUrl,
+          } } : {}),
+          campaignTitle: campaign.title || "活動禮物",
         };
       }
     );
@@ -525,6 +528,8 @@ function createRewardCampaignPlayerHandlers({db, APP_ID, FieldValue, HttpsError}
 
         rewardAmount:
           campaign.rewardAmount,
+
+         rewardItem: campaign.rewardItem || null,
 
         endAt:
           campaign.endAt,
