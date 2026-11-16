@@ -12741,6 +12741,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get worldAboutUsDeleteTooltip => 'Eliminar recuerdo';
 
   @override
+  String get weeklyRecommendations => 'Recomendaciones de la semana';
+
+  @override
   String get world_menu_chat_section1 => 'Chat';
 
   @override

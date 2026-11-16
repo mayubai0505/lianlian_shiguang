@@ -11752,6 +11752,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get worldAboutUsDeleteTooltip => '刪除記憶';
 
   @override
+  String get weeklyRecommendations => '本週推薦';
+
+  @override
   String get world_menu_chat_section1 => '聊天';
 
   @override
@@ -23995,6 +23998,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get worldAboutUsDeleteTooltip => '删除记忆';
+
+  @override
+  String get weeklyRecommendations => '本周推荐';
 
   @override
   String get world_menu_chat_section1 => '聊天';
@@ -36694,6 +36700,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get worldAboutUsDeleteTooltip => '刪除記憶';
+
+  @override
+  String get weeklyRecommendations => '本週推薦';
 
   @override
   String get world_menu_chat_section1 => '聊天';

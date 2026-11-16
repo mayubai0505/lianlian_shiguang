@@ -12613,6 +12613,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get worldAboutUsDeleteTooltip => 'स्मृति हटाएँ';
 
   @override
+  String get weeklyRecommendations => 'इस सप्ताह की सिफारिशें';
+
+  @override
   String get world_menu_chat_section1 => 'चैट';
 
   @override

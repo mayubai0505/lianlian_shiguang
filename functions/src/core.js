@@ -3045,8 +3045,22 @@ let relationContext = "";
                 currentIdentityName ||
                 "玩家";
 
+            // Use the explicitly selected player identity, not character lore or old chat history.
+            // A current request value wins; a missing value may fall back only to the
+            // selected profile's explicit gender field. Never infer gender from names.
+            const canonicalPlayerGender = value => {
+                const raw = String(value ?? '').trim().toLowerCase();
+                if (['男', '男性', 'male', 'm'].includes(raw)) return '男性';
+                if (['女', '女性', 'female', 'f'].includes(raw)) return '女性';
+                return '';
+            };
+            const selectedPlayerProfile = Array.isArray(userData.profiles)
+                ? userData.profiles.find(p => p?.id === (String(playerProfileId || '').trim() || userData.activeProfileId))
+                : null;
             const normalizedPlayerGender =
-                String(playerGender || "").trim();
+                canonicalPlayerGender(playerGender) ||
+                canonicalPlayerGender(selectedPlayerProfile?.gender) ||
+                '未設定';
 
             let playerIdentityDirective = "";
 
@@ -4421,6 +4435,22 @@ ${persistentPreferenceDirective}
 - 狀態欄只能出現在正文最後，保留創作者原本的欄名、圖案、順序及群組訊息數要求。
 `;
        }
+
+       // Final shared identity constraint: placed AFTER all mode-specific prompts,
+       // creator formatting, RAG and session summaries. Does not edit history,
+       // affect billing, route models, or mutate response text/NPC identities.
+       systemPrompt += `
+【玩家目前選定身分｜最終一致性檢查・四模式共用】
+- 當前玩家身分姓名：${playerName}；正式性別：${normalizedPlayerGender}。
+- ${normalizedPlayerGender === '男性'
+    ? '玩家為男性：對玩家本人使用「你」，第三人稱使用「他」；不得把玩家寫成「妳／她／女生／女主角」。'
+    : normalizedPlayerGender === '女性'
+        ? '玩家為女性：對玩家本人使用「妳」，第三人稱使用「她」；不得把玩家寫成「他／男生／男主角」。'
+        : '未明確設定玩家性別：使用姓名或中性第二人稱「你」，不得猜測男性或女性。'}
+- 舊對話、劇情摘要、RAG 記憶、創作者範例若含有與目前玩家身分衝突的稱呼，只視為歷史敘述錯誤；保留事件本身，不要繼承錯誤性別。
+- 以上只約束「玩家本人」；角色、NPC、引用台詞中的其他人照其各自身分，不可全域替換「他／她／你／妳」。
+- 在生成正文、旁白、台詞、狀態欄及重寫答案前，確認所有指向玩家的性別稱呼與本輪身分一致，不要輸出檢查過程。
+`;
 
        // ✨ 偷天換日 1：隨機開局 (把「玩家」換成 `${playerName}`)
        const checkMsg = userMessage.trim().toLowerCase();
@@ -8053,16 +8083,50 @@ const resultPayload = {
                                    return;
 
                                    } catch (error) {
-                                       console.error("❌ 任務發生災難:", error);
+                                       // Backend-only AI failure diagnostics. Preserve HTTP 500 so
+                                       // existing clients can show their usual red error; never
+                                       // expose upstream API bodies, prompts, tokens or secrets.
+                                       const rawCode = String(error?.code || '').slice(0, 80);
+                                       const rawName = String(error?.name || '').slice(0, 80);
+                                       const rawMessage = String(error?.message || '');
+                                       const httpStatus = Number(error?.statusCode || error?.status || 0);
+                                       const isTimeout =
+                                           /^(?:AI_TIMEOUT|ETIMEDOUT|ESOCKETTIMEDOUT|ECONNABORTED)$/i.test(rawCode) ||
+                                           /^(?:AbortError|TimeoutError)$/i.test(rawName) ||
+                                           /timed? ?out|timeout|operation was aborted|逾時/i.test(rawMessage);
+                                       const isFiltered =
+                                           /(?:AI_CONTENT_FILTERED|CONTENT_FILTERED)/i.test(rawCode) ||
+                                           /(?:PROHIBITED_CONTENT|content[_ -]?filter)/i.test(rawMessage);
+                                       const failureCode = isTimeout ? 'AI_TIMEOUT' :
+                                           isFiltered ? 'AI_CONTENT_FILTERED' :
+                                           httpStatus === 403 || /(?:^|_)403$/.test(rawCode) ? 'AI_PROVIDER_403' :
+                                           'AI_INTERNAL_ERROR';
+                                       const safeMessage = failureCode === 'AI_TIMEOUT'
+                                           ? 'AI 回覆逾時，請稍後重試。'
+                                           : failureCode === 'AI_CONTENT_FILTERED'
+                                               ? 'AI 本次無法產生合適的回覆，請調整內容後重試。'
+                                               : failureCode === 'AI_PROVIDER_403'
+                                                   ? 'AI 服務暫時無法使用，請稍後重試。'
+                                                   : 'AI 回覆暫時失敗，請稍後重試。';
+                                       console.error('REGULAR_CHAT_AI_FAILURE', {
+                                           failureCode,
+                                           providerCode: rawCode || null,
+                                           providerErrorName: rawName || null,
+                                           providerStatusCode: Number.isFinite(httpStatus) && httpStatus > 0 ? httpStatus : null,
+                                           chatMode: String(chatMode || 'daily').slice(0, 32),
+                                           hasSessionId: Boolean(sessionId),
+                                           // Do not log raw provider error text or user content.
+                                       });
 
                                        if (!res.writableEnded && !res.destroyed) {
                                            return res.status(500).json({
-                                               status: "error",
-                                               errorMessage: error.message,
+                                               status: 'error',
+                                               errorCode: failureCode,
+                                               errorMessage: safeMessage,
                                            });
                                        }
 
-                                       console.log("📦 發生錯誤，但玩家 HTTP 連線已關閉，略過 res.status(500)。");
+                                       console.log('📦 AI 失敗但玩家 HTTP 連線已關閉，略過 res.status(500)。');
                                        return;
                                    }
 

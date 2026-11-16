@@ -6636,6 +6636,7 @@
   "worldAboutUsEmpty": "아직 공동 추억이 없습니다.",
   "worldAboutUsEditTooltip": "추억 편집",
   "worldAboutUsDeleteTooltip": "추억 삭제",
+  "weeklyRecommendations": "이번 주 추천",
   "world_edit_tag_max1": "Select up to 5 tags",
   "world_edit_tag_custom1": "Tags (customizable; separate with commas)",
   "world_edit_secret_not_ready1": "Secret chapters have not loaded. Publishing is paused to protect your content. Check permissions and reopen this page.",

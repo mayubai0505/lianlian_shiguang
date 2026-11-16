@@ -12568,6 +12568,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get worldAboutUsDeleteTooltip => 'Delete memory';
 
   @override
+  String get weeklyRecommendations => 'This Week\'s Picks';
+
+  @override
   String get world_menu_chat_section1 => 'Chat';
 
   @override

@@ -33,6 +33,8 @@ import '../widgets/user_avatar_with_frame.dart';
 
 class CharacterProfilePage extends StatefulWidget {
   final String? sessionId;
+  // 創作者公開頁帶入的玩家好感度；未提供時保留既有讀取方式。
+  final int? initialAffection;
   final Character character;
   final String characterId;
 
@@ -44,6 +46,7 @@ class CharacterProfilePage extends StatefulWidget {
     required this.character,
     required this.characterId,
     this.sessionId,
+    this.initialAffection,
     this.analyticsSource,
   });
 
@@ -3762,24 +3765,52 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
               ),
             const SizedBox(height: 32),
 
-            // 原本相簿 / 好感度功能保留。
-            StreamBuilder<DocumentSnapshot>(
-              stream: (FirebaseAuth.instance.currentUser != null &&
-                  widget.sessionId != null)
-                  ? FirebaseFirestore.instance
-                  .collection('artifacts')
-                  .doc(AppConfig.appId)
-                  .collection('chat_sessions')
-                  .doc(widget.sessionId)
-                  .snapshots()
-                  : const Stream.empty(),
+            // 通話專屬背景：有指定房間時讀房間好感度；
+            // 無房間時讀玩家對角色的全域好感度，不變更解鎖門檻。
+            StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+              stream: FirebaseAuth.instance.currentUser == null
+                  ? const Stream.empty()
+                  : (widget.sessionId?.trim().isNotEmpty == true)
+                      ? FirebaseFirestore.instance
+                          .collection('artifacts')
+                          .doc(AppConfig.appId)
+                          .collection('chat_sessions')
+                          .doc(widget.sessionId!.trim())
+                          .snapshots()
+                      : FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(FirebaseAuth.instance.currentUser!.uid)
+                          .collection('characters')
+                          .doc(widget.character.id)
+                          .snapshots(),
               builder: (context, snapshot) {
-                int realAffection = 0;
-
+                // 沒有聊天室 ID 時，先顯示入口已取得的好感度；
+                // Firestore 即時資料可更新它，不會因 waiting 暫時變回 0。
+                int realAffection = widget.sessionId?.trim().isNotEmpty == true
+                    ? 0
+                    : (widget.initialAffection ?? 0);
                 if (snapshot.hasData && snapshot.data!.exists) {
-                  final data = snapshot.data!.data() as Map<String, dynamic>?;
-                  if (data != null) {
-                    realAffection = data['friendshipScore'] ?? 0;
+                  final data = snapshot.data!.data();
+                  final bool hasRoom =
+                      widget.sessionId?.trim().isNotEmpty == true;
+                  final Object? rawScore;
+                  if (hasRoom) {
+                    rawScore = data?['friendshipScore'];
+                  } else {
+                    rawScore = data?['affection'];
+                  }
+                  if (rawScore is num) {
+                    final latestScore = rawScore.toInt();
+                    // 同一角色的總帳為歷史最高分，避免尚未同步的舊資料
+                    // 覆蓋創作者入口傳入的已確認分數。
+                    if (widget.sessionId?.trim().isNotEmpty == true) {
+                      realAffection = latestScore;
+                    } else if (widget.initialAffection == null ||
+                        widget.initialAffection == 0 ||
+                        latestScore != 0) {
+                      // 0 不可覆蓋入口已確認的負分；其餘保留總帳即時值。
+                      realAffection = latestScore;
+                    }
                   }
                 }
 

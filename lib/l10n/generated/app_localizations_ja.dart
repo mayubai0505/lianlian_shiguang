@@ -12013,6 +12013,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get worldAboutUsDeleteTooltip => '思い出を削除';
 
   @override
+  String get weeklyRecommendations => '今週のおすすめ';
+
+  @override
   String get world_menu_chat_section1 => 'チャット';
 
   @override

@@ -1352,6 +1352,7 @@ class _CreatorPromotionEntryState extends State<_CreatorPromotionEntry> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: _promotionStream,
       builder: (context, snapshot) {
@@ -1387,13 +1388,13 @@ class _CreatorPromotionEntryState extends State<_CreatorPromotionEntry> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
+                  padding: EdgeInsets.only(bottom: 10),
                   child: Row(
                     children: [
                       Icon(Icons.auto_awesome_rounded, size: 17, color: colors.primary),
                       const SizedBox(width: 8),
                       Text(
-                        '本週推薦',
+                        l10n.weeklyRecommendations,
                         style: GoogleFonts.notoSerifTc(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,

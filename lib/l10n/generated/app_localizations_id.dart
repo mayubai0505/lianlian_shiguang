@@ -12635,6 +12635,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get worldAboutUsDeleteTooltip => 'Hapus kenangan';
 
   @override
+  String get weeklyRecommendations => 'Rekomendasi Minggu Ini';
+
+  @override
   String get world_menu_chat_section1 => 'Obrolan';
 
   @override

@@ -2028,6 +2028,75 @@ class CreatorProfilePage extends StatelessWidget {
       ],
     );
   }
+  // 創作者公開頁沒有聊天室 ID；點角色卡片時先帶入玩家已累積的好感度。
+  // 只讀取資料，不改動總帳或聊天房間分數。
+  Future<void> _openCreatorCharacterProfile(
+    BuildContext context,
+    Character character,
+  ) async {
+    int? initialAffection;
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        final doc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('characters')
+            .doc(character.id)
+            .get();
+        final score = doc.data()?['affection'];
+        if (score is num) initialAffection = score.toInt();
+      } catch (error) {
+        debugPrint('[CALL_BG_AFFECTION] global read failed: $error');
+      }
+
+      // 舊角色可能只在聊天室保存 friendshipScore，總帳尚未同步。
+      // 0 和負分都是有效分數；不可用最高分預設 0 排除負數。
+      if (initialAffection == null || initialAffection == 0) {
+        try {
+          final rooms = await FirebaseFirestore.instance
+              .collection('artifacts')
+              .doc(AppConfig.appId)
+              .collection('chat_sessions')
+              .where('userId', isEqualTo: user.uid)
+              .where('characterId', isEqualTo: character.id)
+              .get();
+          int? highest;
+          for (final room in rooms.docs) {
+            final score = room.data()['friendshipScore'];
+            if (score is num) {
+              final value = score.toInt();
+              if (highest == null || value > highest) highest = value;
+            }
+          }
+          // 總帳還是 0 時，保留聊天室實際紀錄（包括負分）。
+          if (highest != null &&
+              (initialAffection == null || initialAffection == 0)) {
+            initialAffection = highest;
+          }
+          debugPrint('[CALL_BG_AFFECTION] rooms=${rooms.docs.length} '
+              'highest=$highest selected=$initialAffection');
+        } catch (error) {
+          debugPrint('[CALL_BG_AFFECTION] rooms read failed: $error');
+        }
+      }
+    }
+
+    if (!context.mounted) return;
+    debugPrint('[CALL_BG_AFFECTION] creator navigation: '
+        'characterId=${character.id} initialAffection=$initialAffection');
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CharacterProfilePage(
+          character: character,
+          characterId: character.id,
+          initialAffection: initialAffection,
+        ),
+      ),
+    );
+  }
+
   Widget _buildCreatorWorks(
       BuildContext context,
       ThemeData theme,
@@ -2092,19 +2161,7 @@ class CreatorProfilePage extends StatelessWidget {
         cardImage = getAvatarImageProvider(safeAvatar);
 
         return GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    CharacterProfilePage(
-                      character: characterObj,
-                      characterId:
-                      characterObj.id,
-                    ),
-              ),
-            );
-          },
+          onTap: () => _openCreatorCharacterProfile(context, characterObj),
           child: Container(
             height: cardHeight,
             decoration: BoxDecoration(

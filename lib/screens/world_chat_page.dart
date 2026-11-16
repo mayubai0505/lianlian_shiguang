@@ -2647,7 +2647,10 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
                     child: ColoredBox(color: Colors.white.withValues(alpha: 0.55)))),
               SafeArea(child:Column(children:[
                 if (_loading) const Expanded(child: SizedBox.expand())
-                else Expanded(child: (_messages.isEmpty && !_pendingVisible && !_sending)
+                else Expanded(child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: () => _focus.unfocus(),
+                  child: (_messages.isEmpty && !_pendingVisible && !_sending)
                     ? Center(child: Text(_error.isEmpty ? AppLocalizations.of(context)!.world_chat_no_chat1 : '$_error\n可返回後重試',
                     textAlign: TextAlign.center))
                     : ListView.builder(
@@ -2704,7 +2707,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
                     ])),
                     );
                   },
-                )),
+                ))),
                 if (_worldSelectionMode)
                   SafeArea(top:false,child:Padding(
                     padding:const EdgeInsets.symmetric(horizontal:12,vertical:6),

@@ -278,24 +278,15 @@ function createWriterResponseUtils() {
                                                                                                                                .replace(/\\n/g, "\n")
                                                                                                                                .replace(/\\"/g, '"');
 
-                                                                                                                           // 🌟🌟🌟 總裁專屬防線：自動偵測並砍掉中途重複出現的第二組「時間／地點」標頭！
-                                                                                                                           // 原理：用正則找出第二次出現的時間地點標頭，直接把後面重複的截掉或合併
-                                                                                                                           const duplicateHeaderRegex = /((?:時間：[^\r\n]*\r?\n地點：[^\r\n]*)|(?:時間：[^\r\n]*\|\s*地點：[^\r\n]*))\n\n[\s\S]*?\1/;
-                                                                                                                           if (duplicateHeaderRegex.test(text)) {
-                                                                                                                               // 如果抓到它自己複製貼上兩次，我們保留第一次，把第二次以後的雜訊清掉
-                                                                                                                               text = text.replace(duplicateHeaderRegex, "$1");
-                                                                                                                           }
-
-                                                                                                                           // 也可以用更暴力的保底：如果文字中出現兩次「時間：」，直接從第二個「時間：」切掉前半段重複的
-                                                                                                                           const firstIndex = text.indexOf("時間：");
-                                                                                                                           if (firstIndex !== -1) {
-                                                                                                                               const secondIndex = text.indexOf("時間：", firstIndex + 3);
-                                                                                                                               if (secondIndex !== -1) {
-                                                                                                                                   // 代表它真的鬼打牆寫了兩次！我們只取第二段接續下去的精華，或者把第一段拔掉
-                                                                                                                                   // 這裡我們把第二個「時間：」開頭到之間的廢話拔掉，讓它變成流暢的一段
-                                                                                                                                   text = text.substring(0, secondIndex) + text.substring(text.indexOf("（", secondIndex));
-                                                                                                                               }
-                                                                                                                           }
+                                                                                                                           // V5.21: Do not deduplicate time/location headers here.
+                                                                                                                           // The opening scene and a creator-defined closing status may
+                                                                                                                           // legitimately share identical time and location values.
+                                                                                                                           // The previous duplicateHeaderRegex deleted every narrative
+                                                                                                                           // paragraph between those headers; the secondIndex fallback
+                                                                                                                           // could also splice unrelated text (including when no "（" exists).
+                                                                                                                           // Only dedicated downstream duplicate-narrative checks may
+                                                                                                                           // remove demonstrably repeated story paragraphs.
+                                                                                                                           // This function must preserve the complete authored narrative.
 
                                                                                                                            text = text.replace(/玩家/g, safePlayerName);
 

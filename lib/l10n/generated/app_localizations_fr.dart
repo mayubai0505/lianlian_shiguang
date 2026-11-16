@@ -12812,6 +12812,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get worldAboutUsDeleteTooltip => 'Supprimer le souvenir';
 
   @override
+  String get weeklyRecommendations => 'Sélection de la semaine';
+
+  @override
   String get world_menu_chat_section1 => 'Discussion';
 
   @override

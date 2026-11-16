@@ -267,11 +267,9 @@ async function callAiWithRetry({
         invalidResponseRetryable ||
         error?.code === "AI_NETWORK_ERROR" ||
         error?.code === "AI_TIMEOUT" ||
-        error.statusCode === 429 ||
-        error.statusCode === 500 ||
-        error.statusCode === 502 ||
-        error.statusCode === 503 ||
-        error.statusCode === 504 ||
+        error?.statusCode === 408 ||
+        error?.statusCode === 429 ||
+        (Number(error?.statusCode) >= 500 && Number(error?.statusCode) <= 599) ||
         error.message ===
           "AI_PROVIDER_BUSY" ||
         error.message?.includes(
@@ -283,9 +281,8 @@ async function callAiWithRetry({
         error.message?.includes(
           "AI 連線暫時不穩"
         ) ||
-        error.message?.includes(
-          "AI 回傳格式異常"
-        ) ||
+        (error?.code !== "AI_INVALID_RESPONSE" && !error?.statusCode &&
+          error?.message?.includes("AI 回傳格式異常")) ||
         error.message?.includes(
           "AI 斷線或沒有回傳 choices"
         ) ||

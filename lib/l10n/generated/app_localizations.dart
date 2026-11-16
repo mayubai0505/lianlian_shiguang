@@ -21551,6 +21551,12 @@ abstract class AppLocalizations {
   /// **'刪除記憶'**
   String get worldAboutUsDeleteTooltip;
 
+  /// No description provided for @weeklyRecommendations.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'本週推薦'**
+  String get weeklyRecommendations;
+
   /// No description provided for @world_menu_chat_section1.
   ///
   /// In zh_Hant, this message translates to:

@@ -18,7 +18,7 @@ import 'creator_profile_page.dart';
 import '../widgets/world_echo_wall.dart';
 import '../widgets/user_avatar_with_frame.dart';
 
-//開放世界介紹頁。進入世界時由 worldPrivateTest 後端再次檢查公開遊玩權限。
+//開放世界介紹頁。
 class WorldDiscoveryPage extends StatefulWidget {
   const WorldDiscoveryPage({super.key, required this.worldId, this.creatorPreview = false});
   final String worldId;

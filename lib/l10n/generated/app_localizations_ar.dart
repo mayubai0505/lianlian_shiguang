@@ -12484,6 +12484,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get worldAboutUsDeleteTooltip => 'حذف الذكرى';
 
   @override
+  String get weeklyRecommendations => 'توصيات هذا الأسبوع';
+
+  @override
   String get world_menu_chat_section1 => 'الدردشة';
 
   @override

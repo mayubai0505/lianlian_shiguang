@@ -12519,6 +12519,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get worldAboutUsDeleteTooltip => 'ลบความทรงจำ';
 
   @override
+  String get weeklyRecommendations => 'แนะนำประจำสัปดาห์';
+
+  @override
   String get world_menu_chat_section1 => 'แชต';
 
   @override

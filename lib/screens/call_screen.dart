@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:ui';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:permission_handler/permission_handler.dart';
@@ -826,7 +827,12 @@ class _CallOverlayState extends State<CallOverlay> {
               children: [
                 IconButton(
                   icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white, size: 32),
-                  onPressed: () => setState(() => _isChatMode = false),
+                  onPressed: () {
+                    // 先解除輸入焦點並收起系統鍵盤，再回到通話介面。
+                    FocusManager.instance.primaryFocus?.unfocus();
+                    SystemChannels.textInput.invokeMethod<void>('TextInput.hide');
+                    setState(() => _isChatMode = false);
+                  },
                 ),
                 CircleAvatar(radius: 20, backgroundColor: Colors.black45, backgroundImage: _callBackgroundImage),
                 const SizedBox(width: 12),

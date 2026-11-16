@@ -12049,6 +12049,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get worldAboutUsDeleteTooltip => '추억 삭제';
 
   @override
+  String get weeklyRecommendations => '이번 주 추천';
+
+  @override
   String get world_menu_chat_section1 => '채팅';
 
   @override

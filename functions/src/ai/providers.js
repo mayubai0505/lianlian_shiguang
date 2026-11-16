@@ -110,13 +110,17 @@ async function callOpenRouter({
     try {
         data = rawText ? JSON.parse(rawText) : null;
     } catch (err) {
-        console.error("🚨 AI returned non-JSON:", {
+        // Non-JSON 4xx is usually a request/auth problem, not a reason to retry.
+        // Never log upstream response bodies: they may echo private prompt data.
+        console.error("AI_PROVIDER_INVALID_JSON", {
+            model: modelId,
             status: response?.status,
-            rawText: rawText.slice(0, 2000),
-            parseMessage: err?.message,
+            responseBytes: Buffer.byteLength(rawText, "utf8"),
         });
-
-        throw new Error("AI 回傳格式異常");
+        const error = new Error("AI 回傳格式異常");
+        error.code = "AI_INVALID_RESPONSE";
+        error.statusCode = response?.status;
+        throw error;
     }
 
     if (!response.ok) {
@@ -139,7 +143,7 @@ async function callOpenRouter({
         throw error;
     }
 
-    if (!data?.choices || data.choices.length === 0) {
+    if (!Array.isArray(data?.choices) || data.choices.length === 0) {
         // 只記錄供應商回應結構，不寫出原始 JSON／玩家內容。
         console.error("AI_PROVIDER_NO_CHOICES", {
             model: modelId,
@@ -152,11 +156,13 @@ async function callOpenRouter({
             errorCode: String(data?.error?.code || "").slice(0, 80),
         });
 
-        throw new Error(
-            data?.error?.message ||
-            data?.message ||
-            "AI 斷線或沒有回傳 choices"
-        );
+        const error = new Error("AI 斷線或沒有回傳 choices");
+        error.code = "AI_EMPTY_RESPONSE";
+        error.statusCode = response.status;
+        error.result = {
+            promptFeedback: data?.promptFeedback || null,
+        };
+        throw error;
     }
 
     return data;

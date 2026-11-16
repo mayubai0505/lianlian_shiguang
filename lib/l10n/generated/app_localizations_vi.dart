@@ -12645,6 +12645,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get worldAboutUsDeleteTooltip => 'Xóa kỷ niệm';
 
   @override
+  String get weeklyRecommendations => 'Đề xuất tuần này';
+
+  @override
   String get world_menu_chat_section1 => 'Trò chuyện';
 
   @override

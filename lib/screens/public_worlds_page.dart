@@ -54,6 +54,8 @@ class PublicWorldsPage extends StatefulWidget {
 class _PublicWorldsPageState extends State<PublicWorldsPage> with WidgetsBindingObserver {
   Timer? _countRefreshTimer;
   bool _refreshInProgress = false;
+  // Keep the visible catalog mounted while silent refreshes replace the Future.
+  List<Map<String, dynamic>>? _lastLoadedWorlds;
 
   @override
   void initState() {
@@ -80,7 +82,10 @@ class _PublicWorldsPageState extends State<PublicWorldsPage> with WidgetsBinding
     _refreshInProgress = true;
     try {
       final worlds = await _load();
-      if (mounted) setState(() => _future = Future.value(worlds));
+      if (mounted) setState(() {
+        _lastLoadedWorlds = worlds;
+        _future = Future.value(worlds);
+      });
     } catch (error) {
       debugPrint('世界聊天次數背景同步略過：$error');
     } finally {
@@ -132,22 +137,32 @@ class _PublicWorldsPageState extends State<PublicWorldsPage> with WidgetsBinding
       ),
       body: FutureBuilder<List<Map<String,dynamic>>>(
           future:_future, builder:(context,snapshot) {
-        if(snapshot.connectionState!=ConnectionState.done) return const Center(child:CircularProgressIndicator());
-        if(snapshot.hasError) return Center(child:SingleChildScrollView(
+        // Keep the previous list alive during re-fetch. Otherwise the loading
+        // spinner unmounts ListView/GridView and resets the user's scroll.
+        if (snapshot.connectionState == ConnectionState.done &&
+            !snapshot.hasError && snapshot.hasData) {
+          _lastLoadedWorlds = snapshot.data;
+        }
+        final worlds = _lastLoadedWorlds ?? snapshot.data;
+        if (worlds == null && snapshot.connectionState != ConnectionState.done) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (worlds == null && snapshot.hasError) return Center(child:SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child:Column(mainAxisSize:MainAxisSize.min,children:[
               Text(l10n.public_worlds_load_failed1),TextButton(onPressed:() { _refresh(); },child:Text(l10n.public_worlds_refresh1))])));
-        final worlds=snapshot.data??[];
-        if(worlds.isEmpty) return Center(child:Text(l10n.public_worlds_empty1));
+        final visibleWorlds = worlds ?? <Map<String, dynamic>>[];
+        if(visibleWorlds.isEmpty) return Center(child:Text(l10n.public_worlds_empty1));
         // 橫向/平板限制卡片寬度與封面高度，避免封面隨螢幕寬度無限制放大。
         final isLandscape = MediaQuery.orientationOf(context) == Orientation.landscape;
         // Desktop only: use a bounded responsive grid; keep the original mobile list.
         if (kIsWeb && MediaQuery.sizeOf(context).width >= 900) {
-          return _buildDesktopWorlds(context, worlds, l10n);
+          return _buildDesktopWorlds(context, visibleWorlds, l10n);
         }
         return RefreshIndicator(onRefresh:_refresh,child:ListView.builder(
-            padding:const EdgeInsets.all(12),itemCount:worlds.length,itemBuilder:(context,index){
-          final w=worlds[index], id=(w['id']??'').toString();
+            key: const PageStorageKey<String>('public_worlds_mobile_scroll'),
+            padding:const EdgeInsets.all(12),itemCount:visibleWorlds.length,itemBuilder:(context,index){
+          final w=visibleWorlds[index], id=(w['id']??'').toString();
           final cover=(w['coverImage']??'').toString();
           final tags=(w['tags'] as List? ?? []).map((v)=>v.toString()).join(' · ');
           return Center(child: ConstrainedBox(
@@ -197,6 +212,7 @@ class _PublicWorldsPageState extends State<PublicWorldsPage> with WidgetsBinding
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1180),
           child: GridView.builder(
+            key: const PageStorageKey<String>('public_worlds_desktop_scroll'),
             padding: const EdgeInsets.fromLTRB(24, 24, 24, 36),
             physics: const AlwaysScrollableScrollPhysics(),
             itemCount: worlds.length,

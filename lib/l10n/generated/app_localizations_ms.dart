@@ -12641,6 +12641,9 @@ class AppLocalizationsMs extends AppLocalizations {
   String get worldAboutUsDeleteTooltip => 'Padam kenangan';
 
   @override
+  String get weeklyRecommendations => 'Pilihan Minggu Ini';
+
+  @override
   String get world_menu_chat_section1 => 'Sembang';
 
   @override

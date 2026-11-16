@@ -6689,6 +6689,7 @@
     }
   },
   "worldAboutUsEmpty": "لا توجد ذكريات مشتركة بعد.",
+  "weeklyRecommendations": "توصيات هذا الأسبوع",
   "worldAboutUsEditTooltip": "تعديل الذكرى",
   "worldAboutUsDeleteTooltip": "حذف الذكرى",
   "world_edit_tag_max1": "Select up to 5 tags",
