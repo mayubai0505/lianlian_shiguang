@@ -301,4 +301,67 @@ function resolveFictionalClock(previous,player,minutes=3) {
  return addFictionalMinutes(base,Math.max(1,Math.min(120,Number.isFinite(Number(minutes))?Math.trunc(Number(minutes)):3)));
 }
 
-module.exports={normalize,label,addMinutes,resolveClock,creatorInitialCalendar,initialStoryClock,parseStatusClock,enforceStatusTime,detectTimeStyle,branchOfHour,displayTime,timePresentationDirective,creatorTimePolicy,advanceForWorld,normalizeFictionalClock,parseFictionalTime,parseFictionalDaypart,parseFictionalStatusAnchor,displayFictionalClock,resolveFictionalClock};
+
+
+// Unlike generic word spotting, accept an explicit present-time/scene command.
+// Mentions of past/future/hypothetical dates are not authorizations to rewrite
+// the current story calendar.
+function isExplicitCreatorCalendarTransition(message) {
+  const input=String(message||'').trim().slice(0,1500);
+  if(!input || /^(?:如果|假如|假設|回憶|回想|曾經|聽說|夢見|夢裡)/u.test(input))return false;
+  if(explicitNextDayTransition(input))return true;
+  return /(?:^|[\n。！？!?；;])\s*[（(]?\s*(?:時間|故事時間|日期|故事日期|劇情|場景|畫面)\s*(?:改成|設定為|設定成|跳到|跳至|推進到|來到|切到|進入)\s*[^\n。！？!?；;]{1,80}/u.test(input) ||
+    /(?:^|[\n。！？!?；;])\s*[（(]?\s*(?:過了|經過|時間過了|時間推進)\s*\d{1,3}\s*(?:分鐘|分|小時|個小時|天|日)/u.test(input);
+}
+
+// Keep unknown creator calendars stable from the last committed status.
+// A Gregorian arithmetic clock cannot calculate alien cycles, Roman eras or
+// arbitrary author-defined dates. This guard never inserts a field, alters
+// a known 24-hour clock, nor interprets creator prose as executable rules.
+function preserveOpaqueCreatorCalendar(template, generated, previous, options={}) {
+  const current=String(generated||'');
+  if(!current.trim() || !String(previous||'').trim()) return current;
+  // A deliberate player time jump may change a custom calendar. We cannot
+  // validate its math, so don't override it with a stale prior date.
+  if(options.explicitTransition===true && options.regenerate!==true) return current;
+  const row=/^\s*([^\n：:]{1,55})[：:]\s*(.*)$/u;
+  const calendarLabel=/(?:日期|年月|年分|年份|時間|時辰|曆|紀年|週期|周期|時段|星際日|星日|stardate|calendar|date|time|cycle)/iu;
+  const labelOf=line=>line.match(row)?.[1]?.trim()||'';
+  const authored=new Set(String(template||'').replace(/\r\n?/g,'\n').split('\n')
+    .map(labelOf).filter(x=>calendarLabel.test(x)));
+  if(!authored.size) return current;
+  const bodyHead=value=>String(value||'').split(/[｜|]/u)[0].trim();
+  const standard=value=>{
+    const v=bodyHead(value);
+    return /^(?:(?:\d{4}[\/.\-])?\d{1,2}[\/.\-]\d{1,2}\s+)?(?:[01]?\d|2[0-3])[:：][0-5]\d$/u.test(v) ||
+      /^第\s*[零〇一二兩三四五六七八九十百千\d]+[日天][，,、\s]+(?:[01]?\d|2[0-3])[:：][0-5]\d$/u.test(v);
+  };
+  // Require strong date/cycle syntax; e.g. 「晚上」「亥時」 alone is an ordinary
+  // time-of-day, not an opaque calendar requiring a whole-row freeze.
+  const opaque=value=>{
+    const v=bodyHead(value);
+    return !standard(v) && v.length<=200 && (
+      /(?:星曆|星歷|星際曆|星紀|紀元|紀年|週期|周期|星日|恆星日|羅馬曆|羅馬紀|帝國曆|曆年|stardate|galactic\s+(?:date|cycle)|sol\s*\d)/iu.test(v) ||
+      /(?:[零〇一二兩三四五六七八九十百千\dIVXLCDM]{1,12})\s*(?:年|月|日|週|周|季|紀)[^\n]{0,75}(?:第\s*[零〇一二兩三四五六七八九十百千\dIVXLCDM]+|[零〇一二兩三四五六七八九十百千\dIVXLCDM]{1,12}\s*(?:日|時段|週期|周期))/iu.test(v)
+    );
+  };
+  const oldRows=new Map();
+  for(const line of String(previous).replace(/\r\n?/g,'\n').split('\n')) {
+    const m=line.match(row);if(!m)continue;
+    const label=m[1].trim(),head=bodyHead(m[2]);
+    if(authored.has(label) && !oldRows.has(label) && opaque(head)) oldRows.set(label,head);
+  }
+  if(!oldRows.size)return current;
+  return current.replace(/\r\n?/g,'\n').split('\n').map(line=>{
+    const m=line.match(row);if(!m)return line;
+    const label=m[1].trim();
+    if(!oldRows.has(label))return line;
+    const split=m[2].match(/^([^｜|]*)([｜|].*)?$/u);
+    if(!split || !opaque(split[1]))return line;
+    // Keep exact current field prefix and any separately-authored compound tail.
+    const valueStart=line.indexOf(m[2]);
+    return line.slice(0,valueStart)+oldRows.get(label)+(split[2]||'');
+  }).join('\n');
+}
+
+module.exports={normalize,label,addMinutes,resolveClock,creatorInitialCalendar,initialStoryClock,parseStatusClock,enforceStatusTime,detectTimeStyle,branchOfHour,displayTime,timePresentationDirective,creatorTimePolicy,advanceForWorld,normalizeFictionalClock,parseFictionalTime,parseFictionalDaypart,parseFictionalStatusAnchor,displayFictionalClock,resolveFictionalClock,preserveOpaqueCreatorCalendar,isExplicitCreatorCalendarTransition};

@@ -273,6 +273,41 @@ function maskPreviousWorldPrimaryThought(status, {recovery = false} = {}) {
   return result.join('\n');
 }
 
+// Ancient-era creator dates (e.g. 承熙六年・八月十七・亥時) are not Gregorian
+// timestamps. For the SAME story day, preserve the last confirmed date portion
+// instead of accepting a fresh model guess. Keep the current turn's time-of-day,
+// other status fields, and any explicit creator conditional visibility unchanged.
+// This is display-only: it does not infer lunar month lengths or rewrite clocks.
+function preserveSameDayCreatorEraDate(template, currentStatus, previousStatus, sameStoryDay) {
+  const current = String(currentStatus || '');
+  if (!sameStoryDay || !current.trim() || !String(previousStatus || '').trim()) return current;
+  const row = /^(\s*([^\n：:]{1,55})[：:]\s*)(.*)$/u;
+  const isTimeLabel = label => /(?:日期|年月|時辰|時間|時刻|故事時間|現在時間|當前時間|📅|📆|🗓️|🕰|⏰|🕒)/u.test(label);
+  const labels = new Set(String(template || '').split(/\r?\n/u)
+    .map(line => line.match(row)).filter(m => m && isTimeLabel(m[2])).map(m => m[2].trim()));
+  if (!labels.size) return current;
+  // Restrict to clear era + month + day prefixes, not incidental character ages,
+  // birthdays, events in status prose, or arbitrary text within a row.
+  const eraDate = /^(\s*)([\p{Script=Han}]{1,12}(?:元|[零〇一二兩三四五六七八九十百千\d]{1,8})年\s*[・·，,、\s-]*[零〇一二兩三四五六七八九十\d]{1,4}月\s*[初廿卅零〇一二兩三四五六七八九十\d]{1,4}(?:日|號)?)/u;
+  const prior = new Map();
+  for (const line of String(previousStatus).split(/\r?\n/u)) {
+    const m = line.match(row);
+    if (!m || !labels.has(m[2].trim())) continue;
+    const date = m[3].match(eraDate);
+    if (date && !prior.has(m[2].trim())) prior.set(m[2].trim(), date[2]);
+  }
+  if (!prior.size) return current;
+  return current.split(/\r?\n/u).map(line => {
+    const m = line.match(row);
+    if (!m || !prior.has(m[2].trim())) return line;
+    const previousDate = prior.get(m[2].trim());
+    const date = m[3].match(eraDate);
+    // Only replace an existing recognizable date. Never add a removed/hidden
+    // date field or replace a purely numeric time, heading, or prose sentence.
+    return date ? m[1] + m[3].replace(eraDate, (_, spaces) => spaces + previousDate) : line;
+  }).join('\n');
+}
+
 // 世界觀邏輯集中管理；依賴由 functions/index.js 注入，避免重複初始化 Firebase Admin。
 function registerWorldFunctions(exports, deps) {
   const {
@@ -2300,6 +2335,18 @@ exports.worldPrivateTest = onCall({
           ? (firstGeneratedAnchor?.clock || storyClock.parseFictionalTime(generatedCalendarValue)) : null;
         const savedFictionalClock = newFictionalClock || initialFictionalClock;
         if (savedFictionalClock) finalFictionalClock = savedFictionalClock;
+        // Only compare backend clocks. Model-proposed calendar text is never
+        // proof of a day change; regeneration must keep the same story date.
+        const isSameBackendStoryDay = action === 'regenerate' || (
+          previousFictionalClock && savedFictionalClock
+            ? previousFictionalClock.day === savedFictionalClock.day
+            : previousStoryClock && finalStoryClock
+              ? previousStoryClock.year === finalStoryClock.year &&
+                previousStoryClock.month === finalStoryClock.month &&
+                previousStoryClock.day === finalStoryClock.day
+              : false
+        );
+        const previousStatusForEraDate = persistedCreatorStatus || latestStatusText;
         // Never adopt a model-invented calendar date as the canonical clock.
         // Modern rooms already have a neutral persistent seed; only creator
         // configuration or explicit player input may establish an exact date.
@@ -2347,8 +2394,14 @@ exports.worldPrivateTest = onCall({
             repairedFields:completeness.repairedFields,
             skippedAmbiguous:completeness.skippedAmbiguous, replyAccepted:true,
           });
-          newCreatorStatusForPersistence = completeness.status;
-          if(completeness.status)statusParts.push(completeness.status);
+          newCreatorStatusForPersistence = storyClock.preserveOpaqueCreatorCalendar(
+            customStatusTemplate,
+            preserveSameDayCreatorEraDate(customStatusTemplate, completeness.status,
+              previousStatusForEraDate, isSameBackendStoryDay),
+            previousStatusForEraDate,
+            {explicitTransition: action === 'send' && storyClock.isExplicitCreatorCalendarTransition(rawMessage),
+             regenerate: action === 'regenerate'});
+          if(newCreatorStatusForPersistence)statusParts.push(newCreatorStatusForPersistence);
           if(gatedStatus.protectedCount)logger.info('WORLD CREATOR CONDITIONAL STATUS GUARD',{
             mode:worldMode,protectedCount:gatedStatus.protectedCount,removedCount:gatedStatus.removedCount,
             // No player message, hidden status value, or secret trigger in logs.
@@ -2381,7 +2434,14 @@ exports.worldPrivateTest = onCall({
               skippedAmbiguous:completeness.skippedAmbiguous,
               recoveredWholeStatus:true, replyAccepted:true,
             });
-            if(completeness.status)statusParts.push(completeness.status);
+            const stableRecoveredStatus = storyClock.preserveOpaqueCreatorCalendar(
+              customStatusTemplate,
+              preserveSameDayCreatorEraDate(customStatusTemplate, completeness.status,
+                previousStatusForEraDate, isSameBackendStoryDay),
+              previousStatusForEraDate,
+              {explicitTransition: action === 'send' && storyClock.isExplicitCreatorCalendarTransition(rawMessage),
+               regenerate: action === 'regenerate'});
+            if(stableRecoveredStatus)statusParts.push(stableRecoveredStatus);
             reusedPriorStatusBar = true;
             logger.warn('world status bar safely restored from same room', {
               worldMode, parseStrategy:validation.parseStrategy,

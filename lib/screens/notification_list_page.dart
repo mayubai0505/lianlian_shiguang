@@ -386,6 +386,10 @@ class _NotificationListPageState extends State<NotificationListPage> {
           rewardAmount: (data['rewardAmount'] as num?)?.toInt() ??
               int.tryParse(data['rewardAmount']?.toString() ?? '') ??
               0,
+          rewardType: data['rewardType']?.toString() ?? 'flowerPoints',
+          rewardItem: data['rewardItem'] is Map
+              ? Map<String, dynamic>.from(data['rewardItem'] as Map)
+              : const <String, dynamic>{},
           timeText: timeText,
           endAt: _readMailDateTime(
             data['endAt'] ?? data['expiresAt'],
@@ -1252,6 +1256,8 @@ class _RewardCampaignDetailPage extends StatefulWidget {
   final String title;
   final String body;
   final int rewardAmount;
+  final String rewardType;
+  final Map<String, dynamic> rewardItem;
   final String timeText;
   final DateTime? endAt;
   final bool initiallyClaimed;
@@ -1261,6 +1267,8 @@ class _RewardCampaignDetailPage extends StatefulWidget {
     required this.title,
     required this.body,
     required this.rewardAmount,
+    required this.rewardType,
+    required this.rewardItem,
     required this.timeText,
     required this.endAt,
     required this.initiallyClaimed,
@@ -1279,6 +1287,19 @@ class _RewardCampaignDetailPageState
 
   bool _isClaiming = false;
   late bool _isClaimed;
+
+  bool get _isItemReward =>
+      widget.rewardType == 'avatar_frame' || widget.rewardType == 'sticker';
+
+  String get _rewardName {
+    final name = widget.rewardItem['name']?.toString().trim() ?? '';
+    if (name.isNotEmpty) return name;
+    return widget.rewardType == 'avatar_frame' ? '限定頭像框' : '限定貼圖';
+  }
+
+  String get _rewardImageUrl =>
+      widget.rewardItem['imageUrl']?.toString().trim() ?? '';
+
 
   @override
   void initState() {
@@ -1327,10 +1348,19 @@ class _RewardCampaignDetailPageState
 
       final int receivedAmount =
           (data['rewardAmount'] as num?)?.toInt() ?? widget.rewardAmount;
+      final claimedItem = data['rewardItem'] is Map
+          ? Map<String, dynamic>.from(data['rewardItem'] as Map)
+          : const <String, dynamic>{};
+      final claimedName = claimedItem['name']?.toString().trim() ?? '';
+      final receivedType = data['rewardType']?.toString() ?? widget.rewardType;
 
       ToastUtils.showCenterToast(
         context,
-        l10n.rewardCampaignClaimSuccess(receivedAmount),
+        receivedType == 'avatar_frame'
+            ? '已領取頭像框：${claimedName.isNotEmpty ? claimedName : _rewardName}'
+            : receivedType == 'sticker'
+                ? '已領取貼圖：${claimedName.isNotEmpty ? claimedName : _rewardName}'
+                : l10n.rewardCampaignClaimSuccess(receivedAmount),
       );
     } on FirebaseFunctionsException catch (error) {
       debugPrint(
@@ -1443,21 +1473,55 @@ class _RewardCampaignDetailPageState
                       style: TextStyle(color: Colors.grey),
                     ),
                     const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          l10n.rewardCampaignFlowerAmount(
-                            widget.rewardAmount,
-                          ),
-                          style: const TextStyle(
-                            color: Colors.pinkAccent,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
+                    if (_isItemReward) ...[
+                      if (_rewardImageUrl.isNotEmpty) ...[
+                        SizedBox(
+                          width: 172,
+                          height: 172,
+                          child: CachedNetworkImage(
+                            imageUrl: _rewardImageUrl,
+                            fit: BoxFit.contain,
+                            placeholder: (_, __) => const Center(
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                            errorWidget: (_, __, ___) => const Center(
+                              child: Icon(Icons.image_not_supported_outlined, size: 40),
+                            ),
                           ),
                         ),
+                        const SizedBox(height: 10),
                       ],
-                    ),
+                      Text(
+                        _rewardName,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: theme.colorScheme.onSurface,
+                          fontSize: 19,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        widget.rewardType == 'avatar_frame' ? '限定頭像框' : '限定貼圖',
+                        style: TextStyle(
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.65),
+                          fontSize: 12,
+                        ),
+                      ),
+                    ] else
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            l10n.rewardCampaignFlowerAmount(widget.rewardAmount),
+                            style: const TextStyle(
+                              color: Colors.pinkAccent,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
                     if (endAt != null) ...[
                       const SizedBox(height: 10),
                       Text(
