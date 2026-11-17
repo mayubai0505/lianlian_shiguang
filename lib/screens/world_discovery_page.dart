@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -9,6 +10,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../services/toast_utils.dart';
+import '../services/work_feedback_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -36,6 +38,7 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
     super.initState();
     _tabs = TabController(length: 4, vsync: this);
     _worldFuture = _fetchWorld();
+    _engagementAuth = FirebaseAuth.instance.authStateChanges().listen(_bindEngagement);
   }
   Future<DocumentSnapshot<Map<String, dynamic>>> _fetchWorld() {
     final collection = widget.creatorPreview
@@ -56,15 +59,222 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
   @override
   void didUpdateWidget(covariant WorldDiscoveryPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.worldId != widget.worldId) {
+    if (oldWidget.worldId != widget.worldId || oldWidget.creatorPreview != widget.creatorPreview) {
       _retryWorldLoad();
+      _bindEngagement(FirebaseAuth.instance.currentUser);
     }
   }
 
   @override
-  void dispose() { _tabs.dispose(); super.dispose(); }
+  void dispose() {
+    _engagementGeneration++;
+    _engagementAuth?.cancel();
+    _bookmarkSub?.cancel();
+    _likeSub?.cancel();
+    _countSub?.cancel();
+    _tabs.dispose();
+    super.dispose();
+  }
 
   String _s(Map<String, dynamic> d, String key) => (d[key] ?? '').toString();
+
+  // Account-scoped reactions. Keep the public-world Future stable when a
+  // player taps a button, and never attach reactions to a private preview.
+  StreamSubscription<User?>? _engagementAuth;
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _bookmarkSub;
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _likeSub;
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _countSub;
+  String? _engagementUid;
+  int _engagementGeneration = 0;
+  bool _bookmarkReady = false, _likeReady = false;
+  bool _bookmarked = false, _liked = false;
+  bool? _pendingBookmark, _pendingLike;
+  bool _likeSyncInFlight = false, _bookmarkInFlight = false;
+  int? _likesCount;
+
+  DocumentReference<Map<String, dynamic>> _bookmarkRef(String uid) =>
+      FirebaseFirestore.instance.collection('users').doc(uid)
+          .collection('bookmarks').doc('world_${widget.worldId}');
+  DocumentReference<Map<String, dynamic>> _likeRef(String uid) =>
+      FirebaseFirestore.instance.collection('users').doc(uid)
+          .collection('liked_works').doc('world_${widget.worldId}');
+  bool _canReact(Map<String, dynamic> world) => !widget.creatorPreview &&
+      world['isPublic'] == true && world['status'] == 'public' &&
+      world['publicPlayable'] == true;
+
+  void _bindEngagement(User? user) {
+    if (!mounted) return;
+    final generation = ++_engagementGeneration;
+    _bookmarkSub?.cancel();
+    _likeSub?.cancel();
+    _countSub?.cancel();
+    final uid = user?.uid;
+    setState(() {
+      _engagementUid = uid;
+      _bookmarkReady = false;
+      _likeReady = false;
+      _bookmarked = false;
+      _liked = false;
+      _pendingBookmark = null;
+      _pendingLike = null;
+      _likeSyncInFlight = false;
+      _bookmarkInFlight = false;
+      _likesCount = null;
+    });
+    if (widget.creatorPreview) return;
+    bool current() => mounted && generation == _engagementGeneration;
+    if (uid != null) {
+      _bookmarkSub = _bookmarkRef(uid).snapshots().listen((snapshot) {
+        if (!current()) return;
+        setState(() { _bookmarked = snapshot.exists; _bookmarkReady = true; });
+      }, onError: (Object e) {
+        debugPrint('世界收藏讀取失敗：$e');
+        if (current()) setState(() => _bookmarkReady = false);
+      });
+      _likeSub = _likeRef(uid).snapshots().listen((snapshot) {
+        if (!current()) return;
+        setState(() { _liked = snapshot.exists; _likeReady = true; });
+      }, onError: (Object e) {
+        debugPrint('世界喜歡讀取失敗：$e');
+        if (current()) setState(() => _likeReady = false);
+      });
+    }
+    _countSub = FirebaseFirestore.instance.collection('artifacts').doc(AppConfig.appId)
+        .collection('world_engagement').doc(widget.worldId).snapshots().listen((snapshot) {
+      if (!current()) return;
+      final value = snapshot.data()?['likesCount'];
+      setState(() => _likesCount = value is num && value >= 0 ? value.toInt() : 0);
+    }, onError: (Object e) {
+      debugPrint('世界愛心數讀取失敗：$e');
+      if (current()) setState(() => _likesCount = null);
+    });
+  }
+
+  bool _checkEngagementReady(bool ready) {
+    final l10n = AppLocalizations.of(context)!;
+    if (FirebaseAuth.instance.currentUser == null) {
+      ToastUtils.showCenterToast(context, l10n.profilePagePleaseSignIn, isError: true);
+      return false;
+    }
+    if (!ready || FirebaseAuth.instance.currentUser?.uid != _engagementUid) {
+      ToastUtils.showCenterToast(context, l10n.common_operation_failed_retry, isError: true);
+      return false;
+    }
+    return true;
+  }
+
+  Future<void> _toggleWorldBookmark(Map<String, dynamic> world) async {
+    if (!_canReact(world) || _bookmarkInFlight || !_checkEngagementReady(_bookmarkReady)) return;
+    final generation = _engagementGeneration;
+    final ref = _bookmarkRef(_engagementUid!);
+    final before = _bookmarked;
+    final desired = !before;
+    final l10n = AppLocalizations.of(context)!;
+    setState(() { _bookmarkInFlight = true; _pendingBookmark = desired; });
+    try {
+      if (desired) {
+        await ref.set({
+          'type': 'world', 'worldId': widget.worldId,
+          'worldName': _s(world, 'name'), 'coverImage': _s(world, 'coverImage'),
+          'bookmarkedAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+      } else {
+        await ref.delete();
+      }
+      if (mounted && generation == _engagementGeneration) setState(() => _bookmarked = desired);
+    } catch (e) {
+      debugPrint('世界收藏更新失敗：$e');
+      if (mounted && generation == _engagementGeneration) {
+        setState(() => _bookmarked = before);
+        ToastUtils.showCenterToast(context, l10n.common_operation_failed_retry, isError: true);
+      }
+    } finally {
+      if (mounted && generation == _engagementGeneration) {
+        setState(() { _bookmarkInFlight = false; _pendingBookmark = null; });
+      }
+    }
+  }
+
+  void _toggleWorldLike(Map<String, dynamic> world) {
+    if (!_canReact(world) || !_checkEngagementReady(_likeReady)) return;
+    final l10n = AppLocalizations.of(context)!;
+    if (_engagementUid == _s(world, 'createdBy')) {
+      ToastUtils.showCenterToast(context, l10n.like_own_char_warning);
+      return;
+    }
+    setState(() => _pendingLike = !(_pendingLike ?? _liked));
+    _syncWorldLike();
+  }
+
+  Future<void> _syncWorldLike() async {
+    if (_likeSyncInFlight) return;
+    final generation = _engagementGeneration;
+    final uid = _engagementUid;
+    final worldId = widget.worldId;
+    _likeSyncInFlight = true;
+    bool current() => mounted && generation == _engagementGeneration &&
+        FirebaseAuth.instance.currentUser?.uid == uid;
+    try {
+      final callable = FirebaseFunctions.instanceFor(region: 'us-central1').httpsCallable('setWorldLike');
+      while (current() && _pendingLike != null) {
+        final desired = _pendingLike!;
+        final result = await callable.call({'worldId': worldId, 'liked': desired});
+        if (!current()) return;
+        final data = Map<String, dynamic>.from(result.data as Map);
+        if (data['success'] != true || data['liked'] != desired) {
+          throw StateError('世界喜歡狀態未確認');
+        }
+        setState(() {
+          _liked = desired;
+          if (data['likesCount'] is num) _likesCount = (data['likesCount'] as num).toInt();
+          if (_pendingLike == desired) _pendingLike = null;
+        });
+        if (data['notificationCreated'] == true) {
+          ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.like_success_msg);
+        }
+      }
+    } catch (e) {
+      debugPrint('世界喜歡更新失敗：$e');
+      if (current()) {
+        setState(() => _pendingLike = null);
+        ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.common_operation_failed_retry, isError: true);
+      }
+    } finally {
+      if (generation == _engagementGeneration) _likeSyncInFlight = false;
+    }
+  }
+
+  Widget _worldReactionRow(Map<String, dynamic> world) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final active = _pendingLike ?? _liked;
+    final count = _likesCount;
+    // The count is a server-confirmed value; do not add a second optimistic delta.
+    final displayedCount = count;
+    Widget action(IconData icon, String text, VoidCallback onTap, bool selected) {
+      final color = selected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant;
+      return Expanded(child: InkWell(
+        borderRadius: BorderRadius.circular(12), onTap: onTap,
+        child: Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Column(
+          mainAxisSize: MainAxisSize.min, children: [
+            Icon(icon, size: 23, color: color),
+            const SizedBox(height: 5),
+            Text(text, maxLines: 1, overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.notoSerifTc(fontSize: 12.5, color: color)),
+          ],
+        )),
+      ));
+    }
+    return Row(children: [
+      action(active ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+        displayedCount == null ? l10n.like_label : '${l10n.like_label} · $displayedCount',
+        () => _toggleWorldLike(world), active),
+      Container(width: 1, height: 34, color: theme.dividerColor.withValues(alpha: 0.35)),
+      action(Icons.thumb_down_alt_outlined, l10n.dislike_label,
+        () { showWorkDislikeDialog(context, workId: widget.worldId, isWorld: true, workName: _s(world, 'name')); }, false),
+    ]);
+  }
+
 
   final GlobalKey _shareCardKey = GlobalKey();
   bool _sharing = false;
@@ -205,6 +415,10 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
       Text(name,maxLines:2,overflow:TextOverflow.visible,
           style:GoogleFonts.notoSerifTc(fontSize:name.runes.length>22 ? 16 :
           name.runes.length>14 ? 20 : 26,fontWeight:FontWeight.w700)),
+      if (_canReact(d)) ...[
+        const SizedBox(height: 8),
+        _worldReactionRow(d),
+      ],
       const SizedBox(height:18),
       Text(AppLocalizations.of(context)!.world_discovery_story_open1,style:GoogleFonts.notoSerifTc(fontSize:17,fontWeight:FontWeight.w600)),
       const SizedBox(height:12),
@@ -404,7 +618,16 @@ class _WorldDiscoveryPageState extends State<WorldDiscoveryPage>
             ? _s(d, 'name').trim()
             : AppLocalizations.of(context)!.world_discovery_open_world1,
             maxLines: 2, overflow: TextOverflow.ellipsis),
-        actions: [IconButton(
+        actions: [
+          if (_canReact(d)) IconButton(
+            tooltip: (_pendingBookmark ?? _bookmarked)
+                ? AppLocalizations.of(context)!.character_profile_remove_bookmark
+                : AppLocalizations.of(context)!.character_profile_add_bookmark,
+            onPressed: () => _toggleWorldBookmark(d),
+            icon: Icon((_pendingBookmark ?? _bookmarked) ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+              color: (_pendingBookmark ?? _bookmarked) ? theme.colorScheme.primary : null),
+          ),
+          IconButton(
           tooltip: AppLocalizations.of(context)!.world_discovery_share_tooltip1,
           onPressed: () => _showSharePreview(d),
           icon: const Icon(Icons.ios_share_rounded),

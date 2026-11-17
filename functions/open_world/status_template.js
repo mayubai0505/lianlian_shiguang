@@ -1,4 +1,5 @@
 'use strict';
+const creatorThought = require('./creator_thought');
 // Creator templates are free-form presentation guides, not a schema.
 // Keep AI-generated layout/emoji/kaomoji intact and remove only clearly leaked instructions.
 const CONTROL = /(?:reasoning_content|userRequestSummary|系統提示詞|內部提示詞|隱藏篇章|世界完整設定|檢查系統提示|回顧系統提示|現在開始正式寫作|於封禁狀態)/iu;
@@ -323,6 +324,14 @@ function inspectCreatorStatusCompleteness(template, visible, options={}) {
     seen.add(label);
     rows.push({label,separator:match[2]});
   }
+  // Count a recognized required primary thought once, even with a named inline layout.
+  const thoughtSpec=creatorThought.authoredThoughtSpec(template);
+  const isThoughtLabel=label=>Boolean(creatorThought.parseHeading(`${label}：`));
+  if(thoughtSpec?.required) {
+    const first=rows.findIndex(item=>isThoughtLabel(item.label));
+    if(first>=0)rows[first].thought=true;
+    else rows.push({label:thoughtSpec.heading,separator:'：',thought:true});
+  }
   if(!rows.length)return result;
   // Reliable labels must be present as their own field row. Do not match a
   // narrative mention or another NPC's sentence containing the same label.
@@ -330,7 +339,7 @@ function inspectCreatorStatusCompleteness(template, visible, options={}) {
     const match=line.match(row);
     return Boolean(match&&match[1].trim()===label);
   });
-  const missing=rows.filter(item=>findRow(item.label,lines)<0);
+  const missing=rows.filter(item=>item.thought ? !creatorThought.readThought(original).valid : findRow(item.label,lines)<0);
   result.eligibleFields=rows.length;
   result.presentFields=rows.length-missing.length;
   result.missingFields=missing.length;
@@ -345,6 +354,7 @@ function inspectCreatorStatusCompleteness(template, visible, options={}) {
   const date=match[1]?`${match[1]}年${String(match[2]).padStart(2,'0')}月${String(match[3]).padStart(2,'0')}日`:'';
   const repaired=new Map();
   for(const item of missing) {
+    if(item.thought)continue;
     if(/^(?:時間|時刻|故事時間|目前時間|當前時間|現在時間|時間\s+TIME|TIME\s+時間)$/iu.test(item.label))repaired.set(item.label,hhmm);
     if(date && /^(?:日期|故事日期|目前日期|日期\s+DATE|DATE\s+日期)$/iu.test(item.label))repaired.set(item.label,date);
   }

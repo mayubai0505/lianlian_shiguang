@@ -9,6 +9,7 @@ async function extractPlayerMemory({
   chatMode = "",
   abortController,
 }) {
+  const canonicalName = String(playerName || "").trim() || "玩家";
   const cleanMessage = String(userMessage || "").trim();
 
   if (!cleanMessage) {
@@ -36,25 +37,25 @@ async function extractPlayerMemory({
 
   const contextText = (Array.isArray(recentHistory) ? recentHistory : []).slice(-6)
     .map(msg => `${msg.role === 'assistant' ? '角色' : '玩家'}：${String(msg.content || msg.text || '').slice(0, 1800)}`).join('\n');
-  const evidenceInput = `需要記憶的人名：${playerName || "對方"}\n【前文，僅供指涉理解，不可直接當成新記憶證據】\n${contextText}\n【玩家本輪訊息，唯一允許的記憶來源】\n${cleanMessage}`;
+  const evidenceInput = `需要記憶的人名：${canonicalName}\n【前文，僅供指涉理解，不可直接當成新記憶證據】\n${contextText}\n【玩家本輪訊息，唯一允許的記憶來源】\n${cleanMessage}`;
   const memorySystemPrompt = `
 你是「玩家長期記憶提取器」。
 【玩家可見記憶的語言】
 - 本輪指定語言：${String(playerLanguage || "未指定：沿用玩家本輪原文的主要語言").slice(0,80)}。
 - memory 是直接顯示給玩家的完整句子，必須使用上述語言；未指定時沿用玩家本輪原文的主要語言。繁體中文不得改成英文或簡體中文；其他語系也不得強制翻成中文。
-- 玩家、角色與寵物的原始名稱原樣保留，例如棉花糖不可翻譯成 Cotton Candy。
+- 玩家、角色與寵物的原始名稱原樣保留，不得翻譯原始專名。
 - factKey 仍用英文 taxonomy；factKey 的英文規則不適用於 memory。factValue 可用簡潔原語言值，不得據此把 memory 改寫為英文。
 【核心限制：只記錄玩家本人確認的資訊】
 - 所有記憶項目只能引用【玩家本輪訊息】的原文；不從角色回覆、角色的內心、角色的行程或角色單方面的台詞建立記憶。
-- 「與我相關」每一條 memory 都必須以需要記憶的人名作為敘述主體；例如「默語白早上 7:50 上駕訓班」，不可變成「角色提醒默語白上課」，也不可寫「玩家早上 7:50...」。
+- 「與我相關」每一條 memory 都必須以需要記憶的人名作為敘述主體；必須逐字以本輪提供的名稱開頭，不得改用角色或其他名稱。
 - 明確的未來安排、上課/駕訓班時間、約定的時間和地點屬於應保存的事件，即使不是永久偏好；如「我早上 7:50 上駕訓班」，保存為 important_event.driving_class，scope=session，含準確時刻。既有儲存器會將 important_event.* 固定為 session，跨聊天室固定課程另需設計獨立鍵與分類；不得憑空補日期、星期、地點。
 - 只保存玩家明確說過、確認過或更正過的內容；角色單方面提議不等於玩家接受。
 
 【已選中記憶的事實完整性｜不改變是否值得記住的標準】
 - 先依現有規則判斷該事實是否值得記住；只有 shouldRemember=true 的項目才套用以下完整性要求，不得因此把普通吃飯、聊天或日常小動作一律升格成永久記憶。
 - 玩家本輪原文若明確指出某個已選中事件的發生地點、參與者、時間、物品、事件先後或肯定／否定／取消狀態，memory 應在簡潔的同一句中保留這些直接相關的限定資訊；不能只留下動作或物品而捨棄地點，也不能將目前所在地當作過去事件地點。
-- 例：玩家說「我在育幼院吃草莓蛋糕」，若依原有標準判定這件事應記住，應寫「小滿曾在育幼院吃草莓蛋糕」，不可縮成「小滿吃過草莓蛋糕」，更不可改成「小滿在教室吃草莓蛋糕」；若只是普通一次性吃點心，仍可判定不記住。
-- 例：「我明天下午三點在圖書館跟阿澈碰面」若屬重要約定，保留「明天下午三點」「圖書館」「阿澈」及約定狀態；不得憑空產生年月日。
+- 例：玩家說「我在育幼院吃草莓蛋糕」，若依原有標準判定這件事應記住，應寫「本輪提供的名稱＋曾在育幼院吃草莓蛋糕」，不可縮成「吃過草莓蛋糕」，更不可改成「在教室吃草莓蛋糕」；若只是普通一次性吃點心，仍可判定不記住。
+- 例：「我明天下午三點在圖書館跟對方碰面」若屬重要約定，保留「明天下午三點」「圖書館」「對方」及約定狀態；不得憑空產生年月日。
 - factValue 若是簡短分類值（如「喜歡」）可保持簡潔，但 memory 必須是獨立可理解的完整事實；evidence 請盡量引用玩家本輪包含關鍵限定資訊的連續原文片段，而非只摘取「草莓蛋糕」等物品名稱。
 - 若玩家本輪並未提供某個細節，保持未知，不可從角色回覆、其他場景、目前所在地或前文推測填補；不同事件的地點／時間不能合併。玩家的心聲或私下想法不可改寫成 NPC 已聽見或知悉的事實。
 【自然敘述、特質與職業必須分清】
@@ -104,8 +105,8 @@ ${["immersive", "resonance"].includes(chatMode) ? "【沉浸／共鳴模式補�
 - 假設、疑問、演繹內的猜測或未完成的玩家動作不能保存為完成事實。取消、更正必須更新同一主題鍵並寫清新狀態。
 - 不得補充、推測或改寫成更誇張的內容。
 - 記憶中的玩家稱呼，必須使用系統提供的人設名稱，禁止猜測別名、暱稱或沿用前文的其他名稱。
-- 例如系統提供的人設名稱是「小滿」，就寫「小滿喜歡吃草莓蛋糕」；不可自行創造其他名字。
-- 絕對不要使用「玩家喜歡……」這種系統式稱呼。
+- memory 必須逐字以本輪提供的名稱開頭，不得輸出範例佔位符或其他主詞。
+- 只有本輪提供的名稱就是「玩家」時才可使用「玩家」作主詞。
 - 一次最多提取4項不同的重要事實，不要為湊數提取。
 - 若沒有值得長期保存的資訊，shouldRemember 必須是 false。
 - 若 shouldRemember=true，必須同時提供 factKey 與 factValue。
@@ -144,8 +145,8 @@ ${["immersive", "resonance"].includes(chatMode) ? "【沉浸／共鳴模式補�
   - 「我現在每天喝咖啡」若是在更新長期習慣，仍用 preference.drink.coffee，不要改成 habit.coffee。
   - 「我討厭草莓蛋糕」與「我現在最喜歡草莓蛋糕」→ 都用 preference.food.strawberry_cake。
   - 「我是學生」與「我畢業後成為咖啡師」→ 都用 identity.occupation。
-  - 「叫我小滿」與「以後叫我阿滿」→ 都用 interaction.preferred_address。
-  - 若是一般、跨聊天室成立的稱呼（例如「大家都叫我阿滿」「叫我小滿就好」）→ scope=profile。
+  - 「叫我[暱稱A]」與「以後叫我[暱稱B]」→ 都用 interaction.preferred_address。
+  - 若是一般、跨聊天室成立的稱呼（例如「大家都叫我[暱稱B]」「叫我[暱稱A]就好」）→ scope=profile。
   - 若是目前角色／目前聊天室專屬稱呼（例如「我喜歡你叫我寶寶」「你叫我老婆」「不要叫我寶寶，叫名字」）→ scope=session。
   - 「我們結婚了」與「我們決定離婚」→ 都用 relationship.status；事件本身若另有長期意義才用 relationship.event.<subject>。
   - scope 只表示「這個事實在哪裡成立」，不要把 scope 重複編進 factKey。
@@ -153,7 +154,7 @@ ${["immersive", "resonance"].includes(chatMode) ? "【沉浸／共鳴模式補�
   - 只要已有 identity / preference / habit / interaction / relationship 等語意鍵可用，就優先使用語意鍵；worldline.* 僅保留給沒有其他 canonical semantic key 可表達的世界線事實。
   - 「我懷孕了」→ worldline.pregnancy_status。
 - 禁止輸出 personal.job、habit.alcohol、relationship.preferred_name、story.relationship_status、story.pregnancy_status 等舊式自由鍵。
-- factValue 是這條事實目前的簡潔值，例如「咖啡師」「不喝」「喜歡」「阿滿」「已婚」「離婚」「懷孕」。
+- factValue 是這條事實目前的簡潔值，例如「咖啡師」「不喝」「喜歡」「[暱稱B]」「已婚」「離婚」「懷孕」。
 - 只回傳合法 JSON，不要加入 Markdown 或說明。
 
 【記憶範圍判斷】
@@ -317,7 +318,7 @@ ${["immersive", "resonance"].includes(chatMode) ? "【沉浸／共鳴模式補�
       const culinaryNickname = item.factKey === 'identity.occupation' &&
         /大[廚厨]/.test(item.evidence) &&
         !/(職業|职业|任職|任职|受僱|受雇|餐廳|餐厅|飯店|饭店|酒店|工作是|工作就是|當廚師|当厨师|當主廚|当主厨)/.test(item.evidence);
-      return item.sourceRole === 'user' && !culinaryNickname && item.shouldRemember && (item.evidence.length >= 2 || shortConfirmation) && source.includes(item.evidence);
+      return item.memory.startsWith(canonicalName) && item.sourceRole === 'user' && !culinaryNickname && item.shouldRemember && (item.evidence.length >= 2 || shortConfirmation) && source.includes(item.evidence);
     });
     return {shouldRemember: memories.length > 0, memories};
 

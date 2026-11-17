@@ -7,6 +7,7 @@ async function callAiWithRetry({
   fallbackModelId,
   requestBody,
   fallbackRequestBody = null,
+  timeoutFallbackModelId = null,
   abortController,
   timeoutMs = 95_000,
   fallbackTimeoutMs = timeoutMs,
@@ -301,7 +302,10 @@ async function callAiWithRetry({
       // Gemini / Grok 失敗後直接切 OpenRouter DeepSeek v3.2；
       // fallback 也失敗就結束，不再切第三模型。
       if (!retryPrimary) {
-        if (!fallbackModelId) {
+        // Explicit opt-in for transport timeouts only; other failure routes stay unchanged.
+        const selectedFallbackModelId = error?.code === "AI_TIMEOUT" && timeoutFallbackModelId
+          ? timeoutFallbackModelId : fallbackModelId;
+        if (!selectedFallbackModelId) {
           return await finishFailure(
             error
           );
@@ -314,13 +318,13 @@ async function callAiWithRetry({
         }
         usedFallback = true;
         finalModelId =
-          fallbackModelId;
+          selectedFallbackModelId;
 
         console.warn(
           "🚑 Writer 主模型失敗，直接切換最後 fallback:",
           {
             modelId,
-            fallbackModelId,
+            fallbackModelId: selectedFallbackModelId,
             message:
               error?.message,
             code:
@@ -335,20 +339,20 @@ async function callAiWithRetry({
         try {
           const fallbackResult =
             await callCurrentAiModel(
-              fallbackModelId,
+              selectedFallbackModelId,
               fallbackTimeoutMs,
               fallbackRequestBody || requestBody
             );
 
           return await finishSuccess(
             fallbackResult,
-            fallbackModelId
+            selectedFallbackModelId
           );
         } catch (fallbackError) {
           console.error(
             "🧯 Writer fallback 也失敗，本輪結束且不再切第三模型:",
             {
-              fallbackModelId,
+              fallbackModelId: selectedFallbackModelId,
               message:
                 fallbackError?.message,
               code:

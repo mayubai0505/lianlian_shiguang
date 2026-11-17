@@ -6,6 +6,7 @@ async function extractPlayerMemory({
   chatMode = "",
   abortController,
 }) {
+  const canonicalName = String(playerName || "").trim() || "玩家";
   const cleanMessage = String(userMessage || "").trim();
 
   if (!cleanMessage) {
@@ -70,8 +71,8 @@ ${["immersive", "resonance"].includes(chatMode) ? "【沉浸／共鳴模式補�
 - 只能提取玩家明確表達的事實。
 - 不得補充、推測或改寫成更誇張的內容。
 - 記憶中的玩家稱呼，必須使用系統提供的玩家名稱。
-- 例如玩家名稱是「妮妮」，就寫「妮妮喜歡吃草莓蛋糕」。
-- 絕對不要使用「玩家喜歡……」這種系統式稱呼。
+- memory 必須逐字以本輪提供的名稱開頭；不得使用範例姓名、猜測姓名或其他人物作主詞。
+- 只有本輪提供的名稱就是「玩家」時才可使用「玩家」作主詞。
 - 一次最多提取一項最重要的記憶。
 - 若沒有值得長期保存的資訊，shouldRemember 必須是 false。
 - 若 shouldRemember=true，必須同時提供 factKey 與 factValue。
@@ -110,8 +111,8 @@ ${["immersive", "resonance"].includes(chatMode) ? "【沉浸／共鳴模式補�
   - 「我現在每天喝咖啡」若是在更新長期習慣，仍用 preference.drink.coffee，不要改成 habit.coffee。
   - 「我討厭草莓蛋糕」與「我現在最喜歡草莓蛋糕」→ 都用 preference.food.strawberry_cake。
   - 「我是學生」與「我畢業後成為咖啡師」→ 都用 identity.occupation。
-  - 「叫我小滿」與「以後叫我阿滿」→ 都用 interaction.preferred_address。
-  - 若是一般、跨聊天室成立的稱呼（例如「大家都叫我阿滿」「叫我小滿就好」）→ scope=profile。
+  - 「叫我[暱稱A]」與「以後叫我[暱稱B]」→ 都用 interaction.preferred_address。
+  - 若是一般、跨聊天室成立的稱呼（例如「大家都叫我[暱稱B]」「叫我[暱稱A]就好」）→ scope=profile。
   - 若是目前角色／目前聊天室專屬稱呼（例如「我喜歡你叫我寶寶」「你叫我老婆」「不要叫我寶寶，叫名字」）→ scope=session。
   - 「我們結婚了」與「我們決定離婚」→ 都用 relationship.status；事件本身若另有長期意義才用 relationship.event.<subject>。
   - scope 只表示「這個事實在哪裡成立」，不要把 scope 重複編進 factKey。
@@ -119,7 +120,7 @@ ${["immersive", "resonance"].includes(chatMode) ? "【沉浸／共鳴模式補�
   - 只要已有 identity / preference / habit / interaction / relationship 等語意鍵可用，就優先使用語意鍵；worldline.* 僅保留給沒有其他 canonical semantic key 可表達的世界線事實。
   - 「我懷孕了」→ worldline.pregnancy_status。
 - 禁止輸出 personal.job、habit.alcohol、relationship.preferred_name、story.relationship_status、story.pregnancy_status 等舊式自由鍵。
-- factValue 是這條事實目前的簡潔值，例如「咖啡師」「不喝」「喜歡」「阿滿」「已婚」「離婚」「懷孕」。
+- factValue 是這條事實目前的簡潔值，例如「咖啡師」「不喝」「喜歡」「[暱稱B]」「已婚」「離婚」「懷孕」。
 - 只回傳合法 JSON，不要加入 Markdown 或說明。
 
 【記憶範圍判斷】
@@ -147,7 +148,7 @@ ${["immersive", "resonance"].includes(chatMode) ? "【沉浸／共鳴模式補�
 輸出格式：
 {
   "shouldRemember": true 或 false,
-  "memory": "${playerName || "對方"}喜歡吃草莓蛋糕。",
+  "memory": "以本輪提供的名稱開頭的實際事實",
   "scope": "profile | character | session | none",
   "category": "preference | personal | habit | relationship | story_state | important_event | none",
   "factKey": "preference.food.strawberry_cake",
@@ -164,7 +165,7 @@ ${["immersive", "resonance"].includes(chatMode) ? "【沉浸／共鳴模式補�
       },
       {
         role: "user",
-        content: `需要記憶的人名：${playerName || "對方"}\n最新訊息：${cleanMessage}`,
+        content: `需要記憶的人名：${canonicalName}\n最新訊息：${cleanMessage}`,
       },
     ],
     max_tokens: 400,
@@ -240,7 +241,7 @@ ${["immersive", "resonance"].includes(chatMode) ? "【沉浸／共鳴模式補�
             },
             {
               role: "user",
-              content: `需要記憶的人名：${playerName || "對方"}\n最新訊息：${cleanMessage}`,
+              content: `需要記憶的人名：${canonicalName}\n最新訊息：${cleanMessage}`,
             },
           ],
         },
@@ -252,7 +253,7 @@ ${["immersive", "resonance"].includes(chatMode) ? "【沉浸／共鳴模式補�
     }
 
     return {
-      shouldRemember: parsed.shouldRemember === true,
+      shouldRemember: parsed.shouldRemember === true && String(parsed.memory || "").trim().startsWith(canonicalName),
       memory: String(parsed.memory || "").trim(),
       scope: String(parsed.scope || "none").trim().toLowerCase(),
       category: String(parsed.category || "none").trim(),

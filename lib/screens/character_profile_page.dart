@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import '../services/theme_notifier.dart';
 import '../services/toast_utils.dart';
+import '../services/work_feedback_service.dart';
 import 'chat_page.dart';
 import 'character_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -1617,73 +1618,10 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
     }
   }
 
-  void _showDislikeDialog() {
-    final l10n = AppLocalizations.of(context)!;
-
-    final reasonController = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          // 💡 注意：這裡的 const 被我拆到裡面的 Icon 和 SizedBox 去了
-          title: Row(children: [
-            Text(l10n.dislike_dialog_title) // ✨ 替換：不太喜歡這個角色？
-          ]),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(l10n.dislike_dialog_subtitle, // ✨ 替換：請偷偷告訴我們原因...
-                  style: const TextStyle(fontSize: 13, color: Colors.grey)),
-              const SizedBox(height: 12),
-              TextField(
-                  controller: reasonController,
-                  maxLines: 3,
-                  decoration: InputDecoration(
-                      hintText: l10n.dislike_hint, // ✨ 替換：設定太無聊、圖片不適合...
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12)))),
-            ],
-          ),
-          actions: [
-            TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(l10n.cancelButton, // 這個總裁原本就寫得很完美了！
-                    style: const TextStyle(color: Colors.grey))),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueGrey,
-                  foregroundColor: Colors.white),
-              onPressed: () async {
-                final reason = reasonController.text.trim();
-                if (reason.isEmpty) return;
-                Navigator.pop(context);
-                if (mounted) {
-                  // ✨ 總裁級：低調且專業的「收到回饋」確認！
-                  ToastUtils.showCenterToast(
-                    context,
-                    l10n.dislike_thanks,
-                  );
-                }
-                await FirebaseFirestore.instance
-                    .collection('admin_feedback')
-                    .add({
-                  'type': 'character_dislike',
-                  'characterId': widget.character.id,
-                  'reporterId':
-                  FirebaseAuth.instance.currentUser?.uid ?? 'unknown',
-                  'reason': reason,
-                  'timestamp': FieldValue.serverTimestamp(),
-                });
-              },
-              child: Text(l10n.dislike_submit), // ✨ 替換：悄悄送出
-            ),
-          ],
-        );
-      },
-    );
-  }
+  Future<void> _showDislikeDialog() => showWorkDislikeDialog(
+    context, workId: widget.character.id, isWorld: false,
+    workName: widget.character.name,
+  );
 
   // 📢 檢舉時空迴響 (包含原因選擇)
   Future<void> _reportEcho(String echoId) async {

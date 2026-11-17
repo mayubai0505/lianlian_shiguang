@@ -8866,6 +8866,51 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     );
   }
 
+  // Independent chat outcomes; old API-health counters remain below.
+  Widget _buildChatOutcomeCard(Map<String, dynamic> data) {
+    final raw = data['chatHealth'];
+    final health = raw is Map ? raw : const <String, dynamic>{};
+    Widget group(String scope, String title, Map<String, String> modes) {
+      final groupData = health[scope];
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: Theme.of(context).textTheme.titleMedium),
+          for (final mode in modes.entries)
+            Builder(builder: (context) {
+              final row = groupData is Map ? groupData[mode.key] : null;
+              int n(String key) => row is Map && row[key] is num ? (row[key] as num).toInt() : 0;
+              final ok = n('successCount');
+              final failed = n('failureCount');
+              final cancelled = n('cancelledCount');
+              final total = ok + failed;
+              final rate = total > 0 ? '${(100 * ok / total).toStringAsFixed(1)}%' : '尚無資料';
+              final latency = total > 0 ? '${(n('totalLatencyMs') / total / 1000).toStringAsFixed(1)} 秒' : '—';
+              return ListTile(
+                contentPadding: EdgeInsets.zero,
+                dense: true,
+                title: Text(mode.value),
+                subtitle: Text('成功 $ok ・失敗 $failed ・取消 $cancelled ・平均 $latency'),
+                trailing: Text(rate, style: Theme.of(context).textTheme.titleMedium),
+              );
+            }),
+        ],
+      );
+    }
+    return Card(child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text('聊天室回覆寫入成功率', style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 6),
+        const Text('台灣時間今日；新版部署後開始累積。取消、付款拒絕及背景 AI 不計入成功率。'),
+        const SizedBox(height: 12),
+        group('regular', '一般角色', const {'casual':'閒聊','story':'劇情','immersive':'沉浸','resonance':'共鳴'}),
+        const Divider(),
+        group('world', '開放世界', const {'story':'劇情','immersive':'沉浸','resonance':'共鳴','interaction':'互動'}),
+      ]),
+    ));
+  }
+
   Widget _buildSystemHealthTab() {
     final theme = Theme.of(context);
     return DefaultTabController(
@@ -9063,6 +9108,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                           20,
                         ),
                         children: [
+                          _buildChatOutcomeCard(data),
+                          const SizedBox(height: 12),
                           Card(
                             child: Padding(
                               padding:
@@ -9123,7 +9170,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                             children: [
                               _adminStatCard(
                                 label:
-                                'AI 成功率',
+                                'AI 呼叫成功率',
                                 value:
                                 '${successRate.toStringAsFixed(1)}%',
                                 icon: Icons
@@ -9132,7 +9179,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
 
                               _adminStatCard(
                                 label:
-                                'AI 失敗率',
+                                'AI 呼叫失敗率',
                                 value:
                                 '${failureRate.toStringAsFixed(1)}%',
                                 icon: Icons

@@ -28,7 +28,7 @@ const { normalizeAiResponseScript, fixMojibake } = require('./text/normalization
 
 const { getAuth } = require("firebase-admin/auth");
 const { getMessaging } = require("firebase-admin/messaging");
-const { onDocumentCreated } = require("firebase-functions/v2/firestore");
+const { onDocumentCreated, onDocumentWritten } = require("firebase-functions/v2/firestore");
 const functions = require("firebase-functions");
 const axios = require('axios');
 const { onSchedule } = require("firebase-functions/v2/scheduler");
@@ -79,6 +79,7 @@ const {buildRelationshipGuard} = require('./chat/relationship_guard');
 const {protectGroupKinship} = require('./chat/kinship_output_guard');
 const {createEventTaskUtils} = require('./events/task_utils');
 const {createCharacterLikeHandler} = require('./characters/like_handler');
+const {createWorldLikeHandler, syncCharacterLikeIndex} = require('./characters/work_engagement');
 const {createEventDailyCheckInHandler} = require('./events/event_daily_checkin');
 const {isAiContentFiltered,hasUsableAiContent,isAiTimeoutError} = require('./ai/response_checks');
 
@@ -180,6 +181,8 @@ const {estimateAiCallCost,formatAiCostTraceLine} = createAiCostTrace({extractAiU
 // AI health telemetry recorder extracted; unchanged Firestore updates and non-fatal errors.
 const {createAiHealthRecorder} = require('./ai/health_recorder');
 const recordAiHealth = createAiHealthRecorder({db,APP_ID,FieldValue,getAiHealthTaipeiDateKey,extractAiUsage});
+const {createChatHealthRecorder} = require("./ai/chat_health_recorder");
+const beginRegularChatHealth = createChatHealthRecorder({db,APP_ID,FieldValue});
 
 // 沉浸與共鳴模式：只識別高度明確的模型內部分析輸出，不誤判一般角色對白。
 const {isRoleplayInternalLeak} = require('./ai/internal_leak_detection');
@@ -219,6 +222,21 @@ const {callAiWithRetry} = createAiRetryHandler({
 exports.setCharacterLike = onCall({
     region: 'us-central1', timeoutSeconds: 30, memory: '256MiB',
 }, createCharacterLikeHandler({db, APP_ID, FieldValue, HttpsError}));
+
+exports.setWorldLike = onCall({
+    region: 'us-central1', timeoutSeconds: 30, memory: '256MiB',
+}, createWorldLikeHandler({db, APP_ID, FieldValue, HttpsError}));
+
+// Index-only bridge for older clients that write the original liker directly.
+exports.syncCharacterLikeIndex = onDocumentWritten({
+    document: 'artifacts/{appId}/public_characters/{characterId}/likers/{uid}',
+    region: 'asia-east1', memory: '256MiB', timeoutSeconds: 30, retry: true,
+}, async event => {
+    const {appId, characterId, uid} = event.params;
+    if (appId !== APP_ID) return;
+    return syncCharacterLikeIndex({db, APP_ID, FieldValue, characterId, uid});
+});
+
 
 // ============================================================
 // 🎃 通用活動系統 1.0：任務進度 / 活動貨幣
@@ -1430,6 +1448,7 @@ exports.getAiResponse = onRequest({
     secrets: [openRouterApiKey, geminiApiKey, xaiApiKey, anthropicApiKey],
 }, (req, res) => {
     return cors(req, res, async () => {
+        let finishChatHealth = async () => {};
         try {
             const body = req.body || {};
             const playerLanguage = body.language || "台灣繁體中文";
@@ -4511,6 +4530,7 @@ ${persistentPreferenceDirective}
                    if (activePlayerInstructionFlags.noPlayerReplay) {
                        finalUserMessage += `\n\n【本輪玩家明確限制】玩家已寫的台詞和動作不重新演出，直接從角色新反應開始。`;
                    }
+                   if (!isTestChat && !isQixiOpeningRequest) finishChatHealth = beginRegularChatHealth("regular", chatMode);
                    const abortController = new AbortController();
                    let playerConnectionClosed = false;
 
@@ -5205,6 +5225,10 @@ ${persistentPreferenceDirective}
                                                                                                retryPrimary: false,
                                                                                                requestBody: finalRequestBody,
                                                                                                fallbackRequestBody: compactKimiFallbackBody,
+                                                                                               // Timeout-only trial: keep the existing non-timeout fallback unchanged.
+                                                                                               timeoutFallbackModelId: isKimiTimeoutRescueEligible &&
+                                                                                                   targetModel === "moonshotai/kimi-k2.5"
+                                                                                                   ? "deepseek/deepseek-v4-flash" : null,
                                                                                            });
                                                                                        } catch (writerError) {
                                                                                            const providerErrorText = String(writerError?.result?.error || "");
@@ -5348,6 +5372,8 @@ ${persistentPreferenceDirective}
                                                                                                }
                                                                                            );
 
+                                                                                           await finishChatHealth("failure");
+
                                                                                            return res.status(400).json({
                                                                                                error: "AI_RESPONSE_TRUNCATED",
                                                                                                message: "AI 回覆沒有完整生成，請稍後再試。",
@@ -5387,6 +5413,7 @@ ${persistentPreferenceDirective}
                                                                                // 沉浸模式：拒絕將內部分析當作對話回傳。
                                                                                if (["immersive", "resonance"].includes(chatMode) && isRoleplayInternalLeak(rawContent)) {
                                                                                    console.error("🛡️ 沉浸回覆出現內部分析，阻止回傳／寫入／扣花", {chatMode, finishReason});
+                                                                                   await finishChatHealth("failure");
                                                                                    return res.status(400).json({
                                                                                        error: "AI_INTERNAL_ANALYSIS_LEAK",
                                                                                        message: "本次回覆生成異常，請重新發送訊息。",
@@ -5429,6 +5456,8 @@ ${persistentPreferenceDirective}
                                                                                               "🛑 fallback 後仍為空回覆，停止本輪並攔截寫入／扣款"
                                                                                           );
 
+                                                                                          await finishChatHealth("failure");
+
                                                                                           return res.status(400).json({
                                                                                               error: "AI_EMPTY_RESPONSE",
                                                                                               message: "他目前在忙，請稍後再試一次喔！"
@@ -5448,6 +5477,8 @@ ${persistentPreferenceDirective}
                                                                                       }
 
                                                                                       console.warn("🛑 AI rescue 次數已達上限，攔截寫入與扣款");
+
+                                                                                      await finishChatHealth("failure");
 
                                                                                       return res.status(400).json({
                                                                                           error: "CENSORED",
@@ -5653,6 +5684,8 @@ const residualWriterArtifacts =
                                                                                        "🛑 異常輸出重試次數已達上限，停止寫入與扣款"
                                                                                    );
 
+                                                                                   await finishChatHealth("failure");
+
                                                                                    return res.status(400).json({
                                                                                        error: "INVALID_AI_OUTPUT",
                                                                                        message: "AI 回覆生成異常，請稍後再試。",
@@ -5713,6 +5746,8 @@ const residualWriterArtifacts =
 
                                                                                         continue;
                                                                                     }
+
+                                                                                    await finishChatHealth("failure");
 
                                                                                     return res.status(400).json({
                                                                                         error:
@@ -6307,6 +6342,7 @@ if (cancellationRef) {
             }
         );
 
+        await finishChatHealth("cancelled");
         await cancellationRef
             .delete()
             .catch(() => null);
@@ -6340,6 +6376,7 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
 // 最終正文也檢查：避免模型把分析藏進 response JSON，脫殼後才出現。
 if (["immersive", "resonance"].includes(chatMode) && isRoleplayInternalLeak(finalResponseText)) {
     console.error("🛡️ 沉浸模式最終正文含內部分析，拒絕儲存與扣點");
+    await finishChatHealth("failure");
     return res.status(400).json({error: "AI_INTERNAL_ANALYSIS_LEAK", message: "本次回覆生成異常，請重新發送訊息。", charged: false, cost: 0});
 }
 let cleanDisplayText = String(finalResponseText || "");
@@ -7046,6 +7083,7 @@ if (sessionId) {
                 errorMessage: "本次沉浸回覆未達最低正文長度，未儲存也未扣除花花，請重新嘗試。",
                 charged: false, cost: 0,
             };
+            await finishChatHealth("failure");
             if (!res.writableEnded && !res.destroyed) return res.status(200).json(payload);
             return;
         }
@@ -7084,6 +7122,7 @@ if (sessionId) {
                 errorMessage: "這次 AI 回覆的劇情正文過短，未儲存也未扣除花花，請重新嘗試。",
                 charged: false, cost: 0,
             };
+            await finishChatHealth("failure");
             if (!res.writableEnded && !res.destroyed) return res.status(200).json(payload);
             return;
         }
@@ -7098,6 +7137,7 @@ if (sessionId) {
             ` 玩家：${userId}，角色：${name}，原定扣款：${cost}`
         );
 
+        await finishChatHealth("failure");
         const emptyPayload = {
             status: "error",
             errorCode: "EMPTY_AI_RESPONSE",
@@ -7625,6 +7665,7 @@ const sessionData =
         // Transaction 沒有進行任何訊息與扣款寫入
         // ==========================================
         if (wasCancelled) {
+            await finishChatHealth("cancelled");
             console.log(
                 "🛑 [安全收銀台] 玩家已取消本次 AI 請求，" +
                 "未寫入回覆、未扣除花花、未建立消費明細。",
@@ -7669,6 +7710,8 @@ const sessionData =
 
             return;
         }
+
+        await finishChatHealth("success");
 
         // 🎃 通用活動任務進度：
         // 只有 AI 回覆與原本收銀台交易都成功後才計入，
@@ -7897,6 +7940,7 @@ const sessionData =
             writeError
         );
 
+        await finishChatHealth("failure");
         const failedPayload = {
             status: "error",
             errorCode: "MESSAGE_WRITE_FAILED",
@@ -7927,6 +7971,7 @@ const sessionData =
         "已攔截回覆寫入與扣款。"
     );
 
+    await finishChatHealth("failure");
     const missingSessionPayload = {
         status: "error",
         errorCode: "MISSING_SESSION_ID",
@@ -8083,6 +8128,7 @@ const resultPayload = {
                                    return;
 
                                    } catch (error) {
+                                       await finishChatHealth(error?.code === "PLAYER_DISCONNECTED" || error?.message === "PLAYER_DISCONNECTED" ? "cancelled" : "failure");
                                        // Backend-only AI failure diagnostics. Preserve HTTP 500 so
                                        // existing clients can show their usual red error; never
                                        // expose upstream API bodies, prompts, tokens or secrets.

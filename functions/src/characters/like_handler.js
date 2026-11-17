@@ -20,25 +20,31 @@ function createCharacterLikeHandler({db, APP_ID, FieldValue, HttpsError}) {
     // 與按讚關係分開，取消喜歡不刪除，永久記住是否曾經通知。
     const notifiedRef = charRef.collection('like_notifications_sent').doc(userId);
     const userRef = db.collection('users').doc(userId);
+    const indexRef = userRef.collection('liked_works').doc(`character_${characterId}`);
 
     const result = await db.runTransaction(async (tx) => {
       // 所有讀取都先完成，再進行任何寫入。
-      const [charSnap, likerSnap, notifiedSnap, userSnap] = await Promise.all([
-        tx.get(charRef), tx.get(likerRef), tx.get(notifiedRef), tx.get(userRef),
+      const [charSnap, likerSnap, notifiedSnap, userSnap, indexSnap] = await Promise.all([
+        tx.get(charRef), tx.get(likerRef), tx.get(notifiedRef), tx.get(userRef), tx.get(indexRef),
       ]);
-      if (!charSnap.exists) throw new HttpsError('not-found', '找不到角色');
+      if (!charSnap.exists) {
+        if (desiredLike) throw new HttpsError('not-found', '找不到角色');
+        if (likerSnap.exists) tx.delete(likerRef);
+        if (indexSnap.exists) tx.delete(indexRef);
+        return {liked:false, notificationCreated:false};
+      }
       const character = charSnap.data() || {};
       const creatorId = String(character.createdBy || '').trim();
-      if (!creatorId || creatorId.includes('/')) {
+      if (desiredLike && (!creatorId || creatorId.includes('/'))) {
         throw new HttpsError('failed-precondition', '角色缺少創作者資料');
       }
-      if (creatorId === userId) throw new HttpsError('failed-precondition', '不能喜歡自己的角色');
-      if (character.isPublic !== true || character.status !== 'published') {
+      if (desiredLike && creatorId === userId) throw new HttpsError('failed-precondition', '不能喜歡自己的角色');
+      if (desiredLike && (character.isPublic !== true || character.status !== 'published')) {
         throw new HttpsError('failed-precondition', '角色目前未公開');
       }
 
-      const notificationRef = db.collection('users').doc(creatorId)
-        .collection('mailbox').doc(`character_like_${characterId}_${userId}`);
+      const notificationRef = desiredLike ? db.collection('users').doc(creatorId)
+        .collection('mailbox').doc(`character_like_${characterId}_${userId}`) : null;
       // 相容舊版已寄出的通知：不因升級而重新寄一次。
       const oldNotificationSnap = desiredLike && !notifiedSnap.exists
         ? await tx.get(notificationRef) : null;
@@ -52,6 +58,13 @@ function createCharacterLikeHandler({db, APP_ID, FieldValue, HttpsError}) {
         } else {
           tx.delete(likerRef);
         }
+      }
+
+      if (desiredLike && !indexSnap.exists) {
+        tx.set(indexRef, {type:'character', characterId,
+          likedAt:likerSnap.data()?.timestamp || FieldValue.serverTimestamp()});
+      } else if (!desiredLike && indexSnap.exists) {
+        tx.delete(indexRef);
       }
 
       if (desiredLike && !notifiedSnap.exists) {

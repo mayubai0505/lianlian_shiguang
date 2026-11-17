@@ -16,9 +16,13 @@ const getAdminSystemHealthHandler = async (request) => {
       .doc(dateKey)
       .get();
 
+    // Independent read: old clients and old daily data remain compatible.
+    const chatSnapshot = await db.collection("artifacts").doc(APP_ID).collection("ai_chat_daily").doc(dateKey).get();
+    const chatHealth = chatSnapshot.exists ? (chatSnapshot.data() || {}) : null;
     if (!snapshot.exists) {
       return {
         dateKey,
+        chatHealth,
 
         requests: 0,
         apiAttempts: 0,
@@ -113,6 +117,7 @@ const getAdminSystemHealthHandler = async (request) => {
 
     return {
       dateKey,
+      chatHealth,
 
       requests,
 

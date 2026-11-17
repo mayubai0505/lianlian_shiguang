@@ -8,6 +8,10 @@ import 'character_profile_page.dart';
 import 'world_discovery_page.dart';
 import 'public_worlds_page.dart';
 import 'search_character_page.dart';
+import 'saved_works_page.dart';
+import '../services/tutorial_seen_sync.dart';
+import 'package:showcaseview/showcaseview.dart';
+import 'package:flutter/rendering.dart' show RenderObject, RenderBox, RenderIndexedStack, RenderOffstage;
 import 'package:cloud_functions/cloud_functions.dart';
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
@@ -187,6 +191,85 @@ class SelectChatPageState extends State<SelectChatPage> {
   Set<String> _blockedCreatorIds = {};
   final Set<String> _preloadedImageUrls = {};
   StreamSubscription<User?>? _authStateSub;
+  static const String _savedWorksGuideId = 'seen_encounter_saved_works_v1';
+  final GlobalKey _savedWorksGuideKey = GlobalKey();
+  final Set<String> _savedWorksGuideSeenUsers = <String>{};
+  bool _savedWorksGuideChecking = false;
+
+  String _savedWorksGuideText(BuildContext context) {
+    final locale = Localizations.localeOf(context);
+    if (locale.languageCode == 'zh') {
+      return locale.scriptCode == 'Hans' ||
+              locale.countryCode == 'CN' || locale.countryCode == 'SG'
+          ? '在这里找到你收藏与喜爱的角色及开放世界！'
+          : '在這裡找到你收藏與喜愛的角色及開放世界！';
+    }
+    const texts = <String, String>{
+      'en': 'Find your bookmarked and liked characters and open worlds here!',
+      'ar': 'هنا تجد الشخصيات والعوالم المفتوحة التي حفظتها وأعجبتك!',
+      'de': 'Hier findest du deine gespeicherten und gelikten Charaktere und offenen Welten!',
+      'es': '¡Aquí encontrarás los personajes y mundos abiertos que guardaste y te gustaron!',
+      'fr': 'Retrouve ici les personnages et mondes ouverts que tu as enregistrés et aimés !',
+      'id': 'Temukan karakter dan dunia terbuka yang kamu simpan dan sukai di sini!',
+      'it': 'Qui trovi i personaggi e i mondi aperti che hai salvato e apprezzato!',
+      'ja': 'ブックマークやいいねをしたキャラクターとオープンワールドはここから見つけられます！',
+      'ko': '저장하거나 좋아요를 누른 캐릭터와 오픈 월드를 여기에서 찾을 수 있어요!',
+      'pt': 'Encontre aqui os personagens e mundos abertos que você salvou e curtiu!',
+      'ru': 'Здесь вы найдёте сохранённых и понравившихся персонажей и открытые миры!',
+      'th': 'ค้นหาตัวละครและโลกเปิดที่คุณบันทึกและกดถูกใจได้ที่นี่!',
+      'vi': 'Tìm các nhân vật và thế giới mở bạn đã lưu và yêu thích tại đây!',
+      'tr': 'Kaydettiğin ve beğendiğin karakterleri ve açık dünyaları burada bulabilirsin!',
+      'ms': 'Cari watak dan dunia terbuka yang anda simpan dan sukai di sini!',
+    };
+    return texts[locale.languageCode] ?? texts['en']!;
+  }
+
+  bool _savedWorksGuideIsVisible() {
+    if (!mounted || ModalRoute.of(context)?.isCurrent == false) return false;
+    RenderObject? node = _savedWorksGuideKey.currentContext?.findRenderObject();
+    if (node == null || !node.attached) return false;
+    // The main navigation may keep inactive tabs in an IndexedStack.
+    // Never consume the guide while its target is not being displayed.
+    while (node != null) {
+      if (node is RenderOffstage && node.offstage) return false;
+      final parent = node.parent;
+      if (parent is RenderIndexedStack) {
+        RenderBox? active = parent.firstChild;
+        for (var i = 0; i < (parent.index ?? 0) && active != null; i++) {
+          active = parent.childAfter(active);
+        }
+        if (parent.index == null || !identical(active, node)) return false;
+      }
+      node = parent;
+    }
+    return true;
+  }
+
+  Future<void> _maybeShowSavedWorksGuide(BuildContext showcaseContext) async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null || _savedWorksGuideChecking ||
+        _savedWorksGuideSeenUsers.contains(uid) || !_savedWorksGuideIsVisible()) return;
+    _savedWorksGuideChecking = true;
+    try {
+      final seen = await TutorialSeenSync.hasSeen(_savedWorksGuideId);
+      if (!mounted || !showcaseContext.mounted ||
+          FirebaseAuth.instance.currentUser?.uid != uid) return;
+      if (seen) {
+        _savedWorksGuideSeenUsers.add(uid);
+        return;
+      }
+      if (!_savedWorksGuideIsVisible()) return;
+      ShowCaseWidget.of(showcaseContext).startShowCase([_savedWorksGuideKey]);
+      // Record only after the visible target has been started successfully.
+      _savedWorksGuideSeenUsers.add(uid);
+      await TutorialSeenSync.markSeen(_savedWorksGuideId);
+    } catch (e) {
+      debugPrint('邂逅收藏導覽：$e');
+    } finally {
+      _savedWorksGuideChecking = false;
+    }
+  }
+
 
   @override
   void initState() {
@@ -474,63 +557,89 @@ class SelectChatPageState extends State<SelectChatPage> {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        title: Text(
-          l10n.title_meet_him,
-          style: GoogleFonts.notoSerifTc(
-            color: theme.colorScheme.onSurface,
-            fontSize: 19,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search_rounded),
-            onPressed: _navigateToSearch,
-          ),
-        ],
-      ),
-      body: FutureBuilder<List<Character>>(
-        future: _charactersFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+    return ShowCaseWidget(
+      builder: (showcaseContext) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && showcaseContext.mounted) {
+            unawaited(_maybeShowSavedWorksGuide(showcaseContext));
           }
-
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                l10n.encounter_load_failed,
-                style: GoogleFonts.notoSerifTc(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.65),
-                  fontSize: 14,
+        });
+        return Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            automaticallyImplyLeading: false,
+            title: Text(
+              l10n.title_meet_him,
+              style: GoogleFonts.notoSerifTc(
+                color: theme.colorScheme.onSurface,
+                fontSize: 19,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            actions: [
+              Showcase(
+                key: _savedWorksGuideKey,
+                description: _savedWorksGuideText(context),
+                child: IconButton(
+                  tooltip: SavedWorksPage.title(context),
+                  icon: Image.asset(
+                    'assets/images/chat/chat_pin_bookmark.webp',
+                    width: 24,
+                    height: 24,
+                    fit: BoxFit.contain,
+                  ),
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const SavedWorksPage()),
+                  ),
                 ),
               ),
-            );
-          }
+              IconButton(
+                icon: const Icon(Icons.search_rounded),
+                onPressed: _navigateToSearch,
+              ),
+            ],
+          ),
+          body: FutureBuilder<List<Character>>(
+            future: _charactersFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
 
-          final characters = snapshot.data ?? const <Character>[];
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text(
+                    l10n.encounter_load_failed,
+                    style: GoogleFonts.notoSerifTc(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.65),
+                      fontSize: 14,
+                    ),
+                  ),
+                );
+              }
 
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (!mounted) return;
-            _precacheCharacterImages(characters);
-          });
+              final characters = snapshot.data ?? const <Character>[];
 
-          return _DiscoveryHallView(
-            allCharacters: characters,
-            blockedCharacterIds: _blockedCharacterIds,
-            blockedCreatorIds: _blockedCreatorIds,
-            onRefresh: _refreshAllData,
-          );
-        },
-      ),
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!mounted) return;
+                _precacheCharacterImages(characters);
+              });
+
+              return _DiscoveryHallView(
+                allCharacters: characters,
+                blockedCharacterIds: _blockedCharacterIds,
+                blockedCreatorIds: _blockedCreatorIds,
+                onRefresh: _refreshAllData,
+              );
+            },
+          ),
+        );
+      },
     );
   }
 

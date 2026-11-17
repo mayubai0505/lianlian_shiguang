@@ -72,7 +72,7 @@ async function savePlayerMemoryIfNeeded({
     if (drink && !/^(?:什麼|什么|這個|那个|那個|飲料|饮料)$/u.test(drink)) {
       const evidence = drinkMatch[0].trim().replace(/^[（(，。！!\s]+/u, '');
       items.push({
-        shouldRemember: true, memory: `喜歡喝${drink}`,
+        shouldRemember: true, memory: `${canonicalPlayerName}喜歡喝${drink}`,
         scope: 'profile', category: 'preference',
         factKey: 'preference.drink.' +
           require('crypto').createHash('sha256').update(drink).digest('hex').slice(0, 12),
@@ -125,21 +125,13 @@ async function savePlayerMemoryIfNeeded({
   });
   if (/^(relationship\.|worldline\.|important_event\.)/.test(factKey)) memoryScope = "session";
 
-  // Display names come from Firestore's selected profile, never AI output.
-  // Reject unexplained third-person names instead of silently changing a fact.
-  const safeMemoryName = canonicalPlayerName;
-  memoryText = memoryText.replace(/^(?:玩家|對方|我)(?=的|是|在|會|要|有|喜歡|不|早|晚|每|今|明|後|已|正|，|：|\s)/u, '').trim();
-  if (!memoryText.startsWith(safeMemoryName)) {
-    // A fabricated subject like 「妮妮喜歡...」 must not be saved as personal truth.
-    if (/^[\p{Script=Han}]{2,8}(?=喜歡|討厭|不喜歡|承諾|認為|知道|需要|想要|打算|會去|要去|早上|下午|晚上|今天|明天|昨天|每週|每周)/u.test(memoryText)) {
-      console.warn('MEMORY_SUBJECT_MISMATCH_REJECTED', {
-        profileId: safeProfileId, factKey,
-      });
-      return null;
-    }
-    memoryText = /^(?:喜歡|討厭|不喜歡|不喝|不吃|會|要|在|有|早上|下午|晚上|今天|明天|每週|每周)/u.test(memoryText)
-      ? `${safeMemoryName}${memoryText}`
-      : `${safeMemoryName}：${memoryText}`;
+  // Require the resolved profile name as the subject; never prepend it to
+  // unchecked model text, which can hide a fabricated third-person subject.
+  if (!memoryText.startsWith(canonicalPlayerName)) {
+    console.warn('MEMORY_SUBJECT_MISMATCH_REJECTED', {
+      profileId: safeProfileId, factKey,
+    });
+    return null;
   }
 
   if (!["profile", "character", "session"].includes(memoryScope)) {

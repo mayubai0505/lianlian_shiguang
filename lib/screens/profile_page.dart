@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'dart:math';
 import 'heartbeat_diary_page.dart';
 import 'event_memory_collection_page.dart';
+import 'saved_works_page.dart';
 import '../repositories/character_repository.dart';
 import '../services/moment_notification_service.dart';
 import '../services/toast_utils.dart';
@@ -2266,6 +2267,12 @@ class _ProfilePageState extends State<ProfilePage>
                     ),
                   ),
                   actions: [
+                    IconButton(
+                      tooltip: SavedWorksPage.title(context),
+                      constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                      onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SavedWorksPage())),
+                      icon: Icon(Icons.bookmarks_outlined, size: 28, color: theme.colorScheme.primary),
+                    ),
                     // 收藏靠近右側設定；維持獨立點擊範圍。
                     IconButton(
                       tooltip: l10n.event_memory_collection_show_collection_intro_if_needed_message_collection,
@@ -2474,6 +2481,11 @@ class _ProfilePageState extends State<ProfilePage>
                       children: [
                         assetAction('assets/images/profile/announcement_mask.webp', l10n.profile_tooltip_announcement,
                                 () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AnnouncementListPage()))),
+                        IconButton(
+                          tooltip: SavedWorksPage.title(context),
+                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SavedWorksPage())),
+                          icon: Icon(Icons.bookmarks_outlined, size: 28, color: color),
+                        ),
                         assetAction('assets/icons/icon_profile_collection.png',
                             l10n.event_memory_collection_show_collection_intro_if_needed_message_collection,
                                 () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EventMemoryCollectionPage()))),
