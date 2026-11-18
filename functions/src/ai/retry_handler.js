@@ -1,4 +1,5 @@
 'use strict';
+const {isCancelled, isSafetyFailure, mayFallbackProvider} = require('./provider_failure_policy');
 // 原樣移出 core.js 的重試、備援與健康監測協作；透過依賴注入保留原行為。
 function createAiRetryHandler({getAiProviderConfig, callOpenRouter, callAnthropicDirect,
   isAiContentFiltered, hasUsableAiContent, isAiTimeoutError, recordAiHealth}) {
@@ -87,9 +88,8 @@ async function callAiWithRetry({
     // HTTP 200 不代表模型真的成功產生內容。
     // Gemini 會用 200 + finish_reason=content_filter: PROHIBITED_CONTENT 擋掉回覆；
     // 其他 provider 也可能回 choices 但 content 為空。
-    // 這兩種情況都必須在這一層視為 provider failure，
-    // 才能讓所有模式統一進入 fallback，而不是外層一直重撞同一模型。
-    if (isAiContentFiltered(result)) {
+    // 此處區分服務異常（可備援）與明確內容拒絕（不可備援）。
+    if (isAiContentFiltered(result) || isSafetyFailure({result})) {
       const finishReasons = (result?.choices || [])
         .map((choice) => String(choice?.finish_reason || ""))
         .filter(Boolean);
@@ -102,7 +102,7 @@ async function callAiWithRetry({
       error.finishReasons = finishReasons;
 
       console.warn(
-        "🛡️ AI provider content filter，改走 fallback:",
+        "🛡️ AI provider content filter，停止備援:",
         {
           provider: providerConfig.provider,
           modelId: targetModelId,
@@ -160,6 +160,11 @@ async function callAiWithRetry({
     return result;
   }
 
+  async function safeRecordAiHealth(data) {
+    try { await recordAiHealth(data); }
+    catch (error) { console.warn('AI_HEALTH_RECORD_FAILED', {code:String(error?.code || 'unknown')}); }
+  }
+
   async function finishSuccess(
     result,
     selectedModelId
@@ -167,7 +172,7 @@ async function callAiWithRetry({
     finalModelId =
       selectedModelId;
 
-    await recordAiHealth({
+    await safeRecordAiHealth({
       success: true,
 
       latencyMs:
@@ -196,11 +201,9 @@ async function callAiWithRetry({
   async function finishFailure(
     error
   ) {
-    const cancelled =
-      error?.message ===
-      "PLAYER_DISCONNECTED";
+    const cancelled = isCancelled(error, abortController?.signal);
 
-    await recordAiHealth({
+    await safeRecordAiHealth({
       success: false,
 
       latencyMs:
@@ -213,7 +216,7 @@ async function callAiWithRetry({
 
       contentFiltered:
         error?.code === "AI_CONTENT_FILTERED" ||
-        isAiContentFiltered(error?.result),
+        isSafetyFailure(error) || isAiContentFiltered(error?.result),
 
       timedOut:
         isAiTimeoutError(error),
@@ -224,8 +227,8 @@ async function callAiWithRetry({
         error?.result || null,
 
       // 診斷資料：只記錄最終錯誤，不改變原本的重試／備援判斷。
-      failureCode: String(error?.code || ""),
-      failureStatusCode: Number(error?.statusCode) || null,
+      failureCode: String(isSafetyFailure(error) ? "AI_CONTENT_FILTERED" : error?.code || ""),
+      failureStatusCode: Number(error?.statusCode || error?.status) || null,
       failureMessage: String(error?.message || ""),
 
       modelId:
@@ -257,51 +260,17 @@ async function callAiWithRetry({
         );
       }
 
-      // Non-JSON 2xx/429/5xx responses may be transient. Never retry or
-      // fallback for malformed 4xx requests or authentication failures.
-      const invalidResponseRetryable = error?.code === "AI_INVALID_RESPONSE" &&
-        (error?.statusCode == null ||
-          (error.statusCode >= 200 && error.statusCode < 300) ||
-          error.statusCode === 429 || error.statusCode >= 500);
-
-      const retryable =
-        invalidResponseRetryable ||
-        error?.code === "AI_NETWORK_ERROR" ||
-        error?.code === "AI_TIMEOUT" ||
-        error?.statusCode === 408 ||
-        error?.statusCode === 429 ||
-        (Number(error?.statusCode) >= 500 && Number(error?.statusCode) <= 599) ||
-        error.message ===
-          "AI_PROVIDER_BUSY" ||
-        error.message?.includes(
-          "AI 回覆時間太久"
-        ) ||
-        error.message?.includes(
-          "AI 服務暫時忙碌"
-        ) ||
-        error.message?.includes(
-          "AI 連線暫時不穩"
-        ) ||
-        (error?.code !== "AI_INVALID_RESPONSE" && !error?.statusCode &&
-          error?.message?.includes("AI 回傳格式異常")) ||
-        error.message?.includes(
-          "AI 斷線或沒有回傳 choices"
-        ) ||
-        error?.code === "AI_CONTENT_FILTERED" ||
-        error?.code === "AI_EMPTY_RESPONSE" ||
-        error?.message === "AI_CONTENT_FILTERED" ||
-        error?.message === "AI_EMPTY_RESPONSE";
-
-      if (!retryable) {
-        return await finishFailure(
-          error
-        );
+      if (!mayFallbackProvider(error, abortController?.signal)) {
+        return await finishFailure(error);
       }
+      const status = Number(error?.statusCode || error?.status || 0);
+      // Permanent provider/billing failures must never retry the same primary.
+      const directFallback = status >= 400 && status < 500 && status !== 408 && status !== 429;
 
       // v2.4.6：Writer 主路由不重撞同供應商。
       // Gemini / Grok 失敗後直接切 OpenRouter DeepSeek v3.2；
       // fallback 也失敗就結束，不再切第三模型。
-      if (!retryPrimary) {
+      if (!retryPrimary || directFallback) {
         // Explicit opt-in for transport timeouts only; other failure routes stay unchanged.
         const selectedFallbackModelId = error?.code === "AI_TIMEOUT" && timeoutFallbackModelId
           ? timeoutFallbackModelId : fallbackModelId;
@@ -389,6 +358,11 @@ async function callAiWithRetry({
           )
       );
 
+      if (abortController?.signal?.aborted) {
+        const cancelled = new Error("PLAYER_DISCONNECTED");
+        cancelled.code = "PLAYER_DISCONNECTED";
+        return await finishFailure(cancelled);
+      }
       try {
         const retryResult =
           await callCurrentAiModel(
@@ -410,10 +384,8 @@ async function callAiWithRetry({
           );
         }
 
-        if (!fallbackModelId) {
-          return await finishFailure(
-            retryError
-          );
+        if (!mayFallbackProvider(retryError, abortController?.signal) || !fallbackModelId) {
+          return await finishFailure(retryError);
         }
 
         if (abortController?.signal?.aborted) {

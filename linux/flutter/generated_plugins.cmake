@@ -9,6 +9,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   flutter_sound
   flutter_timezone
   printing
+  record_linux
   url_launcher_linux
 )
 

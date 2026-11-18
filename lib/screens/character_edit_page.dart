@@ -88,7 +88,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   bool _isTestingSettings = false;
   bool _isLeavingPage = false;
   final FirebaseFunctions _functions =
-  FirebaseFunctions.instanceFor(region: 'asia-east1');
+  FirebaseFunctions.instanceFor(region: 'us-central1');
   Map<String, String> _relationships = {};
   List<Map<String, dynamic>> _voiceSamples = [];
   List<Map<String, dynamic>> newSamples = [];
@@ -2125,7 +2125,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       );
 
       final callable = _functions.httpsCallable(
-        'testVoiceSettings',
+        'testVoiceSettingsUs',
       );
 
       final result = await callable.call({
@@ -2231,7 +2231,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       debugPrint('Description: ${prompt.trim()}');
 
       final callable = _functions.httpsCallable(
-        'matchVoiceFromBank',
+        'matchVoiceFromBankUs',
       );
 
       final result = await callable.call({
@@ -2449,7 +2449,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         debugPrint('⏳ Voice 尚未快取，開始生成：$voiceId');
 
         final callable = _functions.httpsCallable(
-          'testVoiceSettings',
+          'testVoiceSettingsUs',
         );
 
         final result = await callable.call({
@@ -2573,7 +2573,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 
     try {
       final callable = _functions.httpsCallable(
-        'testVoiceSettings',
+        'testVoiceSettingsUs',
       );
 
       final result = await callable.call({

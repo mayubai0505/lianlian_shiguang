@@ -34,6 +34,7 @@ async function recordAiHealth({
     const status = Number(failureStatusCode) || 0;
     const message = String(failureMessage || "");
     const failureType = success || cancelled ? "" : (
+      status === 402 ? "http402" :
       status === 403 ? "http403" :
       status === 429 ? "http429" :
       status === 401 ? "http401" :

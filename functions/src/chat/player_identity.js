@@ -1,5 +1,14 @@
 'use strict';
 
+function canonicalPlayerGender(value) {
+  const raw = String(value ?? '').trim().toLowerCase();
+  if (['male','m','男','男性','男生'].includes(raw)) return '男性';
+  if (['female','f','女','女性','女生'].includes(raw)) return '女性';
+  if (['other','其他'].includes(raw)) return '其他';
+  if (['unset','未設定','未選擇','未选择','not selected'].includes(raw)) return '未設定';
+  return '';
+}
+
 function createPlayerIdentityTools({db, APP_ID}) {
 function resolvePlayerIdentityFromUserData(userData = {}, playerProfileId = "default") {
   const safeProfileId = String(playerProfileId || "default").trim() || "default";
@@ -42,9 +51,9 @@ function resolvePlayerIdentityFromUserData(userData = {}, playerProfileId = "def
     id: safeProfileId,
     name:
       String(matchedProfile.name || accountName).trim() || accountName,
-    // 目前前端的自訂拾光檔案仍沿用帳號層級性別／生日；若未來 profile 自己有值則優先使用。
+    // 自訂拾光檔案的明確性別優先；舊檔案無性別時仍沿用帳號。
     gender:
-      String(matchedProfile.gender || accountGender).trim() || accountGender,
+      canonicalPlayerGender(matchedProfile.gender) || accountGender,
     birthday:
       String(matchedProfile.birthday || accountBirthday).trim() || accountBirthday,
     profile: matchedProfile,
@@ -186,4 +195,4 @@ async function resolveEffectivePlayerProfileId({
 return {resolvePlayerIdentityFromUserData, resolveEffectivePlayerProfileId};
 }
 
-module.exports = {createPlayerIdentityTools};
+module.exports = {createPlayerIdentityTools, canonicalPlayerGender};

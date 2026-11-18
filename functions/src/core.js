@@ -67,9 +67,12 @@ const {findRepeatedNarrative} = require('./chat/reply_duplicates');
 const {inspectAndCleanRegularReply} = require('./chat/output_quality_guard');
 const {createWriterResponseUtils} = require('./ai/writer_response');
 const {parseRoleCommands} = require('./chat/role_commands');
-const {createPlayerIdentityTools} = require('./chat/player_identity');
+const {createPlayerIdentityTools, canonicalPlayerGender} = require('./chat/player_identity');
 const {createAiProviders} = require('./ai/providers');
 const {createAiRetryHandler} = require('./ai/retry_handler');
+const {formatNamedStatusReply} = require('./chat/creator_named_status');
+const {missingStatusRows,mergeMissingStatus,markUnresolvedStatus,completionInstruction} = require("./chat/status_value_completion");
+const {literalCreatorStatus} = require('./chat/literal_creator_status');
 const {createCustomStatusGuard} = require('./chat/custom_status_guard');
 const {resolveCreatorIdentityMacros} = require('./chat/creator_macro_compat');
 const {describeCreatorAdvancedStatus} = require('./chat/creator_advanced_status');
@@ -1449,6 +1452,8 @@ exports.getAiResponse = onRequest({
 }, (req, res) => {
     return cors(req, res, async () => {
         let finishChatHealth = async () => {};
+        let healthChatMode = "unknown";
+        let healthHasSessionId = false;
         try {
             const body = req.body || {};
             const playerLanguage = body.language || "台灣繁體中文";
@@ -1504,6 +1509,8 @@ exports.getAiResponse = onRequest({
                 statusBarFields = [],
                 persistentInstructions = "",
             } = body;
+            healthChatMode = String(chatMode || "daily").slice(0, 32);
+            healthHasSessionId = Boolean(sessionId);
 
             // 🌸 只有新版 App 明確送出 billingType，才啟用新版計價。
             // 舊版 App 沒有這個欄位，完全維持原本收費方式。
@@ -1646,16 +1653,16 @@ JSON 必須額外包含：
 
             const playerAgencyAndNaturalnessDirective = `
 【🎭 玩家小動作與劇情修正優先權｜全模式最高優先｜主模型、備援、成人分流、續寫／重寫皆適用】
-1. 可以為敘事流暢，自然補寫少量合理、低風險的玩家日常過場（如上車、坐下、接飲料），以及貼合當下情境的外在微表情／即時反應（如微笑、抬頭、愣一下、點頭）；這些僅是暫定的場景銜接，不必每個小動作都停下等待。不可由微表情擅自推導玩家內心、感情、同意或重大決定。
+1. 只寫角色與 NPC 的台詞、動作、表情及感受。正文不描述或代演玩家；只有創作者明確指定玩家的某項資料時，才在指定格式與位置依已知事實填寫該項，其餘不延伸。一般心情、穿著、內心欄指角色。
 2. 玩家下一輪若說「我沒上車」「我沒有接可樂」「我還站在門外」等明確更正，立即以玩家最新描述為本聊天室劇情事實；此前 AI 自行補寫的相反動作視為未發生。角色從更正後的位置與狀態自然接續，不爭辯、不要引用上一輪 AI 的敘事反駁玩家，也不必作後設解說或道歉。
 3. 優先序：玩家本輪明確描述／更正 ＞ 已確認的既定事實 ＞ AI 先前自行補寫的過場 ＞ 摘要或記憶中的推測。只覆寫衝突部分，不清除其他沒有衝突的劇情、角色記憶或場景資訊。
 4. 仍不得替玩家擅自新增台詞、內心獨白、明確情緒與愛意結論、同意或拒絕、重大／不可逆決策、重要關係變更。若玩家明確拒絕或提出邊界，不可以用「過場」名義將其覆蓋。
-5. 角色與 NPC 可主動推動情節；不要把玩家每一個微動作都當作需取得新指令的重大選擇。角色演繹保持自然，不寫規則說明，不重演玩家已輸入的動作。
+5. 從角色與 NPC 對當前事件的反應推進。
 6. 【說話者／事件主體不得互換】在歷史訊息中，assistant 是角色或 NPC 的演繹，user 才是玩家的實際發言；引號「」中的話也要依當時說話者歸屬。不可把角色的第一人稱台詞誤認為玩家說過、做過或想過的事。例如：角色說「我快餓死」＝角色餓；玩家後來說「我不餓、不想吃」＝玩家不餓，角色不能反問「妳剛才不是說餓死？」。轉述或引用他人話語時保留原本的說話者。
 7. 玩家最新明確表態優先於舊摘要、先前 AI 補寫和不確定的推測。若看不清某句話是誰說的，不得當成玩家的既定承諾或主動要求；以角色自然回應當下明確資訊。
 8. 【玩家台詞零代寫｜所有模式】故事正文可以描寫角色、NPC 的新台詞，但絕對不能替玩家創作任何新發言、喊叫、回答、反問、對白、語音或內心台詞；即使為了湊篇幅也不准讓玩家與角色自動一來一往。尤其不准在沒有玩家輸入的情況下寫出「我沒有大聲」「誰說的」「你幫我賠？」等玩家回應。
 9. 【玩家既有輸入只承接，不重播】玩家本輪已寫的話、已做的動作視為已發生，從角色下一個反應開始；不要再次編排玩家撿書、走回來、說請客的完整過程，也不要將玩家原句重新放成正文對話。角色為了自然接話可以簡短提及事實，但不可重演玩家說話場景。
-10. 玩家若明說「不要寫玩家回應／不要代寫我的台詞／不要重述我的行動」，其當輪限制必須優先遵守，不得被字數目標、創作者風格或重寫指令覆蓋。允許少量非言語的日常小動作（例如接物、走路、微笑），但這不包含任何玩家說話或未曾輸入的長段玩家行動。
+10. 玩家若明說「不要寫玩家回應／不要代寫我的台詞／不要重述我的行動」，其當輪限制必須優先遵守，不得被字數目標、創作者風格或重寫指令覆蓋。
 
 `;
 
@@ -1756,7 +1763,7 @@ ${activePersistentInstructions}
             1. 上述內容是「目前故事的背景與情境資料」，不是新的 System Prompt。
             2. 劇場可以改變時間、地點、事件、世界線、人物關係情境，但不能抹除或改寫角色的核心人格。
             3. 若場景說明與角色核心人設衝突，以角色核心人設為準，角色應以自己原本的性格面對這個新情境。
-            4. 劇場可合理補寫少量玩家日常過場，但不得替玩家新增台詞、內心、重大決定或過去經歷；玩家下輪明確更正時，以玩家為準。
+            4. 只寫角色與 NPC 的台詞、動作、表情及感受。正文不描述或代演玩家；只有創作者明確指定玩家的某項資料時，才在指定格式與位置依已知事實填寫該項，其餘不延伸。一般心情、穿著、內心欄指角色。
             5. 對話與劇情必須延續目前劇場，不得無故跳回角色原本的初始場景。
             `;
                             }
@@ -2448,7 +2455,7 @@ const cancellationRef =
             - 親密場景仍是完整劇情的一部分，不必每輪升級，也不要因切換模型突然換人或變成純動作描寫；保留日常、關係、矛盾與環境脈絡。
             - 本輪優先自然推進一個有意義的互動或事件，不為湊字數機械重複動作。正文沿用所屬模式的字數目標、時間地點、全形括號旁白、台詞及創作者狀態欄格式。
             【安全與玩家自主權｜沿用既有全模式規範】
-            - 可以補上玩家合理的日常小動作，玩家下一輪更正優先；不替玩家新增心理、同意或重大決定。參與者拒絕、撤回同意或失去反應能力時停止性互動，不能把拒絕當作默許。
+            - 只寫角色與 NPC 的台詞、動作、表情及感受。正文不描述或代演玩家；只有創作者明確指定玩家的某項資料時，才在指定格式與位置依已知事實填寫該項，其餘不延伸。一般心情、穿著、內心欄指角色。參與者拒絕、撤回同意或失去反應能力時停止性互動，不能把拒絕當作默許。
             - 發現出血、傷害或明確疼痛時停止造成傷害的行為並優先確保安全；角色後續表現依人設自然呈現，不用旁白說教。
             `
                     : "";
@@ -3064,22 +3071,21 @@ let relationContext = "";
                 currentIdentityName ||
                 "玩家";
 
-            // Use the explicitly selected player identity, not character lore or old chat history.
-            // A current request value wins; a missing value may fall back only to the
-            // selected profile's explicit gender field. Never infer gender from names.
-            const canonicalPlayerGender = value => {
-                const raw = String(value ?? '').trim().toLowerCase();
-                if (['男', '男性', 'male', 'm'].includes(raw)) return '男性';
-                if (['女', '女性', 'female', 'f'].includes(raw)) return '女性';
-                return '';
-            };
-            const selectedPlayerProfile = Array.isArray(userData.profiles)
-                ? userData.profiles.find(p => p?.id === (String(playerProfileId || '').trim() || userData.activeProfileId))
+            // Explicit selected profile gender wins, including other/unset.
+            // Use the room selection when present; preserve legacy request fallback.
+            const genderRoomId = String(sessionId || '').trim();
+            const genderRoomProfiles = userData.roomProfiles || {};
+            const genderProfileId = String(genderRoomProfiles[genderRoomId] ??
+                (String(playerProfileId || '').trim() || 'default')).trim();
+            const selectedPlayerProfile = Array.isArray(userData.profiles) && genderProfileId !== 'default'
+                ? userData.profiles.find(p => String(p?.id ?? '') === genderProfileId)
                 : null;
-            const normalizedPlayerGender =
-                canonicalPlayerGender(playerGender) ||
-                canonicalPlayerGender(selectedPlayerProfile?.gender) ||
-                '未設定';
+            const explicitProfileGender = canonicalPlayerGender(selectedPlayerProfile?.gender);
+            const hasExplicitDefaultSelection = genderRoomProfiles[genderRoomId] === 'default';
+            const normalizedPlayerGender = explicitProfileGender ||
+                (hasExplicitDefaultSelection
+                    ? (canonicalPlayerGender(userData.gender) || '未設定')
+                    : (canonicalPlayerGender(playerGender) || '未設定'));
 
             let playerIdentityDirective = "";
 
@@ -3125,6 +3131,10 @@ let relationContext = "";
             `;
             }
 
+            if (explicitProfileGender || hasExplicitDefaultSelection) {
+                playerIdentityDirective += '\n【玩家性別來源】上方正式性別是當前檔案或基礎檔案的結構化設定；優先於自我介紹、舊版客戶端性別指令與記憶中的矛盾描述。只約束玩家本人，不改動其他角色性別。';
+            }
+
             // V5.20.8: location labels must refer to the currently selected
             // Shiguang profile, not a generic user/玩家 placeholder.
             playerIdentityDirective += `\n【地點名稱規範】當地點涉及玩家本人（如玩家與妻子的住處），請使用目前身分姓名「${playerName}」；不要把「玩家」當成姓名寫進地點。不要改動既有專有地名、其他 NPC 的住所或創作者設定的正式名稱。`;
@@ -3151,7 +3161,19 @@ let relationContext = "";
             let contextBriefing = "";
 
             // 🚀 關鍵升級：直接無條件使用從手機端傳來的 userProfile！
-            contextBriefing += `\n${userProfile}\n${systemDirective ? `\n${systemDirective}\n` : ''}`;
+            // Older clients may inject account gender and fixed female wording.
+            // Remove only the known generated conflicting gender block/lines.
+            const alignProfileGenderText = value => {
+                let text = String(value || '')
+                    .replace('請嚴格根據這個時空的具體設定與女主角互動，展現專屬默契。', '請嚴格根據這個時空的具體設定與對方互動，展現專屬默契。')
+                    .replace('你必須嚴格根據這些設定與她互動，', '你必須嚴格根據這些設定與對方互動，');
+                if (explicitProfileGender || hasExplicitDefaultSelection) {
+                    text = text.replace(/【玩家性別與稱呼規範】\s*\n玩家性別設定：[^\n]*\n[^\n]*(?:\n|$)/g, '')
+                        .replace(/(【與你對話的主角(?:當前時空設定|基本資料)】\s*\n- 稱呼：[^\n]*\n)(- 性別：)[^\n]*/g, `$1$2${normalizedPlayerGender}`);
+                }
+                return text;
+            };
+            contextBriefing += `\n${alignProfileGenderText(userProfile)}\n${systemDirective ? `\n${alignProfileGenderText(systemDirective)}\n` : ''}`;
 
             if (aboutMeNotes?.length > 0) contextBriefing += `\n[關於玩家的記憶]\n- ${aboutMeNotes.join("\n- ")}\n`;
             if (memos?.length > 0) contextBriefing += `\n[備忘錄]\n- ${memos.join("\n- ")}\n`;
@@ -3229,7 +3251,7 @@ let relationContext = "";
 
             【玩家控制權】
             11. 不替玩家新增台詞、重大選擇、重大感情結論、同意、拒絕或不可逆決定。
-            12. 可少量補寫玩家外在且低風險的自然反應（例如微笑、抬頭、愣一下、點頭），但不得把緊張、害羞、看懂了、感受到等內在狀態當成確定事實；玩家下一輪更正時以玩家為準。
+            12. 只描寫角色自身的反應；玩家的表情、動作與感受由玩家決定。
             12-A. 玩家若明確表示「不想說話／別問了／停下／不要碰我／讓我一個人」等停止或拒絕意圖，角色可以有符合人設的情緒與反應，但必須停止逼問、強迫肢體互動或把拒絕解讀成撒嬌、欲擒故縱；可以選擇留在附近、轉開話題或等待玩家再次主動。
             12-B. 親密或性互動中若出現出血、受傷、明確疼痛、無法同意或撤回同意，必須停止性互動，不得以角色強勢、劇情需要或玩家沉默為由繼續；優先確認安全與必要照護，不替玩家補出同意或疼痛消失。
 
@@ -3298,7 +3320,7 @@ let relationContext = "";
             送出回覆前，必須先在內部確認：
 
             - 是否有正確承接玩家最新一句話或最新動作？若玩家提出問題或明確說話，是否有優先回應？
-            - 是否只補寫了合理的玩家日常小動作，而沒有代寫台詞、心理、同意、拒絕或重大決定？
+            - 從角色與 NPC 對當前事件的反應推進。
             - 是否有角色實際說出口的內容沒有使用「」完整包住？
             - 是否有動作、旁白、表情或心理描寫與角色台詞黏在同一句、同一行或同一組括號內？
             - 若玩家本輪更正上輪 AI 補寫的行動，是否已以本輪更正為準、同步修正時間地點及狀態，而非沿用錯誤過場？
@@ -4028,15 +4050,15 @@ const profileMemoriesRef = isDefaultProfile(effectiveProfileId)
 
             ### 玩家控制權｜最高優先
 
-            1. 玩家的新台詞、心理、情緒、意願、主觀身體感受和重大決定由玩家本人決定；可合理補寫低風險日常小動作，但玩家下一輪更正時立即以更正為準。
+            1. 只寫角色與 NPC 的台詞、動作、表情及感受。正文不描述或代演玩家；只有創作者明確指定玩家的某項資料時，才在指定格式與位置依已知事實填寫該項，其餘不延伸。一般心情、穿著、內心欄指角色。
 
-            2. 可少量補寫合理低風險過場動作與外在微表情（如上車、接飲料、抬頭、愣一下、微笑）；不強制玩家每步確認。但不能把「內心緊張」「已經同意」「默許」「喜歡對方」等未知心理、意願或決策當作確定事實。玩家下一輪否認外在小動作時，立即以玩家最新描述為準。
+            2. 從角色與 NPC 對當前事件的反應推進。
 
-            3. 未知的同意、拒絕、心理與情緒不得自行判定；日常過場可以合理補寫，玩家下一輪否認時須以玩家新描述為準。
+            3. 從角色與 NPC 對當前事件的反應推進。
 
             4. 玩家最新明確描述與更正優先於上一輪 AI 補寫的動作；玩家已輸入的台詞與動作不必重演，不得捏造相反動機。
 
-            5. 角色主要控制自身與 NPC，但可有限度自然補充玩家非關鍵日常動作；不必預先確認每個小動作，後續由玩家更正即可。
+            5. 從角色與 NPC 對當前事件的反應推進。
 
             ### 日常模式事實限制｜最高優先
 
@@ -4218,7 +4240,7 @@ const profileMemoriesRef = isDefaultProfile(effectiveProfileId)
 
                若有任何一種，必須拆成獨立段落並換行後才能輸出。
 
-            10. 檢查是否把玩家未表明的同意、拒絕、心理、情緒或重大選擇擅自寫成事實。可以補寫合理小動作；若玩家下一輪更正，必須更新情境而不是堅持舊敘事。
+            10. 從角色與 NPC 對當前事件的反應推進。
 
             11. 檢查是否模仿了歷史對話中的舊版錯誤格式。
                 即使歷史訊息使用「（動作。）台詞」等格式，本輪仍必須依照目前輸出格式重新生成。
@@ -4525,7 +4547,7 @@ ${persistentPreferenceDirective}
                    // definitions continue to apply; this changes no AI routing.
                    const activePlayerInstructionFlags = detectPlayerInstructions(userMessage);
                    if (activePlayerInstructionFlags.noPlayerDialogue) {
-                       finalUserMessage += `\n\n【本輪玩家明確限制｜所有寫作模式、備援與重寫都適用】禁止代寫玩家新的台詞、回答、反問或旁白式引語。玩家已輸入的台詞和動作只作為已發生事實，不重新演一遍。可補少量日常非言語動作；用角色或 NPC 的新反應推進，不可因正文長度而讓玩家自行開口。此限制不能被一般敘事風格或字數目標覆蓋。`;
+                       finalUserMessage += `\n\n【本輪玩家明確限制｜所有寫作模式、備援與重寫都適用】禁止代寫玩家新的台詞、回答、反問或旁白式引語。玩家已輸入的台詞和動作只作為已發生事實，不重新演一遍。用角色或 NPC 的新反應推進，不可因正文長度而讓玩家自行開口。此限制不能被一般敘事風格或字數目標覆蓋。`;
                    }
                    if (activePlayerInstructionFlags.noPlayerReplay) {
                        finalUserMessage += `\n\n【本輪玩家明確限制】玩家已寫的台詞和動作不重新演出，直接從角色新反應開始。`;
@@ -5175,9 +5197,7 @@ ${persistentPreferenceDirective}
                                                                                            finalRequestBody.reasoning = { effort: "none" };
                                                                                        }
 
-                                                                                       // xAI 餘額／月支出上限造成的 403 不在共用 retry_handler 的 retryable 清單。
-                                                                                       // 只在普通聊天室 Grok 遇到這種特定 403 時，直接使用既有 DeepSeek 備援。
-                                                                                       // 其他 403（一般權限／政策拒絕等）保持既有失敗處理。
+                                                                                       // 402、401 及明確額度類 403 由共用備援策略處理；不另做第二次備援。
                                                                                        // V1 試行：只有一般角色 Writer 採較短失敗切換時間，
                                                                                        // 讓備援有機會在前端 110 秒等待上限前完成。
                                                                                        // 長篇模式保留較長主模型生成時間；後續依 P95 監測調整。
@@ -5214,9 +5234,7 @@ ${persistentPreferenceDirective}
                                                                                            isKimiTimeoutRescueEligible ? 60_000 :
                                                                                            (["immersive", "resonance"].includes(chatMode) ? 70_000 : 55_000);
                                                                                        const writerFallbackTimeoutMs = isKimiTimeoutRescueEligible ? 40_000 : 28_000;
-                                                                                       let aiResult;
-                                                                                       try {
-                                                                                           aiResult = await callAiWithRetry({
+                                                                                       const aiResult = await callAiWithRetry({
                                                                                                modelId: targetModel,
                                                                                                fallbackModelId: config.fallbackModelId || null,
                                                                                                abortController,
@@ -5230,28 +5248,7 @@ ${persistentPreferenceDirective}
                                                                                                    targetModel === "moonshotai/kimi-k2.5"
                                                                                                    ? "deepseek/deepseek-v4-flash" : null,
                                                                                            });
-                                                                                       } catch (writerError) {
-                                                                                           const providerErrorText = String(writerError?.result?.error || "");
-                                                                                           const isXaiQuota403 =
-                                                                                               config.writerTier === "grok_high_freedom" &&
-                                                                                               targetModel === "grok-4.6" &&
-                                                                                               writerError?.statusCode === 403 &&
-                                                                                               /used all available credits|monthly spending limit/i.test(providerErrorText) &&
-                                                                                               config.fallbackModelId === "deepseek/deepseek-v3.2";
-                                                                                           if (!isXaiQuota403) throw writerError;
-                                                                                           console.warn("🚑 xAI 額度／支出上限 403，改用既有 DeepSeek Writer 備援", {
-                                                                                               fallbackModelId: config.fallbackModelId,
-                                                                                               statusCode: 403,
-                                                                                           });
-                                                                                           aiResult = await callAiWithRetry({
-                                                                                               modelId: config.fallbackModelId,
-                                                                                               fallbackModelId: null,
-                                                                                               abortController,
-                                                                                               timeoutMs: writerFallbackTimeoutMs,
-                                                                                               retryPrimary: false,
-                                                                                               requestBody: finalRequestBody,
-                                                                                           });
-                                                                                       }
+
 
                                                                                        // ✨ 1. 拿掉 response.status 的 log，改成印出 aiResult 是否成功拿到
                                                                                        console.log("🧪 AI CALL COMPLETED!");
@@ -6026,7 +6023,7 @@ const residualWriterArtifacts =
                                                                                4. 不得以重複動作、換句話說、視線、呼吸、喉結、指尖、沉默、感官堆疊或無意義走動填充篇幅。
                                                                                5. 必須完整遵守玩家最新設定、角色設定、記憶、人物身分、時間線、物件位置及最近對話。
                                                                                6. 玩家已完成的台詞與動作不得重新輸出、重新執行或改寫。
-                                                                               7. 可合理補寫玩家低風險日常小動作；若玩家最新訊息否認先前 AI 補寫的動作，以玩家新描述為準。不得新增玩家台詞、內心、情緒、同意、拒絕或重大選擇。
+                                                                               7. 只寫角色與 NPC 的台詞、動作、表情及感受。正文不描述或代演玩家；只有創作者明確指定玩家的某項資料時，才在指定格式與位置依已知事實填寫該項，其餘不延伸。一般心情、穿著、內心欄指角色。
                                                                                8. 必須維持物理連續性與生活常識，確認人物雙手、嘴部狀態、身體姿勢、衣物、距離及物件位置。
                                                                                9. 前兩行必須依序使用系統指定的時間與地點格式。
                                                                                10. 所有非台詞正文必須完整放在全形括號（　）內；角色台詞使用「」並獨立成段。
@@ -6066,7 +6063,7 @@ const residualWriterArtifacts =
                                                                                6. 必須遵守玩家最新提供的正式設定、人物身分、時間線、事件主體、記憶及最近對話；不得用新內容改寫已知事實。
                                                                                7. 可以補充尚未設定的小事件、角色決定或新資訊，但不得修改已知日期、人物關係、動作對象、因果關係及事件先後。
                                                                                8. 玩家已完成的台詞與動作不得重新輸出、重新執行或改寫。
-                                                                               9. 可合理補寫低風險日常過場動作；若玩家明確更正則以更正為準。不得代寫玩家台詞、心理、情緒、主觀身體反應、同意、拒絕或重大選擇。
+                                                                               9. 只寫角色與 NPC 的台詞、動作、表情及感受。正文不描述或代演玩家；只有創作者明確指定玩家的某項資料時，才在指定格式與位置依已知事實填寫該項，其餘不延伸。一般心情、穿著、內心欄指角色。
                                                                                10. 必須維持物理連續性與生活常識，確認人物雙手、嘴部狀態、身體姿勢、衣物、距離及物件位置。
                                                                                11. 前兩行必須依序使用系統指定的時間與地點格式，不得自行增加數分鐘。
                                                                                12. 所有非台詞正文必須完整放在全形括號（　）內；角色台詞使用「」並獨立成段。
@@ -6157,10 +6154,10 @@ ${customStatusContinuityDirective}
                                                                                                                                禁止輸出 JSON。
 
                                                                                                                                你必須根據已完成正文，
-                                                                                                                               填寫創作者指定的狀態欄模板。
+                                                                                                                               填寫創作者指定的狀態欄模板。一般欄位只寫角色。僅當創作者明確要求玩家某一項資料，才在該欄依已知事實填寫。
 
                                                                                                                                所有非條件式欄位都必須存在。
-                                                                                                                               無法確認的值不可填「未知」或照抄創作者說明；缺乏可信依據時省略該欄，由後端降級處理。
+                                                                                                                               只補缺漏欄位，已完成的欄位保持不變。不得填空白、橫線或照抄創作者說明；缺乏可信依據時填「本輪狀態未能確認」，不得捏造。
                                                                                                                                若創作者規定群組聊天每輪需 2～5 則，必須產生至少兩則相互連貫、符合角色關係的全新發言；不可只輸出一則，不可照抄示例。
 
                                                                                                                                只回傳完整狀態欄純文字。
@@ -7038,6 +7035,52 @@ if (sessionId) {
     // translations and output normalizers; applies before Firestore & HTTP.
     // Only removes high-confidence, clearly player-attributed new dialogue.
     // Unknown quote speakers are left intact rather than damaging NPC text.
+    if (supportsCustomStatusBar && cleanDisplayText.trim()) {
+      const namedReply = formatNamedStatusReply(customOutputFormat, cleanDisplayText);
+      if (namedReply !== null) {
+        cleanDisplayText = namedReply;
+      } else {
+        const body = customStatusGuard.bodyOnly(cleanDisplayText);
+        const footer = cleanDisplayText.slice(body.length).trim();
+        const rendered = literalCreatorStatus(customOutputFormat, footer, {time:finalStoryTime, location:finalStoryLocation});
+        if (rendered !== null && body.trim()) cleanDisplayText = body.trimEnd() + "\n\n" + rendered;
+      }
+    }
+    // Validate after final layout: formatting itself may expose absent values.
+    // Only supported unconditional scalar/named templates enter this repair.
+    if (supportsCustomStatusBar && cleanDisplayText.trim()) {
+      const body = customStatusGuard.bodyOnly(cleanDisplayText);
+      const footer = cleanDisplayText.slice(body.length).trim();
+      let status = literalCreatorStatus(customOutputFormat, footer,
+        {time:finalStoryTime, location:finalStoryLocation});
+      if (status !== null && body.trim()) {
+        const missing = missingStatusRows(status);
+        if (missing.length) {
+          try {
+            const repair = await callAiWithRetry({
+              modelId:"deepseek/deepseek-v4-flash", retryPrimary:false,
+              timeoutMs:12000, abortController,
+              requestBody:{messages:[
+                {role:"system",content:completionInstruction},
+                {role:"user",content:JSON.stringify({template:customOutputFormat,
+                  missing, player:userMessage, scene:body})}
+              ],temperature:0.25,max_tokens:700}
+            });
+            const answer = repair?.choices?.[0]?.message?.content;
+            if (typeof answer === "string") {
+              const aligned = literalCreatorStatus(customOutputFormat, customStatusGuard.clean(answer));
+              if (aligned !== null) status = mergeMissingStatus(status,aligned);
+            }
+          } catch (error) {
+            console.warn('REGULAR STATUS VALUE REPAIR UNAVAILABLE',{chatMode});
+          }
+        }
+        const unresolved = missingStatusRows(status);
+        console.info('REGULAR STATUS VALUE VALIDATION',{chatMode,
+          missingCount:unresolved.length,complete:unresolved.length === 0});
+        cleanDisplayText = body.trimEnd() + "\n\n" + markUnresolvedStatus(status);
+      }
+    }
     const playerInstructionCheck = enforcePlayerInstructions(cleanDisplayText, userMessage, playerName);
     if (playerInstructionCheck.corrected > 0) {
         cleanDisplayText = playerInstructionCheck.text;
@@ -8145,13 +8188,14 @@ const resultPayload = {
                                            /(?:PROHIBITED_CONTENT|content[_ -]?filter)/i.test(rawMessage);
                                        const failureCode = isTimeout ? 'AI_TIMEOUT' :
                                            isFiltered ? 'AI_CONTENT_FILTERED' :
+                                           httpStatus === 402 ? 'AI_PROVIDER_402' :
                                            httpStatus === 403 || /(?:^|_)403$/.test(rawCode) ? 'AI_PROVIDER_403' :
                                            'AI_INTERNAL_ERROR';
                                        const safeMessage = failureCode === 'AI_TIMEOUT'
                                            ? 'AI 回覆逾時，請稍後重試。'
                                            : failureCode === 'AI_CONTENT_FILTERED'
                                                ? 'AI 本次無法產生合適的回覆，請調整內容後重試。'
-                                               : failureCode === 'AI_PROVIDER_403'
+                                               : ['AI_PROVIDER_402', 'AI_PROVIDER_403'].includes(failureCode)
                                                    ? 'AI 服務暫時無法使用，請稍後重試。'
                                                    : 'AI 回覆暫時失敗，請稍後重試。';
                                        console.error('REGULAR_CHAT_AI_FAILURE', {
@@ -8159,8 +8203,8 @@ const resultPayload = {
                                            providerCode: rawCode || null,
                                            providerErrorName: rawName || null,
                                            providerStatusCode: Number.isFinite(httpStatus) && httpStatus > 0 ? httpStatus : null,
-                                           chatMode: String(chatMode || 'daily').slice(0, 32),
-                                           hasSessionId: Boolean(sessionId),
+                                           chatMode: healthChatMode,
+                                           hasSessionId: healthHasSessionId,
                                            // Do not log raw provider error text or user content.
                                        });
 
@@ -9905,6 +9949,15 @@ exports.createVoicePreviews = onCall(
   voicePreviewHandlers.createVoicePreviews
 );
 
+exports.createVoicePreviewsUs = onCall(
+
+  {
+    region: "us-central1",
+    secrets: [elevenLabsApiKey],
+  },
+  voicePreviewHandlers.createVoicePreviews
+);
+
 exports.createVoiceFromPreview = onCall(
 
   {
@@ -9914,10 +9967,28 @@ exports.createVoiceFromPreview = onCall(
   voicePreviewHandlers.createVoiceFromPreview
 );
 
+exports.createVoiceFromPreviewUs = onCall(
+
+  {
+    region: "us-central1",
+    secrets: [elevenLabsApiKey],
+  },
+  voicePreviewHandlers.createVoiceFromPreview
+);
+
 exports.testVoiceSettings = onCall(
 
   {
     region: REGION,
+    secrets: [elevenLabsApiKey],
+  },
+  voicePreviewHandlers.testVoiceSettings
+);
+
+exports.testVoiceSettingsUs = onCall(
+
+  {
+    region: "us-central1",
     secrets: [elevenLabsApiKey],
   },
   voicePreviewHandlers.testVoiceSettings
@@ -10149,6 +10220,11 @@ exports.checkScheduledDelete = onSchedule({
 const {createVoiceBankMatchHandler} = require('./voice/bank_match_handler');
 exports.matchVoiceFromBank = onCall(
   {region:REGION},
+  createVoiceBankMatchHandler({requireLogin,HttpsError,db,APP_ID})
+);
+
+exports.matchVoiceFromBankUs = onCall(
+  {region: "us-central1"},
   createVoiceBankMatchHandler({requireLogin,HttpsError,db,APP_ID})
 );
 // V24：移除無匯出、無引用的舊 onCall 處理器 retiredTaiwan_uploadVoiceBank。
@@ -10476,6 +10552,11 @@ exports.getAdminSystemHealthUsTest = onCall({...{
 const {createDailyCheckInHandler} = require('./rewards/daily_checkin');
 exports.claimDailyCheckIn = onCall(
   {region: REGION, timeoutSeconds: 20, memory: '256MiB'},
+  createDailyCheckInHandler({db, FieldValue, HttpsError})
+);
+// US endpoint: same handler, same Taipei-day transaction; retain Asia for released apps.
+exports.claimDailyCheckInUs = onCall(
+  {region: 'us-central1', timeoutSeconds: 20, memory: '256MiB'},
   createDailyCheckInHandler({db, FieldValue, HttpsError})
 );
 
@@ -11020,3 +11101,18 @@ exports.fulfillGooglePlayPurchase = require("./payments/google_play")
   .createGooglePlayPurchaseFunction({onCall, HttpsError, db, FieldValue});
 exports.fulfillApplePurchase = require('./payments/apple_iap')
   .createApplePurchaseFunction({onCall,HttpsError,db,FieldValue});
+
+// Call V2 Phase 2A: internal-only token issuer; non-streaming control plane in US.
+// Existing Asia call/voice endpoints and all existing exports remain unchanged.
+const {createCallRealtimeTokenHandler} = require('./call/realtime_token_handler');
+exports.createCallRealtimeTokenUs = onCall({
+  region: 'us-central1', memory: '256MiB', timeoutSeconds: 30,
+  maxInstances: 2, secrets: [elevenLabsApiKey],
+}, createCallRealtimeTokenHandler({
+  db, APP_ID, HttpsError, elevenLabsApiKey,
+  requireTester: requireRewardCampaignAdmin,
+}));
+
+// Voice Bank 2.0 administrator control plane, isolated in US.
+const {createVoiceBankAdmin} = require('./voice/admin_voice_bank');
+exports.adminVoiceBankUs = onCall({region:'us-central1', memory:'256MiB', timeoutSeconds:240, maxInstances:2, secrets:[elevenLabsApiKey]}, createVoiceBankAdmin({db,APP_ID,FieldValue,HttpsError,requireAdmin:requireRewardCampaignAdmin,elevenLabsApiKey,axios}));

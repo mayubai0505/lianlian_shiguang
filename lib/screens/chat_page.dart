@@ -725,12 +725,13 @@ class _ChatPageState extends State<ChatPage> {
       return """
 【與你對話的主角當前時空設定】
 - 稱呼：${profile['name'] ?? '未填寫'}
+- 性別：${_normalizePlayerGenderForAi(profile['gender']?.toString())}
 - 身高：${profile['height'] ?? '未填寫'}
 - 外貌特徵：${profile['appearance'] ?? '未填寫'}
 - 職業背景：${profile['occupation'] ?? '未填寫'}
 - 個性與自我介紹：${profile['intro'] ?? '未填寫'}
 
-請嚴格根據這個時空的具體設定與女主角互動，展現專屬默契。
+請嚴格根據這個時空的具體設定與對方互動，展現專屬默契。
 """;
     } else {
       // 🛡️ 軌道 B：兜底機制，玩家按了「稍後填寫」
@@ -3935,7 +3936,7 @@ class _ChatPageState extends State<ChatPage> {
             '請視為全新的互動自然地接續。'
             '以下是對方當前的專屬時空設定：\n'
             '$dynamicProfile\n\n'
-            '你必須嚴格根據這些設定與她互動，'
+            '你必須嚴格根據這些設定與對方互動，'
             '並以 JSON 格式回覆，格式為：'
             '{"response": "你的對話台詞", '
             '"affectionChange": 數字}。',
@@ -6615,17 +6616,17 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   String _normalizePlayerGenderForAi(String? rawGender) {
-    final gender = (rawGender ?? '').trim();
+    final gender = (rawGender ?? '').trim().toLowerCase();
 
-    if (gender == '男' || gender == '男性' || gender == '男生') {
+    if (gender == '男' || gender == '男性' || gender == '男生' || gender == 'male' || gender == 'm') {
       return '男性';
     }
 
-    if (gender == '女' || gender == '女性' || gender == '女生') {
+    if (gender == '女' || gender == '女性' || gender == '女生' || gender == 'female' || gender == 'f') {
       return '女性';
     }
 
-    if (gender == '其他') {
+    if (gender == '其他' || gender == 'other') {
       return '其他';
     }
 
@@ -6978,14 +6979,17 @@ class _ChatPageState extends State<ChatPage> {
         );
       }
 
-      if (data.containsKey('profiles')) {
-        List<dynamic> allProfiles = data['profiles'];
-        Map<String, dynamic>? roomProfiles = data['roomProfiles'];
+      {
+        final List<dynamic> allProfiles = data['profiles'] is List
+            ? data['profiles'] as List : <dynamic>[];
+        final rawRoomProfiles = data['roomProfiles'];
+        final Map<String, dynamic>? roomProfiles = rawRoomProfiles is Map
+            ? Map<String, dynamic>.from(rawRoomProfiles) : null;
         String? targetProfileId;
         if (roomProfiles != null) {
           // 先找真正的房間 ID，如果找不到，去看看有沒有這角色的「臨時身分證」遺產！
           targetProfileId =
-              roomProfiles[roomId] ?? roomProfiles['draft_$characterId'];
+              (roomProfiles[roomId] ?? roomProfiles['draft_$characterId'])?.toString();
         }
 
         // 若 user.roomProfiles 尚未建立（例如舊房補資料），則沿用 session 已記錄的 profileId。
@@ -6998,7 +7002,8 @@ class _ChatPageState extends State<ChatPage> {
         if (targetProfileId != null) {
           // ✨ 總裁級魔法：用 where().firstOrNull 取代笨重的 try-catch
           activeProfile = allProfiles
-              .where((p) => p['id'] == targetProfileId)
+              .whereType<Map<String, dynamic>>()
+              .where((p) => p['id']?.toString() == targetProfileId)
               .firstOrNull;
           if (activeProfile != null) {
             resolvedProfileId = targetProfileId.toString();
@@ -7036,7 +7041,7 @@ class _ChatPageState extends State<ChatPage> {
               'appearance': activeProfile!['appearance'],
               'occupation': activeProfile!['occupation'],
               'intro': activeProfile!['intro'],
-              'gender': data['gender'] ?? '未填寫', // 從最上面抓下來的基本資料
+              'gender': activeProfile!['gender'] ?? data['gender'] ?? '未填寫',
               'birthday': birthday,
             };
 
@@ -7055,14 +7060,12 @@ class _ChatPageState extends State<ChatPage> {
           // 將目前選中的玩家檔案同步寫回聊天室，讓後端 RAG 後續能直接依 session 分流。
           final sessionRef = _sessionDocRef;
           if (sessionRef != null && !widget.isTestMode) {
-            unawaited(
-              sessionRef.set(
-                {'playerProfileId': resolvedProfileId},
-                SetOptions(merge: true),
-              ).catchError((error) {
-                debugPrint('⚠️ 同步聊天室玩家檔案 ID 失敗：$error');
-              }),
-            );
+            await sessionRef.set(
+              {'playerProfileId': resolvedProfileId},
+              SetOptions(merge: true),
+            ).catchError((error) {
+              debugPrint('⚠️ 同步聊天室玩家檔案 ID 失敗：$error');
+            });
           }
         }
       }
@@ -13109,7 +13112,10 @@ Widget _buildStyledAiMessage(
   // 只有明確的引號才視為台詞；括號和台詞之外的敘述視為動作。
   // 沒有任何標記的舊訊息仍當作台詞，避免歷史訊息被誤判。
   final tokenRegex = RegExp(
-    r'(「.*?」|“.*?”|".*?"|（.*?）|\(.*?\))',
+    // Keep numbered suggestions together, including quoted text inside an option.
+    r'(^[^\S\r\n]*【建議行動】[^\S\r\n]*(?:(?:\r?\n[^\S\r\n]*)+[0-9０-９]+[.．、)）][^\r\n]*)+)'
+    r'|(?:「.*?」|“.*?”|".*?"|（.*?）|\(.*?\))',
+    multiLine: true,
     dotAll: true,
   );
   final matches = tokenRegex.allMatches(message).toList();
@@ -13123,6 +13129,11 @@ Widget _buildStyledAiMessage(
       if (narrative.isNotEmpty) parts.add((value: narrative, action: true));
     }
     final token = match.group(0) ?? '';
+    if (match.group(1) != null) {
+      parts.add((value: token.trim(), action: true));
+      cursor = match.end;
+      continue;
+    }
     final isAction = token.startsWith('（') || token.startsWith('(');
     final value = (isAction && token.length >= 2)
         ? token.substring(1, token.length - 1).trim()

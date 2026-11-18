@@ -1,4 +1,6 @@
 "use strict";
+const {isMissingStatusValue} = require("./status_value_completion");
+const {parseNamedStatus} = require("./creator_named_status");
 // V3：只辨識創作者「自訂結尾狀態欄」，不改寫正文、人物設定與 JSON statusBar。
 // 未成立的條件欄位不屬於必填；無條件的欄位必須全部保留（不再只檢查前兩欄）。
 const DIRECTIVE_HEADING = /^\s*(?:#{1,6}\s*)?(?:每回合|每輪|以下為|狀態欄格式|固定生成|【?狀態欄規則)/u;
@@ -24,6 +26,7 @@ const GENERIC_INSTRUCTION = /^\s*(?:#{1,6}\s*)?(?:每回合固定生成|每輪�
 function canonicalLabel(label) {
   return String(label || "")
     .normalize("NFKC")
+    .replace(/^\s*[-*•]\s+/u, "")
     .replace(/[\uFE0E\uFE0F\u200B-\u200D]/gu, "")
     .replace(/[\s\u3000]/gu, "")
     .replace(/[：:]+$/u, "")
@@ -48,6 +51,8 @@ function directiveEmojiSlot(line) {
   return {label:match[1], instruction:match[2].trim()};
 }
 function parseTemplate(template) {
+  const named = parseNamedStatus(template);
+  if (named) return named.fields.map(field => ({label:field.label, optional:false}));
   const fields = [];
   let insideNpcDetailSection = false;
   const templateLines = String(template || "").split(/\r?\n/);
@@ -106,7 +111,7 @@ function isPlaceholder(value) {
   const v = String(value || "").trim();
   if (!v) return false;
   const plain = v.replace(/^[（(\s]+|[）)\s]+$/g, "").trim();
-  return isHideInstruction(plain) || TEMPLATE_INSTRUCTION.test(plain) || /^無.{0,32}(?:隱藏|不顯示|不輸出)$/u.test(plain);
+  return isMissingStatusValue(plain) || isHideInstruction(plain) || TEMPLATE_INSTRUCTION.test(plain) || /^無.{0,32}(?:隱藏|不顯示|不輸出)$/u.test(plain);
 }
 // Only for creator-defined footer text. Do not strip normal story/dialogue.
 const META_LINE = /^(?:[（(]?範例(?:[⬇↓：:]|$)|備註[：:]|示範(?:對話|如下|[：:]|$)|(?:[-•]\s*)?(?:成員固定為|依劇情生成|每次顯示|不必四人|可包含|可發貼圖|男性請使用|女性用|不得重複|禁止全部|嚴禁顯示|若無NPC|若無比賽|限\d+字|\(?\{char\}內心話))/u;
@@ -180,6 +185,11 @@ function createCustomStatusGuard(template) {
     return result;
   }
   function footerStart(lines) {
+    const named = parseNamedStatus(template);
+    if (named) {
+      const heading = lines.findIndex(line => line.trim() === named.heading);
+      if (heading >= 0) return heading;
+    }
     // 必須是行首的狀態欄標籤，不匹配正文中提到的 Emoji 或欄名。
     // 從最後一個狀態欄連續區段搜尋，兼容條件欄被隱藏、群組聊天包含多行。
     const hits = [];
@@ -395,7 +405,7 @@ function createCustomStatusGuard(template) {
     const output = [];
     for (const field of fields) {
       const key = canonicalLabel(field.label);
-      const value = newBlocks.get(key) || oldBlocks.get(key);
+      const value = oldBlocks.get(key) || newBlocks.get(key);
       if (value) output.push(value);
     }
     const combined = clean([body, ...output].filter(Boolean).join('\n\n'));
@@ -439,7 +449,7 @@ function createCustomStatusGuard(template) {
       if (/^(?:📍|地點|位置)$/u.test(normalized)) value = String(context.location || "").trim();
       // Dynamic blocks cannot be copied from the previous round as fresh events.
       const dynamic = /(?:群組|聊天|對話|訊息|聊天室|內心|心聲|老二出廠)/u.test(normalized);
-      if (!value && !dynamic) value = existingValue(label, priorLines);
+      if (!value && !dynamic && /(?:地點|位置|衣著|穿著|服裝|裝備)/u.test(normalized)) value = existingValue(label, priorLines);
       if (unknownValue(value)) value = "";
       if (!value) { unresolved.push(label); continue; }
       linesToAdd.push(`${label}：${value}`);

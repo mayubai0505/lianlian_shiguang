@@ -17,8 +17,8 @@ const getAdminSystemHealthHandler = async (request) => {
       .get();
 
     // Independent read: old clients and old daily data remain compatible.
-    const chatSnapshot = await db.collection("artifacts").doc(APP_ID).collection("ai_chat_daily").doc(dateKey).get();
-    const chatHealth = chatSnapshot.exists ? (chatSnapshot.data() || {}) : null;
+    const chatSnapshot = await db.collection("artifacts").doc(APP_ID).collection("ai_chat_daily").doc(`${dateKey}_v2`).get();
+    const chatHealth = chatSnapshot.exists ? {...(chatSnapshot.data() || {}), firstRecordedAt: chatSnapshot.createTime?.toDate?.()?.toISOString() || null} : null;
     if (!snapshot.exists) {
       return {
         dateKey,

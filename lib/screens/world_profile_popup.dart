@@ -48,6 +48,9 @@ class _WorldProfilePageState extends State<_WorldProfilePage> {
   final TextEditingController _occupationController = TextEditingController();
   final TextEditingController _personalityController = TextEditingController();
 
+  // null = legacy profile without a gender field; do not migrate silently.
+  String? _profileGender = 'unset';
+
   bool _isSaving = false;
   bool _isLoading = true;
   bool _isEditingView = false;
@@ -85,6 +88,8 @@ class _WorldProfilePageState extends State<_WorldProfilePage> {
       'action': 'saveProfile',
       'nickname': nickname,
       'identity': identity,
+      if (profile != null) 'profileId': profile['id'],
+      if (profile?['gender'] != null) 'gender': profile!['gender'],
     });
   }
 
@@ -146,6 +151,8 @@ class _WorldProfilePageState extends State<_WorldProfilePage> {
             'id': defaultId,
             'profileName': '預設檔案',
             'name': data['nickname'] ?? '',
+            if (_profileGenderCode(oldProfile['gender']) != null)
+              'gender': _profileGenderCode(oldProfile['gender']),
             'height': oldProfile['height'] ?? '',
             'appearance': oldProfile['appearance'] ?? '',
             'occupation': oldProfile['occupation'] ?? '',
@@ -191,6 +198,7 @@ class _WorldProfilePageState extends State<_WorldProfilePage> {
 
   void _startCreate() {
     _editingProfileId = null;
+    _profileGender = 'unset';
     _profileNameController.clear();
     _nameController.clear();
     _heightController.clear();
@@ -203,6 +211,7 @@ class _WorldProfilePageState extends State<_WorldProfilePage> {
   void _startEdit(Map<String, dynamic> profile) {
     final l10n = AppLocalizations.of(context)!;
     _editingProfileId = profile['id']?.toString();
+    _profileGender = _profileGenderCode(profile['gender']);
     final rawProfileName = (profile['profileName'] ?? '').toString();
     _profileNameController.text =
     rawProfileName == '預設檔案' ? l10n.defaultProfileName : rawProfileName;
@@ -240,6 +249,7 @@ class _WorldProfilePageState extends State<_WorldProfilePage> {
         // 不再寫入 characterId：拾光檔案改為所有角色共用。
         'profileName': _profileNameController.text.trim(),
         'name': _nameController.text.trim(),
+        if (_profileGender != null) 'gender': _profileGender,
         'height': _heightController.text.trim(),
         'appearance': _appearanceController.text.trim(),
         'occupation': _occupationController.text.trim(),
@@ -729,6 +739,10 @@ class _WorldProfilePageState extends State<_WorldProfilePage> {
             hint: l10n.profileNicknameHint,
           ),
           const SizedBox(height: 16),
+          _buildFieldLabel(context, l10n.charGenderLabel),
+          const SizedBox(height: 8),
+          _buildProfileGenderField(context),
+          const SizedBox(height: 16),
           _buildFieldLabel(context, l10n.profileHeightLabel),
           const SizedBox(height: 8),
           _buildTextField(
@@ -835,6 +849,48 @@ class _WorldProfilePageState extends State<_WorldProfilePage> {
           color: theme.colorScheme.onSurface.withValues(alpha: 0.72),
         ),
       ),
+    );
+  }
+
+  String? _profileGenderCode(dynamic value) {
+    switch (value?.toString().trim().toLowerCase()) {
+      case 'male': case 'm': case '男': case '男性': case '男生':
+        return 'male';
+      case 'female': case 'f': case '女': case '女性': case '女生':
+        return 'female';
+      case 'other': case '其他':
+        return 'other';
+      case 'unset': case '未設定': case '未選擇': case '未选择': case 'not selected':
+        return 'unset';
+      default:
+        return null;
+    }
+  }
+
+  Widget _buildProfileGenderField(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context);
+    final other = locale.languageCode == 'zh'
+        ? '其他'
+        : const <String, String>{
+            'en': 'Other', 'ja': 'その他', 'ko': '기타', 'vi': 'Khác',
+            'id': 'Lainnya', 'th': 'อื่น ๆ', 'ar': 'أخرى', 'fr': 'Autre',
+            'ms': 'Lain-lain', 'es': 'Otro', 'hi': 'अन्य', 'pt': 'Outro',
+          }[locale.languageCode] ?? 'Other';
+    return DropdownButtonFormField<String>(
+      value: _profileGender,
+      isExpanded: true,
+      decoration: const InputDecoration(border: OutlineInputBorder()),
+      hint: Text(l10n.genderNotSelected),
+      items: [
+        DropdownMenuItem(value: 'male', child: Text(l10n.genderMale)),
+        DropdownMenuItem(value: 'female', child: Text(l10n.genderFemale)),
+        DropdownMenuItem(value: 'other', child: Text(other)),
+        DropdownMenuItem(value: 'unset', child: Text(l10n.genderNotSelected)),
+      ],
+      onChanged: _isSaving ? null : (value) {
+        setState(() => _profileGender = value);
+      },
     );
   }
 

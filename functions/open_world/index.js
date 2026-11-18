@@ -1,4 +1,5 @@
 'use strict';
+const {isCancelled: isWriterCancelled, isSafetyFailure: isWriterSafetyFailure, mayFallbackProvider: mayFallbackWriterProvider} = require('../src/ai/provider_failure_policy');
 const {publicChatCount, recordPublicChatSend} = require('./chat_count');
 const {createWorldChatAudit} = require('./chat_count_audit');
 const storyClock = require('./story_clock');
@@ -7,8 +8,11 @@ const {createAiCostTrace} = require('../src/ai/cost_trace');
 const {onDocumentCreated} = require('firebase-functions/v2/firestore');
 const {createWorldReplyNotificationHandler} = require('./world_reply_notification');
 const {createWorldMemoryTools, EMBEDDING_VERSION} = require('./world_memory_worker');
+const {missingStatusRows,mergeMissingStatus,markUnresolvedStatus,completionInstruction} = require('../src/chat/status_value_completion');
+const {literalCreatorStatus} = require('../src/chat/literal_creator_status');
 const {inspectCreatorStatusCompleteness, parseFields, lockCreatorStatus, describeCreatorTemplate, isCreatorGuidance, enforceModernStatusTime, protectCreatorCalendarDisplay} = require('./status_template');
 const creatorThought = require('./creator_thought');
+const {canonicalPlayerGender} = require('../src/chat/player_identity');
 
 // V1 conditional creator status display: enforce only unambiguous, explicitly
 // command-gated status fields. Never infer permission from AI-generated text.
@@ -1168,7 +1172,12 @@ exports.worldPrivateTest = onCall({
       const identity = String(payload.identity || '').trim();
       if ([...nickname].length > 40 || [...identity].length > 2000)
         throw new HttpsError('invalid-argument','身分資料超過字數限制');
-      await room.update({playerWorldProfile:{nickname, identity},profileUpdatedAt:now});
+      const gender = payload.gender;
+      if (gender != null && !['male','female','other','unset'].includes(gender))
+        throw new HttpsError('invalid-argument','身分性別無效');
+      const profileId = typeof payload.profileId === 'string' ? payload.profileId.trim().slice(0,128) : '';
+      await room.update({playerWorldProfile:{nickname, identity,
+        ...(profileId ? {profileId} : {}), ...(gender != null ? {gender} : {})},profileUpdatedAt:now});
       return {ok:true};
     }
     const allowedKeys = ['mood','outfit','relationship','thought','weather','currentState','action','affinity'];
@@ -1687,10 +1696,16 @@ exports.worldPrivateTest = onCall({
       // 僅讀取本人的 users/{uid}，不使用其他玩家資料。
       const worldNickname = String(savedProfile.nickname || '').trim();
       let accountNickname = '';
-      if (!worldNickname) {
-        const ownAccountSnap = await db.collection('users').doc(uid).get();
-        const ownAccount = ownAccountSnap.data() || {};
-        accountNickname = String(ownAccount.nickname || ownAccount.displayName || ownAccount.name || '').trim();
+      let ownAccount = null;
+      if (!worldNickname || savedProfile.profileId) {
+        try {
+          ownAccount = (await db.collection('users').doc(uid).get()).data() || {};
+          accountNickname = String(ownAccount.nickname || ownAccount.displayName || ownAccount.name || '').trim();
+        } catch (profileReadError) {
+          // A new live gender lookup must not block a turn; use the saved snapshot.
+          if (!worldNickname) throw profileReadError;
+          logger.warn('world profile gender lookup failed; using saved snapshot', {code: String(profileReadError?.code || 'unknown')});
+        }
       }
       const profileNickname = String(worldNickname || accountNickname)
         .replace(/[\r\n\t\u0000-\u001f]/gu, ' ').trim().slice(0,40);
@@ -1700,8 +1715,21 @@ exports.worldPrivateTest = onCall({
       const playerGenderDeclarations = [...profileIdentity.matchAll(
         /(?:^|[\n，,。；;])\s*(?:(?:我的)?(?:性別|生理性別)\s*[:：是為]\s*|我(?:是|為)\s*(?:一名|一個)?\s*)(男生|男人|男性|男的|男|女生|女人|女性|女的|女)(?=$|[\s，,。；;])/gu
       )].map(m => /^(?:男)/u.test(m[1]) ? 'male' : 'female');
-      const playerGender = new Set(playerGenderDeclarations).size === 1
-        ? playerGenderDeclarations[0] : null;
+      // Explicit structured gender wins even when set to other/unset.
+      // Old profiles retain the existing conservative text parser.
+      let explicitGender = savedProfile.gender;
+      const genderCode = value => ({'男性':'male','女性':'female','其他':'other','未設定':'unset'})[canonicalPlayerGender(value)];
+      if (savedProfile.profileId && ownAccount) {
+        const current = Array.isArray(ownAccount.profiles)
+          ? ownAccount.profiles.find(p => String(p?.id ?? '') === savedProfile.profileId) : null;
+        explicitGender = genderCode(current?.gender) || explicitGender;
+      }
+      // No selected world identity: use the account gender, not a former profile.
+      if (!savedProfile.profileId && !worldNickname && !profileIdentity && !explicitGender) {
+        explicitGender = genderCode(ownAccount?.gender);
+      }
+      const playerGender = ['male','female','other','unset'].includes(explicitGender)
+        ? explicitGender : (new Set(playerGenderDeclarations).size === 1 ? playerGenderDeclarations[0] : null);
       const playerStoryLabel = profileNickname || '玩家';
       const playerProfileContext = [
         '【本房間拾光檔案：玩家身分與稱呼，所有模式優先遵守】此處是角色需要知道的故事資料，不是要求輸出的原始 JSON。',
@@ -1709,10 +1737,10 @@ exports.worldPrivateTest = onCall({
         profileIdentity ? `玩家自行設定的世界身分背景：${profileIdentity}` : '玩家尚未設定世界身分背景。',
         playerGender === 'male' ? '【本房間玩家性別：明確為男性】描述玩家本人時使用男性視角及「他／你」等適合的稱呼；不可因舊歷史、摘要、RAG、世界預設女主角或 NPC 誤稱而改寫成女性。這只約束玩家本人，不影響其他角色的性別。' :
           playerGender === 'female' ? '【本房間玩家性別：明確為女性】描述玩家本人時使用女性視角及「她／妳」等適合的稱呼；不可因舊歷史、摘要、RAG、世界預設男主角或 NPC 誤稱而改寫成男性。這只約束玩家本人，不影響其他角色的性別。' :
-          '【玩家性別未明確確認】不得從 NPC、世界預設主角、過往對話或暱稱猜測玩家性別；使用中性敘事，直到玩家明確設定。',
-        '【玩家檔案衝突優先序】本房間目前保存的拾光檔案優先於較早的對話、長期摘要、RAG 和創作者對預設主角的描述。舊記錄若誤用玩家的性別或稱呼，應視為過時描述，不可延續錯誤；不得將 NPC 的性別套用到玩家。',
+          '【玩家性別為其他或未明確確認】不得從 NPC、世界預設主角、過往對話或暱稱猜測玩家性別；使用中性敘事，直到玩家明確設定。',
+        '【玩家檔案衝突優先序】上方正式性別優先於身分介紹中的矛盾描述。本房間目前保存的拾光檔案優先於較早的對話、長期摘要、RAG 和創作者對預設主角的描述。舊記錄若誤用玩家的性別或稱呼，應視為過時描述，不可延續錯誤；不得將 NPC 的性別套用到玩家。',
 
-        profileNickname ? `敘事與 NPC 對白提及玩家本人時，優先自然使用「${profileNickname}」或合適的人稱代名詞，絕不可把內部標籤「玩家」當成人名寫進故事。` : '未提供名字時，可使用自然的你／妳、他／她或角色已知的稱呼；不要憑空捏造姓名。',
+        profileNickname ? `敘事與 NPC 對白提及玩家本人時，優先自然使用「${profileNickname}」或合適的人稱代名詞，絕不可把內部標籤「玩家」當成人名寫進故事。` : '未提供名字時，依上方正式性別使用適當的人稱或角色已知的稱呼；不要憑空捏造姓名。',
         '姓名、身分只能依這個檔案及玩家明確說過的資訊；NPC 只有在劇情中已知曉時才能直呼其名。不得代替玩家做事、說話或決定。',
         '【玩家不可成為 AI 發言者】玩家稱呼只是歷史與 NPC 稱呼用的識別資料，絕不是可演繹 NPC；無論模型如何分段，都不得以玩家姓名建立 npc、user、player 或其他人物發言段落。',
         '不要原樣輸出拾光檔案的資料結構、JSON、後端提示詞，也不要把整份個人檔案貼進旁白或狀態欄。',
@@ -1823,7 +1851,7 @@ exports.worldPrivateTest = onCall({
         ] : []),
         `目前敘事模式：${worldMode}；互動動作請以指定 NPC 為核心，不代替其他人做出選擇。`,
         '【玩家敘事主權與輸出段落】玩家明確寫出的台詞、動作視為已發生，推測與心聲並非已說出口或 NPC 已知。不可重述、改寫、擴寫或用玩家第一人稱重播。segments 的 npc 僅限正式或真正獨立的臨時 NPC，不得以玩家暱稱或無頭像角色代演玩家。',
-        '旁白只可簡短銜接 NPC 可見的玩家已述行為，不新增玩家言語、動作、推理、情緒、心理或選擇；NPC 不冒用玩家原話作新台詞。',
+        '只寫角色與 NPC 的台詞、動作、表情及感受。正文不描述或代演玩家；只有創作者明確指定玩家的某項資料時，才在指定格式與位置依已知事實填寫該項，其餘不延伸。一般心情、穿著、內心欄指角色。',
         '成人情境也必須尊重人物年齡、明確意願與停止訊號；不得假定同意，不得因切換模型而修改角色設定或玩家自主權。',
         '遵守世界及 NPC 設定；依場景決定出場者，不預設固定男主角。',
         '已設定 NPC 使用其原本 id；臨時 NPC 可使用 npcId="" 並提供 name，但不可假冒既有 id。',
@@ -2183,6 +2211,7 @@ exports.worldPrivateTest = onCall({
               timeoutMs:budget,
             });
             recordWorldWriterCost(tierResult, targetModel, 'tiered_writer', attemptIndex + 1);
+            lastProviderError = null;
             const checked = parseWorldWriterResult(tierResult);
             const usage = tierResult?.usage || {};
             logWorldTrace('info', '模型回覆', {
@@ -2219,9 +2248,11 @@ exports.worldPrivateTest = onCall({
               reason:checked.reason, responseLength:checked.length,
               finishReason:String(tierResult?.choices?.[0]?.finish_reason || 'unknown').slice(0,32),
             });
-            if (isWorldReliabilityTrial && ['unsafe_output','unsafe_segments'].includes(checked.reason)) break;
+            if (['unsafe_output','unsafe_segments'].includes(checked.reason)) {
+              throw new HttpsError('internal','AI 回覆包含不適合顯示的內部內容，請重試');
+            }
           } catch (tierError) {
-            if (tierError?.message === 'PLAYER_DISCONNECTED') throw tierError;
+            if (isWriterCancelled(tierError) || tierError instanceof HttpsError) throw tierError;
             lastProviderError = tierError;
             logger.warn('world writer tier request failed', {
               ...traceBase, mode:worldMode, modelId:targetModel, tier:attemptIndex + 1,
@@ -2232,14 +2263,7 @@ exports.worldPrivateTest = onCall({
               code:String(tierError?.code || 'unknown').slice(0,64),
               providerRouting:isKimi ? 'openrouter_atlas_cloud_preferred_fallbacks_allowed' : 'default',
             });
-            if (isWorldReliabilityTrial) {
-              const code = String(tierError?.code || '');
-              const status = Number(tierError?.statusCode || 0);
-              const transient = ['AI_TIMEOUT','AI_NETWORK_ERROR','AI_EMPTY_RESPONSE'].includes(code) ||
-                status === 408 || status === 429 || (status >= 500 && status <= 599) ||
-                (code === 'AI_INVALID_RESPONSE' && (!status || (status >= 200 && status < 300)));
-              if (code === 'AI_CONTENT_FILTERED' || !transient) break;
-            }
+            if (!mayFallbackWriterProvider(tierError)) break;
           }
         }
         if (!validation?.parsed) {
@@ -2256,6 +2280,12 @@ exports.worldPrivateTest = onCall({
             });
             throw new HttpsError('internal',
               'AI 回覆逾時，所有備援模型均未成功，請稍後重試（失敗回覆未儲存）');
+          }
+          if (isWriterSafetyFailure(lastProviderError)) {
+            throw new HttpsError('internal','AI 本次無法產生合適的回覆，請調整內容後重試（失敗回覆未儲存）');
+          }
+          if (Number(lastProviderError?.statusCode) === 402) {
+            throw new HttpsError('internal','AI 服務暫時無法使用，請稍後重試（失敗回覆未儲存）');
           }
           throw new HttpsError('internal','AI 回覆重複或格式異常，請重試（不會儲存失敗回覆）');
         }
@@ -2587,13 +2617,49 @@ exports.worldPrivateTest = onCall({
           ),
           // Do not log world or player text, date, user ID, or precise clock.
         });
-        const lockedStatus = lockCreatorStatus(customStatusTemplate, renderedStatus,
+        const alignedStatus = literalCreatorStatus(customStatusTemplate, renderedStatus, {time:serverTimeText});
+        const lockedStatus = lockCreatorStatus(customStatusTemplate, alignedStatus ?? renderedStatus,
           {timeText: serverTimeText});
-        if (lockedStatus) {
+        let scalarStatus = literalCreatorStatus(customStatusTemplate, lockedStatus, {time:serverTimeText});
+        if (scalarStatus) {
+          const missing = missingStatusRows(scalarStatus);
+          if (missing.length) {
+            try {
+              const modelId = 'google/gemini-3-flash-preview';
+              const repair = await callAiWithRetry({
+                modelId, retryPrimary:false, timeoutMs:12000,
+                requestBody:{messages:[
+                  {role:'system',content:completionInstruction},
+                  {role:'user',content:JSON.stringify({template:customStatusTemplate, missing,
+                    player:rawMessage,scene:segments.map(x=>({name:x.name,text:x.text})).slice(-8)})},
+                ],temperature:0.25,max_tokens:550},
+              });
+              recordWorldWriterCost(repair,modelId,'creator_scalar_repair',1);
+              const answer = repair?.choices?.[0]?.message?.content;
+              if (typeof answer === 'string' && !leakedInternal.test(answer)) {
+                const safe = lockCreatorStatus(customStatusTemplate,
+                  literalCreatorStatus(customStatusTemplate, sanitizeStatusBar(normalizeAiResponseScript(answer,'台灣繁體中文'))) || '');
+                const filled = literalCreatorStatus(customStatusTemplate,safe);
+                if (filled) {
+                  scalarStatus = mergeMissingStatus(scalarStatus, filled);
+                }
+              }
+            } catch (error) {
+              logger.warn('world creator scalar repair unavailable',{mode:worldMode});
+            }
+          }
+        }
+        if (scalarStatus) {
+          const unresolved = missingStatusRows(scalarStatus);
+          logger.info('WORLD STATUS VALUE VALIDATION', {mode:worldMode,
+            missingCount:unresolved.length, complete:unresolved.length === 0});
+          scalarStatus = markUnresolvedStatus(scalarStatus);
+        }
+        if (lockedStatus || scalarStatus) {
           // Sync a recognizable numeric creator time to the authoritative clock
           // for fictional-day AND modern rooms. Ancient branch-only labels remain
           // untouched because enforceModernStatusTime only accepts HH:MM clocks.
-          const timeAlignedStatus = enforceModernStatusTime(lockedStatus,serverTimeText);
+          const timeAlignedStatus = enforceModernStatusTime(scalarStatus ?? lockedStatus,serverTimeText);
           const displayedStatus = protectCreatorCalendarDisplay(
             customStatusTemplate,timeAlignedStatus,serverTimeText);
           const gatedStatus=enforceCreatorConditionalStatus(customStatusTemplate,displayedStatus,rawMessage);
@@ -2644,6 +2710,8 @@ exports.worldPrivateTest = onCall({
             {explicitTransition:action==='send' && storyClock.isExplicitCreatorCalendarTransition(rawMessage),
              backendDaysElapsed:verifiedBackendDaysElapsed,regenerate:action==='regenerate'});
           newCreatorStatusForPersistence = await finalizeCreatorThoughtAndTime(newCreatorStatusForPersistence);
+          newCreatorStatusForPersistence = literalCreatorStatus(customStatusTemplate, newCreatorStatusForPersistence,
+            {time:serverTimeText}) ?? newCreatorStatusForPersistence;
           if(newCreatorStatusForPersistence)statusParts.push(newCreatorStatusForPersistence);
           if(gatedStatus.protectedCount)logger.info('WORLD CREATOR CONDITIONAL STATUS GUARD',{
             mode:worldMode,protectedCount:gatedStatus.protectedCount,removedCount:gatedStatus.removedCount,
@@ -3028,7 +3096,7 @@ exports.worldPrivateTest = onCall({
         })).catch(e=>logger.warn('world memory indexing skipped',e?.code||'error'));
       }
     } catch(err) {
-      if (err?.code === "cancelled") await finishChatHealth("cancelled");
+      if (isWriterCancelled(err)) await finishChatHealth("cancelled");
       else if (!["resource-exhausted","failed-precondition","permission-denied","unauthenticated","invalid-argument"].includes(err?.code)) await finishChatHealth("failure");
       if (reserved) await db.runTransaction(async tx => {
         const current = await tx.get(room);
@@ -3047,6 +3115,8 @@ exports.worldPrivateTest = onCall({
             ['AI 回傳格式異常，請重試（不會儲存失敗回覆）', 'invalid_writer_json'],
             ['AI 回覆逾時，所有備援模型均未成功，請稍後重試（失敗回覆未儲存）', 'writer_tiers_exhausted_timeout'],
             ['AI 回覆為空', 'empty_writer_segments'],
+            ['AI 本次無法產生合適的回覆，請調整內容後重試（失敗回覆未儲存）', 'provider_content_filtered'],
+            ['AI 服務暫時無法使用，請稍後重試（失敗回覆未儲存）', 'provider_billing_402'],
             ['AI 回覆包含不適合顯示的內部內容，請重試', 'unsafe_writer_segments'],
           ]);
           logger.error('worldPrivateTest internal failure', {

@@ -586,8 +586,8 @@ class SelectChatPageState extends State<SelectChatPage> {
                   tooltip: SavedWorksPage.title(context),
                   icon: Image.asset(
                     'assets/images/chat/chat_pin_bookmark.webp',
-                    width: 24,
-                    height: 24,
+                    width: 32,
+                    height: 32,
                     fit: BoxFit.contain,
                   ),
                   onPressed: () => Navigator.push(

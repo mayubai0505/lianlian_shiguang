@@ -26,7 +26,7 @@ class _CallMemoryDetailPageState extends State<CallMemoryDetailPage> {
   String? _currentlyPlayingText; // 記錄正在播放哪一句，用來顯示特效
   final Map<String, Uint8List> _voiceAudioCache = {};
   final FirebaseFunctions _functions =
-  FirebaseFunctions.instanceFor(region: 'asia-east1');
+  FirebaseFunctions.instanceFor(region: 'us-central1');
   @override
   void initState() {
     super.initState();
@@ -102,7 +102,7 @@ class _CallMemoryDetailPageState extends State<CallMemoryDetailPage> {
       } else {
         debugPrint("☁️ 呼叫 Cloud Function 產生語音");
 
-        final callable = _functions.httpsCallable('testVoiceSettings');
+        final callable = _functions.httpsCallable('testVoiceSettingsUs');
 
         final result = await callable.call({
           'voiceId': voiceId,

@@ -1,3 +1,4 @@
+import 'admin_voice_bank_page.dart';
 import 'admin_world_chat_count_page.dart';
 import 'dart:async';
 import 'dart:typed_data';
@@ -197,7 +198,6 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   final TextEditingController _contentController = TextEditingController();
   bool _sendNotification = true;
   bool _isPublishing = false;
-  bool _isUploadingVoiceBank = false;
   bool _isSyncingCreatorNames = false;
   bool _isBackfillingMomentSearch = false;
   final FirebaseFunctions _functions = FirebaseFunctions.instanceFor(
@@ -674,81 +674,6 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       );
     } finally {
       if (mounted) setState(() => _isPublishing = false);
-    }
-  }
-
-  Future<void> _uploadVoiceBank() async {
-    if (_isUploadingVoiceBank) return;
-
-    setState(() {
-      _isUploadingVoiceBank = true;
-    });
-
-    try {
-      final callable = _usAdminFunctions.httpsCallable(
-        'uploadVoiceBankUs',
-      );
-
-      final result = await callable.call();
-
-      final data = result.data is Map
-          ? Map<String, dynamic>.from(
-        result.data as Map,
-      )
-          : <String, dynamic>{};
-
-      final int count = (data['count'] as num?)?.toInt() ?? 0;
-
-      debugPrint(
-        '✅ Voice Bank 同步成功：$data',
-      );
-
-      if (!mounted) return;
-
-      ToastUtils.showCenterToast(
-        context,
-        'Voice Bank 已同步 $count 筆聲音',
-        customIcon: Icons.cloud_done_rounded,
-      );
-    } on FirebaseFunctionsException catch (e, stackTrace) {
-      debugPrint(
-        '========== uploadVoiceBank 失敗 ==========',
-      );
-      debugPrint('code: ${e.code}');
-      debugPrint('message: ${e.message}');
-      debugPrint('details: ${e.details}');
-      debugPrintStack(
-        stackTrace: stackTrace,
-      );
-
-      if (!mounted) return;
-
-      ToastUtils.showCenterToast(
-        context,
-        e.message ?? 'Voice Bank 同步失敗',
-        isError: true,
-      );
-    } catch (e, stackTrace) {
-      debugPrint(
-        'Voice Bank 同步未知錯誤：$e',
-      );
-      debugPrintStack(
-        stackTrace: stackTrace,
-      );
-
-      if (!mounted) return;
-
-      ToastUtils.showCenterToast(
-        context,
-        'Voice Bank 同步失敗：$e',
-        isError: true,
-      );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isUploadingVoiceBank = false;
-        });
-      }
     }
   }
 
@@ -8870,6 +8795,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   Widget _buildChatOutcomeCard(Map<String, dynamic> data) {
     final raw = data['chatHealth'];
     final health = raw is Map ? raw : const <String, dynamic>{};
+    final firstRecordedAt = DateTime.tryParse(health['firstRecordedAt']?.toString() ?? '');
     Widget group(String scope, String title, Map<String, String> modes) {
       final groupData = health[scope];
       return Column(
@@ -8902,7 +8828,9 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text('聊天室回覆寫入成功率', style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 6),
-        const Text('台灣時間今日；新版部署後開始累積。取消、付款拒絕及背景 AI 不計入成功率。'),
+        const Text('台灣時間今日｜V2 獨立統計，不包含 V1 資料。取消、花花不足及背景 AI 不計入成功率。'),
+        if (firstRecordedAt != null)
+          Text('V2 首筆紀錄：${DateFormat("yyyy/MM/dd HH:mm:ss").format(firstRecordedAt.toUtc().add(const Duration(hours: 8)))}（台灣時間）'),
         const SizedBox(height: 12),
         group('regular', '一般角色', const {'casual':'閒聊','story':'劇情','immersive':'沉浸','resonance':'共鳴'}),
         const Divider(),
@@ -9261,6 +9189,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                                     style: TextStyle(fontWeight: FontWeight.bold)),
                                   const SizedBox(height: 8),
                                   Text('逾時：${failedBy('timeout')} 次｜網路：${failedBy('network')} 次'),
+                                  Text('HTTP 402 額度／付款：${failedBy('http402')} 次'),
                                   Text('HTTP 403 拒絕：${failedBy('http403')} 次｜HTTP 429 限流：${failedBy('http429')} 次'),
                                   Text('HTTP 401 權限：${failedBy('http401')} 次｜HTTP 5xx：${failedBy('http5xx')} 次'),
                                   Text('內容過濾：${failedBy('contentFiltered')} 次｜空回覆：${failedBy('emptyResponse')} 次'),
@@ -13073,8 +13002,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                     ),
                     const SizedBox(height: 12),
                     const Text(
-                      '同步後端預設的聲音資料到 Firestore。'
-                          '同一個文件會更新，不會重複建立。',
+                      '探索共享音色、試聽與管理推薦。'
+                          '原始初始化不再從此入口執行。',
                     ),
                     const SizedBox(height: 16),
                     SizedBox(
@@ -13082,20 +13011,10 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                       height: 50,
                       child: ElevatedButton.icon(
                         onPressed:
-                        _isUploadingVoiceBank ? null : _uploadVoiceBank,
-                        icon: _isUploadingVoiceBank
-                            ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                          ),
-                        )
-                            : const Icon(
-                          Icons.cloud_upload_rounded,
-                        ),
+                        () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AdminVoiceBankPage())),
+                        icon: const Icon(Icons.library_music_outlined),
                         label: Text(
-                          _isUploadingVoiceBank ? '同步中...' : '同步 Voice Bank',
+                          '開啟聲音管理中心',
                         ),
                       ),
                     ),
