@@ -12648,6 +12648,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get weeklyRecommendations => 'Đề xuất tuần này';
 
   @override
+  String get profile_delete_confirm_message =>
+      'Không thể khôi phục sau khi xóa. Các cuộc trò chuyện đang sử dụng danh tính này sẽ ngừng áp dụng danh tính đó, nhưng lịch sử trò chuyện sẽ được giữ nguyên.';
+
+  @override
   String get world_menu_chat_section1 => 'Trò chuyện';
 
   @override

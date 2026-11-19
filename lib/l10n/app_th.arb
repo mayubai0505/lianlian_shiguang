@@ -6586,6 +6586,7 @@
   "worldAboutUsEditTooltip": "แก้ไขความทรงจำ",
   "worldAboutUsDeleteTooltip": "ลบความทรงจำ",
   "weeklyRecommendations": "แนะนำประจำสัปดาห์",
+  "profile_delete_confirm_message": "เมื่อลบแล้วจะไม่สามารถกู้คืนได้ แชทที่ใช้อัตลักษณ์นี้จะถูกยกเลิกการใช้งานอัตลักษณ์ดังกล่าว แต่ประวัติการสนทนาจะไม่ถูกลบ",
   "world_edit_tag_max1": "Select up to 5 tags",
   "world_edit_tag_custom1": "Tags (customizable; separate with commas)",
   "world_edit_secret_not_ready1": "Secret chapters have not loaded. Publishing is paused to protect your content. Check permissions and reopen this page.",

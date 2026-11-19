@@ -21557,6 +21557,12 @@ abstract class AppLocalizations {
   /// **'本週推薦'**
   String get weeklyRecommendations;
 
+  /// No description provided for @profile_delete_confirm_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除後無法復原。使用此身分的聊天室將取消套用，聊天紀錄不會刪除。'**
+  String get profile_delete_confirm_message;
+
   /// No description provided for @world_menu_chat_section1.
   ///
   /// In zh_Hant, this message translates to:

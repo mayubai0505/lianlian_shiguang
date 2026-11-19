@@ -90,7 +90,7 @@ async function callAiWithRetry({
     // 其他 provider 也可能回 choices 但 content 為空。
     // 此處區分服務異常（可備援）與明確內容拒絕（不可備援）。
     if (isAiContentFiltered(result) || isSafetyFailure({result})) {
-      const finishReasons = (result?.choices || [])
+      const finishReasons = (Array.isArray(result?.choices) ? result.choices : [])
         .map((choice) => String(choice?.finish_reason || ""))
         .filter(Boolean);
 
@@ -114,12 +114,14 @@ async function callAiWithRetry({
     }
 
     if (!hasUsableAiContent(result)) {
-      const finishReasons = (result?.choices || [])
+      const finishReasons = (Array.isArray(result?.choices) ? result.choices : [])
         .map((choice) => String(choice?.finish_reason || ""))
         .filter(Boolean);
 
-      const error = new Error("AI_EMPTY_RESPONSE");
-      error.code = "AI_EMPTY_RESPONSE";
+      const invalidShape = result?.choices != null && !Array.isArray(result.choices);
+      const failureCode = invalidShape ? "AI_INVALID_RESPONSE" : "AI_EMPTY_RESPONSE";
+      const error = new Error(failureCode);
+      error.code = failureCode;
       error.result = result;
       error.provider = providerConfig.provider;
       error.modelId = targetModelId;

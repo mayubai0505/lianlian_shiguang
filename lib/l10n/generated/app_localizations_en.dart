@@ -12571,6 +12571,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weeklyRecommendations => 'This Week\'s Picks';
 
   @override
+  String get profile_delete_confirm_message =>
+      'This identity will be permanently deleted and deselected from any chat using it. Your chat history will be kept.';
+
+  @override
   String get world_menu_chat_section1 => 'Chat';
 
   @override

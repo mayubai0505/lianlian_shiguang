@@ -12638,6 +12638,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get weeklyRecommendations => 'Rekomendasi Minggu Ini';
 
   @override
+  String get profile_delete_confirm_message =>
+      'Identitas yang dihapus tidak dapat dipulihkan. Identitas ini akan dilepas dari semua ruang obrolan yang menggunakannya, tetapi riwayat obrolan tetap tersimpan.';
+
+  @override
   String get world_menu_chat_section1 => 'Obrolan';
 
   @override

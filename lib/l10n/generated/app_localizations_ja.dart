@@ -12016,6 +12016,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get weeklyRecommendations => '今週のおすすめ';
 
   @override
+  String get profile_delete_confirm_message =>
+      '削除すると元に戻せません。このプロフィールを使用しているチャットでは適用が解除されますが、チャット履歴は削除されません。';
+
+  @override
   String get world_menu_chat_section1 => 'チャット';
 
   @override

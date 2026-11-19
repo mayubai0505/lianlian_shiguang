@@ -2,7 +2,7 @@
 // 原樣移出 core.js 的供應商回應有效性判定，未修改原邏輯。
 function isAiContentFiltered(result) {
   return (
-    result?.choices?.some(
+    (Array.isArray(result?.choices) ? result.choices : []).some(
       (choice) => {
         const finishReason = String(
           choice?.finish_reason || ""
@@ -19,7 +19,7 @@ function isAiContentFiltered(result) {
 }
 
 function hasUsableAiContent(result) {
-  if (!result?.choices?.length) return false;
+  if (!Array.isArray(result?.choices) || !result.choices.length) return false;
 
   return result.choices.some((choice) => {
     const content = choice?.message?.content;

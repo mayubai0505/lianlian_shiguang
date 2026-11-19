@@ -1,5 +1,5 @@
 'use strict';
-const {isCancelled: isWriterCancelled, isSafetyFailure: isWriterSafetyFailure, mayFallbackProvider: mayFallbackWriterProvider} = require('../src/ai/provider_failure_policy');
+const {isCancelled: isWriterCancelled, isSafetyFailure: isWriterSafetyFailure, classifyWorldProviderFailure} = require('../src/ai/provider_failure_policy');
 const {publicChatCount, recordPublicChatSend} = require('./chat_count');
 const {createWorldChatAudit} = require('./chat_count_audit');
 const storyClock = require('./story_clock');
@@ -8,7 +8,7 @@ const {createAiCostTrace} = require('../src/ai/cost_trace');
 const {onDocumentCreated} = require('firebase-functions/v2/firestore');
 const {createWorldReplyNotificationHandler} = require('./world_reply_notification');
 const {createWorldMemoryTools, EMBEDDING_VERSION} = require('./world_memory_worker');
-const {missingStatusRows,mergeMissingStatus,markUnresolvedStatus,completionInstruction} = require('../src/chat/status_value_completion');
+const {dedupeStatusHeading,trimWorldStatusBoundary,missingStatusRows,mergeMissingStatus,markUnresolvedStatus,completionInstruction} = require('../src/chat/status_value_completion');
 const {literalCreatorStatus} = require('../src/chat/literal_creator_status');
 const {inspectCreatorStatusCompleteness, parseFields, lockCreatorStatus, describeCreatorTemplate, isCreatorGuidance, enforceModernStatusTime, protectCreatorCalendarDisplay} = require('./status_template');
 const creatorThought = require('./creator_thought');
@@ -2147,7 +2147,7 @@ exports.worldPrivateTest = onCall({
       };
       let actualWriterModelId = writerRoute.modelId;
       // 世界觀劇情／沉浸／共鳴使用獨立逐層備援：每層只呼叫一個模型，
-      // 關閉共用 retry/fallback，避免 Gemini 內容過濾後直接卡在 DeepSeek 95 秒。
+      // 關閉共用 retry/fallback，由此統一分配剩餘時間與技術異常備援；安全拒絕不切換模型。
       // 劇情、沉浸保留原路由；一般共鳴及互動試行兩層備援，逐層驗證。
       // 成人情境優先保留既有 Grok 主模型；每層皆驗證 JSON，成功才停止。
       // 失敗不進入 Firestore 寫入／扣花交易；不改一般聊天室共用 retry_handler。
@@ -2166,8 +2166,31 @@ exports.worldPrivateTest = onCall({
           'deepseek/deepseek-v3.2',
         ])];
         let lastProviderError = null;
+        let lastProviderReason = null;
+        let stopReason = null;
+        let attemptsStarted = 0;
+        let primaryOutcome = null;
+        let finalTier = null;
+        const writerStartedAt = Date.now();
+        const writerOutcome = (outcome) => ({
+          ...traceBase, mode:worldMode, scope:'writer', outcome, primaryModelId:routeModels[0],
+          primaryOutcome, attemptedTiers:attemptsStarted, plannedTiers:routeModels.length,
+          fallbackAttempted:attemptsStarted > 1,
+          finalTier, elapsedMs:Date.now() - writerStartedAt,
+          lastProviderReason,
+        });
         for (let attemptIndex = 0; attemptIndex < routeModels.length; attemptIndex++) {
           const targetModel = routeModels[attemptIndex];
+          // Cancel can be handled by another instance. Before spending on a new
+          // tier, recheck the existing room reservation (no extra read on primary).
+          if (attemptIndex > 0) {
+            const state = (await room.get()).data() || {};
+            if (state.cancelledRequestId === requestId ||
+                state.activeRequestId !== requestId || state.processing !== true) {
+              logger.info('world writer outcome', writerOutcome('cancelled_before_fallback'));
+              throw new HttpsError('cancelled','這次生成已被停止');
+            }
+          }
           const remaining = 180000 - (Date.now() - functionStartedAt) - 25000;
           const isKimi = targetModel === 'moonshotai/kimi-k2.5';
           const defaultTierLimitMs = worldMode === 'story'
@@ -2179,9 +2202,13 @@ exports.worldPrivateTest = onCall({
             : (isKimi ? (worldMode === 'story' ? 80000 : 65000) : defaultTierLimitMs);
           const budget = Math.min(tierLimitMs, remaining);
           if (budget < 8000) {
-            logger.warn('world writer tier budget exhausted', {...traceBase, mode:worldMode, tier:attemptIndex + 1});
+            stopReason = 'writer_budget_exhausted';
+            logger.warn('world writer tier budget exhausted', {...traceBase, mode:worldMode, tier:attemptIndex + 1,
+              remainingFunctionBudgetMs:remaining, attemptedTiers:attemptsStarted});
             break;
           }
+          attemptsStarted++;
+          finalTier = attemptIndex + 1;
           writerStage = attemptIndex === 0 ? 'provider_request' : 'tiered_fallback';
           logWorldTrace('info', '呼叫模型', {
             ...traceBase, tier:attemptIndex + 1, modelId:targetModel,
@@ -2198,6 +2225,7 @@ exports.worldPrivateTest = onCall({
             maxTokens:writerRoute.maxTokens,
             providerRouting:isKimi ? 'openrouter_atlas_cloud_preferred_fallbacks_allowed' : 'default',
           });
+          let providerCallCompleted = false;
           try {
             // Prefer AtlasCloud for Kimi while allowing provider fallback.
             // Keep the shared request unchanged for Gemini, DeepSeek and Grok fallbacks.
@@ -2210,9 +2238,14 @@ exports.worldPrivateTest = onCall({
               retryPrimary:false,
               timeoutMs:budget,
             });
+            providerCallCompleted = true;
             recordWorldWriterCost(tierResult, targetModel, 'tiered_writer', attemptIndex + 1);
             lastProviderError = null;
+            lastProviderReason = null;
             const checked = parseWorldWriterResult(tierResult);
+            if (attemptIndex === 0) {
+              primaryOutcome = checked.parsed ? 'success' : `invalid_${checked.reason}`;
+            }
             const usage = tierResult?.usage || {};
             logWorldTrace('info', '模型回覆', {
               ...traceBase, tier:attemptIndex + 1, modelId:targetModel,
@@ -2236,10 +2269,14 @@ exports.worldPrivateTest = onCall({
               }
               if (attemptIndex > 0) {
                 logger.info('world writer tiered fallback succeeded', {
-                  mode:worldMode, tier:attemptIndex + 1, modelId:targetModel,
+                  ...traceBase, mode:worldMode, tier:attemptIndex + 1, modelId:targetModel,
                   latencyMs:Date.now() - tierStartedAt,
                 });
               }
+              logger.info('world writer outcome', {
+                ...writerOutcome('success'), selectedModelId:targetModel,
+                actualModelId:actualWriterModelId, fallbackSucceeded:attemptIndex > 0,
+              });
               break;
             }
             logger.warn('world writer invalid structured output', {
@@ -2253,39 +2290,69 @@ exports.worldPrivateTest = onCall({
             }
           } catch (tierError) {
             if (isWriterCancelled(tierError) || tierError instanceof HttpsError) throw tierError;
+            // A local parsing/normalization/cost-accounting exception is not a
+            // provider outage, even if it has a timeout-looking message.
+            if (providerCallCompleted) {
+              logger.error('world writer local processing failed', {
+                ...traceBase, mode:worldMode, tier:attemptIndex + 1,
+                code:String(tierError?.code || 'unknown').slice(0,64),
+              });
+              throw tierError;
+            }
             lastProviderError = tierError;
+            const decision = classifyWorldProviderFailure(tierError);
+            lastProviderReason = decision.reason;
+            if (attemptIndex === 0) primaryOutcome = decision.reason;
+            const nextModelId = routeModels[attemptIndex + 1] || null;
             logger.warn('world writer tier request failed', {
               ...traceBase, mode:worldMode, modelId:targetModel, tier:attemptIndex + 1,
               latencyMs:Date.now() - tierStartedAt,
               configuredTimeoutMs:budget,
               timeoutOverrunMs:Math.max(0,Date.now() - tierStartedAt - budget),
-              statusCode:Number(tierError?.statusCode) || null,
+              statusCode:decision.statusCode,
               code:String(tierError?.code || 'unknown').slice(0,64),
+              failureReason:decision.reason,
+              fallbackEligible:decision.allowFallback,
+              nextModelId:decision.allowFallback ? nextModelId : null,
               providerRouting:isKimi ? 'openrouter_atlas_cloud_preferred_fallbacks_allowed' : 'default',
             });
-            if (!mayFallbackWriterProvider(tierError)) break;
+            if (!decision.allowFallback) {
+              stopReason = decision.reason;
+              break;
+            }
           }
         }
         if (!validation?.parsed) {
-          logger.warn('world writer all tiers exhausted', {
-            ...traceBase, mode:worldMode, hasProviderError:Boolean(lastProviderError),
+          const exhausted = !stopReason && attemptsStarted === routeModels.length;
+          const outcome = stopReason || 'all_tiers_exhausted';
+          logger.warn(exhausted ? 'world writer all tiers exhausted' : 'world writer stopped', {
+            ...writerOutcome(outcome), hasProviderError:Boolean(lastProviderError),
           });
-          // Preserve the existing client-visible error channel (red error UI).
-          // The final tier timed out: explain the failure instead of calling it JSON corruption.
-          // Do not write a fake response, change billing, or expose player content.
-          if (String(lastProviderError?.code || '') === 'AI_TIMEOUT') {
-            logger.warn('world writer exhausted with provider timeout', {
+          logger.warn('world writer outcome', writerOutcome(outcome));
+          // Keep the existing client error channel and commit/billing rules.
+          // Safety refusals stop: no unchanged blocked prompt is sent to another model.
+          if (isWriterSafetyFailure(lastProviderError)) {
+            throw new HttpsError('internal','AI 本次無法產生合適的回覆，請調整內容後重試（失敗回覆未儲存）');
+          }
+          if (stopReason === 'writer_budget_exhausted') {
+            throw new HttpsError('internal','AI 回覆已達本輪時間上限，請稍後重試（失敗回覆未儲存）');
+          }
+          if (lastProviderReason === 'provider_timeout') {
+            if (exhausted) logger.warn('world writer exhausted with provider timeout', {
               ...traceBase, mode:worldMode, reason:'writer_tiers_exhausted_timeout',
-              lastProviderCode:'AI_TIMEOUT',
+              lastProviderCode:String(lastProviderError?.code || 'unknown').slice(0,64),
             });
             throw new HttpsError('internal',
               'AI 回覆逾時，所有備援模型均未成功，請稍後重試（失敗回覆未儲存）');
           }
-          if (isWriterSafetyFailure(lastProviderError)) {
-            throw new HttpsError('internal','AI 本次無法產生合適的回覆，請調整內容後重試（失敗回覆未儲存）');
+          if (lastProviderReason === 'provider_billing') {
+            if (classifyWorldProviderFailure(lastProviderError).statusCode === 402) {
+              throw new HttpsError('internal','AI 服務暫時無法使用，請稍後重試（失敗回覆未儲存）');
+            }
+            throw new HttpsError('internal','AI 服務供應商額度不足，請稍後重試（失敗回覆未儲存）');
           }
-          if (Number(lastProviderError?.statusCode) === 402) {
-            throw new HttpsError('internal','AI 服務暫時無法使用，請稍後重試（失敗回覆未儲存）');
+          if (lastProviderError) {
+            throw new HttpsError('internal','AI 服務暫時不穩定，請稍後重試（失敗回覆未儲存）');
           }
           throw new HttpsError('internal','AI 回覆重複或格式異常，請重試（不會儲存失敗回覆）');
         }
@@ -2622,7 +2689,7 @@ exports.worldPrivateTest = onCall({
           {timeText: serverTimeText});
         let scalarStatus = literalCreatorStatus(customStatusTemplate, lockedStatus, {time:serverTimeText});
         if (scalarStatus) {
-          const missing = missingStatusRows(scalarStatus);
+          const missing = missingStatusRows(scalarStatus, customStatusTemplate);
           if (missing.length) {
             try {
               const modelId = 'google/gemini-3-flash-preview';
@@ -2641,7 +2708,7 @@ exports.worldPrivateTest = onCall({
                   literalCreatorStatus(customStatusTemplate, sanitizeStatusBar(normalizeAiResponseScript(answer,'台灣繁體中文'))) || '');
                 const filled = literalCreatorStatus(customStatusTemplate,safe);
                 if (filled) {
-                  scalarStatus = mergeMissingStatus(scalarStatus, filled);
+                  scalarStatus = mergeMissingStatus(scalarStatus, filled, customStatusTemplate);
                 }
               }
             } catch (error) {
@@ -2650,7 +2717,7 @@ exports.worldPrivateTest = onCall({
           }
         }
         if (scalarStatus) {
-          const unresolved = missingStatusRows(scalarStatus);
+          const unresolved = missingStatusRows(scalarStatus, customStatusTemplate);
           logger.info('WORLD STATUS VALUE VALIDATION', {mode:worldMode,
             missingCount:unresolved.length, complete:unresolved.length === 0});
           scalarStatus = markUnresolvedStatus(scalarStatus);
@@ -2860,7 +2927,9 @@ exports.worldPrivateTest = onCall({
         // Only remove clear duplicates at narrator boundaries. The creator's
         // status is already validated by the existing status visibility guards.
         if (hasCustomStatusBar && statusParts[0]) {
+          statusParts[0] = dedupeStatusHeading(statusParts[0]);
           const removed = removeDuplicateBoundaryStatus(segments,statusParts[0]);
+          if (placement === 'end') statusParts[0] = trimWorldStatusBoundary(segments,statusParts[0]) ?? statusParts[0];
           if (removed) logger.info('WORLD CREATOR STATUS BOUNDARY DEDUPED', {mode:worldMode,removed});
         }
         const statusSegment = {kind:'narrator',npcId:'',name:'',text:statusParts.join('\n\n'),isStatusBar:true};
@@ -3117,7 +3186,11 @@ exports.worldPrivateTest = onCall({
             ['AI 回覆為空', 'empty_writer_segments'],
             ['AI 本次無法產生合適的回覆，請調整內容後重試（失敗回覆未儲存）', 'provider_content_filtered'],
             ['AI 服務暫時無法使用，請稍後重試（失敗回覆未儲存）', 'provider_billing_402'],
+            ['AI 服務供應商額度不足，請稍後重試（失敗回覆未儲存）', 'provider_billing'],
             ['AI 回覆包含不適合顯示的內部內容，請重試', 'unsafe_writer_segments'],
+            ['AI 回覆已達本輪時間上限，請稍後重試（失敗回覆未儲存）', 'writer_budget_exhausted'],
+            ['AI 服務暫時不穩定，請稍後重試（失敗回覆未儲存）', 'provider_unavailable'],
+            ['AI 回覆重複或格式異常，請重試（不會儲存失敗回覆）', 'invalid_writer_output'],
           ]);
           logger.error('worldPrivateTest internal failure', {
             action, mode:worldMode, sessionId, stage:writerStage,

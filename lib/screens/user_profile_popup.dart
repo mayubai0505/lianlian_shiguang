@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -230,41 +231,31 @@ class _UserProfilePageState extends State<_UserProfilePage> {
       };
 
       final selectedProfileId = newProfile['id'] as String;
-      final updatedProfiles = _profiles
-          .map((p) => Map<String, dynamic>.from(p))
-          .toList();
-
-      if (_editingProfileId != null) {
-        final index = updatedProfiles
-            .indexWhere((p) => p['id']?.toString() == _editingProfileId);
-        if (index != -1) {
-          updatedProfiles[index] = newProfile;
+      final userRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+      final updatedProfiles = await FirebaseFirestore.instance.runTransaction<List<Map<String, dynamic>>>((tx) async {
+        final snapshot = await tx.get(userRef);
+        final data = snapshot.data() ?? <String, dynamic>{};
+        final profiles = List<Map<String, dynamic>>.from(data['profiles'] ?? const []);
+        if (_editingProfileId != null) {
+          final index = profiles.indexWhere((p) => p['id']?.toString() == _editingProfileId);
+          if (index == -1) throw StateError('This identity no longer exists');
+          profiles[index] = newProfile;
+        } else {
+          if (profiles.length >= 10) throw StateError('Profile limit reached');
+          profiles.add(newProfile);
         }
-      } else {
-        updatedProfiles.add(newProfile);
-      }
-
-      final userRef = FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid);
-
-      await userRef.set({
-        'profiles': updatedProfiles,
-        'profileSchemaVersion': 2,
-        'hasHandledProfileIntro': true,
-        'hasSkippedProfile': true,
-      }, SetOptions(merge: true));
-
-      // 儲存/建立後，沿用原本行為：當前聊天室直接套用這份身分。
-      try {
-        await userRef.update({
-          'roomProfiles.${widget.roomId}': selectedProfileId,
-        });
-      } catch (_) {
-        await userRef.set({
-          'roomProfiles': {widget.roomId: selectedProfileId},
+        final rawRooms = data['roomProfiles'];
+        final rooms = rawRooms is Map ? Map<String, dynamic>.from(rawRooms) : <String, dynamic>{};
+        rooms[widget.roomId] = selectedProfileId;
+        tx.set(userRef, {
+          'profiles': profiles,
+          'profileSchemaVersion': 2,
+          'hasHandledProfileIntro': true,
+          'hasSkippedProfile': true,
+          'roomProfiles': rooms,
         }, SetOptions(merge: true));
-      }
+        return profiles;
+      });
 
       if (!mounted) return;
       setState(() {
@@ -341,6 +332,54 @@ class _UserProfilePageState extends State<_UserProfilePage> {
         l10n.profileSwitchError(e.toString()),
         isError: true,
       );
+    }
+  }
+
+  Future<void> _deleteProfile(Map<String, dynamic> profile) async {
+    final user = FirebaseAuth.instance.currentUser;
+    final profileId = profile['id']?.toString() ?? '';
+    if (_isSaving || user == null || profileId.isEmpty || profileId == 'default') return;
+    final l10n = AppLocalizations.of(context)!;
+    final name = (profile['profileName'] ?? '').toString();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text('${l10n.delete_btn}：$name'),
+        content: Text(l10n.profile_delete_confirm_message),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(l10n.cancelButton)),
+          TextButton(onPressed: () => Navigator.pop(dialogContext, true),
+              style: TextButton.styleFrom(foregroundColor: Theme.of(dialogContext).colorScheme.error),
+              child: Text(l10n.delete_btn)),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted || _isSaving ||
+        FirebaseAuth.instance.currentUser?.uid != user.uid) return;
+    setState(() => _isSaving = true);
+    try {
+      final response = await FirebaseFunctions.instanceFor(region: 'us-central1')
+          .httpsCallable('deletePlayerProfileUs',
+              options: HttpsCallableOptions(timeout: const Duration(seconds: 70)))
+          .call({'profileId': profileId});
+      final result = Map<String, dynamic>.from(response.data as Map);
+      if (result['ok'] != true) throw StateError('Profile deletion failed');
+      final remaining = (result['profiles'] as List)
+          .map((item) => Map<String, dynamic>.from(item as Map)).toList();
+      final rooms = Map<String, dynamic>.from(result['roomProfiles'] as Map);
+      final selected = rooms[widget.roomId]?.toString();
+      if (!mounted || FirebaseAuth.instance.currentUser?.uid != user.uid) return;
+      setState(() {
+        _profiles = remaining;
+        _currentRoomProfileId = remaining.any((p) => p['id']?.toString() == selected) ? selected : null;
+        _editingProfileId = null;
+        _isEditingView = false;
+      });
+      widget.onSaved();
+    } catch (e) {
+      if (mounted) ToastUtils.showCenterToast(context, '${l10n.delete_failed_msg}: $e', isError: true);
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
     }
   }
 
@@ -612,6 +651,25 @@ class _UserProfilePageState extends State<_UserProfilePage> {
                             ),
                           ),
                         ),
+                        const SizedBox(width: 4),
+                        IconButton(
+                          tooltip: l10n.delete_btn,
+                          onPressed: _isSaving ||
+                                  (profile['id']?.toString() ?? '').isEmpty ||
+                                  profile['id']?.toString() == 'default'
+                              ? null
+                              : () => _deleteProfile(profile),
+                          padding: const EdgeInsets.all(4),
+                          constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+                          icon: Image.asset(
+                            'assets/images/chat/chat_msg_delete_mask.webp',
+                            width: 36,
+                            height: 36,
+                            fit: BoxFit.contain,
+                            color: theme.colorScheme.error,
+                            colorBlendMode: BlendMode.srcIn,
+                          ),
+                        ),
                       ],
                     ),
                     if (name.isNotEmpty || occupation.isNotEmpty) ...[
@@ -649,10 +707,15 @@ class _UserProfilePageState extends State<_UserProfilePage> {
               IconButton(
                 tooltip: l10n.edit_btn,
                 onPressed: _isSaving ? null : onEdit,
-                icon: Icon(
-                  Icons.edit_outlined,
-                  size: 21,
+                padding: const EdgeInsets.all(4),
+                constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+                icon: Image.asset(
+                  'assets/images/chat/chat_msg_edit_mask.webp',
+                  width: 36,
+                  height: 36,
+                  fit: BoxFit.contain,
                   color: primary.withValues(alpha: 0.72),
+                  colorBlendMode: BlendMode.srcIn,
                 ),
               ),
             ],

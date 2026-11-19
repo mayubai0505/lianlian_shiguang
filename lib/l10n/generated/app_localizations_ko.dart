@@ -12052,6 +12052,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get weeklyRecommendations => '이번 주 추천';
 
   @override
+  String get profile_delete_confirm_message =>
+      '삭제 후에는 복구할 수 없습니다. 이 프로필을 사용하는 채팅방에서는 적용이 해제되지만, 채팅 기록은 삭제되지 않습니다.';
+
+  @override
   String get world_menu_chat_section1 => '채팅';
 
   @override

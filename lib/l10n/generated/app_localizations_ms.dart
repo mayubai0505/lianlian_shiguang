@@ -12644,6 +12644,10 @@ class AppLocalizationsMs extends AppLocalizations {
   String get weeklyRecommendations => 'Pilihan Minggu Ini';
 
   @override
+  String get profile_delete_confirm_message =>
+      'Identiti yang dipadam tidak boleh dipulihkan. Penggunaan identiti ini dalam semua ruang sembang berkaitan akan dibatalkan, tetapi sejarah sembang akan dikekalkan.';
+
+  @override
   String get world_menu_chat_section1 => 'Sembang';
 
   @override

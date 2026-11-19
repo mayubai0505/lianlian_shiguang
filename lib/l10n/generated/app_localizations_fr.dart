@@ -12815,6 +12815,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get weeklyRecommendations => 'Sélection de la semaine';
 
   @override
+  String get profile_delete_confirm_message =>
+      'Cette suppression est irréversible. Cette identité sera désactivée dans les conversations qui l\'utilisent, mais l\'historique sera conservé.';
+
+  @override
   String get world_menu_chat_section1 => 'Discussion';
 
   @override

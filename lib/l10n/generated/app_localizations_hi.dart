@@ -12616,6 +12616,10 @@ class AppLocalizationsHi extends AppLocalizations {
   String get weeklyRecommendations => 'इस सप्ताह की सिफारिशें';
 
   @override
+  String get profile_delete_confirm_message =>
+      'हटाने के बाद इसे वापस नहीं लाया जा सकता। इस पहचान का उपयोग करने वाली चैट से इसे हटा दिया जाएगा, लेकिन चैट का इतिहास सुरक्षित रहेगा।';
+
+  @override
   String get world_menu_chat_section1 => 'चैट';
 
   @override

@@ -6648,6 +6648,7 @@
   "worldAboutUsEditTooltip": "編輯記憶",
   "worldAboutUsDeleteTooltip": "刪除記憶",
   "weeklyRecommendations": "本週推薦",
+  "profile_delete_confirm_message": "刪除後無法復原。使用此身分的聊天室將取消套用，聊天紀錄不會刪除。",
   "world_menu_chat_section1": "聊天",
   "world_menu_search1": "搜尋對話",
   "world_menu_save_transcript1": "保存對話紀錄",

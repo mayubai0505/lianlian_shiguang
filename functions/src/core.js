@@ -71,7 +71,7 @@ const {createPlayerIdentityTools, canonicalPlayerGender} = require('./chat/playe
 const {createAiProviders} = require('./ai/providers');
 const {createAiRetryHandler} = require('./ai/retry_handler');
 const {formatNamedStatusReply} = require('./chat/creator_named_status');
-const {missingStatusRows,mergeMissingStatus,markUnresolvedStatus,completionInstruction} = require("./chat/status_value_completion");
+const {dedupeStatusHeading,missingStatusRows,mergeMissingStatus,markUnresolvedStatus,completionInstruction} = require("./chat/status_value_completion");
 const {literalCreatorStatus} = require('./chat/literal_creator_status');
 const {createCustomStatusGuard} = require('./chat/custom_status_guard');
 const {resolveCreatorIdentityMacros} = require('./chat/creator_macro_compat');
@@ -229,6 +229,12 @@ exports.setCharacterLike = onCall({
 exports.setWorldLike = onCall({
     region: 'us-central1', timeoutSeconds: 30, memory: '256MiB',
 }, createWorldLikeHandler({db, APP_ID, FieldValue, HttpsError}));
+
+// Shared player profile deletion: US only; chat endpoints stay in Asia.
+const {createDeletePlayerProfileHandler} = require('./chat/delete_player_profile');
+exports.deletePlayerProfileUs = onCall({
+    region: 'us-central1', timeoutSeconds: 60, memory: '256MiB', maxInstances: 3,
+}, createDeletePlayerProfileHandler({db, APP_ID, FieldValue, HttpsError}));
 
 // Index-only bridge for older clients that write the original liker directly.
 exports.syncCharacterLikeIndex = onDocumentWritten({
@@ -7054,7 +7060,7 @@ if (sessionId) {
       let status = literalCreatorStatus(customOutputFormat, footer,
         {time:finalStoryTime, location:finalStoryLocation});
       if (status !== null && body.trim()) {
-        const missing = missingStatusRows(status);
+        const missing = missingStatusRows(status, customOutputFormat);
         if (missing.length) {
           try {
             const repair = await callAiWithRetry({
@@ -7069,18 +7075,19 @@ if (sessionId) {
             const answer = repair?.choices?.[0]?.message?.content;
             if (typeof answer === "string") {
               const aligned = literalCreatorStatus(customOutputFormat, customStatusGuard.clean(answer));
-              if (aligned !== null) status = mergeMissingStatus(status,aligned);
+              if (aligned !== null) status = mergeMissingStatus(status,aligned,customOutputFormat);
             }
           } catch (error) {
             console.warn('REGULAR STATUS VALUE REPAIR UNAVAILABLE',{chatMode});
           }
         }
-        const unresolved = missingStatusRows(status);
+        const unresolved = missingStatusRows(status, customOutputFormat);
         console.info('REGULAR STATUS VALUE VALIDATION',{chatMode,
           missingCount:unresolved.length,complete:unresolved.length === 0});
         cleanDisplayText = body.trimEnd() + "\n\n" + markUnresolvedStatus(status);
       }
     }
+    if (supportsCustomStatusBar) cleanDisplayText = dedupeStatusHeading(cleanDisplayText);
     const playerInstructionCheck = enforcePlayerInstructions(cleanDisplayText, userMessage, playerName);
     if (playerInstructionCheck.corrected > 0) {
         cleanDisplayText = playerInstructionCheck.text;

@@ -12718,6 +12718,10 @@ class AppLocalizationsPt extends AppLocalizations {
   String get weeklyRecommendations => 'Recomendações da Semana';
 
   @override
+  String get profile_delete_confirm_message =>
+      'Esta ação não pode ser desfeita. A identidade será desvinculada das conversas que a utilizam, mas o histórico de conversas será mantido.';
+
+  @override
   String get world_menu_chat_section1 => 'Chat';
 
   @override

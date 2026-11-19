@@ -12522,6 +12522,10 @@ class AppLocalizationsTh extends AppLocalizations {
   String get weeklyRecommendations => 'แนะนำประจำสัปดาห์';
 
   @override
+  String get profile_delete_confirm_message =>
+      'เมื่อลบแล้วจะไม่สามารถกู้คืนได้ แชทที่ใช้อัตลักษณ์นี้จะถูกยกเลิกการใช้งานอัตลักษณ์ดังกล่าว แต่ประวัติการสนทนาจะไม่ถูกลบ';
+
+  @override
   String get world_menu_chat_section1 => 'แชต';
 
   @override

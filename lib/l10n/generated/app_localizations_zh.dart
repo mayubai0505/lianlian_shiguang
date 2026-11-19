@@ -11755,6 +11755,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get weeklyRecommendations => '本週推薦';
 
   @override
+  String get profile_delete_confirm_message =>
+      '刪除後無法復原。使用此身分的聊天室將取消套用，聊天紀錄不會刪除。';
+
+  @override
   String get world_menu_chat_section1 => '聊天';
 
   @override
@@ -24001,6 +24005,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get weeklyRecommendations => '本周推荐';
+
+  @override
+  String get profile_delete_confirm_message =>
+      '删除后无法恢复。使用此身份的聊天室将取消套用，聊天记录不会删除。';
 
   @override
   String get world_menu_chat_section1 => '聊天';
@@ -36703,6 +36711,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get weeklyRecommendations => '本週推薦';
+
+  @override
+  String get profile_delete_confirm_message =>
+      '刪除後無法復原。使用此身分的聊天室將取消套用，聊天紀錄不會刪除。';
 
   @override
   String get world_menu_chat_section1 => '聊天';

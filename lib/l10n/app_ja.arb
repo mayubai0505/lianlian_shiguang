@@ -6637,6 +6637,7 @@
   "worldAboutUsEditTooltip": "思い出を編集",
   "worldAboutUsDeleteTooltip": "思い出を削除",
   "weeklyRecommendations": "今週のおすすめ",
+  "profile_delete_confirm_message": "削除すると元に戻せません。このプロフィールを使用しているチャットでは適用が解除されますが、チャット履歴は削除されません。",
   "world_edit_tag_max1": "Select up to 5 tags",
   "world_edit_tag_custom1": "Tags (customizable; separate with commas)",
   "world_edit_secret_not_ready1": "Secret chapters have not loaded. Publishing is paused to protect your content. Check permissions and reopen this page.",

@@ -12487,6 +12487,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get weeklyRecommendations => 'توصيات هذا الأسبوع';
 
   @override
+  String get profile_delete_confirm_message =>
+      'لا يمكن التراجع عن الحذف. سيتم إلغاء استخدام هذه الهوية في المحادثات المرتبطة بها، ولن يتم حذف سجل المحادثات.';
+
+  @override
   String get world_menu_chat_section1 => 'الدردشة';
 
   @override

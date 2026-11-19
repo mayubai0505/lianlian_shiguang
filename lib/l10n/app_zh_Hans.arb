@@ -5457,6 +5457,7 @@
   "worldAboutUsEditTooltip": "编辑记忆",
   "worldAboutUsDeleteTooltip": "删除记忆",
   "weeklyRecommendations": "本周推荐",
+  "profile_delete_confirm_message": "删除后无法恢复。使用此身份的聊天室将取消套用，聊天记录不会删除。",
   "creator_program_benefit_merch": "实体合作：旗下角色若进入官方实体商品／礼盒合作，可依合作企划获得现金创作奖励。",
   "creator_program_last_review_note": "上次审核说明：{reason}",
   "creator_program_apply_heading": "申请加入",

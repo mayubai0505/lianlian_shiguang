@@ -12744,6 +12744,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get weeklyRecommendations => 'Recomendaciones de la semana';
 
   @override
+  String get profile_delete_confirm_message =>
+      'Esta acción no se puede deshacer. La identidad se desvinculará de los chats que la utilicen, sin eliminar el historial de conversaciones.';
+
+  @override
   String get world_menu_chat_section1 => 'Chat';
 
   @override
