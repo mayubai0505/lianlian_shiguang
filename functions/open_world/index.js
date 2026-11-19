@@ -1,3 +1,6 @@
+const {isContinueRequest, progressionInstruction} = require('../src/chat/story_progression');
+const {findRepeatedNarrative} = require('../src/chat/reply_duplicates');
+const {creatorStatusTokenReserve} = require('../src/chat/separate_output_budget');
 'use strict';
 const {isCancelled: isWriterCancelled, isSafetyFailure: isWriterSafetyFailure, classifyWorldProviderFailure} = require('../src/ai/provider_failure_policy');
 const {publicChatCount, recordPublicChatSend} = require('./chat_count');
@@ -1888,6 +1891,10 @@ exports.worldPrivateTest = onCall({
         `人物：${compactCharacterJson}`,
         `人物目前好感度（後端紀錄，請據此維持跨回合連續性；未建檔預設為0）：${JSON.stringify(relationshipContext).slice(0,9000)}`,
       ];
+      systemParts.push(progressionInstruction({
+        continuing: isContinueRequest(rawMessage, action === 'continue' ||
+          (action === 'regenerate' && rawMessage === '（請延續上一段已發生的事件與角色的對話，讓角色自然回應；不要替玩家說話、行動或決定。）')),
+      }));
       const system = systemParts.join('\n');
       // 路由只使用本房間的近期歷史與本輪玩家輸入，不跨房間取成人情境。
       const initialWriterRoute = chooseWorldWriterRoute(
@@ -1896,6 +1903,9 @@ exports.worldPrivateTest = onCall({
         route:initialWriterRoute, mode:worldMode, message:rawMessage,
         history:history.slice(-4500), callAiWithRetry, logger,
       });
+      if (hasCustomStatusBar) {
+        writerRoute.maxTokens += creatorStatusTokenReserve(customStatusTemplate);
+      }
       logger.info('world writer route', {worldMode,routeReason:writerRoute.routeReason,
         modelId:writerRoute.modelId,sessionId});
       // 先驗證 Writer 回覆結構，再進入 Firestore 交易與扣款。
@@ -2127,7 +2137,10 @@ exports.worldPrivateTest = onCall({
         }
         // Catch repeated complete AI story output before Firestore and billing.
         // Never use template/statusBar repetition as a reason for rejection.
-        if (repeatedWorldWriterReply(candidates,previousAiReplies) ||
+        const sharedRepeatedStory = findRepeatedNarrative(
+          candidates.filter(s => !s?.isStatusBar).map(s => String(s?.text || '')).join('\n'),
+          previousAiReplies.map(text => ({text})), customStatusTemplate);
+        if (sharedRepeatedStory || repeatedWorldWriterReply(candidates,previousAiReplies) ||
             repeatedWorldNarrativeSegments(candidates,previousNarrativeSegments) ||
             (action === 'regenerate' && repeatedWorldRegeneration(candidates,regenerateOriginalReply))) {
           return {parsed:null,reason:'repeated_story_output',length:content.length};
@@ -2278,6 +2291,9 @@ exports.worldPrivateTest = onCall({
                 actualModelId:actualWriterModelId, fallbackSucceeded:attemptIndex > 0,
               });
               break;
+            }
+            if (checked.reason === 'repeated_story_output') {
+              writerRequestBody.messages[1].content += '\n【重複草稿已退回】上一個草稿重播了既有正文。請從歷史末端之後寫新的角色行動或事件後果，不能只換詞重述；保留 JSON 結構與狀態欄規則。';
             }
             logger.warn('world writer invalid structured output', {
               mode:worldMode, modelId:targetModel, tier:attemptIndex + 1,

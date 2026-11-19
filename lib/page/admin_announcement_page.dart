@@ -1,3 +1,4 @@
+import 'admin_environment_sound_page.dart';
 import 'admin_voice_bank_page.dart';
 import 'admin_world_chat_count_page.dart';
 import 'dart:async';
@@ -13025,6 +13026,15 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
 
             const SizedBox(height: 20),
 
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AdminEnvironmentSoundPage())),
+                icon: const Icon(Icons.surround_sound_outlined),
+                label: const Text('開啟環境音效庫'),
+              ),
+            ),
+            const SizedBox(height: 16),
             Text(
               '目前共 ${docs.length} 個聲音',
               style: const TextStyle(

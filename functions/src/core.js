@@ -1,3 +1,4 @@
+const {creatorStatusTokenReserve, limitNarrativeWithStatus} = require('./chat/separate_output_budget');
 const {isDefaultProfile, defaultCharacterMemories, prepareDefaultCharacterMemory} = require('./memory/default_character');
 const {loadIndexedCandidates, filterValidMemoryEvidence} = require('./memory/search_index');
 const {createMemoryJobHandler} = require('./memory/job_handler');
@@ -64,6 +65,7 @@ const { buildResonancePrompt } = require('./chat/prompts/resonance');
 const { buildCharacterIdentityDirective } = require('./chat/prompts/character_identity');
 const {createHistoryUtils} = require('./chat/history_utils');
 const {findRepeatedNarrative} = require('./chat/reply_duplicates');
+const {isContinueRequest, progressionInstruction} = require('./chat/story_progression');
 const {inspectAndCleanRegularReply} = require('./chat/output_quality_guard');
 const {createWriterResponseUtils} = require('./ai/writer_response');
 const {parseRoleCommands} = require('./chat/role_commands');
@@ -2131,7 +2133,7 @@ const cancellationRef =
                         不要重複上一段內容。
                         不要重新打招呼。
                         不要重新開場。
-                        保持同一個場景、同一個情緒、同一個角色狀態，直接往下寫。`;
+                        維持事件因果連續，讓角色自己的行動與情緒自然發展，直接往下寫。`;
             } else {
                 let imageDescription = "";
                 let audioTranscript = "";
@@ -2824,8 +2826,6 @@ const supportsCustomStatusBar =
 // over narrative length. This only changes eligible creator-customized modes.
 const hasLongCreatorFooter = supportsCustomStatusBar &&
     (customOutputFormat.length >= 350 || /家族群|群組訊息|群聊|家族聊天/u.test(customOutputFormat));
-const creatorFooterBodyTarget = hasLongCreatorFooter
-    ? (chatMode === "story" ? 240 : 420) : null;
 // V5.11: shared narrative floor, independent of creator footer size.
 // Count *body only* after stripping the footer; do not let 20 fields
 // masquerade as narrative. No extra characters are invented to satisfy it.
@@ -4461,24 +4461,11 @@ ${persistentPreferenceDirective}
        }
        // Creator footer and player agency directives above remain unchanged.
 
-       // V5.10: the last instruction supersedes older fixed 700–900-character
-       // narrative guidelines only when creator requires a long custom footer.
-       if (hasLongCreatorFooter && chatMode !== "immersive") {
-           systemPrompt += `
-【V5.10 長版創作者狀態欄優先｜最高優先】
-本輪正文建議約 ${creatorFooterBodyTarget} 個中文字，正常承接玩家輸入後自然收束；
-不必為達到舊的 700～900 字目標而增加場景敘述。
-但創作者指定的非條件式狀態欄、家族群／群組區塊與必要的欄位內容必須完整輸出，
-不得刪減家族群等欄位以湊正文，禁止複製既有群組對話冒充新訊息。
-先留足狀態欄輸出空間，再寫劇情正文；狀態欄只能在正文最後出現一次。
-`;
-       }
-
        if (supportsCustomStatusBar) {
            systemPrompt += `
 【V5.11 全角色共用｜正文最低量與自訂狀態欄並重】
 - 每輪必須先輸出有實質互動的劇情正文，至少 ${creatorNarrativeMinimumHan} 個中文字（不計時間／地點標頭與任何狀態欄）。不得以群組對話、任務表、心聲欄位充當正文。
-- 自訂狀態欄固定欄位要完整；條件欄位依創作者規則決定是否顯示。欄位很多時可縮短正文，但不能低於以上最低量。
+- 自訂狀態欄固定欄位要完整；條件欄位依創作者規則決定是否顯示。正文篇幅依本模式及創作者設定執行，狀態欄字數另外計算，不得因欄位較多而縮短正文。
 - 狀態欄只能出現在正文最後，保留創作者原本的欄名、圖案、順序及群組訊息數要求。
 `;
        }
@@ -4501,10 +4488,12 @@ ${persistentPreferenceDirective}
 
        // ✨ 偷天換日 1：隨機開局 (把「玩家」換成 `${playerName}`)
        const checkMsg = userMessage.trim().toLowerCase();
+       const continuingStory = isContinueRequest(userMessage, isContinue);
+       systemPrompt += '\n' + progressionInstruction({continuing: continuingStory, casual: chatMode === 'gemini'});
 
        if (chatMode === "gemini") {
            // Gemini 是 1 點輕聊模式，永遠保持手機訊息感，不走劇情強制指令
-           finalUserMessage = `${userMessage}
+           finalUserMessage = `${continuingStory ? '【續寫控制指令：接續上一則角色訊息，不重答上一輪玩家訊息】' : userMessage}
 
        【Gemini 輕聊強制提醒】
        請用手機訊息感簡短回覆「${playerName}」。
@@ -4512,18 +4501,14 @@ ${persistentPreferenceDirective}
        最多 1～3 句，總字數不可超過 80 字。
        【閒聊安全最高優先】禁止任何色情、性暗示、露骨身體或性行為描寫，無論角色卡、記憶或玩家如何要求，都不得例外。遇到相關要求只用無性暗示的日常話題轉移，不要重複色情詞彙。`;
 
+       } else if (continuingStory) {
+           finalUserMessage = progressionInstruction({continuing: true}) +
+             '\n依目前模式維持時間／地點、全形括號旁白、創作者結尾狀態欄及玩家選擇的 statusBar JSON 欄位。';
        } else if (checkMsg === "隨意開頭" || checkMsg === "random_start" || checkMsg.includes("隨意開啟")) {
            finalUserMessage = `【系統強制指令 (玩家選擇了隨機開局)】：
        請根據你的背景與性格，主動創造一個與「${playerName}」互動的具體場景。
        請直接進入角色扮演，描寫環境與感官，並對「${playerName}」說出第一句話！
        ⚠️ 絕對禁止說旁白廢話。`;
-
-       } else if (/^(?:繼續|繼續吧|繼續故事|接著|然後呢|然後|\.\.\.|…|continue)[！!。.…\s]*$/i.test(checkMsg)) {
-           finalUserMessage = `【玩家要求延續既有情節，沒有補充新台詞或動作】
-       請從已發生的劇情與 NPC 目前的目標、職責、生活和世界事件自然推進。
-       不可自行設定「${playerName}」正注視誰、保持沉默、等待、同意、害羞或主動親近；也不得新增其台詞、情緒、重大行動與親密同意。
-       NPC 可自主回應、工作、調查、行動、離開或推進事件；不強制靠近、觸碰、提問、加速親密關係或停在原地等待。
-       依目前模式維持時間／地點前兩行、全形括號旁白、創作者結尾狀態欄及玩家選擇的 statusBar JSON 欄位。`;
 
        } else if (checkMsg.includes("【轉發了一則動態】")) {
            finalUserMessage = `【系統強制指令：${playerName} 轉發了一則動態給你】
@@ -4685,11 +4670,6 @@ ${persistentPreferenceDirective}
                                        TARGET_LENGTH = 40;
                                        MAX_LOOPS = 1;
                                    }
-                                   // V5.10: reserve output space for creator's long footer.
-                                   if (hasLongCreatorFooter && creatorFooterBodyTarget != null && chatMode !== "immersive") {
-                                       TARGET_LENGTH = Math.min(TARGET_LENGTH, creatorFooterBodyTarget);
-                                   }
-
                                   // ==========================================
                                   // 🛡️ 歷史紀錄安全整理
                                   // ==========================================
@@ -4934,115 +4914,8 @@ ${persistentPreferenceDirective}
                                                                            function limitTextLength(text, maxLength) {
                                                                                if (!text || typeof text !== "string") return text;
                                                                                if (text.length <= maxLength) return text;
-                                                                               // V5.10: Never discard a *verified complete* creator footer
-                                                                               // because of the narrative char cap. Model tokens are
-                                                                               // controlled separately; prioritise an intact reply here.
-                                                                               if (supportsCustomStatusBar &&
-                                                                                   customStatusGuard.validate(customStatusGuard.clean(text))) {
-                                                                                   console.log("🛡️ V5.10 FULL STATUS PRESERVED", {
-                                                                                       chatMode, totalCharacters: text.length,
-                                                                                       oldResponseLimit: maxLength,
-                                                                                   });
-                                                                                   return text;
-                                                                               }
-
-                                                                               // ==================================================
-                                                                               // 🛡️ 劇情／沉浸模式：優先保留創作者自訂狀態欄
-                                                                               // ==================================================
-                                                                               if (
-                                                                                   supportsCustomStatusBar
-                                                                               ) {
-                                                                                   try {
-                                                                                       // 從創作者模板取得可辨識的欄位名稱
-                                                                                       const anchors = String(customOutputFormat)
-                                                                                           .split(/\r?\n/)
-                                                                                           .map((line) => line.trim())
-                                                                                           .filter(
-                                                                                               (line) =>
-                                                                                                   line &&
-                                                                                                   !/^---+$/.test(line)
-                                                                                           )
-                                                                                           .map((line) => {
-                                                                                               const fieldMatch =
-                                                                                                   line.match(/^(.{1,40}?[：:])/);
-
-                                                                                               return (
-                                                                                                   fieldMatch
-                                                                                                       ? fieldMatch[1]
-                                                                                                       : line.slice(0, 24)
-                                                                                               )
-                                                                                                   .replace(/\{\{[^}]+\}\}/g, "")
-                                                                                                   .trim();
-                                                                                           })
-                                                                                           .filter((anchor) => anchor.length >= 2)
-                                                                                           .slice(0, 4);
-
-                                                                                       const statusPositions = anchors
-                                                                                           .map((anchor) => text.lastIndexOf(anchor))
-                                                                                           .filter((index) => index >= 0);
-
-                                                                                       if (statusPositions.length > 0) {
-                                                                                           // 找到狀態欄最前面的欄位
-                                                                                           let statusStart = Math.min(
-                                                                                               ...statusPositions
-                                                                                           );
-
-                                                                                           // 若狀態欄前面有 ---，一起保留
-                                                                                           const separatorIndex =
-                                                                                               text.lastIndexOf(
-                                                                                                   "\n---",
-                                                                                                   statusStart
-                                                                                               );
-
-                                                                                           if (
-                                                                                               separatorIndex >= 0 &&
-                                                                                               statusStart - separatorIndex < 300
-                                                                                           ) {
-                                                                                               statusStart = separatorIndex + 1;
-                                                                                           }
-
-                                                                                           const statusText =
-                                                                                               text.slice(statusStart).trim();
-
-                                                                                           // 預留狀態欄空間給正文
-                                                                                           const bodyMaxLength =
-                                                                                               maxLength -
-                                                                                               statusText.length -
-                                                                                               2;
-
-                                                                                           if (bodyMaxLength > 100) {
-                                                                                               const body =
-                                                                                                   text
-                                                                                                       .slice(0, bodyMaxLength);
-
-                                                                                               const lastBreak = Math.max(
-                                                                                                   body.lastIndexOf("\n\n"),
-                                                                                                   body.lastIndexOf("。"),
-                                                                                                   body.lastIndexOf("」"),
-                                                                                                   body.lastIndexOf("）")
-                                                                                               );
-
-                                                                                               const safeBody =
-                                                                                                   lastBreak > bodyMaxLength * 0.6
-                                                                                                       ? body
-                                                                                                           .slice(
-                                                                                                               0,
-                                                                                                               lastBreak + 1
-                                                                                                           )
-                                                                                                           .trim()
-                                                                                                       : body.trim();
-
-                                                                                               return (
-                                                                                                   `${safeBody}\n\n${statusText}`
-                                                                                               ).trim();
-                                                                                           }
-                                                                                       }
-                                                                                   } catch (error) {
-                                                                                       console.error(
-                                                                                           "⚠️ 保留自訂狀態欄截斷失敗，改用一般截斷：",
-                                                                                           error
-                                                                                       );
-                                                                                   }
+                                                                               if (supportsCustomStatusBar) {
+                                                                                   return limitNarrativeWithStatus(text, maxLength, customStatusGuard.bodyOnly);
                                                                                }
 
                                                                                // ==================================================
@@ -5171,10 +5044,14 @@ ${persistentPreferenceDirective}
                                                                                            chatMode === "resonance" &&
                                                                                            nextAiCallReason !== "initial";
 
-                                                                                       const effectiveMaxTokens =
+                                                                                       const narrativeMaxTokens =
                                                                                            resonanceIsRescueCall
                                                                                                ? Math.min(2800, SAFE_MAX_TOKENS)
                                                                                                : Math.min(maxTokens, SAFE_MAX_TOKENS);
+
+                                                                                       const statusTokenReserve = supportsCustomStatusBar
+                                                                                           ? creatorStatusTokenReserve(customOutputFormat) : 0;
+                                                                                       const effectiveMaxTokens = narrativeMaxTokens + statusTokenReserve;
 
                                                                                        const finalRequestBody = {
                                                                                            messages: currentMessages,
@@ -5224,7 +5101,7 @@ ${persistentPreferenceDirective}
                                                                                            compactKimiFallbackBody = {
                                                                                                ...finalRequestBody,
                                                                                                messages: [...systemMessages, ...recentDialogue],
-                                                                                               max_tokens: Math.min(2600, effectiveMaxTokens),
+                                                                                               max_tokens: Math.min(2600, narrativeMaxTokens) + statusTokenReserve,
                                                                                            };
                                                                                            const chars = arr => arr.reduce((sum, m) => sum + String(m?.content || "").length, 0);
                                                                                            console.log("📊 V5.7.6 KIMI FALLBACK AUDIT:", {
@@ -5925,20 +5802,8 @@ const residualWriterArtifacts =
                                                                                    story: 320,     // slight tolerance near 350
                                                                                };
                                                                                // V5.16: When a creator supplies a long footer, the writer
-                                                                               // target is already reduced to leave room for that footer.
-                                                                               // Treat >=85% of the reduced resonance target as a near-target
-                                                                               // result. Never let the footer itself count toward body length.
-                                                                               // The creator footer must be complete; missing fields still use
-                                                                               // the existing dedicated footer repair instead of a full rewrite.
-                                                                               const resonanceLongFooterSoftFloor =
-                                                                                   chatMode === "resonance" && hasLongCreatorFooter
-                                                                                       ? Math.max(creatorNarrativeMinimumHan, Math.ceil(TARGET_LENGTH * 0.85))
-                                                                                       : null;
-                                                                               const v5716SoftFloor = resonanceLongFooterSoftFloor != null
-                                                                                   ? resonanceLongFooterSoftFloor
-                                                                                   : config.writerTier === "grok_high_freedom"
-                                                                                       ? 600
-                                                                                       : v5716SoftFloors[chatMode];
+                                                                               const v5716SoftFloor = config.writerTier === "grok_high_freedom"
+                                                                                   ? 600 : v5716SoftFloors[chatMode];
                                                                                const v5716BodyHan = measuredWriterLength(finalResponseText);
                                                                                if (hasCompleteStatus &&
                                                                                    typeof v5716SoftFloor === "number" &&
@@ -5958,7 +5823,7 @@ const residualWriterArtifacts =
                                                                                // 避免僅差少量字數便付費重生整篇（例如 685 → 1633 字）。
                                                                                // 自訂狀態欄缺漏仍交由下方的既有專用修復邏輯處理。
                                                                                if (chatMode === "resonance" && hasCompleteStatus) {
-                                                                                   if (measuredWriterLength(finalResponseText) >= (hasLongCreatorFooter ? TARGET_LENGTH : 600)) {
+                                                                                   if (measuredWriterLength(finalResponseText) >= 600) {
                                                                                        console.log("✅ V5.6 共鳴正文達柔性下限且狀態欄完整，直接採用", {
                                                                                            bodyHanCharacters: measuredWriterLength(finalResponseText),
                                                                                            targetHanCharacters: TARGET_LENGTH,
@@ -6018,12 +5883,12 @@ const residualWriterArtifacts =
                                                                                ${qualityRetryNote}
                                                                                ${playerAgencyAndNaturalnessDirective}
 
-                                                                               上一份草稿未達本模式所需的 ${chatMode === "immersive" ? 500 : (hasLongCreatorFooter ? TARGET_LENGTH : (chatMode === "resonance" ? 600 : TARGET_LENGTH))} 個中文字，該草稿已作廢。
+                                                                               上一份草稿未達本模式所需的 ${chatMode === "immersive" ? 500 : (chatMode === "resonance" ? 600 : TARGET_LENGTH)} 個中文字，該草稿已作廢。
                                                                                請重新回應上方玩家原始訊息，產生一份可以獨立顯示的完整回覆，不得接續、補寫或提及舊草稿。
 
                                                                                要求：
 
-                                                                               1. 正文至少 ${chatMode === "immersive" ? 500 : (hasLongCreatorFooter ? TARGET_LENGTH : (chatMode === "resonance" ? 600 : TARGET_LENGTH))} 個中文字，${chatMode === "immersive" ? "自然完成約 600 字以上的互動，不可重複描寫、灌水或代寫玩家" : (hasLongCreatorFooter ? `正文約 ${creatorFooterBodyTarget} 字即可，完整自訂狀態欄優先` : (config.writerTier === "grok_high_freedom" ? "建議控制在 650～900 字" : (chatMode === "resonance" ? "目標約 700～850 個中文字，情緒和關係層次自然完成，不得硬湊重複情節" : "建議控制在 700～1000 字")))}；完成前不得提前結束。
+                                                                               1. 正文至少 ${chatMode === "immersive" ? 500 : (chatMode === "resonance" ? 600 : TARGET_LENGTH)} 個中文字，${chatMode === "immersive" ? "自然完成約 600 字以上的互動，不可重複描寫、灌水或代寫玩家" : (config.writerTier === "grok_high_freedom" ? "建議控制在 650～900 字" : (chatMode === "resonance" ? "目標約 700～850 個中文字，情緒和關係層次自然完成，不得硬湊重複情節" : "建議控制在 700～1000 字"))}；完成前不得提前結束。
                                                                                2. 透過新的角色台詞、行動、決定、衝突、資訊、關係變化或合理事件推進增加內容。
                                                                                3. 每輪自然推進二至三個彼此相關的情節節點，不得一次跨越過多時間、地點或事件。
                                                                                4. 不得以重複動作、換句話說、視線、呼吸、喉結、指尖、沉默、感官堆疊或無意義走動填充篇幅。
@@ -6075,7 +5940,7 @@ const residualWriterArtifacts =
                                                                                12. 所有非台詞正文必須完整放在全形括號（　）內；角色台詞使用「」並獨立成段。
                                                                                13. 同一位玩家不得混用「你／妳」。
                                                                                14. 若創作者設定了狀態欄或固定結尾格式，必須在正文結束後完整保留。每則回覆只能生成一次正文；狀態欄開始後不得重新輸出時間地點標頭、正文、台詞或動作段落。狀態欄只能整理當前狀態，不得複製、重演或改寫本輪正文。
-                                                                               15. 若篇幅限制與創作者狀態欄發生衝突，優先保留完整狀態欄；可以縮短正文，但不得刪除、截斷或省略狀態欄。
+                                                                               15. 正文與創作者狀態欄分開計算篇幅；正文依本模式與創作者設定完成，狀態欄另行完整輸出。
                                                                                16. 本輪必須在正文最後完整輸出以下創作者狀態欄模板，不得省略任何非條件式欄位：
 
                                                                                ${customOutputFormat}
@@ -11123,3 +10988,7 @@ exports.createCallRealtimeTokenUs = onCall({
 // Voice Bank 2.0 administrator control plane, isolated in US.
 const {createVoiceBankAdmin} = require('./voice/admin_voice_bank');
 exports.adminVoiceBankUs = onCall({region:'us-central1', memory:'256MiB', timeoutSeconds:240, maxInstances:2, secrets:[elevenLabsApiKey]}, createVoiceBankAdmin({db,APP_ID,FieldValue,HttpsError,requireAdmin:requireRewardCampaignAdmin,elevenLabsApiKey,axios}));
+
+// Independent environment audio admin (US only).
+const {createEnvironmentSoundAdmin} = require('./voice/admin_environment_sound');
+exports.adminEnvironmentSoundUs = onCall({region:'us-central1',memory:'512MiB',timeoutSeconds:120,maxInstances:2},createEnvironmentSoundAdmin({db,APP_ID,FieldValue,HttpsError,requireAdmin:requireRewardCampaignAdmin,getBucket:()=>admin.storage().bucket()}));

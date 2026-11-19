@@ -29,6 +29,10 @@
         tools:node="remove" />
 
 
+    <uses-feature
+        android:name="android.hardware.screen.portrait"
+        android:required="false" />
+
     <application
         android:label="戀戀拾光"
         android:name="${applicationName}"
