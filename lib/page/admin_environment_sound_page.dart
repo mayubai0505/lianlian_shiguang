@@ -8,7 +8,7 @@ import '../services/environment_audio_service.dart';
 const _categories = {'indoor':'室內','outdoor':'戶外','weather':'天氣','transport':'交通','action':'動作','other':'其他'};
 class AdminEnvironmentSoundPage extends StatefulWidget {
   const AdminEnvironmentSoundPage({super.key});
-  @override State<AdminEnvironmentSounPage> createState() => _AdminEnvironmentSoundPageState();
+  @override State<AdminEnvironmentSoundPage> createState() => _AdminEnvironmentSoundPageState();
 }
 class _AdminEnvironmentSoundPageState extends State<AdminEnvironmentSoundPage> {
   final _functions = FirebaseFunctions.instanceFor(region:'us-central1');
