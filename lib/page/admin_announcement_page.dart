@@ -1,4 +1,5 @@
 import 'admin_environment_sound_page.dart';
+import 'admin_social_promotion_page.dart';
 import 'admin_voice_bank_page.dart';
 import 'admin_world_chat_count_page.dart';
 import 'dart:async';
@@ -10052,6 +10053,14 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                 ),
               ],
             ),
+            actions: [
+              IconButton(
+                tooltip: '創作者宣傳申請',
+                icon: const Icon(Icons.campaign_outlined),
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                  builder: (_) => Theme(data: adminTheme, child: const AdminSocialPromotionPage()))),
+              ),
+            ],
             backgroundColor: adminTheme.scaffoldBackgroundColor,
             surfaceTintColor: Colors.transparent,
             elevation: 0,

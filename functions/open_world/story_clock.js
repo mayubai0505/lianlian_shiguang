@@ -1,4 +1,5 @@
 'use strict';
+const {explicitAncientElapsed} = require('./creator_countdown');
 // Fictional story clock: never uses wall-clock time to advance in-game scenes.
 const PAD = n => String(n).padStart(2, '0');
 function dateOk(y,m,d){ const dt=new Date(Date.UTC(y,m-1,d)); return dt.getUTCFullYear()===y&&dt.getUTCMonth()===m-1&&dt.getUTCDate()===d; }
@@ -66,6 +67,8 @@ function resolveClock(previous, player, advanceMinutes=3, maxNaturalMinutes=5){
      else {hour=base.hour;minute=base.minute;}
      return {clock:{...next,hour,minute},reason:'player_next_day'};
    }
+   const ancientElapsed=explicitAncientElapsed(text);
+   if(ancientElapsed!==null)return {clock:addMinutes(base,ancientElapsed),reason:'player_elapsed_ancient'};
    const elapsed=text.match(/(?:過了|經過|時間過了|時間推進)(\d{1,3})\s*(分鐘|分|小時|個小時|天|日)/u);
    if(elapsed){const n=Number(elapsed[1]);const unit=elapsed[2];const minutes=n*(unit==='分鐘'||unit==='分'?1:(unit==='天'||unit==='日'?1440:60));return {clock:addMinutes(base,minutes),reason:'player_elapsed'};}
   }
@@ -288,6 +291,8 @@ function resolveFictionalClock(previous,player,minutes=3) {
   if(/晚上|夜晚/u.test(nextDay.period))return {...next,hour:20,minute:0};
   return next;
  }
+ const ancientElapsed=explicitAncientElapsed(input);
+ if(ancientElapsed!==null)return addFictionalMinutes(base,ancientElapsed);
  const elapsed=input.match(/(?:過了|經過|時間過了|時間推進)\s*(\d{1,3})\s*(分鐘|分|小時|個小時|天|日)/u);
  if(elapsed) {
   const n=Number(elapsed[1]),unit=elapsed[2];

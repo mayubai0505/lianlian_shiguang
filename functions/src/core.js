@@ -73,7 +73,7 @@ const {createPlayerIdentityTools, canonicalPlayerGender} = require('./chat/playe
 const {createAiProviders} = require('./ai/providers');
 const {createAiRetryHandler} = require('./ai/retry_handler');
 const {formatNamedStatusReply} = require('./chat/creator_named_status');
-const {dedupeStatusHeading,missingStatusRows,mergeMissingStatus,markUnresolvedStatus,completionInstruction} = require("./chat/status_value_completion");
+const {dedupeStatusHeading,missingStatusRows,mergeMissingStatus,markUnresolvedStatus,completionInstruction,statusRepairTokens} = require("./chat/status_value_completion");
 const {literalCreatorStatus} = require('./chat/literal_creator_status');
 const {createCustomStatusGuard} = require('./chat/custom_status_guard');
 const {resolveCreatorIdentityMacros} = require('./chat/creator_macro_compat');
@@ -6028,7 +6028,7 @@ ${customStatusContinuityDirective}
                                                                                                                                填寫創作者指定的狀態欄模板。一般欄位只寫角色。僅當創作者明確要求玩家某一項資料，才在該欄依已知事實填寫。
 
                                                                                                                                所有非條件式欄位都必須存在。
-                                                                                                                               只補缺漏欄位，已完成的欄位保持不變。不得填空白、橫線或照抄創作者說明；缺乏可信依據時填「本輪狀態未能確認」，不得捏造。
+                                                                                                                               只補缺漏欄位，已完成的欄位保持不變。不得填空白、橫線或照抄創作者說明；角色的心情、心聲、反應可依設定與本輪情節合理生成；玩家資料、物品與已發生事件須有依據，不得用「未確認」代替可生成的角色狀態。
                                                                                                                                若創作者規定群組聊天每輪需 2～5 則，必須產生至少兩則相互連貫、符合角色關係的全新發言；不可只輸出一則，不可照抄示例。
 
                                                                                                                                只回傳完整狀態欄純文字。
@@ -6925,17 +6925,24 @@ if (sessionId) {
       let status = literalCreatorStatus(customOutputFormat, footer,
         {time:finalStoryTime, location:finalStoryLocation});
       if (status !== null && body.trim()) {
-        const missing = missingStatusRows(status, customOutputFormat);
-        if (missing.length) {
+        const repairStartedAt = Date.now();
+        for (let repairAttempt = 0; repairAttempt < 2; repairAttempt++) {
+          const missing = missingStatusRows(status, customOutputFormat);
+          if (!missing.length || Date.now() - repairStartedAt >= 20000) break;
           try {
             const repair = await callAiWithRetry({
               modelId:"deepseek/deepseek-v4-flash", retryPrimary:false,
-              timeoutMs:12000, abortController,
+              timeoutMs:Math.min(12000, 22000 - (Date.now() - repairStartedAt)), abortController,
               requestBody:{messages:[
                 {role:"system",content:completionInstruction},
                 {role:"user",content:JSON.stringify({template:customOutputFormat,
-                  missing, player:userMessage, scene:body})}
-              ],temperature:0.25,max_tokens:700}
+                  missing, currentStatus:status,
+                  previousStatus:(Array.isArray(chatHistory) ? chatHistory : [])
+                    .filter(m => m?.role === 'assistant').slice(-3)
+                    .map(m => {const t=String(m.text || m.content || ''); const b=customStatusGuard.bodyOnly(t); return t.slice(b.length).trim();})
+                    .filter(Boolean),
+                  player:userMessage, scene:body})}
+              ],temperature:0.25,max_tokens:statusRepairTokens(customOutputFormat, missing)}
             });
             const answer = repair?.choices?.[0]?.message?.content;
             if (typeof answer === "string") {
@@ -9623,6 +9630,10 @@ exports.deleteBrokenMessages = onRequest({
     region: "asia-east1", memory: "1GiB", timeoutSeconds: 300,
 }, brokenMessageHandlers.deleteBrokenMessages);
 
+const {createCallEnvironment,createEnvironmentStreamGate,environmentInstruction} = require('./call/environment');
+const callEnvironment = createCallEnvironment({db,APP_ID,HttpsError,getBucket:()=>require('firebase-admin/storage').getStorage().bucket()});
+exports.getCallEnvironmentSoundUs = onCall({region:'us-central1',memory:'512MiB',timeoutSeconds:30,maxInstances:3,concurrency:4},callEnvironment.getSound);
+
 // 🌟 全新串流版 AI 通話函數 (OpenRouter 專用)
 exports.directCallAiStream = onRequest({
     region: "asia-east1",
@@ -9647,6 +9658,8 @@ exports.directCallAiStream = onRequest({
             sessionId,
             characterId,
             memoryScopeVersion = 0,
+            environmentAudioVersion = 0,
+            currentAmbientId = 'none',
         } = req.body || {};
 
         const authHeader = String(req.headers.authorization || "");
@@ -9666,6 +9679,10 @@ exports.directCallAiStream = onRequest({
                 memoryScopeVersion,
             });
 
+        // Optional versioned control metadata; old clients retain the original raw stream.
+        const wantsEnvironment = environmentAudioVersion === 1;
+        const environmentCatalog = wantsEnvironment ? await callEnvironment.loadCatalogWithin() : [];
+
         // 2. 準備給前端的資料流通道
         res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
         res.setHeader("Cache-Control", "no-cache");
@@ -9680,7 +9697,8 @@ exports.directCallAiStream = onRequest({
                     `\n角色人設：${JSON.stringify(characterProfile || {})}` +
                     (callScopedMemoryContext
                         ? `\n\n${callScopedMemoryContext}`
-                        : ""),
+                        : "") +
+                    (wantsEnvironment ? environmentInstruction(environmentCatalog,currentAmbientId) : ""),
             }
         ];
         if (history && history.length > 0) {
@@ -9723,9 +9741,31 @@ exports.directCallAiStream = onRequest({
             callSubtitleBuffer = chars.slice(flushCount).join('');
             res.write(callSubtitleToTw(part));
         };
+        const emitCallDialogue = (content) => {
+                if (!callSubtitleStarted) {
+                    const pipe = content.indexOf('|');
+                    if (pipe === -1) {
+                        res.write(content); // 語音原文不進行簡繁轉換
+                    } else {
+                        callSubtitleStarted = true;
+                        res.write(content.slice(0, pipe + 1));
+                        callSubtitleBuffer += content.slice(pipe + 1);
+                        flushCallSubtitle();
+                    }
+                } else {
+                    callSubtitleBuffer += content;
+                    flushCallSubtitle();
+                }
+        };
+        const environmentGate = wantsEnvironment ? createEnvironmentStreamGate({
+            catalog:environmentCatalog,
+            emitPlan:({ambient,effect})=>res.write(`[[ENV:${ambient};${effect}]]\n`),
+            emitText:emitCallDialogue,
+        }) : null;
         const closeCallStream = () => {
             if (callStreamClosed) return;
             callStreamClosed = true;
+            if (environmentGate) environmentGate.finish();
             flushCallSubtitle(true);
             res.end();
         };
@@ -9749,20 +9789,8 @@ exports.directCallAiStream = onRequest({
                 const data = JSON.parse(payload);
                 const content = data.choices?.[0]?.delta?.content || '';
                 if (!content) return;
-                if (!callSubtitleStarted) {
-                    const pipe = content.indexOf('|');
-                    if (pipe === -1) {
-                        res.write(content); // 語音原文不進行簡繁轉換
-                    } else {
-                        callSubtitleStarted = true;
-                        res.write(content.slice(0, pipe + 1));
-                        callSubtitleBuffer += content.slice(pipe + 1);
-                        flushCallSubtitle();
-                    }
-                } else {
-                    callSubtitleBuffer += content;
-                    flushCallSubtitle();
-                }
+                if (environmentGate) environmentGate.push(content);
+                else emitCallDialogue(content);
             } catch (error) {
                 logger.warn('directCallAiStream: 收到無法解析的完整 SSE 資料行', {
                     reason: String(error?.message || error),
@@ -10991,4 +11019,21 @@ exports.adminVoiceBankUs = onCall({region:'us-central1', memory:'256MiB', timeou
 
 // Independent environment audio admin (US only).
 const {createEnvironmentSoundAdmin} = require('./voice/admin_environment_sound');
-exports.adminEnvironmentSoundUs = onCall({region:'us-central1',memory:'512MiB',timeoutSeconds:120,maxInstances:2},createEnvironmentSoundAdmin({db,APP_ID,FieldValue,HttpsError,requireAdmin:requireRewardCampaignAdmin,getBucket:()=>admin.storage().bucket()}));
+exports.adminEnvironmentSoundUs = onCall({region:'us-central1',memory:'512MiB',timeoutSeconds:120,maxInstances:2,secrets:[elevenLabsApiKey]},createEnvironmentSoundAdmin({db,APP_ID,FieldValue,HttpsError,requireAdmin:requireRewardCampaignAdmin,getBucket:()=>require('firebase-admin/storage').getStorage().bucket(),elevenLabsApiKey,axios}));
+
+// V4 isolated administrator-only real-time voice agent experiment (US).
+// Existing chat, voice, V3, flower charge, and playback endpoints unchanged.
+const {createCallRealtimeV4Handler} = require('./call/realtime_v4');
+exports.prepareCallRealtimeV4Us = onCall({region:'us-central1',memory:'256MiB',timeoutSeconds:90,maxInstances:1,concurrency:1,secrets:[elevenLabsApiKey]},createCallRealtimeV4Handler({db,APP_ID,HttpsError,elevenLabsApiKey,requireTester:requireRewardCampaignAdmin,buildCallScopedMemoryContext,callEnvironment}));
+
+// V4.1 billing and first-audio timing, restricted to the original test admin.
+const {createV41Billing} = require('./call/realtime_v41_billing');
+const callV41Billing = createV41Billing({db,FieldValue,HttpsError,requireTester:requireRewardCampaignAdmin});
+exports.prepareCallRealtimeV41Us = onCall({region:'us-central1',memory:'256MiB',timeoutSeconds:90,maxInstances:1,concurrency:1,secrets:[elevenLabsApiKey]},createCallRealtimeV4Handler({db,APP_ID,HttpsError,elevenLabsApiKey,requireTester:requireRewardCampaignAdmin,buildCallScopedMemoryContext,callEnvironment,billing:callV41Billing}));
+exports.settleCallRealtimeV41Us = onCall({region:'us-central1',memory:'256MiB',timeoutSeconds:30,maxInstances:2},callV41Billing.handler);
+exports.sweepCallRealtimeV41Us = onSchedule({region:'us-central1',schedule:'every 5 minutes',timeZone:'Asia/Taipei',memory:'256MiB',timeoutSeconds:60,maxInstances:1},()=>callV41Billing.sweep());
+
+// Official social promotion (separate from recommendation banners).
+const socialPromotionHandlers = require('./creator/promotion_submissions').createPromotionSubmissions({db,APP_ID,FieldValue,HttpsError,requireAdmin:requireRewardCampaignAdmin,getBucket:()=>require('firebase-admin/storage').getStorage().bucket(),logger});
+exports.creatorSocialPromotionUs = onCall({region:'us-central1',memory:'256MiB',timeoutSeconds:60,maxInstances:2},socialPromotionHandlers.creator);
+exports.adminSocialPromotionUs = onCall({region:'us-central1',memory:'256MiB',timeoutSeconds:30,maxInstances:2},socialPromotionHandlers.admin);

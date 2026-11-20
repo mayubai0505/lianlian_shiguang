@@ -6,6 +6,7 @@ import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import '../services/toast_utils.dart';
 import 'character_edit_page.dart';
 import 'world_edit_page.dart';
+import 'creator_social_promotion_page.dart';
 import 'world_chat_page.dart';
 import 'official_creator_studio_page.dart';
 import 'package:rxdart/rxdart.dart'; // 🌟 記得這個一定要有！
@@ -256,6 +257,15 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
                       Expanded(child: _studioTabButton(context, l10n.creator_dashboard_my_worlds1, 1, Icons.public_rounded)),
                     ],
                   ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(18, 0, 18, 6),
+                  child: SizedBox(width: double.infinity, child: OutlinedButton.icon(
+                    onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                      builder: (_) => const CreatorSocialPromotionPage())),
+                    icon: const Icon(Icons.campaign_outlined),
+                    label: Text(promotionText(context, '申請官方免費宣傳', 'Request free official promotion')),
+                  )),
                 ),
                 Expanded(
                   child: _selectedStudioTab == 0

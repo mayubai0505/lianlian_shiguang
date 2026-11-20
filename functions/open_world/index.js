@@ -1,3 +1,4 @@
+const {updateCreatorCountdown} = require('./creator_countdown');
 const {isContinueRequest, progressionInstruction} = require('../src/chat/story_progression');
 const {findRepeatedNarrative} = require('../src/chat/reply_duplicates');
 const {creatorStatusTokenReserve} = require('../src/chat/separate_output_budget');
@@ -11,7 +12,7 @@ const {createAiCostTrace} = require('../src/ai/cost_trace');
 const {onDocumentCreated} = require('firebase-functions/v2/firestore');
 const {createWorldReplyNotificationHandler} = require('./world_reply_notification');
 const {createWorldMemoryTools, EMBEDDING_VERSION} = require('./world_memory_worker');
-const {dedupeStatusHeading,trimWorldStatusBoundary,missingStatusRows,mergeMissingStatus,markUnresolvedStatus,completionInstruction} = require('../src/chat/status_value_completion');
+const {dedupeStatusHeading,trimWorldStatusBoundary,missingStatusRows,mergeMissingStatus,markUnresolvedStatus,completionInstruction,statusRepairTokens} = require('../src/chat/status_value_completion');
 const {literalCreatorStatus} = require('../src/chat/literal_creator_status');
 const {inspectCreatorStatusCompleteness, parseFields, lockCreatorStatus, describeCreatorTemplate, isCreatorGuidance, enforceModernStatusTime, protectCreatorCalendarDisplay} = require('./status_template');
 const creatorThought = require('./creator_thought');
@@ -2435,6 +2436,7 @@ exports.worldPrivateTest = onCall({
 
       let creatorAncientTimeCarry = Number(roomConfig.creatorAncientTimeCarry || 0);
       let creatorAncientTimeCarryTouched = false;
+      let creatorCountdownState = null;
       const validIds = new Map(allowed.filter(n=>n.id).map(n=>[n.id,n.name]));
       // 防止模型把後端玩家檔案 JSON 當成可見旁白或狀態欄。
       // 只匹配完整的 nickname/identity 物件，避免誤刪故事中正常的 JSON 描述。
@@ -2677,6 +2679,15 @@ exports.worldPrivateTest = onCall({
            explicitTransition:action === 'send' && storyClock.isExplicitCreatorCalendarTransition(rawMessage),
            regenerate:action === 'regenerate'});
         const previousStatusForEraDate = persistedCreatorStatus || latestStatusText;
+        const applyCreatorCountdown = status => {
+          const result = updateCreatorCountdown({template:customStatusTemplate,status,
+            previous:previousStatusForEraDate,
+            saved:roomConfig.creatorCountdownTemplateHash === creatorStatusTemplateHash
+              ? roomConfig.creatorCountdownState : {},
+            elapsedMinutes:validatedElapsedMinutes,regenerate:action === 'regenerate'});
+          if(result.handled)creatorCountdownState=result.state;
+          return result.status;
+        };
         // Never adopt a model-invented calendar date as the canonical clock.
         // Modern rooms already have a neutral persistent seed; only creator
         // configuration or explicit player input may establish an exact date.
@@ -2705,19 +2716,24 @@ exports.worldPrivateTest = onCall({
           {timeText: serverTimeText});
         let scalarStatus = literalCreatorStatus(customStatusTemplate, lockedStatus, {time:serverTimeText});
         if (scalarStatus) {
-          const missing = missingStatusRows(scalarStatus, customStatusTemplate);
-          if (missing.length) {
+          const repairStartedAt = Date.now();
+          for (let repairAttempt = 0; repairAttempt < 2; repairAttempt++) {
+            const missing = missingStatusRows(scalarStatus, customStatusTemplate);
+            const repairBudget = Math.min(12000, 22000 - (Date.now() - repairStartedAt),
+              180000 - (Date.now() - functionStartedAt) - 15000);
+            if (!missing.length || repairBudget < 3000) break;
             try {
               const modelId = 'google/gemini-3-flash-preview';
               const repair = await callAiWithRetry({
-                modelId, retryPrimary:false, timeoutMs:12000,
+                modelId, retryPrimary:false, timeoutMs:repairBudget,
                 requestBody:{messages:[
                   {role:'system',content:completionInstruction},
                   {role:'user',content:JSON.stringify({template:customStatusTemplate, missing,
+                    currentStatus:scalarStatus, previousStatus:persistedCreatorStatus || latestStatusText,
                     player:rawMessage,scene:segments.map(x=>({name:x.name,text:x.text})).slice(-8)})},
-                ],temperature:0.25,max_tokens:550},
+                ],temperature:0.25,max_tokens:statusRepairTokens(customStatusTemplate, missing)},
               });
-              recordWorldWriterCost(repair,modelId,'creator_scalar_repair',1);
+              recordWorldWriterCost(repair,modelId,'creator_scalar_repair',repairAttempt + 1);
               const answer = repair?.choices?.[0]?.message?.content;
               if (typeof answer === 'string' && !leakedInternal.test(answer)) {
                 const safe = lockCreatorStatus(customStatusTemplate,
@@ -2795,6 +2811,7 @@ exports.worldPrivateTest = onCall({
           newCreatorStatusForPersistence = await finalizeCreatorThoughtAndTime(newCreatorStatusForPersistence);
           newCreatorStatusForPersistence = literalCreatorStatus(customStatusTemplate, newCreatorStatusForPersistence,
             {time:serverTimeText}) ?? newCreatorStatusForPersistence;
+          newCreatorStatusForPersistence = applyCreatorCountdown(newCreatorStatusForPersistence);
           if(newCreatorStatusForPersistence)statusParts.push(newCreatorStatusForPersistence);
           if(gatedStatus.protectedCount)logger.info('WORLD CREATOR CONDITIONAL STATUS GUARD',{
             mode:worldMode,protectedCount:gatedStatus.protectedCount,removedCount:gatedStatus.removedCount,
@@ -2865,7 +2882,7 @@ exports.worldPrivateTest = onCall({
               customStatusTemplate,recoveredAncientResult.status,previousStatusForEraDate,
               {explicitTransition:action==='send' && storyClock.isExplicitCreatorCalendarTransition(rawMessage),
                backendDaysElapsed:verifiedBackendDaysElapsed,regenerate:action==='regenerate'});
-            const anchoredRecoveredStatus=await finalizeCreatorThoughtAndTime(guardedRecoveredStatus);
+            const anchoredRecoveredStatus=applyCreatorCountdown(await finalizeCreatorThoughtAndTime(guardedRecoveredStatus));
             if(anchoredRecoveredStatus) {
               statusParts.push(anchoredRecoveredStatus);
               // A recovered clock must become the next turn's reference too.
@@ -3113,6 +3130,8 @@ exports.worldPrivateTest = onCall({
             lastCreatorStatusTemplateHash:creatorStatusTemplateHash,
           } : {}),
           ...(creatorAncientTimeCarryTouched ? {creatorAncientTimeCarry} : {}),
+          ...(creatorCountdownState ? {creatorCountdownState,
+            creatorCountdownTemplateHash:creatorStatusTemplateHash} : {}),
           ...(action === 'send' && playerTimeAnchor ? {storyTimeAnchor:playerTimeAnchor, storyTimeAnchorUpdatedAt:now} : {}),
           ...(finalStoryClock ? {storyClock:finalStoryClock, storyClockUpdatedAt:now,
             fictionalStoryClock:FieldValue.delete()} : {}),

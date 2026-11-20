@@ -5251,7 +5251,12 @@ class _ChatPageState extends State<ChatPage> {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return; // 沒登入直接擋掉
 
-    // 1. 扣除 20 花花邏輯
+    final v41 = CallOverlay.usesRealtimeV41(selectedLanguage, l10n.lang_zh);
+    _isCalling = true;
+    try {
+    // V4.1 reserves the same 20 flowers on the server before issuing a URL.
+    // Older calls retain the existing charge. Never subtract both.
+    if (!v41) {
     try {
       final userRef =
       FirebaseFirestore.instance.collection('users').doc(user.uid);
@@ -5263,24 +5268,21 @@ class _ChatPageState extends State<ChatPage> {
       return;
     }
 
-    // 🌟 2. 去保險箱抓專屬背景 (不用再寫 if (user != null) 囉)
-    try {
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .collection('characters')
-          .doc(widget.character.id)
-          .get();
-
-      if (doc.exists && doc.data() != null) {
-        customBgUrl = doc.data()!['callBackgroundUrl'] as String?;
-      }
-    } catch (e) {
-      print("抓取自訂背景失敗: $e");
     }
-
-    final finalBg = customBgUrl ?? widget.character.avatarPath;
-    print("🌟 準備傳進 CallOverlay 的背景圖片是: $finalBg");
+    // For V4.1, avoid a background-image Firestore read blocking ringback.
+    Future<String?> loadCallBackground() async {
+      try {
+        final doc = await FirebaseFirestore.instance
+            .collection('users').doc(user.uid).collection('characters')
+            .doc(widget.character.id).get();
+        return doc.data()?['callBackgroundUrl'] as String?;
+      } catch (e) {
+        debugPrint('抓取自訂背景失敗');
+        return null;
+      }
+    }
+    final pendingBackground = v41 ? loadCallBackground() : null;
+    if (!v41) customBgUrl = await loadCallBackground();
 
 // 🌟 2. 拿到網址後，再打開通話畫面
     if (mounted) {
@@ -5293,9 +5295,11 @@ class _ChatPageState extends State<ChatPage> {
               // ✨✨✨ 關鍵替換：如果有 customBgUrl 就用它，沒有的話才用預設大頭貼
               selectedBackgroundUrl:
               customBgUrl ?? widget.character.avatarPath,
+              backgroundUrlFuture: pendingBackground,
               selectedLanguage: selectedLanguage,
               shouldSave: shouldSave,
               sessionId: _sessionId ?? '',
+              onCallNotConnected: () { Navigator.pop(context); },
               onCallEnded: (duration, messages) async {
                 Navigator.pop(context);
                 final minutes = (duration / 60).floor();
@@ -5362,6 +5366,7 @@ class _ChatPageState extends State<ChatPage> {
             )),
       );
     }
+    } finally { _isCalling = false; }
   }
 
   Future<void> _insertCreatorSceneOpening(

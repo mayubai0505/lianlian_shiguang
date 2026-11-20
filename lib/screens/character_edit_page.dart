@@ -9,6 +9,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:convert';
 import 'character_edit_basic_tab.dart';
+import 'creator_social_promotion_page.dart';
 import 'character_edit_voice_tab.dart';
 import 'character_edit_relationship_tab.dart';
 import '../services/toast_utils.dart';
@@ -1726,6 +1727,14 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         ),
       };
 
+      // Only a newly public work gets the optional official promotion invitation.
+      // Publication already succeeded: promotion failure cannot roll it back.
+      if (_isPublic && (!isEditing || widget.character?.isPublic == false) &&
+          originalCreatedBy == currentUser.uid) {
+        await CreatorSocialPromotionPage.invite(context,
+          workType: 'character', workId: charDocRef.id);
+      }
+      if (!mounted) return;
       debugPrint('✅ 準備返回上一頁 result=$result');
 
 // 直接回上一頁，不要在這頁先跳 Toast

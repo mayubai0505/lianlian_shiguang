@@ -1,9 +1,11 @@
 'use strict';
+const {literalCreatorStatus} = require('./literal_creator_status');
+const {parseNamedStatus} = require('./creator_named_status');
 
 // Shared by both chat paths. These values are never successful state data.
 function isMissingStatusValue(value) {
   const text = String(value ?? '').trim().replace(/^[（(\s]+|[）)\s]+$/gu, '').trim();
-  return !text || /^(?:[-—–─_…\.\s]+|未知|不明|未設定|無資料|待確認|無法判斷|尚未確認|本輪狀態未能確認|N\/A|null|undefined)$/iu.test(text);
+  return !text || /^(?:[-—–─_…\.\s]+|未確認|未顯示|暫未確認|待更新|未知|不明|未設定|無資料|待確認|無法判斷|尚未確認|本輪狀態未能確認|N\/A|null|undefined)$/iu.test(text);
 }
 
 function blocks(status) {
@@ -27,6 +29,12 @@ function percentage(value) {
 
 function incompleteStatusRow(row, template) {
   if (isMissingStatusValue(row.value)) return true;
+  const namedField = parseNamedStatus(template)?.fields.find(field =>
+    statusLabel(field.prefix) === statusLabel(row.prefix));
+  if (namedField?.multiline) {
+    const detail = row.lines.slice(1).join('\n').match(/[（(]([^（）()]+)[）)]/u)?.[1];
+    if (!detail || isMissingStatusValue(detail)) return true;
+  }
   const definition = blocks(template).find(field => statusLabel(field.prefix) === statusLabel(row.prefix));
   if (!definition) return false;
   const instruction = definition.value.split(/例如|範例|示例/u)[0];
@@ -40,20 +48,30 @@ function incompleteStatusRow(row, template) {
 }
 
 function missingStatusRows(status, template = '') {
-  return blocks(status).filter(row => incompleteStatusRow(row, template)).map(row => row.lines[0]);
+  const current = blocks(status);
+  const missing = current.filter(row => incompleteStatusRow(row, template)).map(row => row.lines[0]);
+  // Infer only layouts accepted by the existing unconditional-template parser.
+  const baseline = literalCreatorStatus(template, '');
+  if (baseline !== null) for (const row of blocks(baseline)) {
+    if (!current.some(found => statusLabel(found.prefix) === statusLabel(row.prefix))) missing.push(row.lines[0]);
+  }
+  return missing;
 }
 // Inputs have already been aligned to the creator's template. Never replace a
 // completed field, and keep multi-line repair details together with their row.
 function mergeMissingStatus(status, repaired, template = '') {
+  // Recreate missing fields from the template, without carrying old turn values.
+  status = literalCreatorStatus(template, status) ?? status;
   const pending = new Set(missingStatusRows(status, template));
   const candidates = new Map(blocks(repaired).filter(row => !incompleteStatusRow(row, template))
-    .map(row => [row.prefix.trim(), row.lines.join('\n').trimEnd()]));
+    .map(row => [statusLabel(row.prefix), row.lines.join('\n').trimEnd()]));
   let skip = false;
   const output = [];
   for (const line of String(status).split('\n')) {
     const row = line.match(/^([^：:\n]+[：:][ \t]*)(.*)$/u);
     if (row && !/^[（(]/u.test(line.trim())) {
-      let replacement = pending.has(line) && candidates.get(row[1].trim());
+      let replacement = pending.has(line) && candidates.get(statusLabel(row[1]));
+      if (replacement) replacement = row[1] + replacement.slice(replacement.indexOf(replacement.match(/[：:]/u)[0]) + 1).trimStart();
       // A description repair must preserve a percentage already shown this turn.
       const currentPercentage = percentage(row[2]);
       if (replacement && currentPercentage !== null) {
@@ -73,7 +91,18 @@ function markUnresolvedStatus(status) {
       ? row[1] + '本輪狀態未能確認' : line;
   }).join('\n');
 }
-const completionInstruction = '只補指定缺欄。若創作者要求百分比加括號描述，兩者必須同時輸出，保留本輪已有百分比並補上符合本輪劇情的描述。保留創作者欄名、順序與格式，不新增欄位、不重寫正文。依創作者規則與已確認的本輪劇情填寫；不得代替玩家新增動作或心聲。不得填空白、橫線或占位符。沒有證據不得捏造數值、物品或事件，也不得把不知道寫成沒有；確實無法確認時填「本輪狀態未能確認」。';
+function statusRepairTokens(template, missing) {
+  return Math.min(3000, Math.max(900, (missing?.length || 1) * 160, Math.ceil(String(template || '').length * 0.6)));
+}
+const completionInstruction = [
+  '你負責補齊創作者狀態欄，只輸出缺少欄位的純文字，保留欄名及多行格式，不輸出 JSON、程式碼框或正文。',
+  'currentStatus 是本輪已完成欄位，不能更動。previousStatus 只是同房間歷史參考：依本輪玩家輸入與 scene 判斷變化，不得直接沿用過時時間、危機或心聲。',
+  '數值欄需描述時，必須同時輸出數值與括號說明；本輪已有數值則保留它，只補描述。',
+  '角色的心情、心聲、反應及創作者要求的虛構評量可依人物設定和本輪劇情合理生成，並非必須在正文逐字出現。不可因正文沒寫心聲就填未確認。角色不能知道未公開的秘密。',
+  '第一輪優先採用創作者明確初始值；範例不是初始值。若創作者授權隨劇情更新的虛構評量未設起始值，可依其量尺和本輪劇情建立合理初值。既有有效數值則依事件增減，不任意重置。',
+  '物品、地點、已發生事件及玩家資料必須有設定或劇情依據。未變動的既有事實可保留。不可為填欄新增玩家動作、對白、情緒、心聲或同意。',
+  '空白、橫線、未確認及其他占位字都不是成功補值。若缺乏必要事實且不能合理生成，省略該缺欄讓系統辨識失敗，不得冒充已完成；不得把未知寫成沒有。',
+].join('\n');
 // Collapse adjacent copies only when an actual status field follows them.
 function dedupeStatusHeading(text) {
   return text.replace(/^(?:[ \t]*---[ \t]*\r?\n(?:[ \t]*\r?\n)*)*([ \t]*【[^【】\r\n]{0,72}狀態欄】[ \t]*)(?:\r?\n(?:[ \t]*\r?\n|[ \t]*---[ \t]*\r?\n)*\1)*(?=\r?\n(?:[ \t]*\r?\n)*[^\r\n：:]{1,48}[：:])/gmu,
@@ -103,4 +132,4 @@ function trimWorldStatusBoundary(segments, status) {
   }
   return hadSeparator && !status.trimStart().startsWith('---') ? '---\n' + status : status;
 }
-module.exports = {dedupeStatusHeading,trimWorldStatusBoundary,isMissingStatusValue,missingStatusRows,mergeMissingStatus,markUnresolvedStatus,completionInstruction};
+module.exports = {statusRepairTokens,dedupeStatusHeading,trimWorldStatusBoundary,isMissingStatusValue,missingStatusRows,mergeMissingStatus,markUnresolvedStatus,completionInstruction};

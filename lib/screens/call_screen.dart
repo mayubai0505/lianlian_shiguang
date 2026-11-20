@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui';
@@ -15,27 +16,39 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 import 'package:flutter/foundation.dart';
 import 'call_realtime_input.dart';
+import 'character_gallery_widget.dart';
+import 'character_model.dart';
+import '../services/call_environment_audio.dart';
+import '../services/call_agent_realtime.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 // 通話介面
 
 class CallOverlay extends StatefulWidget {
   final dynamic character;
   final String? selectedBackgroundUrl;
+  final Future<String?>? backgroundUrlFuture;
   final Function(int, List<Map<String, dynamic>>) onCallEnded;
   final String sessionId;
   final String characterId;
   final String selectedLanguage;
   final bool shouldSave;
+  final VoidCallback? onCallNotConnected;
+  static bool usesRealtimeV41(String language, String chinese) => kDebugMode &&
+      const bool.fromEnvironment('CALL_REALTIME_V4_TEST') && !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.android || defaultTargetPlatform == TargetPlatform.iOS) && language == chinese;
 
   const CallOverlay({
     Key? key,
     required this.character,
     this.selectedBackgroundUrl,
+    this.backgroundUrlFuture,
     required this.onCallEnded,
     required this.sessionId,
     required this.characterId,
     required this.selectedLanguage,
     required this.shouldSave,
+    this.onCallNotConnected,
   }) : super(key: key);
 
   @override
@@ -47,7 +60,23 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
   late final stt.SpeechToText _speech;
   late AudioPlayer _audioPlayer;
   final CallRealtimeInput _realtime = CallRealtimeInput();
+  late final CallEnvironmentAudio? _environmentAudio;
   bool _realtimeMode = false;
+  // V4 is an internal device test; release builds and non-Chinese calls stay V3.
+  bool _agentV4Mode = false;
+  CallAgentRealtime? _agentV4;
+  String? _v41CallId;
+  Timer? _v41DialTimeout, _v41FailureTimer;
+  bool _v41Played = false, _v41Failed = false, _v41Settled = false, _v41FirstReady = false;
+  int _v41TimeLimitMs = 60000;
+  String? _v41EarlyAmbient, _v41EarlyEffect, _v41EarlyTranscript;
+  String _newCallId() {
+    final random = Random.secure();
+    return List.generate(16, (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0')).join();
+  }
+  bool _v4Speaking = false, _v4MixerActive = false;
+  int _v4EnvTurn = 0;
+  Timer? _v4EnvironmentQuietTimer;
   bool get _callQualityTest => kDebugMode &&
       const bool.fromEnvironment('CALL_REALTIME_TEST') && _supportsAudioRoute;
   bool _rtStarting = false;
@@ -94,13 +123,15 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
   String? _callStatus;
   String _recognitionLocale = 'zh-TW';
   ImageProvider? _callBackgroundImage;
+  bool _showBackgroundPicker = false;
+  int _backgroundRevision = 0;
   http.Client? _streamingHttpClient;
   Completer<void>? _activePlayback;
 
   bool get _live => mounted && !_closing;
   bool get _supportsAudioRoute => !kIsWeb &&
       (defaultTargetPlatform == TargetPlatform.android || defaultTargetPlatform == TargetPlatform.iOS);
-  bool get _canListen => _live && _foreground && !_realtimeMode && !_turnBusy && !_isMuted &&
+  bool get _canListen => _live && _foreground && !_agentV4Mode && !_realtimeMode && !_turnBusy && !_isMuted &&
       !_speechUnavailable && !_routeChanging;
   bool _turnCurrent(int id) => _live && _turnId == id;
 
@@ -110,11 +141,20 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _speech = stt.SpeechToText();
     _audioPlayer = AudioPlayer();
+    _environmentAudio = const bool.fromEnvironment('CALL_ENV_AUDIO', defaultValue: true) &&
+        widget.sessionId.isNotEmpty && widget.characterId.isNotEmpty
+      ? CallEnvironmentAudio(sessionId: widget.sessionId,
+          characterId: widget.characterId, configurePlayer: _configureEnvironmentPlayer)
+      : null;
     _realtimeMode = _callQualityTest;
     globalActiveCharacterId = widget.character.id;
     _setBackground();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_live) unawaited(_startFirstGreeting());
+      if (!_live) return;
+      _agentV4Mode = CallOverlay.usesRealtimeV41(widget.selectedLanguage, AppLocalizations.of(context)!.lang_zh);
+      if (_agentV4Mode) _v41CallId = _newCallId();
+      if (_agentV4Mode) _realtimeMode = false;
+      unawaited(_startFirstGreeting());
     });
   }
 
@@ -122,7 +162,16 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (!_live) return;
     _foreground = state == AppLifecycleState.resumed;
+    if (_agentV4Mode) {
+      // Never maintain a paid microphone connection in the background.
+      // Inactive alone may be the native permission dialog.
+      if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
+        _endCallManually();
+      }
+      return;
+    }
     if (!_foreground) {
+      if (_environmentAudio != null) unawaited(_quiet(_environmentAudio!.suspend));
       // Short-phrase test does not capture audio in background or while app is inactive.
       unawaited(_cancelRecognition());
     } else {
@@ -141,6 +190,14 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
   }
 
   void _closeResources() {
+    _v4EnvironmentQuietTimer?.cancel();
+    _v41DialTimeout?.cancel();
+    _v41FailureTimer?.cancel();
+    if (_agentV4Mode) unawaited(_settleV41());
+    final agent = _agentV4;
+    _agentV4 = null;
+    if (agent != null) unawaited(_quiet(agent.close));
+    if (_environmentAudio != null) unawaited(_quiet(_environmentAudio!.close));
     _turnId++;
     _recognitionId++;
     _listenRetry?.cancel();
@@ -201,34 +258,87 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
     }
   }
 
-  void _setBackground() async {
-    final bgUrl = widget.selectedBackgroundUrl;
-    final avatarUrl = widget.character.avatarPath;
-
-    Future<ImageProvider?> resolveImage(String? url) async {
-      if (url == null || url.trim().isEmpty) return null;
-      if (url.startsWith('http') || url.startsWith('gs://') || url.startsWith('/')) {
-        final validUrl = await _validateImageUrl(url);
-        if (validUrl != null) return CachedNetworkImageProvider(validUrl);
-      } else if (url.startsWith('assets/')) {
-        return AssetImage(url);
-      }
-      return null;
+  Future<ImageProvider?> _resolveCallBackground(String? url) async {
+    if (url == null || url.trim().isEmpty) return null;
+    if (url.startsWith('http') || url.startsWith('gs://') || url.startsWith('/')) {
+      final validUrl = await _validateImageUrl(url);
+      if (validUrl != null) return CachedNetworkImageProvider(validUrl);
+    } else if (url.startsWith('assets/')) {
+      return AssetImage(url);
     }
-
-    ImageProvider? finalProvider = await resolveImage(bgUrl);
-    if (finalProvider == null) {
-      finalProvider = await resolveImage(avatarUrl);
-    }
-
-    if (mounted) {
-      setState(() {
-        _callBackgroundImage = finalProvider;
-      });
-    }
+    return null;
   }
 
-  // Start at the greeting response headers, as in the old call screen.
+  Future<void> _setBackground() async {
+    final revision = ++_backgroundRevision;
+    String? url = widget.selectedBackgroundUrl;
+    // Wait for the existing saved choice before drawing an avatar fallback.
+    // Ringback / authorization still start independently in initState.
+    final deferred = widget.backgroundUrlFuture;
+    if (deferred != null) {
+      try { url = await deferred; } catch (_) {}
+    }
+    if (!_live || revision != _backgroundRevision) return;
+    await _applyCallBackground(url, revision);
+  }
+
+  Future<void> _applyCallBackground(String? url, int revision) async {
+    final avatar = widget.character.avatarPath as String?;
+    final provider = await _resolveCallBackground(url) ??
+        await _resolveCallBackground(avatar);
+    if (!_live || revision != _backgroundRevision) return;
+    setState(() => _callBackgroundImage = provider);
+  }
+
+  Future<void> _changeCallBackground(String url) async {
+    if (!_live) return;
+    final revision = ++_backgroundRevision;
+    await _applyCallBackground(url, revision);
+  }
+
+  void _toggleBackgroundPicker() {
+    if (!_live) return;
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(() => _showBackgroundPicker = !_showBackgroundPicker);
+  }
+
+  // In-route sheet: a timed hangup still pops the call, not a separate modal route.
+  Widget _buildBackgroundPicker(BuildContext context) {
+    final theme = Theme.of(context);
+    return Positioned.fill(
+      child: Stack(children: [
+        Positioned.fill(child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: _toggleBackgroundPicker,
+          child: const ColoredBox(color: Colors.black54),
+        )),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Material(
+            color: theme.colorScheme.surface,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            clipBehavior: Clip.antiAlias,
+            child: SafeArea(top: false, child: Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                Align(alignment: Alignment.centerRight, child: IconButton(
+                  onPressed: _toggleBackgroundPicker,
+                  icon: const Icon(Icons.close),
+                )),
+                Flexible(child: SingleChildScrollView(child: CharacterGalleryWidget(
+                  characterId: widget.characterId,
+                  character: widget.character as Character,
+                  onBackgroundChanged: _changeCallBackground,
+                ))),
+              ]),
+            )),
+          ),
+        ),
+      ]),
+    );
+  }
+
+  // V3 still starts at greeting headers; V4.1 calls this only on first playable PCM.
   void _startTimer() {
     if (!_live || _timer != null) return;
     _callClock.start();
@@ -236,7 +346,7 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
       if (!_live) return;
       final elapsed = _callClock.elapsed.inSeconds.clamp(0, _maxCallTime).toInt();
       if (elapsed != _timeElapsed) setState(() => _timeElapsed = elapsed);
-      if (elapsed >= _maxCallTime) _endCallManually();
+      if (_agentV4Mode ? _callClock.elapsedMilliseconds >= _v41TimeLimitMs : elapsed >= _maxCallTime) _endCallManually();
     });
   }
 
@@ -250,6 +360,10 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
     _closing = true;
     _closeResources();
     // Parent callback retains the original call-ended / optional memory save logic.
+    if (_agentV4Mode && !_v41Played && widget.onCallNotConnected != null) {
+      widget.onCallNotConnected!();
+      return;
+    }
     widget.onCallEnded(_timeElapsed,
         _inCallMessages.map((m) => Map<String, dynamic>.from(m)).toList());
   }
@@ -260,10 +374,206 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
     setState(() => _callStatus = l10n.call_connecting);
     _sfxPlayer = AudioPlayer();
     final sfx = _sfxPlayer!;
+    if (_agentV4Mode) {
+      _v41DialTimeout = Timer(const Duration(seconds: 45), _failV41BeforeConnect);
+      unawaited(_quiet(() async {
+        await sfx.setReleaseMode(ReleaseMode.loop);
+        if (_live && !_v41Failed && !_v41Played && !_v41FirstReady) await sfx.play(AssetSource('audio/pickup.mp3'));
+      }));
+      await _startAgentV4();
+      return;
+    }
     unawaited(_quiet(() => sfx.play(AssetSource('audio/pickup.mp3'))));
     // Keep the original 60-second timer semantics; connection is concurrent.
     if (_realtimeMode) _scheduleListen();
     await _startCallStreamingPipeline('', isFirstGreeting: true);
+  }
+
+  // V4 does not invoke the old text-stream / per-sentence TTS pipeline.
+  Future<void> _startAgentV4() async {
+    if (!_live) return;
+    final l10n = AppLocalizations.of(context)!;
+    final agent = CallAgentRealtime();
+    _agentV4 = agent;
+    try {
+      if (defaultTargetPlatform != TargetPlatform.android) {
+        await _configureEnvironmentPlayer(_audioPlayer);
+      }
+      if (!_live) return;
+      await agent.start(callId: _v41CallId!, sessionId: widget.sessionId, characterId: widget.characterId,
+        speaker: _speakerEnabled,
+        onConnected: () {
+          // A WebSocket handshake is not an answered call.
+          debugPrint('CALL_V41_WAIT_FIRST_AUDIO');
+        },
+        onFirstAudioReady: () async {
+          if (!_live || _v41Failed || !identical(_agentV4, agent)) return;
+          _v41FirstReady = true;
+          final sfx = _sfxPlayer;
+          if (sfx != null) await _quiet(sfx.stop);
+        },
+        onFirstAudioPlayed: () {
+          if (!_live || _v41Failed || _v41Played || !identical(_agentV4, agent)) return;
+          _v41Played = true;
+          _v41DialTimeout?.cancel();
+          setState(() { _isListening = !_isMuted; _callStatus = '即時通話中'; });
+          _startTimer();
+          final firstText = _v41EarlyTranscript;
+          _v41EarlyTranscript = null;
+          if (firstText != null) {
+            setState(() { _sttText = firstText; _inCallMessages.add({'isMe': false, 'isSystem': false, 'text': firstText}); });
+            _scrollToBottom();
+          }
+          final ambient = _v41EarlyAmbient, effect = _v41EarlyEffect;
+          _v41EarlyAmbient = null; _v41EarlyEffect = null;
+          if (ambient != null) _applyV4Environment(ambient, effect ?? 'none');
+          unawaited(_confirmV41());
+        },
+        onUser: (text) {
+          if (!_live) return;
+          setState(() {
+            _recognizedSpeech = text;
+            _inCallMessages.add({'isMe': true, 'isSystem': false, 'text': text});
+            _sttText = null;
+          });
+          _scrollToBottom();
+        },
+        onAgent: (text) {
+          if (!_live || _v41Failed) return;
+          if (!_v41Played) { _v41EarlyTranscript = text; return; }
+          setState(() {
+            _sttText = text; _recognizedSpeech = '';
+            _inCallMessages.add({'isMe': false, 'isSystem': false, 'text': text});
+          });
+          _scrollToBottom();
+        },
+        onCorrection: (original, corrected) {
+          if (!_live || original.isEmpty) return;
+          if (!_v41Played) {
+            if (_v41EarlyTranscript == original) _v41EarlyTranscript = corrected.isEmpty ? null : corrected;
+            return;
+          }
+          setState(() {
+            for (int i = _inCallMessages.length - 1; i >= 0; i--) {
+              final item = _inCallMessages[i];
+              if (item['isMe'] != true && item['isSystem'] != true && item['text'] == original) {
+                if (corrected.isEmpty) { _inCallMessages.removeAt(i); }
+                else { item['text'] = corrected; }
+                break;
+              }
+            }
+            if (_sttText == original) _sttText = corrected.isEmpty ? null : corrected;
+          });
+        },
+        onInterrupted: () {
+          if (!_live) return;
+          _environmentAudio?.interrupt(); _v4MixerActive = false;
+          _v4EnvironmentQuietTimer?.cancel();
+          setState(() { _v4Speaking = false; _sttText = null; });
+        },
+        onEnvironment: _applyV4Environment,
+        onSpeaking: (speaking) {
+          if (!_live || !_v41Played) return;
+          _v4Speaking = speaking;
+          if (speaking) {
+            _v4EnvironmentQuietTimer?.cancel();
+            if (!_v4MixerActive) _applyV4Environment('keep', 'none');
+          } else { _finishV4Environment(); }
+          setState(() {
+            _callStatus = _isMuted ? l10n.silence :
+                speaking ? '${widget.character.name} 正在說話' : '即時通話中';
+          });
+        },
+        onDisconnected: (reason) {
+          if (!_live || !identical(_agentV4, agent)) return;
+          if (!_v41Played) { _failV41BeforeConnect(); } else { _endCallManually(); }
+        },
+      );
+    } catch (e) {
+      if (_live && identical(_agentV4, agent)) {
+        debugPrint('CALL_V4_START_FAILED ${e.runtimeType}');
+        _failV41BeforeConnect();
+      }
+      unawaited(_quiet(agent.close));
+    }
+  }
+
+  Future<Map<String, dynamic>> _v41Billing(String action) async {
+    final result = await FirebaseFunctions.instanceFor(region: 'us-central1')
+        .httpsCallable('settleCallRealtimeV41Us', options: HttpsCallableOptions(timeout: const Duration(seconds: 12)))
+        .call({'callId': _v41CallId, 'action': action});
+    return Map<String, dynamic>.from(result.data as Map);
+  }
+
+  Future<void> _confirmV41() async {
+    try {
+      final result = await _v41Billing('connect');
+      if (!_live) return;
+      if (result['state'] != 'connected') { _endCallManually(); return; }
+      final remaining = result['remainingMs'];
+      // Use the same server budget, never extend past 60s local playback.
+      if (remaining is num) {
+        final serverLimit = _callClock.elapsedMilliseconds + remaining.toInt();
+        _v41TimeLimitMs = min(_v41TimeLimitMs, serverLimit);
+        if (_callClock.elapsedMilliseconds >= _v41TimeLimitMs) _endCallManually();
+      }
+      debugPrint('CALL_V41_BILLING_CONNECTED');
+    } catch (_) {
+      debugPrint('CALL_V41_CONFIRM_FAILED');
+      if (_live) _endCallManually();
+    }
+  }
+
+  Future<void> _settleV41() async {
+    if (_v41Settled || _v41CallId == null) return;
+    _v41Settled = true;
+    final action = _v41Played ? 'end' : 'cancel';
+    // The server transaction makes retrying safe. Cancellation can arrive
+    // before the authorization request; the tombstone prevents a late charge.
+    for (int attempt = 0; attempt < 3; attempt++) {
+      try {
+        await _v41Billing(action);
+        debugPrint('CALL_V41_SETTLED $action');
+        return;
+      } catch (_) {
+        if (attempt < 2) await Future<void>.delayed(const Duration(seconds: 1));
+      }
+    }
+    debugPrint('CALL_V41_SETTLEMENT_RETRY_PENDING');
+  }
+
+  void _failV41BeforeConnect() {
+    if (!_live || _v41Played || _v41Failed) return;
+    _v41Failed = true;
+    setState(() { _isListening = false; _callStatus = '${widget.character.name}暫時無法接聽。'; });
+    _closeResources();
+    _v41FailureTimer = Timer(const Duration(milliseconds: 1500), _endCallManually);
+  }
+
+  void _applyV4Environment(String ambient, String effect) {
+    if (!_live || _v41Failed || _environmentAudio == null) return;
+    if (!_v41Played) { _v41EarlyAmbient = ambient; _v41EarlyEffect = effect; return; }
+    // One persistent mixer: replace the plan without starting a second TTS path.
+    if (_v4MixerActive && effect == 'none' &&
+        (ambient == 'keep' || ambient == _environmentAudio!.currentAmbientId)) return;
+    _v4MixerActive = true;
+    final turn = ++_v4EnvTurn;
+    _environmentAudio!.beginTurn(turn);
+    _environmentAudio!.select(turn, ambient, effect);
+    _environmentAudio!.speechStarted(turn);
+    _v4EnvironmentQuietTimer?.cancel();
+    if (!_v4Speaking) {
+      _v4EnvironmentQuietTimer = Timer(const Duration(seconds: 3), () {
+        if (_live && !_v4Speaking && turn == _v4EnvTurn) _finishV4Environment();
+      });
+    }
+  }
+
+  void _finishV4Environment() {
+    _v4EnvironmentQuietTimer?.cancel();
+    if (!_v4MixerActive) return;
+    _environmentAudio?.finishTurn(_v4EnvTurn);
+    _v4MixerActive = false;
   }
 
   Future<void> _startCallStreamingPipeline(String userText,
@@ -271,6 +581,7 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
     if (!_live || _turnBusy) return;
     final l10n = AppLocalizations.of(context)!;
     final int turn = ++_turnId;
+    _environmentAudio?.beginTurn(turn);
     final bool realtimeTurn = _realtimeMode;
     final bool syncTurn = _callQualityTest;
     debugPrint('CALL_INPUT_MODE ${realtimeTurn ? "realtime" : "native"}');
@@ -343,6 +654,9 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
       if (syncTurn) debugPrint('CALL_LATENCY turn=$turn stage=$stage ms=${latency.elapsedMilliseconds}');
     }
     String promptText = userText.trim();
+    final environmentHeader = CallEnvironmentHeader((ambient, effect) {
+      if (_turnCurrent(turn)) _environmentAudio?.select(turn, ambient, effect);
+    });
 
     void queueSentence(String sentence) {
       final text = syncTurn ? cleanSpeech(sentence) : sentence.trim();
@@ -478,6 +792,8 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
         "history": priorHistory,
         "chatMode": "call",
         "memoryScopeVersion": 2,
+        "environmentAudioVersion": _environmentAudio == null ? 0 : 1,
+        "currentAmbientId": _environmentAudio?.currentAmbientId ?? 'none',
         "sessionId": widget.sessionId,
         "characterId": widget.characterId,
         "overrideSystemPrompt": callOverridePrompt,
@@ -495,9 +811,9 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
       if (response.statusCode != 200) {
         throw StateError('call stream HTTP ${response.statusCode}');
       }
-      await for (final textChunk in response.stream
-          .transform(utf8.decoder).timeout(const Duration(seconds: 20))) {
-        if (!_turnCurrent(turn)) break;
+      // Control data never enters subtitles, call memories or ElevenLabs TTS.
+      void consumeDialogue(String textChunk) {
+        if (textChunk.isEmpty || !_turnCurrent(turn)) return;
         if (!loggedFirstText && textChunk.trim().isNotEmpty) {
           loggedFirstText = true;
           trace('first_ai_text');
@@ -523,7 +839,13 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
           }
         }
       }
+      await for (final rawChunk in response.stream
+          .transform(utf8.decoder).timeout(const Duration(seconds: 20))) {
+        if (!_turnCurrent(turn)) break;
+        consumeDialogue(_environmentAudio == null ? rawChunk : environmentHeader.push(rawChunk));
+      }
       if (!_turnCurrent(turn)) return;
+      if (_environmentAudio != null) consumeDialogue(environmentHeader.finish());
       if (fullReplyForHistory.trim().isEmpty) throw StateError('empty call reply');
       flushSentences(force: true);
       streamComplete = true;
@@ -578,6 +900,7 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
         }
         _deliveredSpeech.clear();
         _activeSpokenSentence = '';
+        _environmentAudio?.finishTurn(turn);
         setState(() {
           _turnBusy = false;
           if (syncTurn) _sttText = null;
@@ -648,6 +971,7 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
         await _quiet(player.stop);
         return false;
       }
+      if (_foreground) _environmentAudio?.speechStarted(turn);
       if (!_callQualityTest) onStarted?.call();
       await completed.future.timeout(const Duration(seconds: 25));
       return success && _turnCurrent(turn);
@@ -689,9 +1013,57 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
     ).build());
   }
 
+  // Secondary players must not take exclusive audio focus or force the speaker.
+  // Match the realtime call route; do not change the existing TTS route policy.
+  Future<void> _configureEnvironmentPlayer(AudioPlayer player) async {
+    if (!_supportsAudioRoute) return;
+    await player.setAudioContext(AudioContext(
+      android: AudioContextAndroid(
+        isSpeakerphoneOn: _speakerEnabled,
+        audioMode: AndroidAudioMode.inCommunication,
+        contentType: AndroidContentType.music,
+        usageType: AndroidUsageType.voiceCommunication,
+        audioFocus: AndroidAudioFocus.none,
+      ),
+      iOS: AudioContextIOS(
+        category: AVAudioSessionCategory.playAndRecord,
+        options: {AVAudioSessionOptions.allowBluetooth,
+          if (_speakerEnabled) AVAudioSessionOptions.defaultToSpeaker},
+      ),
+    ));
+    if (_agentV4Mode && !_routeChanging && _live &&
+        defaultTargetPlatform == TargetPlatform.android) {
+      final agent = _agentV4;
+      if (agent != null) await _quiet(agent.refreshAndroidRoute);
+    }
+  }
+
   Future<void> _toggleSpeaker() async {
     if (!_live || _routeChanging) return;
     if (!_supportsAudioRoute) return;
+    if (_agentV4Mode) {
+      final agent = _agentV4;
+      if (agent == null || !agent.connected || !_v41Played) return;
+      setState(() { _routeChanging = true; _speakerEnabled = !_speakerEnabled; });
+      try {
+        await _configureEnvironmentPlayer(_audioPlayer);
+        if (_environmentAudio != null) await _quiet(_environmentAudio!.updateRoute);
+        await agent.setSpeaker(_speakerEnabled);
+      } catch (_) {
+        if (_live) {
+          setState(() => _speakerEnabled = !_speakerEnabled);
+          if (defaultTargetPlatform == TargetPlatform.android) {
+            await _quiet(() => _configureEnvironmentPlayer(_audioPlayer));
+            if (_live && _environmentAudio != null) await _quiet(_environmentAudio!.updateRoute);
+            if (_live) await _quiet(() => agent.setSpeaker(_speakerEnabled));
+            debugPrint('CALL_V41_AUDIO_ROUTE_FAILED');
+          }
+        }
+      } finally {
+        if (_live) setState(() => _routeChanging = false);
+      }
+      return;
+    }
     final old = _speakerEnabled;
     setState(() {
       _routeChanging = true;
@@ -700,7 +1072,10 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
     });
     // Don't reconfigure the playback audio session while native STT owns it.
     await _cancelRecognition();
-    try { if (_live) await _applyAudioRoute(); }
+    try { if (_live) {
+      await _applyAudioRoute();
+      if (_environmentAudio != null) await _quiet(_environmentAudio!.updateRoute);
+    } }
     catch (e) {
       debugPrint('call audio route failed: $e');
       if (_live) setState(() => _speakerEnabled = old);
@@ -715,6 +1090,14 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
   Future<void> _toggleMute() async {
     if (!_live) return;
     final l10n = AppLocalizations.of(context)!;
+    if (_agentV4Mode) {
+      final agent = _agentV4;
+      if (agent == null || !agent.connected || !_v41Played) return;
+      setState(() { _isMuted = !_isMuted; _isListening = !_isMuted;
+        _callStatus = _isMuted ? l10n.silence : '即時通話中'; });
+      await agent.setMuted(_isMuted);
+      return;
+    }
     setState(() {
       _isMuted = !_isMuted;
       if (!_turnBusy) _callStatus = _isMuted ? l10n.silence : l10n.call_listening_auto_send;
@@ -753,6 +1136,7 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
 
   void _scheduleListen([Duration delay = const Duration(milliseconds: 450)]) {
     _listenRetry?.cancel();
+    if (_agentV4Mode) return;
     if (_realtimeMode) {
       if (_live && _foreground && !_isMuted && !_routeChanging && !_isListening && !_rtStarting && _rtStopping == 0) {
         _listenRetry = Timer(delay, () => unawaited(_startRealtimeListening()));
@@ -906,6 +1290,7 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
     final stopLatency = Stopwatch()..start();
     _startTimer();
     ++_turnId;
+    _environmentAudio?.interrupt();
     _streamingHttpClient?.close();
     _streamingHttpClient = null;
     _finishPlaybackWait();
@@ -1012,6 +1397,11 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
         });
         return;
       }
+      // Avoid feedback on native STT; do not stop the call or lose scene ID.
+      if (_environmentAudio != null) {
+        await _quiet(() => _environmentAudio!.suspend().timeout(const Duration(seconds: 2)));
+      }
+      if (!_canListen || id != _recognitionId) return;
       setState(() {
         _isListening = true;
         _recognizedSpeech = '';
@@ -1100,6 +1490,7 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
   }
 
   Future<void> _submitPlayerText(String text) async {
+    if (_agentV4Mode) { if (_live && _v41Played) _agentV4?.sendText(text); return; }
     if (!_live || _turnBusy || text.trim().isEmpty) return;
     setState(() {
       _inCallMessages.add({'isMe': true, 'isSystem': false, 'text': text.trim()});
@@ -1109,6 +1500,7 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
   }
 
   Future<void> _sendMessage() async {
+    if (_agentV4Mode && (!_v41Played || _agentV4?.connected != true)) return;
     if (!_live || _turnBusy || _recognitionFinishing || _interruptTask != null) return;
     final text = _chatController.text.trim();
     if (text.isEmpty) return;
@@ -1135,7 +1527,13 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) _endCallManually();
+        if (!didPop) {
+          if (_showBackgroundPicker) {
+            _toggleBackgroundPicker();
+          } else {
+            _endCallManually();
+          }
+        }
       },
       child: Scaffold(
       backgroundColor: Colors.transparent,
@@ -1155,6 +1553,22 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
 
           // 3. 根據模式切換 UI
           if (!_isChatMode) _buildCallUI(context) else _buildInCallChatUI(context),
+          if (!_isChatMode && widget.character is Character)
+            Positioned(top: MediaQuery.of(context).padding.top + 8, right: 12,
+              child: IconButton(
+                tooltip: AppLocalizations.of(context)!.gallery_title,
+                onPressed: _toggleBackgroundPicker,
+                icon: Image.asset(
+                  'assets/images/chat/chat_tool_archive_mask.png',
+                  width: 34,
+                  height: 34,
+                  fit: BoxFit.contain,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          if (_showBackgroundPicker && widget.character is Character)
+            _buildBackgroundPicker(context),
         ],
       ),
       ),
@@ -1164,8 +1578,9 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
   Widget _buildCallUI(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-    String minutesStr = (_timeElapsed / 60).floor().toString().padLeft(2, '0');
-    String secondsStr = (_timeElapsed % 60).toString().padLeft(2, '0');
+    final shownSeconds = _agentV4Mode ? (_maxCallTime - _timeElapsed).clamp(0, _maxCallTime).toInt() : _timeElapsed;
+    String minutesStr = (shownSeconds ~/ 60).toString().padLeft(2, '0');
+    String secondsStr = (shownSeconds % 60).toString().padLeft(2, '0');
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -1186,7 +1601,7 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
             const SizedBox(height: 20),
             Text(widget.character.name, style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
-            Text('$minutesStr:$secondsStr', style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 20, letterSpacing: 2)),
+            Text(_agentV4Mode && !_v41Played ? '--:--' : '$minutesStr:$secondsStr', style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 20, letterSpacing: 2)),
             const SizedBox(height: 60),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -1244,8 +1659,9 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
   Widget _buildInCallChatUI(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-    String minutesStr = (_timeElapsed / 60).floor().toString().padLeft(2, '0');
-    String secondsStr = (_timeElapsed % 60).toString().padLeft(2, '0');
+    final shownSeconds = _agentV4Mode ? (_maxCallTime - _timeElapsed).clamp(0, _maxCallTime).toInt() : _timeElapsed;
+    String minutesStr = (shownSeconds ~/ 60).toString().padLeft(2, '0');
+    String secondsStr = (shownSeconds % 60).toString().padLeft(2, '0');
 
     return SafeArea(
       child: Column(
@@ -1270,7 +1686,7 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(widget.character.name, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-                      Text('$minutesStr:$secondsStr', style: const TextStyle(color: Colors.greenAccent, fontSize: 14)),
+                      Text(_agentV4Mode && !_v41Played ? '--:--' : '$minutesStr:$secondsStr', style: const TextStyle(color: Colors.greenAccent, fontSize: 14)),
                     ],
                   ),
                 ),

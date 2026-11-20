@@ -15,6 +15,7 @@ import '../services/app_constants.dart';
 import '../services/toast_utils.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'world_secret_chapter_editor_page.dart';
+import 'creator_social_promotion_page.dart';
 
 /// 獨立世界觀編輯器。與 CharacterEditPage / public_characters 完全分開。
 ///
@@ -63,6 +64,7 @@ class _WorldEditPageState extends State<WorldEditPage>
   final List<Map<String, String>> _secretChapters = [];
   bool _secretReadFailed = false;
   bool _isPublic = false; // 預設私人試玩
+  bool _wasPublished = false; // 新公開作品才邀請宣傳
   bool _busy = false;
   bool _loading = true;
   bool _leaving = false;
@@ -108,6 +110,7 @@ class _WorldEditPageState extends State<WorldEditPage>
         _customOutputFormat.text = data['customOutputFormat']?.toString() ?? '';
         _creatorMessage.text = data['creatorMessage']?.toString() ?? '';
         _isPublic = data['isPublic'] == true;
+        _wasPublished = _isPublic && data['publicPlayable'] == true && data['status'] == 'public' && data['isDraft'] != true;
         final secretId = _worldId ?? _draftId;
         if (secretId != null) {
           try {
@@ -851,6 +854,12 @@ class _WorldEditPageState extends State<WorldEditPage>
                       : () async {
                     final saved = await _save(asDraft: false);
                     if (saved && mounted) {
+                      if (_isPublic && !_wasPublished && _worldId != null) {
+                        _wasPublished = true;
+                        await CreatorSocialPromotionPage.invite(context,
+                          workType: 'world', workId: _worldId!);
+                      }
+                      if (!mounted) return;
                       _leaving = true;
                       Navigator.pop(context, {'changed': true, 'worldId': _worldId});
                     }
