@@ -296,6 +296,17 @@ class _ChatPageState extends State<ChatPage> {
   String? _currentStoryTime; //時間
   String? _currentStoryLocation; //地點
   String? _highlightedMessageId; // 🌟 用來記住現在要「發光」的是誰
+  // Match explicit creator tokens only; replacement names are literal text.
+  String _replaceCreatorPlayerName(String text) {
+    final name = _playerNickname.trim();
+    if (name.isEmpty) return text;
+    final pattern = RegExp(
+      r'\{\{\s*(?:user|uers|player|user_name|username|player_name|玩家名字|玩家姓名|玩家名稱|玩家昵称|玩家暱稱|玩家)\s*\}\}|\(\s*(?:玩家名字|玩家姓名|玩家名稱|玩家昵称|玩家暱稱)\s*\)|（\s*(?:玩家名字|玩家姓名|玩家名稱|玩家昵称|玩家暱稱)\s*）',
+      caseSensitive: false,
+    );
+    return text.replaceAllMapped(pattern, (_) => name);
+  }
+
   String _playerNickname = "玩家"; // ✨ 新增：專門用來記住玩家的暱稱，方便替換字串！
   List<ChatMessage> _localMessages = [];
   String? _userId;
@@ -803,27 +814,9 @@ class _ChatPageState extends State<ChatPage> {
 
       final DateTime now = DateTime.now();
 
-      final String initialStory = (_currentCharacter.initialStory ?? '')
-          .replaceAll(
-        '{{玩家名字}}',
-        _playerNickname,
-      )
-          .replaceAll(
-        '(玩家名字)',
-        _playerNickname,
-      )
-          .trim();
+      final String initialStory = (_currentCharacter.initialStory ?? '').trim();
 
-      final String firstLine = (_currentCharacter.firstLine ?? '')
-          .replaceAll(
-        '{{玩家名字}}',
-        _playerNickname,
-      )
-          .replaceAll(
-        '(玩家名字)',
-        _playerNickname,
-      )
-          .trim();
+      final String firstLine = (_currentCharacter.firstLine ?? '').trim();
 
       // 訊息列表採用「最新在前」的順序：
       // 第一個是角色開場白，第二個是較早出現的初始故事。
@@ -2009,21 +2002,17 @@ class _ChatPageState extends State<ChatPage> {
     final existing = await messagesRef.limit(1).get();
     if (existing.docs.isNotEmpty) return;
 
+    await _refreshChatPlayerName(roomIdOverride: sessionRef.id);
+    if (!mounted) return;
     String rawFirstLine = _currentCharacter.firstLine ?? '';
     if (rawFirstLine.trim().isEmpty) {
       rawFirstLine = l10n.chat_first_line_fallback;
     }
 
-    final String firstLine = rawFirstLine
-        .replaceAll('{{玩家名字}}', _playerNickname)
-        .replaceAll('(玩家名字)', _playerNickname)
-        .trim();
+    final String firstLine = _replaceCreatorPlayerName(rawFirstLine).trim();
 
     final String rawInitialStory = _currentCharacter.initialStory ?? '';
-    final String initialStoryText = rawInitialStory
-        .replaceAll('{{玩家名字}}', _playerNickname)
-        .replaceAll('(玩家名字)', _playerNickname)
-        .trim();
+    final String initialStoryText = _replaceCreatorPlayerName(rawInitialStory).trim();
 
     final DateTime now = DateTime.now();
     final batch = FirebaseFirestore.instance.batch();
@@ -3831,7 +3820,9 @@ class _ChatPageState extends State<ChatPage> {
         for (final message in recentTests) {
           if ((message.sender == 'user' || message.sender == 'ai') &&
               message.type != 'callEnded') {
-            final text = message.text.trim();
+            final text = (message.sender == 'ai'
+                ? _replaceCreatorPlayerName(message.text)
+                : message.text).trim();
 
             if (text.isEmpty) {
               continue;
@@ -5905,7 +5896,9 @@ class _ChatPageState extends State<ChatPage> {
         for (int i = 0; i < recentTests.length; i++) {
           final msg = recentTests[i];
           final sender = msg.sender;
-          String text = msg.text;
+          String text = sender == 'ai'
+              ? _replaceCreatorPlayerName(msg.text)
+              : msg.text;
           if (i == recentTests.length - 1 &&
               sender == 'user' &&
               secretPrompt != null) text = secretPrompt;
@@ -10143,7 +10136,7 @@ class _ChatPageState extends State<ChatPage> {
 
   // 送禮與小互動共用目前聊天室的人設名稱；每次發送前從雲端確認最新版本。
   // 若讀取失敗保留已載入的名稱，避免因此阻擋玩家互動。
-  Future<String> _refreshChatPlayerName() async {
+  Future<String> _refreshChatPlayerName({String? roomIdOverride}) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return _playerNickname;
     try {
@@ -10152,7 +10145,7 @@ class _ChatPageState extends State<ChatPage> {
       final accountName = (data['nickname'] ?? '').toString().trim();
       final profiles = data['profiles'];
       final roomProfiles = data['roomProfiles'];
-      final roomId = (_sessionId ?? widget.sessionId ?? '').trim();
+      final roomId = (roomIdOverride ?? _sessionId ?? widget.sessionId ?? '').trim();
       final characterId = widget.characterId.trim();
       String profileId = _activePlayerProfileId;
       if (roomProfiles is Map && roomId.isNotEmpty) {
@@ -12658,12 +12651,9 @@ class _ChatPageState extends State<ChatPage> {
                 ? message.text
                 : _getCleanAiMessage(message.text);
 
-            // 下面玩家名字替換請保留你原檔目前正常的三個 replaceAll。
-            // 如果你的原檔文字是正常中文，請沿用原來那三行，不要照 PowerShell 亂碼貼回去。
-            final displayText = rawDisplayText
-                .replaceAll('(玩家名字)', _playerNickname)
-                .replaceAll('{{玩家名字}}', _playerNickname)
-                .replaceAll('玩家名字', _playerNickname);
+            final displayText = isUserMessage
+                ? rawDisplayText
+                : _replaceCreatorPlayerName(rawDisplayText);
 
             messageContent = ConstrainedBox(
               constraints: BoxConstraints(

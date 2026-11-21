@@ -1,5 +1,6 @@
 'use strict';
 const OpenCC = require('opencc-js');
+const {repairTraditionalLexemes} = require('./traditional_lexical_repair');
 
 // 僅在玩家選擇繁體中文時轉換 AI 的最終輸出；不碰玩家輸入或其他語系。
 const convertAiTextToTaiwanTraditional = OpenCC.Converter({ from: 'cn', to: 'tw' });
@@ -13,7 +14,7 @@ function shouldConvertAiToTaiwanTraditional(language) {
 function normalizeAiResponseScript(text, language) {
     const original = String(text ?? '');
     return shouldConvertAiToTaiwanTraditional(language)
-        ? convertAiTextToTaiwanTraditional(original)
+        ? repairTraditionalLexemes(convertAiTextToTaiwanTraditional(original))
         : original;
 }
 

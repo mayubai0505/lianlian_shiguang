@@ -10603,7 +10603,7 @@ exports.sendGlobalAnnouncementNotificationV2 = onDocumentCreated(
         timeoutSeconds: 300,
         memory: "512MiB",
     },
-    createAnnouncementDeliveryHandler({db, normalizeNotificationLocale, getNotificationText, sendToUserDevices})
+    createAnnouncementDeliveryHandler({db, FieldValue, normalizeNotificationLocale, getNotificationText, getUserFcmTokens, getMessaging})
 );
 
 // ============================================================

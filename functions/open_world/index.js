@@ -1,3 +1,4 @@
+const {replacePlayerName,hasPlayerNamePlaceholder,openingPlayerName} = require('../src/text/player_name_placeholders');
 const {updateCreatorCountdown} = require('./creator_countdown');
 const {isContinueRequest, progressionInstruction} = require('../src/chat/story_progression');
 const {findRepeatedNarrative} = require('../src/chat/reply_duplicates');
@@ -1043,8 +1044,13 @@ exports.worldPrivateTest = onCall({
     const snap = await tx.get(room);
     if (snap.exists) return;
     const intro = [];
-    const opening = String(world.storyOpening || '').trim();
-    const first = String(world.firstLine || '').trim();
+    const sourceOpening = String(world.storyOpening || '').trim();
+    const sourceFirst = String(world.firstLine || '').trim();
+    const account = hasPlayerNamePlaceholder(sourceOpening + sourceFirst)
+      ? (await tx.get(db.collection('users').doc(uid))).data() || {} : {};
+    const name = openingPlayerName({},account);
+    const opening = replacePlayerName(sourceOpening,name);
+    const first = replacePlayerName(sourceFirst,name);
     if (opening) intro.push({kind:'narrator', text:opening});
     if (first) intro.push({kind:'narrator', text:first});
     tx.set(room, {
@@ -1072,8 +1078,12 @@ exports.worldPrivateTest = onCall({
     }
     const resetId = `reset_${crypto.randomUUID().replace(/-/g,'')}`;
     const openingSegments = [];
-    const openingText = String(world.storyOpening || '').trim();
-    const firstLine = String(world.firstLine || '').trim();
+    const resetProfile = (await room.get()).data()?.playerWorldProfile || {};
+    const resetAccount = hasPlayerNamePlaceholder(String(world.storyOpening || '') + String(world.firstLine || '')) && !resetProfile.nickname
+      ? (await db.collection('users').doc(uid).get()).data() || {} : {};
+    const resetName = openingPlayerName(resetProfile,resetAccount);
+    const openingText = replacePlayerName(world.storyOpening,resetName).trim();
+    const firstLine = replacePlayerName(world.firstLine,resetName).trim();
     if (openingText) openingSegments.push({kind:'narrator',text:openingText});
     if (firstLine) openingSegments.push({kind:'narrator',text:firstLine});
 
@@ -1920,7 +1930,7 @@ exports.worldPrivateTest = onCall({
       const openingDocForWriter = chronologicalDocs.find(doc => doc.id === 'opening' && doc.data()?.sender === 'ai');
       const openingSegmentsForWriter = Array.isArray(openingDocForWriter?.data()?.segments)
         ? openingDocForWriter.data().segments : [];
-      const openingRawForWriter = openingSegmentsForWriter.map(seg => String(seg?.text || '')).join('\n');
+      const openingRawForWriter = openingSegmentsForWriter.map(seg => replacePlayerName(seg?.text,profileNickname)).join('\n');
       const explicitOpeningForWriter = /做愛|性交|性愛|發生關係|抽插|射精|內射|口交|手交|陰莖|陰道/u
         .test(openingRawForWriter);
       const compressOpeningForWriter = writerRoute.routeReason === 'standard_scene' &&
@@ -1930,19 +1940,17 @@ exports.worldPrivateTest = onCall({
           .filter(name => name.length >= 2 && openingRawForWriter.includes(name))
           .slice(0, 8).join('、') : '';
       const openingSummaryForWriter = `世界旁白：開場曾有多位角色的親密情節；本輪為一般場景，開場細節僅作為已發生的背景，不要求重演。${openingMentionedNpcNames ? `開場提及人物：${openingMentionedNpcNames}。` : ''}請維持已確立的場景與人物關係，從玩家本次輸入自然接續。`;
-      const writerOnlyHistory = compressOpeningForWriter
-        ? chronologicalDocs.filter(d => d.data()?.sender !== 'control' &&
+      const writerOnlyHistory = chronologicalDocs.filter(d => d.data()?.sender !== 'control' &&
             (action !== 'regenerate' || d.id !== regenerateTargetId)).map(d => {
-            if (d.id === 'opening') return openingSummaryForWriter;
+            if (d.id === 'opening' && compressOpeningForWriter) return openingSummaryForWriter;
             const m = d.data() || {};
             if (m.sender === 'user') return `玩家：${String(m.text || '').slice(0,1800)}`;
             return (Array.isArray(m.segments) ? m.segments : []).map(seg => {
-              const text = String(seg.text || '').slice(0,1400);
+              const text = String(d.id === 'opening' ? replacePlayerName(seg.text, profileNickname) : (seg.text || '')).slice(0,1400);
               return seg.isStatusBar === true || unsafeHistory.test(text) ? '' :
                 `${seg.kind === 'npc' ? (seg.name || 'NPC') : '世界旁白'}：${text}`;
             }).join('\n');
-          }).filter(Boolean).join('\n')
-        : history;
+          }).filter(Boolean).join('\n');
       logger.info('world writer opening context diagnostic', {
         mode:worldMode, sessionId,
         openingInRecentWindow:Boolean(openingDocForWriter),
@@ -3264,6 +3272,14 @@ exports.worldPrivateTest = onCall({
     if (b.id === `ai_${a.id}`) return -1;
     return a.id.localeCompare(b.id);
   });
+  const openingNeedsName = orderedHistory.some(d => d.id === 'opening' &&
+    (d.data()?.segments || []).some(s => hasPlayerNamePlaceholder(s?.text)));
+  let loadedOpeningName = '';
+  if(openingNeedsName) {
+    const profile = (await room.get()).data()?.playerWorldProfile || {};
+    const account = profile.nickname ? {} : (await db.collection('users').doc(uid).get()).data() || {};
+    loadedOpeningName = openingPlayerName(profile,account);
+  }
   const regenDateForUi = new Intl.DateTimeFormat('en-CA',{
     timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit'
   }).format(new Date());
@@ -3279,7 +3295,9 @@ exports.worldPrivateTest = onCall({
     npcs:(Array.isArray(world.npcCharacters)?world.npcCharacters:[]).map(n=>({
       id:String(n.id||''),name:String(n.name||''),avatarUrl:String(n.avatarUrl||''),
     })),
-    messages:orderedHistory.filter(d=>d.data()?.sender !== 'control').map(d=>({id:d.id,...d.data(),timestamp:undefined})),
+    messages:orderedHistory.filter(d=>d.data()?.sender !== 'control').map(d=>({id:d.id,...d.data(),
+      ...(d.id === 'opening' && loadedOpeningName ? {segments:(d.data()?.segments || []).map(s=>({...s,text:replacePlayerName(s.text,loadedOpeningName)}))} : {}),
+      timestamp:undefined})),
     affinities:Object.fromEntries((await room.collection('character_affinities').get()).docs
       .map(d => [d.id, Number(d.data()?.score || 0)])),
   };
