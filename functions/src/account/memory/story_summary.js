@@ -1,3 +1,4 @@
+const {secureOpenRouterBody} = require('../../ai/openrouter_security');
 'use strict';
 function createStorySummaryFunction({onRequest, openRouterApiKey, cors, getAuth, db, FieldValue}) {
 const exports = {};
@@ -63,14 +64,14 @@ exports.generateStorySummary = onRequest({
                     "Authorization": `Bearer ${openRouterApiKey.value()}`,
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({
+                body: JSON.stringify(secureOpenRouterBody({
                     model: "google/gemini-2.5-flash-lite",
                     messages: [
                         { role: "system", content: systemPrompt },
                         { role: "user", content: `【對話紀錄】：\n${formattedHistory}` }
                     ],
                     temperature: 0.6, // 稍微給一點創意空間
-                })
+                }))
             });
 
             const aiResult = await response.json();

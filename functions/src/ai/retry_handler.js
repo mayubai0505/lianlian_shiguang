@@ -1,5 +1,5 @@
 'use strict';
-const {isCancelled, isSafetyFailure, mayFallbackProvider} = require('./provider_failure_policy');
+const {isCancelled, isSafetyFailure, mayFallbackProvider, classifyProviderFailure} = require('./provider_failure_policy');
 // 原樣移出 core.js 的重試、備援與健康監測協作；透過依賴注入保留原行為。
 function createAiRetryHandler({getAiProviderConfig, callOpenRouter, callAnthropicDirect,
   isAiContentFiltered, hasUsableAiContent, isAiTimeoutError, recordAiHealth}) {
@@ -13,6 +13,7 @@ async function callAiWithRetry({
   timeoutMs = 95_000,
   fallbackTimeoutMs = timeoutMs,
   retryPrimary = true,
+  beforeRetry = null,
 }) {
   const startedAt = Date.now();
 
@@ -25,6 +26,23 @@ async function callAiWithRetry({
     attemptTimeoutMs = timeoutMs,
     attemptRequestBody = requestBody
   ) {
+    // Remote cancellation can arrive on another server instance.
+    // A failed preflight must not be reclassified as a provider outage.
+    if (apiAttempts > 0 && beforeRetry) {
+      try { await beforeRetry(); }
+      catch (cause) {
+        if (isCancelled(cause, abortController?.signal)) throw cause;
+        const error = new Error('AI_RETRY_PREFLIGHT_FAILED');
+        error.code = 'AI_RETRY_PREFLIGHT_FAILED';
+        error.cause = cause;
+        throw error;
+      }
+    }
+    if (abortController?.signal?.aborted) {
+      const cancelled = new Error('PLAYER_DISCONNECTED');
+      cancelled.code = 'PLAYER_DISCONNECTED';
+      throw cancelled;
+    }
     apiAttempts++;
 
     const providerConfig =
@@ -84,6 +102,12 @@ async function callAiWithRetry({
           abortController,
           timeoutMs: attemptTimeoutMs,
         });
+
+    if (abortController?.signal?.aborted) {
+      const cancelled = new Error('PLAYER_DISCONNECTED');
+      cancelled.code = 'PLAYER_DISCONNECTED';
+      throw cancelled;
+    }
 
     // HTTP 200 不代表模型真的成功產生內容。
     // Gemini 會用 200 + finish_reason=content_filter: PROHIBITED_CONTENT 擋掉回覆；
@@ -265,7 +289,10 @@ async function callAiWithRetry({
       if (!mayFallbackProvider(error, abortController?.signal)) {
         return await finishFailure(error);
       }
-      const status = Number(error?.statusCode || error?.status || 0);
+      const decision = classifyProviderFailure(error, abortController?.signal);
+      console.info('AI_FALLBACK_DECISION', {modelId, reason:decision.reason,
+        statusCode:decision.statusCode, allowFallback:decision.allowFallback});
+      const status = decision.statusCode || 0;
       // Permanent provider/billing failures must never retry the same primary.
       const directFallback = status >= 400 && status < 500 && status !== 408 && status !== 429;
 
@@ -274,7 +301,7 @@ async function callAiWithRetry({
       // fallback 也失敗就結束，不再切第三模型。
       if (!retryPrimary || directFallback) {
         // Explicit opt-in for transport timeouts only; other failure routes stay unchanged.
-        const selectedFallbackModelId = error?.code === "AI_TIMEOUT" && timeoutFallbackModelId
+        const selectedFallbackModelId = decision.reason === 'provider_timeout' && timeoutFallbackModelId
           ? timeoutFallbackModelId : fallbackModelId;
         if (!selectedFallbackModelId) {
           return await finishFailure(

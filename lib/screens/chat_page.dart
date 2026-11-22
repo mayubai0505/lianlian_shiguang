@@ -9,6 +9,8 @@ import 'dart:ui' show ImageFilter;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' as fs show Source;
+import 'package:audioplayers/audioplayers.dart' hide Source;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -2002,6 +2004,21 @@ class _ChatPageState extends State<ChatPage> {
     final existing = await messagesRef.limit(1).get();
     if (existing.docs.isNotEmpty) return;
 
+    if (!widget.isTestMode) {
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid == null) throw StateError('請先登入');
+      final root = _db.collection('artifacts').doc(_appId);
+      var latest = await root.collection('public_characters')
+          .doc(_currentCharacter.id).get(const GetOptions(source: fs.Source.server));
+      if (!latest.exists) {
+        latest = await root.collection('users').doc(uid).collection('private_characters')
+            .doc(_currentCharacter.id).get(const GetOptions(source: fs.Source.server));
+      }
+      if (!latest.exists) throw StateError('角色已不存在，請重新開啟角色頁');
+      final freshCharacter = await Character.fromFirestoreAsync(latest);
+      if (!mounted) return;
+      setState(() => _currentCharacter = freshCharacter);
+    }
     await _refreshChatPlayerName(roomIdOverride: sessionRef.id);
     if (!mounted) return;
     String rawFirstLine = _currentCharacter.firstLine ?? '';

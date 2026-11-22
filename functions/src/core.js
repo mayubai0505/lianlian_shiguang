@@ -1,3 +1,5 @@
+const {loadLiveProfile,preferredWorldLore,LATEST_SETTINGS_DIRECTIVE} = require('./characters/live_settings');
+const {secureOpenRouterBody} = require('./ai/openrouter_security');
 const {creatorStatusTokenReserve, limitNarrativeWithStatus} = require('./chat/separate_output_budget');
 const {isDefaultProfile, defaultCharacterMemories, prepareDefaultCharacterMemory} = require('./memory/default_character');
 const {loadIndexedCandidates, filterValidMemoryEvidence} = require('./memory/search_index');
@@ -199,9 +201,7 @@ const {downloadMediaAsBase64,describeImageWithGemini,transcribeAudioWithGemini} 
 // 僅供 AI Prompt 使用，前台角色介紹仍讀取 worldSetting。
 function getPreferredAiWorldLore(profile) {
     const data = profile && typeof profile === "object" ? profile : {};
-    return [data.worldLore, data.worldSetting, data.background]
-        .map(value => String(value ?? "").trim())
-        .find(value => value.length > 0) || "";
+    return preferredWorldLore(data);
 }
 
 const {callAiWithRetry} = createAiRetryHandler({
@@ -1477,7 +1477,7 @@ exports.getAiResponse = onRequest({
             const userDocRef = db.collection("users").doc(userId);
 
             const {
-                characterProfile = {},
+                characterProfile: submittedCharacterProfile = {},
                 sessionId,
                 chatHistory = [],
                 userMessage = "",
@@ -1517,6 +1517,12 @@ exports.getAiResponse = onRequest({
                 statusBarFields = [],
                 persistentInstructions = "",
             } = body;
+            const liveCharacterId = String(body.characterId || body.botId || submittedCharacterProfile.id || '').trim();
+            const liveCharacter = await loadLiveProfile({db,appId:APP_ID,userId,id:liveCharacterId,
+                client:submittedCharacterProfile,isTestMode,sessionId,playerProfileId});
+            const characterProfile = liveCharacter.profile;
+            console.info('CREATOR_SETTINGS_VERSION', {characterId:liveCharacterId,
+                source:liveCharacter.source,revision:liveCharacter.revision || null});
             healthChatMode = String(chatMode || "daily").slice(0, 32);
             healthHasSessionId = Boolean(sessionId);
 
@@ -2716,7 +2722,8 @@ if (
             // 新版角色優先使用合併後的核心設定。
             // 舊版角色沒有新欄位時，才合併原本三個欄位。
             const rawPersonality =
-                newCoreCharacterSetting ||
+                Object.prototype.hasOwnProperty.call(characterProfile,'coreCharacterSetting')
+                ? (newCoreCharacterSetting || '無特別設定') :
                 [
                     legacyDetailedPersonality
                         ? `角色性格與設定：\n${legacyDetailedPersonality}`
@@ -4308,6 +4315,10 @@ const profileMemoriesRef = isDefaultProfile(effectiveProfileId)
 
          // 角色本人是所有一般聊天模式共用的身分基礎；模式僅影響敘事節奏與輸出格式。
          // 七夕限定開場同樣適用；不修改原本各模式的 JSON／計費／模型分流。
+         systemPrompt += '\n' + LATEST_SETTINGS_DIRECTIVE;
+         const latestOpening = [characterProfile.initialStory, characterProfile.storyModeFirstLine ?? characterProfile.firstLine]
+             .map(value => String(value ?? '').trim()).filter(Boolean).join('\n');
+         if (latestOpening) systemPrompt += '\n【最新開場背景，僅作設定參考，不重播事件】\n' + latestOpening.slice(0,3000);
          systemPrompt += buildCharacterIdentityDirective({name, chatMode});
 
          // Shared across all general-character modes, including work scenes.
@@ -5120,6 +5131,16 @@ ${persistentPreferenceDirective}
                                                                                        const aiResult = await callAiWithRetry({
                                                                                                modelId: targetModel,
                                                                                                fallbackModelId: config.fallbackModelId || null,
+                                                                                               beforeRetry: async () => {
+                                                                                                   if (!cancellationRef) return;
+                                                                                                   const cancellation = (await cancellationRef.get()).data();
+                                                                                                   if (cancellation?.cancelled === true && cancellation?.userId === userId) {
+                                                                                                       abortController.abort();
+                                                                                                       const error = new Error('PLAYER_CANCELLED');
+                                                                                                       error.code = 'PLAYER_CANCELLED';
+                                                                                                       throw error;
+                                                                                                   }
+                                                                                               },
                                                                                                abortController,
                                                                                                timeoutMs: writerPrimaryTimeoutMs,
                                                                                                fallbackTimeoutMs: writerFallbackTimeoutMs,
@@ -9206,7 +9227,7 @@ const {momentTimestampToMillis, sanitizeMomentReplyId, extractJsonObjectText, ha
                                              "Authorization": `Bearer ${openRouterApiKey.value()}`,
                                              "Content-Type": "application/json",
                                          },
-                                         body: JSON.stringify({
+                                         body: JSON.stringify(secureOpenRouterBody({
                                              model: "google/gemini-2.5-flash-lite",
                                              messages: [
                                                  { role: "system", content: systemPrompt },
@@ -9215,7 +9236,7 @@ const {momentTimestampToMillis, sanitizeMomentReplyId, extractJsonObjectText, ha
                                              temperature: 0.9,
                                              max_tokens: 200,
                                              response_format: { type: "json_object" },
-                                         })
+                                         }))
                                      });
 
                                      if (!response.ok) {
@@ -9383,12 +9404,12 @@ const buildCallScopedMemoryContext = createCallScopedMemoryContext({
                                           "Content-Type": "application/json",
                                           "HTTP-Referer": "https://lianlianshiguang.com",
                                       },
-                                      body: JSON.stringify({
+                                      body: JSON.stringify(secureOpenRouterBody({
                                           model: "deepseek/deepseek-v4-flash",
                                           messages: messagesArray, // ✨ 把「人設 + 記憶 + 新對話」整包送給 AI
                                           temperature: 0.7,
                                           max_tokens: 100
-                                      })
+                                      }))
                                   });
 
                                   if (!response.ok) throw new Error(`API 失敗: ${await response.text()}`);
@@ -9717,11 +9738,11 @@ exports.directCallAiStream = onRequest({
                 "HTTP-Referer": "https://lianlianshiguang.app",
                 "X-Title": "Lianlian Shiguang",
             },
-            data: {
+            data: secureOpenRouterBody({
                 model: "openai/gpt-4o-mini", // 💡 妳可以在這裡換成妳最愛用的模型，例如 anthropic/claude-3-haiku
                 stream: true, // 🔥 關鍵：開啟串流
                 messages: messages
-            },
+            }),
             responseType: 'stream' // 告訴 axios 我們要接水管，不要一次拿一桶
         });
 

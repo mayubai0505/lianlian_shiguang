@@ -1,3 +1,4 @@
+const {LATEST_SETTINGS_DIRECTIVE} = require('../src/characters/live_settings');
 const {replacePlayerName,hasPlayerNamePlaceholder,openingPlayerName} = require('../src/text/player_name_placeholders');
 const {updateCreatorCountdown} = require('./creator_countdown');
 const {isContinueRequest, progressionInstruction} = require('../src/chat/story_progression');
@@ -1845,7 +1846,7 @@ exports.worldPrivateTest = onCall({
         statusCommand ? `【玩家明確使用創作者 STATUS COMMAND】本輪指令為「${statusCommand.heading}」。這是玩家介面查詢，不是 NPC 在劇情中喊出的台詞；不要冒充玩家或 NPC 回答未公開的秘密。後端會額外提供已驗證的查詢顯示，請不要在 statusBar 重複加入完整查詢清單或不存在的資訊。` : '',
         playerStatusDirective,
         playerProfileContext,
-        WORLD_PERSONHOOD_DIRECTIVE,
+        WORLD_PERSONHOOD_DIRECTIVE + '\n' + LATEST_SETTINGS_DIRECTIVE,
         WORLD_LANGUAGE_DIRECTIVE,
         buildWorldTimeDirective(currentStoryTimeAnchor),
         storyClock.timePresentationDirective(world),
@@ -1902,6 +1903,10 @@ exports.worldPrivateTest = onCall({
         `人物：${compactCharacterJson}`,
         `人物目前好感度（後端紀錄，請據此維持跨回合連續性；未建檔預設為0）：${JSON.stringify(relationshipContext).slice(0,9000)}`,
       ];
+      systemParts.push('【最新開場設定，僅作背景參考；不可重播或當作新事件】\n' +
+        replacePlayerName(String(world.storyOpening ?? '') + '\n' + String(world.firstLine ?? ''),profileNickname).slice(0,4500));
+      logger.info('CREATOR_SETTINGS_VERSION', {worldId,source:'worlds',
+        revision:String(world.lastEditTime?.toMillis?.() ?? world.updatedAt?.toMillis?.() ?? 'unknown')});
       systemParts.push(progressionInstruction({
         continuing: isContinueRequest(rawMessage, action === 'continue' ||
           (action === 'regenerate' && rawMessage === '（請延續上一段已發生的事件與角色的對話，讓角色自然回應；不要替玩家說話、行動或決定。）')),
@@ -2820,6 +2825,11 @@ exports.worldPrivateTest = onCall({
           newCreatorStatusForPersistence = literalCreatorStatus(customStatusTemplate, newCreatorStatusForPersistence,
             {time:serverTimeText}) ?? newCreatorStatusForPersistence;
           newCreatorStatusForPersistence = applyCreatorCountdown(newCreatorStatusForPersistence);
+          newCreatorStatusForPersistence = storyClock.advanceCreatorNumericEra(
+            customStatusTemplate,newCreatorStatusForPersistence,previousStatusForEraDate,
+            validatedElapsedMinutes,{regenerate:action==='regenerate',
+              explicitTransition:action==='send' && storyClock.isExplicitCreatorCalendarTransition(rawMessage),
+              playerMessage:action==='send' ? rawMessage : ''});
           if(newCreatorStatusForPersistence)statusParts.push(newCreatorStatusForPersistence);
           if(gatedStatus.protectedCount)logger.info('WORLD CREATOR CONDITIONAL STATUS GUARD',{
             mode:worldMode,protectedCount:gatedStatus.protectedCount,removedCount:gatedStatus.removedCount,
@@ -2890,7 +2900,12 @@ exports.worldPrivateTest = onCall({
               customStatusTemplate,recoveredAncientResult.status,previousStatusForEraDate,
               {explicitTransition:action==='send' && storyClock.isExplicitCreatorCalendarTransition(rawMessage),
                backendDaysElapsed:verifiedBackendDaysElapsed,regenerate:action==='regenerate'});
-            const anchoredRecoveredStatus=applyCreatorCountdown(await finalizeCreatorThoughtAndTime(guardedRecoveredStatus));
+            const anchoredRecoveredStatus=storyClock.advanceCreatorNumericEra(
+              customStatusTemplate,applyCreatorCountdown(await finalizeCreatorThoughtAndTime(guardedRecoveredStatus)),
+              previousStatusForEraDate,validatedElapsedMinutes,
+              {regenerate:action==='regenerate',
+               explicitTransition:action==='send' && storyClock.isExplicitCreatorCalendarTransition(rawMessage),
+               playerMessage:action==='send' ? rawMessage : ''});
             if(anchoredRecoveredStatus) {
               statusParts.push(anchoredRecoveredStatus);
               // A recovered clock must become the next turn's reference too.
@@ -3493,7 +3508,7 @@ exports.worldSecretChapters = onCall({
 });
 
 // 世界觀發布：由後端驗證所有權及必要欄位，並投影不含內部設定的公開目錄。
-exports.worldPublish = onCall({region: REGION, memory:'256MiB', timeoutSeconds:30}, async request => {
+async function handleWorldPublish(request) {
   const uid=request.auth?.uid;
   if (!uid) throw new HttpsError('unauthenticated','請先登入');
   const worldId=String(request.data?.worldId||'').trim();
@@ -3541,7 +3556,9 @@ exports.worldPublish = onCall({region: REGION, memory:'256MiB', timeoutSeconds:3
     else tx.delete(publicRef);
     return {ok:true,publicPlayable:publish};
   });
-});
+}
+exports.worldPublish = onCall({region: REGION, memory:'256MiB', timeoutSeconds:30}, handleWorldPublish);
+exports.worldPublishUs = onCall({region:'us-central1', memory:'256MiB', timeoutSeconds:30}, handleWorldPublish);
 
 // 安全的公開世界目錄：僅回傳展示資訊，不回傳內部 NPC、劇情完整背景與秘密。
 exports.worldPublicCatalog = onCall({region: REGION, memory:'256MiB', timeoutSeconds:30}, async request => {

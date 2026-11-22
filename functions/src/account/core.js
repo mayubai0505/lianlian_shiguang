@@ -1,3 +1,4 @@
+const {secureOpenRouterBody} = require('../ai/openrouter_security');
 const {createBrokenMessageHandlers} = require('./maintenance/broken_messages');
 const {createQixiLettersScheduler} = require('./events/qixi_letters_scheduler');
 const {createAnnouncementDeliveryHandler} = require('./notifications/announcement_delivery_handler');
@@ -9564,7 +9565,7 @@ exports.notifyFollowersOnNewMomentV2 = onDocumentCreated(
                                              "Authorization": `Bearer ${openRouterApiKey.value()}`,
                                              "Content-Type": "application/json",
                                          },
-                                         body: JSON.stringify({
+                                         body: JSON.stringify(secureOpenRouterBody({
                                              model: "google/gemini-2.5-flash-lite",
                                              messages: [
                                                  { role: "system", content: systemPrompt },
@@ -9573,7 +9574,7 @@ exports.notifyFollowersOnNewMomentV2 = onDocumentCreated(
                                              temperature: 0.9,
                                              max_tokens: 200,
                                              response_format: { type: "json_object" },
-                                         })
+                                         }))
                                      });
 
                                      if (!response.ok) {
@@ -9869,12 +9870,12 @@ ${memoryLines.join("\n")}
                                           "Content-Type": "application/json",
                                           "HTTP-Referer": "https://lianlianshiguang.com",
                                       },
-                                      body: JSON.stringify({
+                                      body: JSON.stringify(secureOpenRouterBody({
                                           model: "deepseek/deepseek-v4-flash",
                                           messages: messagesArray, // ✨ 把「人設 + 記憶 + 新對話」整包送給 AI
                                           temperature: 0.7,
                                           max_tokens: 100
-                                      })
+                                      }))
                                   });
 
                                   if (!response.ok) throw new Error(`API 失敗: ${await response.text()}`);
@@ -10554,11 +10555,11 @@ exports.directCallAiStream = onRequest({
                 "HTTP-Referer": "https://lianlianshiguang.app",
                 "X-Title": "Lianlian Shiguang",
             },
-            data: {
+            data: secureOpenRouterBody({
                 model: "openai/gpt-4o-mini", // 💡 妳可以在這裡換成妳最愛用的模型，例如 anthropic/claude-3-haiku
                 stream: true, // 🔥 關鍵：開啟串流
                 messages: messages
-            },
+            }),
             responseType: 'stream' // 告訴 axios 我們要接水管，不要一次拿一桶
         });
 

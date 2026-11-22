@@ -1,3 +1,4 @@
+const {secureOpenRouterBody} = require('../ai/openrouter_security');
 'use strict';
 // Recover only a complete JSON object, and only escape literal control characters
 // within JSON strings. Never guess missing facts, fix broken quotes, or salvage truncation.
@@ -214,7 +215,7 @@ exports.generateStorySummary = onRequest({
                         "Authorization": `Bearer ${openRouterApiKey.value()}`,
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({
+                    body: JSON.stringify(secureOpenRouterBody({
                         model: "google/gemini-2.5-flash-lite",
                         messages: attempt === 1 ? summaryMessages : [
                             ...summaryMessages,
@@ -227,7 +228,7 @@ exports.generateStorySummary = onRequest({
                         // Ordinary requests and other JSON-format retries keep the original cost ceiling.
                         max_tokens: attempt === 2 && lastFinishReason === 'length' ? 3200 : 2200,
                         response_format: {type: "json_object"},
-                    }),
+                    })),
                 });
                 if (!response.ok) throw new Error(`SUMMARY_PROVIDER_HTTP_${response.status}`);
                 const aiResult = await response.json();

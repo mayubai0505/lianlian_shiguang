@@ -1,4 +1,6 @@
 'use strict';
+const {secureOpenRouterBody} = require('../../ai/openrouter_security');
+
 // 原樣移出 core.js 的 API 供應商呼叫與模型路由；透過依賴注入取得 Firebase Secrets。
 function createAiProviders({anthropicApiKey, geminiApiKey, xaiApiKey, openRouterApiKey}) {
 async function callOpenRouter({
@@ -28,10 +30,15 @@ async function callOpenRouter({
     let rawText = "";
 
     try {
-        const finalBody = {
+        // OpenRouter-only routing options are rejected by Google's Gemini API.
+        // Keep the native provider request payload unchanged.
+        const baseBody = {
             ...requestBody,
             model: modelId,
         };
+        const finalBody = /^https:\/\/openrouter\.ai\//i.test(String(apiUrl || ""))
+            ? secureOpenRouterBody(baseBody)
+            : baseBody;
 
         console.log("🚀 AI REQUEST:", {
             apiUrl,

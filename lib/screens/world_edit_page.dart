@@ -448,8 +448,8 @@ class _WorldEditPageState extends State<WorldEditPage>
         _worldId = worldId;
         // 公開資格與公開清單由可信任後端核准與投影，不能讓客戶端直接寫 publicPlayable。
         try {
-          final publishResult = await FirebaseFunctions.instanceFor(region: 'asia-east1')
-              .httpsCallable('worldPublish')
+          final publishResult = await FirebaseFunctions.instanceFor(region: 'us-central1')
+              .httpsCallable('worldPublishUs')
               .call({'worldId': worldId});
           final published = (publishResult.data is Map)
               ? (publishResult.data as Map)['publicPlayable'] == true

@@ -1,7 +1,7 @@
 'use strict';
 // Common provider failure classification. Never use another model to bypass a refusal.
 function isCancelled(error, signal) {
-  return Boolean(signal?.aborted || ['PLAYER_DISCONNECTED','cancelled','CANCELLED'].includes(error?.code) || error?.message === 'PLAYER_DISCONNECTED');
+  return Boolean(signal?.aborted || ['PLAYER_DISCONNECTED','PLAYER_CANCELLED','AI_CANCELLED','cancelled','CANCELLED'].includes(error?.code) || error?.message === 'PLAYER_DISCONNECTED');
 }
 function isSafetyFailure(error) {
   const result = error?.result;
@@ -41,24 +41,11 @@ function isSafetyFailure(error) {
   }
   return false;
 }
+// Both regular chat and world tiers share one decision table.
 function mayFallbackProvider(error, signal) {
-  if (!error || isCancelled(error, signal) || isSafetyFailure(error)) return false;
-  const status = Number(error.statusCode || error.status || 0);
-  // Unknown 403 may be a policy refusal. Only explicitly identified billing/credit errors qualify.
-  if (status === 403) {
-    const upstream = Array.isArray(error.result) ? error.result[0]?.error : error.result?.error;
-    const detail = [error.message, typeof upstream === 'string' ? upstream : upstream?.message].join(' ');
-    return /used all available credits|monthly spending limit|prepayment credits are depleted|insufficient credits|insufficient balance/i.test(detail);
-  }
-  if (status >= 400 && status <= 599) return true;
-  if (['AI_TIMEOUT','AI_NETWORK_ERROR','AI_EMPTY_RESPONSE','AI_INVALID_RESPONSE','AI_PROVIDER_BUSY'].includes(error.code)) return true;
-  if (/AI 回覆時間太久|AI 服務暫時忙碌|AI 連線暫時不穩|AI 回傳格式異常|AI 斷線或沒有回傳 choices/.test(String(error.message || ''))) return true;
-  // Unclassified local programming exceptions are not a provider outage.
-  return false;
+  return classifyProviderFailure(error, signal).allowFallback;
 }
-// World writer uses its own bounded tier loop. Keep the ordinary chat fallback
-// decision above unchanged for existing non-world callers.
-function classifyWorldProviderFailure(error, signal) {
+function classifyProviderFailure(error, signal) {
   const status = [error?.statusCode, error?.status, error?.response?.status]
     .map(Number).find(value => Number.isInteger(value) && value >= 100 && value <= 599) || null;
   const code = String(error?.code || '');
@@ -66,6 +53,16 @@ function classifyWorldProviderFailure(error, signal) {
   if (isCancelled(error, signal)) return classification(false, 'cancelled');
   if (!error) return classification(false, 'unclassified_error');
   if (isSafetyFailure(error)) return classification(false, 'provider_content_filtered');
+  if (['unauthenticated','permission-denied','invalid-argument','failed-precondition',
+    'already-exists','not-found','resource-exhausted','INSUFFICIENT_FLOWERS',
+    'REQUEST_ALREADY_COMPLETED','REQUEST_IN_PROGRESS','AI_BUDGET_EXHAUSTED',
+    'AI_RETRY_PREFLIGHT_FAILED','INSUFFICIENT_FLOWER_POINTS'].includes(code)) {
+    return classification(false, 'application_precondition');
+  }
+  if (status === 400 || status === 413 || status === 422) {
+    return classification(false, 'provider_invalid_request');
+  }
+
   if (status === 451) return classification(false, 'provider_legal_restriction');
   if (status === 403) {
     // Unknown forbidden may be legal/policy-related. Only explicit account,
@@ -115,4 +112,7 @@ function classifyWorldProviderFailure(error, signal) {
   // Do not turn programming exceptions into model calls.
   return classification(false, 'unclassified_error');
 }
-module.exports = {isCancelled, isSafetyFailure, mayFallbackProvider, classifyWorldProviderFailure};
+// Compatibility alias for existing world imports.
+const classifyWorldProviderFailure = classifyProviderFailure;
+module.exports = {isCancelled, isSafetyFailure, mayFallbackProvider,
+  classifyProviderFailure, classifyWorldProviderFailure};
