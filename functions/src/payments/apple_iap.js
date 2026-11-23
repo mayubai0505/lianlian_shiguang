@@ -1,4 +1,23 @@
 'use strict';
+// 台灣 2026-12-01 00:00 = UTC 2026-11-30 16:00。
+// 使用商店驗證的購買時間，不用入帳時間，避免延遲補單損失原優惠。
+const FIRST_PURCHASE_BONUS_CHANGE_AT = Date.parse('2026-11-30T16:00:00.000Z');
+function verifiedPurchaseTimeMs(value, fallbackNow) {
+  const milliseconds = typeof value === 'number' ? value :
+    (typeof value === 'string' && /^\d+$/.test(value) ? Number(value) : Date.parse(value));
+  if (Number.isFinite(milliseconds) && milliseconds > 0 && milliseconds <= fallbackNow.getTime() + 86400000) {
+    return milliseconds;
+  }
+  // 非預期無購買時間時，使用伺服器時間；不信任前端自報日期。
+  return fallbackNow.getTime();
+}
+function firstPurchaseBonus(base, first, monthly, purchaseTimeMs) {
+  const bonusPercent = monthly || !first ? 0 :
+    (purchaseTimeMs < FIRST_PURCHASE_BONUS_CHANGE_AT ? 100 : 20);
+  // 花花為整數，優惠加贈採向下取整。
+  const bonusPoints = Math.floor(base * bonusPercent / 100);
+  return {bonusPercent, bonusPoints, amount: base + bonusPoints};
+}
 const crypto = require('node:crypto');
 const {productInfo} = require('./google_play');
 const hash = s => crypto.createHash('sha256').update(s).digest('hex');
@@ -61,7 +80,8 @@ function createAppleFulfillHandler({db, FieldValue, HttpsError, verifyTransactio
       if (!userSnap.exists) throw new HttpsError('failed-precondition','玩家資料尚未建立。');
       const user=userSnap.data();
       const first=!(Array.isArray(user.purchaseHistory) && user.purchaseHistory.includes(v.productId));
-      const amount=info.base*(info.monthly || !first ? 1 : 2);
+      const purchaseTimeMs=verifiedPurchaseTimeMs(v.purchaseDate, now());
+      const {amount, bonusPercent, bonusPoints}=firstPurchaseBonus(info.base, first, info.monthly, purchaseTimeMs);
       const update={flowerPoints:FieldValue.increment(amount),totalSpent:FieldValue.increment(info.price),
         purchaseHistory:FieldValue.arrayUnion(v.productId)};
       if (info.monthly) {
@@ -75,11 +95,13 @@ function createAppleFulfillHandler({db, FieldValue, HttpsError, verifyTransactio
       }
       tx.set(userRef,update,{merge:true});
       tx.set(userRef.collection('flower_logs').doc(`apple_${key}`),{
-        title:info.monthly?'啟動：星光契約（月卡立即贈點）':`儲值：${amount} 點${first?'（含首購雙倍）':''}`,
+        title:info.monthly?'啟動：星光契約（月卡立即贈點）':`儲值：${amount} 點${bonusPercent?`（含首購加贈${bonusPercent}%）`:''}`,
         amount,type:'purchase',provider:'apple_iap',productId:v.productId,purchaseId:id,
+        bonusPercent,bonusPoints,purchaseTimeMs,
         environment,price:info.price,currency:'TWD',priceSource:'catalog',createdAt:stamp});
       tx.set(receiptRef,{...record,status:'fulfilled',points:amount});
-      return {fulfilled:true,alreadyFulfilled:false,points:amount,isFirstTime:first};
+      return {fulfilled:true,alreadyFulfilled:false,points:amount,
+        isFirstTime:first && !info.monthly,bonusPercent,bonusPoints};
     });
   };
 }

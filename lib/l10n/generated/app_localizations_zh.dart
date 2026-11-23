@@ -3281,7 +3281,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get shop_unknown_item => '未知項目';
 
   @override
-  String get shop_first_purchase_bonus => '首購雙倍！';
+  String get shop_first_purchase_bonus => '首購20%！';
 
   @override
   String get story_summary_title => '我們的故事';
@@ -3356,7 +3356,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String shop_log_top_up_double(int points) {
-    return '儲值：$points 點 (含首購雙倍 )';
+    return '儲值：$points 點 (含首購20%)';
   }
 
   @override
@@ -3373,7 +3373,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get shop_purchase_success_double_bonus => '恭喜觸發首購雙倍獎勵！';
+  String get shop_purchase_success_double_bonus => '恭喜觸發首購20%獎勵！';
 
   @override
   String get shop_purchase_awesome => '太棒了';
@@ -15997,7 +15997,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get shop_unknown_item => '未知项目';
 
   @override
-  String get shop_first_purchase_bonus => '首购双倍！';
+  String get shop_first_purchase_bonus => '首购20%！';
 
   @override
   String get story_summary_title => '我们的故事';
@@ -16072,7 +16072,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String shop_log_top_up_double(int points) {
-    return '充值：$points 点 (含首购双倍 )';
+    return '充值：$points 点 (含首购20%)';
   }
 
   @override
@@ -16089,7 +16089,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get shop_purchase_success_double_bonus => '恭喜触发首购双倍奖励！';
+  String get shop_purchase_success_double_bonus => '恭喜触发首购20%奖励！';
 
   @override
   String get shop_purchase_awesome => '太棒了';
@@ -28239,7 +28239,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get shop_unknown_item => '未知項目';
 
   @override
-  String get shop_first_purchase_bonus => '首購雙倍！';
+  String get shop_first_purchase_bonus => '首購20%！';
 
   @override
   String get story_summary_title => '我們的故事';
@@ -28314,7 +28314,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String shop_log_top_up_double(int points) {
-    return '儲值：$points 點 (含首購雙倍 )';
+    return '儲值：$points 點 (含首購20%)';
   }
 
   @override
@@ -28331,7 +28331,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get shop_purchase_success_double_bonus => '恭喜觸發首購雙倍獎勵！';
+  String get shop_purchase_success_double_bonus => '恭喜觸發首購20%獎勵！';
 
   @override
   String get shop_purchase_awesome => '太棒了';

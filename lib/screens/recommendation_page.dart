@@ -1406,50 +1406,144 @@ class _CreatorPromotionEntryState extends State<_CreatorPromotionEntry> {
                 ),
                 SizedBox(
                   height: 136,
-                  child: PageView.builder(
-                    key: ValueKey('creator_promo_week_${_weekNumber()}'),
-                    controller: PageController(viewportFraction: weekly.length == 1 ? 1 : 0.94),
-                    itemCount: weekly.length,
-                    itemBuilder: (context, index) {
-                      final promo = weekly[index];
-                      return Padding(
-                        padding: EdgeInsets.only(right: weekly.length == 1 ? 0 : 8),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(22),
-                            onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                              builder: (_) => CreatorProfilePage(
-                                creatorId: promo.creatorId,
-                                creatorName: promo.creatorName,
-                              ),
-                            )),
-                            child: Ink(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(22),
-                                color: colors.primary.withValues(alpha: 0.055),
-                                border: Border.all(color: colors.primary.withValues(alpha: 0.12)),
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(22),
-                                child: _buildRecommendationCachedImage(
-                                  context,
-                                  imageUrl: promo.bannerImageUrl,
-                                  fit: BoxFit.cover,
-                                  cacheWidth: 900,
-                                  fallback: const SizedBox.shrink(),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
+                  child: _CreatorPromotionCarousel(
+                    // 換週或管理員換圖時重新建立輪播控制器，避免舊頁碼越界。
+                    key: ValueKey('creator_promo_${_weekNumber()}_${weekly.map((p) => '${p.creatorId}:${p.bannerImageUrl}').join('|')}'),
+                    promotions: weekly,
                   ),
                 ),
               ],
             );
           },
+        );
+      },
+    );
+  }
+}
+
+// 每五秒切換一張；一張時停用計時。控制器生命週期與橫幅綁定，
+// 離開推薦頁（元件銷毀）、切換隱藏分頁或 App 退到背景時停止。
+class _CreatorPromotionCarousel extends StatefulWidget {
+  const _CreatorPromotionCarousel({super.key, required this.promotions});
+
+  final List<_CreatorPromotion> promotions;
+
+  @override
+  State<_CreatorPromotionCarousel> createState() => _CreatorPromotionCarouselState();
+}
+
+class _CreatorPromotionCarouselState extends State<_CreatorPromotionCarousel>
+    with WidgetsBindingObserver {
+  late final PageController _controller;
+  Timer? _autoSlideTimer;
+  int _currentPage = 0;
+  bool _openingCreator = false;
+  AppLifecycleState _appLifecycle = AppLifecycleState.resumed;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = PageController(
+      viewportFraction: widget.promotions.length == 1 ? 1 : 0.94,
+    );
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _updateAutoSlide();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _appLifecycle = state;
+    _updateAutoSlide();
+  }
+
+  void _updateAutoSlide() {
+    final visible = mounted && TickerMode.of(context) &&
+        _appLifecycle == AppLifecycleState.resumed && !_openingCreator;
+    if (!visible || widget.promotions.length <= 1) {
+      _autoSlideTimer?.cancel();
+      _autoSlideTimer = null;
+      return;
+    }
+    _autoSlideTimer ??= Timer.periodic(const Duration(seconds: 5), (_) {
+      if (!mounted || !_controller.hasClients ||
+          !TickerMode.of(context) || _openingCreator ||
+          ModalRoute.of(context)?.isCurrent == false) return;
+      final next = (_currentPage + 1) % widget.promotions.length;
+      _controller.animateToPage(
+        next,
+        duration: const Duration(milliseconds: 450),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+  Future<void> _openCreator(_CreatorPromotion promo) async {
+    if (_openingCreator) return;
+    _openingCreator = true;
+    _updateAutoSlide();
+    try {
+      await Navigator.of(context).push(MaterialPageRoute<void>(
+        builder: (_) => CreatorProfilePage(
+          creatorId: promo.creatorId,
+          creatorName: promo.creatorName,
+        ),
+      ));
+    } finally {
+      if (mounted) {
+        _openingCreator = false;
+        _updateAutoSlide();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _autoSlideTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return PageView.builder(
+      controller: _controller,
+      itemCount: widget.promotions.length,
+      onPageChanged: (index) => _currentPage = index,
+      itemBuilder: (context, index) {
+        final promo = widget.promotions[index];
+        return Padding(
+          padding: EdgeInsets.only(right: widget.promotions.length == 1 ? 0 : 8),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(22),
+              onTap: () => _openCreator(promo),
+              child: Ink(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(22),
+                  color: colors.primary.withValues(alpha: 0.055),
+                  border: Border.all(color: colors.primary.withValues(alpha: 0.12)),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(22),
+                  child: _buildRecommendationCachedImage(
+                    context,
+                    imageUrl: promo.bannerImageUrl,
+                    fit: BoxFit.cover,
+                    cacheWidth: 900,
+                    fallback: const SizedBox.shrink(),
+                  ),
+                ),
+              ),
+            ),
+          ),
         );
       },
     );

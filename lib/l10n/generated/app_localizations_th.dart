@@ -3439,7 +3439,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get shop_unknown_item => 'ไอเท็มที่ไม่รู้จัก';
 
   @override
-  String get shop_first_purchase_bonus => 'ซื้อครั้งแรกรับสองเท่า!';
+  String get shop_first_purchase_bonus => 'โบนัส 20% สำหรับการซื้อครั้งแรก!';
 
   @override
   String get story_summary_title => 'เรื่องราวของเรา';
@@ -3518,7 +3518,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String shop_log_top_up_double(int points) {
-    return 'เติมเงิน: $points แต้ม (รวมโบนัสสองเท่าจากการซื้อครั้งแรก )';
+    return 'เติมเงิน: $points แต้ม (รวมโบนัส 20% สำหรับการซื้อครั้งแรก)';
   }
 
   @override
@@ -3536,7 +3536,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get shop_purchase_success_double_bonus =>
-      'ยินดีด้วย! คุณได้รับโบนัสสองเท่าจากการซื้อครั้งแรก!';
+      'ยินดีด้วย! คุณได้รับโบนัส 20% สำหรับการซื้อครั้งแรก!';
 
   @override
   String get shop_purchase_awesome => 'สุดยอดเลย';

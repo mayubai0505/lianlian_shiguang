@@ -1,6 +1,6 @@
 'use strict';
-// Administrator device test only. The client reports first audio readiness;
-// production needs a server-owned transport/verified provider lifecycle.
+// V4.1 billing: reserve 20 flowers, refund unconnected calls, idempotent settlement.
+// Client-reported first audio is not independently verified by provider: review before scale.
 const COST=20, PENDING_MS=120000, TALK_MS=60000;
 const validId=x=>typeof x==='string'&&/^[a-f0-9]{32}$/.test(x);
 function createV41Billing({db,FieldValue,HttpsError,requireTester,now=Date.now}) {
@@ -45,7 +45,7 @@ function createV41Billing({db,FieldValue,HttpsError,requireTester,now=Date.now})
         tx.update(r,{state:'connected',connectedAt:t,deadlineAt});
         return {state:'connected',deadlineAt,remainingMs:TALK_MS};
       }
-      if(s.state==='pending'&&action==='end'){tx.update(r,{state:'ended',closedAt:t});return {state:'ended'};}
+      // A pending call is never billable, even if the client sent 'end'.
       if(s.state==='pending'){
         const user=await tx.get(u);if(!user.exists)throw new HttpsError('failed-precondition','退款帳戶不存在');
         tx.update(u,{flowerPoints:FieldValue.increment(COST)});
@@ -57,7 +57,7 @@ function createV41Billing({db,FieldValue,HttpsError,requireTester,now=Date.now})
     });
   }
   async function sweep(){
-    // Test-administrator queue is limited to 30 attempts/day.
+    // Recover expired reservations and connected-call deadlines.
     const [pending,connected]=await Promise.all([col.where('state','==','pending').limit(200).get(),col.where('state','==','connected').limit(200).get()]);
     const expired=[...pending.docs.filter(d=>d.data().expiresAt<=now()),...connected.docs.filter(d=>d.data().deadlineAt<=now())];
     const results=await Promise.allSettled(expired.map(d=>settle(d.data().uid,d.data().id,'cancel',{expiredOnly:true})));

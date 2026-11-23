@@ -30,6 +30,8 @@ import 'package:home_widget/home_widget.dart';
 import 'screens/notification_list_page.dart';
 import 'screens/world_chat_memos_page.dart';
 import 'screens/world_chat_page.dart';
+import 'screens/role_agreement_incoming_page.dart';
+import 'services/role_agreement_native_calls.dart';
 
 // 僅供本機 Web Debug 測試，正式版與一般 Debug 皆維持原本 Firebase 連線。
 const bool _worldEmulatorRequested = bool.fromEnvironment(
@@ -38,6 +40,9 @@ const bool _worldEmulatorRequested = bool.fromEnvironment(
 final bool _worldEmulatorEnabled = kIsWeb && kDebugMode && _worldEmulatorRequested;
 
 String? globalActiveCharacterId;
+RemoteMessage? _pendingRoleAgreementTap;
+String? _lastRoleAgreementTapId;
+
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 // Pending world memo navigation is held until auth and Navigator are ready.
 Map<String, String>? _pendingWorldMemo;
@@ -159,6 +164,10 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterL
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   print("👻 [背景小精靈] 成功攔截到背景通知: ${message.notification?.title}");
+  if (RoleAgreementNativeCalls.validData(message.data)) {
+    try { await RoleAgreementNativeCalls.showFromRemoteMessage(message); }
+    catch (e) { debugPrint('原生來電顯示失敗：$e'); }
+  }
 }
 
 // ==========================================
@@ -428,6 +437,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   StreamSubscription<Uri?>? _homeWidgetClickSubscription;
+  StreamSubscription<dynamic>? _roleAgreementNativeEventSubscription;
   String? _lastHomeWidgetLaunchUri;
   DateTime? _lastHomeWidgetLaunchAt;
   String? _lastSyncedNotificationLocale;
@@ -489,6 +499,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           if (user != null) {
             _tryOpenPendingWorldMemo();
             _tryOpenPendingWorldChat();
+            unawaited(RoleAgreementNativeCalls.registerIosVoipToken());
+            _flushRoleAgreementTap();
           }
         },
       );
@@ -501,6 +513,19 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
 
     WidgetsBinding.instance.addObserver(this);
+    if (RoleAgreementNativeCalls.supported) {
+      _roleAgreementNativeEventSubscription = RoleAgreementNativeCalls.listen(
+        onAccept: (extra) {
+          // The system Accept action is only an intent to open confirmation.
+          // No backend charge occurs until the player presses 20-flower confirm in App.
+          _handleNotificationClick(RemoteMessage(data:extra.map((k,v) => MapEntry(k, '$v'))));
+        },
+        onDecline: (extra) {
+          // A missed native UI must not charge. The server will expire this call.
+          debugPrint('角色來電拒接／逾時：${extra['agreementId']}');
+        },
+      );
+    }
 
     _homeWidgetClickSubscription =
         HomeWidget.widgetClicked.listen(_handleHomeWidgetLaunch);
@@ -508,8 +533,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // 這些都不是顯示首頁的必要條件，全部留在第一幀之後背景處理。
       unawaited(_initializeAfterAppStarted());
+      unawaited(RoleAgreementNativeCalls.registerIosVoipToken());
       unawaited(_checkInitialHomeWidgetLaunch());
       _tryOpenPendingWorldChat();
+      _flushRoleAgreementTap();
 
       unawaited(
         _initializeBackgroundServices().catchError((e, stackTrace) {
@@ -525,6 +552,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     _accountAuthSubscription?.cancel();
     _accountSync?.dispose();
     _homeWidgetClickSubscription?.cancel();
+    _roleAgreementNativeEventSubscription?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -923,6 +951,14 @@ class _ChatLoaderWrapperState extends State<ChatLoaderWrapper> {
 // ==========================================
 // 💌 推播處理函數 (保持原樣)
 // ==========================================
+void _flushRoleAgreementTap() {
+  final message = _pendingRoleAgreementTap;
+  if (message == null || navigatorKey.currentState == null ||
+      FirebaseAuth.instance.currentUser == null) return;
+  _pendingRoleAgreementTap = null;
+  _handleNotificationClick(message);
+}
+
 void _handleNotificationClick(RemoteMessage message) {
   final data = message.data;
   final type = (data['type'] ?? '').toString().trim();
@@ -942,6 +978,31 @@ void _handleNotificationClick(RemoteMessage message) {
 
   if (type == 'world_memo_reminder') {
     _queueWorldMemoNotification(message);
+    return;
+  }
+
+  // 拾光約定：來電邀請需要明確點擊接聽，絕不可在推播抵達時扣款。
+  if (type == 'role_agreement_call' || type == 'role_agreement_reminder') {
+    if (navigatorKey.currentState == null || FirebaseAuth.instance.currentUser == null) {
+      _pendingRoleAgreementTap = message;
+      return;
+    }
+    final dedupeKey = message.messageId ?? '${data['agreementId']}_${data['type']}';
+    if (_lastRoleAgreementTapId == dedupeKey) return;
+    _lastRoleAgreementTapId = dedupeKey;
+    final characterId = (data['characterId'] ?? '').toString().trim();
+    final agreementId = (data['agreementId'] ?? '').toString().trim();
+    if (!RegExp(r'^[A-Za-z0-9_-]{1,160}$').hasMatch(characterId) ||
+        !RegExp(r'^[a-f0-9]{64}$').hasMatch(agreementId)) return;
+    if (type == 'role_agreement_call') {
+      unawaited(RoleAgreementNativeCalls.close(agreementId));
+      navigatorKey.currentState?.push(MaterialPageRoute<void>(
+        builder: (_) => RoleAgreementIncomingPage(characterId:characterId,agreementId:agreementId)));
+    } else {
+      navigatorKey.currentState?.pushNamed('/chat',arguments:{
+        'characterId':characterId,'sessionId':(data['sessionId']??'').toString(),
+      });
+    }
     return;
   }
 
@@ -1075,6 +1136,29 @@ Future<void> setupPushNotifications() async {
     FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationClick);
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      // Foreground FCM notification display is disabled above. Show an in-app
+      // invitation instead of silently swallowing scheduled calls/reminders.
+      final type=(message.data['type']??'').toString();
+      if (type!='role_agreement_call' && type!='role_agreement_reminder') return;
+      if (type == 'role_agreement_call' && RoleAgreementNativeCalls.supported &&
+          defaultTargetPlatform == TargetPlatform.android) {
+        unawaited(RoleAgreementNativeCalls.showFromRemoteMessage(message));
+        return;
+      }
+      final context=navigatorKey.currentContext;
+      if (context==null) return;
+      final title=type=='role_agreement_call'?'拾光約定・角色來電':'拾光約定提醒';
+      showDialog<void>(context:context,builder:(dialogContext)=>AlertDialog(
+        title:Text(title),
+        content:Text(message.notification?.body??'約定時間到了'),
+        actions:[
+          TextButton(onPressed:()=>Navigator.pop(dialogContext),child:const Text('稍後')),
+          FilledButton(onPressed:(){
+            Navigator.pop(dialogContext);
+            _handleNotificationClick(message);
+          },child:Text(type=='role_agreement_call'?'查看來電':'查看提醒')),
+        ],
+      ));
     });
   } catch (e) {
     debugPrint("❌ 推播初始化發生錯誤: $e");

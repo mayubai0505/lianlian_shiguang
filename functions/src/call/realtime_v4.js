@@ -1,8 +1,11 @@
 'use strict';
-// V4 first-device test. Never expose this endpoint to ordinary users until
-// server-owned billing and production session authorization are implemented.
+// V4.1 authenticated call path: session ownership checked before signed URL issuance.
+// Legacy V4 endpoint remains administrator-only; V4.1 uses server-owned billing.
 const AGENT_ID = 'agent_8401m7vxft10fd3rpgs88s2997t1';
 const MODEL = 'eleven_realtime_v1_mini';
+// Creator plan: up to 10 concurrent calls. 200/day is a safety cap, NOT a free allowance.
+const AGENT_DAILY_LIMIT = 200;
+const AGENT_CONCURRENCY_LIMIT = 10;
 const TOOL_NAME = 'lianlian_call_environment_v4';
 const VOICE = Object.freeze({stability:0.5, similarity_boost:1.0, clone_strength:0.85, speed:1});
 const EVENTS = ['audio','interruption','user_transcript','agent_response','agent_response_correction','agent_response_complete','client_tool_call'];
@@ -17,7 +20,7 @@ function toolMatches(t) {
 }
 function needsUpdate(a, toolId, providerMaxDuration=60) {
   const c=a.conversation_config||{}, p=a.platform_settings||{}, t=c.tts||{}, o=p.overrides?.conversation_config_override||{};
-  return c.realtime_model!==MODEL || c.agent?.language!=='zh' || c.agent?.disable_first_message_interruptions!==false || c.asr?.user_input_audio_format!=='pcm_16000' || t.agent_output_audio_format!=='pcm_16000' || t.expressive_mode!==true || Object.entries(VOICE).some(([k,v])=>t[k]!==v) || c.conversation?.max_duration_seconds!==providerMaxDuration || c.conversation?.text_only!==false || c.conversation?.file_input?.enabled!==false || !EVENTS.every(e=>c.conversation?.client_events?.includes(e)) || !(c.agent?.prompt?.tool_ids||[]).includes(toolId) || p.auth?.enable_auth!==true || (p.auth?.allowlist||[]).length!==0 || p.privacy?.record_voice!==false || p.privacy?.retention_days!==0 || p.call_limits?.daily_limit!==30 || p.call_limits?.agent_concurrency_limit!==1 || p.call_limits?.bursting_enabled!==false || p.queueing_config?.enabled!==false || o.tts?.voice_id!==true || o.agent?.first_message!==true || o.agent?.language!==false || o.agent?.prompt?.prompt!==true || o.conversation?.max_duration_seconds!==false || o.conversation?.text_only!==false || ['model_id','stability','speed','similarity_boost','clone_strength','supported_voices','pronunciation_dictionary_locators'].some(k=>o.tts?.[k]!==false) || ['llm','tool_ids','tool_ids_strict','native_mcp_server_ids','knowledge_base','reasoning_effort'].some(k=>o.agent?.prompt?.[k]!==false) || p.overrides?.custom_llm_extra_body!==false;
+  return c.realtime_model!==MODEL || c.agent?.language!=='zh' || c.agent?.disable_first_message_interruptions!==false || c.asr?.user_input_audio_format!=='pcm_16000' || t.agent_output_audio_format!=='pcm_16000' || t.expressive_mode!==true || Object.entries(VOICE).some(([k,v])=>t[k]!==v) || c.conversation?.max_duration_seconds!==providerMaxDuration || c.conversation?.text_only!==false || c.conversation?.file_input?.enabled!==false || !EVENTS.every(e=>c.conversation?.client_events?.includes(e)) || !(c.agent?.prompt?.tool_ids||[]).includes(toolId) || p.auth?.enable_auth!==true || (p.auth?.allowlist||[]).length!==0 || p.privacy?.record_voice!==false || p.privacy?.retention_days!==0 || p.call_limits?.daily_limit!==AGENT_DAILY_LIMIT || p.call_limits?.agent_concurrency_limit!==AGENT_CONCURRENCY_LIMIT || p.call_limits?.bursting_enabled!==false || p.queueing_config?.enabled!==false || o.tts?.voice_id!==true || o.agent?.first_message!==true || o.agent?.language!==false || o.agent?.prompt?.prompt!==true || o.conversation?.max_duration_seconds!==false || o.conversation?.text_only!==false || ['model_id','stability','speed','similarity_boost','clone_strength','supported_voices','pronunciation_dictionary_locators'].some(k=>o.tts?.[k]!==false) || ['llm','tool_ids','tool_ids_strict','native_mcp_server_ids','knowledge_base','reasoning_effort'].some(k=>o.agent?.prompt?.[k]!==false) || p.overrides?.custom_llm_extra_body!==false;
 }
 function buildPatch(a,toolId,providerMaxDuration=60) {
   const c=a.conversation_config||{}, p=a.platform_settings||{}, o=p.overrides||{}, co=o.conversation_config_override||{};
@@ -30,7 +33,7 @@ function buildPatch(a,toolId,providerMaxDuration=60) {
   },platform_settings:{
     auth:{...p.auth,enable_auth:true,allowlist:[]},
     privacy:{...p.privacy,record_voice:false,retention_days:0,apply_to_existing_conversations:false},
-    call_limits:{...p.call_limits,daily_limit:30,agent_concurrency_limit:1,bursting_enabled:false},
+    call_limits:{...p.call_limits,daily_limit:AGENT_DAILY_LIMIT,agent_concurrency_limit:AGENT_CONCURRENCY_LIMIT,bursting_enabled:false},
     queueing_config:{...p.queueing_config,enabled:false},
     overrides:{...o,custom_llm_extra_body:false,conversation_config_override:{...co,
       tts:{...co.tts,voice_id:true,model_id:false,supported_voices:false,stability:false,speed:false,similarity_boost:false,clone_strength:false,pronunciation_dictionary_locators:false},
@@ -82,9 +85,8 @@ function createCallRealtimeV4Handler({db,APP_ID,HttpsError,elevenLabsApiKey,requ
       const currentDuration=a.conversation_config?.conversation?.max_duration_seconds;
       const currentClone=a.conversation_config?.tts?.clone_strength;
       const currentSimilarity=a.conversation_config?.tts?.similarity_boost;
-      // Detect whether only the duration, clone strength and similarity differ. Avoid
-      // resending unrelated settings to an already configured Agent.
-      const normalized={...a,conversation_config:{...a.conversation_config,
+      // Include call limits in the targeted update to avoid resetting unrelated Agent settings.
+      const normalized={...a,platform_settings:{...a.platform_settings,call_limits:{...a.platform_settings?.call_limits,daily_limit:AGENT_DAILY_LIMIT,agent_concurrency_limit:AGENT_CONCURRENCY_LIMIT}},conversation_config:{...a.conversation_config,
         tts:{...a.conversation_config?.tts,clone_strength:VOICE.clone_strength,similarity_boost:VOICE.similarity_boost},
         conversation:{...a.conversation_config?.conversation,max_duration_seconds:providerMaxDuration}}};
       const narrow=!needsUpdate(normalized,tool.id,providerMaxDuration);
@@ -92,8 +94,11 @@ function createCallRealtimeV4Handler({db,APP_ID,HttpsError,elevenLabsApiKey,requ
       if(currentDuration!==providerMaxDuration)delta.conversation={max_duration_seconds:providerMaxDuration};
       if(currentClone!==VOICE.clone_strength)delta.tts={clone_strength:VOICE.clone_strength};
       if(currentSimilarity!==VOICE.similarity_boost)delta.tts={...delta.tts,similarity_boost:VOICE.similarity_boost};
-      const patch=narrow?{conversation_config:delta}:buildPatch(a,tool.id,providerMaxDuration);
-      console.info('CALL_V41_AGENT_PATCH',{mode:narrow?'targeted':'full-setup',previousDuration:currentDuration,targetDuration:providerMaxDuration,previousCloneStrength:currentClone,targetCloneStrength:VOICE.clone_strength,previousSimilarity:currentSimilarity,targetSimilarity:VOICE.similarity_boost});
+      const limitsDelta={};
+      if(a.platform_settings?.call_limits?.daily_limit!==AGENT_DAILY_LIMIT)limitsDelta.daily_limit=AGENT_DAILY_LIMIT;
+      if(a.platform_settings?.call_limits?.agent_concurrency_limit!==AGENT_CONCURRENCY_LIMIT)limitsDelta.agent_concurrency_limit=AGENT_CONCURRENCY_LIMIT;
+      const patch=narrow?{...(Object.keys(delta).length?{conversation_config:delta}:{}),...(Object.keys(limitsDelta).length?{platform_settings:{call_limits:limitsDelta}}:{})}:buildPatch(a,tool.id,providerMaxDuration);
+      console.info('CALL_V41_AGENT_PATCH',{mode:narrow?'targeted':'full-setup',previousDuration:currentDuration,targetDuration:providerMaxDuration,previousDailyLimit:a.platform_settings?.call_limits?.daily_limit,targetDailyLimit:AGENT_DAILY_LIMIT,previousConcurrency:a.platform_settings?.call_limits?.agent_concurrency_limit,targetConcurrency:AGENT_CONCURRENCY_LIMIT,previousCloneStrength:currentClone,targetCloneStrength:VOICE.clone_strength,previousSimilarity:currentSimilarity,targetSimilarity:VOICE.similarity_boost});
       // Patch only the named test Agent; never update voice-library settings.
       await api('PATCH',branchPath,patch);
       a=await api('GET',branchPath);

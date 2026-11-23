@@ -3505,7 +3505,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get shop_unknown_item => 'Artículo desconocido';
 
   @override
-  String get shop_first_purchase_bonus => '¡Doble en la primera compra!';
+  String get shop_first_purchase_bonus => '¡20 % extra en tu primera compra!';
 
   @override
   String get story_summary_title => 'Nuestra historia';
@@ -3585,7 +3585,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String shop_log_top_up_double(int points) {
-    return 'Recarga: $points pts (Incluye el doble por primera compra )';
+    return 'Recarga: $points puntos (incluye un bono del 20 % por la primera compra)';
   }
 
   @override
@@ -3603,7 +3603,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get shop_purchase_success_double_bonus =>
-      '¡ Felicidades! ¡Se activó la bonificación doble por primera compra!';
+      '¡Felicidades! ¡Has desbloqueado una bonificación del 20 % por tu primera compra!';
 
   @override
   String get shop_purchase_awesome => '¡Genial!';

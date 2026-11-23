@@ -2,6 +2,65 @@
 const {explicitAncientElapsed} = require('./creator_countdown');
 // Fictional story clock: never uses wall-clock time to advance in-game scenes.
 const PAD = n => String(n).padStart(2, '0');
+// Explicit elapsed SCENE time, not a future plan or remembered event.
+// Keep the expression anchored to a scene clause so incidental dialogue
+// mentioning an hour does not advance the story clock.
+function explicitSceneElapsedMinutes(message) {
+ const input=String(message||'').trim();
+ if (!input || /^(?:如果|假如|假設|假使|回憶|回想|想起|夢見|夢裡|假裝|打算|計畫|預計|希望|聽說)/u.test(input)) return null;
+ const value=String.raw`(\d{1,4}|[零〇一二兩三四五六七八九十百千]{1,6}|半)`;
+ const unit=String.raw`(個?(?:小時|鐘頭)|分鐘|分|天|日)`;
+ const approx=String.raw`(?:約莫|大約|大概|差不多|約|將近|近)?`;
+ // Example: （約莫過一個小時）、過了大概半小時、時間推進兩小時.
+ const prefix=String.raw`(?:^|[\n。！？!?；;，,])\s*[（(]?\s*`+approx+String.raw`\s*(?:已經|又)?\s*(?:過(?:了|去)?|經過(?:了)?|時間(?:已經)?(?:過(?:了|去)?|推進(?:了)?|流逝(?:了)?))\s*`+approx+String.raw`\s*`;
+ const match=input.match(new RegExp(prefix+value+String.raw`\s*`+unit+String.raw`(?![\p{Script=Han}\d])`,'u'));
+ if (!match) return null;
+ const raw=match[1], u=match[2];
+ let n;
+ if (/^\d+$/u.test(raw)) n=Number(raw);
+ else if (raw==='半') n=0.5;
+ else {
+  const digits={零:0,〇:0,一:1,二:2,兩:2,三:3,四:4,五:5,六:6,七:7,八:8,九:9};
+  let total=0, segment=0, digit=0;
+  for (const char of raw) {
+   if (Object.prototype.hasOwnProperty.call(digits,char)) digit=digits[char];
+   else if (char==='十'||char==='百'||char==='千') {segment+=(digit||1)*({十:10,百:100,千:1000}[char]);digit=0;}
+   else return null;
+  }
+  n=total+segment+digit;
+ }
+ const factor= u==='分'||u==='分鐘'?1:(u==='天'||u==='日'?1440:60);
+ const minutes=Math.round(n*factor);
+ return minutes>=1 && minutes<=43200 ? minutes : null;
+}
+
+
+// Read only completed scene transitions described by the AI narrator.
+// Dialogue, remembered events, future plans and hypothetical timelines
+// must never advance the committed story clock.
+function explicitAiNarratedElapsedMinutes(reply) {
+ const source=String(reply||'').slice(0,18000)
+   .split(/\n\s*---\s*\n/u)[0]
+   .replace(/「[^」]*」|『[^』]*』|“[^”]*”|"[^"\n]*"/gu,'');
+ // A scene/time-transition clause must begin after a sentence/paragraph
+ // boundary, or be a parenthesized stage direction.
+ const chunks=source.split(/[\n。！？!?；;]+/u);
+ for (const chunk of chunks) {
+  const scene=chunk.trim().replace(/^[（(\s]+/u,'');
+  if (!scene || /^(?:如果|假如|假設|假使|回憶|回想|想起|夢見|夢裡|假裝|打算|計畫|預計|希望|聽說|曾經|當年|那年|彼時|假若|倘若)/u.test(scene))continue;
+  const elapsed=explicitSceneElapsedMinutes(scene);
+  if (elapsed!==null)return elapsed;
+  // '約莫一個小時後，兩人終於抵達' describes a completed scene cut;
+  // exclude future/modal instructions such as '一小時後要出門'.
+  const elapsedAfter=scene.match(/^(?:(?:時間|鏡頭|場景|畫面)(?:一轉|推移|跳轉)?[,，]?\s*)?(?:約莫|大約|大概|差不多|約|將近|近)?\s*(\d{1,3}|[一二兩三四五六七八九十]{1,4}|半)\s*(個?(?:小時|鐘頭)|分鐘|分)\s*(?:後|過後|之後)[,，]?\s*(.{0,32})/u);
+  if (elapsedAfter && !/^(?:要|將|會|可能|應該|預計|打算|計畫|如果|假如|假設|希望|才會)/u.test(elapsedAfter[3])) {
+   const parsed=explicitSceneElapsedMinutes('過了'+elapsedAfter[1]+elapsedAfter[2]);
+   if(parsed!==null)return parsed;
+  }
+ }
+ return null;
+}
+
 function dateOk(y,m,d){ const dt=new Date(Date.UTC(y,m-1,d)); return dt.getUTCFullYear()===y&&dt.getUTCMonth()===m-1&&dt.getUTCDate()===d; }
 function normalize(clock){
  if(!clock || typeof clock!=='object')return null;
@@ -67,6 +126,8 @@ function resolveClock(previous, player, advanceMinutes=3, maxNaturalMinutes=5){
      else {hour=base.hour;minute=base.minute;}
      return {clock:{...next,hour,minute},reason:'player_next_day'};
    }
+   const sceneElapsed=explicitSceneElapsedMinutes(text);
+   if(sceneElapsed!==null)return {clock:addMinutes(base,sceneElapsed),reason:'player_elapsed_natural_language'};
    const ancientElapsed=explicitAncientElapsed(text);
    if(ancientElapsed!==null)return {clock:addMinutes(base,ancientElapsed),reason:'player_elapsed_ancient'};
    const elapsed=text.match(/(?:過了|經過|時間過了|時間推進)(\d{1,3})\s*(分鐘|分|小時|個小時|天|日)/u);
@@ -160,7 +221,7 @@ const BRANCHES = ['子','丑','寅','卯','辰','巳','午','未','申','酉','�
 function creatorTimePolicy(world={}) {
  const template=String(world.customOutputFormat||'').slice(0,6000);
  const source=[String(world.timeSystem||''),String(world.timeFormat||''),String(world.calendarSystem||''),template].join('\n');
- const rows=source.split(/\r?\n/).filter(row=>/(?:時間|時刻|時辰|紀時|計時|曆法|每回合|每輪|每進行|劇情推進)/u.test(row)).slice(0,25).map(row=>row.slice(0,200));
+ const rows=source.split(/\r?\n/).filter(row=>/(?:時間|時辰|紀時|計時|曆法|每回合|每輪|劇情推進)/u.test(row)).slice(0,25).map(row=>row.slice(0,200));
  const spec=rows.join('\n');
  let style=null;
  if(/(?:十二時辰|古代時辰|子丑寅卯|時辰制|以時辰(?:表示|顯示|記錄|推進)|使用時辰)/u.test(spec))style='ancient';
@@ -171,10 +232,6 @@ function creatorTimePolicy(world={}) {
  if(duration){const n=Number(duration[1]);const multiplier=/(小時)/u.test(duration[2])?60:/(刻)/u.test(duration[2])?15:1;const mins=n*multiplier;if(mins>=1&&mins<=120)fixedMinutes=mins;}
  else if(/每(?:一)?(?:回合|輪|次對話|次回覆)\s*(?:推進|經過|增加|流逝|過去)\s*(?:一個)?時辰/u.test(spec))fixedMinutes=120;
  else if(/每(?:一)?(?:回合|輪|次對話|次回覆)\s*(?:推進|經過|增加|流逝|過去)\s*一刻鐘/u.test(spec))fixedMinutes=15;
- if(fixedMinutes===null){
-  const range=spec.match(/每(?:進行)?\s*\d?\s*(?:輪|回合|次)[^\n]{0,45}?(?:至少)?(?:推進|經過|增加|流逝)[^\d\n]{0,12}?[+＋]?\s*(\d{1,3})\s*[～~\-至到]\s*\d{1,3}\s*(?:分鐘|分)/u);
-  if(range && Number(range[1])>=1 && Number(range[1])<=120)fixedMinutes=Number(range[1]);
- }
  return {style,fixedMinutes,hasTimeInstructions:rows.length>0};
 }
 function advanceForWorld(world={},requested=3){
@@ -295,6 +352,8 @@ function resolveFictionalClock(previous,player,minutes=3) {
   if(/晚上|夜晚/u.test(nextDay.period))return {...next,hour:20,minute:0};
   return next;
  }
+ const sceneElapsed=explicitSceneElapsedMinutes(input);
+ if(sceneElapsed!==null)return addFictionalMinutes(base,sceneElapsed);
  const ancientElapsed=explicitAncientElapsed(input);
  if(ancientElapsed!==null)return addFictionalMinutes(base,ancientElapsed);
  const elapsed=input.match(/(?:過了|經過|時間過了|時間推進)\s*(\d{1,3})\s*(分鐘|分|小時|個小時|天|日)/u);
@@ -319,6 +378,7 @@ function isExplicitCreatorCalendarTransition(message) {
   const input=String(message||'').trim().slice(0,1500);
   if(!input || /^(?:如果|假如|假設|回憶|回想|曾經|聽說|夢見|夢裡)/u.test(input))return false;
   if(explicitNextDayTransition(input))return true;
+  if(explicitSceneElapsedMinutes(input)!==null)return true;
   return /(?:^|[\n。！？!?；;])\s*[（(]?\s*(?:時間|故事時間|日期|故事日期|劇情|場景|畫面)\s*(?:改成|設定為|設定成|跳到|跳至|推進到|來到|切到|進入)\s*[^\n。！？!?；;]{1,80}/u.test(input) ||
     /(?:^|[\n。！？!?；;])\s*[（(]?\s*(?:過了|經過|時間過了|時間推進)\s*\d{1,3}\s*(?:分鐘|分|小時|個小時|天|日)/u.test(input);
 }
@@ -857,99 +917,4 @@ function advanceCreatorAncientDisplay(template, status, previous, elapsedMinutes
   return result(lines.join('\n'),remain,true,'advanced');
 }
 
-
-// Generic, anchored numeric fictional-era clock. Applies only to one creator-authored
-// status row containing an unambiguous era + numeric Y/M/D + 24h clock.
-// Uses server elapsed minutes, never AI-proposed arithmetic or real-world time.
-// Unsupported lunar/custom month calendars remain under existing opaque guards.
-function advanceCreatorNumericEra(template, status, previous, elapsedMinutes, options={}) {
-  const output=String(status||''), prior=String(previous||'');
-  if(!output.trim() || !prior.trim() || !String(template||'').trim())return output;
-  const row=/^\s*(?:[\p{Extended_Pictographic}\u2600-\u27BF\uFE0F\u200D]+\s*)?([^：:\n]{1,55})[：:]\s*(.*)$/u;
-  const normalizedKey=line=>{
-    const m=String(line).match(row);
-    if(!m)return '';
-    const field=m[1].trim();
-    return /(?:時間|時刻|日期|曆|紀年|紀元|calendar|date|time)/iu.test(field) ? field : '';
-  };
-  const templateLines=String(template).replace(/\r\n?/g,'\n').split('\n');
-  const keys=templateLines.map(normalizedKey).filter(Boolean);
-  const counts=new Map();for(const key of keys)counts.set(key,(counts.get(key)||0)+1);
-  const unique=new Set(keys.filter(key=>counts.get(key)===1));
-  if(!unique.size)return output;
-  const era=/([\p{Script=Han}A-Za-z][\p{Script=Han}A-Za-z\s·・\-]{0,28}?)(\d{1,4})年\s*(\d{1,2})月\s*(\d{1,2})[日號]?\s+([01]?\d|2[0-3])[:：]([0-5]\d)/u;
-  const entries=text=>new Map(String(text).replace(/\r\n?/g,'\n').split('\n').map(line=>{
-    const key=normalizedKey(line),m=line.match(era);
-    return key&&unique.has(key)&&m?[key,{line,m}]:null;
-  }).filter(Boolean));
-  const previousRows=entries(prior), currentRows=entries(output);
-  if(!previousRows.size || !currentRows.size)return output;
-  const delta=Number(elapsedMinutes);
-  if(!Number.isSafeInteger(delta)||delta<0||delta>5256000)return output;
-  const isRegenerate=options.regenerate===true;
-  const explicit=options.explicitTransition===true && !isRegenerate;
-  const playerText=String(options.playerMessage||'');
-  const nextDay=explicitNextDayTransition(playerText);
-  const periodHours={'凌晨':3,'清晨':6,'早上':7,'上午':9,'一早':7,'中午':12,'下午':15,'傍晚':18,'晚上':20,'夜晚':20,'深夜':23,'半夜':0};
-  function convertDate(m){
-    const year=Number(m[2]),month=Number(m[3]),day=Number(m[4]),hour=Number(m[5]),minute=Number(m[6]);
-    if(year<1 || year>9999 || !dateOk(year,month,day))return null;
-    return {year,month,day,hour,minute};
-  }
-  const renderDate=(origin,minutes)=>{
-    const stamp=new Date(0);
-    stamp.setUTCFullYear(origin.year,origin.month-1,origin.day);
-    stamp.setUTCHours(origin.hour,origin.minute,0,0);
-    const adjusted=new Date(stamp.getTime()+minutes*60000);
-    return {year:adjusted.getUTCFullYear(),month:adjusted.getUTCMonth()+1,
-      day:adjusted.getUTCDate(),hour:adjusted.getUTCHours(),minute:adjusted.getUTCMinutes()};
-  };
-  return output.replace(/\r\n?/g,'\n').split('\n').map(line=>{
-    const key=normalizedKey(line);
-    if(!key || !currentRows.has(key) || !previousRows.has(key))return line;
-    const old=previousRows.get(key).m, now=currentRows.get(key).m;
-    const parsed=convertDate(old);if(!parsed || !convertDate(now))return line;
-    // Keep the era identity the author chose. A different era is not interchangeable.
-    if(old[1].trim()!==now[1].trim())return line;
-    let advanced=renderDate(parsed,isRegenerate?0:delta);
-    // Explicit player time instructions take precedence where understood.
-    if(explicit){
-      const matching=playerText.match(/(?:現在|故事時間|時間|日期|跳到|改成)[^。\n]{0,85}?(\d{1,4})年\s*(\d{1,2})月\s*(\d{1,2})[日號]?\s*([01]?\d|2[0-3])[:：]([0-5]\d)/u);
-      if(matching){
-        const target=[null,null,matching[1],matching[2],matching[3],matching[4],matching[5]];
-        const date=convertDate(target);
-        if(date)advanced=date;
-      }else if(nextDay){
-        // A next-day scene means the following story date, not +24h from
-        // whichever hour was saved. Preserve the intended daypart when supplied.
-        advanced=renderDate(parsed,1440);
-        const hour=periodHours[nextDay.period];
-        if(Number.isInteger(hour)){advanced.hour=hour;advanced.minute=0;}
-      }else{
-        const t=playerText.match(/(?:時間|現在|跳到|改成|來到)[^。\n]{0,30}?([01]?\d|2[0-3])[:：]([0-5]\d)/u);
-        if(t){advanced.hour=Number(t[1]);advanced.minute=Number(t[2]);}
-      }
-    }
-    const newDate=`${advanced.year}年 ${String(advanced.month).padStart(now[3].length,'0')}月${String(advanced.day).padStart(now[4].length,'0')}日 ${PAD(advanced.hour)}:${PAD(advanced.minute)}`;
-    // Keep all author-owned suffixes (time period, event name, field labels).
-    let updated=line.replace(now[0],old[1]+newDate);
-    // Keep creator daypart wording, but ensure it matches authoritative time.
-    const newPeriod=h=>h<4?'深夜':h<6?'黎明':h<9?'清晨':h<12?'上午':h<13?'中午':h<17?'下午':h<19?'黃昏':h<23?'夜晚':'深夜';
-    const cursor=updated.indexOf(old[1]+newDate)+(old[1]+newDate).length;
-    const suffix=updated.slice(cursor);
-    updated=updated.slice(0,cursor)+suffix.replace(/^(\s*)(?:凌晨|黎明|清晨|早上|上午|中午|下午|黃昏|傍晚|夜晚|晚上|深夜|半夜)/u,(_all,space)=>space+newPeriod(advanced.hour));
-    // Only maintain a countdown if the SAME named event already existed in
-    // the previous committed row. Don't create, rename or reset any event.
-    const originalTail=previousRows.get(key).line.slice(previousRows.get(key).line.indexOf(old[0])+old[0].length);
-    const oldEvent=originalTail.match(/(?:距|距離|倒數)\s*([^：:（）()\n]{1,35})\s*[：:]\s*(\d{1,5})\s*天/u);
-    if(oldEvent){
-      // Compare across era years using the year-adjusted arithmetic clock.
-      const dayDifference=Math.max(0,Math.floor((Date.UTC(advanced.year,advanced.month-1,advanced.day)-Date.UTC(parsed.year,parsed.month-1,parsed.day))/86400000));
-      const eventRe=new RegExp(`((?:距|距離|倒數)\\s*${oldEvent[1].replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\s*[：:]\\s*)(\\d{1,5})(\\s*天)`,'u');
-      updated=updated.replace(eventRe,(_full,front,_current,tail)=>front+Math.max(0,Number(oldEvent[2])-dayDifference)+tail);
-    }
-    return updated;
-  }).join('\n');
-}
-
-module.exports={advanceCreatorNumericEra,normalize,label,addMinutes,resolveClock,creatorInitialCalendar,initialStoryClock,parseStatusClock,enforceStatusTime,detectTimeStyle,branchOfHour,displayTime,timePresentationDirective,creatorTimePolicy,advanceForWorld,normalizeFictionalClock,parseFictionalTime,parseFictionalDaypart,parseFictionalStatusAnchor,displayFictionalClock,resolveFictionalClock,preserveOpaqueCreatorCalendar,isExplicitCreatorCalendarTransition,explicitPlayerAncientTime,reconcileExplicitPlayerAncientTime,protectHourglassStoryDate,enforceCreatorTimeAuthority,protectCreatorStoryDayOrdinal,creatorOrdinalTimeRules,advanceCreatorOrdinalTimeHead,reconcileExplicitAncientSceneTime,advanceCreatorAncientDisplay};
+module.exports={explicitAiNarratedElapsedMinutes,normalize,label,addMinutes,resolveClock,creatorInitialCalendar,initialStoryClock,parseStatusClock,enforceStatusTime,detectTimeStyle,branchOfHour,displayTime,timePresentationDirective,creatorTimePolicy,advanceForWorld,normalizeFictionalClock,parseFictionalTime,parseFictionalDaypart,parseFictionalStatusAnchor,displayFictionalClock,resolveFictionalClock,preserveOpaqueCreatorCalendar,isExplicitCreatorCalendarTransition,explicitPlayerAncientTime,reconcileExplicitPlayerAncientTime,protectHourglassStoryDate,enforceCreatorTimeAuthority,protectCreatorStoryDayOrdinal,creatorOrdinalTimeRules,advanceCreatorOrdinalTimeHead,reconcileExplicitAncientSceneTime,advanceCreatorAncientDisplay};

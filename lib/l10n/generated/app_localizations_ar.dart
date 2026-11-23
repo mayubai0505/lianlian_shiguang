@@ -3429,7 +3429,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get shop_unknown_item => 'عنصر غير معروف';
 
   @override
-  String get shop_first_purchase_bonus => 'مضاعفة الشراء الأول!';
+  String get shop_first_purchase_bonus => 'مكافأة 20% لأول شراء!';
 
   @override
   String get story_summary_title => 'قصتنا';
@@ -3508,7 +3508,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String shop_log_top_up_double(int points) {
-    return 'شحن: $points نقطة (تشمل مضاعفة الشراء الأول )';
+    return 'شحن الرصيد: $points نقطة (يشمل مكافأة الشراء الأول بنسبة 20%)';
   }
 
   @override
@@ -3526,7 +3526,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get shop_purchase_success_double_bonus =>
-      'تهانينا! تم تفعيل مكافأة مضاعفة الشراء الأول!';
+      'تهانينا! لقد حصلت على مكافأة إضافية بنسبة 20% بمناسبة أول عملية شراء!';
 
   @override
   String get shop_purchase_awesome => 'رائع';

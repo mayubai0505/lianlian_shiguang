@@ -3483,7 +3483,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get shop_unknown_item => 'अज्ञात आइटम';
 
   @override
-  String get shop_first_purchase_bonus => 'पहली खरीदारी पर दोगुना!';
+  String get shop_first_purchase_bonus => 'पहली खरीद पर 20% बोनस!';
 
   @override
   String get story_summary_title => 'हमारी कहानी';
@@ -3562,7 +3562,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String shop_log_top_up_double(int points) {
-    return 'टॉप-अप: $points पॉइंट्स (पहली खरीदारी पर दोगुना शामिल है )';
+    return 'रिचार्ज: $points पॉइंट्स (पहली खरीदारी पर 20% बोनस सहित)';
   }
 
   @override
@@ -3580,7 +3580,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get shop_purchase_success_double_bonus =>
-      'बधाई हो! पहली खरीदारी पर दोगुना बोनस मिला!';
+      'बधाई हो! आपने पहली खरीदारी पर 20% का बोनस अनलॉक कर लिया है!';
 
   @override
   String get shop_purchase_awesome => 'बहुत बढ़िया';

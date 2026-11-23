@@ -57,6 +57,7 @@ dependencies:
   web: ^1.1.1
   flutter_timezone: ^5.0.2
   flutter_local_notifications: ^21.0.0
+  flutter_callkit_incoming: ^3.1.6
   audioplayers: ^6.7.0
   file_selector: ^1.1.0
   showcaseview: ^5.1.0

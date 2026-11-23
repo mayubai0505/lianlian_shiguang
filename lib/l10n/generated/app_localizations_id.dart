@@ -3483,7 +3483,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get shop_unknown_item => 'Item tidak diketahui';
 
   @override
-  String get shop_first_purchase_bonus => 'Ganda untuk pembelian pertama!';
+  String get shop_first_purchase_bonus => 'Bonus 20% Pembelian Pertama!';
 
   @override
   String get story_summary_title => 'Cerita Kita';
@@ -3562,7 +3562,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String shop_log_top_up_double(int points) {
-    return 'Top-up: $points poin (Termasuk bonus ganda pembelian pertama )';
+    return 'Isi ulang: $points poin (termasuk bonus 20% untuk pembelian pertama)';
   }
 
   @override
@@ -3580,7 +3580,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get shop_purchase_success_double_bonus =>
-      'Selamat! Bonus ganda pembelian pertama telah diaktifkan!';
+      'Selamat! Kamu berhasil mendapatkan bonus 20% untuk pembelian pertama!';
 
   @override
   String get shop_purchase_awesome => 'Luar biasa';

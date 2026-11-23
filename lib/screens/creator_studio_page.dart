@@ -27,6 +27,47 @@ class CreatorStudioPage extends StatefulWidget {
 class _CreatorStudioPageState extends State<CreatorStudioPage> {
   int _selectedStudioTab = 0;
 
+  // Keep Firestore subscriptions stable across widget rebuilds and tab changes.
+  // Recreating combineLatest in build can repeatedly reset the loading state.
+  String? _streamOwnerUid;
+  Stream<Map<String, List<QueryDocumentSnapshot>>>? _characterStudioStream;
+  Stream<Map<String, List<QueryDocumentSnapshot>>>? _worldStudioStream;
+
+  void _ensureStudioStreams(String uid) {
+    if (_streamOwnerUid == uid &&
+        _characterStudioStream != null && _worldStudioStream != null) return;
+    _streamOwnerUid = uid;
+    final root = FirebaseFirestore.instance
+        .collection('artifacts').doc(AppConfig.appId);
+
+    final drafts = FirebaseFirestore.instance.collection('draft_characters')
+        .where('createdBy', isEqualTo: uid).snapshots();
+    final privates = root.collection('users').doc(uid)
+        .collection('private_characters').snapshots();
+    final publics = root.collection('public_characters')
+        .where('createdBy', isEqualTo: uid).snapshots();
+    _characterStudioStream = Rx.combineLatest3(
+      drafts, privates, publics,
+      (QuerySnapshot d, QuerySnapshot p, QuerySnapshot u) =>
+          <String, List<QueryDocumentSnapshot>>{
+            'drafts': d.docs, 'privates': p.docs, 'publics': u.docs,
+          },
+    );
+
+    final worlds = root.collection('worlds')
+        .where('createdBy', isEqualTo: uid).snapshots();
+    final worldDrafts = FirebaseFirestore.instance.collection('draft_worlds')
+        .where('createdBy', isEqualTo: uid).snapshots();
+    _worldStudioStream = Rx.combineLatest2(
+      worlds, worldDrafts,
+      (QuerySnapshot w, QuerySnapshot d) =>
+          <String, List<QueryDocumentSnapshot>>{
+            'worlds': w.docs, 'drafts': d.docs,
+          },
+    );
+    debugPrint('🦋 創作同步監測：uid=$uid appId=${AppConfig.appId}');
+  }
+
   // ✨ 總裁專屬：刪除草稿與清理雲端圖片的邏輯
   Future<void> _deleteDraft(BuildContext context, String docId, String? avatarUrl) async {
     final l10n = AppLocalizations.of(context)!;
@@ -97,58 +138,8 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
       );
     }
 
-    final draftStream = FirebaseFirestore.instance
-        .collection('draft_characters')
-        .where(
-      'createdBy',
-      isEqualTo: user.uid,
-    )
-        .snapshots();
-
-    final privateStream = FirebaseFirestore.instance
-        .collection('artifacts')
-        .doc(
-      const String.fromEnvironment(
-        'APP_ID',
-        defaultValue: 'lianlianshiguang',
-      ),
-    )
-        .collection('users')
-        .doc(user.uid)
-        .collection('private_characters')
-        .snapshots();
-
-    final publicStream = FirebaseFirestore.instance
-        .collection('artifacts')
-        .doc(
-      const String.fromEnvironment(
-        'APP_ID',
-        defaultValue: 'lianlianshiguang',
-      ),
-    )
-        .collection('public_characters')
-        .where(
-      'createdBy',
-      isEqualTo: user.uid,
-    )
-        .snapshots();
-
-    final combinedStream = Rx.combineLatest3(
-      draftStream,
-      privateStream,
-      publicStream,
-          (
-          QuerySnapshot drafts,
-          QuerySnapshot privates,
-          QuerySnapshot publics,
-          ) {
-        return {
-          'drafts': drafts.docs,
-          'privates': privates.docs,
-          'publics': publics.docs,
-        };
-      },
-    );
+    _ensureStudioStreams(user.uid);
+    final combinedStream = _characterStudioStream!;
 
     final primary = theme.colorScheme.primary;
 
@@ -280,6 +271,7 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
                       }
 
                       if (snapshot.hasError) {
+                        debugPrint('❌ 創作角色清單同步失敗：${snapshot.error}');
                         return Center(
                           child: Text(
                             l10n.creator_dashboard_error1,
@@ -562,26 +554,13 @@ class _CreatorStudioPageState extends State<CreatorStudioPage> {
   }
 
   Widget _buildWorldStudio(BuildContext context, ThemeData theme, String uid) {
-    // 依照 WorldEditPage 實際使用的兩個資料位置，避免與角色資料混用。
-    final worldStream = FirebaseFirestore.instance
-        .collection('artifacts')
-        .doc(AppConfig.appId)
-        .collection('worlds')
-        .where('createdBy', isEqualTo: uid)
-        .snapshots();
-    final draftStream = FirebaseFirestore.instance
-        .collection('draft_worlds')
-        .where('createdBy', isEqualTo: uid)
-        .snapshots();
+    _ensureStudioStreams(uid);
     final l10n = AppLocalizations.of(context)!;
     return StreamBuilder<Map<String, List<QueryDocumentSnapshot>>>(
-      stream: Rx.combineLatest2(worldStream, draftStream,
-              (QuerySnapshot worlds, QuerySnapshot drafts) => {
-            'worlds': worlds.docs,
-            'drafts': drafts.docs,
-          }),
+      stream: _worldStudioStream,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
+          debugPrint('❌ 開放世界清單同步失敗：${snapshot.error}');
           return Center(child: Padding(
             padding: const EdgeInsets.all(24),
             child: Text(l10n.creator_dashboard_error1),

@@ -1890,8 +1890,7 @@
   "shop_tab_history": "Transaction History",
   "shop_empty_history": "No flower records yet!",
   "shop_unknown_item": "Unknown Item",
-  "shop_first_purchase_bonus": "First Purchase Double!",
-  "story_summary_title": "Our Story",
+  "shop_first_purchase_bonus": "20% First-Purchase Bonus!",  "story_summary_title": "Our Story",
   "story_summary_empty_content": "Summary content is empty.",
   "story_summary_deleted_toast": "Removed this memory",
   "story_summary_empty_list": "Your story hasn't started yet...\nChat more and let {name}\nwrite down your first memory!",
@@ -1940,13 +1939,11 @@
     }
   },
   "shop_log_monthly_card": "Activated: Starlight Contract (Monthly Card Instant Points)",
-  "shop_log_top_up_double": "Top-up: {points} pts (Includes First Purchase Double )",
-  "@shop_log_top_up_double": {
-    "placeholders": {
+  "shop_log_top_up_double": "Top-up: {points} points (includes 20% first-purchase bonus)",
+  "placeholders": {
       "points": {
         "type": "int"
       }
-    }
   },
   "shop_log_top_up_normal": "Top-up: {points} pts",
   "@shop_log_top_up_normal": {
@@ -1965,7 +1962,7 @@
       }
     }
   },
-  "shop_purchase_success_double_bonus": "Congrats! First Purchase Double Bonus triggered!",
+  "shop_purchase_success_double_bonus": "Congratulations! You've unlocked a 20% first-purchase bonus!",
   "shop_purchase_awesome": "Awesome",
   "shop_purchase_failed_title": "Purchase Canceled or Failed",
   "shop_purchase_failed_body": "No charge was made.\n\n(Error Code: {errorCode})",

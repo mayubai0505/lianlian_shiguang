@@ -34,9 +34,16 @@ class CallOverlay extends StatefulWidget {
   final String selectedLanguage;
   final bool shouldSave;
   final VoidCallback? onCallNotConnected;
-  static bool usesRealtimeV41(String language, String chinese) => kDebugMode &&
-      const bool.fromEnvironment('CALL_REALTIME_V4_TEST') && !kIsWeb &&
-      (defaultTargetPlatform == TargetPlatform.android || defaultTargetPlatform == TargetPlatform.iOS) && language == chinese;
+  final VoidCallback? onFirstAudioStarted;
+  final String? incomingAgreementContent;
+  // 正式版預設使用 V4.1 即時語音；緊急回退可用
+  // --dart-define=CALL_REALTIME_V41_ENABLED=false 建置舊版通話流程。
+  // 僅原生 Android/iOS 與繁體中文通話啟用；Web／其他語言沿用 V3。
+  static bool usesRealtimeV41(String language, String chinese) =>
+      const bool.fromEnvironment('CALL_REALTIME_V41_ENABLED', defaultValue: true) &&
+      !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.android || defaultTargetPlatform == TargetPlatform.iOS) &&
+      language == chinese;
 
   const CallOverlay({
     Key? key,
@@ -49,6 +56,8 @@ class CallOverlay extends StatefulWidget {
     required this.selectedLanguage,
     required this.shouldSave,
     this.onCallNotConnected,
+    this.onFirstAudioStarted,
+    this.incomingAgreementContent,
   }) : super(key: key);
 
   @override
@@ -62,12 +71,14 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
   final CallRealtimeInput _realtime = CallRealtimeInput();
   late final CallEnvironmentAudio? _environmentAudio;
   bool _realtimeMode = false;
-  // V4 is an internal device test; release builds and non-Chinese calls stay V3.
+  // V4.1 is enabled for release native Chinese calls; other routes retain V3.
   bool _agentV4Mode = false;
   CallAgentRealtime? _agentV4;
   String? _v41CallId;
   Timer? _v41DialTimeout, _v41FailureTimer;
   bool _v41Played = false, _v41Failed = false, _v41Settled = false, _v41FirstReady = false;
+  // A playable frame is not equivalent to a server-confirmed paid connection.
+  bool _v41ServerConnected = false;
   int _v41TimeLimitMs = 60000;
   String? _v41EarlyAmbient, _v41EarlyEffect, _v41EarlyTranscript;
   String _newCallId() {
@@ -104,6 +115,12 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
   Timer? _listenRetry;
   Timer? _recognitionEndTimer;
   bool _closing = false;
+  bool _reportedFirstAudio = false;
+  void _markFirstAudioStarted() {
+    if (_reportedFirstAudio) return;
+    _reportedFirstAudio = true;
+    widget.onFirstAudioStarted?.call();
+  }
   bool _foreground = true;
   bool _turnBusy = false;
   bool _isListening = false;
@@ -415,6 +432,7 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
         onFirstAudioPlayed: () {
           if (!_live || _v41Failed || _v41Played || !identical(_agentV4, agent)) return;
           _v41Played = true;
+          _markFirstAudioStarted();
           _v41DialTimeout?.cancel();
           setState(() { _isListening = !_isMuted; _callStatus = '即時通話中'; });
           _startTimer();
@@ -510,6 +528,7 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
       final result = await _v41Billing('connect');
       if (!_live) return;
       if (result['state'] != 'connected') { _endCallManually(); return; }
+      _v41ServerConnected = true;
       final remaining = result['remainingMs'];
       // Use the same server budget, never extend past 60s local playback.
       if (remaining is num) {
@@ -527,7 +546,7 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
   Future<void> _settleV41() async {
     if (_v41Settled || _v41CallId == null) return;
     _v41Settled = true;
-    final action = _v41Played ? 'end' : 'cancel';
+    final action = _v41ServerConnected ? 'end' : 'cancel';
     // The server transaction makes retrying safe. Cancellation can arrive
     // before the authorization request; the tombstone prevents a late charge.
     for (int attempt = 0; attempt < 3; attempt++) {
@@ -699,6 +718,7 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
         if (_recentAudio.length > 3) _recentAudio.removeAt(0);
         _lastAudioAt = DateTime.now();
         final played = await _playSentence(url, turn, onStarted: () {
+          _markFirstAudioStarted();
           if (syncTurn) {
             playingSegment = segmentIndex;
             showPlayingSubtitle(segmentIndex);
@@ -777,7 +797,9 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
         callOverridePrompt += "\n【即時語音輸出補充】只輸出真正要說出口的台詞與繁中翻譯；不要輸出括號、方括號、角色名、格式標籤、舞台動作、音效文字或結尾標記。只使用一個半形 | 分隔；兩側句數、順序及句末標點對齊。用逗號或自然語氣表達停頓。";
       }
       if (isFirstGreeting) {
-        promptText = '（玩家從目前的文字聊天室撥來電話，角色接起電話。）';
+        promptText = widget.incomingAgreementContent == null
+            ? '（玩家從目前的文字聊天室撥來電話，角色接起電話。）'
+            : '（角色依照與玩家事先確認的約定主動打電話給玩家。約定事項：${widget.incomingAgreementContent}。請自然地提到約定內容。）';
         callOverridePrompt += "\n【通話開場】自然接聽，承接同一聊天室最新已發生的劇情和角色當前行為、地點、情緒。若場景未知，保持未知，不得亂編。不要強迫每次以固定招呼語開場。";
       }
 

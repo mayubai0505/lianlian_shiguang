@@ -1904,8 +1904,7 @@
   "shop_tab_history": "लेन-देन का इतिहास",
   "shop_empty_history": "अभी तक कोई फ्लावर रिकॉर्ड नहीं है!",
   "shop_unknown_item": "अज्ञात आइटम",
-  "shop_first_purchase_bonus": "पहली खरीदारी पर दोगुना!",
-  "story_summary_title": "हमारी कहानी",
+  "shop_first_purchase_bonus": "पहली खरीद पर 20% बोनस!",  "story_summary_title": "हमारी कहानी",
   "story_summary_empty_content": "सारांश सामग्री खाली है।",
   "story_summary_deleted_toast": "इस याद को हटा दिया गया है",
   "story_summary_empty_list": "आपकी कहानी अभी शुरू नहीं हुई है...\nअधिक बात करें और {name} को\nअपनी पहली याद लिखने दें!",
@@ -1954,8 +1953,7 @@
     }
   },
   "shop_log_monthly_card": "सक्रिय: स्टारलाईट कॉन्ट्रैक्ट (मासिक कार्ड इंस्टेंट पॉइंट्स)",
-  "shop_log_top_up_double": "टॉप-अप: {points} पॉइंट्स (पहली खरीदारी पर दोगुना शामिल है )",
-  "@shop_log_top_up_double": {
+  "shop_log_top_up_double": "रिचार्ज: {points} पॉइंट्स (पहली खरीदारी पर 20% बोनस सहित)",  "@shop_log_top_up_double": {
     "placeholders": {
       "points": {
         "type": "int"
@@ -1979,7 +1977,7 @@
       }
     }
   },
-  "shop_purchase_success_double_bonus": "बधाई हो! पहली खरीदारी पर दोगुना बोनस मिला!",
+  "shop_purchase_success_double_bonus": "बधाई हो! आपने पहली खरीदारी पर 20% का बोनस अनलॉक कर लिया है!",
   "shop_purchase_awesome": "बहुत बढ़िया",
   "shop_purchase_failed_title": "खरीदारी रद्द या विफल",
   "shop_purchase_failed_body": "कोई शुल्क नहीं लिया गया है।\n\n(त्रुटि कोड: {errorCode})",

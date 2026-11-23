@@ -32,6 +32,7 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
   List<String> _recentSearches = [];
   Timer? _searchSaveDebounce;
   late final Stream<QuerySnapshot> charactersStream;
+  String? _openingCharacterId; // Guard all cards against duplicate navigation.
   Set<String> _blockedCharacterIds = {};
   Set<String> _blockedCreatorIds = {};
   StreamSubscription<QuerySnapshot>? _blockedCharactersSub;
@@ -205,6 +206,40 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
     _saveRecentSearch(query);
   }
 
+  // Shared mobile/desktop card navigation: lock synchronously, before any await.
+  Future<void> _openCharacterFromSearch(DocumentSnapshot doc) async {
+    if (_openingCharacterId != null || !mounted) return;
+    setState(() => _openingCharacterId = doc.id);
+    try {
+      final keyword = _searchQuery.trim();
+      if (keyword.isNotEmpty) {
+        // Search-history persistence must not prevent opening a character.
+        try {
+          await _saveRecentSearch(keyword);
+        } catch (error) {
+          debugPrint('搜尋紀錄儲存失敗：$error');
+        }
+      }
+      if (!mounted) return;
+      final character = await Character.fromFirestoreAsync(doc);
+      if (!mounted) return;
+      await CharacterNavigator.open(
+        context,
+        characterId: character.id,
+        fallbackName: character.name,
+      );
+    } catch (error) {
+      debugPrint('搜尋角色開啟失敗：$error');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('角色載入失敗，請稍後再試')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _openingCharacterId = null);
+    }
+  }
+
   @override
   void dispose() {
     _blockedCharactersSub?.cancel();
@@ -365,6 +400,29 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
                 ),
               ],
             ),
+            // Full-page loading shield: blocks all search cards on both platforms.
+            if (_openingCharacterId != null)
+              Positioned.fill(
+                child: AbsorbPointer(
+                  absorbing: true,
+                  child: ColoredBox(
+                    color: theme.colorScheme.scrim.withValues(alpha: 0.22),
+                    child: Center(
+                      child: Container(
+                        padding: const EdgeInsets.all(22),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surface,
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        child: CircularProgressIndicator(
+                          color: theme.colorScheme.primary,
+                          strokeWidth: 3,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
@@ -831,13 +889,7 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
       borderRadius: BorderRadius.circular(18),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () async {
-          if (_searchQuery.isNotEmpty) await _saveRecentSearch(_searchQuery);
-          final target = await Character.fromFirestoreAsync(doc);
-          if (!context.mounted) return;
-          await CharacterNavigator.open(context,
-            characterId: target.id, fallbackName: target.name);
-        },
+        onTap: () => _openCharacterFromSearch(doc),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -937,22 +989,7 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
     ).toString().trim();
 
     return GestureDetector(
-      onTap: () async {
-        if (_searchQuery.isNotEmpty) {
-          await _saveRecentSearch(_searchQuery);
-        }
-
-        final targetCharacter =
-        await Character.fromFirestoreAsync(doc);
-
-        if (!context.mounted) return;
-
-        await CharacterNavigator.open(
-          context,
-          characterId: targetCharacter.id,
-          fallbackName: targetCharacter.name,
-        );
-      },
+      onTap: () => _openCharacterFromSearch(doc),
       child: Container(
         decoration: BoxDecoration(
           borderRadius:

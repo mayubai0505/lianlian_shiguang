@@ -1904,8 +1904,7 @@
   "shop_tab_history": "Sejarah Transaksi",
   "shop_empty_history": "Belum ada rekod Bunga lagi!",
   "shop_unknown_item": "Item tidak diketahui",
-  "shop_first_purchase_bonus": "Berganda untuk pembelian pertama!",
-  "story_summary_title": "Kisah Kita",
+  "shop_first_purchase_bonus": "Bonus 20% Pembelian Pertama!",  "story_summary_title": "Kisah Kita",
   "story_summary_empty_content": "Kandungan ringkasan adalah kosong.",
   "story_summary_deleted_toast": "Telah membuang memori ini",
   "story_summary_empty_list": "Kisah korang belum bermula lagi...\nBanyakkan bersembang dan biarkan {name}\nmenulis memori pertama korang!",
@@ -1954,8 +1953,7 @@
     }
   },
   "shop_log_monthly_card": "Diaktifkan: Kontrak Cahaya Bintang (Mata Ganjaran Kad Bulanan)",
-  "shop_log_top_up_double": "Tambah nilai: {points} mata (Termasuk bonus ganda pembelian pertama )",
-  "@shop_log_top_up_double": {
+  "shop_log_top_up_double": "Tambah nilai: {points} mata (termasuk bonus 20% untuk pembelian pertama)",  "@shop_log_top_up_double": {
     "placeholders": {
       "points": {
         "type": "int"
@@ -1979,7 +1977,7 @@
       }
     }
   },
-  "shop_purchase_success_double_bonus": "Tahniah! Bonus ganda pembelian pertama telah diaktifkan!",
+  "shop_purchase_success_double_bonus": "Tahniah! Anda telah menerima bonus 20% untuk pembelian pertama!",
   "shop_purchase_awesome": "Hebat",
   "shop_purchase_failed_title": "Pembelian Dibatalkan atau Gagal",
   "shop_purchase_failed_body": "Tiada bayaran dikenakan.\n\n(Kod ralat: {errorCode})",

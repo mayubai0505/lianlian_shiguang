@@ -4319,6 +4319,12 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                         final created = _dateFromDynamic(data['createdAt']);
                         final caseNo = data['caseNumber']?.toString().trim() ?? '';
                         final imageUrl = data['imageUrl']?.toString().trim() ?? '';
+                        final reportedContent = data['reportedContent']?.toString().trim() ?? '';
+                        final reportCharacter = data['characterName']?.toString().trim() ?? '';
+                        final reportSessionId = data['sessionId']?.toString().trim() ?? '';
+                        final reportMessageId = data['messageId']?.toString().trim() ?? '';
+                        final reportSegmentIndex = data['segmentIndex'];
+                        final isChatReport = data['category'] == 'aiReply' || data['relatedType'] == 'chat';
                         final resolved = _reportStatusOf(data) == 'resolved';
 
                         return Container(
@@ -4358,6 +4364,46 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                               ),
                               const SizedBox(height: 8),
                               Text(text, style: GoogleFonts.notoSerifTc(fontSize: 12.5, height: 1.55)),
+                              if (isChatReport) ...[
+                                const SizedBox(height: 12),
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(13),
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.surface,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: primary.withValues(alpha: 0.25)),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(children: [
+                                        Icon(Icons.flag_outlined, color: primary, size: 17),
+                                        const SizedBox(width: 7),
+                                        Text('被檢舉的原始訊息', style: GoogleFonts.notoSerifTc(
+                                            color: primary, fontSize: 13, fontWeight: FontWeight.w700)),
+                                      ]),
+                                      const SizedBox(height: 8),
+                                      SelectableText(
+                                        reportedContent.isNotEmpty
+                                            ? reportedContent
+                                            : '此案件未保存原始訊息（舊版或非訊息檢舉），無法還原。',
+                                        style: GoogleFonts.notoSerifTc(fontSize: 12.5, height: 1.6),
+                                      ),
+                                      if (reportCharacter.isNotEmpty) ...[
+                                        const SizedBox(height: 8),
+                                        Text('角色／世界：$reportCharacter', style: TextStyle(fontSize: 11, color: theme.colorScheme.onSurfaceVariant)),
+                                      ],
+                                      if (reportSessionId.isNotEmpty)
+                                        SelectableText('聊天室 ID：$reportSessionId', style: TextStyle(fontSize: 11, color: theme.colorScheme.onSurfaceVariant)),
+                                      if (reportMessageId.isNotEmpty)
+                                        SelectableText('訊息 ID：$reportMessageId', style: TextStyle(fontSize: 11, color: theme.colorScheme.onSurfaceVariant)),
+                                      if (reportSegmentIndex is num)
+                                        Text('NPC 段落：${reportSegmentIndex.toInt() + 1}', style: TextStyle(fontSize: 11, color: theme.colorScheme.onSurfaceVariant)),
+                                    ],
+                                  ),
+                                ),
+                              ],
                               if (imageUrl.isNotEmpty) ...[
                                 const SizedBox(height: 12),
                                 Text('玩家附圖', style: TextStyle(fontSize: 12, color: primary, fontWeight: FontWeight.w600)),

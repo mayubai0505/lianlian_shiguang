@@ -3325,7 +3325,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get shop_unknown_item => '알 수 없는 항목';
 
   @override
-  String get shop_first_purchase_bonus => '첫 구매 두 배!';
+  String get shop_first_purchase_bonus => '첫 구매 20% 보너스!';
 
   @override
   String get story_summary_title => '우리의 이야기';
@@ -3400,7 +3400,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String shop_log_top_up_double(int points) {
-    return '충전: $points 포인트 (첫 구매 두 배 혜택 포함 )';
+    return '충전: $points포인트 (첫 구매 보너스 20% 포함)';
   }
 
   @override
@@ -3418,7 +3418,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get shop_purchase_success_double_bonus =>
-      '축하합니다! 첫 구매 두 배 보너스가 적용되었습니다!';
+      '축하합니다! 첫 구매 보너스 20%를 획득했습니다!';
 
   @override
   String get shop_purchase_awesome => '최고예요';

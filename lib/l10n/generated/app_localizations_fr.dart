@@ -3526,7 +3526,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get shop_unknown_item => 'Article inconnu';
 
   @override
-  String get shop_first_purchase_bonus => 'Double pour le premier achat !';
+  String get shop_first_purchase_bonus => 'Bonus de 20 % au premier achat !';
 
   @override
   String get story_summary_title => 'Notre Histoire';
@@ -3605,7 +3605,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String shop_log_top_up_double(int points) {
-    return 'Recharge : $points pts (Inclut le bonus double du premier achat )';
+    return 'Recharge : $points points (bonus de 20 % pour le premier achat inclus)';
   }
 
   @override
@@ -3623,7 +3623,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get shop_purchase_success_double_bonus =>
-      'Félicitations ! Bonus double du premier achat activé !';
+      'Félicitations ! Vous avez débloqué un bonus de 20 % pour votre premier achat !';
 
   @override
   String get shop_purchase_awesome => 'Génial';

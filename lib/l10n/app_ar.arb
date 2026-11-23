@@ -1959,8 +1959,7 @@
   "shop_tab_history": "سجل المعاملات",
   "shop_empty_history": "لا توجد سجلات للزهور حتى الآن!",
   "shop_unknown_item": "عنصر غير معروف",
-  "shop_first_purchase_bonus": "مضاعفة الشراء الأول!",
-  "story_summary_title": "قصتنا",
+  "shop_first_purchase_bonus": "مكافأة 20% لأول شراء!",  "story_summary_title": "قصتنا",
   "story_summary_empty_content": "محتوى الملخص فارغ.",
   "story_summary_deleted_toast": "تم إزالة هذه الذكرى",
   "story_summary_empty_list": "قصتكم لم تبدأ بعد...\nتحدثوا أكثر، ودعي {name}\nيكتب أول فصل من ذكرياتكم!",
@@ -2009,7 +2008,7 @@
     }
   },
   "shop_log_monthly_card": "تفعيل: عقد النجوم (نقاط فورية من البطاقة الشهرية)",
-  "shop_log_top_up_double": "شحن: {points} نقطة (تشمل مضاعفة الشراء الأول )",
+  "shop_log_top_up_double": "شحن الرصيد: {points} نقطة (يشمل مكافأة الشراء الأول بنسبة 20%)",
   "@shop_log_top_up_double": {
     "placeholders": {
       "points": {
@@ -2034,8 +2033,7 @@
       }
     }
   },
-  "shop_purchase_success_double_bonus": "تهانينا! تم تفعيل مكافأة مضاعفة الشراء الأول!",
-  "shop_purchase_awesome": "رائع",
+  "shop_purchase_success_double_bonus": "تهانينا! لقد حصلت على مكافأة إضافية بنسبة 20% بمناسبة أول عملية شراء!",  "shop_purchase_awesome": "رائع",
   "shop_purchase_failed_title": "فشلت عملية الشراء أو تم إلغاؤها",
   "shop_purchase_failed_body": "لم يتم خصم أي مبلغ.\n\n(رمز الخطأ: {errorCode})",
   "@shop_purchase_failed_body": {

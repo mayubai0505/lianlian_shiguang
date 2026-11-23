@@ -3308,7 +3308,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get shop_unknown_item => '不明なアイテム';
 
   @override
-  String get shop_first_purchase_bonus => '初回購入2倍！';
+  String get shop_first_purchase_bonus => '初回購入20％ボーナス！';
 
   @override
   String get story_summary_title => '二人の物語';
@@ -3383,7 +3383,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String shop_log_top_up_double(int points) {
-    return 'チャージ：$points ポイント（初回購入2倍特典含む ）';
+    return 'チャージ：$pointsポイント（初回購入特典20％を含む）';
   }
 
   @override
@@ -3401,7 +3401,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get shop_purchase_success_double_bonus =>
-      'おめでとうございます！初回購入2倍特典が適用されました！';
+      'おめでとうございます！初回購入特典として20％のボーナスを獲得しました！';
 
   @override
   String get shop_purchase_awesome => '最高！';

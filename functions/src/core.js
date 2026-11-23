@@ -1,3 +1,62 @@
+// Explicit elapsed SCENE time, not a future plan or remembered event.
+// Keep the expression anchored to a scene clause so incidental dialogue
+// mentioning an hour does not advance the story clock.
+function explicitSceneElapsedMinutes(message) {
+ const input=String(message||'').trim();
+ if (!input || /^(?:如果|假如|假設|假使|回憶|回想|想起|夢見|夢裡|假裝|打算|計畫|預計|希望|聽說)/u.test(input)) return null;
+ const value=String.raw`(\d{1,4}|[零〇一二兩三四五六七八九十百千]{1,6}|半)`;
+ const unit=String.raw`(個?(?:小時|鐘頭)|分鐘|分|天|日)`;
+ const approx=String.raw`(?:約莫|大約|大概|差不多|約|將近|近)?`;
+ // Example: （約莫過一個小時）、過了大概半小時、時間推進兩小時.
+ const prefix=String.raw`(?:^|[\n。！？!?；;，,])\s*[（(]?\s*`+approx+String.raw`\s*(?:已經|又)?\s*(?:過(?:了|去)?|經過(?:了)?|時間(?:已經)?(?:過(?:了|去)?|推進(?:了)?|流逝(?:了)?))\s*`+approx+String.raw`\s*`;
+ const match=input.match(new RegExp(prefix+value+String.raw`\s*`+unit+String.raw`(?![\p{Script=Han}\d])`,'u'));
+ if (!match) return null;
+ const raw=match[1], u=match[2];
+ let n;
+ if (/^\d+$/u.test(raw)) n=Number(raw);
+ else if (raw==='半') n=0.5;
+ else {
+  const digits={零:0,〇:0,一:1,二:2,兩:2,三:3,四:4,五:5,六:6,七:7,八:8,九:9};
+  let total=0, segment=0, digit=0;
+  for (const char of raw) {
+   if (Object.prototype.hasOwnProperty.call(digits,char)) digit=digits[char];
+   else if (char==='十'||char==='百'||char==='千') {segment+=(digit||1)*({十:10,百:100,千:1000}[char]);digit=0;}
+   else return null;
+  }
+  n=total+segment+digit;
+ }
+ const factor= u==='分'||u==='分鐘'?1:(u==='天'||u==='日'?1440:60);
+ const minutes=Math.round(n*factor);
+ return minutes>=1 && minutes<=43200 ? minutes : null;
+}
+
+
+// Read only completed scene transitions described by the AI narrator.
+// Dialogue, remembered events, future plans and hypothetical timelines
+// must never advance the committed story clock.
+function explicitAiNarratedElapsedMinutes(reply) {
+ const source=String(reply||'').slice(0,18000)
+   .split(/\n\s*---\s*\n/u)[0]
+   .replace(/「[^」]*」|『[^』]*』|“[^”]*”|"[^"\n]*"/gu,'');
+ // A scene/time-transition clause must begin after a sentence/paragraph
+ // boundary, or be a parenthesized stage direction.
+ const chunks=source.split(/[\n。！？!?；;]+/u);
+ for (const chunk of chunks) {
+  const scene=chunk.trim().replace(/^[（(\s]+/u,'');
+  if (!scene || /^(?:如果|假如|假設|假使|回憶|回想|想起|夢見|夢裡|假裝|打算|計畫|預計|希望|聽說|曾經|當年|那年|彼時|假若|倘若)/u.test(scene))continue;
+  const elapsed=explicitSceneElapsedMinutes(scene);
+  if (elapsed!==null)return elapsed;
+  // '約莫一個小時後，兩人終於抵達' describes a completed scene cut;
+  // exclude future/modal instructions such as '一小時後要出門'.
+  const elapsedAfter=scene.match(/^(?:(?:時間|鏡頭|場景|畫面)(?:一轉|推移|跳轉)?[,，]?\s*)?(?:約莫|大約|大概|差不多|約|將近|近)?\s*(\d{1,3}|[一二兩三四五六七八九十]{1,4}|半)\s*(個?(?:小時|鐘頭)|分鐘|分)\s*(?:後|過後|之後)[,，]?\s*(.{0,32})/u);
+  if (elapsedAfter && !/^(?:要|將|會|可能|應該|預計|打算|計畫|如果|假如|假設|希望|才會)/u.test(elapsedAfter[3])) {
+   const parsed=explicitSceneElapsedMinutes('過了'+elapsedAfter[1]+elapsedAfter[2]);
+   if(parsed!==null)return parsed;
+  }
+ }
+ return null;
+}
+
 const {loadLiveProfile,preferredWorldLore,LATEST_SETTINGS_DIRECTIVE} = require('./characters/live_settings');
 const {secureOpenRouterBody} = require('./ai/openrouter_security');
 const {creatorStatusTokenReserve, limitNarrativeWithStatus} = require('./chat/separate_output_budget');
@@ -3050,7 +3109,16 @@ ${creatorAdvancedStatus.directive}
 
             let timeObj = lastStoryTime ? new Date(lastStoryTime) : new Date();
             if (isNaN(timeObj.getTime())) timeObj = new Date();
-            timeObj.setMinutes(timeObj.getMinutes() + Math.floor(Math.random() * 3) + 1);
+            const storyTurnBaseISO = timeObj.toISOString();
+            // Player narrates completed elapsed time: honor it instead of the
+            // usual 1-3 minute natural progression. Regeneration never advances.
+            const playerElapsedMinutes = (!isRegenerateRequest && isContinue !== true)
+                ? explicitSceneElapsedMinutes(userMessage)
+                : null;
+            if (!isRegenerateRequest) {
+                timeObj.setMinutes(timeObj.getMinutes() + (playerElapsedMinutes ?? (Math.floor(Math.random() * 3) + 1)));
+            }
+
 
             const formattedTime = formatTimeDisplay(timeObj);
             const currentStoryTimeISO = timeObj.toISOString();
@@ -7160,6 +7228,40 @@ if (sessionId) {
             qixiTodayKey >= qixiEventStartDate &&
             qixiTodayKey <= qixiEventEndDate;
 
+    // An AI may write a completed one-hour scene transition while returning
+    // only a five-minute storyTime/status. Reconcile before the save transaction.
+    // Do not reinterpret dialogue, old memories or regenerated text as elapsed.
+    if (["story", "immersive", "resonance"].includes(chatMode) &&
+        !isRegenerateRequest && playerElapsedMinutes === null) {
+        const narratedMinutes = explicitAiNarratedElapsedMinutes(cleanDisplayText);
+        if (narratedMinutes !== null) {
+            const base = new Date(storyTurnBaseISO);
+            if (!Number.isNaN(base.getTime())) {
+                base.setUTCMinutes(base.getUTCMinutes() + narratedMinutes);
+                finalStoryTime = base.toISOString();
+                // Only update unambiguous numeric HH:MM lines that are explicitly
+                // labeled as current time. Never edit dialogue or creator dates.
+                const newTime = formatTimeDisplay(base);
+                const hhmm = String(newTime).match(/(?:^|\s)([01]?\d|2[0-3])[:：]([0-5]\d)/u);
+                if (hhmm) {
+                    const timeHHMM = `${hhmm[1].padStart(2,'0')}:${hhmm[2]}`;
+                    cleanDisplayText = cleanDisplayText.split('\n').map(line => {
+                        if (!/^\s*(?:[⏰🕒🕰️⌚📅]?\s*)?(?:當前時間|目前時間|故事時間|時間|時刻)\s*[:：]/u.test(line)) return line;
+                        return line.replace(/([01]?\d|2[0-3])[:：]([0-5]\d)/u,timeHHMM);
+                    }).join('\n');
+                    for (const key of Object.keys(finalStatusBar || {})) {
+                        if (/(?:^|[^a-z])(?:時間|時刻|storytime|time)(?:$|[^a-z])/iu.test(key) &&
+                            typeof finalStatusBar[key] === 'string') {
+                            finalStatusBar[key] = finalStatusBar[key].replace(/([01]?\d|2[0-3])[:：]([0-5]\d)/u,timeHHMM);
+                        }
+                    }
+                }
+                finalResponseText = cleanDisplayText;
+                console.info('REGULAR AI NARRATED TIME', {chatMode,minutes:narratedMinutes});
+            }
+        }
+    }
+
     // ==========================================
     // 4. 原子化安全收銀台
     // 取消檢查、回覆、聊天室、扣點與明細
@@ -7687,6 +7789,12 @@ const sessionData =
         // 若取消通知在交易提交後才抵達，
         // 讓它依 expiresAt 自動清理即可。
         // ==========================================
+        // Explicit player scene elapsed time is authoritative for persistent
+        // room time. Do not let an AI's 5-minute storyTime override it.
+        // The prompt already receives this computed time as currentStoryTimeDisplay.
+        if (playerElapsedMinutes !== null && !isRegenerateRequest) {
+            finalStoryTime = currentStoryTimeISO;
+        }
         // 🕒📍 同步本輪結束後的故事時間與地點
         // 此處原本訊息／扣款交易已成功提交後才執行
         // ==========================================

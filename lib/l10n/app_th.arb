@@ -1904,8 +1904,7 @@
   "shop_tab_history": "ประวัติการทำรายการ",
   "shop_empty_history": "ยังไม่มีประวัติดอกไม้เลย!",
   "shop_unknown_item": "ไอเท็มที่ไม่รู้จัก",
-  "shop_first_purchase_bonus": "ซื้อครั้งแรกรับสองเท่า!",
-  "story_summary_title": "เรื่องราวของเรา",
+  "shop_first_purchase_bonus": "โบนัส 20% สำหรับการซื้อครั้งแรก!",  "story_summary_title": "เรื่องราวของเรา",
   "story_summary_empty_content": "เนื้อหาบทสรุปว่างเปล่า",
   "story_summary_deleted_toast": "ลบความทรงจำนี้แล้ว",
   "story_summary_empty_list": "เรื่องราวของคุณยังไม่เริ่มขึ้นเลย...\nมาคุยกันให้มากขึ้น แล้วให้ {name}\nเขียนความทรงจำแรกของคุณนะ!",
@@ -1954,8 +1953,7 @@
     }
   },
   "shop_log_monthly_card": "เปิดใช้งาน: สัญญาดวงดาว (แต้มแถมทันทีจากบัตรรายเดือน)",
-  "shop_log_top_up_double": "เติมเงิน: {points} แต้ม (รวมโบนัสสองเท่าจากการซื้อครั้งแรก )",
-  "@shop_log_top_up_double": {
+  "shop_log_top_up_double": "เติมเงิน: {points} แต้ม (รวมโบนัส 20% สำหรับการซื้อครั้งแรก)",  "@shop_log_top_up_double": {
     "placeholders": {
       "points": {
         "type": "int"
@@ -1979,7 +1977,7 @@
       }
     }
   },
-  "shop_purchase_success_double_bonus": "ยินดีด้วย! คุณได้รับโบนัสสองเท่าจากการซื้อครั้งแรก!",
+  "shop_purchase_success_double_bonus": "ยินดีด้วย! คุณได้รับโบนัส 20% สำหรับการซื้อครั้งแรก!",
   "shop_purchase_awesome": "สุดยอดเลย",
   "shop_purchase_failed_title": "การซื้อถูกยกเลิกหรือล้มเหลว",
   "shop_purchase_failed_body": "ยังไม่มีการหักเงิน\n\n(รหัสข้อผิดพลาด: {errorCode})",

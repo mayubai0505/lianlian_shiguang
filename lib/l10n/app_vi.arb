@@ -1904,7 +1904,7 @@
   "shop_tab_history": "Lịch sử giao dịch",
   "shop_empty_history": "Hiện chưa có lịch sử nạp Hoa nào!",
   "shop_unknown_item": "Mục không xác định",
-  "shop_first_purchase_bonus": "Nhân đôi cho lần mua đầu!",
+  "shop_first_purchase_bonus": "Thưởng 20% cho lần mua đầu!",
   "story_summary_title": "Câu chuyện của chúng ta",
   "story_summary_empty_content": "Nội dung tóm tắt đang trống.",
   "story_summary_deleted_toast": "Đã xóa ký ức này",
@@ -1954,8 +1954,7 @@
     }
   },
   "shop_log_monthly_card": "Kích hoạt: Khế ước Tinh quang (Tặng điểm tức thì từ thẻ tháng)",
-  "shop_log_top_up_double": "Nạp: {points} điểm (Bao gồm nhân đôi lần nạp đầu )",
-  "@shop_log_top_up_double": {
+  "shop_log_top_up_double": "Nạp điểm: {points} điểm (bao gồm thưởng thêm 20% cho lần mua đầu tiên)",  "@shop_log_top_up_double": {
     "placeholders": {
       "points": {
         "type": "int"
@@ -1979,7 +1978,7 @@
       }
     }
   },
-  "shop_purchase_success_double_bonus": "Chúc mừng bạn đã kích hoạt phần thưởng nhân đôi lần mua đầu!",
+  "shop_purchase_success_double_bonus": "Chúc mừng! Bạn đã nhận được ưu đãi thưởng thêm 20% cho lần mua đầu tiên!",
   "shop_purchase_awesome": "Tuyệt quá",
   "shop_purchase_failed_title": "Mua hàng bị hủy hoặc thất bại",
   "shop_purchase_failed_body": "Chưa thực hiện khấu trừ tiền.\n\n(Mã lỗi: {errorCode})",

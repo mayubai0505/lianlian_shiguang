@@ -1996,7 +1996,7 @@
   "shop_tab_history": "收支明細",
   "shop_empty_history": "目前還沒有花花紀錄喔！",
   "shop_unknown_item": "未知項目",
-  "shop_first_purchase_bonus": "首購雙倍！",
+  "shop_first_purchase_bonus": "首購20%！",
   "story_summary_title": "我們的故事",
   "story_summary_empty_content": "摘要內容為空。",
   "story_summary_deleted_toast": "已移除這段回憶",
@@ -2046,7 +2046,7 @@
     }
   },
   "shop_log_monthly_card": "啟動：星光契約 (月卡立即贈點)",
-  "shop_log_top_up_double": "儲值：{points} 點 (含首購雙倍 )",
+  "shop_log_top_up_double": "儲值：{points} 點 (含首購20%)",
   "@shop_log_top_up_double": {
     "placeholders": {
       "points": {
@@ -2071,7 +2071,7 @@
       }
     }
   },
-  "shop_purchase_success_double_bonus": "恭喜觸發首購雙倍獎勵！",
+  "shop_purchase_success_double_bonus": "恭喜觸發首購20%獎勵！",
   "shop_purchase_awesome": "太棒了",
   "shop_purchase_failed_title": "購買取消或失敗",
   "shop_purchase_failed_body": "尚未扣款。\n\n(錯誤碼: {errorCode})",

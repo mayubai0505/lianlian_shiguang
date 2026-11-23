@@ -38,6 +38,8 @@ class FeedbackPage extends StatefulWidget {
 
   final String? sessionId;
   final String? messageId;
+  // 開放世界的同一則 AI 訊息可能有多位 NPC 的獨立段落。
+  final int? segmentIndex;
 
   final String? momentId;
 
@@ -52,6 +54,7 @@ class FeedbackPage extends StatefulWidget {
     this.characterName,
     this.sessionId,
     this.messageId,
+    this.segmentIndex,
     this.momentId,
     this.reportedContent,
     this.initialReason,
@@ -480,6 +483,12 @@ class _FeedbackPageState
 
           'messageId':
           widget.messageId ?? '',
+
+          // 同一 AI 訊息中的 NPC 段落索引；一般角色為 null。
+          'segmentIndex': widget.segmentIndex,
+          'reportedContentCapturedAt':
+              widget.reportedContent?.trim().isNotEmpty == true
+                  ? FieldValue.serverTimestamp() : null,
 
           // Moment
           'momentId':

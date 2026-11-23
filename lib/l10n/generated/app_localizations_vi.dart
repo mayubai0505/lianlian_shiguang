@@ -3478,7 +3478,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get shop_unknown_item => 'Mục không xác định';
 
   @override
-  String get shop_first_purchase_bonus => 'Nhân đôi cho lần mua đầu!';
+  String get shop_first_purchase_bonus => 'Thưởng 20% cho lần mua đầu!';
 
   @override
   String get story_summary_title => 'Câu chuyện của chúng ta';
@@ -3557,7 +3557,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String shop_log_top_up_double(int points) {
-    return 'Nạp: $points điểm (Bao gồm nhân đôi lần nạp đầu )';
+    return 'Nạp điểm: $points điểm (bao gồm thưởng thêm 20% cho lần mua đầu tiên)';
   }
 
   @override
@@ -3575,7 +3575,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get shop_purchase_success_double_bonus =>
-      'Chúc mừng bạn đã kích hoạt phần thưởng nhân đôi lần mua đầu!';
+      'Chúc mừng! Bạn đã nhận được ưu đãi thưởng thêm 20% cho lần mua đầu tiên!';
 
   @override
   String get shop_purchase_awesome => 'Tuyệt quá';

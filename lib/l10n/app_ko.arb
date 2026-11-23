@@ -1904,8 +1904,7 @@
   "shop_tab_history": "거래 내역",
   "shop_empty_history": "아직 꽃 기록이 없어요!",
   "shop_unknown_item": "알 수 없는 항목",
-  "shop_first_purchase_bonus": "첫 구매 두 배!",
-  "story_summary_title": "우리의 이야기",
+  "shop_first_purchase_bonus": "첫 구매 20% 보너스!",  "story_summary_title": "우리의 이야기",
   "story_summary_empty_content": "요약 내용이 비어 있습니다.",
   "story_summary_deleted_toast": "이 추억을 삭제했습니다",
   "story_summary_empty_list": "여러분의 이야기가 아직 시작되지 않았어요...\n더 많이 대화해서 {name}님이\n첫 번째 추억을 기록하게 해주세요!",
@@ -1954,8 +1953,7 @@
     }
   },
   "shop_log_monthly_card": "활성화: 별빛 계약 (월간 카드 즉시 지급 포인트)",
-  "shop_log_top_up_double": "충전: {points} 포인트 (첫 구매 두 배 혜택 포함 )",
-  "@shop_log_top_up_double": {
+  "shop_log_top_up_double": "충전: {points}포인트 (첫 구매 보너스 20% 포함)",  "@shop_log_top_up_double": {
     "placeholders": {
       "points": {
         "type": "int"
@@ -1979,7 +1977,7 @@
       }
     }
   },
-  "shop_purchase_success_double_bonus": "축하합니다! 첫 구매 두 배 보너스가 적용되었습니다!",
+  "shop_purchase_success_double_bonus": "축하합니다! 첫 구매 보너스 20%를 획득했습니다!",
   "shop_purchase_awesome": "최고예요",
   "shop_purchase_failed_title": "구매 취소 또는 실패",
   "shop_purchase_failed_body": "결제가 이루어지지 않았습니다.\n\n(에러 코드: {errorCode})",

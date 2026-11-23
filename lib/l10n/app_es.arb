@@ -1904,8 +1904,7 @@
   "shop_tab_history": "Historial de transacciones",
   "shop_empty_history": "¡Aún no hay registros de flores!",
   "shop_unknown_item": "Artículo desconocido",
-  "shop_first_purchase_bonus": "¡Doble en la primera compra!",
-  "story_summary_title": "Nuestra historia",
+  "shop_first_purchase_bonus": "¡20 % extra en tu primera compra!",  "story_summary_title": "Nuestra historia",
   "story_summary_empty_content": "El contenido del resumen está vacío.",
   "story_summary_deleted_toast": "Recuerdo eliminado",
   "story_summary_empty_list": "Vuestra historia aún no ha comenzado...\n¡Chatea más y deja que {name}\nescriba vuestro primer recuerdo!",
@@ -1954,8 +1953,7 @@
     }
   },
   "shop_log_monthly_card": "Activado: Contrato Estelar (Puntos instantáneos de la tarjeta mensual)",
-  "shop_log_top_up_double": "Recarga: {points} pts (Incluye el doble por primera compra )",
-  "@shop_log_top_up_double": {
+  "shop_log_top_up_double": "Recarga: {points} puntos (incluye un bono del 20 % por la primera compra)",  "@shop_log_top_up_double": {
     "placeholders": {
       "points": {
         "type": "int"
@@ -1979,7 +1977,7 @@
       }
     }
   },
-  "shop_purchase_success_double_bonus": "¡ Felicidades! ¡Se activó la bonificación doble por primera compra!",
+  "shop_purchase_success_double_bonus": "¡Felicidades! ¡Has desbloqueado una bonificación del 20 % por tu primera compra!",
   "shop_purchase_awesome": "¡Genial!",
   "shop_purchase_failed_title": "Compra cancelada o fallida",
   "shop_purchase_failed_body": "No se ha realizado ningún cargo.\n\n(Código de error: {errorCode})",

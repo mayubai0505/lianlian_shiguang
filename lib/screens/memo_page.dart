@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/reminder_notification_service.dart';
@@ -67,7 +68,33 @@ class MemoPage extends StatefulWidget {
   State<MemoPage> createState() => _MemoPageState();
 }
 
-class _MemoPageState extends State<MemoPage> {
+class _MemoPageState extends State<MemoPage> with SingleTickerProviderStateMixin {
+  late final TabController _memoTabs;
+
+  // 正式約定與玩家手動備忘完全分離。約定只能由後端在玩家確認後建立。
+  CollectionReference<Map<String, dynamic>>? get _agreementsCollection {
+    final uid = _userId;
+    if (uid == null || uid.isEmpty) return null;
+    return FirebaseFirestore.instance
+        .collection('role_agreements').doc(uid)
+        .collection('characters').doc(widget.character.id).collection('items');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _memoTabs = TabController(length: 2, vsync: this);
+    _memoTabs.addListener(() {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _memoTabs.dispose();
+    super.dispose();
+  }
+
   bool _isLoading = false; // <-- 這個可以保留，用於某些操作
   String? get _userId => FirebaseAuth.instance.currentUser?.uid;
 
@@ -445,8 +472,55 @@ class _MemoPageState extends State<MemoPage> {
             color: onSurface,
           ),
         ),
+        bottom: TabBar(
+          controller: _memoTabs,
+          indicatorColor: primary,
+          labelColor: primary,
+          unselectedLabelColor: onSurface.withValues(alpha: 0.54),
+          tabs: const [
+            Tab(text: '我的備忘'),
+            Tab(text: '角色約定'),
+          ],
+        ),
         actions: [
-          IconButton(
+          StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+            stream: _userId == null ? null : FirebaseFirestore.instance
+                .collection('users').doc(_userId).snapshots(),
+            builder: (context, snapshot) {
+              final on = snapshot.data?.data()?['roleAgreementDndEnabled'] == true;
+              return IconButton(
+                tooltip: on ? '約定勿擾已開啟（23:00–08:00）' : '約定勿擾設定',
+                icon: Icon(on ? Icons.bedtime_rounded : Icons.bedtime_outlined,
+                  color: on ? primary : onSurface.withValues(alpha: 0.65)),
+                onPressed: () async {
+                  final uid = _userId;
+                  if (uid == null) return;
+                  final enable = await showDialog<bool>(context: context,
+                    builder: (dialogContext) => AlertDialog(
+                      title: const Text('角色約定勿擾'),
+                      content: Text(on
+                        ? '目前已啟用 23:00–08:00 勿擾。此時段到期的約定不會發送提醒或來電；不會延後補打。要關閉嗎？'
+                        : '是否啟用 23:00–08:00 勿擾？此時段到期的約定會標示「勿擾時段未發送」，不會補打電話。'),
+                      actions: [
+                        TextButton(onPressed:()=>Navigator.pop(dialogContext),child:const Text('取消')),
+                        FilledButton(onPressed:()=>Navigator.pop(dialogContext,true),
+                          child:Text(on?'關閉勿擾':'啟用勿擾')),
+                      ],
+                    ));
+                  if (enable != true) return;
+                  try {
+                    await FirebaseFirestore.instance.collection('users').doc(uid).set({
+                      'roleAgreementDndEnabled': !on,
+                      'roleAgreementTimezoneOffsetMinutes':DateTime.now().timeZoneOffset.inMinutes,
+                    },SetOptions(merge:true));
+                  } catch(e) {
+                    if (mounted) ToastUtils.showCenterToast(context,'設定勿擾失敗：$e',isError:true);
+                  }
+                },
+              );
+            },
+          ),
+          if (_memoTabs.index == 0) IconButton(
             tooltip: l10n.memo_add_title,
             icon: Icon(
               Icons.add_circle_outline_rounded,
@@ -458,7 +532,10 @@ class _MemoPageState extends State<MemoPage> {
           const SizedBox(width: 6),
         ],
       ),
-      body: Stack(
+      body: TabBarView(
+        controller: _memoTabs,
+        children: [
+          Stack(
         children: [
           Positioned(
             right: -22,
@@ -541,7 +618,150 @@ class _MemoPageState extends State<MemoPage> {
             },
           ),
         ],
+          ),
+          _buildRoleAgreements(),
+        ],
       ),
+    );
+  }
+
+  // 正式取消才更新雲端，刪除本機畫面不等於取消排程。
+  Future<void> _cancelRoleAgreement(String agreementId) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('取消角色約定？'),
+        content: const Text('取消後，這項約定將不再執行。'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('返回')),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('確認取消')),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    try {
+      await FirebaseFunctions.instanceFor(region: 'us-central1')
+          .httpsCallable('cancelRoleAgreement').call({
+        'characterId': widget.character.id,
+        'agreementId': agreementId,
+      });
+      if (mounted) ToastUtils.showCenterToast(context, '已取消角色約定');
+    } catch (e) {
+      if (mounted) ToastUtils.showCenterToast(context, '取消失敗：$e', isError: true);
+    }
+  }
+
+  // 只讀取正式約定。待同意提案不可顯示在這裡，避免誤導玩家已排程。
+  Widget _buildRoleAgreements() {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    final onSurface = theme.colorScheme.onSurface;
+    final collection = _agreementsCollection;
+    if (collection == null) {
+      return const Center(child: Text('請先登入後查看角色約定'));
+    }
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: collection.snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text('角色約定載入失敗：${snapshot.error}', textAlign: TextAlign.center),
+          ));
+        }
+        if (!snapshot.hasData) {
+          return Center(child: CircularProgressIndicator(color: primary, strokeWidth: 2));
+        }
+        final docs = snapshot.data!.docs.where((doc) {
+          final status = doc.data()['status']?.toString() ?? '';
+          return status != 'proposal' && status != 'pending_confirmation';
+        }).toList();
+        docs.sort((a, b) {
+          final at = a.data()['scheduledAt'];
+          final bt = b.data()['scheduledAt'];
+          final aTime = at is Timestamp ? at.millisecondsSinceEpoch : 0;
+          final bTime = bt is Timestamp ? bt.millisecondsSinceEpoch : 0;
+          return bTime.compareTo(aTime);
+        });
+        if (docs.isEmpty) {
+          return Center(child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 35),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              Icon(Icons.event_available_outlined, color: primary.withValues(alpha: .55), size: 56),
+              const SizedBox(height: 18),
+              Text('還沒有角色約定', style: GoogleFonts.notoSerifTc(
+                fontSize: 17, fontWeight: FontWeight.w600, color: onSurface)),
+              const SizedBox(height: 10),
+              Text('在角色的閒聊模式中，約好提醒時間並完成確認後，約定就會顯示在這裡。',
+                textAlign: TextAlign.center, style: TextStyle(color: onSurface.withValues(alpha: .6), height: 1.6)),
+            ]),
+          ));
+        }
+        return ListView.builder(
+          padding: const EdgeInsets.fromLTRB(18, 16, 18, 32),
+          itemCount: docs.length,
+          itemBuilder: (context, index) {
+            final data = docs[index].data();
+            final content = (data['content'] ?? '').toString();
+            final scheduledAt = data['scheduledAt'];
+            final when = scheduledAt is Timestamp
+                ? DateFormat('yyyy/MM/dd HH:mm').format(scheduledAt.toDate())
+                : '時間待確認';
+            final isCall = data['method'] == 'call';
+            final status = (data['status'] ?? 'scheduled').toString();
+            final statusText = switch (status) {
+              'scheduled' => '已約定',
+              'pending_delivery' => '待啟用提醒',
+              'completed' => '已完成',
+              'cancelled' => '已取消',
+              'missed' => '未接聽',
+              'ringing' => '等待接聽',
+              'accepted' => '通話中',
+              'connection_failed' => '連線失敗（已退花）',
+              'delivery_failed' => '通知發送失敗',
+              'suppressed_dnd' => '勿擾時段未發送',
+              _ => '狀態：$status',
+            };
+            return Card(
+              color: theme.colorScheme.surface,
+              margin: const EdgeInsets.only(bottom: 12),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Row(children: [
+                    Icon(isCall ? Icons.phone_in_talk_outlined : Icons.notifications_active_outlined,
+                      color: primary, size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(child: Text(isCall ? '角色主動來電' : '訊息提醒',
+                      style: TextStyle(color: primary, fontWeight: FontWeight.w600))),
+                    Text(statusText, style: TextStyle(color: onSurface.withValues(alpha: .56), fontSize: 12)),
+                  ]),
+                  const SizedBox(height: 12),
+                  Text(content.isEmpty ? '未填寫約定內容' : content,
+                    style: GoogleFonts.notoSerifTc(fontSize: 15, color: onSurface)),
+                  const SizedBox(height: 9),
+                  Text(when, style: TextStyle(color: onSurface.withValues(alpha: .65), fontSize: 12)),
+                  if (status == 'pending_delivery' || status == 'scheduled' || status == 'ringing')
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton.icon(
+                        onPressed: () => _cancelRoleAgreement(docs[index].id),
+                        icon: const Icon(Icons.event_busy_outlined, size: 18),
+                        label: const Text('取消約定'),
+                      ),
+                    ),
+                  if (isCall) Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text('接聽前確認扣除 20 花花；未接聽不扣費',
+                      style: TextStyle(color: onSurface.withValues(alpha: .56), fontSize: 11)),
+                  ),
+                ]),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 

@@ -2104,7 +2104,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
         color: danger ? Colors.redAccent : Theme.of(context).colorScheme.primary),
   );
 
-  Future<void> _reportWorldText(String content) async {
+  Future<void> _reportWorldText(String content, {String? messageId, int? segmentIndex}) async {
     if (!mounted) return;
     await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => FeedbackPage(
       category: ReportCategory.aiReply,
@@ -2112,6 +2112,8 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
       characterId: widget.worldId,
       characterName: _name,
       sessionId: _sessionId,
+      messageId: messageId,
+      segmentIndex: segmentIndex,
       reportedContent: content,
     )));
   }
@@ -2143,7 +2145,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
           title: Text(AppLocalizations.of(context)!.world_chat_delete1, style: TextStyle(color: Colors.redAccent)),
           onTap: () { Navigator.pop(ctx); _beginWorldSelection(key, delete: true); }),
       ListTile(leading: _worldActionIcon('report'), title: Text(AppLocalizations.of(context)!.world_chat_report1),
-          onTap: () { Navigator.pop(ctx); _reportWorldText('[$speaker] $content'); }),
+          onTap: () { Navigator.pop(ctx); _reportWorldText('[$speaker] $content', messageId: messageId, segmentIndex: segmentIndex); }),
       ListTile(leading: _worldActionIcon('feedback'), title: Text(AppLocalizations.of(context)!.world_chat_feedback1),
           onTap: () { Navigator.pop(ctx); _suggestWorldChat(); }),
     ])));
@@ -2574,7 +2576,7 @@ class _WorldChatPageState extends State<WorldChatPage> with WidgetsBindingObserv
           title: Text(AppLocalizations.of(context)!.world_chat_delete1, style: TextStyle(color: Colors.redAccent)),
           onTap: () { Navigator.pop(ctx); _beginWorldSelection(id, delete: true); }),
       ListTile(leading: _worldActionIcon('report'), title: Text(AppLocalizations.of(context)!.world_chat_report1),
-          onTap: () { Navigator.pop(ctx); _reportWorldText(content); }),
+          onTap: () { Navigator.pop(ctx); _reportWorldText(content, messageId: id); }),
       ListTile(leading: _worldActionIcon('feedback'), title: Text(AppLocalizations.of(context)!.world_chat_feedback1),
           onTap: () { Navigator.pop(ctx); _suggestWorldChat(); }),
     ])));

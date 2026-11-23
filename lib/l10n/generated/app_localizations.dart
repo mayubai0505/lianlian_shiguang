@@ -6127,7 +6127,7 @@ abstract class AppLocalizations {
   /// No description provided for @shop_first_purchase_bonus.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'首購雙倍！'**
+  /// **'首購20%！'**
   String get shop_first_purchase_bonus;
 
   /// No description provided for @story_summary_title.
@@ -6259,7 +6259,7 @@ abstract class AppLocalizations {
   /// No description provided for @shop_log_top_up_double.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'儲值：{points} 點 (含首購雙倍 )'**
+  /// **'儲值：{points} 點 (含首購20%)'**
   String shop_log_top_up_double(int points);
 
   /// No description provided for @shop_log_top_up_normal.
@@ -6283,7 +6283,7 @@ abstract class AppLocalizations {
   /// No description provided for @shop_purchase_success_double_bonus.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'恭喜觸發首購雙倍獎勵！'**
+  /// **'恭喜觸發首購20%獎勵！'**
   String get shop_purchase_success_double_bonus;
 
   /// No description provided for @shop_purchase_awesome.

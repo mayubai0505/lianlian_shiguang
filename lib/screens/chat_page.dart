@@ -35,6 +35,7 @@ import '../utils/image_utils.dart';
 import 'about_me_page.dart';
 import 'character_model.dart';
 import 'memo_page.dart';
+import '../services/role_agreement_candidate.dart';
 import 'period_tracker_page.dart';
 import 'story_summary_page.dart';
 import 'package:intl/intl.dart';
@@ -233,6 +234,9 @@ class _ChatPageState extends State<ChatPage> {
   final TextEditingController _occupationController = TextEditingController();
   final TextEditingController _introController = TextEditingController();
   bool _isCalling = false;
+  // 只在一般角色閒聊模式保存本次尚待玩家同意的提案。
+  RoleAgreementCandidate? _pendingRoleAgreement;
+  bool _roleAgreementDialogOpen = false;
   List<ChatMessage> _testMessages = [];
   Set<String> _triggeredEggKeywords = {};
   late AudioPlayer _audioPlayer;
@@ -5459,6 +5463,143 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+
+  // 玩家回覆同意只會開確認視窗；視窗中的明確按鈕才會呼叫後端寫入。
+  Future<void> _handleRoleAgreementAfterReply({
+    required String playerText,
+    required String aiText,
+    required String requestId,
+    required String sessionId,
+  }) async {
+    if (!mounted || widget.isTestMode || _currentMode != ChatMode.gemini ||
+        _sessionId != sessionId || _roleAgreementDialogOpen) {
+      _pendingRoleAgreement = null;
+      return;
+    }
+    final previous = _pendingRoleAgreement;
+    final player = playerText.trim();
+    if (previous != null && RoleAgreementCandidateDetector.isRejection(player)) {
+      _pendingRoleAgreement = null;
+      return;
+    }
+    if (previous != null && RoleAgreementCandidateDetector.isApproval(player)) {
+      _pendingRoleAgreement = null;
+      await _showRoleAgreementConfirmation(previous, sessionId);
+      return;
+    }
+    // 非直接同意會視為新提案；避免過期或不相關的上下文觸發。
+    _pendingRoleAgreement = null;
+    final now = DateTime.now();
+    final fromCharacter = RoleAgreementCandidateDetector.extract(aiText, requestId, now);
+    final fromPlayer = RoleAgreementCandidateDetector.extract(player, requestId, now);
+    _pendingRoleAgreement = fromCharacter ?? fromPlayer;
+  }
+
+  Future<void> _showRoleAgreementConfirmation(RoleAgreementCandidate candidate, String sessionId) async {
+    if (!mounted || _roleAgreementDialogOpen || _currentMode != ChatMode.gemini) return;
+    _roleAgreementDialogOpen = true;
+    DateTime selectedDateTime = candidate.scheduledAt;
+    String method = 'notification';
+    bool saving = false;
+    try {
+      await showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogContext) => StatefulBuilder(builder: (dialogContext, refresh) {
+          final theme = Theme.of(dialogContext);
+          return AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: const Text('建立拾光約定？'),
+            content: SingleChildScrollView(child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(candidate.content, maxLines: 5, overflow: TextOverflow.ellipsis),
+                const SizedBox(height: 12),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.event_outlined),
+                  title: Text(DateFormat('yyyy/MM/dd HH:mm').format(selectedDateTime)),
+                  subtitle: const Text('請確認日期和時間'),
+                  trailing: const Icon(Icons.edit_calendar_outlined),
+                  onTap: saving ? null : () async {
+                    final day = await showDatePicker(
+                      context: dialogContext,
+                      initialDate: selectedDateTime,
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime.now().add(const Duration(days: 365)),
+                    );
+                    if (day == null || !dialogContext.mounted) return;
+                    final time = await showTimePicker(
+                      context: dialogContext,
+                      initialTime: TimeOfDay.fromDateTime(selectedDateTime),
+                    );
+                    if (time == null || !dialogContext.mounted) return;
+                    refresh(() => selectedDateTime = DateTime(day.year, day.month, day.day, time.hour, time.minute));
+                  },
+                ),
+                RadioListTile<String>(
+                  dense: true, contentPadding: EdgeInsets.zero,
+                  title: const Text('角色訊息提醒（免費）'),
+                  value: 'notification', groupValue: method,
+                  onChanged: saving ? null : (value) => refresh(() => method = value!),
+                ),
+                RadioListTile<String>(
+                  dense: true, contentPadding: EdgeInsets.zero,
+                  title: const Text('角色主動來電（接聽 20 花花）'),
+                  value: 'call', groupValue: method,
+                  onChanged: saving ? null : (value) => refresh(() => method = value!),
+                ),
+                Text('確認後將安排通知；主動來電只有玩家確認接聽後才扣除 20 花花。',
+                  style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurfaceVariant)),
+              ],
+            )),
+            actions: [
+              TextButton(
+                onPressed: saving ? null : () => Navigator.pop(dialogContext),
+                child: const Text('取消'),
+              ),
+              FilledButton(
+                onPressed: saving ? null : () async {
+                  if (!selectedDateTime.isAfter(DateTime.now().add(const Duration(minutes: 1)))) {
+                    ScaffoldMessenger.of(dialogContext).showSnackBar(const SnackBar(content: Text('請選擇未來的約定時間')));
+                    return;
+                  }
+                  refresh(() => saving = true);
+                  try {
+                    final result = await FirebaseFunctions.instanceFor(region: 'us-central1')
+                        .httpsCallable('confirmRoleAgreement').call({
+                      'characterId': _currentCharacter.id,
+                      'sessionId': sessionId,
+                      'requestId': candidate.id,
+                      'content': candidate.content,
+                      'scheduledAtMs': selectedDateTime.millisecondsSinceEpoch,
+                      'method': method,
+                    });
+                    if (!dialogContext.mounted) return;
+                    Navigator.pop(dialogContext);
+                    if (mounted) _showCenterToast('約定已建立，將於約定時間發送提醒。');
+                    debugPrint('拾光約定確認結果：${result.data}');
+                  } catch (error) {
+                    if (dialogContext.mounted) {
+                      ScaffoldMessenger.of(dialogContext).showSnackBar(
+                        SnackBar(content: Text('約定儲存失敗：$error')),
+                      );
+                      refresh(() => saving = false);
+                    }
+                  }
+                },
+                child: Text(saving ? '儲存中…' : '確認約定'),
+              ),
+            ],
+          );
+        }),
+      );
+    } finally {
+      _roleAgreementDialogOpen = false;
+    }
+  }
+
   Future<void> _executeMessageSending({
     required String userText,
     required String clientRequestId,
@@ -6462,6 +6603,19 @@ class _ChatPageState extends State<ChatPage> {
               _isLoading = false;
             });
           }
+          // 只在正常閒聊文字回合觸發；不影響非閒聊、重生、繼續或特殊互動。
+          if (mounted && !isContinue && billingType == 'chat' &&
+              showInChat && !userMessageAlreadySaved &&
+              secretPrompt == null && overridePrompt == null &&
+              userText.trim().isNotEmpty && _currentMode == ChatMode.gemini &&
+              !widget.isTestMode && _sessionId != null) {
+            unawaited(_handleRoleAgreementAfterReply(
+              playerText: userText,
+              aiText: aiResponseText,
+              requestId: clientRequestId,
+              sessionId: _sessionId!,
+            ));
+          }
           _scheduleStorySummary();
         } else {
           // The backend also returns HTTP 200 for safe, non-charged failures.
@@ -7355,6 +7509,7 @@ class _ChatPageState extends State<ChatPage> {
 
                   _openChatReportPage(
                     reportedMessage: message.text,
+                    reportedMessageId: message.id,
                   );
                 },
               ),
@@ -7384,6 +7539,7 @@ class _ChatPageState extends State<ChatPage> {
   // 🚨 1. 舉報對話的彈出視窗 (🌟 接收傳進來的句子)
   Future<void> _openChatReportPage({
     required String reportedMessage,
+    required String reportedMessageId,
   }) async {
     final l10n = AppLocalizations.of(context)!;
     final result = await Navigator.push<bool>(
@@ -7395,6 +7551,7 @@ class _ChatPageState extends State<ChatPage> {
           characterId: widget.character.id,
           characterName: widget.character.name,
           sessionId: _sessionId,
+          messageId: reportedMessageId,
           reportedContent: reportedMessage,
         ),
       ),
@@ -9829,6 +9986,7 @@ class _ChatPageState extends State<ChatPage> {
     if (mounted) {
       setState(() {
         _currentMode = mode;
+        _pendingRoleAgreement = null;
       });
     }
 
@@ -9911,6 +10069,7 @@ class _ChatPageState extends State<ChatPage> {
                   if (mounted)
                     setState(() {
                       _currentMode = mode;
+                      _pendingRoleAgreement = null;
                     });
                   if (_sessionId != null) {
                     // 🌟 修正 4：更新模式也要對準新家路徑
