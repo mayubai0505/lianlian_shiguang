@@ -1210,8 +1210,8 @@ class _CreatorGiftClaimDetailPageState extends State<_CreatorGiftClaimDetailPage
     if (_busy || widget.giftId.isEmpty) return;
     setState(() => _busy = true);
     try {
-      final result = await FirebaseFunctions.instanceFor(region: 'asia-east1')
-          .httpsCallable('claimCreatorFlowerGift').call({'giftId': widget.giftId});
+      final result = await FirebaseFunctions.instanceFor(region: 'us-central1')
+          .httpsCallable('claimCreatorFlowerGiftUs').call({'giftId': widget.giftId});
       final data = result.data is Map ? Map<String, dynamic>.from(result.data as Map) : <String, dynamic>{};
       if (!mounted) return;
       ToastUtils.showCenterToast(context,

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -21,13 +21,27 @@ class _RoleAgreementIncomingPageState extends State<RoleAgreementIncomingPage> {
   bool _busy = false;
   bool _opened = false;
 
+  Future<void> _closeNativeSafely() async {
+    try { await RoleAgreementNativeCalls.close(widget.agreementId); }
+    catch (e) { debugPrint('[RA] native close failed: $e'); }
+  }
+
+  @override
+  void dispose() {
+    _closeNativeSafely();
+    super.dispose();
+  }
+
   FirebaseFunctions get _functions => FirebaseFunctions.instanceFor(region:'us-central1');
   Future<_RoleAgreementInfo> _loadInfo() async {
+    debugPrint('[RA] confirmation page loading');
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) throw StateError('請先登入');
-    final agreement = await FirebaseFirestore.instance.collection('role_agreements').doc(uid)
+    final agreement = await FirebaseFirestore.instance
+      .collection('users').doc(uid)
       .collection('characters').doc(widget.characterId)
-      .collection('items').doc(widget.agreementId).get();
+      .collection('role_agreements').doc(widget.agreementId)
+      .get();
     if (!agreement.exists) throw StateError('找不到這筆角色約定');
     final data = agreement.data()!;
     if (data['method'] != 'call' || data['status'] != 'ringing') {
@@ -54,7 +68,7 @@ class _RoleAgreementIncomingPageState extends State<RoleAgreementIncomingPage> {
       await _functions.httpsCallable('declineRoleAgreementCall').call({
         'characterId':widget.characterId,'agreementId':widget.agreementId,
       });
-      await RoleAgreementNativeCalls.close(widget.agreementId);
+      await _closeNativeSafely();
       if (mounted) Navigator.pop(context);
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text('拒接失敗：$e')));
@@ -76,17 +90,22 @@ class _RoleAgreementIncomingPageState extends State<RoleAgreementIncomingPage> {
       });} catch(e) {debugPrint('約定通話結算失敗：$e');}
     }
     try {
+      debugPrint('[RA] explicit confirmation; calling backend');
       final result=await _functions.httpsCallable('acceptRoleAgreementCall').call({
         'characterId':widget.characterId,'agreementId':widget.agreementId,
       });
       charged=true;
       if (!mounted) {await finish();return;}
       _opened=true;
+      debugPrint('[RA] backend accepted; closing native UI');
+      await _closeNativeSafely();
+      if (!mounted) {await finish();return;}
+      debugPrint('[RA] pushing CallOverlay');
       await Navigator.of(context).push(MaterialPageRoute<void>(builder:(_) => CallOverlay(
         character:info.character,characterId:widget.characterId,
         sessionId:info.sessionId,selectedLanguage:'繁體中文',shouldSave:false,
         incomingAgreementContent:info.content,
-        onFirstAudioStarted:(){audioStarted=true;},
+        onFirstAudioStarted:(){audioStarted=true;debugPrint('[RA] first audio started');},
         onCallNotConnected:(){if(Navigator.of(context).canPop())Navigator.of(context).pop();},
         onCallEnded:(duration,messages){if(Navigator.of(context).canPop())Navigator.of(context).pop();},
       )));
@@ -94,6 +113,7 @@ class _RoleAgreementIncomingPageState extends State<RoleAgreementIncomingPage> {
       if (mounted) Navigator.of(context).pop();
       debugPrint('角色約定來電已結束：${result.data}');
     } catch(e) {
+      debugPrint('[RA] answer failed: $e');
       if (charged) await finish();
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text('接聽失敗：$e')));
     } finally {if(mounted)setState(()=>_busy=false);}

@@ -225,6 +225,7 @@ class _EventMemoryCharacterSelectPageState
           characterId: character.id,
           characterName: character.name,
           characterAvatarPath: character.avatarPath,
+          isPrivate: character.isPrivate,
         ),
       ),
     );

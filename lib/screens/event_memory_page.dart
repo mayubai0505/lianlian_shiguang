@@ -191,7 +191,7 @@ class EventMemoryPage extends StatelessWidget {
                           }
 
                           final memories = (memorySnapshot.data?.docs ?? [])
-                              .where((doc) => doc.data()['isActive'] != false)
+                              .where((doc) => doc.data()['isActive'] != false && doc.data()['generationMode'] == 'ai')
                               .toList();
 
                           final unlockedCount = memories.where((doc) {

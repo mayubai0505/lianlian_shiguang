@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:characters/characters.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -363,6 +364,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
         _safeUtf16Boundary(
           remaining,
           remaining.length.clamp(1, 120),
+          forward: true,
         );
         result.add(_safePrefix(remaining, fallbackLength).trim());
         remaining =
@@ -450,6 +452,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
           _safeUtf16Boundary(
             remainingText,
             remainingText.length.clamp(1, 40),
+            forward: true,
           );
           final fallbackText =
           _safePrefix(remainingText, fallbackLength);
@@ -531,28 +534,22 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
   bool _isLowSurrogate(int codeUnit) =>
       codeUnit >= 0xDC00 && codeUnit <= 0xDFFF;
 
-  /// Dart String.substring() uses UTF-16 code-unit offsets.
-  /// Binary-search pagination can otherwise cut an emoji/supplementary
-  /// character exactly between its surrogate pair and create invalid UTF-16.
+  // Keep extended grapheme clusters intact (emoji, ZWJ, flags, accents).
   int _safeUtf16Boundary(
-      String text,
-      int index, {
-        bool forward = false,
-      }) {
+    String text,
+    int index, {
+    bool forward = false,
+  }) {
     if (index <= 0) return 0;
     if (index >= text.length) return text.length;
-
-    final previous = text.codeUnitAt(index - 1);
-    final current = text.codeUnitAt(index);
-
-    if (_isHighSurrogate(previous) && _isLowSurrogate(current)) {
-      if (forward && index + 1 <= text.length) {
-        return index + 1;
-      }
-      return index - 1;
+    var offset = 0;
+    for (final cluster in text.characters) {
+      final next = offset + cluster.length;
+      if (next == index) return next;
+      if (next > index) return forward ? next : offset;
+      offset = next;
     }
-
-    return index;
+    return text.length;
   }
 
   String _safePrefix(String text, int end) {
@@ -632,7 +629,8 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
       }
     }
 
-    return _safePrefix(text, breakAt);
+    final prefix = _safePrefix(text, breakAt);
+    return prefix.isEmpty ? _safePrefix(text, best) : prefix;
   }
 
   String _sanitizeUtf16(String input) {
@@ -751,7 +749,8 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
       }
     }
 
-    return _safePrefix(text, breakAt);
+    final prefix = _safePrefix(text, breakAt);
+    return prefix.isEmpty ? _safePrefix(text, best) : prefix;
   }
 
   ui.TextDirection _textDirectionFor(String text) {
@@ -1694,15 +1693,20 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
 
   Future<Uint8List> _buildPdfBytes() async {
     final document = pw.Document();
+    // Viewer preference: one complete page rather than continuous scrolling.
+    document.document.catalog.params['/PageLayout'] =
+        const PdfName('/SinglePage');
     final l10n = AppLocalizations.of(context)!;
     // PDF 主字體改成與 App 視覺一致的 Serif 系列。
     final regularFont = await PdfGoogleFonts.notoSerifTCRegular();
     final boldFont = await PdfGoogleFonts.notoSerifTCBold();
+    final emojiFont = await PdfGoogleFonts.notoColorEmoji();
 
     // 多語系 fallback：
     // 簡中 / 日文 / 韓文 / 阿拉伯文 / Hindi / 泰文。
     // 拉丁語系（英、西、法、葡、越、印尼、馬來）可由主字體直接涵蓋。
     final fallbackFonts = <pw.Font>[
+      emojiFont,
       await PdfGoogleFonts.notoSerifSCRegular(),
       await PdfGoogleFonts.notoSerifJPRegular(),
       await PdfGoogleFonts.notoSerifKRRegular(),
@@ -1712,6 +1716,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
     ];
 
     final boldFallbackFonts = <pw.Font>[
+      emojiFont,
       await PdfGoogleFonts.notoSerifSCBold(),
       await PdfGoogleFonts.notoSerifJPBold(),
       await PdfGoogleFonts.notoSerifKRBold(),
@@ -2201,6 +2206,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
               text,
               style: pw.TextStyle(
                 font: regularFont,
+                fontFallback: fallbackFonts,
                 fontSize: 9.3,
                 lineSpacing: 3.5,
                 color: const PdfColor.fromInt(0xFF4C474E),

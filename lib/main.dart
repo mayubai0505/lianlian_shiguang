@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:lianlian_shiguang/screens/moment_detail_page.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -42,6 +42,59 @@ final bool _worldEmulatorEnabled = kIsWeb && kDebugMode && _worldEmulatorRequest
 String? globalActiveCharacterId;
 RemoteMessage? _pendingRoleAgreementTap;
 String? _lastRoleAgreementTapId;
+StreamSubscription<dynamic>? _earlyRoleAgreementSubscription;
+final Map<String, Map<String, dynamic>> _pendingNativeAccepts = {};
+final Set<String> _handledNativeAccepts = {};
+bool _nativeAcceptOpening = false;
+String? _nativeAcceptPageId;
+
+void _queueNativeAccept(Map<String, dynamic> extra) {
+  if (!RoleAgreementNativeCalls.validData(extra)) return;
+  final id = '${extra['agreementId']}';
+  if (_handledNativeAccepts.contains(id) || _nativeAcceptPageId == id) return;
+  _pendingNativeAccepts[id] = Map<String, dynamic>.from(extra);
+  debugPrint('[RA] native accept queued');
+  _flushNativeAccepts();
+}
+
+void _flushNativeAccepts() {
+  if (_nativeAcceptOpening || _pendingNativeAccepts.isEmpty ||
+      Firebase.apps.isEmpty) return;
+  if (FirebaseAuth.instance.currentUser == null ||
+      navigatorKey.currentState == null ||
+      WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) return;
+  _nativeAcceptOpening = true;
+  WidgetsBinding.instance.addPostFrameCallback((_) async {
+    try {
+      final nav = navigatorKey.currentState;
+      if (nav == null || FirebaseAuth.instance.currentUser == null ||
+          WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed ||
+          _pendingNativeAccepts.isEmpty) return;
+      final entry = _pendingNativeAccepts.entries.first;
+      _pendingNativeAccepts.remove(entry.key);
+      if (_handledNativeAccepts.contains(entry.key)) return;
+      _nativeAcceptPageId = entry.key;
+      debugPrint('[RA] opening confirmation page from native accept');
+      await nav.push(MaterialPageRoute<void>(builder: (_) =>
+          RoleAgreementIncomingPage(characterId: '${entry.value['characterId']}',
+              agreementId: entry.key)));
+      _handledNativeAccepts.add(entry.key);
+    } catch (error) {
+      debugPrint('[RA] native accept navigation failed: $error');
+    } finally {
+      _nativeAcceptPageId = null;
+      _nativeAcceptOpening = false;
+      if (_pendingNativeAccepts.isNotEmpty) _flushNativeAccepts();
+    }
+  });
+  WidgetsBinding.instance.ensureVisualUpdate();
+}
+
+Future<void> _recoverNativeAccepts() async {
+  await RoleAgreementNativeCalls.recoverAcceptedCalls(_queueNativeAccept);
+  _flushNativeAccepts();
+}
+
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 // Pending world memo navigation is held until auth and Navigator are ready.
@@ -163,6 +216,20 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterL
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // ROLE_AGREEMENT_BACKGROUND_CALL_V1
+  final roleAgreementType = (message.data['type'] ?? '').toString();
+  if (roleAgreementType == 'role_agreement_call' &&
+      !kIsWeb &&
+      defaultTargetPlatform == TargetPlatform.android) {
+    try {
+      await RoleAgreementNativeCalls.showFromRemoteMessage(message);
+      debugPrint('Background role agreement call forwarded to CallKit');
+    } catch (error, stackTrace) {
+      debugPrint('Background role agreement call failed: $error');
+      debugPrintStack(stackTrace: stackTrace);
+    }
+    return;
+  }
   print("👻 [背景小精靈] 成功攔截到背景通知: ${message.notification?.title}");
   if (RoleAgreementNativeCalls.validData(message.data)) {
     try { await RoleAgreementNativeCalls.showFromRemoteMessage(message); }
@@ -176,6 +243,19 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 Future<void> main() async {
   final binding = WidgetsFlutterBinding.ensureInitialized();
+
+  // Subscribe before Firebase initialization to reduce cold-start event loss.
+  if (RoleAgreementNativeCalls.supported) {
+    _earlyRoleAgreementSubscription = RoleAgreementNativeCalls.listen(
+      onAccept: _queueNativeAccept,
+      onDecline: (extra) {
+        final id = '${extra['agreementId']}';
+        _pendingNativeAccepts.remove(id);
+        _handledNativeAccepts.add(id);
+        debugPrint('[RA] native decline');
+      },
+    );
+  }
 
   FirebaseMessaging.onBackgroundMessage(
     _firebaseMessagingBackgroundHandler,
@@ -501,6 +581,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             _tryOpenPendingWorldChat();
             unawaited(RoleAgreementNativeCalls.registerIosVoipToken());
             _flushRoleAgreementTap();
+            unawaited(_recoverNativeAccepts());
           }
         },
       );
@@ -513,19 +594,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
 
     WidgetsBinding.instance.addObserver(this);
-    if (RoleAgreementNativeCalls.supported) {
-      _roleAgreementNativeEventSubscription = RoleAgreementNativeCalls.listen(
-        onAccept: (extra) {
-          // The system Accept action is only an intent to open confirmation.
-          // No backend charge occurs until the player presses 20-flower confirm in App.
-          _handleNotificationClick(RemoteMessage(data:extra.map((k,v) => MapEntry(k, '$v'))));
-        },
-        onDecline: (extra) {
-          // A missed native UI must not charge. The server will expire this call.
-          debugPrint('角色來電拒接／逾時：${extra['agreementId']}');
-        },
-      );
-    }
+    _roleAgreementNativeEventSubscription = _earlyRoleAgreementSubscription;
 
     _homeWidgetClickSubscription =
         HomeWidget.widgetClicked.listen(_handleHomeWidgetLaunch);
@@ -537,6 +606,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       unawaited(_checkInitialHomeWidgetLaunch());
       _tryOpenPendingWorldChat();
       _flushRoleAgreementTap();
+      unawaited(_recoverNativeAccepts());
 
       unawaited(
         _initializeBackgroundServices().catchError((e, stackTrace) {
@@ -691,6 +761,13 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     if (state ==
         AppLifecycleState.resumed) {
       _updateUserStatus(true);
+      _flushRoleAgreementTap();
+      _flushNativeAccepts();
+      unawaited(_recoverNativeAccepts());
+      // Native accept persistence may complete just after resume.
+      unawaited(Future<void>.delayed(const Duration(milliseconds: 700), () async {
+        if (mounted) await _recoverNativeAccepts();
+      }));
 
       unawaited(
         _recordDailyAppActivity(),
@@ -995,9 +1072,7 @@ void _handleNotificationClick(RemoteMessage message) {
     if (!RegExp(r'^[A-Za-z0-9_-]{1,160}$').hasMatch(characterId) ||
         !RegExp(r'^[a-f0-9]{64}$').hasMatch(agreementId)) return;
     if (type == 'role_agreement_call') {
-      unawaited(RoleAgreementNativeCalls.close(agreementId));
-      navigatorKey.currentState?.push(MaterialPageRoute<void>(
-        builder: (_) => RoleAgreementIncomingPage(characterId:characterId,agreementId:agreementId)));
+      _queueNativeAccept(Map<String, dynamic>.from(data));
     } else {
       navigatorKey.currentState?.pushNamed('/chat',arguments:{
         'characterId':characterId,'sessionId':(data['sessionId']??'').toString(),
@@ -1102,6 +1177,8 @@ Future<void> setupPushNotifications() async {
     );
 
     await messaging.requestPermission(alert: true, badge: false, sound: true);
+    // ROLE_AGREEMENT_ANDROID_PERMISSION_V1
+    await RoleAgreementNativeCalls.prepareAndroidIncomingPermissions();
 
     String? token;
 

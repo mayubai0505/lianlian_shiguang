@@ -24,8 +24,8 @@ function createConfirmRoleAgreementHandler({db,APP_ID,HttpsError,FieldValue}) {
       throw new HttpsError('permission-denied','僅限本人角色閒聊房間建立約定');
     }
     const id = crypto.createHash('sha256').update(`${uid}\0${sessionId}\0${requestId}`).digest('hex');
-    const ref = db.collection('role_agreements').doc(uid).collection('characters').doc(characterId)
-      .collection('items').doc(id);
+    const ref = db.collection('users').doc(uid).collection('characters').doc(characterId)
+      .collection('role_agreements').doc(id);
     const job = db.collection('artifacts').doc(APP_ID).collection('role_agreement_jobs').doc(id);
     const created = await db.runTransaction(async tx => {
       const old = await tx.get(ref);

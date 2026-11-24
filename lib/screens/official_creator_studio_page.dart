@@ -17,12 +17,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../services/toast_utils.dart';
 import 'creator_support_center_page.dart';
 
-/// 官方合作創作者專區第一版。
-/// 注意：畫面上的權限檢查不能取代 Cloud Functions 的後端驗證。
+// 官方合作創作者專區第一版。
+// 注意：畫面上的權限檢查不能取代 Cloud Functions 的後端驗證。
 class OfficialCreatorStudioPage extends StatefulWidget {
   const OfficialCreatorStudioPage({super.key, this.onOpenShop});
 
-  /// 由現有商店入口提供實際導頁方法；未提供時不會猜測路由。
+  // 由現有商店入口提供實際導頁方法；未提供時不會猜測路由。
   final VoidCallback? onOpenShop;
 
   @override
@@ -968,7 +968,7 @@ class _CreatorFlowerGiftPageState extends State<_CreatorFlowerGiftPage> {
   int _fanSearchGeneration = 0;
   Timer? _fanSearchDebounce;
   final Set<String> _selected = {};
-  final _functions = FirebaseFunctions.instanceFor(region:'asia-east1');
+  final _giftFunctions = FirebaseFunctions.instanceFor(region:'us-central1');
   String? _requestId;
   bool _submitting = false;
 
@@ -1099,7 +1099,7 @@ class _CreatorFlowerGiftPageState extends State<_CreatorFlowerGiftPage> {
     setState(()=>_submitting=true);
     _requestId ??= FirebaseFirestore.instance.collection('creator_flower_gifts').doc().id;
     try {
-      final result=await _functions.httpsCallable('giftCreatorFlowers',
+      final result=await _giftFunctions.httpsCallable('giftCreatorFlowersUs',
           options:HttpsCallableOptions(timeout:const Duration(seconds:60))).call({
         'requestId':_requestId, 'recipientUids':_selected.toList(),
         'amount':amount,'note':_noteController.text.trim(),
@@ -1282,7 +1282,14 @@ class _CreatorMonthlyRewardPageState extends State<_CreatorMonthlyRewardPage> {
   @override
   Widget build(BuildContext context){
     final d=_data;
-    final count=((d?['qualifyingCount'] as num?)?.toInt()??0).clamp(0,3);
+    // 後端新版可回傳 characterCount / worldCount；舊版仍只回 qualifyingCount。
+    // qualifyingCount 應由伺服器計算為「公開角色 + 公開世界」合計，最多顯示 3。
+    final characterCount=(d?['characterCount'] as num?)?.toInt();
+    final worldCount=(d?['worldCount'] as num?)?.toInt();
+    final combinedCount=characterCount!=null || worldCount!=null
+        ? ((characterCount??0)+(worldCount??0))
+        : ((d?['qualifyingCount'] as num?)?.toInt()??0);
+    final count=combinedCount.clamp(0,3);
     final claimed=d?['claimed']==true;
     final month=(d?['month']??AppLocalizations.of(context)!.official_studio_text_1521).toString();
     final color=Theme.of(context).colorScheme.primary;
@@ -1291,8 +1298,15 @@ class _CreatorMonthlyRewardPageState extends State<_CreatorMonthlyRewardPage> {
           padding:const EdgeInsets.all(20),children:[
         Card(child:Padding(padding:const EdgeInsets.all(20),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[
           Text(AppLocalizations.of(context)!.official_studio_text_1841(month),style:GoogleFonts.notoSerifTc(fontSize:20,fontWeight:FontWeight.w600)),
-          const SizedBox(height:8),Text(AppLocalizations.of(context)!.official_studio_text_1531,style:TextStyle(color:Theme.of(context).colorScheme.onSurfaceVariant,height:1.6)),
-          const SizedBox(height:18),Text(AppLocalizations.of(context)!.official_studio_text_1851(count),style:const TextStyle(fontWeight:FontWeight.w600)),
+          const SizedBox(height:8),
+          Text('公開角色與公開世界合計完成 3 個，即可領取 300 朵花花。',
+              style:TextStyle(color:Theme.of(context).colorScheme.onSurfaceVariant,height:1.6)),
+          if(characterCount!=null || worldCount!=null) ...[
+            const SizedBox(height:10),
+            Text('公開角色 ${characterCount??0} 個・公開世界 ${worldCount??0} 個',
+                style:TextStyle(fontSize:12,color:Theme.of(context).colorScheme.onSurfaceVariant)),
+          ],
+          const SizedBox(height:18),Text('本月公開作品進度：$count / 3',style:const TextStyle(fontWeight:FontWeight.w600)),
           const SizedBox(height:8),LinearProgressIndicator(value:count/3,color:color,minHeight:9,borderRadius:BorderRadius.circular(8)),
           const SizedBox(height:18),SizedBox(width:double.infinity,child:FilledButton.icon(
               onPressed:_loading||_claiming||d==null||claimed||count<3?null:_claim,
@@ -1301,10 +1315,10 @@ class _CreatorMonthlyRewardPageState extends State<_CreatorMonthlyRewardPage> {
           if(_loading)const Padding(padding:EdgeInsets.only(top:12),child:LinearProgressIndicator()),
         ]))),
         const SizedBox(height:12),
-        Text(AppLocalizations.of(context)!.official_studio_text_1541,
+        Text('計算方式：公開角色與公開世界合併計算；同一作品只計一次，私人或未公開作品不計入。',
             style:TextStyle(fontSize:12,height:1.7,color:Theme.of(context).colorScheme.onSurfaceVariant)),
         const SizedBox(height:8),
-        Text(AppLocalizations.of(context)!.official_studio_text_1551,
+        Text('達成 3 個公開作品後可領取 300 朵花花；獎勵領取狀態仍由伺服器驗證。',
             style:TextStyle(fontSize:12,height:1.6,color:Theme.of(context).colorScheme.onSurfaceVariant)),
       ]))),);
   }

@@ -9,6 +9,13 @@ const {isCancelled: isWriterCancelled, isSafetyFailure: isWriterSafetyFailure, c
 const {publicChatCount, recordPublicChatSend} = require('./chat_count');
 const {createWorldChatAudit} = require('./chat_count_audit');
 const storyClock = require('./story_clock');
+// 2026-11-23 urgent crash fix: some deployed clock modules do not implement
+// advanceCreatorNumericEra. Preserve the already-authorized creator status
+// rather than causing a TypeError that aborts every AI reply.
+// Numeric-era advancement remains unchanged until its parser is implemented.
+const advanceCreatorNumericEraSafe = typeof storyClock.advanceCreatorNumericEra === 'function'
+  ? (...args) => storyClock.advanceCreatorNumericEra(...args)
+  : (_template, status) => String(status ?? '');
 const {findCreatorStatusCommand,makeStatusCommandDisplay} = require('./status_command');
 const {createAiCostTrace} = require('../src/ai/cost_trace');
 const {onDocumentCreated} = require('firebase-functions/v2/firestore');
@@ -18,6 +25,7 @@ const {dedupeStatusHeading,trimWorldStatusBoundary,missingStatusRows,mergeMissin
 const {literalCreatorStatus} = require('../src/chat/literal_creator_status');
 const {inspectCreatorStatusCompleteness, parseFields, lockCreatorStatus, describeCreatorTemplate, isCreatorGuidance, enforceModernStatusTime, protectCreatorCalendarDisplay} = require('./status_template');
 const creatorThought = require('./creator_thought');
+const {protectWorldFinancialStatus} = require('./world_status_finance_guard');
 const {canonicalPlayerGender} = require('../src/chat/player_identity');
 
 // V1 conditional creator status display: enforce only unambiguous, explicitly
@@ -368,7 +376,7 @@ function registerWorldFunctions(exports, deps) {
 // 世界觀專屬計費配置：聊天模式與玩法消費分開，禁止雙重扣費。
 const WORLD_CHAT_MODES = Object.freeze({
   story: {cost:5, modelId:'google/gemini-3-flash-preview', fallbackModelId:'deepseek/deepseek-v3.2', maxTokens:2400},
-  immersive: {cost:7, modelId:'moonshotai/kimi-k2.5', fallbackModelId:'google/gemini-3-flash-preview', maxTokens:3800},
+  immersive: {cost:7, modelId:'deepseek/deepseek-v3.2', fallbackModelId:'google/gemini-3-flash-preview', maxTokens:3800},
   resonance: {cost:10, modelId:'deepseek/deepseek-v4-pro-0813', fallbackModelId:'deepseek/deepseek-v4-flash', maxTokens:4096},
   interaction: {cost:12, modelId:'claude-sonnet-5-5', fallbackModelId:'deepseek/deepseek-v4-flash', maxTokens:5000},
 });
@@ -424,8 +432,7 @@ function chooseWorldWriterRoute(mode, latestMessage, historyText, npcCharacters 
   else if (transitionCount>=2 && intimateEscalation.test(latest)) reason='adult_tension_transition';
   else if (explicit.some(re => re.test(recent)) && continuingIntimacy.test(latest) && !exit.test(latest)) reason='adult_scene_continuity';
   return reason ? {...unchanged,modelId:'xai/grok-4.6',
-    fallbackModelId: ['immersive','resonance'].includes(mode)
-      ? 'google/gemini-3-flash-preview' : 'deepseek/deepseek-v3.2',routeReason:reason} : unchanged;
+    fallbackModelId:'deepseek/deepseek-v4-pro-0813',routeReason:reason} : unchanged;
 }
 
 // Conservative second-stage scene check. This is NOT a retry of a filtered
@@ -485,7 +492,7 @@ async function resolveAmbiguousWorldWriterRoute({route, mode, message, history, 
   logger.info('world writer context classifier', {mode, decision, elapsedMs:Date.now()-began});
   return decision === 'ADULT_CONTINUES'
     ? {...route,modelId:'xai/grok-4.6',
-        fallbackModelId:mode === 'story' ? 'deepseek/deepseek-v3.2' : 'google/gemini-3-flash-preview',
+        fallbackModelId:'deepseek/deepseek-v4-pro-0813',
         routeReason:'adult_scene_context_confirmed'}
     : route;
 }
@@ -1806,6 +1813,7 @@ exports.worldPrivateTest = onCall({
         '只要創作者有設定模板，本輪 JSON 最外層就必須有已填妥的 statusBar 字串，不可省略、留空或放進 segments。這是顯示契約，不是可選的裝飾。',
         '創作者在模板中對欄位內容、分行、固定文字、顯示條件的指示是 statusBar 專用的有效格式規則；在不違反玩家自主權、NPC 知情界線與安全規則的前提下逐項遵守。',
         '請同時參考本輪玩家輸入、最新劇情和上一輪已保存狀態；沒有新事件依據時持續性數值及已取得線索保持不變，確實發生變化的數值、位置、想法則依本輪更新。',
+        '【金錢／背包防重複】再次提及、回憶、詢問、展示、試穿或討論過往商品，不代表本輪又付款或取得同一件商品。只有玩家在本輪明確進行一筆新的交易，才可考慮調整金錢；不要因為 NPC 台詞、舊紀錄或模型自編購買動作而扣款。狀態欄金額不是遊戲花花扣款紀錄。',
         ...(previousCreatorStatusContext ? [previousCreatorStatusContext] : []),
         '創作者能自由使用 Emoji、顏文字、符號、換行、縮排、表格、｜分隔、無冒號欄位與自訂文字。不要依固定標籤重新排列，不要因為欄位沒有冒號就省略。',
         ...(emojiDirectiveStatusHint ? [emojiDirectiveStatusHint] : []),
@@ -1903,15 +1911,23 @@ exports.worldPrivateTest = onCall({
         `人物：${compactCharacterJson}`,
         `人物目前好感度（後端紀錄，請據此維持跨回合連續性；未建檔預設為0）：${JSON.stringify(relationshipContext).slice(0,9000)}`,
       ];
+      // Keep the creator's raw opening in Firestore. Only the writer context may
+      // summarize an explicitly sexual opening when the current route is NOT the
+      // adult-scene router. Otherwise a harmless normal scene can be filtered
+      // merely because an unrelated opening is repeated in every system prompt.
+      const openingSystemPartIndex = systemParts.length;
+      const rawWorldOpeningContext = replacePlayerName(
+        String(world.storyOpening ?? '') + '\n' + String(world.firstLine ?? ''), profileNickname);
       systemParts.push('【最新開場設定，僅作背景參考；不可重播或當作新事件】\n' +
-        replacePlayerName(String(world.storyOpening ?? '') + '\n' + String(world.firstLine ?? ''),profileNickname).slice(0,4500));
+        rawWorldOpeningContext.slice(0,4500));
       logger.info('CREATOR_SETTINGS_VERSION', {worldId,source:'worlds',
         revision:String(world.lastEditTime?.toMillis?.() ?? world.updatedAt?.toMillis?.() ?? 'unknown')});
       systemParts.push(progressionInstruction({
         continuing: isContinueRequest(rawMessage, action === 'continue' ||
           (action === 'regenerate' && rawMessage === '（請延續上一段已發生的事件與角色的對話，讓角色自然回應；不要替玩家說話、行動或決定。）')),
       }));
-      const system = systemParts.join('\n');
+      // The system prompt is finalized *after* writer routing, so irrelevant
+      // explicit opening prose is not accidentally sent to a normal-scene model.
       // 路由只使用本房間的近期歷史與本輪玩家輸入，不跨房間取成人情境。
       const initialWriterRoute = chooseWorldWriterRoute(
         worldMode, rawMessage, history.slice(-4500), allowed, interactionNpcId);
@@ -1938,8 +1954,21 @@ exports.worldPrivateTest = onCall({
       const openingRawForWriter = openingSegmentsForWriter.map(seg => replacePlayerName(seg?.text,profileNickname)).join('\n');
       const explicitOpeningForWriter = /做愛|性交|性愛|發生關係|抽插|射精|內射|口交|手交|陰莖|陰道/u
         .test(openingRawForWriter);
-      const compressOpeningForWriter = writerRoute.routeReason === 'standard_scene' &&
+      const isAdultWorldWriterRoute = writerRoute.modelId === 'xai/grok-4.6';
+      // A minor_context guard is a reason to KEEP the ordinary model, not a
+      // reason to send unrelated graphic opening text to that model. This also
+      // preserves the original routing safety gate for potentially young NPCs.
+      const compressOpeningForWriter = !isAdultWorldWriterRoute &&
         Boolean(openingDocForWriter) && explicitOpeningForWriter;
+      const compressSystemOpeningForWriter = !isAdultWorldWriterRoute &&
+        /做愛|性交|性愛|發生關係|抽插|射精|內射|口交|手交|陰莖|陰道/u.test(rawWorldOpeningContext);
+      if (compressSystemOpeningForWriter) {
+        systemParts[openingSystemPartIndex] =
+          '【開場歷史摘要｜一般場景】開場包含成人情節；它只是已發生的背景，' +
+          '本輪不要重演或提及露骨細節。維持人物既定關係與故事連續性，' +
+          '只回應本輪玩家實際輸入，使用適合一般劇情的非露骨描寫。';
+      }
+      const system = systemParts.join('\n');
       const openingMentionedNpcNames = compressOpeningForWriter
         ? allowed.map(n => String(n.name || '').trim())
           .filter(name => name.length >= 2 && openingRawForWriter.includes(name))
@@ -1961,6 +1990,7 @@ exports.worldPrivateTest = onCall({
         openingInRecentWindow:Boolean(openingDocForWriter),
         openingContainsExplicitTerms:explicitOpeningForWriter,
         openingCompressedForWriter:compressOpeningForWriter,
+        systemOpeningCompressedForWriter:compressSystemOpeningForWriter,
         routeReason:writerRoute.routeReason,
         originalHistoryCharacters:history.length,
         writerHistoryCharacters:writerOnlyHistory.length,
@@ -2099,6 +2129,14 @@ exports.worldPrivateTest = onCall({
         let content = result?.choices?.[0]?.message?.content || '';
         if (Array.isArray(content)) content = content.map(p=>p?.text||'').join('');
         content = String(content).trim().replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'');
+        // A provider's explicit safety refusal is not a technical failure.
+        // Never move an unchanged declined request to another provider.
+        const finishReason = String(result?.choices?.[0]?.finish_reason || '').toLowerCase();
+        const refusalText = String(result?.choices?.[0]?.message?.refusal || '').trim();
+        const overtRefusal = /^(?:抱歉[，,、。\s]*|對不起[，,、。\s]*|很抱歉[，,、。\s]*|sorry[,.!\s]*|i\s+(?:am\s+)?sorry[,.!\s]*)(?:我)?(?:無法|不能|不可以|無法協助|can't|cannot|won't|i\s+can't|i\s+cannot)/iu;
+        if (refusalText || finishReason === 'content_filter' || overtRefusal.test(content)) {
+          return {parsed:null,reason:'provider_refusal',length:content.length};
+        }
         let parsed, parseStrategy = 'exact';
         try { parsed = JSON.parse(content); }
         catch (_) {
@@ -2181,16 +2219,28 @@ exports.worldPrivateTest = onCall({
       const isWorldReliabilityTrial = worldMode === 'interaction' ||
         (worldMode === 'resonance' && writerRoute.modelId === WORLD_CHAT_MODES.resonance.modelId);
       if (isWorldReliabilityTrial || worldMode === 'story' || worldMode === 'immersive' || worldMode === 'resonance') {
-        const routeModels = [...new Set(isWorldReliabilityTrial ? [
+        const isAdultGrokRoute = writerRoute.modelId === 'xai/grok-4.6' &&
+          writerRoute.routeReason !== 'standard_scene';
+        // Adult-route technical outages/invalid JSON: Grok -> DeepSeek V4 Pro -> DeepSeek V4 Flash.
+        // A content-policy refusal is never eligible for fallback.
+        const routeModels = [...new Set(isAdultGrokRoute ? [
+          'xai/grok-4.6',
+          'deepseek/deepseek-v4-pro-0813',
+          'deepseek/deepseek-v4-flash',
+        ] : isWorldReliabilityTrial ? [
           writerRoute.modelId, writerRoute.fallbackModelId,
         ] : worldMode === 'story' ? [
           writerRoute.modelId,
-          'moonshotai/kimi-k2.5',
           'deepseek/deepseek-v3.2',
-        ] : [
+          'deepseek/deepseek-v4-flash',
+        ] : worldMode === 'immersive' ? [
           writerRoute.modelId,
           'google/gemini-3-flash-preview',
-          'deepseek/deepseek-v3.2',
+          'deepseek/deepseek-v4-flash',
+        ] : [
+          writerRoute.modelId,
+          writerRoute.fallbackModelId,
+          'deepseek/deepseek-v4-flash',
         ])];
         let lastProviderError = null;
         let lastProviderReason = null;
@@ -2219,14 +2269,13 @@ exports.worldPrivateTest = onCall({
             }
           }
           const remaining = 180000 - (Date.now() - functionStartedAt) - 25000;
-          const isKimi = targetModel === 'moonshotai/kimi-k2.5';
           const defaultTierLimitMs = worldMode === 'story'
             ? [45000, 45000, 65000][attemptIndex]
             : (attemptIndex === 0 ? 45000 : 35000);
           // Trial: preserve the existing 25s post-writer reserve; recompute before each tier.
           const tierLimitMs = isWorldReliabilityTrial
             ? (attemptIndex === 0 ? (worldMode === 'interaction' ? 80000 : 65000) : 45000)
-            : (isKimi ? (worldMode === 'story' ? 80000 : 65000) : defaultTierLimitMs);
+            : defaultTierLimitMs;
           const budget = Math.min(tierLimitMs, remaining);
           if (budget < 8000) {
             stopReason = 'writer_budget_exhausted';
@@ -2250,15 +2299,12 @@ exports.worldPrivateTest = onCall({
             userCharacters:writerRequestBody.messages[1].content.length,
             totalPromptCharacters:system.length + writerRequestBody.messages[1].content.length,
             maxTokens:writerRoute.maxTokens,
-            providerRouting:isKimi ? 'openrouter_atlas_cloud_preferred_fallbacks_allowed' : 'default',
+            providerRouting:'default',
           });
           let providerCallCompleted = false;
           try {
-            // Prefer AtlasCloud for Kimi while allowing provider fallback.
-            // Keep the shared request unchanged for Gemini, DeepSeek and Grok fallbacks.
-            const tierRequestBody = isKimi
-              ? {...writerRequestBody, provider:{order:['atlas-cloud'], allow_fallbacks:true}}
-              : writerRequestBody;
+            // No Kimi-specific provider override; keep request behavior identical across tiers.
+            const tierRequestBody = writerRequestBody;
             const tierResult = await callAiWithRetry({
               modelId:targetModel,
               requestBody:tierRequestBody,
@@ -2306,6 +2352,14 @@ exports.worldPrivateTest = onCall({
               });
               break;
             }
+            if (checked.reason === 'provider_refusal') {
+              logger.warn('world writer safety refusal, fallback disabled', {
+                mode:worldMode, modelId:targetModel, tier:attemptIndex+1,
+              });
+              throw new HttpsError('failed-precondition',
+                '未能產生這段劇情。請換個敘述方式再試試看',
+                {reason:'provider_content_filtered'});
+            }
             if (checked.reason === 'repeated_story_output') {
               writerRequestBody.messages[1].content += '\n【重複草稿已退回】上一個草稿重播了既有正文。請從歷史末端之後寫新的角色行動或事件後果，不能只換詞重述；保留 JSON 結構與狀態欄規則。';
             }
@@ -2344,7 +2398,7 @@ exports.worldPrivateTest = onCall({
               failureReason:decision.reason,
               fallbackEligible:decision.allowFallback,
               nextModelId:decision.allowFallback ? nextModelId : null,
-              providerRouting:isKimi ? 'openrouter_atlas_cloud_preferred_fallbacks_allowed' : 'default',
+              providerRouting:'default',
             });
             if (!decision.allowFallback) {
               stopReason = decision.reason;
@@ -2362,7 +2416,12 @@ exports.worldPrivateTest = onCall({
           // Keep the existing client error channel and commit/billing rules.
           // Safety refusals stop: no unchanged blocked prompt is sent to another model.
           if (isWriterSafetyFailure(lastProviderError)) {
-            throw new HttpsError('internal','AI 本次無法產生合適的回覆，請調整內容後重試（失敗回覆未儲存）');
+            // A supplier's explicit content rejection is not a provider outage.
+            // Don't retry the blocked request with another supplier. Also don't
+            // surface it as an opaque INTERNAL/500 error to the player.
+            throw new HttpsError('failed-precondition',
+              '未能產生這段劇情。請換個敘述方式再試試看',
+              {reason:'provider_content_filtered'});
           }
           if (stopReason === 'writer_budget_exhausted') {
             throw new HttpsError('internal','AI 回覆已達本輪時間上限，請稍後重試（失敗回覆未儲存）');
@@ -2436,16 +2495,40 @@ exports.worldPrivateTest = onCall({
         },
         unit:'utf16_code_units',
       });
-      const effectiveStoryClock = storyClock.resolveClock(
+      // A completed one-hour transition in the generated narrative must not be
+      // silently reduced to the writer's default 1–5 minute numeric field.
+      // Player instructions retain priority inside resolveClock; regenerate
+      // continues to preserve the existing committed clock.
+      const aiNarratedElapsedMinutes = action === 'regenerate' ? null :
+        storyClock.explicitAiNarratedElapsedMinutes(
+          (Array.isArray(parsed.segments) ? parsed.segments : [])
+            .map(s => String(s?.text || '')).join('\n'));
+      const writerElapsedMinutes = aiNarratedElapsedMinutes ??
+        storyClock.advanceForWorld(world,parsed.storyMinutesElapsed);
+      if (aiNarratedElapsedMinutes !== null) {
+        logger.info('world narrated scene time recognized', {
+          mode:worldMode,minutes:aiNarratedElapsedMinutes,
+          overriddenWriterMinutes:parsed.storyMinutesElapsed,
+        });
+      }
+      const resolvedStoryClock = storyClock.resolveClock(
         previousFictionalClock ? null : previousStoryClock,
-        action === 'send' ? rawMessage : '', storyClock.advanceForWorld(world,parsed.storyMinutesElapsed), 5);
+        action === 'send' ? rawMessage : '', writerElapsedMinutes, 5);
+      // resolveClock intentionally caps *ordinary* turns at five minutes.
+      // Override that cap only when the AI itself described a completed,
+      // explicit scene jump, and no player time command took precedence.
+      const effectiveStoryClock = aiNarratedElapsedMinutes !== null &&
+          resolvedStoryClock.reason === 'normal_turn' && previousStoryClock
+        ? {clock:storyClock.addMinutes(previousStoryClock,aiNarratedElapsedMinutes),
+           reason:'ai_narrated_elapsed'}
+        : resolvedStoryClock;
       // Fictional-day clock and Gregorian clock must never both control the UI.
       // Regeneration reuses the same room time; never advances a second time.
       let finalStoryClock = previousFictionalClock ? null :
         (action === 'regenerate' ? previousStoryClock : effectiveStoryClock.clock);
       const newFictionalClock = action === 'regenerate' ? previousFictionalClock :
         storyClock.resolveFictionalClock(previousFictionalClock,
-          action === 'send' ? rawMessage : '', storyClock.advanceForWorld(world, parsed.storyMinutesElapsed));
+          action === 'send' ? rawMessage : '', writerElapsedMinutes);
 
       let creatorAncientTimeCarry = Number(roomConfig.creatorAncientTimeCarry || 0);
       let creatorAncientTimeCarryTouched = false;
@@ -2825,11 +2908,23 @@ exports.worldPrivateTest = onCall({
           newCreatorStatusForPersistence = literalCreatorStatus(customStatusTemplate, newCreatorStatusForPersistence,
             {time:serverTimeText}) ?? newCreatorStatusForPersistence;
           newCreatorStatusForPersistence = applyCreatorCountdown(newCreatorStatusForPersistence);
-          newCreatorStatusForPersistence = storyClock.advanceCreatorNumericEra(
+          newCreatorStatusForPersistence = advanceCreatorNumericEraSafe(
             customStatusTemplate,newCreatorStatusForPersistence,previousStatusForEraDate,
             validatedElapsedMinutes,{regenerate:action==='regenerate',
               explicitTransition:action==='send' && storyClock.isExplicitCreatorCalendarTransition(rawMessage),
               playerMessage:action==='send' ? rawMessage : ''});
+          // Keep old financial lines when the current player turn does not
+          // explicitly authorize a new transaction. Status text is NOT a ledger.
+          const financialGuard = protectWorldFinancialStatus({
+            current:newCreatorStatusForPersistence,
+            previous:previousStatusForEraDate,
+            playerMessage:action === 'send' ? rawMessage : '',
+            action,
+          });
+          newCreatorStatusForPersistence = financialGuard.status;
+          if(financialGuard.restoredRows)logger.info('WORLD CREATOR FINANCIAL STATUS GUARD', {
+            mode:worldMode,restoredRows:financialGuard.restoredRows,
+          });
           if(newCreatorStatusForPersistence)statusParts.push(newCreatorStatusForPersistence);
           if(gatedStatus.protectedCount)logger.info('WORLD CREATOR CONDITIONAL STATUS GUARD',{
             mode:worldMode,protectedCount:gatedStatus.protectedCount,removedCount:gatedStatus.removedCount,
@@ -2900,7 +2995,7 @@ exports.worldPrivateTest = onCall({
               customStatusTemplate,recoveredAncientResult.status,previousStatusForEraDate,
               {explicitTransition:action==='send' && storyClock.isExplicitCreatorCalendarTransition(rawMessage),
                backendDaysElapsed:verifiedBackendDaysElapsed,regenerate:action==='regenerate'});
-            const anchoredRecoveredStatus=storyClock.advanceCreatorNumericEra(
+            const anchoredRecoveredStatus=advanceCreatorNumericEraSafe(
               customStatusTemplate,applyCreatorCountdown(await finalizeCreatorThoughtAndTime(guardedRecoveredStatus)),
               previousStatusForEraDate,validatedElapsedMinutes,
               {regenerate:action==='regenerate',

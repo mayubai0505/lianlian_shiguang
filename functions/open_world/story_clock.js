@@ -6,32 +6,50 @@ const PAD = n => String(n).padStart(2, '0');
 // Keep the expression anchored to a scene clause so incidental dialogue
 // mentioning an hour does not advance the story clock.
 function explicitSceneElapsedMinutes(message) {
- const input=String(message||'').trim();
- if (!input || /^(?:如果|假如|假設|假使|回憶|回想|想起|夢見|夢裡|假裝|打算|計畫|預計|希望|聽說)/u.test(input)) return null;
- const value=String.raw`(\d{1,4}|[零〇一二兩三四五六七八九十百千]{1,6}|半)`;
+ const original=String(message||'').trim();
+ if (!original || /^(?:如果|假如|假設|假使|回憶|回想|想起|夢見|夢裡|假裝|打算|計畫|預計|希望|聽說)/u.test(original)) return null;
+ // Ignore quoted dialogue so "三小時後再找我" is not mistaken for elapsed scene time.
+ const input=original.replace(/「[^」]*」|『[^』]*』|“[^”]*”|"[^"\n]*"/gu,' ');
+ const value=String.raw`(\d{1,4}|[零〇一二兩三四五六七八九十百千]{1,6}|半|幾|數)`;
  const unit=String.raw`(個?(?:小時|鐘頭)|分鐘|分|天|日)`;
  const approx=String.raw`(?:約莫|大約|大概|差不多|約|將近|近)?`;
- // Example: （約莫過一個小時）、過了大概半小時、時間推進兩小時.
- const prefix=String.raw`(?:^|[\n。！？!?；;，,])\s*[（(]?\s*`+approx+String.raw`\s*(?:已經|又)?\s*(?:過(?:了|去)?|經過(?:了)?|時間(?:已經)?(?:過(?:了|去)?|推進(?:了)?|流逝(?:了)?))\s*`+approx+String.raw`\s*`;
- const match=input.match(new RegExp(prefix+value+String.raw`\s*`+unit+String.raw`(?![\p{Script=Han}\d])`,'u'));
- if (!match) return null;
- const raw=match[1], u=match[2];
- let n;
- if (/^\d+$/u.test(raw)) n=Number(raw);
- else if (raw==='半') n=0.5;
- else {
-  const digits={零:0,〇:0,一:1,二:2,兩:2,三:3,四:4,五:5,六:6,七:7,八:8,九:9};
-  let total=0, segment=0, digit=0;
-  for (const char of raw) {
-   if (Object.prototype.hasOwnProperty.call(digits,char)) digit=digits[char];
-   else if (char==='十'||char==='百'||char==='千') {segment+=(digit||1)*({十:10,百:100,千:1000}[char]);digit=0;}
-   else return null;
-  }
-  n=total+segment+digit;
+ const parse=(raw,u)=>{
+   let n;
+   if (/^\d+$/u.test(raw)) n=Number(raw);
+   else if (raw==='半') n=0.5;
+   else if (raw==='幾'||raw==='數') {
+     // Creator convention used widely in status rules: vague "幾/數小時" = 3 hours.
+     if (!/(?:小時|鐘頭)/u.test(u)) return null;
+     n=3;
+   } else {
+     const digits={零:0,〇:0,一:1,二:2,兩:2,三:3,四:4,五:5,六:6,七:7,八:8,九:9};
+     let segment=0,digit=0;
+     for (const char of raw) {
+       if (Object.prototype.hasOwnProperty.call(digits,char)) digit=digits[char];
+       else if (char==='十'||char==='百'||char==='千') {segment+=(digit||1)*({十:10,百:100,千:1000}[char]);digit=0;}
+       else return null;
+     }
+     n=segment+digit;
+   }
+   const factor=u==='分'||u==='分鐘'?1:(u==='天'||u==='日'?1440:60);
+   const minutes=Math.round(n*factor);
+   return minutes>=1 && minutes<=43200 ? minutes : null;
+ };
+ // Completed elapsed-time wording may appear inside a roleplay sentence, not just
+ // at the start of a clause.  Reject obvious future/modal contexts immediately
+ // before the phrase, but accept narrative forms such as "我收拾好東西，經過三小時，...".
+ const elapsedRe=new RegExp(String.raw`(?:過(?:了|去)?|經過(?:了)?|時間(?:已經)?(?:過(?:了|去)?|推進(?:了)?|流逝(?:了)?))\s*`+approx+String.raw`\s*`+value+String.raw`\s*`+unit+String.raw`(?![\p{Script=Han}\d])`,'gu');
+ for (const match of input.matchAll(elapsedRe)) {
+   const before=input.slice(Math.max(0,(match.index||0)-18),match.index||0);
+   if (/(?:等|等到|等著|要|打算|計畫|預計|希望|如果|假如|假設)\s*$/u.test(before)) continue;
+   const parsed=parse(match[1],match[2]);
+   if(parsed!==null)return parsed;
  }
- const factor= u==='分'||u==='分鐘'?1:(u==='天'||u==='日'?1440:60);
- const minutes=Math.round(n*factor);
- return minutes>=1 && minutes<=43200 ? minutes : null;
+ // Vague scene-cut wording required by creator rules: "數小時後／幾個小時後" = 3h.
+ // Keep this conservative: accept only at a scene boundary or parenthesized stage direction.
+ const vagueAfter=input.match(/(?:^|[\n。！？!?；;，,])\s*[（(]?\s*(?:約莫|大約|大概|差不多|約)?\s*(?:幾個?|數個?)\s*(?:小時|鐘頭)\s*(?:後|過後|之後)(?!\s*(?:要|將|會|可能|應該|預計|打算|計畫|如果|假如|假設|希望))/u);
+ if(vagueAfter)return 180;
+ return null;
 }
 
 
@@ -87,13 +105,20 @@ function explicitNextDayTransition(player) {
  const opened=text.match(opening);
  if(opened)return {period:opened[1]||''};
  // A completed overnight transition in narration.
- const overnight=new RegExp('(?:^|[\n。！？!?；;])\s*[（(]?\s*(?:一夜過去|過了一晚|睡了一晚|睡了一夜|一覺睡到)\s*[，, ]*'+day+'(?:的)?\s*'+part,'u');
+ const overnight=new RegExp('(?:^|[\n。！？!?；;])\s*[（(]?\s*(?:一夜過去|過了一晚|睡了一晚|睡了一夜|睡到|一覺睡到)\s*[，, ]*'+day+'(?:的)?\s*'+part,'u');
  const slept=text.match(overnight);
  if(slept)return {period:slept[1]||''};
- // "我睡了一晚，隔天醒來" (completed action, not a future warning).
- if(/(?:睡了一晚|睡了一夜|睡過一晚|一覺睡醒)\s*[，,]\s*(?:隔天|第二天|翌日|次日)(?:的)?\s*(?:醒來|起床|睜開)/u.test(text) &&
-    !/(?:如果|假如|假設|萬一|要是|不准|不能|別|打算|計畫)\s*[^。！？!?；;\n]{0,28}(?:睡了一晚|睡了一夜|睡過一晚|一覺睡醒)/u.test(text))return {period:''};
- return null;
+  // "我睡了一晚，隔天醒來" (completed action, not a future warning).
+  if(/(?:睡了一晚|睡了一夜|睡過一晚|一覺睡醒)\s*[，,]?\s*(?:隔天|第二天|翌日|次日)(?:的)?\s*(?:醒來|起床|睜開)/u.test(text) &&
+     !/(?:如果|假如|假設|萬一|要是|不准|不能|別|打算|計畫)\s*[^。！？!?；;\n]{0,28}(?:睡了一晚|睡了一夜|睡過一晚|一覺睡醒)/u.test(text))return {period:''};
+  // Embedded completed transition, e.g. "我收拾完東西睡去，隔天醒來".
+  if(/(?:睡去|睡著|入睡|休息|過夜|一夜過去)[^。！？!?；;\n]{0,18}(?:隔天|第二天|翌日|次日)(?:的)?\s*(?:凌晨|清晨|早上|上午|一早|中午|下午|傍晚|晚上|深夜|半夜)?(?:\s*(?:醒來|起床|睜開|天亮))?/u.test(text) &&
+     !/(?:如果|假如|假設|萬一|要是|打算|計畫|預計|希望)[^。！？!?；;\n]{0,30}(?:隔天|第二天|翌日|次日)/u.test(text)) {
+    const m=text.match(/(?:隔天|第二天|翌日|次日)(?:的)?\s*(凌晨|清晨|早上|上午|一早|中午|下午|傍晚|晚上|深夜|半夜)?/u);
+    return {period:m?.[1]||''};
+  }
+  if(/(?:^|[\n。！？!?；;，,）)])\s*(?:天亮後|天亮了|到了天亮)(?=$|[，,。！？!?；;\s])/u.test(text))return {period:'早上'};
+  return null;
 }
 function resolveClock(previous, player, advanceMinutes=3, maxNaturalMinutes=5){
  const base=normalize(previous);const text=String(player||'').trim();
@@ -623,8 +648,8 @@ function advanceCreatorOrdinalTimeHead(oldHead, rules) {
 function protectCreatorStoryDayOrdinal(template, generated, previous, options={}) {
   const now=String(generated||''), before=String(previous||'');
   if(!now.trim() || !before.trim())return now;
-  const explicit=options.explicitTransition===true && options.regenerate!==true;
-  if(explicit)return now; // Existing explicit creator calendar semantics stay intact.
+  // Even explicit player transitions (e.g. 隔天 / 過了三小時) must use the
+  // server-computed day delta. Trusting the model here caused ordinal days to freeze.
   const row=/^\s*([^：:\n]{1,60})[：:]\s*(.*)$/u;
   const templateLabels=new Set(String(template||'').split(/\r?\n/u)
     .map(line=>line.match(row)?.[1]?.trim()).filter(Boolean));
@@ -672,14 +697,86 @@ function protectCreatorStoryDayOrdinal(template, generated, previous, options={}
   }).join('\n');
 }
 
+// Creator-defined ordinal 24-hour calendar, e.g.
+// 「灰霧紀元104年·深秋第24日 23:59（距大黑潮：30天）」.
+// The LAST COMMITTED row is authoritative. We apply only the server-approved
+// elapsed minutes, so crossing midnight advances the ordinal day and decreases
+// an inline "距…：N天" countdown by the exact same number of crossed days.
+// This deliberately does not use wall-clock time or trust model-proposed math.
+function advanceCreatorOrdinal24hCalendar(template, generated, previous, options={}) {
+  const current=String(generated||''), before=String(previous||'');
+  if(!current.trim() || !before.trim() || options.regenerate===true)return current;
+  const elapsed=Number(options.elapsedMinutes);
+  if(!Number.isSafeInteger(elapsed) || elapsed<0 || elapsed>5256000)return current;
+
+  const source=String(template||'');
+  // Require an author-owned time row and strong 24-hour/ordinal-day syntax.
+  // This keeps ordinary numeric text, quest counters and unrelated status rows out.
+  if(!/(?:24\s*小時制|二十四小時制|HH\s*[:：]\s*MM|\[HH:MM\])/iu.test(source) ||
+     !/(?:第\s*\[?\s*(?:XX|\d+)[^\]\n]*\]?\s*[日天]|第\s*[零〇一二兩三四五六七八九十百千\d]+\s*[日天])/iu.test(source))return current;
+
+  const row=/^(\s*([^：:\n]{1,60})[：:]\s*)(.*)$/u;
+  const authoredLabels=new Set(source.split(/\r?\n/u).map(line=>line.match(row)?.[2]?.trim()).filter(Boolean));
+  if(!authoredLabels.size)return current;
+
+  const ordinal=/第\s*([零〇一二兩三四五六七八九十百千\d]{1,8})\s*([日天])/u;
+  const clock=/([01]?\d|2[0-3])\s*[:：]\s*([0-5]\d)(?!\d)/u;
+  const countdown=/(距(?:離)?[^（）()\n｜|]{1,40}?[：:]\s*)(\d{1,5})(\s*天)/u;
+
+  const priorRows=new Map();
+  for(const line of before.replace(/\r\n?/gu,'\n').split('\n')) {
+    const m=line.match(row); if(!m)continue;
+    const label=m[2].trim();
+    if(!authoredLabels.has(label) || priorRows.has(label))continue;
+    const day=m[3].match(ordinal), hm=m[3].match(clock);
+    if(!day || !hm)continue;
+    const parsedDay=parseDayNumber(day[1]);
+    if(!Number.isInteger(parsedDay) || parsedDay<1 || parsedDay>9999)continue;
+    priorRows.set(label,{line,prefix:m[1],body:m[3],day,hm,parsedDay});
+  }
+  if(!priorRows.size)return current;
+
+  return current.replace(/\r\n?/gu,'\n').split('\n').map(line=>{
+    const m=line.match(row); if(!m)return line;
+    const label=m[2].trim(), prior=priorRows.get(label);
+    if(!prior)return line;
+
+    const startMinutes=Number(prior.hm[1])*60+Number(prior.hm[2]);
+    const total=startMinutes+elapsed;
+    const crossedDays=Math.floor(total/1440);
+    const minuteOfDay=((total%1440)+1440)%1440;
+    const nextHour=Math.floor(minuteOfDay/60), nextMinute=minuteOfDay%60;
+    const nextDay=prior.parsedDay+crossedDays;
+    if(nextDay<1 || nextDay>9999)return line;
+
+    // Start from the last committed creator row, not the model proposal.
+    let body=prior.body;
+    const dayRaw=prior.day[1];
+    const dayText=/^\d+$/u.test(dayRaw)
+      ? String(nextDay).padStart(dayRaw.length,'0')
+      : chineseDay(nextDay);
+    body=body.replace(ordinal, match=>match.replace(dayRaw,dayText));
+    body=body.replace(clock, (_all,h,_m)=>`${String(nextHour).padStart(h.length,'0')}:${PAD(nextMinute)}`);
+
+    if(crossedDays>0 && countdown.test(body)) {
+      body=body.replace(countdown,(_all,prefix,n,suffix)=>{
+        const remaining=Math.max(0,Number(n)-crossedDays);
+        return prefix+String(remaining).padStart(String(n).length,'0')+suffix;
+      });
+    }
+    return m[1]+body;
+  }).join('\n');
+}
+
 // V5: A creator-declared time field is a VIEW, never an authoritative clock.
 // Preserve the prior committed field's calendar and apply ONLY the server-approved
 // elapsed minutes when its display is an unambiguous Gregorian numeric date.
 // For calendars we cannot calculate, keep the last committed display unchanged.
 // No model text can establish a date change on an ordinary turn.
 function enforceCreatorTimeAuthority(template, generated, previous, options={}) {
-  const now=String(generated||'');
   const before=String(previous||'');
+  const ordinal24h=advanceCreatorOrdinal24hCalendar(template, generated, previous, options);
+  const now=String(ordinal24h||'');
   if(!now.trim() || !before.trim()) return now;
   const noOp=options.regenerate===true;
   const explicit=options.explicitTransition===true && !noOp;
@@ -917,4 +1014,4 @@ function advanceCreatorAncientDisplay(template, status, previous, elapsedMinutes
   return result(lines.join('\n'),remain,true,'advanced');
 }
 
-module.exports={explicitAiNarratedElapsedMinutes,normalize,label,addMinutes,resolveClock,creatorInitialCalendar,initialStoryClock,parseStatusClock,enforceStatusTime,detectTimeStyle,branchOfHour,displayTime,timePresentationDirective,creatorTimePolicy,advanceForWorld,normalizeFictionalClock,parseFictionalTime,parseFictionalDaypart,parseFictionalStatusAnchor,displayFictionalClock,resolveFictionalClock,preserveOpaqueCreatorCalendar,isExplicitCreatorCalendarTransition,explicitPlayerAncientTime,reconcileExplicitPlayerAncientTime,protectHourglassStoryDate,enforceCreatorTimeAuthority,protectCreatorStoryDayOrdinal,creatorOrdinalTimeRules,advanceCreatorOrdinalTimeHead,reconcileExplicitAncientSceneTime,advanceCreatorAncientDisplay};
+module.exports={explicitAiNarratedElapsedMinutes,normalize,label,addMinutes,resolveClock,creatorInitialCalendar,initialStoryClock,parseStatusClock,enforceStatusTime,detectTimeStyle,branchOfHour,displayTime,timePresentationDirective,creatorTimePolicy,advanceForWorld,normalizeFictionalClock,parseFictionalTime,parseFictionalDaypart,parseFictionalStatusAnchor,displayFictionalClock,resolveFictionalClock,preserveOpaqueCreatorCalendar,isExplicitCreatorCalendarTransition,explicitPlayerAncientTime,reconcileExplicitPlayerAncientTime,protectHourglassStoryDate,advanceCreatorOrdinal24hCalendar,enforceCreatorTimeAuthority,protectCreatorStoryDayOrdinal,creatorOrdinalTimeRules,advanceCreatorOrdinalTimeHead,reconcileExplicitAncientSceneTime,advanceCreatorAncientDisplay};

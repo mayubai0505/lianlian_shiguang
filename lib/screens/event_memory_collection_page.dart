@@ -852,6 +852,7 @@ class _MemoryCollectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final provider = _safeImageProvider(memory.characterImageSnapshot);
+    if (memory.isAi && provider != null) { return InkWell(onTap: onTap, child: Image(image: provider, fit: BoxFit.contain)); }
 
     return InkWell(
       borderRadius: BorderRadius.circular(20),
@@ -1155,7 +1156,7 @@ class _EventMemoryCollectionDetailPageState
               ),
             ),
             const SizedBox(height: 22),
-            FilledButton.icon(
+            if (!memory.isAi) FilledButton.icon(
               onPressed: memory.sceneSnapshot.isEmpty
                   ? null
                   : () {
@@ -1188,7 +1189,7 @@ class _EventMemoryCollectionDetailPageState
               ),
             ),
             const SizedBox(height: 8),
-            TextButton.icon(
+            if (!memory.isAi) TextButton.icon(
               onPressed: _deleting ? null : _deleteCollection,
               icon: _deleting
                   ? const SizedBox(
@@ -1218,6 +1219,7 @@ class _CollectedMemoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = _safeImageProvider(memory.characterImageSnapshot);
+    if (memory.isAi && provider != null) { return AspectRatio(aspectRatio: 9/16, child: Image(image: provider, fit: BoxFit.contain)); }
 
     return AspectRatio(
       aspectRatio: 3 / 4,
@@ -1723,6 +1725,7 @@ class _CollectedMemory {
   final String memoryTitle;
   final String characterName;
   final String characterImageSnapshot;
+  final bool isAi;
   final String playerName;
   final String playerProfileName;
   final String finalText;
@@ -1734,6 +1737,7 @@ class _CollectedMemory {
     required this.memoryTitle,
     required this.characterName,
     required this.characterImageSnapshot,
+    this.isAi = false,
     required this.playerName,
     required this.playerProfileName,
     required this.finalText,
@@ -1760,6 +1764,7 @@ class _CollectedMemory {
       reference: doc.reference,
       memoryTitle: (data['memoryTitle'] ?? '限定回憶').toString(),
       characterName: (data['characterName'] ?? '角色').toString(),
+      isAi: data['generationMode'] == 'ai',
       characterImageSnapshot:
       (data['characterImageSnapshot'] ?? '').toString().trim(),
       playerName: (data['playerName'] ?? '你').toString(),

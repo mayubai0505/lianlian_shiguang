@@ -9,8 +9,8 @@ function createCancelRoleAgreementHandler({db,APP_ID,HttpsError,FieldValue}) {
     if (!/^[^/]{1,160}$/.test(characterId) || !/^[a-f0-9]{64}$/.test(agreementId)) {
       throw new HttpsError('invalid-argument', '約定編號無效');
     }
-    const ref = db.collection('role_agreements').doc(uid).collection('characters')
-      .doc(characterId).collection('items').doc(agreementId);
+    const ref = db.collection('users').doc(uid).collection('characters')
+      .doc(characterId).collection('role_agreements').doc(agreementId);
     return db.runTransaction(async tx => {
       const snapshot = await tx.get(ref);
       if (!snapshot.exists) throw new HttpsError('not-found','找不到約定');

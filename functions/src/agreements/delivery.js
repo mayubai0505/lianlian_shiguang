@@ -2,7 +2,9 @@
 // US region minute scheduler. Firestore jobs contain no message secrets and
 // all state changes are transaction-guarded to avoid duplicate deliveries.
 function createRoleAgreementDelivery({db,APP_ID,FieldValue,sendToUserDevices,logger}) {
-  const {sendVoipToUser}=require('./apns_voip');
+  // iOS PushKit bridge is optional during rollout. Android/ordinary FCM must still work if absent.
+  let sendVoipToUser=null;
+  try { ({sendVoipToUser}=require('./apns_voip')); } catch (_) { logger.warn('role agreement APNs VoIP module unavailable; using FCM fallback'); }
   const {getMessaging}=require('firebase-admin/messaging');
   async function sendAndroidIncoming(uid,message) {
     const list=await db.collection('users').doc(uid).collection('fcmTokens').get();
@@ -14,8 +16,8 @@ function createRoleAgreementDelivery({db,APP_ID,FieldValue,sendToUserDevices,log
     return {successCount:response.successCount};
   }
   const jobs = db.collection('artifacts').doc(APP_ID).collection('role_agreement_jobs');
-  const agreementRef = job => db.collection('role_agreements').doc(job.uid).collection('characters')
-    .doc(job.characterId).collection('items').doc(job.agreementId);
+  const agreementRef = job => db.collection('users').doc(job.uid).collection('characters')
+    .doc(job.characterId).collection('role_agreements').doc(job.agreementId);
   return async () => {
     const now = Date.now();
     const due = await jobs.where('nextActionAt','<=',new Date(now)).orderBy('nextActionAt').limit(75).get();
@@ -107,12 +109,19 @@ function createRoleAgreementDelivery({db,APP_ID,FieldValue,sendToUserDevices,log
             : await sendToUserDevices(job.uid,message);
           success=result.successCount>0;
           if(call) {
-            const voip=await sendVoipToUser({db,userId:job.uid,payload:{
-              type:'role_agreement_call',agreementId:job.agreementId,
-              characterId:job.characterId,sessionId:String(agreement.sessionId||''),
-              characterName:String(agreement.characterName||'角色').slice(0,60)
-            },logger});
-            success=success || voip.successCount>0;
+            if (typeof sendVoipToUser === 'function') {
+              const voip=await sendVoipToUser({db,userId:job.uid,payload:{
+                type:'role_agreement_call',agreementId:job.agreementId,
+                characterId:job.characterId,sessionId:String(agreement.sessionId||''),
+                characterName:String(agreement.characterName||'角色').slice(0,60)
+              },logger});
+              success=success || voip.successCount>0;
+            } else {
+              // iOS/legacy fallback: ordinary high-priority FCM notification.
+              // Android may receive this too; state transition remains transaction-idempotent.
+              const fallback=await sendToUserDevices(job.uid,message);
+              success=success || fallback.successCount>0;
+            }
           }
         }
         catch(e) {logger.warn('role agreement push failed',{id:job.agreementId,error:String(e)});}

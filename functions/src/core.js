@@ -147,6 +147,7 @@ const {createEventTaskUtils} = require('./events/task_utils');
 const {createCharacterLikeHandler} = require('./characters/like_handler');
 const {createWorldLikeHandler, syncCharacterLikeIndex} = require('./characters/work_engagement');
 const {createEventDailyCheckInHandler} = require('./events/event_daily_checkin');
+const {createUpdateRoleAgreementHandler} = require('./agreements/update');
 const {isAiContentFiltered,hasUsableAiContent,isAiTimeoutError} = require('./ai/response_checks');
 
 const openRouterApiKey = defineSecret("OPENROUTER_API_KEY");
@@ -171,6 +172,42 @@ const {createAdminSupportReportNotification} = require('./notifications/admin_su
 const {getUserFcmTokens, sendToUserDevices} = createDeviceDelivery({db, getMessaging});
 const {createEventEndingText} = require('./notifications/event_ending_text');
 const {getEventEndingNotificationText} = createEventEndingText({normalizeNotificationLocale});
+
+
+// ============================================================
+// 🦋 拾光約定｜US 排程、取消、來電接聽控制
+// 正式約定儲存在 users/{uid}/characters/{characterId}/role_agreements/{id}
+// 排程工作儲存在 artifacts/{APP_ID}/role_agreement_jobs/{id}
+// ============================================================
+const {createConfirmRoleAgreementHandler} = require('./agreements/confirm');
+const {createCancelRoleAgreementHandler} = require('./agreements/cancel');
+const {createRoleAgreementDelivery} = require('./agreements/delivery');
+const {createRoleAgreementCallHandlers} = require('./agreements/call_handlers');
+
+exports.confirmRoleAgreement = onCall({
+  region:'us-central1', timeoutSeconds:30, memory:'256MiB', maxInstances:3,
+}, createConfirmRoleAgreementHandler({db,APP_ID,HttpsError,FieldValue}));
+
+exports.cancelRoleAgreement = onCall({
+  region:'us-central1', timeoutSeconds:30, memory:'256MiB', maxInstances:3,
+}, createCancelRoleAgreementHandler({db,APP_ID,HttpsError,FieldValue}));
+
+// 每分鐘掃描到期的約定。Handler 內含 transaction lease、重試與防重複配送。
+exports.dispatchRoleAgreements = onSchedule({
+  schedule:'every 1 minutes', region:'us-central1', timeZone:'Etc/UTC',
+  memory:'256MiB', timeoutSeconds:120, maxInstances:1,
+}, createRoleAgreementDelivery({db,APP_ID,FieldValue,sendToUserDevices,logger}));
+
+const roleAgreementCalls = createRoleAgreementCallHandlers({db,APP_ID,HttpsError,FieldValue});
+exports.acceptRoleAgreementCall = onCall({
+  region:'us-central1', timeoutSeconds:30, memory:'256MiB', maxInstances:3,
+}, roleAgreementCalls.accept);
+exports.declineRoleAgreementCall = onCall({
+  region:'us-central1', timeoutSeconds:30, memory:'256MiB', maxInstances:3,
+}, roleAgreementCalls.decline);
+exports.finishRoleAgreementCall = onCall({
+  region:'us-central1', timeoutSeconds:30, memory:'256MiB', maxInstances:3,
+}, roleAgreementCalls.finish);
 
 const WEB_PRODUCTS = {
   web_monthly_card_250: {
@@ -296,6 +333,18 @@ const {createDeletePlayerProfileHandler} = require('./chat/delete_player_profile
 exports.deletePlayerProfileUs = onCall({
     region: 'us-central1', timeoutSeconds: 60, memory: '256MiB', maxInstances: 3,
 }, createDeletePlayerProfileHandler({db, APP_ID, FieldValue, HttpsError}));
+
+// New US-only callable for modifying existing pending role agreements.
+// Does not change the existing confirm/cancel endpoints used by released Apps.
+exports.updateRoleAgreementUs = onCall({
+    region: 'us-central1', timeoutSeconds: 30, memory: '256MiB', maxInstances: 3,
+}, createUpdateRoleAgreementHandler({db, APP_ID, HttpsError, FieldValue}));
+
+// Owner-authorized deletion; cancel pending delivery in same Firestore transaction.
+const {createDeleteRoleAgreementHandler} = require('./agreements/delete');
+exports.deleteRoleAgreementUs = onCall({
+    region: 'us-central1', timeoutSeconds: 30, memory: '256MiB', maxInstances: 3,
+}, createDeleteRoleAgreementHandler({db, APP_ID, HttpsError}));
 
 // Index-only bridge for older clients that write the original liker directly.
 exports.syncCharacterLikeIndex = onDocumentWritten({
@@ -10775,6 +10824,9 @@ const creatorFlowerGiftHandlers = createCreatorFlowerGiftHandlers({
 exports.searchCreatorGiftFollowers = creatorFlowerGiftHandlers.searchCreatorGiftFollowers;
 exports.giftCreatorFlowers = creatorFlowerGiftHandlers.giftCreatorFlowers;
 exports.claimCreatorFlowerGift = creatorFlowerGiftHandlers.claimCreatorFlowerGift;
+exports.searchCreatorGiftFollowersUs = creatorFlowerGiftHandlers.searchCreatorGiftFollowersUs;
+exports.giftCreatorFlowersUs = creatorFlowerGiftHandlers.giftCreatorFlowersUs;
+exports.claimCreatorFlowerGiftUs = creatorFlowerGiftHandlers.claimCreatorFlowerGiftUs;
 
 // V51: 創作者合作申請與稽核邏輯移至獨立模組，入口設定不變。
 const {createCreatorApplicationHandler} = require('./creator/cooperation_application');
@@ -10785,10 +10837,12 @@ exports.submitCreatorCooperationApplication = onCall({region: REGION, timeoutSec
 const { createCreatorMonthlyRewards } = require('./creator/monthly_rewards');
 const creatorMonthlyRewardHandlers = createCreatorMonthlyRewards({
   db, APP_ID, REGION, HttpsError, Timestamp, FieldValue, onDocumentCreated, onCall, creatorFanMailVerified,
+  sendToUserDevices, logger,
 });
 exports.creatorRewardTrackDraftBirth = creatorMonthlyRewardHandlers.creatorRewardTrackDraftBirth;
 exports.creatorRewardTrackPrivateBirth = creatorMonthlyRewardHandlers.creatorRewardTrackPrivateBirth;
 exports.creatorRewardTrackPublicBirth = creatorMonthlyRewardHandlers.creatorRewardTrackPublicBirth;
+exports.creatorRewardTrackPublicWorldBirth = creatorMonthlyRewardHandlers.creatorRewardTrackPublicWorldBirth;
 exports.getCreatorMonthlyReward = creatorMonthlyRewardHandlers.getCreatorMonthlyReward;
 exports.claimCreatorMonthlyReward = creatorMonthlyRewardHandlers.claimCreatorMonthlyReward;
 
@@ -11166,3 +11220,9 @@ exports.sweepCallRealtimeV41Us = onSchedule({region:'us-central1',schedule:'ever
 const socialPromotionHandlers = require('./creator/promotion_submissions').createPromotionSubmissions({db,APP_ID,FieldValue,HttpsError,requireAdmin:requireRewardCampaignAdmin,getBucket:()=>require('firebase-admin/storage').getStorage().bucket(),logger});
 exports.creatorSocialPromotionUs = onCall({region:'us-central1',memory:'256MiB',timeoutSeconds:60,maxInstances:2},socialPromotionHandlers.creator);
 exports.adminSocialPromotionUs = onCall({region:'us-central1',memory:'256MiB',timeoutSeconds:30,maxInstances:2},socialPromotionHandlers.admin);
+
+// AI limited event memory, US region only.
+const limitedMemoryKey = defineSecret('LIMITED_MEMORY_GEMINI_KEY');
+const eventMemoryAI = require('./limited_memory/event_memory_handler').createEventMemoryHandlers({db,admin,APP_ID,FieldValue,HttpsError,reusableEventIsRunning,geminiApiKey:limitedMemoryKey});
+exports.generateEventMemoryUs = onCall({region:'us-central1',timeoutSeconds:240,memory:'512MiB',maxInstances:3,concurrency:2,secrets:[limitedMemoryKey]},eventMemoryAI.handle);
+exports.recoverEventMemoryJobsUs = onSchedule({region:'us-central1',schedule:'every 5 minutes',timeoutSeconds:120,memory:'256MiB',maxInstances:1},eventMemoryAI.recover);

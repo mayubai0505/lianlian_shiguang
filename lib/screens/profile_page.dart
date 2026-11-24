@@ -115,6 +115,8 @@ class _ProfilePageState extends State<ProfilePage>
   bool _isVerifiedCreator = false; // 官方合作創作者認證徽章
   bool _hasActiveMonthlyCard = false;   // 是否持有有效月卡
   bool _isMonthlyRewardClaimed = false; // 今日月卡任務是否已領取
+  // 同一項任務同時只能發出一次請求；後端交易仍是最終防重複依據。
+  final Set<String> _claimingTaskKeys = <String>{};
   bool _isDefaultTheme(BuildContext context) {
     return Provider.of<ThemeNotifier>(
       context,
@@ -859,7 +861,39 @@ class _ProfilePageState extends State<ProfilePage>
     });
   }
 
-  // ✨ 3新增「領取獎勵」的核心函式
+  // Callable 回應可能遺失，但伺服器已完成交易。只用伺服器資料核對，
+  // 絕不靠舊快取或餘額增幅推測領獎結果，也不自動重複發送領獎請求。
+  Future<bool> _verifyTaskClaimOnServer(String uid, String taskKey) async {
+    final userRef = _db.collection('users').doc(uid);
+    final today = _checkInDayKey; // 台灣 UTC+8 日期，與後端一致
+    try {
+      final snap = await userRef.get(const GetOptions(source: Source.server));
+      if (snap.exists) {
+        final data = snap.data() ?? <String, dynamic>{};
+        final resetAt = data['lastTasksResetDate'];
+        final tasks = data['dailyTasks'];
+        if (resetAt is Timestamp &&
+            _checkInDayOf(resetAt) == today &&
+            tasks is Map && tasks[taskKey] == true) {
+          return true;
+        }
+      }
+    } catch (e) {
+      debugPrint('⚠️ 任務領獎狀態核對失敗：$e');
+    }
+
+    // 當伺服器已寫入領取日誌，但任務資料尚未顯示時，使用固定 ID 核對。
+    try {
+      final logId = 'heartbeat_${today.replaceAll('-', '')}_$taskKey';
+      final log = await userRef.collection('flower_logs').doc(logId)
+          .get(const GetOptions(source: Source.server));
+      return log.exists;
+    } catch (e) {
+      debugPrint('⚠️ 任務領獎日誌核對失敗：$e');
+      return false;
+    }
+  }
+
   Future<void> _claimTaskReward(
       String taskName,
       String progressField,
@@ -867,45 +901,46 @@ class _ProfilePageState extends State<ProfilePage>
       int rewardAmount,
       VoidCallback onDialogSetState,
       ) async {
-    if (_userId == null) return;
-
-    final userDocRef = _db.collection('users').doc(_userId);
+    final uid = _userId;
+    if (uid == null || !_claimingTaskKeys.add(claimedField)) return;
     final l10n = AppLocalizations.of(context)!;
 
     try {
-      // 不接受客戶端指定的花花數量；後端依 taskKey 決定固定獎勵。
+      // 由後端決定發放金額；跨地區仍使用相同的固定日誌與交易，防止重領。
       final result = await FirebaseFunctions.instanceFor(
-        region: 'asia-east1',
-      ).httpsCallable('claimHeartbeatTaskReward').call({
+        region: 'us-central1',
+      ).httpsCallable('claimHeartbeatTaskRewardUs').call({
         'taskKey': claimedField,
       });
       final data = Map<String, dynamic>.from(result.data as Map);
-      if (data['alreadyClaimed'] == true) {
-        throw StateError(l10n.task_reward_already_claimed);
-      }
-      if (data['claimed'] != true) {
+      if (data['claimed'] != true && data['alreadyClaimed'] != true) {
         throw StateError('任務領取未完成');
       }
-
-      if (!mounted) return;
-
-      // ✅ 交易成功後，才更新畫面
+      if (!mounted || _userId != uid) return;
       onDialogSetState();
-
       ToastUtils.showCenterToast(
         context,
-        l10n.task_reward_claimed(taskName, rewardAmount.toString()),
+        data['alreadyClaimed'] == true
+            ? l10n.task_reward_already_claimed
+            : l10n.task_reward_claimed(taskName, rewardAmount.toString()),
       );
     } catch (e) {
-      if (!mounted) return;
-
-      ToastUtils.showCenterToast(
-        context,
-        l10n.claim_failed_error(
-          e.toString().replaceFirst('Exception: ', ''),
-        ),
-        isError: true,
-      );
+      // 不盲目重試；只核對資料庫是否已入帳，避免誤報及重複領取。
+      final verified = await _verifyTaskClaimOnServer(uid, claimedField);
+      if (!mounted || _userId != uid) return;
+      if (verified) {
+        onDialogSetState();
+        ToastUtils.showCenterToast(context, l10n.task_reward_already_claimed);
+      } else {
+        debugPrint('❌ 心動日記領獎失敗 ($claimedField): $e');
+        ToastUtils.showCenterToast(
+          context,
+          l10n.claim_failed_error(e.toString().replaceFirst('Exception: ', '')),
+          isError: true,
+        );
+      }
+    } finally {
+      _claimingTaskKeys.remove(claimedField);
     }
   }
 

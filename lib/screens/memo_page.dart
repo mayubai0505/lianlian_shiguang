@@ -76,8 +76,9 @@ class _MemoPageState extends State<MemoPage> with SingleTickerProviderStateMixin
     final uid = _userId;
     if (uid == null || uid.isEmpty) return null;
     return FirebaseFirestore.instance
-        .collection('role_agreements').doc(uid)
-        .collection('characters').doc(widget.character.id).collection('items');
+        .collection('users').doc(uid)
+        .collection('characters').doc(widget.character.id)
+        .collection('role_agreements');
   }
 
   @override
@@ -625,6 +626,27 @@ class _MemoPageState extends State<MemoPage> with SingleTickerProviderStateMixin
     );
   }
 
+  String _roleAgreementFriendlyError(Object error, {required String action}) {
+    if (error is FirebaseFunctionsException) {
+      switch (error.code) {
+        case 'not-found':
+          return '找不到這筆約定，可能已經取消或刪除。';
+        case 'failed-precondition':
+          return action == 'delete'
+              ? '這筆約定正在執行中，請先取消或稍後再刪除。'
+              : '這筆約定目前無法變更，請重新整理後再試。';
+        case 'unauthenticated':
+          return '登入狀態已失效，請重新登入後再試。';
+        case 'permission-denied':
+          return '目前無法操作這筆約定。';
+        case 'unavailable':
+        case 'deadline-exceeded':
+          return '目前連線不穩定，請稍後再試。';
+      }
+    }
+    return '目前無法完成操作，請稍後再試。';
+  }
+
   // 正式取消才更新雲端，刪除本機畫面不等於取消排程。
   Future<void> _cancelRoleAgreement(String agreementId) async {
     final confirmed = await showDialog<bool>(
@@ -647,7 +669,124 @@ class _MemoPageState extends State<MemoPage> with SingleTickerProviderStateMixin
       });
       if (mounted) ToastUtils.showCenterToast(context, '已取消角色約定');
     } catch (e) {
-      if (mounted) ToastUtils.showCenterToast(context, '取消失敗：$e', isError: true);
+      debugPrint('❌ 取消角色約定失敗: $e');
+      if (mounted) ToastUtils.showCenterToast(
+        context, _roleAgreementFriendlyError(e, action: 'cancel'), isError: true);
+    }
+  }
+
+  // 從備忘錄直接修改已排程約定；伺服器會原子更新原約定和排程。
+  Future<void> _editRoleAgreement(
+      String agreementId, Map<String, dynamic> data) async {
+    final stamp = data['scheduledAt'];
+    if (stamp is! Timestamp || data['status'] != 'scheduled' ||
+        data['deliveryEnabled'] == false) {
+      ToastUtils.showCenterToast(context, '此約定已開始執行或不允許修改', isError: true);
+      return;
+    }
+    final sessionId = (data['sessionId'] ?? '').toString();
+    if (sessionId.isEmpty) {
+      ToastUtils.showCenterToast(context, '找不到約定聊天室資訊', isError: true);
+      return;
+    }
+    final original = stamp.toDate();
+    var edited = original;
+    var submitting = false;
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, refresh) => AlertDialog(
+          title: const Text('修改角色約定'),
+          content: ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.edit_calendar_outlined),
+            title: Text(DateFormat('yyyy/MM/dd HH:mm').format(edited)),
+            subtitle: const Text('點選修改日期與時間'),
+            onTap: submitting ? null : () async {
+              final now = DateTime.now();
+              final initial = edited.isAfter(now) ? edited : now.add(const Duration(days: 1));
+              final day = await showDatePicker(
+                context: ctx,
+                initialDate: initial,
+                firstDate: DateTime(now.year, now.month, now.day),
+                lastDate: DateTime(now.year + 1, now.month, now.day));
+              if (day == null || !ctx.mounted) return;
+              final time = await showTimePicker(
+                  context: ctx, initialTime: TimeOfDay.fromDateTime(edited));
+              if (time == null || !ctx.mounted) return;
+              refresh(() => edited = DateTime(day.year, day.month, day.day,
+                  time.hour, time.minute));
+            },
+          ),
+          actions: [
+            TextButton(onPressed: submitting ? null : () => Navigator.pop(ctx),
+                child: const Text('保留原時間')),
+            FilledButton(
+              onPressed: submitting ? null : () async {
+                if (!edited.isAfter(DateTime.now().add(const Duration(minutes: 1)))) {
+                  ScaffoldMessenger.of(ctx).showSnackBar(
+                      const SnackBar(content: Text('請選擇未來的時間')));
+                  return;
+                }
+                refresh(() => submitting = true);
+                try {
+                  final result = await FirebaseFunctions.instanceFor(region: 'us-central1')
+                      .httpsCallable('updateRoleAgreementUs').call({
+                    'characterId': widget.character.id,
+                    'agreementId': agreementId,
+                    'sessionId': sessionId,
+                    'scheduledAtMs': edited.millisecondsSinceEpoch,
+                  });
+                  if (result.data is! Map || result.data['success'] != true) {
+                    throw StateError('伺服器未確認修改成功');
+                  }
+                  if (!ctx.mounted) return;
+                  Navigator.pop(ctx);
+                  if (mounted) ToastUtils.showCenterToast(context, '約定時間已更新');
+                } catch (e) {
+                  if (ctx.mounted) {
+                    debugPrint('❌ 更新角色約定失敗: $e');
+                    ScaffoldMessenger.of(ctx).showSnackBar(
+                        SnackBar(content: Text(_roleAgreementFriendlyError(e, action: 'update'))));
+                    refresh(() => submitting = false);
+                  }
+                }
+              },
+              child: Text(submitting ? '更新中…' : '確認修改'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // 刪除與取消分開：刪除需要後端同步移除待送排程，禁止直接從 App 刪除 Firestore。
+  Future<void> _deleteRoleAgreement(String agreementId) async {
+    final confirmed = await showDialog<bool>(context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('刪除角色約定？'),
+        content: const Text('尚未送出的提醒會同步取消，刪除後將無法復原。'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('返回')),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('確認刪除')),
+        ],
+      ));
+    if (confirmed != true || !mounted) return;
+    try {
+      final result = await FirebaseFunctions.instanceFor(region: 'us-central1')
+        .httpsCallable('deleteRoleAgreementUs').call({
+          'characterId': widget.character.id,
+          'agreementId': agreementId,
+        });
+      if (result.data is! Map || result.data['success'] != true) {
+        throw StateError('伺服器未確認刪除成功');
+      }
+      if (mounted) ToastUtils.showCenterToast(context, '角色約定已刪除');
+    } catch (e) {
+      debugPrint('❌ 刪除角色約定失敗: $e');
+      if (mounted) ToastUtils.showCenterToast(
+        context, _roleAgreementFriendlyError(e, action: 'delete'), isError: true);
     }
   }
 
@@ -742,15 +881,31 @@ class _MemoPageState extends State<MemoPage> with SingleTickerProviderStateMixin
                     style: GoogleFonts.notoSerifTc(fontSize: 15, color: onSurface)),
                   const SizedBox(height: 9),
                   Text(when, style: TextStyle(color: onSurface.withValues(alpha: .65), fontSize: 12)),
-                  if (status == 'pending_delivery' || status == 'scheduled' || status == 'ringing')
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton.icon(
-                        onPressed: () => _cancelRoleAgreement(docs[index].id),
-                        icon: const Icon(Icons.event_busy_outlined, size: 18),
-                        label: const Text('取消約定'),
-                      ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Wrap(
+                      spacing: 6,
+                      children: [
+                        if (status == 'scheduled' && data['deliveryEnabled'] != false)
+                          TextButton.icon(
+                            onPressed: () => _editRoleAgreement(docs[index].id, data),
+                            icon: const Icon(Icons.edit_calendar_outlined, size: 18),
+                            label: const Text('修改'),
+                          ),
+                        if (status == 'scheduled' || status == 'pending_delivery' || status == 'ringing')
+                          TextButton.icon(
+                            onPressed: () => _cancelRoleAgreement(docs[index].id),
+                            icon: const Icon(Icons.event_busy_outlined, size: 18),
+                            label: const Text('取消'),
+                          ),
+                        TextButton.icon(
+                          onPressed: () => _deleteRoleAgreement(docs[index].id),
+                          icon: const Icon(Icons.delete_outline, size: 18),
+                          label: const Text('刪除'),
+                        ),
+                      ],
                     ),
+                  ),
                   if (isCall) Padding(
                     padding: const EdgeInsets.only(top: 6),
                     child: Text('接聽前確認扣除 20 花花；未接聽不扣費',

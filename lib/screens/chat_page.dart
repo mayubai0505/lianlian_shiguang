@@ -5487,12 +5487,146 @@ class _ChatPageState extends State<ChatPage> {
       await _showRoleAgreementConfirmation(previous, sessionId);
       return;
     }
-    // 非直接同意會視為新提案；避免過期或不相關的上下文觸發。
+    // 「改一點半吧」等修訂意圖：先找本聊天室唯一待執行約定，
+    // 只由玩家在修改視窗確認後，透過後端原子交易改寫舊排程。
+    if (RoleAgreementCandidateDetector.isRescheduleIntent(player)) {
+      await _handleRoleAgreementReschedule(player, sessionId);
+      return;
+    }
+    // 玩家主動提出明確、有時間的約定：直接顯示二次確認視窗。
+    // 此處不寫入約定，也不扣花；必須在視窗內再按「確認約定」。
     _pendingRoleAgreement = null;
     final now = DateTime.now();
+    final fromPlayer = RoleAgreementCandidateDetector.extractForConfirmation(player, requestId, now);
+    if (fromPlayer != null) {
+      await _showRoleAgreementConfirmation(fromPlayer, sessionId);
+      return;
+    }
+    // 角色主動提議則維持原有兩輪同意流程，避免角色單方面安排。
     final fromCharacter = RoleAgreementCandidateDetector.extract(aiText, requestId, now);
-    final fromPlayer = RoleAgreementCandidateDetector.extract(player, requestId, now);
-    _pendingRoleAgreement = fromCharacter ?? fromPlayer;
+    _pendingRoleAgreement = fromCharacter;
+  }
+
+  Future<void> _handleRoleAgreementReschedule(String player, String sessionId) async {
+    if (!mounted || _roleAgreementDialogOpen || _userId == null) return;
+    try {
+      final snapshots = await _db.collection('users').doc(_userId)
+          .collection('characters').doc(_currentCharacter.id)
+          .collection('role_agreements').get();
+      final candidates = snapshots.docs.where((doc) {
+        final data = doc.data();
+        return data['sessionId'] == sessionId && data['status'] == 'scheduled' &&
+            data['deliveryEnabled'] != false && data['scheduledAt'] is Timestamp;
+      }).toList();
+      if (!mounted || _sessionId != sessionId) return;
+      // 多筆時絕不擅自挑一筆；由玩家到備忘錄操作原約定。
+      if (candidates.length != 1) {
+        _showCenterToast(candidates.isEmpty
+            ? '沒有找到可修改的未來約定，請先建立約定。'
+            : '找到多筆約定，請到拾光約定列表選擇要修改的那一筆。');
+        return;
+      }
+      final doc = candidates.single;
+      final data = doc.data();
+      final original = (data['scheduledAt'] as Timestamp).toDate();
+      final suggested = RoleAgreementCandidateDetector.rescheduledTime(
+        player, original, DateTime.now());
+      if (suggested == null) {
+        // 無法安全解析時，不亂猜隔天：保留原時間預選，交由玩家在修改視窗選擇。
+        _showCenterToast('新時間無法自動判定，請在接下來的視窗手動選擇日期與時間。');
+      }
+      await _showRoleAgreementRescheduleDialog(
+        agreementId: doc.id, sessionId: sessionId,
+        oldDateTime: original, newDateTime: suggested ?? original,
+        oldMethod: (data['method'] ?? 'notification').toString(),
+      );
+    } catch (error) {
+      debugPrint('拾光約定查詢待修改項目失敗：$error');
+      if (mounted) _showCenterToast('查詢約定失敗，請稍後再試。');
+    }
+  }
+
+  Future<void> _showRoleAgreementRescheduleDialog({
+    required String agreementId,
+    required String sessionId,
+    required DateTime oldDateTime,
+    required DateTime newDateTime,
+    required String oldMethod,
+  }) async {
+    if (!mounted || _roleAgreementDialogOpen) return;
+    _roleAgreementDialogOpen = true;
+    var selected = newDateTime;
+    var saving = false;
+    try {
+      await showDialog<void>(
+        context: context, barrierDismissible: false,
+        builder: (dialogContext) => StatefulBuilder(
+          builder: (dialogContext, refresh) => AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: const Text('修改拾光約定？'),
+            content: Column(mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('原訂：${DateFormat('yyyy/MM/dd HH:mm').format(oldDateTime)}'),
+                const SizedBox(height: 10),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.edit_calendar_outlined),
+                  title: Text('改為：${DateFormat('yyyy/MM/dd HH:mm').format(selected)}'),
+                  subtitle: Text(oldMethod == 'call' ? '保留原本的角色來電方式' : '保留原本的免費訊息提醒'),
+                  onTap: saving ? null : () async {
+                    final day = await showDatePicker(
+                      context: dialogContext, initialDate: selected,
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime.now().add(const Duration(days: 365)));
+                    if (day == null || !dialogContext.mounted) return;
+                    final time = await showTimePicker(
+                      context: dialogContext,
+                      initialTime: TimeOfDay.fromDateTime(selected));
+                    if (time == null || !dialogContext.mounted) return;
+                    refresh(() => selected = DateTime(day.year, day.month, day.day,
+                        time.hour, time.minute));
+                  },
+                ),
+                const Text('按下確認前，不會變更原本的約定，也不會新增第二通來電。',
+                    style: TextStyle(fontSize: 12)),
+              ]),
+            actions: [
+              TextButton(onPressed: saving ? null : () => Navigator.pop(dialogContext),
+                child: const Text('保留原約定')),
+              FilledButton(
+                onPressed: saving ? null : () async {
+                  if (!selected.isAfter(DateTime.now().add(const Duration(minutes: 1)))) {
+                    ScaffoldMessenger.of(dialogContext).showSnackBar(
+                      const SnackBar(content: Text('請選擇未來的約定時間')));
+                    return;
+                  }
+                  refresh(() => saving = true);
+                  try {
+                    await FirebaseFunctions.instanceFor(region: 'us-central1')
+                        .httpsCallable('updateRoleAgreementUs').call({
+                      'characterId': _currentCharacter.id,
+                      'agreementId': agreementId,
+                      'sessionId': sessionId,
+                      'scheduledAtMs': selected.millisecondsSinceEpoch,
+                    });
+                    if (!dialogContext.mounted) return;
+                    Navigator.pop(dialogContext);
+                    if (mounted) _showCenterToast('約定時間已修改，原時段不會再通知。');
+                  } catch (error) {
+                    if (dialogContext.mounted) {
+                      ScaffoldMessenger.of(dialogContext).showSnackBar(
+                          SnackBar(content: Text('修改失敗，原約定維持不變：$error')));
+                      refresh(() => saving = false);
+                    }
+                  }
+                },
+                child: Text(saving ? '更新中…' : '確認修改'),
+              ),
+            ],
+          ),
+        ),
+      );
+    } finally { _roleAgreementDialogOpen = false; }
   }
 
   Future<void> _showRoleAgreementConfirmation(RoleAgreementCandidate candidate, String sessionId) async {
@@ -5576,9 +5710,17 @@ class _ChatPageState extends State<ChatPage> {
                       'scheduledAtMs': selectedDateTime.millisecondsSinceEpoch,
                       'method': method,
                     });
+                    final rawResult = result.data;
+                    final resultMap = rawResult is Map
+                        ? Map<String, dynamic>.from(rawResult)
+                        : const <String, dynamic>{};
+                    if (resultMap['success'] != true ||
+                        (resultMap['id'] ?? '').toString().isEmpty) {
+                      throw StateError('伺服器尚未確認約定儲存成功');
+                    }
                     if (!dialogContext.mounted) return;
                     Navigator.pop(dialogContext);
-                    if (mounted) _showCenterToast('約定已建立，將於約定時間發送提醒。');
+                    if (mounted) _showCenterToast('約定已建立！可至角色備忘錄的「角色約定」查看。');
                     debugPrint('拾光約定確認結果：${result.data}');
                   } catch (error) {
                     if (dialogContext.mounted) {

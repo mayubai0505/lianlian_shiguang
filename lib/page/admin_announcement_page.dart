@@ -6209,9 +6209,9 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     final titleController = TextEditingController(text: initial?['title']?.toString() ?? '');
     final subtitleController = TextEditingController(text: initial?['subtitle']?.toString() ?? '');
     final coverController = TextEditingController(text: initial?['coverImageUrl']?.toString() ?? '');
-    final backgroundController = TextEditingController(
-      text: initial?['defaultBackgroundImageUrl']?.toString() ?? '',
-    );
+    final themeController = TextEditingController(text: initial?['eventTheme']?.toString() ?? '');
+    final decorController = TextEditingController(text: initial?['eventDecor']?.toString() ?? '');
+    final costController = TextEditingController(text: (initial?['costFlowers'] ?? 30).toString());
     final unlockValueController = TextEditingController(
       text: (initial?['unlockValue'] ?? 0).toString(),
     );
@@ -6220,13 +6220,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     );
     String unlockType = initial?['unlockType']?.toString() ?? 'free';
     bool isActive = initial?['isActive'] != false;
-    final scenes = <Map<String, dynamic>>[
-      ...((initial?['scenes'] is List)
-          ? (initial!['scenes'] as List)
-          .whereType<Map>()
-          .map((e) => Map<String, dynamic>.from(e))
-          : const <Map<String, dynamic>>[]),
-    ];
+
 
     final result = await showDialog<Map<String, dynamic>>(
       context: context,
@@ -6290,28 +6284,12 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                         ],
                       ),
                       const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: backgroundController,
-                              decoration: const InputDecoration(
-                                labelText: '預設演出背景圖',
-                                border: OutlineInputBorder(),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          IconButton.filledTonal(
-                            tooltip: '選擇背景圖',
-                            onPressed: _uploadingEventImageSlot == null
-                                ? () => pickImage('memory_background', backgroundController)
-                                : null,
-                            icon: const Icon(Icons.landscape_outlined),
-                          ),
-                        ],
-                      ),
+                      TextField(controller: themeController, decoration: const InputDecoration(labelText: '節慶主題', border: OutlineInputBorder())),
                       const SizedBox(height: 12),
+                      TextField(controller: decorController, maxLines: 4, decoration: const InputDecoration(labelText: 'AI 生圖指引', border: OutlineInputBorder())),
+                      const SizedBox(height: 12),
+                      TextField(controller: costController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: '生成費用（花花）', border: OutlineInputBorder())),
+                      const Padding(padding: EdgeInsets.symmetric(vertical: 12), child: Text('卡面日期自動使用台灣生成當日；每篇每角色限一張，失敗退款。')),
                       DropdownButtonFormField<String>(
                         initialValue: unlockType,
                         isExpanded: true,
@@ -6360,92 +6338,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                         value: isActive,
                         onChanged: (value) => setDialogState(() => isActive = value),
                       ),
-                      const Divider(height: 28),
-                      Row(
-                        children: [
-                          const Expanded(
-                            child: Text(
-                              '回憶 Scene',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          FilledButton.tonalIcon(
-                            onPressed: () async {
-                              final scene = await _showMemorySceneDialog();
-                              if (scene != null && dialogContext.mounted) {
-                                setDialogState(() => scenes.add(scene));
-                              }
-                            },
-                            icon: const Icon(Icons.add_rounded),
-                            label: const Text('新增 Scene'),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      if (scenes.isEmpty)
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 14),
-                          child: Text('尚未新增 Scene。正式篇章建議 6～12 個 Scene。'),
-                        )
-                      else
-                        ...List.generate(scenes.length, (index) {
-                          final scene = scenes[index];
-                          final text = scene['text']?.toString() ?? '';
-                          return Card(
-                            margin: const EdgeInsets.only(bottom: 8),
-                            child: ListTile(
-                              leading: CircleAvatar(child: Text('${index + 1}')),
-                              title: Text(
-                                '${_memorySceneTypeLabel(scene['type']?.toString() ?? 'narration')} · ${scene['animation'] ?? 'fade'}',
-                              ),
-                              subtitle: Text(
-                                text,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              trailing: Wrap(
-                                spacing: 0,
-                                children: [
-                                  IconButton(
-                                    tooltip: '上移',
-                                    onPressed: index == 0
-                                        ? null
-                                        : () => setDialogState(() {
-                                      final item = scenes.removeAt(index);
-                                      scenes.insert(index - 1, item);
-                                    }),
-                                    icon: const Icon(Icons.arrow_upward_rounded),
-                                  ),
-                                  IconButton(
-                                    tooltip: '下移',
-                                    onPressed: index == scenes.length - 1
-                                        ? null
-                                        : () => setDialogState(() {
-                                      final item = scenes.removeAt(index);
-                                      scenes.insert(index + 1, item);
-                                    }),
-                                    icon: const Icon(Icons.arrow_downward_rounded),
-                                  ),
-                                  IconButton(
-                                    tooltip: '編輯',
-                                    onPressed: () async {
-                                      final edited = await _showMemorySceneDialog(initial: scene);
-                                      if (edited != null && dialogContext.mounted) {
-                                        setDialogState(() => scenes[index] = edited);
-                                      }
-                                    },
-                                    icon: const Icon(Icons.edit_outlined),
-                                  ),
-                                  IconButton(
-                                    tooltip: '刪除',
-                                    onPressed: () => setDialogState(() => scenes.removeAt(index)),
-                                    icon: const Icon(Icons.delete_outline_rounded),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }),
+
                     ],
                   ),
                 ),
@@ -6464,9 +6357,9 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                       );
                       return;
                     }
-                    if (scenes.isEmpty) {
+                    if (themeController.text.trim().isEmpty || (int.tryParse(costController.text.trim()) ?? -1) < 0 || (int.tryParse(costController.text.trim()) ?? 0) > 10000) {
                       ScaffoldMessenger.of(dialogContext).showSnackBar(
-                        const SnackBar(content: Text('請至少新增 1 個 Scene')),
+                        const SnackBar(content: Text('請輸入節慶主題及有效費用（0～10000）')),
                       );
                       return;
                     }
@@ -6474,12 +6367,16 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                       'title': title,
                       'subtitle': subtitleController.text.trim(),
                       'coverImageUrl': coverController.text.trim(),
-                      'defaultBackgroundImageUrl': backgroundController.text.trim(),
+                      'memoryId': initial?['memoryId'] ?? FirebaseFirestore.instance.collection('artifacts').doc().id,
+                      'generationMode': 'ai',
+                      'eventTheme': themeController.text.trim(),
+                      'eventDecor': decorController.text.trim(),
+                      'costFlowers': int.parse(costController.text.trim()),
                       'unlockType': unlockType,
                       'unlockValue': int.tryParse(unlockValueController.text.trim()) ?? 0,
                       'unlockTargetId': unlockTargetController.text.trim(),
                       'isActive': isActive,
-                      'scenes': scenes,
+                      'scenes': <Map<String, dynamic>>[],
                     });
                   },
                   child: const Text('完成'),
@@ -6548,7 +6445,6 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
             else
               ...List.generate(_eventMemoryDrafts.length, (index) {
                 final memory = _eventMemoryDrafts[index];
-                final scenes = memory['scenes'] is List ? memory['scenes'] as List : const [];
                 final unlockType = memory['unlockType']?.toString() ?? 'free';
                 return Card(
                   margin: const EdgeInsets.only(bottom: 8),
@@ -6556,7 +6452,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                     leading: CircleAvatar(child: Text('${index + 1}')),
                     title: Text(memory['title']?.toString() ?? '限定回憶'),
                     subtitle: Text(
-                      '${_memoryUnlockLabel(unlockType)} · ${scenes.length} Scenes',
+                      '${_memoryUnlockLabel(unlockType)} · AI 限定回憶',
                     ),
                     trailing: Wrap(
                       spacing: 0,
@@ -7217,7 +7113,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       for (int i = 0; i < _eventMemoryDrafts.length; i++) {
         final memory = Map<String, dynamic>.from(_eventMemoryDrafts[i]);
         final rawScenes = memory.remove('scenes');
-        memory.remove('memoryId');
+        final stableMemoryId = memory.remove('memoryId')?.toString();
 
         final localizedMemories = localized['memories'];
         final rawLocalizedMemory =
@@ -7238,7 +7134,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         };
         localizedMemory['zh_Hant'] = memoryFallback;
 
-        final memoryRef = eventRef.collection('memories').doc('memory_${i + 1}');
+        final memoryRef = eventRef.collection('memories').doc(stableMemoryId == null || stableMemoryId.isEmpty ? eventRef.collection('memories').doc().id : stableMemoryId);
         batch.set(memoryRef, {
           ...memory,
           'content': localizedMemory,

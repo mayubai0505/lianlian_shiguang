@@ -1,5 +1,6 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -17,7 +18,7 @@ class RoleAgreementNativeCalls {
   /// iPhone 專用：將 PushKit VoIP token 交給可信任後端。與普通 FCM token 不同。
   /// 使用者登入後以及重新開啟 App 時呼叫；登入變更就重送。
   static Future<void> registerIosVoipToken() async {
-    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) return;
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS || Firebase.apps.isEmpty) return;
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
     try {
@@ -36,6 +37,28 @@ class RoleAgreementNativeCalls {
   static bool get supported => !kIsWeb &&
       (defaultTargetPlatform == TargetPlatform.android || defaultTargetPlatform == TargetPlatform.iOS);
 
+  static Future<void> prepareAndroidIncomingPermissions() async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return;
+
+    try {
+      await FlutterCallkitIncoming.requestNotificationPermission({
+        'title': '允許角色來電通知',
+        'rationaleMessagePermission': '角色約定到時間時，需要通知權限才能顯示來電。',
+        'postNotificationMessageRequired': '請允許通知權限，才能接收角色約定來電。',
+      });
+    } catch (error) {
+      debugPrint('Role agreement notification permission check failed: $error');
+    }
+
+    try {
+      final canUse = await FlutterCallkitIncoming.canUseFullScreenIntent();
+      if (!canUse) {
+        await FlutterCallkitIncoming.requestFullIntentPermission();
+      }
+    } catch (error) {
+      debugPrint('Role agreement full screen intent permission check failed: $error');
+    }
+  }
   static String? callIdFor(String agreementId) {
     if (!RegExp(r'^[a-f0-9]{64}$').hasMatch(agreementId)) return null;
     final hex = agreementId.substring(0, 32);
@@ -86,6 +109,30 @@ class RoleAgreementNativeCalls {
     ));
   }
 
+  // Recover only explicitly accepted calls; ringing calls must never open
+  // a confirmation page automatically.
+  static Future<void> recoverAcceptedCalls(
+      void Function(Map<String, dynamic>) onAccept) async {
+    if (!supported) return;
+    try {
+      final calls = await FlutterCallkitIncoming.activeCalls();
+      debugPrint('[RA] active calls: ${calls.length}');
+      for (final call in calls) {
+        if (call.isAccepted != true) continue;
+        final extra = extractExtra(call.extra);
+        if (extra == null || call.id.toLowerCase() !=
+            callIdFor('${extra['agreementId']}')) {
+          debugPrint('[RA] accepted call missing valid metadata');
+          continue;
+        }
+        debugPrint('[RA] recovered native accept');
+        onAccept(extra);
+      }
+    } catch (error) {
+      debugPrint('[RA] active call recovery failed: $error');
+    }
+  }
+
   static Future<void> close(String agreementId) async {
     if (!supported) return;
     final id = callIdFor(agreementId);
@@ -112,6 +159,7 @@ class RoleAgreementNativeCalls {
     }
     if (callEvent is CallEventActionCallAccept) {
       final extra = extractExtra(callEvent.callKitParams.extra);
+      debugPrint('[RA] native accept event; valid=${extra != null}');
       if (extra != null) onAccept(extra);
       return;
     }
