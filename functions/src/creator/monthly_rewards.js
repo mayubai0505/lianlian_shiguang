@@ -357,9 +357,7 @@ function createCreatorMonthlyRewards({
     }
   }
 
-  exports.getCreatorMonthlyReward = onCall({
-    region:REGION,timeoutSeconds:60,
-  },async request=>{
+  const _getCreatorMonthlyRewardHandler = async request=>{
     const uid=request.auth?.uid;
     if(!uid)creatorRewardError('unauthenticated','請先登入');
 
@@ -387,11 +385,16 @@ function createCreatorMonthlyRewards({
       claimed:claimed.exists,
       reward:CREATOR_MONTH_REWARD_AMOUNT,
     };
-  });
+  };
+  exports.getCreatorMonthlyReward = onCall({
+    region:REGION,timeoutSeconds:60,
+  }, _getCreatorMonthlyRewardHandler);
+  exports.getCreatorMonthlyRewardUs = onCall({
+    region:'us-central1',timeoutSeconds:60,
+    memory:'256MiB',cpu:'gcf_gen1',concurrency:1,minInstances:0,maxInstances:3,
+  }, _getCreatorMonthlyRewardHandler);
 
-  exports.claimCreatorMonthlyReward = onCall({
-    region:REGION,timeoutSeconds:90,
-  },async request=>{
+  const _claimCreatorMonthlyRewardHandler = async request=>{
     const uid=request.auth?.uid;
     if(!uid)creatorRewardError('unauthenticated','請先登入');
 
@@ -478,7 +481,13 @@ function createCreatorMonthlyRewards({
     });
 
     return result;
-  });
+  };
+  exports.claimCreatorMonthlyReward = onCall({
+    region:REGION,timeoutSeconds:90,
+  }, _claimCreatorMonthlyRewardHandler);
+  exports.claimCreatorMonthlyRewardUs = onCall({
+    region:'us-central1',timeoutSeconds:90,
+  }, _claimCreatorMonthlyRewardHandler);
 
   return exports;
 }

@@ -8,8 +8,8 @@ function createRoleAgreementCallHandlers({db,APP_ID,HttpsError,FieldValue}) {
    const agreementId=String(request.data?.agreementId||'');
    if(!/^[^/]{1,160}$/.test(characterId)||!/^[a-f0-9]{64}$/.test(agreementId))
      throw new HttpsError('invalid-argument','約定資料無效');
-   return {uid,characterId,agreementId,ref:db.collection('role_agreements').doc(uid).collection('characters')
-     .doc(characterId).collection('items').doc(agreementId), job:jobs.doc(agreementId)};
+   return {uid,characterId,agreementId,ref:db.collection('users').doc(uid).collection('characters')
+     .doc(characterId).collection('role_agreements').doc(agreementId), job:jobs.doc(agreementId)};
  }
  async function decline(request) {
    const p=refs(request);
@@ -32,7 +32,9 @@ function createRoleAgreementCallHandlers({db,APP_ID,HttpsError,FieldValue}) {
        throw new HttpsError('not-found','來電不存在');
      if(data.status==='accepted') throw new HttpsError('already-exists','這通電話已被接聽');
      if(data.status!=='ringing'||!job.exists ||
-        job.data()?.state!=='ringing'||job.data().nextActionAt.toMillis()<=Date.now())
+        job.data()?.state!=='ringing'||job.data().uid!==p.uid ||
+         job.data().characterId!==p.characterId || job.data().agreementId!==p.agreementId ||
+         !job.data().nextActionAt || job.data().nextActionAt.toMillis()<=Date.now())
        throw new HttpsError('failed-precondition','來電已結束或尚未到時間');
      if(!user.exists || !Number.isFinite(user.data().flowerPoints) || user.data().flowerPoints<20)
        throw new HttpsError('failed-precondition','花花不足 20，無法接聽');
@@ -53,6 +55,7 @@ function createRoleAgreementCallHandlers({db,APP_ID,HttpsError,FieldValue}) {
      const snap=await tx.get(p.ref);
      if(!snap.exists||snap.data().confirmedBy!==p.uid) throw new HttpsError('not-found','約定不存在');
      const a=snap.data();
+     if(a.billingMode==='v41')throw new HttpsError('failed-precondition','請由即時通話結算');
      if(a.status==='completed'||a.status==='connection_failed') return {success:true,refunded:false};
      if(a.status!=='accepted') throw new HttpsError('failed-precondition','沒有已接聽來電');
      if(!connected && a.chargedFlowers===20) {

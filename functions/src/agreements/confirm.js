@@ -1,5 +1,6 @@
 'use strict';
 const crypto = require('crypto');
+const {resolveRoleAgreementCharacterName}=require('./character_name');
 function createConfirmRoleAgreementHandler({db,APP_ID,HttpsError,FieldValue}) {
   return async request => {
     const uid = request.auth?.uid;
@@ -23,6 +24,7 @@ function createConfirmRoleAgreementHandler({db,APP_ID,HttpsError,FieldValue}) {
     if (!session.exists || data.userId !== uid || data.characterId !== characterId || data.chatMode !== 'gemini') {
       throw new HttpsError('permission-denied','僅限本人角色閒聊房間建立約定');
     }
+    const characterName=await resolveRoleAgreementCharacterName({db,APP_ID,uid,characterId,fallback:data.characterName});
     const id = crypto.createHash('sha256').update(`${uid}\0${sessionId}\0${requestId}`).digest('hex');
     const ref = db.collection('users').doc(uid).collection('characters').doc(characterId)
       .collection('role_agreements').doc(id);
@@ -31,7 +33,7 @@ function createConfirmRoleAgreementHandler({db,APP_ID,HttpsError,FieldValue}) {
       const old = await tx.get(ref);
       if (old.exists) return false;
       tx.create(ref, {
-        characterId, sessionId, sourceRequestId:requestId, content,
+        characterId, characterName, sessionId, sourceRequestId:requestId, content,
         scheduledAt:new Date(when), method, status:'scheduled', deliveryEnabled:true,
         confirmedBy:uid, confirmedAt:FieldValue.serverTimestamp(),
         createdAt:FieldValue.serverTimestamp(), updatedAt:FieldValue.serverTimestamp(),

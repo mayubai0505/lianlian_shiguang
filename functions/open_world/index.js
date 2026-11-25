@@ -25,8 +25,9 @@ const {dedupeStatusHeading,trimWorldStatusBoundary,missingStatusRows,mergeMissin
 const {literalCreatorStatus} = require('../src/chat/literal_creator_status');
 const {inspectCreatorStatusCompleteness, parseFields, lockCreatorStatus, describeCreatorTemplate, isCreatorGuidance, enforceModernStatusTime, protectCreatorCalendarDisplay} = require('./status_template');
 const creatorThought = require('./creator_thought');
+const {migrateStatus,protectInitialReset} = require('../src/chat/status_template_continuity');
 const {protectWorldFinancialStatus} = require('./world_status_finance_guard');
-const {canonicalPlayerGender} = require('../src/chat/player_identity');
+const {resolveWorldPlayerIdentity} = require('./world_player_identity');
 
 // V1 conditional creator status display: enforce only unambiguous, explicitly
 // command-gated status fields. Never infer permission from AI-generated text.
@@ -1086,9 +1087,8 @@ exports.worldPrivateTest = onCall({
     }
     const resetId = `reset_${crypto.randomUUID().replace(/-/g,'')}`;
     const openingSegments = [];
-    const resetProfile = (await room.get()).data()?.playerWorldProfile || {};
-    const resetAccount = hasPlayerNamePlaceholder(String(world.storyOpening || '') + String(world.firstLine || '')) && !resetProfile.nickname
-      ? (await db.collection('users').doc(uid).get()).data() || {} : {};
+    const resetAccount = (await db.collection('users').doc(uid).get()).data() || {};
+    const resetProfile = resolveWorldPlayerIdentity((await room.get()).data()?.playerWorldProfile || {},resetAccount);
     const resetName = openingPlayerName(resetProfile,resetAccount);
     const openingText = replacePlayerName(world.storyOpening,resetName).trim();
     const firstLine = replacePlayerName(world.firstLine,resetName).trim();
@@ -1187,7 +1187,11 @@ exports.worldPrivateTest = onCall({
     const snap = await room.get();
     if (!snap.exists || snap.data()?.userId !== uid || snap.data()?.worldId !== worldId)
       throw new HttpsError('permission-denied','沒有設定這個世界房間的權限');
-    if (action === 'loadProfile') return {profile: snap.data()?.playerWorldProfile || {}};
+    if (action === 'loadProfile') {
+      const account = (await db.collection('users').doc(uid).get()).data() || {};
+      const profile = resolveWorldPlayerIdentity(snap.data()?.playerWorldProfile || {}, account);
+      return {profile: Object.fromEntries(Object.entries(profile).filter(([,v])=>v!==undefined))};
+    }
     if (action === 'loadStatus') return {statusSettings: snap.data()?.statusSettings || {}};
     if (action === 'saveProfile') {
       const nickname = String(payload.nickname || '').trim();
@@ -1714,44 +1718,13 @@ exports.worldPrivateTest = onCall({
       );
       const wantsPlayerStatus = enabledStatusKeys.length > 0;
       const savedProfile = roomConfig.playerWorldProfile || {};
-      // 世界房間拾光檔案優先；沒有設定時，才讀取此登入帳號的公開暱稱。
-      // 僅讀取本人的 users/{uid}，不使用其他玩家資料。
-      const worldNickname = String(savedProfile.nickname || '').trim();
-      let accountNickname = '';
-      let ownAccount = null;
-      if (!worldNickname || savedProfile.profileId) {
-        try {
-          ownAccount = (await db.collection('users').doc(uid).get()).data() || {};
-          accountNickname = String(ownAccount.nickname || ownAccount.displayName || ownAccount.name || '').trim();
-        } catch (profileReadError) {
-          // A new live gender lookup must not block a turn; use the saved snapshot.
-          if (!worldNickname) throw profileReadError;
-          logger.warn('world profile gender lookup failed; using saved snapshot', {code: String(profileReadError?.code || 'unknown')});
-        }
-      }
-      const profileNickname = String(worldNickname || accountNickname)
-        .replace(/[\r\n\t\u0000-\u001f]/gu, ' ').trim().slice(0,40);
-      const profileIdentity = String(savedProfile.identity || '').trim().slice(0,2000);
-      // Only a clear, first-person player identity declaration is authoritative.
-      // Never infer player gender from world lore, NPC descriptions or history.
-      const playerGenderDeclarations = [...profileIdentity.matchAll(
-        /(?:^|[\n，,。；;])\s*(?:(?:我的)?(?:性別|生理性別)\s*[:：是為]\s*|我(?:是|為)\s*(?:一名|一個)?\s*)(男生|男人|男性|男的|男|女生|女人|女性|女的|女)(?=$|[\s，,。；;])/gu
-      )].map(m => /^(?:男)/u.test(m[1]) ? 'male' : 'female');
-      // Explicit structured gender wins even when set to other/unset.
-      // Old profiles retain the existing conservative text parser.
-      let explicitGender = savedProfile.gender;
-      const genderCode = value => ({'男性':'male','女性':'female','其他':'other','未設定':'unset'})[canonicalPlayerGender(value)];
-      if (savedProfile.profileId && ownAccount) {
-        const current = Array.isArray(ownAccount.profiles)
-          ? ownAccount.profiles.find(p => String(p?.id ?? '') === savedProfile.profileId) : null;
-        explicitGender = genderCode(current?.gender) || explicitGender;
-      }
-      // No selected world identity: use the account gender, not a former profile.
-      if (!savedProfile.profileId && !worldNickname && !profileIdentity && !explicitGender) {
-        explicitGender = genderCode(ownAccount?.gender);
-      }
-      const playerGender = ['male','female','other','unset'].includes(explicitGender)
-        ? explicitGender : (new Set(playerGenderDeclarations).size === 1 ? playerGenderDeclarations[0] : null);
+      const ownAccount = (await db.collection('users').doc(uid).get()).data() || {};
+      const effectiveProfile = resolveWorldPlayerIdentity(savedProfile,ownAccount);
+      const profileNickname = String(effectiveProfile.nickname || '').replace(/[\r\n\t\u0000-\u001f]/gu,' ').trim().slice(0,40);
+      const worldNickname = profileNickname;
+      const profileIdentity = effectiveProfile.identity;
+      const declarations = [...profileIdentity.matchAll(/(?:^|[\n，,。；;])\s*(?:(?:我的)?(?:性別|生理性別)\s*[:：是為]\s*|我(?:是|為)\s*(?:一名|一個)?\s*)(男生|男人|男性|男的|男|女生|女人|女性|女的|女)(?=$|[\s，,。；;])/gu)].map(m=>m[1].startsWith('男')?'male':'female');
+      const playerGender = effectiveProfile.gender || (new Set(declarations).size===1?declarations[0]:null);
       const playerStoryLabel = profileNickname || '玩家';
       const playerProfileContext = [
         '【本房間拾光檔案：玩家身分與稱呼，所有模式優先遵守】此處是角色需要知道的故事資料，不是要求輸出的原始 JSON。',
@@ -1779,23 +1752,33 @@ exports.worldPrivateTest = onCall({
       // Persist the last *creator-only* successful status separately from the
       // player-selected rows and the server-injected time display. A same-room
       // memory, never from another room or from the raw author instructions.
-      const persistedCreatorStatus = roomConfig.lastCreatorStatusTemplateHash === creatorStatusTemplateHash
-        ? String(roomConfig.lastCreatorStatus || '').slice(0,10000) : '';
+      const savedCreatorStatus = String(roomConfig.lastCreatorStatus || '').slice(0,10000);
+      const creatorTemplateChanged = Boolean(roomConfig.lastCreatorStatusTemplateHash &&
+        roomConfig.lastCreatorStatusTemplateHash !== creatorStatusTemplateHash);
+      const persistedCreatorStatus = creatorTemplateChanged
+        ? migrateStatus(customStatusTemplate,savedCreatorStatus)
+        : savedCreatorStatus;
+      // Never fall back to the unfiltered old layout after an incompatible edit.
+      const previousCreatorStatus = persistedCreatorStatus || (creatorTemplateChanged
+        ? migrateStatus(customStatusTemplate,latestStatusText) : latestStatusText);
+      if(creatorTemplateChanged)logger.info('WORLD CREATOR TEMPLATE MIGRATION',{
+        retainedRows:persistedCreatorStatus.split('\n').filter(Boolean).length});
       const hasCustomStatusBar = Boolean(customStatusTemplate);
       // Same-room, same-template continuity reference for the writer only.
       // Never read status from another room, restore a mismatched template, or
       // turn a previously hidden/conditional field into a mandatory visible row.
       // Bound the extra context; this does not alter Firestore state or billing.
-      const previousCreatorStatusContext = hasCustomStatusBar && persistedCreatorStatus.trim()
+      const previousCreatorStatusContext = hasCustomStatusBar && previousCreatorStatus.trim()
         ? [
           '【本房間上一輪已保存的創作者狀態｜只供連續性比較，不直接輸出】',
-          '下列內容來自這位玩家、這個世界、這個聊天室與同一份創作者模板已確認的上一輪狀態，不是新的故事事件。',
+          '下列內容來自這位玩家、這個世界、這個聊天室已確認且與最新欄位可對應的上一輪狀態，不是新的故事事件。',
           '宮中聲望、修為、金錢、累積進度、已獲得的秘密線索等持續性欄位，沒有本輪確切劇情依據時，保持上一輪的值與既有事實；不可隨機重算、倒退、憑空新增或移除。',
+          '創作者更新模板、初始值、Emoji 或順序不是故事事件；既有欄位不可因此回到初始值。初始值只用於尚未建立的欄位。',
           '若本輪有實際事件造成變動，應依創作者規則合理更新。角色的即時心情、想法、所在位置等則依本輪劇情更新，不能機械沿用舊內容。',
           '上一輪狀態僅是比較基準，不是所有 NPC 都知道的情報；不得讓未在場 NPC 因此知道玩家秘密、心聲或私訊。',
           '上一輪曾顯示的條件欄位不代表本輪也符合顯示條件；創作者設定的隱藏、指定指令與查詢限定仍須重新判定，不得直接照貼。',
           '日期／時間以後端故事時鐘為準；上一輪狀態只協助維持自訂欄位一致，不能覆蓋後端時間。',
-          `上一輪狀態（動態心聲已遮蔽，僅供持續欄位比較）：\n${maskPreviousWorldPrimaryThought(persistedCreatorStatus).slice(0,3500)}`,
+          `上一輪狀態（動態心聲已遮蔽，僅供持續欄位比較）：\n${maskPreviousWorldPrimaryThought(previousCreatorStatus).slice(0,3500)}`,
         ].join('\n') : '';
       const statusCommand = action === 'send' || action === 'regenerate'
         ? findCreatorStatusCommand([customStatusTemplate,String(world.worldSetting||'')].join('\n'), rawMessage)
@@ -1812,6 +1795,7 @@ exports.worldPrivateTest = onCall({
         '【創作者自由格式狀態欄】以下模板提供展示版型與生成規則，不是可直接貼給玩家的內容。',
         '只要創作者有設定模板，本輪 JSON 最外層就必須有已填妥的 statusBar 字串，不可省略、留空或放進 segments。這是顯示契約，不是可選的裝飾。',
         '創作者在模板中對欄位內容、分行、固定文字、顯示條件的指示是 statusBar 專用的有效格式規則；在不違反玩家自主權、NPC 知情界線與安全規則的前提下逐項遵守。',
+        '創作者更新模板並非劇情事件；同一欄位已有值就不得套用新初始值。',
         '請同時參考本輪玩家輸入、最新劇情和上一輪已保存狀態；沒有新事件依據時持續性數值及已取得線索保持不變，確實發生變化的數值、位置、想法則依本輪更新。',
         '【金錢／背包防重複】再次提及、回憶、詢問、展示、試穿或討論過往商品，不代表本輪又付款或取得同一件商品。只有玩家在本輪明確進行一筆新的交易，才可考慮調整金錢；不要因為 NPC 台詞、舊紀錄或模型自編購買動作而扣款。狀態欄金額不是遊戲花花扣款紀錄。',
         ...(previousCreatorStatusContext ? [previousCreatorStatusContext] : []),
@@ -1968,7 +1952,7 @@ exports.worldPrivateTest = onCall({
           '本輪不要重演或提及露骨細節。維持人物既定關係與故事連續性，' +
           '只回應本輪玩家實際輸入，使用適合一般劇情的非露骨描寫。';
       }
-      const system = systemParts.join('\n');
+      const system = systemParts.join('\n') + '\n\n【最終玩家身分一致性】\n' + playerProfileContext + '\n目前正式姓名不得被開場範例、預設主角、舊記憶或其他 NPC 名稱取代。只有玩家明確建立的暱稱可作稱呼；NPC 尚未知姓名時使用適當代詞，不憑空命名。';
       const openingMentionedNpcNames = compressOpeningForWriter
         ? allowed.map(n => String(n.name || '').trim())
           .filter(name => name.length >= 2 && openingRawForWriter.includes(name))
@@ -2596,7 +2580,7 @@ exports.worldPrivateTest = onCall({
         const value=String(status || '').trim();
         if (!value || !creatorRequiresPrimaryThought) return value;
         const existingThought=creatorThought.readThought(value);
-        const previousThought=creatorThought.readThought(persistedCreatorStatus || latestStatusText || '');
+        const previousThought=creatorThought.readThought(previousCreatorStatus || '');
         const isStale=primaryThoughtSpec.fresh && existingThought.valid && !existingThought.absent &&
           previousThought.valid && !previousThought.absent &&
           existingThought.name===previousThought.name && existingThought.content===previousThought.content;
@@ -2661,7 +2645,7 @@ exports.worldPrivateTest = onCall({
         let next=stripDuplicatedCreatorTimeLabel(String(status||'').trim());
         if (!next || !creatorRequiresPrimaryThought)return next;
         const before=creatorThought.readThought(next);
-        const previous=creatorThought.readThought(persistedCreatorStatus || latestStatusText || '');
+        const previous=creatorThought.readThought(previousCreatorStatus || '');
         const stale=primaryThoughtSpec.fresh && before.valid && !before.absent &&
           previous.valid && !previous.absent && before.name===previous.name &&
           before.content===previous.content;
@@ -2770,11 +2754,11 @@ exports.worldPrivateTest = onCall({
           return 0;
         })();
         const applyAuthoritativeCreatorTime = status => storyClock.enforceCreatorTimeAuthority(
-          customStatusTemplate,status,persistedCreatorStatus || latestStatusText,
+          customStatusTemplate,status,previousCreatorStatus,
           {elapsedMinutes:validatedElapsedMinutes, world,
            explicitTransition:action === 'send' && storyClock.isExplicitCreatorCalendarTransition(rawMessage),
            regenerate:action === 'regenerate'});
-        const previousStatusForEraDate = persistedCreatorStatus || latestStatusText;
+        const previousStatusForEraDate = previousCreatorStatus;
         const applyCreatorCountdown = status => {
           const result = updateCreatorCountdown({template:customStatusTemplate,status,
             previous:previousStatusForEraDate,
@@ -2825,7 +2809,7 @@ exports.worldPrivateTest = onCall({
                 requestBody:{messages:[
                   {role:'system',content:completionInstruction},
                   {role:'user',content:JSON.stringify({template:customStatusTemplate, missing,
-                    currentStatus:scalarStatus, previousStatus:persistedCreatorStatus || latestStatusText,
+                    currentStatus:scalarStatus, previousStatus:previousCreatorStatus,
                     player:rawMessage,scene:segments.map(x=>({name:x.name,text:x.text})).slice(-8)})},
                 ],temperature:0.25,max_tokens:statusRepairTokens(customStatusTemplate, missing)},
               });
@@ -2913,28 +2897,15 @@ exports.worldPrivateTest = onCall({
             validatedElapsedMinutes,{regenerate:action==='regenerate',
               explicitTransition:action==='send' && storyClock.isExplicitCreatorCalendarTransition(rawMessage),
               playerMessage:action==='send' ? rawMessage : ''});
-          // Keep old financial lines when the current player turn does not
-          // explicitly authorize a new transaction. Status text is NOT a ledger.
-          const financialGuard = protectWorldFinancialStatus({
-            current:newCreatorStatusForPersistence,
-            previous:previousStatusForEraDate,
-            playerMessage:action === 'send' ? rawMessage : '',
-            action,
-          });
-          newCreatorStatusForPersistence = financialGuard.status;
-          if(financialGuard.restoredRows)logger.info('WORLD CREATOR FINANCIAL STATUS GUARD', {
-            mode:worldMode,restoredRows:financialGuard.restoredRows,
-          });
-          if(newCreatorStatusForPersistence)statusParts.push(newCreatorStatusForPersistence);
           if(gatedStatus.protectedCount)logger.info('WORLD CREATOR CONDITIONAL STATUS GUARD',{
             mode:worldMode,protectedCount:gatedStatus.protectedCount,removedCount:gatedStatus.removedCount,
             // No player message, hidden status value, or secret trigger in logs.
           });
-        } else if (persistedCreatorStatus || latestStatusText.trim()) {
+        } else if (previousCreatorStatus.trim()) {
           // Restore the latest validated creator-only status; legacy rooms may
           // have only a combined isStatusBar segment in recent history.
           // Never resurrect a status from another room or an old template.
-          const previousCreatorOrLegacy = persistedCreatorStatus || latestStatusText;
+          const previousCreatorOrLegacy = previousCreatorStatus;
           const previousSafeStatus = lockCreatorStatus(
             customStatusTemplate,
             sanitizeStatusBar(normalizeAiResponseScript(previousCreatorOrLegacy.slice(0,10000), '台灣繁體中文')),
@@ -3002,7 +2973,6 @@ exports.worldPrivateTest = onCall({
                explicitTransition:action==='send' && storyClock.isExplicitCreatorCalendarTransition(rawMessage),
                playerMessage:action==='send' ? rawMessage : ''});
             if(anchoredRecoveredStatus) {
-              statusParts.push(anchoredRecoveredStatus);
               // A recovered clock must become the next turn's reference too.
               // Otherwise the room still points to an older status after this
               // turn, and a later reply can reintroduce the old date.
@@ -3014,6 +2984,27 @@ exports.worldPrivateTest = onCall({
               source:persistedCreatorStatus ? 'persisted_creator_only' : 'legacy_recent_history',
             });
           }
+        }
+        // Both freshly generated and recovered creator status must pass the
+        // same finance guard before entering the visible segment or room state.
+        if (newCreatorStatusForPersistence) {
+          const financialGuard = protectWorldFinancialStatus({
+            current:newCreatorStatusForPersistence,
+            previous:previousStatusForEraDate,
+            playerMessage:action === 'send' ? rawMessage : '',
+            action,
+          });
+          newCreatorStatusForPersistence = financialGuard.status;
+          const initialResetGuard=protectInitialReset({template:customStatusTemplate,
+            current:newCreatorStatusForPersistence,previous:previousCreatorStatus,
+            evidence:[rawMessage,...segments.map(x=>x.text||'')].join('\n'),regenerate:action==='regenerate'});
+          newCreatorStatusForPersistence=initialResetGuard.status;
+          if(initialResetGuard.restored)logger.info('WORLD STATUS INITIAL RESET GUARD',{restored:initialResetGuard.restored});
+          if(financialGuard.restoredRows)logger.info('WORLD CREATOR FINANCIAL STATUS GUARD', {
+            mode:worldMode,restoredRows:financialGuard.restoredRows,
+            recoveredPrevious:reusedPriorStatusBar,
+          });
+          if(newCreatorStatusForPersistence)statusParts.push(newCreatorStatusForPersistence);
         }
       }
       if (hasCustomStatusBar) {
@@ -3386,8 +3377,8 @@ exports.worldPrivateTest = onCall({
     (d.data()?.segments || []).some(s => hasPlayerNamePlaceholder(s?.text)));
   let loadedOpeningName = '';
   if(openingNeedsName) {
-    const profile = (await room.get()).data()?.playerWorldProfile || {};
-    const account = profile.nickname ? {} : (await db.collection('users').doc(uid).get()).data() || {};
+    const account = (await db.collection('users').doc(uid).get()).data() || {};
+    const profile = resolveWorldPlayerIdentity((await room.get()).data()?.playerWorldProfile || {},account);
     loadedOpeningName = openingPlayerName(profile,account);
   }
   const regenDateForUi = new Intl.DateTimeFormat('en-CA',{

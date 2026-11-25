@@ -103,6 +103,7 @@ class CallAgentRealtime {
     required String callId,
     required String sessionId,
     required String characterId,
+    String? agreementId,
     required bool speaker,
     required void Function() onConnected,
     required Future<void> Function() onFirstAudioReady,
@@ -127,12 +128,12 @@ class CallAgentRealtime {
     _onEnvironment = onEnvironment;
     _onSpeaking = onSpeaking;
     _onDisconnected = onDisconnected;
-    final task = _start(callId, sessionId, characterId);
+    final task = _start(callId, sessionId, characterId, agreementId);
     _startTask = task;
     return task;
   }
 
-  Future<void> _start(String callId, String sessionId, String characterId) async {
+  Future<void> _start(String callId, String sessionId, String characterId, String? agreementId) async {
     try {
       if (!await _recorder.hasPermission()) {
         throw StateError('microphone_permission');
@@ -141,7 +142,8 @@ class CallAgentRealtime {
       final authorization = FirebaseFunctions.instanceFor(region: 'us-central1')
           .httpsCallable('prepareCallRealtimeV41Us', options: HttpsCallableOptions(
             timeout: const Duration(seconds: 95),
-          )).call({'callId': callId, 'sessionId': sessionId, 'characterId': characterId});
+          )).call({'callId': callId, 'sessionId': sessionId, 'characterId': characterId,
+             if (agreementId != null) 'agreementId': agreementId});
       // Start opening PCM playback while the backend prepares the signed URL.
       final playerReady = () async {
         await _openPlayback(callId);

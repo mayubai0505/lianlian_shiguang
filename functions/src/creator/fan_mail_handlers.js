@@ -5,7 +5,7 @@ function createCreatorFanMailHandlers(deps) {
     creatorFanMailDayKey, creatorFanMailVerified, creatorFanMailValidate,
     creatorFanMailUsageRef, CREATOR_FAN_MAIL_LIMITS} = deps;
   const handlers = {};
-handlers.getCreatorFanMailOverview = onCall({region: REGION, timeoutSeconds:30}, async (request) => {
+const _getCreatorFanMailOverviewHandler = async (request) => {
   const uid = request.auth?.uid;
   if (!uid) throw new HttpsError('unauthenticated', '請先登入');
   const [creator, usage, jobs] = await Promise.all([
@@ -22,9 +22,11 @@ handlers.getCreatorFanMailOverview = onCall({region: REGION, timeoutSeconds:30},
     jobs:jobs.docs.map(x => {const d=x.data()||{};return {id:x.id, mode:d.mode, title:d.title,
       status:d.status, delivered:Number(d.delivered||0), createdAt:d.createdAt?.toDate?.()?.toISOString()||null,
       finishedAt:d.finishedAt?.toDate?.()?.toISOString()||null, error:String(d.error||'')};})};
-});
+};
+handlers.getCreatorFanMailOverview = onCall({region: REGION, timeoutSeconds:30}, _getCreatorFanMailOverviewHandler);
+handlers.getCreatorFanMailOverviewUs = onCall({region:'us-central1', timeoutSeconds:30}, _getCreatorFanMailOverviewHandler);
 
-handlers.sendCreatorFanMail = onCall({region: REGION, timeoutSeconds:60, maxInstances:20}, async (request) => {
+const _sendCreatorFanMailHandler = async (request) => {
   const uid = request.auth?.uid;
   if (!uid) throw new HttpsError('unauthenticated', '請先登入');
   const mode = String(request.data?.mode||'');
@@ -70,12 +72,14 @@ handlers.sendCreatorFanMail = onCall({region: REGION, timeoutSeconds:60, maxInst
     return {jobId:jobRef.id,status:'queued',alreadySubmitted:false};
   });
   return result;
-});
+};
+handlers.sendCreatorFanMail = onCall({region: REGION, timeoutSeconds:60, maxInstances:20}, _sendCreatorFanMailHandler);
+handlers.sendCreatorFanMailUs = onCall({region:'us-central1', timeoutSeconds:60, maxInstances:20}, _sendCreatorFanMailHandler);
 
 // 每分鐘處理最多 5 個工作、每工作最多 120 位；不會在單次 callable 中掃描全部粉絲。
 // Transaction 內完成「信件寫入 + 游標更新」，失敗回滾，不重複寄送。
 handlers.processCreatorFanMailJobs = onSchedule({schedule:'every 1 minutes', timeZone:'Asia/Taipei',region:'us-central1',
-  timeoutSeconds:540,memory:'512MiB'},async () => {
+  timeoutSeconds:540,memory:'512MiB',cpu:'gcf_gen1',concurrency:1,minInstances:0},async () => {
   const jobs=await db.collection('creator_fan_mail_jobs').where('status','in',['queued','processing']).limit(5).get();
   for (const job of jobs.docs) {
     const work=job.data()||{};

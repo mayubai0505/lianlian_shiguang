@@ -1014,4 +1014,53 @@ function advanceCreatorAncientDisplay(template, status, previous, elapsedMinutes
   return result(lines.join('\n'),remain,true,'advanced');
 }
 
-module.exports={explicitAiNarratedElapsedMinutes,normalize,label,addMinutes,resolveClock,creatorInitialCalendar,initialStoryClock,parseStatusClock,enforceStatusTime,detectTimeStyle,branchOfHour,displayTime,timePresentationDirective,creatorTimePolicy,advanceForWorld,normalizeFictionalClock,parseFictionalTime,parseFictionalDaypart,parseFictionalStatusAnchor,displayFictionalClock,resolveFictionalClock,preserveOpaqueCreatorCalendar,isExplicitCreatorCalendarTransition,explicitPlayerAncientTime,reconcileExplicitPlayerAncientTime,protectHourglassStoryDate,advanceCreatorOrdinal24hCalendar,enforceCreatorTimeAuthority,protectCreatorStoryDayOrdinal,creatorOrdinalTimeRules,advanceCreatorOrdinalTimeHead,reconcileExplicitAncientSceneTime,advanceCreatorAncientDisplay};
+
+// Creator-owned numeric era display. Use the previous committed row and server
+// elapsed minutes, not the model's proposed date or countdown. Numeric months
+// use a Gregorian-like calendar only where the template does not declare a
+// different month structure; named seasons have no inferred rollover length.
+function advanceCreatorNumericEra(template, status, previous, elapsedMinutes, options={}) {
+  const current=String(status||''), prior=String(previous||'');
+  if(!current || !prior)return current;
+  const delta=options.regenerate ? 0 : Number(elapsedMinutes);
+  if(!Number.isSafeInteger(delta)||delta<0||delta>5256000)return current;
+  // Explicit custom date resets are not ordinary elapsed-time advances.
+  if(!options.regenerate && options.explicitTransition && /(?:紀元|紀年|\d+年)\s*[^\n]{0,30}(?:月|季|日)/u.test(String(options.playerMessage||'')))return current;
+  const row=/^(\s*([^：:\n]{1,60})[：:]\s*)(.*)$/u;
+  const key=s=>String(s).normalize('NFKC').replace(/[\p{Extended_Pictographic}\p{Emoji_Presentation}\uFE0F\u200D\s]/gu,'');
+  const labels=new Set(String(template||'').split(/\r?\n/u).map(l=>l.match(row)).filter(Boolean).map(m=>key(m[2])).filter(k=>/^(?:紀元時間|紀元日期|紀元|紀年時間|時間|故事時間|當前時間|目前時間|日期時間|星曆時間)$/u.test(k)));
+  const era=/([\p{Script=Han}]{1,20}(?:紀元|紀年|星曆)\s*)(\d{1,6})(年[\s・·，,、-]*)(?:(\d{1,2})(\s*月\s*)|([\p{Script=Han}]{1,12}季\s*))(\d{1,3})(\s*日\s*)([01]?\d|2[0-3])[:：]([0-5]\d)(?!\d)/u;
+  const countdown=/(距(?:離)?[^（）()\n｜|]{1,40}?[：:]\s*)(\d{1,5})(\s*天)/u;
+  const old=new Map();
+  for(const line of prior.split(/\r?\n/u)){
+    const m=line.match(row);if(!m||!labels.has(key(m[2]))||!era.test(m[3]))continue;
+    const k=key(m[2]);if(old.has(k))old.set(k,null);else old.set(k,m[3]);
+  }
+  return current.split(/\r?\n/u).map(line=>{
+    const m=line.match(row);if(!m)return line;
+    const body=old.get(key(m[2]));if(!body)return line;
+    const a=body.match(era);if(!a)return line;
+    const total=Number(a[9])*60+Number(a[10])+delta, days=Math.floor(total/1440);
+    const minute=total%1440;
+    let year=Number(a[2]),month=Number(a[4]),day=Number(a[7]);
+    if(a[4]){
+      // Do not guess nonstandard calendars or cross a month with an unknown length.
+      if(/(?:每月\s*\d+\s*[天日]|每年\s*\d+\s*個?月|非公曆|非公历|自訂曆法)/u.test(String(template||'')) && days && day+days>28)return line;
+      const d=new Date(0);d.setUTCFullYear(year,month-1,day);d.setUTCHours(0,0,0,0);
+      if(d.getUTCFullYear()!==year||d.getUTCMonth()+1!==month||d.getUTCDate()!==day)return line;
+      d.setUTCDate(d.getUTCDate()+days);year=d.getUTCFullYear();month=d.getUTCMonth()+1;day=d.getUTCDate();
+    }else{
+      // Named season day count: no invented season/year boundary.
+      day+=days;
+    }
+    const pad=(v,raw)=>String(v).padStart(raw.length,'0');
+    const stamp=a[1]+pad(year,a[2])+a[3]+(a[4]?pad(month,a[4])+a[5]:a[6])+pad(day,a[7])+a[8]+pad(Math.floor(minute/60),a[9])+':'+PAD(minute%60);
+    let next=body.replace(era,()=>stamp);
+    // Refresh only an existing ordinary daypart; do not add a new field.
+    next=next.replace(/(\d{1,2}[:：]\d{2}\s*)(凌晨|清晨|早上|上午|中午|下午|傍晚|黃昏|晚上|深夜|半夜)/u,(_,prefix)=>{const h=Math.floor(minute/60);return prefix+(h<5?'凌晨':h<7?'清晨':h<12?'上午':h<13?'中午':h<17?'下午':h<19?'黃昏':h<23?'晚上':'深夜');});
+    if(days)next=next.replace(countdown,(_,prefix,n,suffix)=>prefix+Math.max(0,Number(n)-days)+suffix);
+    return m[1]+next;
+  }).join('\n');
+}
+
+module.exports={advanceCreatorNumericEra,explicitAiNarratedElapsedMinutes,normalize,label,addMinutes,resolveClock,creatorInitialCalendar,initialStoryClock,parseStatusClock,enforceStatusTime,detectTimeStyle,branchOfHour,displayTime,timePresentationDirective,creatorTimePolicy,advanceForWorld,normalizeFictionalClock,parseFictionalTime,parseFictionalDaypart,parseFictionalStatusAnchor,displayFictionalClock,resolveFictionalClock,preserveOpaqueCreatorCalendar,isExplicitCreatorCalendarTransition,explicitPlayerAncientTime,reconcileExplicitPlayerAncientTime,protectHourglassStoryDate,advanceCreatorOrdinal24hCalendar,enforceCreatorTimeAuthority,protectCreatorStoryDayOrdinal,creatorOrdinalTimeRules,advanceCreatorOrdinalTimeHead,reconcileExplicitAncientSceneTime,advanceCreatorAncientDisplay};

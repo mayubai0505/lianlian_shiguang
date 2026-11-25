@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -27,6 +27,29 @@ class _RoleAgreementIncomingPageState extends State<RoleAgreementIncomingPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    // Once the confirmation route is visible, dismiss the system call UI.
+    // This does not accept the server call or charge flowers.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _closeNativeSafely();
+    });
+  }
+
+  String _friendlyError(Object error) {
+    if (error is FirebaseFunctionsException) {
+      switch (error.code) {
+        case 'not-found': return '找不到這通約定來電，請重新建立約定。';
+        case 'failed-precondition': return error.message ?? '目前無法接聽，請稍後再試。';
+        case 'already-exists': return '這通電話已被接聽。';
+        case 'unauthenticated': return '請先登入。';
+      }
+    }
+    if (error is StateError) return error.message.toString();
+    return '暫時無法連線，請稍後再試。';
+  }
+
+  @override
   void dispose() {
     _closeNativeSafely();
     super.dispose();
@@ -37,11 +60,18 @@ class _RoleAgreementIncomingPageState extends State<RoleAgreementIncomingPage> {
     debugPrint('[RA] confirmation page loading');
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) throw StateError('請先登入');
-    final agreement = await FirebaseFirestore.instance
+    final ref = FirebaseFirestore.instance
       .collection('users').doc(uid)
       .collection('characters').doc(widget.characterId)
-      .collection('role_agreements').doc(widget.agreementId)
-      .get();
+      .collection('role_agreements').doc(widget.agreementId);
+    var agreement = await ref.get(const GetOptions(source: Source.server));
+    // Push may arrive just before the dispatcher commits ringing state.
+    for (var attempt = 0; attempt < 5 && agreement.exists &&
+        agreement.data()?['status'] == 'scheduled'; attempt++) {
+      await Future<void>.delayed(const Duration(milliseconds: 600));
+      if (!mounted) throw StateError('來電頁面已關閉');
+      agreement = await ref.get(const GetOptions(source: Source.server));
+    }
     if (!agreement.exists) throw StateError('找不到這筆角色約定');
     final data = agreement.data()!;
     if (data['method'] != 'call' || data['status'] != 'ringing') {
@@ -71,51 +101,31 @@ class _RoleAgreementIncomingPageState extends State<RoleAgreementIncomingPage> {
       await _closeNativeSafely();
       if (mounted) Navigator.pop(context);
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text('拒接失敗：$e')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text('拒接失敗：${_friendlyError(e)}')));
     } finally {if(mounted)setState(()=>_busy=false);}
   }
 
   Future<void> _answer(_RoleAgreementInfo info) async {
     if (_busy || _opened) return;
     setState(()=>_busy=true);
-    bool charged=false;
-    bool audioStarted=false;
-    bool finalized=false;
-    Future<void> finish() async {
-      if (finalized) return;
-      finalized=true;
-      try {await _functions.httpsCallable('finishRoleAgreementCall').call({
-        'characterId':widget.characterId,'agreementId':widget.agreementId,
-        'connected':audioStarted,
-      });} catch(e) {debugPrint('約定通話結算失敗：$e');}
-    }
     try {
-      debugPrint('[RA] explicit confirmation; calling backend');
-      final result=await _functions.httpsCallable('acceptRoleAgreementCall').call({
-        'characterId':widget.characterId,'agreementId':widget.agreementId,
-      });
-      charged=true;
-      if (!mounted) {await finish();return;}
+      // Explicit confirmation precedes authorization. V4.1 alone reserves and settles.
       _opened=true;
-      debugPrint('[RA] backend accepted; closing native UI');
       await _closeNativeSafely();
-      if (!mounted) {await finish();return;}
-      debugPrint('[RA] pushing CallOverlay');
-      await Navigator.of(context).push(MaterialPageRoute<void>(builder:(_) => CallOverlay(
+      if (!mounted) return;
+      final nav=Navigator.of(context);
+      await nav.push(MaterialPageRoute<void>(builder:(_) => CallOverlay(
         character:info.character,characterId:widget.characterId,
         sessionId:info.sessionId,selectedLanguage:'繁體中文',shouldSave:false,
-        incomingAgreementContent:info.content,
-        onFirstAudioStarted:(){audioStarted=true;debugPrint('[RA] first audio started');},
-        onCallNotConnected:(){if(Navigator.of(context).canPop())Navigator.of(context).pop();},
-        onCallEnded:(duration,messages){if(Navigator.of(context).canPop())Navigator.of(context).pop();},
+        incomingAgreementContent:info.content,incomingAgreementId:widget.agreementId,
+        onCallNotConnected:(){if(nav.canPop())nav.pop();},
+        onCallEnded:(duration,messages){if(nav.canPop())nav.pop();},
       )));
-      await finish();
       if (mounted) Navigator.of(context).pop();
-      debugPrint('角色約定來電已結束：${result.data}');
     } catch(e) {
-      debugPrint('[RA] answer failed: $e');
-      if (charged) await finish();
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text('接聽失敗：$e')));
+      debugPrint('[RA] V4.1 navigation failed: ${e.runtimeType}');
+      _opened=false;
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text('接聽失敗：${_friendlyError(e)}')));
     } finally {if(mounted)setState(()=>_busy=false);}
   }
 
@@ -126,7 +136,7 @@ class _RoleAgreementIncomingPageState extends State<RoleAgreementIncomingPage> {
       body:FutureBuilder<_RoleAgreementInfo>(future:_info,builder:(context,snapshot){
         if(snapshot.connectionState!=ConnectionState.done)return const Center(child:CircularProgressIndicator());
         if(snapshot.hasError)return Center(child:Padding(padding:const EdgeInsets.all(24),
-          child:Text('無法開啟約定來電：${snapshot.error}',textAlign:TextAlign.center)));
+          child:Text('無法開啟約定來電：${_friendlyError(snapshot.error!)}',textAlign:TextAlign.center)));
         final info=snapshot.data!;
         return Center(child:ConstrainedBox(constraints:const BoxConstraints(maxWidth:420),
           child:Padding(padding:const EdgeInsets.all(24),child:Column(mainAxisSize:MainAxisSize.min,children:[

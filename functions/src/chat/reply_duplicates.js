@@ -77,4 +77,45 @@ function findRepeatedNarrative(candidate, history, template = '') {
     return null;
 }
 
-module.exports = {narrativeBody, findRepeatedNarrative};
+// Short-chat only: meaningful clauses, not greetings or short catchphrases.
+function casualKey(text) {
+    return normalize(String(text || '').normalize('NFKC'));
+}
+function intentionalRepeat(message) {
+    return /再說(?:一遍|一次)|重複(?:一遍|一次|我|這|那)|再念(?:一遍|一次)|跟著我說|跟我說一遍|複誦|復誦|原話|逐字|repeat\b|say (?:it|that) again|quote verbatim/iu.test(String(message || ''));
+}
+function meaningful(key) {
+    const han = (key.match(/\p{Script=Han}/gu) || []).length;
+    return han >= 10 || (han === 0 && key.length >= 28);
+}
+function casualClauses(body) {
+    return String(body || '').replace(/[（(][^（）()\n]*[）)]/gu, '\n')
+        .split(/[。！？!?；;\n]+/u).map(s => s.trim()).filter(Boolean)
+        .map(text => ({text, key:casualKey(text)})).filter(x => meaningful(x.key));
+}
+function findRepeatedCasual(candidate, history, message = '') {
+    if (intentionalRepeat(message)) return null;
+    const body = narrativeBody(candidate);
+    const key = casualKey(body);
+    const clauses = casualClauses(body);
+    const dialogueKey = casualKey(body.replace(/[（(][^（）()\n]*[）)]/gu, ''));
+    for (const item of (Array.isArray(history) ? history : []).filter(m => m?.role === 'assistant').slice(-6).reverse()) {
+        const old = narrativeBody(item.content ?? item.text);
+        const oldKey = casualKey(old);
+        const oldDialogue = casualKey(old.replace(/[（(][^（）()\n]*[）)]/gu, ''));
+        if ((meaningful(key) && (key === oldKey || (key.length >= 18 && oldKey.length >= 18 && similarity(key, oldKey) >= 0.90))) ||
+            (meaningful(dialogueKey) && dialogueKey === oldDialogue)) {
+            return {reason:'casual_repeated_reply', excerpt:old.slice(0,160)};
+        }
+        const previous = casualClauses(old);
+        for (const clause of clauses) {
+            // Do not reject a new answer merely for a familiar incidental phrase.
+            if (clause.key.length < 12 || clause.key.length < dialogueKey.length * 0.60) continue;
+            if (previous.some(p => p.key === clause.key || (clause.key.length >= 20 && p.key.length >= 20 && similarity(p.key, clause.key) >= 0.92))) {
+                return {reason:'casual_repeated_clause', excerpt:clause.text.slice(0,160)};
+            }
+        }
+    }
+    return null;
+}
+module.exports = {narrativeBody, findRepeatedNarrative, findRepeatedCasual, intentionalRepeat, meaningful, casualKey};

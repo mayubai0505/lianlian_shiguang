@@ -66,7 +66,6 @@ const {createMemoryJobHandler} = require('./memory/job_handler');
 const {createChatMessageNotificationHandler,createMailboxNotificationHandler,createSyncNotificationBadgeHandler} = require('./notifications/player_message_handlers');
 const {createLegacyMemoryExtractionHandler} = require('./memory/legacy_extraction_handler');
 const {createCancelAiResponseHandler} = require('./ai/cancel_response_handler');
-const {createBrokenMessageHandlers} = require('./maintenance/broken_messages');
 const {createQixiLettersScheduler} = require('./events/qixi_letters_scheduler');
 const {createAnnouncementDeliveryHandler} = require('./notifications/announcement_delivery_handler');
 const {createStickerAnalysisHandler} = require('./events/sticker_analysis_handler');
@@ -125,17 +124,18 @@ const { buildImmersivePrompt } = require('./chat/prompts/immersive');
 const { buildResonancePrompt } = require('./chat/prompts/resonance');
 const { buildCharacterIdentityDirective } = require('./chat/prompts/character_identity');
 const {createHistoryUtils} = require('./chat/history_utils');
-const {findRepeatedNarrative} = require('./chat/reply_duplicates');
+const {findRepeatedNarrative, findRepeatedCasual} = require('./chat/reply_duplicates');
 const {isContinueRequest, progressionInstruction} = require('./chat/story_progression');
-const {inspectAndCleanRegularReply} = require('./chat/output_quality_guard');
+const {inspectAndCleanRegularReply, cleanCasualRepeatedSentences} = require('./chat/output_quality_guard');
 const {createWriterResponseUtils} = require('./ai/writer_response');
 const {parseRoleCommands} = require('./chat/role_commands');
-const {createPlayerIdentityTools, canonicalPlayerGender} = require('./chat/player_identity');
+const {createPlayerIdentityTools, canonicalPlayerGender, buildResolvedPlayerProfileText} = require('./chat/player_identity');
 const {createAiProviders} = require('./ai/providers');
 const {createAiRetryHandler} = require('./ai/retry_handler');
 const {formatNamedStatusReply} = require('./chat/creator_named_status');
 const {dedupeStatusHeading,missingStatusRows,mergeMissingStatus,markUnresolvedStatus,completionInstruction,statusRepairTokens} = require("./chat/status_value_completion");
 const {literalCreatorStatus} = require('./chat/literal_creator_status');
+const {extractMigratableFooter,protectInitialReset} = require('./chat/status_template_continuity');
 const {createCustomStatusGuard} = require('./chat/custom_status_guard');
 const {resolveCreatorIdentityMacros} = require('./chat/creator_macro_compat');
 const {describeCreatorAdvancedStatus} = require('./chat/creator_advanced_status');
@@ -162,6 +162,25 @@ const crypto = require("crypto");
 const APP_ID = "lianlianshiguang";
 const {createDateTimeHelpers} = require('./utils/date_time_helpers');
 const {formatTimeDisplay,parseRewardCampaignDate,getTaipeiUtcStartOfDay,getTaipeiMonthStart} = createDateTimeHelpers({HttpsError});
+
+// Story time display boundary: machine-readable storyTime remains unchanged.
+const STORY_DISPLAY_ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?(?:Z|[+-]\d{2}:\d{2})$/u;
+const STORY_DISPLAY_ISO_ROW = /^([ \t]*(?:[\p{Extended_Pictographic}\p{Emoji_Presentation}\uFE0F]+[ \t]*)?(?:當前時間|目前時間|故事時間|時間|時刻)[ \t]*[：:][ \t]*)(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?(?:Z|[+-]\d{2}:\d{2}))[ \t]*$/u;
+function regularStoryTimeDisplay(value) {
+    const raw = String(value ?? '').trim();
+    if (!STORY_DISPLAY_ISO.test(raw)) return raw;
+    const date = new Date(raw);
+    if (Number.isNaN(date.getTime())) return raw;
+    return String(formatTimeDisplay(date) || raw).trim();
+}
+function normalizeRegularStoryTimeHeaders(text, authoritativeDisplay = '') {
+    return String(text ?? '').split('\n').map(line => {
+        const row = line.match(STORY_DISPLAY_ISO_ROW);
+        if (!row) return line;
+        return row[1] + (authoritativeDisplay || regularStoryTimeDisplay(row[2]));
+    }).join('\n');
+}
+
 const {normalizeReusableEventTaskDefinition, reusableEventTaskMatchesAction, reusableEventIsRunning, reusableEventProgressRef} = createEventTaskUtils({db, APP_ID});
 const {limitPromptText, normalizeDailyAssistantHistory} = createHistoryUtils({fixMojibake});
 const {resolvePlayerIdentityFromUserData, resolveEffectivePlayerProfileId} = createPlayerIdentityTools({db, APP_ID});
@@ -195,7 +214,7 @@ exports.cancelRoleAgreement = onCall({
 // 每分鐘掃描到期的約定。Handler 內含 transaction lease、重試與防重複配送。
 exports.dispatchRoleAgreements = onSchedule({
   schedule:'every 1 minutes', region:'us-central1', timeZone:'Etc/UTC',
-  memory:'256MiB', timeoutSeconds:120, maxInstances:1,
+  memory:'256MiB', timeoutSeconds:120, maxInstances:1, cpu:'gcf_gen1', concurrency:1, minInstances:0,
 }, createRoleAgreementDelivery({db,APP_ID,FieldValue,sendToUserDevices,logger}));
 
 const roleAgreementCalls = createRoleAgreementCallHandlers({db,APP_ID,HttpsError,FieldValue});
@@ -2890,14 +2909,15 @@ if (
 // 創作者自訂回覆格式／狀態欄
 // ==========================================
 
-// Roleplay-card identity compatibility: resolve only known NAME placeholders.
-// Use the same persona priority as playerName below; never resolve {{time}} to
-// wall-clock time, execute macros, or mutate the stored creator template.
+// One verified room persona for macros, prompt and scoped memory.
 const creatorIdentityData = userDoc.data() || {};
-const creatorActiveProfile = Array.isArray(creatorIdentityData.profiles)
-    ? creatorIdentityData.profiles.find(profile => profile?.id === creatorIdentityData.activeProfileId)
-    : null;
-const creatorPlayerName = body.playerName || creatorActiveProfile?.name || creatorIdentityData.nickname || "玩家";
+const resolvedIdentityProfileId = await resolveEffectivePlayerProfileId({
+    appId: APP_ID, userId, characterId: liveCharacterId,
+    sessionId: isTestChat ? '' : sessionId,
+    requestedProfileId: playerProfileId, userData: creatorIdentityData,
+});
+const resolvedPlayerIdentity = resolvePlayerIdentityFromUserData(creatorIdentityData, resolvedIdentityProfileId);
+const creatorPlayerName = resolvedPlayerIdentity.name;
 const rawCustomOutputFormat = String(characterProfile.customOutputFormat || "").trim();
 const customOutputFormat = resolveCreatorIdentityMacros(rawCustomOutputFormat, {
     characterName: name, playerName: creatorPlayerName,
@@ -2959,14 +2979,15 @@ function extractPreviousCustomStatus(history, template) {
     const previous = Array.isArray(history)
         ? [...history].reverse().find((message) => message?.role === "assistant")
         : null;
-    const text = String(previous?.content || "");
+    const text = String(previous?.content || previous?.text || "");
+    const migrated = extractMigratableFooter(template,text);
     const lines = text.split(/\r?\n/);
     const start = lines.findLastIndex((line) => line.trimStart().startsWith(labels[0] || "\u0000"));
-    if (start < 0 || labels.length === 0) return "";
-    if (lines.slice(start + 1).some((line) => /^\s*[（「]/u.test(line))) return "";
+    if (start < 0 || labels.length === 0) return migrated;
+    if (lines.slice(start + 1).some((line) => /^\s*[（「]/u.test(line))) return migrated;
     const status = lines.slice(start).join("\n").trim();
     // 至少保留第一個模板欄位，避免把只有末端對話的片段當成完整狀態。
-    return lines[start].trimStart().startsWith(labels[0]) ? status : "";
+    return migrated && migrated.split("\n").length > status.split("\n").filter(line => labels.some(label => line.trimStart().startsWith(label))).length ? migrated : status;
 }
 
 // Only use sanitized prior footer as a reference; creator samples are never an eligible fallback.
@@ -2979,6 +3000,7 @@ const customStatusContinuityDirective = `
 - 角色對玩家的想法可以寫在角色內心話；玩家的心理、穿搭及反應不得移植成角色的狀態。創作者明確指定其他人物的欄位，依原指定人物填寫。
 - 以上一輪狀態為底，逐欄判斷本輪實際事件。沒有明確變化的欄位必須逐字沿用，不改寫措辭、不換衣服、不為每回合製造新內容。場景改變不代表角色換衣服。
 - 只有角色本人在本輪確實換裝、移動、產生情緒或其他狀態變化，才更新對應欄位；保留其餘欄位及創作者設定的欄名、Emoji、順序、換行與顯示條件。
+- 創作者更新模板、初始值、Emoji 或欄位順序不是故事事件；既有欄位不可因此回到初始值。初始值只適用於尚未建立的欄位。
 - 第一輪依角色設定與已建立事實填寫，缺乏依據才填未知。已有上一輪值時，不能因本輪沒提到就改為未知。
 - 群組訊息等特殊欄位依創作者設定執行；沒有新訊息就延續既有內容。狀態欄後不得重新演出正文或複製正文對話。
 - 模板中的「每回合固定生成在最底下的狀態欄格式」等操作說明不屬於顯示欄位，不能印給玩家。
@@ -3185,37 +3207,10 @@ let relationContext = "";
             // 🌟 總裁優化：直接使用最上面已經抓好的 userDoc，省下一次資料庫讀取費！
             const userData = userDoc.data() || {};
 
-            // ✨✨✨ 總裁進階優化：讓底層稱呼指令也跟著多重宇宙切換！ ✨✨✨
-            let currentIdentityName = userData.nickname ? userData.nickname : "你";
-            // 檢查是不是有多重身分系統
-            if (userData.profiles && userData.activeProfileId) {
-                const activeProfile = userData.profiles.find(p => p.id === userData.activeProfileId);
-                // 如果有找到啟動中的檔案，而且裡面有寫專屬名字，就優先用它！
-                if (activeProfile && activeProfile.name && activeProfile.name.trim() !== "") {
-                    currentIdentityName = activeProfile.name;
-                }
-            }
-
-            const playerName =
-                body.playerName ||
-                currentIdentityName ||
-                "玩家";
-
-            // Explicit selected profile gender wins, including other/unset.
-            // Use the room selection when present; preserve legacy request fallback.
-            const genderRoomId = String(sessionId || '').trim();
-            const genderRoomProfiles = userData.roomProfiles || {};
-            const genderProfileId = String(genderRoomProfiles[genderRoomId] ??
-                (String(playerProfileId || '').trim() || 'default')).trim();
-            const selectedPlayerProfile = Array.isArray(userData.profiles) && genderProfileId !== 'default'
-                ? userData.profiles.find(p => String(p?.id ?? '') === genderProfileId)
-                : null;
-            const explicitProfileGender = canonicalPlayerGender(selectedPlayerProfile?.gender);
-            const hasExplicitDefaultSelection = genderRoomProfiles[genderRoomId] === 'default';
-            const normalizedPlayerGender = explicitProfileGender ||
-                (hasExplicitDefaultSelection
-                    ? (canonicalPlayerGender(userData.gender) || '未設定')
-                    : (canonicalPlayerGender(playerGender) || '未設定'));
+            const playerName = resolvedPlayerIdentity.name;
+            const normalizedPlayerGender = canonicalPlayerGender(resolvedPlayerIdentity.gender) || '未設定';
+            const explicitProfileGender = canonicalPlayerGender(resolvedPlayerIdentity.profile?.gender);
+            const hasExplicitDefaultSelection = resolvedPlayerIdentity.id === 'default';
 
             let playerIdentityDirective = "";
 
@@ -3285,25 +3280,19 @@ let relationContext = "";
                 playerName,
                 playerGender: normalizedPlayerGender,
             });
-            const playerBirthday = userData.birthday ? userData.birthday : "未知";
+            const playerBirthday = resolvedPlayerIdentity.birthday;
 
             // ✨✨✨ 總裁專屬：AI 情報中心 (完全信任 Flutter 傳來的新版多重身分檔案) ✨✨✨
             let contextBriefing = "";
 
-            // 🚀 關鍵升級：直接無條件使用從手機端傳來的 userProfile！
-            // Older clients may inject account gender and fixed female wording.
-            // Remove only the known generated conflicting gender block/lines.
-            const alignProfileGenderText = value => {
-                let text = String(value || '')
-                    .replace('請嚴格根據這個時空的具體設定與女主角互動，展現專屬默契。', '請嚴格根據這個時空的具體設定與對方互動，展現專屬默契。')
-                    .replace('你必須嚴格根據這些設定與她互動，', '你必須嚴格根據這些設定與對方互動，');
-                if (explicitProfileGender || hasExplicitDefaultSelection) {
-                    text = text.replace(/【玩家性別與稱呼規範】\s*\n玩家性別設定：[^\n]*\n[^\n]*(?:\n|$)/g, '')
-                        .replace(/(【與你對話的主角(?:當前時空設定|基本資料)】\s*\n- 稱呼：[^\n]*\n)(- 性別：)[^\n]*/g, `$1$2${normalizedPlayerGender}`);
-                }
-                return text;
-            };
-            contextBriefing += `\n${alignProfileGenderText(userProfile)}\n${systemDirective ? `\n${alignProfileGenderText(systemDirective)}\n` : ''}`;
+            // The app's generated identity directive can contain stale names,
+            // gender and bio. Rebuild it from the same server-side persona.
+            // Legacy regeneration detection remains above; mode format rules
+            // and special scene overrides are handled separately as before.
+            contextBriefing += '\n' + buildResolvedPlayerProfileText(resolvedPlayerIdentity) + '\n';
+            if (systemDirective && !/【最高防護指令】|【與你對話的主角|【玩家性別與稱呼規範】/u.test(String(systemDirective))) {
+                contextBriefing += '\n' + String(systemDirective) + '\n';
+            }
 
             if (aboutMeNotes?.length > 0) contextBriefing += `\n[關於玩家的記憶]\n- ${aboutMeNotes.join("\n- ")}\n`;
             if (memos?.length > 0) contextBriefing += `\n[備忘錄]\n- ${memos.join("\n- ")}\n`;
@@ -3649,37 +3638,9 @@ let relationContext = "";
 
                                                                                                 const uid = userId;
 const charId = body.characterId || body.botId || characterProfile.id;
-const requestedProfileId = String(playerProfileId || body.playerProfileId || "default").trim() || "default";
-let effectiveProfileId = requestedProfileId;
+const effectiveProfileId = resolvedPlayerIdentity.id;
 try {
 const safeSessionId = String(sessionId || "").trim();
-
-                                                                                                    // 新版聊天室以 session 內保存的 playerProfileId 為準，避免前端誤傳造成跨檔案記憶串台。
-                                                                                                    if (uid && charId && safeSessionId && requestedProfileId) {
-                                                                                                        try {
-                                                                                                            const sessionSnapshot = await db
-                                                                                                                .collection("artifacts")
-                                                                                                                .doc(body.appId || "lianlianshiguang")
-                                                                                                                .collection("chat_sessions")
-                                                                                                                .doc(safeSessionId)
-                                                                                                                .get();
-
-                                                                                                            if (sessionSnapshot.exists) {
-                                                                                                                const sessionData = sessionSnapshot.data() || {};
-                                                                                                                const sessionOwner = String(sessionData.userId || "").trim();
-                                                                                                                const sessionCharacterId = String(sessionData.characterId || "").trim();
-                                                                                                                const sessionProfileId = String(sessionData.playerProfileId || "").trim();
-
-                                                                                                                if (sessionOwner === uid &&
-                                                                                                                    (!sessionCharacterId || sessionCharacterId === String(charId)) &&
-                                                                                                                    sessionProfileId) {
-                                                                                                                    effectiveProfileId = sessionProfileId;
-                                                                                                                }
-                                                                                                            }
-                                                                                                        } catch (sessionProfileError) {
-                                                                                                            console.error("⚠️ 驗證聊天室 playerProfileId 失敗，改用請求值：", sessionProfileError);
-                                                                                                        }
-                                                                                                    }
 
                                                                                                     if (supportsScopedMemory && uid && charId && effectiveProfileId && safeSessionId) {
                                                                                                         // 新版三層記憶：Profile / Character / Session
@@ -4433,10 +4394,14 @@ const profileMemoriesRef = isDefaultProfile(effectiveProfileId)
          // 角色本人是所有一般聊天模式共用的身分基礎；模式僅影響敘事節奏與輸出格式。
          // 七夕限定開場同樣適用；不修改原本各模式的 JSON／計費／模型分流。
          systemPrompt += '\n' + LATEST_SETTINGS_DIRECTIVE;
+         if (["story", "immersive", "resonance"].includes(chatMode)) {
+             systemPrompt += '\n【故事時間顯示】正文時間與自訂狀態欄請使用可閱讀的故事日期／時分，不得輸出 ISO 8601（T、毫秒、Z 或時區偏移碼）。結構化 storyTime 欄位仍依原本格式提供。' +
+                 '\n本輪故事時間顯示參考：' + currentStoryTimeDisplay;
+         }
          const latestOpening = [characterProfile.initialStory, characterProfile.storyModeFirstLine ?? characterProfile.firstLine]
              .map(value => String(value ?? '').trim()).filter(Boolean).join('\n');
          if (latestOpening) systemPrompt += '\n【最新開場背景，僅作設定參考，不重播事件】\n' + latestOpening.slice(0,3000);
-         systemPrompt += buildCharacterIdentityDirective({name, chatMode});
+         systemPrompt += buildCharacterIdentityDirective({name, chatMode, playerName});
 
          // Shared across all general-character modes, including work scenes.
          // Preserve each mode's format, length budget, and character autonomy.
@@ -4609,14 +4574,18 @@ ${persistentPreferenceDirective}
     : normalizedPlayerGender === '女性'
         ? '玩家為女性：對玩家本人使用「妳」，第三人稱使用「她」；不得把玩家寫成「他／男生／男主角」。'
         : '未明確設定玩家性別：使用姓名或中性第二人稱「你」，不得猜測男性或女性。'}
-- 舊對話、劇情摘要、RAG 記憶、創作者範例若含有與目前玩家身分衝突的稱呼，只視為歷史敘述錯誤；保留事件本身，不要繼承錯誤性別。
+- 舊對話、劇情摘要、RAG 記憶、創作者範例若含有與目前玩家身分衝突的稱呼，只視為歷史敘述或其他人物資料；保留事件本身，不要繼承錯誤姓名、性別、年齡或身分。若舊姓名實際屬於 NPC，保留 NPC 原名。
 - 以上只約束「玩家本人」；角色、NPC、引用台詞中的其他人照其各自身分，不可全域替換「他／她／你／妳」。
-- 在生成正文、旁白、台詞、狀態欄及重寫答案前，確認所有指向玩家的性別稱呼與本輪身分一致，不要輸出檢查過程。
+- 在生成正文、旁白、台詞、狀態欄及重寫答案前，確認所有指向玩家的姓名、性別稱呼與本輪身分一致，不要輸出檢查過程。
 `;
 
        // ✨ 偷天換日 1：隨機開局 (把「玩家」換成 `${playerName}`)
        const checkMsg = userMessage.trim().toLowerCase();
        const continuingStory = isContinueRequest(userMessage, isContinue);
+       const isShortCasual = chatMode === 'gemini' || chatMode === 'daily';
+       if (isShortCasual) systemPrompt += `
+【短聊自然接話】以玩家最新訊息為回答核心，先回應其具體內容，再依角色個性自然接話。近期角色訊息是已說過的話，不是待複製的範例；不要反覆使用同一整句安慰、叮囑、反問或同一套動作。無需為變化硬加新事件或長篇內容。正常問候、口頭禪、玩家要求複述及合理的安全拒絕不受此限制。維持本模式原有格式及長度。
+`;
        systemPrompt += '\n' + progressionInstruction({continuing: continuingStory, casual: chatMode === 'gemini'});
 
        if (chatMode === "gemini") {
@@ -5727,8 +5696,16 @@ const residualWriterArtifacts =
                                                                                );
 
                                                                                // 🛡️ 防止模型把同聊天室最近幾則 AI 長回覆整段搬回來。
-                                                                                const repeatedNarrative = findRepeatedNarrative(
-                                                                                    currentText, recentAssistantReplies, customOutputFormat);
+                                                                                const casualCleanup = isShortCasual ? cleanCasualRepeatedSentences(currentText, userMessage) : null;
+                                                                                if (casualCleanup?.removed) {
+                                                                                    currentText = casualCleanup.text;
+                                                                                    console.info('CASUAL_REPEAT_CLEANED', {chatMode, removed:casualCleanup.removed});
+                                                                                    if (chatMode === 'gemini') parsedData.voiceText = currentText;
+                                                                                    else parsedData.voiceText = extractDialogueVoiceText(currentText) || parsedData.voiceText;
+                                                                                }
+                                                                                const repeatedNarrative = isShortCasual
+                                                                                    ? findRepeatedCasual(currentText, recentAssistantReplies, userMessage)
+                                                                                    : findRepeatedNarrative(currentText, recentAssistantReplies, customOutputFormat);
 
                                                                                 if (repeatedNarrative) {
                                                                                     console.warn(
@@ -5759,7 +5736,9 @@ const residualWriterArtifacts =
                                                                                                 `【最高優先防重複指令】\n` +
                                                                                                 `你剛才準備輸出的內容與這個聊天室近期已經出現過的角色回覆高度重複，該草稿作廢。\n` +
                                                                                                 `請重新理解玩家這一次的最新訊息，生成新的回覆。禁止複製、重述或輕微改寫近期已出現過的整段內容；必須自然延續目前對話。\n` +
-                                                                                                `以下為需要避開的重複草稿片段，僅作比對資料：\n${repeatedNarrative.excerpt}\n保留既有事實與角色設定，重新寫出本輪新的反應。固定狀態欄依連續性規則處理。`,
+                                                                                                (isShortCasual
+                                                                                                    ? `只回應最新訊息，保持原本短聊格式及安全限制，不必增加字數或動作。`
+                                                                                                    : `以下為需要避開的重複草稿片段，僅作比對資料：\n${repeatedNarrative.excerpt}\n保留既有事實與角色設定，重新寫出本輪新的反應。固定狀態欄依連續性規則處理。`),
                                                                                         };
 
                                                                                         continue;
@@ -6186,7 +6165,7 @@ ${customStatusContinuityDirective}
                                                                                                                                ${finalResponseText}
 
                                                                                                                                【本輪結束故事時間】
-                                                                                                                               ${finalStoryTime || "未知"}
+                                                                                                                               ${regularStoryTimeDisplay(finalStoryTime) || "未知"}
 
                                                                                                                                【本輪結束故事地點】
                                                                                                                                ${finalStoryLocation || "未知"}
@@ -6293,7 +6272,7 @@ if (supportsCustomStatusBar) {
         const rescued = customStatusGuard.salvage(
             finalResponseText,
             previousCustomStatus,
-            {time: finalStoryTime, location: finalStoryLocation}
+            {time: regularStoryTimeDisplay(finalStoryTime), location: finalStoryLocation}
         );
         // V5.18.1: The salvage path must not bypass the same body-preservation invariant.
         const rescueOriginal = String(finalResponseText || '');
@@ -6926,7 +6905,7 @@ if (sessionId) {
                 `「${safeDialogue}」`;
         } else {
             cleanDisplayText =
-                `時間：${lastStoryTime || "現在"}\n` +
+                `時間：${regularStoryTimeDisplay(lastStoryTime) || "現在"}\n` +
                 `地點：${lastStoryLocation || "當前地點"}\n\n` +
                 `「${safeDialogue}」`;
         }
@@ -7031,6 +7010,14 @@ if (sessionId) {
     }
     // V5.20.6: conservative, Taiwan-Traditional-only final reply quality guard.
     // Runs after existing custom footer/time/kinship normalization; no AI retry.
+    if (isShortCasual) {
+        const casualFinal = cleanCasualRepeatedSentences(cleanDisplayText, userMessage);
+        if (casualFinal.removed) {
+            cleanDisplayText = casualFinal.text;
+            cleanVoiceText = chatMode === 'gemini' ? cleanDisplayText : (extractDialogueVoiceText(cleanDisplayText) || cleanVoiceText);
+            console.info('CASUAL_REPEAT_FINAL_CLEANED', {chatMode, removed:casualFinal.removed});
+        }
+    }
     const replyQuality = inspectAndCleanRegularReply(cleanDisplayText, playerLanguage);
     cleanDisplayText = replyQuality.text;
     if (replyQuality.stats.removedRepeatedParagraphs ||
@@ -7051,7 +7038,7 @@ if (sessionId) {
       } else {
         const body = customStatusGuard.bodyOnly(cleanDisplayText);
         const footer = cleanDisplayText.slice(body.length).trim();
-        const rendered = literalCreatorStatus(customOutputFormat, footer, {time:finalStoryTime, location:finalStoryLocation});
+        const rendered = literalCreatorStatus(customOutputFormat, footer, {time:regularStoryTimeDisplay(finalStoryTime), location:finalStoryLocation});
         if (rendered !== null && body.trim()) cleanDisplayText = body.trimEnd() + "\n\n" + rendered;
       }
     }
@@ -7061,7 +7048,7 @@ if (sessionId) {
       const body = customStatusGuard.bodyOnly(cleanDisplayText);
       const footer = cleanDisplayText.slice(body.length).trim();
       let status = literalCreatorStatus(customOutputFormat, footer,
-        {time:finalStoryTime, location:finalStoryLocation});
+        {time:regularStoryTimeDisplay(finalStoryTime), location:finalStoryLocation});
       if (status !== null && body.trim()) {
         const repairStartedAt = Date.now();
         for (let repairAttempt = 0; repairAttempt < 2; repairAttempt++) {
@@ -7095,6 +7082,16 @@ if (sessionId) {
         console.info('REGULAR STATUS VALUE VALIDATION',{chatMode,
           missingCount:unresolved.length,complete:unresolved.length === 0});
         cleanDisplayText = body.trimEnd() + "\n\n" + markUnresolvedStatus(status);
+      }
+    }
+    if (supportsCustomStatusBar && previousCustomStatus) {
+      const body = customStatusGuard.bodyOnly(cleanDisplayText);
+      const footer = cleanDisplayText.slice(body.length).trim();
+      const resetGuard = protectInitialReset({template:customOutputFormat,current:footer,
+        previous:previousCustomStatus,evidence:String(userMessage||'')+'\n'+body});
+      if(resetGuard.restored && body.trim()) {
+        cleanDisplayText=body.trimEnd()+'\n\n'+resetGuard.status;
+        console.info('REGULAR STATUS INITIAL RESET GUARD',{chatMode,restored:resetGuard.restored});
       }
     }
     if (supportsCustomStatusBar) cleanDisplayText = dedupeStatusHeading(cleanDisplayText);
@@ -7296,6 +7293,7 @@ if (sessionId) {
                     const timeHHMM = `${hhmm[1].padStart(2,'0')}:${hhmm[2]}`;
                     cleanDisplayText = cleanDisplayText.split('\n').map(line => {
                         if (!/^\s*(?:[⏰🕒🕰️⌚📅]?\s*)?(?:當前時間|目前時間|故事時間|時間|時刻)\s*[:：]/u.test(line)) return line;
+                        if (STORY_DISPLAY_ISO_ROW.test(line)) return normalizeRegularStoryTimeHeaders(line, newTime);
                         return line.replace(/([01]?\d|2[0-3])[:：]([0-5]\d)/u,timeHHMM);
                     }).join('\n');
                     for (const key of Object.keys(finalStatusBar || {})) {
@@ -7309,6 +7307,12 @@ if (sessionId) {
                 console.info('REGULAR AI NARRATED TIME', {chatMode,minutes:narratedMinutes});
             }
         }
+    }
+
+    // Final visible-only formatting before Firestore and billing transaction.
+    if (["story", "immersive", "resonance"].includes(chatMode)) {
+        cleanDisplayText = normalizeRegularStoryTimeHeaders(cleanDisplayText);
+        finalResponseText = cleanDisplayText;
     }
 
     // ==========================================
@@ -7953,7 +7957,7 @@ const sessionData =
                     playerLanguage: String(playerLanguage || "台灣繁體中文"),
 
                     sessionId,
-                    playerProfileId: String(playerProfileId || body.playerProfileId || "").trim(),
+                    playerProfileId: resolvedPlayerIdentity.id,
                     memoryScopeVersion: Number(memoryScopeVersion || 0),
                     sourceMessageId: aiMessageRef.id,
 
@@ -8119,6 +8123,9 @@ const sessionData =
                                            cleanDisplayText = checked.text;
                                            cleanVoiceText = checked.text;
                                        }
+                                   }
+                                   if (["story", "immersive", "resonance"].includes(chatMode)) {
+                                       cleanDisplayText = normalizeRegularStoryTimeHeaders(cleanDisplayText);
                                    }
                                    finalResponseText = cleanDisplayText;
                                    finalVoiceText = cleanVoiceText;
@@ -9763,6 +9770,7 @@ exports.processEventEndingNotificationsUs =
             region: 'us-central1',
             timeoutSeconds: 540,
             memory: "512MiB",
+            cpu: "gcf_gen1", concurrency: 1, minInstances: 0,
         },
         createEventEndingScheduler({db, APP_ID, FieldValue, sendEventEndingNotificationToAllUsers})
     );
@@ -9800,13 +9808,6 @@ exports.syncNotificationBadge = onCall(
 // 🌟 總裁專屬：殿堂級劇情書記官 (對話摘要生成)
 exports.generateStorySummary = createStorySummaryFunction({onRequest, openRouterApiKey, cors, getAuth, db, FieldValue});
 
-const brokenMessageHandlers = createBrokenMessageHandlers({db,auth,adminUids:{has:(uid)=>REWARD_CAMPAIGN_ADMIN_UIDS.has(uid)}});
-exports.scanBrokenMessages = onRequest({
-    region: "asia-east1", memory: "1GiB", timeoutSeconds: 300,
-}, brokenMessageHandlers.scanBrokenMessages);
-exports.deleteBrokenMessages = onRequest({
-    region: "asia-east1", memory: "1GiB", timeoutSeconds: 300,
-}, brokenMessageHandlers.deleteBrokenMessages);
 
 const {createCallEnvironment,createEnvironmentStreamGate,environmentInstruction} = require('./call/environment');
 const callEnvironment = createCallEnvironment({db,APP_ID,HttpsError,getBucket:()=>require('firebase-admin/storage').getStorage().bucket()});
@@ -10813,7 +10814,9 @@ const creatorFanMailHandlers = createCreatorFanMailHandlers({
   creatorFanMailUsageRef, CREATOR_FAN_MAIL_LIMITS,
 });
 exports.getCreatorFanMailOverview = creatorFanMailHandlers.getCreatorFanMailOverview;
+exports.getCreatorFanMailOverviewUs = creatorFanMailHandlers.getCreatorFanMailOverviewUs;
 exports.sendCreatorFanMail = creatorFanMailHandlers.sendCreatorFanMail;
+exports.sendCreatorFanMailUs = creatorFanMailHandlers.sendCreatorFanMailUs;
 exports.processCreatorFanMailJobsUs = creatorFanMailHandlers.processCreatorFanMailJobs;
 
 // V65: Gift-to-fans handlers moved to creator/flower_gift_handlers.js.
@@ -10832,6 +10835,7 @@ exports.claimCreatorFlowerGiftUs = creatorFlowerGiftHandlers.claimCreatorFlowerG
 const {createCreatorApplicationHandler} = require('./creator/cooperation_application');
 const creatorApplicationHandlers = createCreatorApplicationHandler({db,HttpsError,FieldValue});
 exports.submitCreatorCooperationApplication = onCall({region: REGION, timeoutSeconds: 30}, creatorApplicationHandlers.submitCreatorCooperationApplicationHandler);
+exports.submitCreatorCooperationApplicationUs = onCall({region: "us-central1", timeoutSeconds: 30}, creatorApplicationHandlers.submitCreatorCooperationApplicationHandler);
 
 // V28: creator monthly reward handlers moved to creator/monthly_rewards.js.
 const { createCreatorMonthlyRewards } = require('./creator/monthly_rewards');
@@ -10844,7 +10848,9 @@ exports.creatorRewardTrackPrivateBirth = creatorMonthlyRewardHandlers.creatorRew
 exports.creatorRewardTrackPublicBirth = creatorMonthlyRewardHandlers.creatorRewardTrackPublicBirth;
 exports.creatorRewardTrackPublicWorldBirth = creatorMonthlyRewardHandlers.creatorRewardTrackPublicWorldBirth;
 exports.getCreatorMonthlyReward = creatorMonthlyRewardHandlers.getCreatorMonthlyReward;
+exports.getCreatorMonthlyRewardUs = creatorMonthlyRewardHandlers.getCreatorMonthlyRewardUs;
 exports.claimCreatorMonthlyReward = creatorMonthlyRewardHandlers.claimCreatorMonthlyReward;
+exports.claimCreatorMonthlyRewardUs = creatorMonthlyRewardHandlers.claimCreatorMonthlyRewardUs;
 
 // ============================================================
 // 角色聲音邀請：玩家只可請求既有角色，通知由 Admin SDK 寫入創作者專屬信箱。
@@ -10864,9 +10870,13 @@ exports.requestCharacterVoice = onCall({
 const {createCreatorStudioHandlers} = require('./creator/studio_handlers');
 const creatorStudioHandlers = createCreatorStudioHandlers({db,HttpsError,creatorFanMailVerified,APP_ID,FieldValue,crypto,requireRewardCampaignAdmin});
 exports.removeCreatorFollower = onCall({region: REGION, timeoutSeconds: 30}, creatorStudioHandlers.removeCreatorFollowerHandler);
+exports.removeCreatorFollowerUs = onCall({region: "us-central1", timeoutSeconds: 30}, creatorStudioHandlers.removeCreatorFollowerHandler);
 exports.updateCreatorPortfolio = onCall({region: REGION, timeoutSeconds: 30}, creatorStudioHandlers.updateCreatorPortfolioHandler);
+exports.updateCreatorPortfolioUs = onCall({region: "us-central1", timeoutSeconds: 30}, creatorStudioHandlers.updateCreatorPortfolioHandler);
 exports.updateCreatorBanner = onCall({region: REGION, timeoutSeconds: 90, memory: '512MiB'}, creatorStudioHandlers.updateCreatorBannerHandler);
+exports.updateCreatorBannerUs = onCall({region: "us-central1", timeoutSeconds: 90, memory: '512MiB'}, creatorStudioHandlers.updateCreatorBannerHandler);
 exports.manageCreatorPromotion = onCall({region: REGION, timeoutSeconds: 30}, creatorStudioHandlers.manageCreatorPromotionHandler);
+exports.manageCreatorPromotionUs = onCall({region: "us-central1", timeoutSeconds: 30}, creatorStudioHandlers.manageCreatorPromotionHandler);
 
 // === Creator support cases v1: all reads/writes through authenticated callables. ===
 // Creator support pure utilities; injected HttpsError retains existing error codes.
@@ -10890,11 +10900,17 @@ const {uploadCreatorSupportImageHandler,getCreatorSupportImageHandler,createCrea
 exports.uploadCreatorSupportImage = onCall({region:REGION,timeoutSeconds:90,memory:'512MiB'},async request=>{
  return uploadCreatorSupportImageHandler(request);
 });
+exports.uploadCreatorSupportImageUs = onCall({region:"us-central1",timeoutSeconds:90,memory:'512MiB'},async request=>{
+ return uploadCreatorSupportImageHandler(request);
+});
 exports.getCreatorSupportImage = onCall({region:REGION,timeoutSeconds:45,memory:'512MiB'},async request=>{
  return getCreatorSupportImageHandler(request);
 });
 
 exports.createCreatorSupportCase = onCall({region:REGION,timeoutSeconds:30},async request=>{
+ return createCreatorSupportCaseHandler(request);
+});
+exports.createCreatorSupportCaseUs = onCall({region:"us-central1",timeoutSeconds:30},async request=>{
  return createCreatorSupportCaseHandler(request);
 });
 exports.listCreatorSupportCases = onCall({region:REGION,timeoutSeconds:30},async request=>{
@@ -11155,7 +11171,7 @@ exports.sendCharacterAdjustmentNoticeUs = onCall(
   characterAdjustmentNoticeHandler
 );;
 
-exports.listCreatorSupportCasesUs = onCall({region:"us-central1",timeoutSeconds:30},async request=>{
+exports.listCreatorSupportCasesUs = onCall({region:"us-central1",timeoutSeconds:30,memory:"256MiB",cpu:"gcf_gen1",concurrency:1,minInstances:0,maxInstances:3},async request=>{
  return listCreatorSupportCasesHandler(request);
 });;
 
@@ -11163,7 +11179,7 @@ exports.getCreatorSupportCaseUs = onCall({region:"us-central1",timeoutSeconds:30
  return getCreatorSupportCaseHandler(request);
 });;
 
-exports.replyCreatorSupportCaseUs = onCall({region:"us-central1",timeoutSeconds:45},async request=>{
+exports.replyCreatorSupportCaseUs = onCall({region:"us-central1",timeoutSeconds:45,memory:"256MiB",cpu:"gcf_gen1",concurrency:1,minInstances:0,maxInstances:3},async request=>{
  return replyCreatorSupportCaseHandler(request);
 });;
 
@@ -11225,4 +11241,4 @@ exports.adminSocialPromotionUs = onCall({region:'us-central1',memory:'256MiB',ti
 const limitedMemoryKey = defineSecret('LIMITED_MEMORY_GEMINI_KEY');
 const eventMemoryAI = require('./limited_memory/event_memory_handler').createEventMemoryHandlers({db,admin,APP_ID,FieldValue,HttpsError,reusableEventIsRunning,geminiApiKey:limitedMemoryKey});
 exports.generateEventMemoryUs = onCall({region:'us-central1',timeoutSeconds:240,memory:'512MiB',maxInstances:3,concurrency:2,secrets:[limitedMemoryKey]},eventMemoryAI.handle);
-exports.recoverEventMemoryJobsUs = onSchedule({region:'us-central1',schedule:'every 5 minutes',timeoutSeconds:120,memory:'256MiB',maxInstances:1},eventMemoryAI.recover);
+exports.recoverEventMemoryJobsUs = onSchedule({region:'us-central1',schedule:'every 5 minutes',timeoutSeconds:120,memory:'256MiB',maxInstances:1,cpu:'gcf_gen1',concurrency:1,minInstances:0},eventMemoryAI.recover);

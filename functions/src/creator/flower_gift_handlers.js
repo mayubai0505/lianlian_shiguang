@@ -52,8 +52,9 @@ handlers.searchCreatorGiftFollowers = onCall({
   let lastProcessedId = null;
   let processedCount = 0;
   // 取得滿 pageSize 位符合者就停止；下一次從最後處理的 UID 接續。
-  for (let i = 0; i < scannedDocs.length && items.length < pageSize; i += 30) {
+  for (let i = 0; i < scannedDocs.length && items.length < pageSize;) {
     const batch = scannedDocs.slice(i, i + Math.min(30, pageSize - items.length));
+    i += batch.length;
     const profiles = await db.getAll(...batch.map(doc => db.collection('users').doc(doc.id)));
     for (let j = 0; j < batch.length; j++) {
       lastProcessedId = batch[j].id;
@@ -262,8 +263,9 @@ handlers.searchCreatorGiftFollowersUs = onCall({
   let lastProcessedId = null;
   let processedCount = 0;
   // 取得滿 pageSize 位符合者就停止；下一次從最後處理的 UID 接續。
-  for (let i = 0; i < scannedDocs.length && items.length < pageSize; i += 30) {
+  for (let i = 0; i < scannedDocs.length && items.length < pageSize;) {
     const batch = scannedDocs.slice(i, i + Math.min(30, pageSize - items.length));
+    i += batch.length;
     const profiles = await db.getAll(...batch.map(doc => db.collection('users').doc(doc.id)));
     for (let j = 0; j < batch.length; j++) {
       lastProcessedId = batch[j].id;

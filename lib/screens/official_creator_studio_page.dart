@@ -345,8 +345,8 @@ class _FollowerItem extends StatelessWidget {
     ));
     if (accepted != true || !context.mounted) return;
     try {
-      await FirebaseFunctions.instanceFor(region: 'asia-east1')
-          .httpsCallable('removeCreatorFollower').call({'followerUid': id});
+      await FirebaseFunctions.instanceFor(region: 'us-central1')
+          .httpsCallable('removeCreatorFollowerUs').call({'followerUid': id});
       if (context.mounted) ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.official_studio_text_0451);
     } catch (e) {
       if (context.mounted) ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.official_studio_text_0461, isError: true);
@@ -432,8 +432,8 @@ class _CreatorBannerPageState extends State<_CreatorBannerPage> {
         return;
       }
       setState(() => _busy = true);
-      await FirebaseFunctions.instanceFor(region: 'asia-east1')
-          .httpsCallable('updateCreatorBanner', options: HttpsCallableOptions(timeout: const Duration(seconds: 90)))
+      await FirebaseFunctions.instanceFor(region: 'us-central1')
+          .httpsCallable('updateCreatorBannerUs', options: HttpsCallableOptions(timeout: const Duration(seconds: 90)))
           .call({'imageBase64': base64Encode(cropped), 'operation': 'upload'});
       if (mounted) ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.official_studio_text_0511);
     } on FirebaseFunctionsException catch (e, st) {
@@ -453,8 +453,8 @@ class _CreatorBannerPageState extends State<_CreatorBannerPage> {
   Future<void> _remove() async {
     setState(() => _busy = true);
     try {
-      await FirebaseFunctions.instanceFor(region: 'asia-east1')
-          .httpsCallable('updateCreatorBanner').call({'operation': 'remove'});
+      await FirebaseFunctions.instanceFor(region: 'us-central1')
+          .httpsCallable('updateCreatorBannerUs').call({'operation': 'remove'});
       if (mounted) ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.official_studio_text_0531);
     } catch (e) {
       if (mounted) ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.official_studio_text_0541, isError: true);
@@ -803,7 +803,7 @@ class _CreatorFanMailPage extends StatefulWidget {
 class _CreatorFanMailPageState extends State<_CreatorFanMailPage> {
   final _title = TextEditingController();
   final _body = TextEditingController();
-  final _functions = FirebaseFunctions.instanceFor(region: 'asia-east1');
+  final _functions = FirebaseFunctions.instanceFor(region: 'us-central1');
   String _mode = 'broadcast';
   String? _recipientUid;
   String? _requestId;
@@ -819,7 +819,7 @@ class _CreatorFanMailPageState extends State<_CreatorFanMailPage> {
     if (_loading) return;
     setState(() => _loading = true);
     try {
-      final response = await _functions.httpsCallable('getCreatorFanMailOverview').call();
+      final response = await _functions.httpsCallable('getCreatorFanMailOverviewUs').call();
       if (!mounted) return;
       setState(() => _overview = Map<String,dynamic>.from(response.data as Map));
     } catch (e) {
@@ -852,7 +852,7 @@ class _CreatorFanMailPageState extends State<_CreatorFanMailPage> {
     // 保留識別碼；逾時重試可避免同一封信重複扣額度。
     _requestId ??= '${DateTime.now().microsecondsSinceEpoch}_${FirebaseAuth.instance.currentUser!.uid.hashCode.abs()}';
     try {
-      await _functions.httpsCallable('sendCreatorFanMail', options: HttpsCallableOptions(timeout: const Duration(seconds: 60))).call({
+      await _functions.httpsCallable('sendCreatorFanMailUs', options: HttpsCallableOptions(timeout: const Duration(seconds: 60))).call({
         'mode':_mode,'recipientUid':_mode=='single'?_recipientUid:null,
         'title':title,'body':body,'requestId':_requestId,
       });
@@ -1010,8 +1010,8 @@ class _CreatorFlowerGiftPageState extends State<_CreatorFlowerGiftPage> {
       }
     });
     try {
-      final response = await _functions.httpsCallable(
-        'searchCreatorGiftFollowers',
+      final response = await _giftFunctions.httpsCallable(
+        'searchCreatorGiftFollowersUs',
         options: HttpsCallableOptions(timeout: const Duration(seconds: 60)),
       ).call(<String, dynamic>{
         'keyword': keyword,
@@ -1238,7 +1238,7 @@ class _CreatorMonthlyRewardPage extends StatefulWidget {
   State<_CreatorMonthlyRewardPage> createState()=>_CreatorMonthlyRewardPageState();
 }
 class _CreatorMonthlyRewardPageState extends State<_CreatorMonthlyRewardPage> {
-  final _functions=FirebaseFunctions.instanceFor(region:'asia-east1');
+  final _functions=FirebaseFunctions.instanceFor(region:'us-central1');
   Map<String,dynamic>? _data;
   bool _loading=false;
   bool _claiming=false;
@@ -1248,7 +1248,7 @@ class _CreatorMonthlyRewardPageState extends State<_CreatorMonthlyRewardPage> {
     if(_loading)return;
     setState(()=>_loading=true);
     try{
-      final result=await _functions.httpsCallable('getCreatorMonthlyReward',options:HttpsCallableOptions(timeout:const Duration(seconds:60))).call();
+      final result=await _functions.httpsCallable('getCreatorMonthlyRewardUs',options:HttpsCallableOptions(timeout:const Duration(seconds:60))).call();
       if(mounted)setState(()=>_data=Map<String,dynamic>.from(result.data as Map));
     }on FirebaseFunctionsException catch(e){
       if(mounted)ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(e.message??AppLocalizations.of(context)!.official_studio_text_1431)));
@@ -1266,7 +1266,7 @@ class _CreatorMonthlyRewardPageState extends State<_CreatorMonthlyRewardPage> {
     if(confirmed!=true || !mounted)return;
     setState(()=>_claiming=true);
     try{
-      final result=await _functions.httpsCallable('claimCreatorMonthlyReward',options:HttpsCallableOptions(timeout:const Duration(seconds:90))).call();
+      final result=await _functions.httpsCallable('claimCreatorMonthlyRewardUs',options:HttpsCallableOptions(timeout:const Duration(seconds:90))).call();
       if(!mounted)return;
       final res=Map<String,dynamic>.from(result.data as Map);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(res['alreadyClaimed']==true?AppLocalizations.of(context)!.official_studio_text_1481:AppLocalizations.of(context)!.official_studio_text_1491)));

@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -80,7 +80,8 @@ class RoleAgreementNativeCalls {
     final id = callIdFor(agreementId)!;
     await FlutterCallkitIncoming.showCallkitIncoming(CallKitParams(
       id: id,
-      nameCaller: '${data['characterName'] ?? '角色'}',
+      nameCaller: '${data['characterName'] ?? ''}'.trim().isEmpty
+           ? '角色' : '${data['characterName']}'.trim(),
       appName: '戀戀拾光',
       handle: '拾光約定',
       type: 0,
@@ -90,6 +91,7 @@ class RoleAgreementNativeCalls {
         'characterId': '${data['characterId']}',
         'agreementId': agreementId,
         'sessionId': '${data['sessionId'] ?? ''}',
+        'characterName': '${data['characterName'] ?? ''}',
       },
       android: const AndroidParams(
         isCustomNotification: true,

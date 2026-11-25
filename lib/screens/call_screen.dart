@@ -36,6 +36,7 @@ class CallOverlay extends StatefulWidget {
   final VoidCallback? onCallNotConnected;
   final VoidCallback? onFirstAudioStarted;
   final String? incomingAgreementContent;
+  final String? incomingAgreementId;
   // 正式版預設使用 V4.1 即時語音；緊急回退可用
   // --dart-define=CALL_REALTIME_V41_ENABLED=false 建置舊版通話流程。
   // 僅原生 Android/iOS 與繁體中文通話啟用；Web／其他語言沿用 V3。
@@ -58,6 +59,7 @@ class CallOverlay extends StatefulWidget {
     this.onCallNotConnected,
     this.onFirstAudioStarted,
     this.incomingAgreementContent,
+    this.incomingAgreementId,
   }) : super(key: key);
 
   @override
@@ -169,6 +171,10 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_live) return;
       _agentV4Mode = CallOverlay.usesRealtimeV41(widget.selectedLanguage, AppLocalizations.of(context)!.lang_zh);
+      if (widget.incomingAgreementId != null && !_agentV4Mode) {
+        widget.onCallNotConnected?.call();
+        return;
+      }
       if (_agentV4Mode) _v41CallId = _newCallId();
       if (_agentV4Mode) _realtimeMode = false;
       unawaited(_startFirstGreeting());
@@ -419,6 +425,7 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
       if (!_live) return;
       await agent.start(callId: _v41CallId!, sessionId: widget.sessionId, characterId: widget.characterId,
         speaker: _speakerEnabled,
+        agreementId: widget.incomingAgreementId,
         onConnected: () {
           // A WebSocket handshake is not an answered call.
           debugPrint('CALL_V41_WAIT_FIRST_AUDIO');
@@ -519,7 +526,9 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
   Future<Map<String, dynamic>> _v41Billing(String action) async {
     final result = await FirebaseFunctions.instanceFor(region: 'us-central1')
         .httpsCallable('settleCallRealtimeV41Us', options: HttpsCallableOptions(timeout: const Duration(seconds: 12)))
-        .call({'callId': _v41CallId, 'action': action});
+        .call({'callId': _v41CallId, 'action': action,
+          if (widget.incomingAgreementId != null) 'agreementId': widget.incomingAgreementId,
+          if (widget.incomingAgreementId != null) 'characterId': widget.characterId});
     return Map<String, dynamic>.from(result.data as Map);
   }
 

@@ -1,4 +1,5 @@
 'use strict';
+const {resolveRoleAgreementCharacterName}=require('./character_name');
 // US region minute scheduler. Firestore jobs contain no message secrets and
 // all state changes are transaction-guarded to avoid duplicate deliveries.
 function createRoleAgreementDelivery({db,APP_ID,FieldValue,sendToUserDevices,logger}) {
@@ -86,6 +87,7 @@ function createRoleAgreementDelivery({db,APP_ID,FieldValue,sendToUserDevices,log
           continue;
         }
         const call=job.method==='call';
+        const characterName=call ? await resolveRoleAgreementCharacterName({db,APP_ID,uid:job.uid,characterId:job.characterId,fallback:agreement.characterName}) : String(agreement.characterName||'角色');
         const message = {
           notification: call ? undefined : {
             title: call ? '📞 拾光約定・角色來電' : '🦋 拾光約定提醒',
@@ -95,7 +97,7 @@ function createRoleAgreementDelivery({db,APP_ID,FieldValue,sendToUserDevices,log
             type:call?'role_agreement_call':'role_agreement_reminder',
             characterId:job.characterId,agreementId:job.agreementId,
             sessionId:String(agreement.sessionId||''),
-            characterName:String(agreement.characterName||'角色').slice(0,60),
+            characterName:characterName,
           },
           android:call?{priority:'high',ttl:30000}:{priority:'high',notification:{channelId:'high_importance_channel'}},
           apns:{headers:{'apns-priority':'10'},payload:{aps:{sound:'default',alert:call?{title:'拾光約定・角色來電',body:String(agreement.content||'約定時間到了').slice(0,140)}:undefined}}},
@@ -113,7 +115,7 @@ function createRoleAgreementDelivery({db,APP_ID,FieldValue,sendToUserDevices,log
               const voip=await sendVoipToUser({db,userId:job.uid,payload:{
                 type:'role_agreement_call',agreementId:job.agreementId,
                 characterId:job.characterId,sessionId:String(agreement.sessionId||''),
-                characterName:String(agreement.characterName||'角色').slice(0,60)
+                characterName:characterName
               },logger});
               success=success || voip.successCount>0;
             } else {
@@ -133,7 +135,7 @@ function createRoleAgreementDelivery({db,APP_ID,FieldValue,sendToUserDevices,log
           if (currentAgreement.data().status!=='scheduled') {tx.delete(document.ref);return;}
           if (success) {
             if(call) {
-              tx.update(ref,{status:'ringing',notifiedAt:FieldValue.serverTimestamp(),updatedAt:FieldValue.serverTimestamp()});
+              tx.update(ref,{status:'ringing',characterName,notifiedAt:FieldValue.serverTimestamp(),updatedAt:FieldValue.serverTimestamp()});
               tx.update(document.ref,{state:'ringing',nextActionAt:new Date(Date.now()+10*60000)});
             } else {
               tx.update(ref,{status:'completed',notifiedAt:FieldValue.serverTimestamp(),completedAt:FieldValue.serverTimestamp(),updatedAt:FieldValue.serverTimestamp()});

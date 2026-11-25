@@ -11,11 +11,10 @@ import 'package:google_fonts/google_fonts.dart';
 import '../services/toast_utils.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
-final _supportFns = FirebaseFunctions.instanceFor(region: 'asia-east1');
 final _supportAdminFns = FirebaseFunctions.instanceFor(region: 'us-central1');
-// 僅後台管理模式導向美國；創作者本人仍走原有台灣端點。
+// Creator and admin share US endpoints; server authorization remains unchanged.
 Future<Map<String,dynamic>> _supportCall(String name, Map<String,dynamic> data, {bool adminMode=false}) async {
- final callable = adminMode ? _supportAdminFns.httpsCallable('${name}Us') : _supportFns.httpsCallable(name);
+ final callable = _supportAdminFns.httpsCallable('${name}Us');
  final response=await callable.call(data??<String,dynamic>{});
  return Map<String,dynamic>.from(response.data as Map);
 }

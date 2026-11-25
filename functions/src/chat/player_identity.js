@@ -55,7 +55,7 @@ function resolvePlayerIdentityFromUserData(userData = {}, playerProfileId = "def
     gender:
       canonicalPlayerGender(matchedProfile.gender) || accountGender,
     birthday:
-      String(matchedProfile.birthday || accountBirthday).trim() || accountBirthday,
+      String(matchedProfile.birthday || "未設定").trim() || "未設定",
     profile: matchedProfile,
   };
 }
@@ -128,15 +128,22 @@ async function resolveEffectivePlayerProfileId({
   }
 
   const safeUserData = resolvedUserData || {};
+  // The profile picker writes the explicit room selection to user.roomProfiles.
+  // It may arrive before the session mirror is updated. Never use a draft or
+  // global activeProfileId for an existing room.
+  if (roomData && safeSessionId) {
+    const selected = String(safeUserData.roomProfiles?.[safeSessionId] ?? '').trim();
+    if (selected) effectiveProfileId = selected;
+  }
 
-  if (!effectiveProfileId && safeSessionId) {
+  if (!roomData && safeSessionId) {
     const roomProfiles =
       safeUserData.roomProfiles && typeof safeUserData.roomProfiles === "object"
         ? safeUserData.roomProfiles
         : {};
 
     effectiveProfileId =
-      String(roomProfiles[safeSessionId] || "").trim();
+      String(roomProfiles[safeSessionId] || "").trim() || effectiveProfileId;
   }
 
   // 舊房間若完全沒有紀錄，視為基礎檔案，避免再落回角色共用記憶路徑。
@@ -195,4 +202,17 @@ async function resolveEffectivePlayerProfileId({
 return {resolvePlayerIdentityFromUserData, resolveEffectivePlayerProfileId};
 }
 
-module.exports = {createPlayerIdentityTools, canonicalPlayerGender};
+function buildResolvedPlayerProfileText(identity) {
+  const profile = identity.profile || {};
+  const clean = (value, max=1200) => String(value ?? '').trim().slice(0,max);
+  const rows = [
+    ['稱呼', identity.name], ['性別', canonicalPlayerGender(identity.gender) || '未設定'],
+    ['生日', identity.birthday], ['年齡', profile.age], ['身高', profile.height],
+    ['外貌特徵', profile.appearance], ['職業背景', profile.occupation],
+    ['個性與自我介紹', profile.intro],
+  ];
+  return '【目前聊天室選定的玩家檔案｜身分資料】\n' + rows
+    .filter(([key,value]) => clean(value)).map(([key,value]) => `- ${key}：${clean(value)}`).join('\n') +
+    '\n僅依據此檔案辨識玩家本人。未設定的資料保持未知；其他姓名可能是 NPC、舊檔案或範例，不可自行認定為玩家姓名。';
+}
+module.exports = {createPlayerIdentityTools, canonicalPlayerGender, buildResolvedPlayerProfileText};

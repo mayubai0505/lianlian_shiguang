@@ -187,7 +187,7 @@ class _ChatPageState extends State<ChatPage> {
   bool _isLoadingRoom = true;
   final List<Map<String, dynamic>> _pendingMediaMessages = [];
   final Map<String, String> _audioDownloadUrlCache = {};
-  bool _isChecking = false; // 也要記得保留原本檢查中的狀態變數
+  int _profileCheckRevision = 0; // Ignore superseded async profile reads.
   String _userProfileText = ""; // 用來顯示檔案內容的變數
   String? _selectedChatImagePath;
   bool _waitingForNewAiReply = false;
@@ -743,6 +743,7 @@ class _ChatPageState extends State<ChatPage> {
 【與你對話的主角當前時空設定】
 - 稱呼：${profile['name'] ?? '未填寫'}
 - 性別：${_normalizePlayerGenderForAi(profile['gender']?.toString())}
+- 年齡：${profile['age'] ?? '未填寫'}
 - 身高：${profile['height'] ?? '未填寫'}
 - 外貌特徵：${profile['appearance'] ?? '未填寫'}
 - 職業背景：${profile['occupation'] ?? '未填寫'}
@@ -1905,6 +1906,7 @@ class _ChatPageState extends State<ChatPage> {
         }
 
         unawaited(_rememberCurrentChat(sessionId));
+        await _checkProfileCompletion(sessionId, widget.characterId);
 
         if (data['isQixiRoom'] == true &&
             data['qixiOpeningGenerated'] != true) {
@@ -1930,6 +1932,7 @@ class _ChatPageState extends State<ChatPage> {
           characterId: _currentCharacter.id,
         );
 
+        _activePlayerProfileId = resolvedProfileId;
         await sessionDocRef.set({
           'userId': user.uid,
           'characterId': _currentCharacter.id,
@@ -2117,6 +2120,7 @@ class _ChatPageState extends State<ChatPage> {
       // ✨✨✨ 4. 關鍵煞車：等待全部寫入成功！ ✨✨✨
       await batch.commit();
 
+      _activePlayerProfileId = resolvedProfileId;
       await _seedCharacterOpeningMessagesIfEmpty(newSessionRef);
 
       // 新房建立成功後，把建立前使用的 draft 身分綁定搬到正式 sessionId。
@@ -2158,6 +2162,7 @@ class _ChatPageState extends State<ChatPage> {
       }
 
       unawaited(_rememberCurrentChat(newSessionRef.id));
+      await _checkProfileCompletion(newSessionRef.id, widget.characterId);
     } catch (e) {
       print("❌ 建立新聊天室失敗: $e");
       if (mounted) {
@@ -7238,13 +7243,11 @@ class _ChatPageState extends State<ChatPage> {
   // ✨ 總裁級進化：加入 currentRoomId 參數，讓每個房間都能召喚專屬的分身！
   Future<void> _checkProfileCompletion(
       String roomId, String characterId) async {
-    if (_isChecking) return;
-    _isChecking = true;
+    final revision = ++_profileCheckRevision;
     final l10n = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
-      _isChecking = false;
       return;
     }
 
@@ -7254,6 +7257,7 @@ class _ChatPageState extends State<ChatPage> {
           .doc(user.uid)
           .get();
       final data = doc.data() ?? {};
+      if (!mounted || revision != _profileCheckRevision || (_sessionDocRef != null && _sessionDocRef!.id != roomId)) return;
 
 // 玩家是否已經建立過任何拾光檔案
       final savedProfiles = data['profiles'];
@@ -7298,9 +7302,8 @@ class _ChatPageState extends State<ChatPage> {
             ? Map<String, dynamic>.from(rawRoomProfiles) : null;
         String? targetProfileId;
         if (roomProfiles != null) {
-          // 先找真正的房間 ID，如果找不到，去看看有沒有這角色的「臨時身分證」遺產！
-          targetProfileId =
-              (roomProfiles[roomId] ?? roomProfiles['draft_$characterId'])?.toString();
+          // 正式房間只讀自己的選擇；draft 不可覆蓋既有房間。
+          targetProfileId = roomProfiles[roomId]?.toString();
         }
 
         // 若 user.roomProfiles 尚未建立（例如舊房補資料），則沿用 session 已記錄的 profileId。
@@ -7310,7 +7313,7 @@ class _ChatPageState extends State<ChatPage> {
         }
 
         String resolvedProfileId = 'default';
-        if (targetProfileId != null) {
+        if (targetProfileId != null && targetProfileId != 'default') {
           // ✨ 總裁級魔法：用 where().firstOrNull 取代笨重的 try-catch
           activeProfile = allProfiles
               .whereType<Map<String, dynamic>>()
@@ -7353,7 +7356,8 @@ class _ChatPageState extends State<ChatPage> {
               'occupation': activeProfile!['occupation'],
               'intro': activeProfile!['intro'],
               'gender': activeProfile!['gender'] ?? data['gender'] ?? '未填寫',
-              'birthday': birthday,
+              'birthday': resolvedProfileId == 'default' ? birthday : (activeProfile!['birthday'] ?? '未設定'),
+              'age': activeProfile!['age'],
             };
 
             // 下面是妳原本的程式碼，不動
@@ -7361,7 +7365,7 @@ class _ChatPageState extends State<ChatPage> {
                 activeProfile!['profileName'] ?? l10n.profile_unnamed_file,
                 _playerNickname,
                 // ✨ 這裡可以直接套用剛剛更新好的變數，更乾淨！
-                birthday,
+                _currentAiProfile['birthday']?.toString() ?? birthday,
                 activeProfile!['height'] ?? '尚未填寫',
                 activeProfile!['appearance'] ?? '尚未填寫',
                 activeProfile!['occupation'] ?? '尚未填寫',
@@ -7370,7 +7374,7 @@ class _ChatPageState extends State<ChatPage> {
 
           // 將目前選中的玩家檔案同步寫回聊天室，讓後端 RAG 後續能直接依 session 分流。
           final sessionRef = _sessionDocRef;
-          if (sessionRef != null && !widget.isTestMode) {
+          if (sessionRef != null && sessionRef.id == roomId && !widget.isTestMode) {
             await sessionRef.set(
               {'playerProfileId': resolvedProfileId},
               SetOptions(merge: true),
@@ -7380,8 +7384,8 @@ class _ChatPageState extends State<ChatPage> {
           }
         }
       }
-    } finally {
-      _isChecking = false;
+    } catch (error) {
+      debugPrint('聊天室玩家檔案讀取失敗：$error');
     }
   }
 
@@ -10464,12 +10468,9 @@ class _ChatPageState extends State<ChatPage> {
       final profiles = data['profiles'];
       final roomProfiles = data['roomProfiles'];
       final roomId = (roomIdOverride ?? _sessionId ?? widget.sessionId ?? '').trim();
-      final characterId = widget.characterId.trim();
       String profileId = _activePlayerProfileId;
       if (roomProfiles is Map && roomId.isNotEmpty) {
-        final selectedId = (roomProfiles[roomId] ??
-            roomProfiles['draft_$characterId'])
-            ?.toString().trim() ?? '';
+        final selectedId = roomProfiles[roomId]?.toString().trim() ?? '';
         if (selectedId.isNotEmpty) profileId = selectedId;
       }
       String resolvedName = accountName;

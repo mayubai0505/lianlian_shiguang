@@ -40,4 +40,34 @@ function inspectAndCleanRegularReply(text, language) {
   stats.suspiciousLatinRuns = Math.min(interleaved.length, 99);
   return {text:output,stats};
 }
-module.exports = {inspectAndCleanRegularReply};
+const {intentionalRepeat, meaningful, casualKey} = require('./reply_duplicates');
+// Exact adjacent duplicates only. Preserve punctuation, quotes and ordinary
+// short repetition. Never delete a historical phrase from a new reply.
+function cleanCasualRepeatedSentences(value, message = '') {
+  let text = String(value ?? '');
+  let removed = 0;
+  if (intentionalRepeat(message)) return {text, removed};
+  // Identical standalone lines (including fully quoted dialogue/action lines).
+  const lines = text.split('\n');
+  let last = '';
+  const kept = [];
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) { kept.push(line); continue; }
+    const key = casualKey(trimmed);
+    if (!/^(?:時間|地點|日期|狀態)\s*[：:]/u.test(trimmed) && meaningful(key) && trimmed === last) {
+      removed++; continue;
+    }
+    kept.push(line); last = trimmed;
+  }
+  text = kept.join('\n');
+  // Same sentence directly repeated in one line; exclude quotation/action
+  // delimiters from the captured sentence so surrounding formatting survives.
+  text = text.replace(/([^\n。！？!?；;「」『』（）()]{10,160}[。！？!?；;])(?:[ \t]*\1)+/gu,
+    (match, sentence) => {
+      if (!meaningful(casualKey(sentence))) return match;
+      removed++; return sentence;
+    });
+  return {text:removed ? text.replace(/\n{3,}/gu,'\n\n').trim() : text, removed};
+}
+module.exports = {inspectAndCleanRegularReply, cleanCasualRepeatedSentences};
