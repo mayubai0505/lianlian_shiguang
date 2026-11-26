@@ -11,9 +11,9 @@ function verifiedPurchaseTimeMs(value, fallbackNow) {
   // 非預期無購買時間時，使用伺服器時間；不信任前端自報日期。
   return fallbackNow.getTime();
 }
-function firstPurchaseBonus(base, first, monthly, purchaseTimeMs) {
+function firstPurchaseBonus(base, first, monthly, purchaseTimeMs, preview = false) {
   const bonusPercent = monthly || !first ? 0 :
-    (purchaseTimeMs < FIRST_PURCHASE_BONUS_CHANGE_AT ? 100 : 20);
+    (purchaseTimeMs < FIRST_PURCHASE_BONUS_CHANGE_AT && !preview ? 100 : 20);
   // 花花為整數，優惠加贈採向下取整。
   const bonusPoints = Math.floor(base * bonusPercent / 100);
   return {bonusPercent, bonusPoints, amount: base + bonusPoints};
@@ -107,9 +107,16 @@ function createFulfillHandler({db, FieldValue, HttpsError, verifyPurchase, now =
       const userSnap = await tx.get(userRef);
       if (!userSnap.exists) throw new HttpsError('failed-precondition', '玩家資料尚未建立。');
       const user = userSnap.data();
+       // Google purchaseType=0 is a verified license-test purchase. Never
+       // accelerate an actual paid order, even for an allowlisted UID.
+       const tester = verified.purchaseType === 0
+         ? await tx.get(db.collection('iap_sandbox_testers').doc(uid)) : null;
+       const preview = tester?.exists === true && tester.data().enabled === true &&
+         tester.data().firstPurchasePreview === true &&
+         now().getTime() < FIRST_PURCHASE_BONUS_CHANGE_AT;
       const first = !(Array.isArray(user.purchaseHistory) && user.purchaseHistory.includes(productId));
       const purchaseTimeMs = verifiedPurchaseTimeMs(verified.purchaseTimeMillis, now());
-      const {amount, bonusPercent, bonusPoints} = firstPurchaseBonus(info.base, first, info.monthly, purchaseTimeMs);
+      const {amount, bonusPercent, bonusPoints} = firstPurchaseBonus(info.base, first, info.monthly, purchaseTimeMs, preview);
       const update = {flowerPoints:FieldValue.increment(amount),
         totalSpent:FieldValue.increment(info.price),
         purchaseHistory:FieldValue.arrayUnion(productId)};
@@ -128,7 +135,7 @@ function createFulfillHandler({db, FieldValue, HttpsError, verifyPurchase, now =
       tx.set(logRef, {title:info.monthly ? '啟動：星光契約（月卡立即贈點）' :
         `儲值：${amount} 點${bonusPercent ? `（含首購加贈${bonusPercent}%）` : ''}`,
         amount, type:'purchase', provider:'google_play', productId, orderId,
-        bonusPercent, bonusPoints, purchaseTimeMs,
+        bonusPercent, bonusPoints, purchaseTimeMs, firstPurchasePreview:preview,
         // Existing totalSpent remains a TWD catalog value, not store settlement.
         price:info.price, currency:'TWD', priceSource:'catalog', createdAt:stamp});
       tx.set(receiptRef, {...record, points:amount});

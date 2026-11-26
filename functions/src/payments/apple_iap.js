@@ -11,9 +11,9 @@ function verifiedPurchaseTimeMs(value, fallbackNow) {
   // 非預期無購買時間時，使用伺服器時間；不信任前端自報日期。
   return fallbackNow.getTime();
 }
-function firstPurchaseBonus(base, first, monthly, purchaseTimeMs) {
+function firstPurchaseBonus(base, first, monthly, purchaseTimeMs, preview = false) {
   const bonusPercent = monthly || !first ? 0 :
-    (purchaseTimeMs < FIRST_PURCHASE_BONUS_CHANGE_AT ? 100 : 20);
+    (purchaseTimeMs < FIRST_PURCHASE_BONUS_CHANGE_AT && !preview ? 100 : 20);
   // 花花為整數，優惠加贈採向下取整。
   const bonusPoints = Math.floor(base * bonusPercent / 100);
   return {bonusPercent, bonusPoints, amount: base + bonusPoints};
@@ -79,9 +79,13 @@ function createAppleFulfillHandler({db, FieldValue, HttpsError, verifyTransactio
       }
       if (!userSnap.exists) throw new HttpsError('failed-precondition','玩家資料尚未建立。');
       const user=userSnap.data();
+       // Only verified Apple Sandbox orders may use the early preview.
+       const preview=environment==='Sandbox' && tester.exists &&
+         tester.data().enabled===true && tester.data().firstPurchasePreview===true &&
+         now().getTime()<FIRST_PURCHASE_BONUS_CHANGE_AT;
       const first=!(Array.isArray(user.purchaseHistory) && user.purchaseHistory.includes(v.productId));
       const purchaseTimeMs=verifiedPurchaseTimeMs(v.purchaseDate, now());
-      const {amount, bonusPercent, bonusPoints}=firstPurchaseBonus(info.base, first, info.monthly, purchaseTimeMs);
+      const {amount, bonusPercent, bonusPoints}=firstPurchaseBonus(info.base, first, info.monthly, purchaseTimeMs, preview);
       const update={flowerPoints:FieldValue.increment(amount),totalSpent:FieldValue.increment(info.price),
         purchaseHistory:FieldValue.arrayUnion(v.productId)};
       if (info.monthly) {
@@ -97,7 +101,7 @@ function createAppleFulfillHandler({db, FieldValue, HttpsError, verifyTransactio
       tx.set(userRef.collection('flower_logs').doc(`apple_${key}`),{
         title:info.monthly?'啟動：星光契約（月卡立即贈點）':`儲值：${amount} 點${bonusPercent?`（含首購加贈${bonusPercent}%）`:''}`,
         amount,type:'purchase',provider:'apple_iap',productId:v.productId,purchaseId:id,
-        bonusPercent,bonusPoints,purchaseTimeMs,
+        bonusPercent,bonusPoints,purchaseTimeMs,firstPurchasePreview:preview,
         environment,price:info.price,currency:'TWD',priceSource:'catalog',createdAt:stamp});
       tx.set(receiptRef,{...record,status:'fulfilled',points:amount});
       return {fulfilled:true,alreadyFulfilled:false,points:amount,

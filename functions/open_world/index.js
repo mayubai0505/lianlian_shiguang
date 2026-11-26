@@ -1984,7 +1984,8 @@ exports.worldPrivateTest = onCall({
         : writerOnlyHistory;
       const writerRequestBody = {messages:[
         {role:'system',content:system},
-        {role:'user',content:`既有劇情：\n${namedHistory.slice(-12500)}\n\n${playerStoryLabel}本次輸入：${rawMessage}`},
+        {role:'user',content:`既有劇情：\n${namedHistory.slice(-12500)}\n\n${playerStoryLabel}本次輸入：${rawMessage}` +
+          (action === 'continue' ? '\n\n【本輪輸出格式】接續既有劇情，但回覆必須是單一完整 JSON 物件，正文放入 segments 陣列，依原規則輸出適用的 statusBar、playerStatus 及其他欄位。字串內換行與引號須依 JSON 語法跳脫。不可只輸出小說正文或 Markdown。' : '')},
       ],temperature:0.45,max_tokens:writerRoute.maxTokens};
       // Count the exact strings sent, including section labels and truncation.
       // Values are JavaScript UTF-16 lengths, not model token counts.
@@ -2109,6 +2110,17 @@ exports.worldPrivateTest = onCall({
         }
         return null;
       };
+      // Privacy-safe diagnostics: JSON.parse errors can contain excerpts of private story text.
+      const worldJsonErrorInfo = error => {
+        const message = String(error?.message || '');
+        const position = /\bposition (\d+)\b/u.exec(message);
+        const kind = /unexpected end|unterminated/iu.test(message) ? 'incomplete_json'
+          : /control character/iu.test(message) ? 'unescaped_control'
+          : /property name|double-quoted/iu.test(message) ? 'property_syntax'
+          : /after json|non-whitespace/iu.test(message) ? 'trailing_content'
+          : 'other_json_syntax';
+        return {kind, position:position ? Number(position[1]) : null};
+      };
       const parseWorldWriterResult = result => {
         let content = result?.choices?.[0]?.message?.content || '';
         if (Array.isArray(content)) content = content.map(p=>p?.text||'').join('');
@@ -2121,9 +2133,10 @@ exports.worldPrivateTest = onCall({
         if (refusalText || finishReason === 'content_filter' || overtRefusal.test(content)) {
           return {parsed:null,reason:'provider_refusal',length:content.length};
         }
-        let parsed, parseStrategy = 'exact';
+        let parsed, parseStrategy = 'exact', exactJsonError = null, repairedJsonError = null;
         try { parsed = JSON.parse(content); }
-        catch (_) {
+        catch (error) {
+          exactJsonError = worldJsonErrorInfo(error);
           // 不接受含已知內部分析文字的輸出，即使其中有合法 JSON。
           if (leakedInternal.test(content)) {
             return {parsed:null,reason:'unsafe_output',length:content.length};
@@ -2137,7 +2150,8 @@ exports.worldPrivateTest = onCall({
           try {
             parsed = JSON.parse(cleaned);
             parseStrategy = 'syntax_repair';
-          } catch (_) {
+          } catch (error) {
+            repairedJsonError = worldJsonErrorInfo(error);
             // 僅在完整 segments 陣列能獨立解析時保留劇情；其餘欄位丟棄。
             const closedSegments = extractClosedWorldSegments(repairWorldJsonSyntax(content));
             if (closedSegments) {
@@ -2149,7 +2163,11 @@ exports.worldPrivateTest = onCall({
             }
           }
         }
-        if (!parsed) return {parsed:null,reason:'invalid_json',length:content.length};
+        if (!parsed) return {parsed:null,reason:'invalid_json',length:content.length,
+          jsonDiagnostic:{exact:exactJsonError,repaired:repairedJsonError,
+            startsWithObject:content.startsWith('{'),endsWithObject:content.endsWith('}'),
+            hasSegmentsKey:/"segments"\s*:/u.test(content),
+            hasClosedSegments:Boolean(extractClosedWorldSegments(repairWorldJsonSyntax(content)))}};
         if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed) ||
             !Array.isArray(parsed.segments) || !parsed.segments.length) {
           return {parsed:null,reason:'missing_segments',length:content.length};
@@ -2344,13 +2362,22 @@ exports.worldPrivateTest = onCall({
                 '未能產生這段劇情。請換個敘述方式再試試看',
                 {reason:'provider_content_filtered'});
             }
+            // A technical format failure is not a refusal. Only the existing
+            // eligible next tier gets a format reminder; never retry a refusal.
+            if (['invalid_json','missing_segments','empty_segments'].includes(checked.reason)) {
+              const formatReminder = '\n【格式草稿已退回】上一個草稿未符合 JSON 正文結構。請依原始劇情與原有安全、人物及狀態欄規則，重新輸出單一完整 JSON 物件。segments 必須是含有效正文的陣列；適用的 statusBar 與 playerStatus 置於外層；依原規則保留其他欄位。正確跳脫字串內換行、引號及反斜線，不輸出 JSON 之外文字。';
+              if (!writerRequestBody.messages[1].content.includes(formatReminder)) {
+                writerRequestBody.messages[1].content += formatReminder;
+              }
+            }
             if (checked.reason === 'repeated_story_output') {
               writerRequestBody.messages[1].content += '\n【重複草稿已退回】上一個草稿重播了既有正文。請從歷史末端之後寫新的角色行動或事件後果，不能只換詞重述；保留 JSON 結構與狀態欄規則。';
             }
             logger.warn('world writer invalid structured output', {
               mode:worldMode, modelId:targetModel, tier:attemptIndex + 1,
               latencyMs:Date.now() - tierStartedAt,
-              reason:checked.reason, responseLength:checked.length,
+              ...traceBase, reason:checked.reason, responseLength:checked.length,
+              jsonDiagnostic:checked.jsonDiagnostic || null,
               finishReason:String(tierResult?.choices?.[0]?.finish_reason || 'unknown').slice(0,32),
             });
             if (['unsafe_output','unsafe_segments'].includes(checked.reason)) {

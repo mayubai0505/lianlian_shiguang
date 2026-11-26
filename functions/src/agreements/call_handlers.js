@@ -1,5 +1,9 @@
 'use strict';
-function createRoleAgreementCallHandlers({db,APP_ID,HttpsError,FieldValue}) {
+const {loadCallRecordRoom,writeCallRecord}=require('./call_record');
+const {queueMissedFollowup,createMissedFollowup}=require('./missed_followup');
+const {FieldPath}=require('firebase-admin/firestore');
+function createRoleAgreementCallHandlers({db,APP_ID,HttpsError,FieldValue,openRouterApiKey,secureOpenRouterBody,logger=console}) {
+ const processFollowup=createMissedFollowup({db,APP_ID,FieldValue,openRouterApiKey,secureOpenRouterBody});
  const jobs=db.collection('artifacts').doc(APP_ID).collection('role_agreement_jobs');
  function refs(request) {
    const uid=request.auth?.uid;
@@ -12,16 +16,44 @@ function createRoleAgreementCallHandlers({db,APP_ID,HttpsError,FieldValue}) {
      .doc(characterId).collection('role_agreements').doc(agreementId), job:jobs.doc(agreementId)};
  }
  async function decline(request) {
-   const p=refs(request);
-   return db.runTransaction(async tx => {
-     const snap=await tx.get(p.ref);
-     if(!snap.exists||snap.data().confirmedBy!==p.uid) throw new HttpsError('not-found','約定不存在');
-     if(snap.data().status==='missed'||snap.data().status==='cancelled') return {success:true};
-     if(snap.data().status!=='ringing') throw new HttpsError('failed-precondition','目前無來電可拒接');
-     tx.update(p.ref,{status:'missed',updatedAt:FieldValue.serverTimestamp()});
-     tx.delete(p.job);
-     return {success:true};
+   const uid=request.auth?.uid;
+   if(!uid)throw new HttpsError('unauthenticated','請先登入');
+   const action=request.data?.action||'declined';
+   if(!['declined','unanswered','nativeAccepted'].includes(action))throw new HttpsError('invalid-argument','來電操作錯誤');
+   // Native timeout contains only the UUID (first 32 hex chars of agreement ID).
+   // Resolve a narrow document-ID range server-side; never trust another user's job.
+   let input=request;
+   if(action==='unanswered'&&request.data?.nativeCallId){
+     const nativeId=String(request.data.nativeCallId).toLowerCase();
+     if(!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(nativeId))throw new HttpsError('invalid-argument','來電編號錯誤');
+     const prefix=nativeId.replace(/-/g,'');
+     const matches=await jobs.orderBy(FieldPath.documentId()).startAt(prefix).endAt(prefix+'\uf8ff').limit(5).get();
+     const own=matches.docs.filter(d=>/^[a-f0-9]{64}$/.test(d.id)&&d.data().uid===uid&&d.data().agreementId===d.id);
+     if(own.length!==1)return {success:true,ignored:true};
+     input={auth:request.auth,data:{agreementId:own[0].id,characterId:own[0].data().characterId}};
+   }
+   const p=refs(input);
+   const result=await db.runTransaction(async tx => {
+     const [snap,jobSnap]=await Promise.all([tx.get(p.ref),tx.get(p.job)]);
+     const a=snap.data()||{}, job=jobSnap.data()||{};
+     if(!snap.exists||a.confirmedBy!==p.uid||a.characterId!==p.characterId||a.method!=='call')throw new HttpsError('not-found','約定不存在');
+     if(['missed','cancelled','accepted','completed','connection_failed','suppressed_dnd','delivery_failed'].includes(a.status))return {success:true,ignored:true};
+     if(a.status!=='ringing'||!jobSnap.exists||job.state!=='ringing'||job.uid!==p.uid||job.characterId!==p.characterId||job.agreementId!==p.agreementId)throw new HttpsError('failed-precondition','目前無有效來電');
+     if(action==='nativeAccepted'){
+       // OS accept is not paid accept. Extend once, never charge or start audio here.
+       if(!job.nativeAcceptedAt)tx.update(p.job,{nativeAcceptedAt:FieldValue.serverTimestamp(),nextActionAt:new Date(Date.now()+10*60000)});
+       return {success:true};
+     }
+     if(action==='unanswered'&&job.nativeAcceptedAt)return {success:true,ignored:true};
+     const room=await loadCallRecordRoom(tx,{db,APP_ID,uid:p.uid,characterId:p.characterId,agreement:a});
+     writeCallRecord(tx,{room,FieldValue,agreementId:p.agreementId,agreement:a,status:'missed'});
+     tx.update(p.ref,{status:'missed',missedReason:action,updatedAt:FieldValue.serverTimestamp()});
+     const task=queueMissedFollowup(tx,{jobRef:p.job,room,uid:p.uid,characterId:p.characterId,agreementId:p.agreementId,reason:action,immediate:true});
+     return {success:true,task,agreement:a};
    });
+   // Record committed before model IO; lease gives scheduler recovery on failure.
+   if(result.task){try{await processFollowup(p.job,result.task,result.agreement);}catch(e){logger.warn('role agreement immediate followup deferred',{id:p.agreementId,error:String(e)});}}
+   return {success:true,ignored:result.ignored===true};
  }
  async function accept(request) {
    const p=refs(request),userRef=db.collection('users').doc(p.uid);
@@ -58,6 +90,8 @@ function createRoleAgreementCallHandlers({db,APP_ID,HttpsError,FieldValue}) {
      if(a.billingMode==='v41')throw new HttpsError('failed-precondition','請由即時通話結算');
      if(a.status==='completed'||a.status==='connection_failed') return {success:true,refunded:false};
      if(a.status!=='accepted') throw new HttpsError('failed-precondition','沒有已接聽來電');
+     const room=await loadCallRecordRoom(tx,{db,APP_ID,uid:p.uid,characterId:p.characterId,agreement:a});
+     writeCallRecord(tx,{room,FieldValue,agreementId:p.agreementId,agreement:a,status:connected?'completed':'connection_failed'});
      if(!connected && a.chargedFlowers===20) {
        tx.update(userRef,{flowerPoints:FieldValue.increment(20)});
        tx.create(userRef.collection('flower_logs').doc(p.agreementId+'_rolecall_refund'),{

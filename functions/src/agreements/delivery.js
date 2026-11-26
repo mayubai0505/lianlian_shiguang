@@ -1,8 +1,27 @@
 'use strict';
-const {resolveRoleAgreementCharacterName}=require('./character_name');
+// Resolve presentation together; no image download or new token generation in scheduler.
+async function callerPresentation(db,APP_ID,job,agreement){
+  const base=db.collection('artifacts').doc(APP_ID);
+  for(const ref of [base.collection('public_characters').doc(job.characterId),
+    base.collection('users').doc(job.uid).collection('private_characters').doc(job.characterId)]){
+    try{
+      const snap=await ref.get(); if(!snap.exists)continue;
+      const data=snap.data()||{};
+      const name=String(data.name||agreement.characterName||'角色').trim().slice(0,60)||'角色';
+      const path=typeof data.avatarPath==='string'?data.avatarPath.trim():'';
+      // Bound FCM payload; only existing HTTPS URLs or storage references.
+      const avatar=Buffer.byteLength(path,'utf8')<=1500 && /^(?:https:\/\/|gs:\/\/|\/)/u.test(path)?path:'';
+      return {name,avatar};
+    }catch(_){}
+  }
+  return {name:String(agreement.characterName||'角色').trim().slice(0,60)||'角色',avatar:''};
+}
+const {loadCallRecordRoom,writeCallRecord}=require('./call_record');
+const {queueMissedFollowup,createMissedFollowup}=require('./missed_followup');
 // US region minute scheduler. Firestore jobs contain no message secrets and
 // all state changes are transaction-guarded to avoid duplicate deliveries.
-function createRoleAgreementDelivery({db,APP_ID,FieldValue,sendToUserDevices,logger}) {
+function createRoleAgreementDelivery({db,APP_ID,FieldValue,sendToUserDevices,logger,openRouterApiKey,secureOpenRouterBody}) {
+  const processFollowup=createMissedFollowup({db,APP_ID,FieldValue,openRouterApiKey,secureOpenRouterBody});
   // iOS PushKit bridge is optional during rollout. Android/ordinary FCM must still work if absent.
   let sendVoipToUser=null;
   try { ({sendVoipToUser}=require('./apns_voip')); } catch (_) { logger.warn('role agreement APNs VoIP module unavailable; using FCM fallback'); }
@@ -31,10 +50,18 @@ function createRoleAgreementDelivery({db,APP_ID,FieldValue,sendToUserDevices,log
           if (!job.nextActionAt || job.nextActionAt.toMillis() > Date.now()) return null;
           const ref = agreementRef(job);
           const agreement = await tx.get(ref);
+          if (['missed_followup','missed_followup_sending'].includes(job.state)) {
+            if(!agreement.exists||agreement.data().status!=='missed'||agreement.data().confirmedBy!==job.uid){tx.delete(document.ref);return null;}
+            const attempts=(job.attempts||0)+1;
+            if(attempts>3){tx.delete(document.ref);return null;}
+            tx.update(document.ref,{state:'missed_followup_sending',attempts,nextActionAt:new Date(Date.now()+120000)});
+            return {followup:true,job:{...job,attempts},agreement:agreement.data()};
+          }
           if (!agreement.exists || ['cancelled','completed','missed','connection_failed'].includes(agreement.data().status)) {
             tx.delete(document.ref); return null;
           }
           if (job.state === 'accepted') {
+            const room=await loadCallRecordRoom(tx,{db,APP_ID,uid:job.uid,characterId:job.characterId,agreement:agreement.data()});
             // App killed mid-call: settle the still-open reservation conservatively.
             // No sound confirmation reached the server; refund once to avoid orphan charges.
             if (agreement.data().status === 'accepted') {
@@ -45,6 +72,7 @@ function createRoleAgreementDelivery({db,APP_ID,FieldValue,sendToUserDevices,log
                 characterId:job.characterId,agreementId:job.agreementId,
                 createdAt:FieldValue.serverTimestamp(),reason:'unsettled_call_timeout',
               });
+              writeCallRecord(tx,{room,FieldValue,agreementId:job.agreementId,agreement:agreement.data(),status:'connection_failed'});
               tx.update(ref,{status:'connection_failed',refundedFlowers:20,
                 finishedAt:FieldValue.serverTimestamp(),updatedAt:FieldValue.serverTimestamp()});
             }
@@ -52,8 +80,10 @@ function createRoleAgreementDelivery({db,APP_ID,FieldValue,sendToUserDevices,log
             return null;
           }
           if (job.state === 'ringing') {
-            tx.update(ref,{status:'missed',updatedAt:FieldValue.serverTimestamp()});
-            tx.delete(document.ref); return null;
+            const room=await loadCallRecordRoom(tx,{db,APP_ID,uid:job.uid,characterId:job.characterId,agreement:agreement.data()});
+            writeCallRecord(tx,{room,FieldValue,agreementId:job.agreementId,agreement:agreement.data(),status:'missed'});
+            tx.update(ref,{status:'missed',missedReason:'unanswered',updatedAt:FieldValue.serverTimestamp()});
+            const task=queueMissedFollowup(tx,{jobRef:document.ref,room,uid:job.uid,characterId:job.characterId,agreementId:job.agreementId,reason:'unanswered',immediate:true}); return task?{followup:true,job:task,agreement:agreement.data()}:null;
           }
           if (job.state === 'sending') {
             // Previous worker crashed. A lease expiration permits a safe retry.
@@ -67,6 +97,7 @@ function createRoleAgreementDelivery({db,APP_ID,FieldValue,sendToUserDevices,log
           return {job,agreement:agreement.data(),attempts};
         });
         if (!action) continue;
+        if(action.followup){await processFollowup(document.ref,action.job,action.agreement);continue;}
         const {job,agreement,attempts}=action;
         // User-controlled quiet hours (23:00-08:00 in the saved device offset).
         // Never wake the player or charge if DND is active at dispatch time.
@@ -87,7 +118,8 @@ function createRoleAgreementDelivery({db,APP_ID,FieldValue,sendToUserDevices,log
           continue;
         }
         const call=job.method==='call';
-        const characterName=call ? await resolveRoleAgreementCharacterName({db,APP_ID,uid:job.uid,characterId:job.characterId,fallback:agreement.characterName}) : String(agreement.characterName||'角色');
+        const caller=call ? await callerPresentation(db,APP_ID,job,agreement) : {name:String(agreement.characterName||'角色'),avatar:''};
+        const characterName=caller.name;
         const message = {
           notification: call ? undefined : {
             title: call ? '📞 拾光約定・角色來電' : '🦋 拾光約定提醒',
@@ -98,6 +130,7 @@ function createRoleAgreementDelivery({db,APP_ID,FieldValue,sendToUserDevices,log
             characterId:job.characterId,agreementId:job.agreementId,
             sessionId:String(agreement.sessionId||''),
             characterName:characterName,
+            ...(call && caller.avatar ? {characterAvatarPath:caller.avatar}:{}),
           },
           android:call?{priority:'high',ttl:30000}:{priority:'high',notification:{channelId:'high_importance_channel'}},
           apns:{headers:{'apns-priority':'10'},payload:{aps:{sound:'default',alert:call?{title:'拾光約定・角色來電',body:String(agreement.content||'約定時間到了').slice(0,140)}:undefined}}},
@@ -136,7 +169,7 @@ function createRoleAgreementDelivery({db,APP_ID,FieldValue,sendToUserDevices,log
           if (success) {
             if(call) {
               tx.update(ref,{status:'ringing',characterName,notifiedAt:FieldValue.serverTimestamp(),updatedAt:FieldValue.serverTimestamp()});
-              tx.update(document.ref,{state:'ringing',nextActionAt:new Date(Date.now()+10*60000)});
+              tx.update(document.ref,{state:'ringing',nextActionAt:new Date(Date.now()+120000)});
             } else {
               tx.update(ref,{status:'completed',notifiedAt:FieldValue.serverTimestamp(),completedAt:FieldValue.serverTimestamp(),updatedAt:FieldValue.serverTimestamp()});
               tx.delete(document.ref);

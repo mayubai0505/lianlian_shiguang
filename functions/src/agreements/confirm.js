@@ -1,7 +1,9 @@
 'use strict';
 const crypto = require('crypto');
+const {prepareReminder,isRepeatCall}=require('./reminder_content');
+const {loadAgreementPersona}=require('./persona_context');
 const {resolveRoleAgreementCharacterName}=require('./character_name');
-function createConfirmRoleAgreementHandler({db,APP_ID,HttpsError,FieldValue}) {
+function createConfirmRoleAgreementHandler({db,APP_ID,HttpsError,FieldValue,openRouterApiKey,secureOpenRouterBody}) {
   return async request => {
     const uid = request.auth?.uid;
     if (!uid) throw new HttpsError('unauthenticated','請先登入');
@@ -29,11 +31,32 @@ function createConfirmRoleAgreementHandler({db,APP_ID,HttpsError,FieldValue}) {
     const ref = db.collection('users').doc(uid).collection('characters').doc(characterId)
       .collection('role_agreements').doc(id);
     const job = db.collection('artifacts').doc(APP_ID).collection('role_agreement_jobs').doc(id);
+    if ((await ref.get()).exists) return {success:true,id,created:false,deliveryEnabled:true};
+    const root=db.collection('artifacts').doc(APP_ID);
+    let character={name:characterName};
+    try {
+      let snap=await root.collection('public_characters').doc(characterId).get();
+      if(!snap.exists)snap=await root.collection('users').doc(uid).collection('private_characters').doc(characterId).get();
+      if(snap.exists)character=snap.data()||character;
+    } catch (_) {}
+    let inherited=null;
+    const last=data.lastRoleAgreementCall;
+    if(method==='call' && isRepeatCall(content) && last && /^[a-f0-9]{64}$/.test(last.agreementId||'') && ['missed','completed','connection_failed'].includes(last.status) && Number.isFinite(last.atMs) && last.atMs<=Date.now() && Date.now()-last.atMs<=7*86400000){
+      const prev=(await ref.parent.doc(last.agreementId).get()).data();
+      if(prev?.confirmedBy===uid && prev.characterId===characterId && prev.sessionId===sessionId && prev.method==='call' && ['missed','completed','connection_failed','declined'].includes(prev.status)){
+        const task=String(prev.reminderContent||prev.content||'').trim().slice(0,500);
+        if(task && !isRepeatCall(task)) inherited={id:last.agreementId,task};
+      }
+    }
+    let context;
+    try{context=await loadAgreementPersona({db,APP_ID,uid,characterId,sessionId,character,roomSnapshot:session});}catch(e){console.warn("AGREEMENT_PREPARE_CONTEXT_UNAVAILABLE");}
+    const prepared=await prepareReminder({raw:inherited?.task||content,character,context,method,apiKey:openRouterApiKey,secureBody:secureOpenRouterBody});
+    if(inherited){prepared.originalText=content;prepared.sourceAgreementId=inherited.id;prepared.reminderContent=inherited.task;}
     const created = await db.runTransaction(async tx => {
       const old = await tx.get(ref);
       if (old.exists) return false;
       tx.create(ref, {
-        characterId, characterName, sessionId, sourceRequestId:requestId, content,
+        characterId, characterName, sessionId, sourceRequestId:requestId, content:prepared.reminderContent, ...prepared,
         scheduledAt:new Date(when), method, status:'scheduled', deliveryEnabled:true,
         confirmedBy:uid, confirmedAt:FieldValue.serverTimestamp(),
         createdAt:FieldValue.serverTimestamp(), updatedAt:FieldValue.serverTimestamp(),

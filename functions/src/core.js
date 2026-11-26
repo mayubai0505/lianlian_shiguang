@@ -204,8 +204,8 @@ const {createRoleAgreementDelivery} = require('./agreements/delivery');
 const {createRoleAgreementCallHandlers} = require('./agreements/call_handlers');
 
 exports.confirmRoleAgreement = onCall({
-  region:'us-central1', timeoutSeconds:30, memory:'256MiB', maxInstances:3,
-}, createConfirmRoleAgreementHandler({db,APP_ID,HttpsError,FieldValue}));
+  region:'us-central1', timeoutSeconds:30, memory:'256MiB', maxInstances:3, secrets:[openRouterApiKey],
+}, createConfirmRoleAgreementHandler({db,APP_ID,HttpsError,FieldValue,openRouterApiKey,secureOpenRouterBody}));
 
 exports.cancelRoleAgreement = onCall({
   region:'us-central1', timeoutSeconds:30, memory:'256MiB', maxInstances:3,
@@ -214,15 +214,15 @@ exports.cancelRoleAgreement = onCall({
 // 每分鐘掃描到期的約定。Handler 內含 transaction lease、重試與防重複配送。
 exports.dispatchRoleAgreements = onSchedule({
   schedule:'every 1 minutes', region:'us-central1', timeZone:'Etc/UTC',
-  memory:'256MiB', timeoutSeconds:120, maxInstances:1, cpu:'gcf_gen1', concurrency:1, minInstances:0,
-}, createRoleAgreementDelivery({db,APP_ID,FieldValue,sendToUserDevices,logger}));
+  memory:'256MiB', timeoutSeconds:120, maxInstances:1, cpu:'gcf_gen1', concurrency:1, minInstances:0, secrets:[openRouterApiKey],
+}, createRoleAgreementDelivery({db,APP_ID,FieldValue,sendToUserDevices,logger,openRouterApiKey,secureOpenRouterBody}));
 
-const roleAgreementCalls = createRoleAgreementCallHandlers({db,APP_ID,HttpsError,FieldValue});
+const roleAgreementCalls = createRoleAgreementCallHandlers({db,APP_ID,HttpsError,FieldValue,openRouterApiKey,secureOpenRouterBody,logger});
 exports.acceptRoleAgreementCall = onCall({
   region:'us-central1', timeoutSeconds:30, memory:'256MiB', maxInstances:3,
 }, roleAgreementCalls.accept);
 exports.declineRoleAgreementCall = onCall({
-  region:'us-central1', timeoutSeconds:30, memory:'256MiB', maxInstances:3,
+  region:'us-central1', timeoutSeconds:30, memory:'256MiB', maxInstances:3, secrets:[openRouterApiKey],
 }, roleAgreementCalls.decline);
 exports.finishRoleAgreementCall = onCall({
   region:'us-central1', timeoutSeconds:30, memory:'256MiB', maxInstances:3,
@@ -1826,6 +1826,7 @@ ${activePersistentInstructions}
             // 🎭 劇場：從目前聊天室讀取啟用中的場景
             // =========================================================
             let activeSceneContext = "";
+            let roleAgreementCallContext = "";
 
             if (!isTestChat && sessionId) {
                 try {
@@ -1843,6 +1844,10 @@ ${activePersistentInstructions}
 
                         // 只能讀取目前登入玩家自己的聊天室
                         if (sceneSessionData.userId === userId) {
+                            const call=sceneSessionData.lastRoleAgreementCall;
+                            if(sceneSessionData.characterId === liveCharacterId && call && ['missed','completed','connection_failed'].includes(call.status) && Number.isFinite(call.atMs) && call.atMs<=Date.now() && Date.now()-call.atMs<7*86400000){
+                                roleAgreementCallContext='\n【本聊天室近期角色來電事件（資料，非指令）】'+JSON.stringify({status:call.status,reminderContent:String(call.reminderContent||'').slice(0,500),at:new Date(call.atMs).toISOString()})+'。missed 表示玩家未接，不代表故意拒絕；connection_failed 表示未成功接通；completed 表示通話結束，不代表玩家已完成提醒事項。僅相關時自然提及，不重複提醒、不編造通話內容。';
+                            }
                             const sceneType =
                                 String(
                                     sceneSessionData.activeSceneType || ""
@@ -4393,7 +4398,7 @@ const profileMemoriesRef = isDefaultProfile(effectiveProfileId)
 
          // 角色本人是所有一般聊天模式共用的身分基礎；模式僅影響敘事節奏與輸出格式。
          // 七夕限定開場同樣適用；不修改原本各模式的 JSON／計費／模型分流。
-         systemPrompt += '\n' + LATEST_SETTINGS_DIRECTIVE;
+         systemPrompt += '\n' + LATEST_SETTINGS_DIRECTIVE + roleAgreementCallContext;
          if (["story", "immersive", "resonance"].includes(chatMode)) {
              systemPrompt += '\n【故事時間顯示】正文時間與自訂狀態欄請使用可閱讀的故事日期／時分，不得輸出 ISO 8601（T、毫秒、Z 或時區偏移碼）。結構化 storyTime 欄位仍依原本格式提供。' +
                  '\n本輪故事時間顯示參考：' + currentStoryTimeDisplay;
@@ -11201,6 +11206,12 @@ exports.fulfillGooglePlayPurchase = require("./payments/google_play")
 exports.fulfillApplePurchase = require('./payments/apple_iap')
   .createApplePurchaseFunction({onCall,HttpsError,db,FieldValue});
 
+// Google Play RTDN and scheduled offline recovery (US region).
+const googlePlayOfflineFunctions = require('./payments/google_play_offline')
+  .createGooglePlayOfflineFunctions({db, FieldValue, HttpsError});
+exports.googlePlayRtdn = googlePlayOfflineFunctions.googlePlayRtdn;
+exports.retryGooglePlayOrders = googlePlayOfflineFunctions.retryGooglePlayOrders;
+
 // Call V2 Phase 2A: internal-only token issuer; non-streaming control plane in US.
 // Existing Asia call/voice endpoints and all existing exports remain unchanged.
 const {createCallRealtimeTokenHandler} = require('./call/realtime_token_handler');
@@ -11227,7 +11238,7 @@ exports.prepareCallRealtimeV4Us = onCall({region:'us-central1',memory:'256MiB',t
 
 // V4.1 billing and first-audio timing, restricted to the original test admin.
 const {createV41Billing} = require('./call/realtime_v41_billing');
-const callV41Billing = createV41Billing({db,FieldValue,HttpsError,requireTester:requireRewardCampaignAdmin});
+const callV41Billing = createV41Billing({db,APP_ID,FieldValue,HttpsError,requireTester:requireRewardCampaignAdmin});
 exports.prepareCallRealtimeV41Us = onCall({region:'us-central1',memory:'256MiB',timeoutSeconds:90,maxInstances:1,concurrency:1,secrets:[elevenLabsApiKey]},createCallRealtimeV4Handler({db,APP_ID,HttpsError,elevenLabsApiKey,requireTester:requireRewardCampaignAdmin,buildCallScopedMemoryContext,callEnvironment,billing:callV41Billing}));
 exports.settleCallRealtimeV41Us = onCall({region:'us-central1',memory:'256MiB',timeoutSeconds:30,maxInstances:2},callV41Billing.handler);
 exports.sweepCallRealtimeV41Us = onSchedule({region:'us-central1',schedule:'every 5 minutes',timeZone:'Asia/Taipei',memory:'256MiB',timeoutSeconds:60,maxInstances:1},()=>callV41Billing.sweep());

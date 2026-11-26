@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -10,10 +11,25 @@ import 'package:flutter_callkit_incoming/entities/android_params.dart';
 import 'package:flutter_callkit_incoming/entities/ios_params.dart';
 import 'package:flutter_callkit_incoming/entities/call_event.dart';
 
-/// System call-style UI. Never charges or starts voice on an OS-level accept.
-/// Server-side accept + explicit 20-flower confirmation remain in IncomingPage.
+/// System call-style UI. Android displays the price before acceptance.
+/// Only a verified native accept of that invitation can bypass the second UI.
 class RoleAgreementNativeCalls {
   static String? _lastVoipToken;
+  static const _pricedVersion = 'android20_v1';
+  static bool isPricedNativeAccept(Map<String, dynamic> extra) =>
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.android &&
+      extra['nativeAcceptedWithPrice'] == true &&
+      extra['priceNoticeVersion'] == _pricedVersion && validData(extra);
+
+  // Only called from actual CallKit acceptance or accepted-call recovery.
+  static Map<String, dynamic> _acceptedExtra(Map<String, dynamic> extra) => {
+    ...extra,
+    'nativeAcceptedWithPrice': !kIsWeb &&
+        defaultTargetPlatform == TargetPlatform.android &&
+        extra['priceNoticeVersion'] == _pricedVersion,
+    'inAppInvitation': false,
+    'nativeAcceptEvent': true,
+  };
 
   /// iPhone 專用：將 PushKit VoIP token 交給可信任後端。與普通 FCM token 不同。
   /// 使用者登入後以及重新開啟 App 時呼叫；登入變更就重送。
@@ -70,6 +86,25 @@ class RoleAgreementNativeCalls {
       RegExp(r'^[A-Za-z0-9_-]{1,160}$').hasMatch('${data['characterId'] ?? ''}') &&
       callIdFor('${data['agreementId'] ?? ''}') != null;
 
+  static String safeAvatarUrl(dynamic raw) {
+    final value = raw is String ? raw.trim() : '';
+    final uri = Uri.tryParse(value);
+    return uri != null && uri.scheme == 'https' && uri.host.isNotEmpty &&
+        uri.userInfo.isEmpty && value.length <= 4096 ? value : '';
+  }
+
+  static Future<String> _resolveNativeAvatar(dynamic raw) async {
+    final direct = safeAvatarUrl(raw);
+    if (direct.isNotEmpty) return direct;
+    final path = raw is String ? raw.trim() : '';
+    if (!path.startsWith('gs://') && !path.startsWith('/')) return '';
+    try {
+      final storage = FirebaseStorage.instance;
+      final ref = path.startsWith('gs://') ? storage.refFromURL(path) : storage.ref(path);
+      return safeAvatarUrl(await ref.getDownloadURL().timeout(const Duration(milliseconds: 900)));
+    } catch (_) { return ''; }
+  }
+
   static Future<void> showFromRemoteMessage(RemoteMessage message) async {
     if (!supported || !validData(message.data)) return;
     // On iOS, terminated/background system calls MUST originate in native PushKit.
@@ -78,12 +113,13 @@ class RoleAgreementNativeCalls {
     final data = message.data;
     final agreementId = '${data['agreementId']}';
     final id = callIdFor(agreementId)!;
+    final avatar = await _resolveNativeAvatar(data['characterAvatarPath']);
     await FlutterCallkitIncoming.showCallkitIncoming(CallKitParams(
       id: id,
-      nameCaller: '${data['characterName'] ?? ''}'.trim().isEmpty
-           ? '角色' : '${data['characterName']}'.trim(),
+      nameCaller: '${data['characterName'] ?? ''}'.trim().isEmpty ? '角色' : '${data['characterName']}'.trim(),
+      avatar: avatar,
       appName: '戀戀拾光',
-      handle: '拾光約定',
+      handle: '接通扣20花花',
       type: 0,
       duration: 30000,
       extra: {
@@ -92,16 +128,18 @@ class RoleAgreementNativeCalls {
         'agreementId': agreementId,
         'sessionId': '${data['sessionId'] ?? ''}',
         'characterName': '${data['characterName'] ?? ''}',
+        'priceNoticeVersion': _pricedVersion,
+        'characterAvatarUrl': avatar,
       },
       android: const AndroidParams(
         isCustomNotification: true,
-        textAccept: '接聽',
+        textAccept: '接聽（20花花）',
         textDecline: '拒接',
         isShowFullLockedScreen: true,
         ringtonePath: 'system_ringtone_default',
         incomingCallNotificationChannelName: '拾光約定來電',
         missedCallNotificationChannelName: '未接來電',
-        backgroundColor: '#4F4783',
+        backgroundColor: '#514B78',
         actionColor: '#8976C9',
         textColor: '#FFFFFF',
       ),
@@ -128,12 +166,42 @@ class RoleAgreementNativeCalls {
           continue;
         }
         debugPrint('[RA] recovered native accept');
-        onAccept(extra);
+        onAccept(_acceptedExtra(extra));
       }
     } catch (error) {
       debugPrint('[RA] active call recovery failed: $error');
     }
   }
+
+  // Only an explicit native decline reaches this endpoint. Never charge here.
+  static Future<void> reportDecline(Map<String, dynamic> extra,
+      {required String expectedUid}) async {
+    if (!(validData(extra) || validTimeoutData(extra)) || Firebase.apps.isEmpty ||
+        FirebaseAuth.instance.currentUser?.uid != expectedUid) {
+      throw StateError('role agreement decline auth unavailable');
+    }
+    final result = await FirebaseFunctions.instanceFor(region: 'us-central1')
+        .httpsCallable('declineRoleAgreementCall', options: HttpsCallableOptions(
+          timeout: const Duration(seconds: 12),
+        )).call({
+          if (validTimeoutData(extra)) ...{
+            'action': 'unanswered', 'nativeCallId': '${extra['nativeCallId']}',
+          } else ...{
+            'characterId': '${extra['characterId']}',
+            'agreementId': '${extra['agreementId']}',
+            'action': extra['action'] ?? 'declined',
+          },
+        });
+    final data = result.data;
+    if (data is! Map || data['success'] != true) {
+      throw StateError('role agreement decline not confirmed');
+    }
+  }
+
+  static bool validTimeoutData(Map<String, dynamic> data) =>
+      data['action'] == 'unanswered' && RegExp(
+          r'^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$')
+          .hasMatch('${data['nativeCallId'] ?? ''}');
 
   static Future<void> close(String agreementId) async {
     if (!supported) return;
@@ -162,7 +230,8 @@ class RoleAgreementNativeCalls {
     if (callEvent is CallEventActionCallAccept) {
       final extra = extractExtra(callEvent.callKitParams.extra);
       debugPrint('[RA] native accept event; valid=${extra != null}');
-      if (extra != null) onAccept(extra);
+      if (extra != null && callEvent.callKitParams.id.toLowerCase() ==
+          callIdFor('${extra['agreementId']}')) onAccept(_acceptedExtra(extra));
       return;
     }
     if (callEvent is CallEventActionCallDecline) {
@@ -170,7 +239,10 @@ class RoleAgreementNativeCalls {
       if (extra != null) onDecline(extra);
       return;
     }
-    // Timeout events contain only an ID, not the original extra data.
-    // Do not create a call or charge on timeout. Server expiry handles it.
+    if (callEvent is CallEventActionCallTimeout) {
+      final extra = <String, dynamic>{'action': 'unanswered',
+        'nativeCallId': callEvent.id.toLowerCase()};
+      if (validTimeoutData(extra)) onDecline(extra);
+    }
   });
 }

@@ -1,9 +1,10 @@
 'use strict';
+const {loadCallRecordRoom,writeCallRecord}=require('../agreements/call_record');
 // V4.1 billing: reserve 20 flowers, refund unconnected calls, idempotent settlement.
 // Client-reported first audio is not independently verified by provider: review before scale.
 const COST=20, PENDING_MS=120000, TALK_MS=60000;
 const validId=x=>typeof x==='string'&&/^[a-f0-9]{32}$/.test(x);
-function createV41Billing({db,FieldValue,HttpsError,requireTester,now=Date.now}) {
+function createV41Billing({db,APP_ID="lianlianshiguang",FieldValue,HttpsError,requireTester,now=Date.now}) {
   const col=db.collection('call_realtime_v41_billing');
   const ref=(uid,id)=>col.doc(`${uid}_${id}`);
   function check(id){if(!validId(id))throw new HttpsError('invalid-argument','通話編號錯誤');}
@@ -13,14 +14,16 @@ function createV41Billing({db,FieldValue,HttpsError,requireTester,now=Date.now})
     return db.runTransaction(async tx=>{
       const prior=await tx.get(r); if(prior.exists)throw new HttpsError('failed-precondition','此通話已處理，請重新撥號');
       const user=await tx.get(u); const points=user.data()?.flowerPoints;
-      let agreementContent='', aRef=null;
+      let agreementContent='', openingLine='', openingPrepared=false, aRef=null;
       if(agreementId){
         aRef=agreementRef(uid,characterId,agreementId);
         const [a,j]=await Promise.all([tx.get(aRef),tx.get(jobRef)]);
         const v=a.data()||{}, job=j.data()||{};
         if(!a.exists||v.confirmedBy!==uid||v.characterId!==characterId||v.sessionId!==sessionId||v.method!=='call')throw new HttpsError('not-found','來電不存在');
         if(v.status!=='ringing'||!j.exists||job.uid!==uid||job.characterId!==characterId||job.agreementId!==agreementId||job.state!=='ringing'||!(job.nextActionAt?.toMillis()>t))throw new HttpsError('failed-precondition','來電已結束或尚未到時間');
-        agreementContent=typeof v.content==='string'?v.content.trim().slice(0,500):'';
+        agreementContent=String(v.reminderContent||v.content||'').trim().slice(0,500);
+        openingLine=typeof v.openingLine==='string'?v.openingLine.trim().slice(0,180):'';
+        openingPrepared=v.openingPrepared===true && !!openingLine;
         if(!agreementContent)throw new HttpsError('failed-precondition','約定內容不存在');
       }
       if(!user.exists||!Number.isSafeInteger(points)||points<COST)throw new HttpsError('failed-precondition','花花不足');
@@ -32,7 +35,7 @@ function createV41Billing({db,FieldValue,HttpsError,requireTester,now=Date.now})
         // Billing sweep now owns recovery. Remove the legacy scheduler job atomically.
         tx.delete(jobRef);
       }
-      return {agreementContent};
+      return {agreementContent,openingLine,openingPrepared};
     });
   }
   async function ensurePending(uid,id){
@@ -51,9 +54,12 @@ function createV41Billing({db,FieldValue,HttpsError,requireTester,now=Date.now})
       if(expectedAgreementId && s.state!=='cancelled' && (s.agreementId!==expectedAgreementId||s.characterId!==expectedCharacterId))throw new HttpsError('permission-denied','通話與約定不符');
       const aRef=s.agreementId?agreementRef(uid,s.characterId,s.agreementId):null;
       const a=aRef?(await tx.get(aRef)).data():null;
+      const room=a&&action!=='connect'&&['pending','connected'].includes(s.state)?await loadCallRecordRoom(tx,{db,APP_ID,uid,characterId:s.characterId,agreement:a}):null;
       const updateAgreement=(status,refundedFlowers)=>{
-        if(a?.billingMode==='v41'&&a.billingCallId===id&&a.status==='accepted')
+        if(a?.billingMode==='v41'&&a.billingCallId===id&&a.status==='accepted'){
           tx.update(aRef,{status,refundedFlowers,finishedAt:FieldValue.serverTimestamp(),updatedAt:FieldValue.serverTimestamp()});
+          writeCallRecord(tx,{room,FieldValue,agreementId:s.agreementId,agreement:a,status,durationSeconds:status==='completed'?(t-s.connectedAt)/1000:null,now:t});
+        }
       };
       if(expiredOnly){
         if(s.state==='connected'){

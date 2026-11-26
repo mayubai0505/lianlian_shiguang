@@ -48,10 +48,95 @@ final Set<String> _handledNativeAccepts = {};
 bool _nativeAcceptOpening = false;
 String? _nativeAcceptPageId;
 
+// Native decline can arrive before Firebase/Auth initialization. Keep a bounded
+// in-process queue; if the OS kills the process, server expiry is authoritative.
+class _NativeDeclinePending {
+  _NativeDeclinePending(this.extra, this.uid);
+  final Map<String, dynamic> extra;
+  String? uid;
+  final DateTime receivedAt = DateTime.now();
+  int attempts = 0;
+}
+final Map<String, _NativeDeclinePending> _pendingNativeDeclines = {};
+bool _nativeDeclineFlushing = false;
+Timer? _nativeDeclineRetry;
+
+void _queueNativeDecline(Map<String, dynamic> extra) {
+  final timeout = RoleAgreementNativeCalls.validTimeoutData(extra);
+  if (!timeout && !RoleAgreementNativeCalls.validData(extra)) return;
+  final id = timeout ? '${extra['nativeCallId']}' : '${extra['agreementId']}';
+  if (timeout) {
+    // Ignore stale timeout emitted after OS acceptance or confirmation navigation.
+    final acceptedIds = <String>{..._pendingNativeAccepts.keys,
+      ..._handledNativeAccepts, if (_nativeAcceptPageId != null) _nativeAcceptPageId!};
+    if (acceptedIds.any((a) => RoleAgreementNativeCalls.callIdFor(a) == id)) return;
+  } else {
+    _pendingNativeAccepts.remove(id);
+    _handledNativeAccepts.add(id);
+  }
+  if (_pendingNativeDeclines.length >= 32 && !_pendingNativeDeclines.containsKey(id)) {
+    _pendingNativeDeclines.remove(_pendingNativeDeclines.keys.first);
+  }
+  _pendingNativeDeclines.putIfAbsent(id, () => _NativeDeclinePending(
+      Map<String, dynamic>.from(extra), Firebase.apps.isEmpty
+          ? null : FirebaseAuth.instance.currentUser?.uid));
+  debugPrint('[RA] native decline queued');
+  unawaited(_flushNativeDeclines());
+}
+
+Future<void> _flushNativeDeclines() async {
+  if (_nativeDeclineFlushing || _pendingNativeDeclines.isEmpty || Firebase.apps.isEmpty) return;
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+  if (uid == null) return;
+  _nativeDeclineRetry?.cancel();
+  _nativeDeclineRetry = null;
+  _nativeDeclineFlushing = true;
+  try {
+    for (final entry in _pendingNativeDeclines.entries.toList()) {
+      final pending = entry.value;
+      if (pending.uid != null && pending.uid != uid ||
+          DateTime.now().difference(pending.receivedAt) > const Duration(minutes: 2) ||
+          pending.attempts >= 4) {
+        _pendingNativeDeclines.remove(entry.key);
+        continue;
+      }
+      if (FirebaseAuth.instance.currentUser?.uid != uid) break;
+      pending.uid = uid;
+      pending.attempts++;
+      try {
+        await RoleAgreementNativeCalls.reportDecline(pending.extra, expectedUid: uid);
+        _pendingNativeDeclines.remove(entry.key);
+        debugPrint('[RA] native decline confirmed');
+      } on FirebaseFunctionsException catch (e) {
+        // Push delivery may precede the ringing transaction. Retry that race,
+        // but do not turn a rejected/accepted call into another operation.
+        if (const {'not-found', 'permission-denied', 'invalid-argument'}.contains(e.code)) {
+          _pendingNativeDeclines.remove(entry.key);
+        }
+        debugPrint('[RA] native decline deferred: ${e.code}');
+      } catch (_) {
+        debugPrint('[RA] native decline deferred');
+      }
+    }
+  } finally {
+    _nativeDeclineFlushing = false;
+    _pendingNativeDeclines.removeWhere((_, p) => p.attempts >= 4 ||
+        DateTime.now().difference(p.receivedAt) > const Duration(minutes: 2));
+    if (_pendingNativeDeclines.isNotEmpty && FirebaseAuth.instance.currentUser != null) {
+      _nativeDeclineRetry = Timer(const Duration(seconds: 2), () {
+        unawaited(_flushNativeDeclines());
+      });
+    }
+  }
+}
+
 void _queueNativeAccept(Map<String, dynamic> extra) {
   if (!RoleAgreementNativeCalls.validData(extra)) return;
   final id = '${extra['agreementId']}';
   if (_handledNativeAccepts.contains(id) || _nativeAcceptPageId == id) return;
+  _pendingNativeDeclines.remove(RoleAgreementNativeCalls.callIdFor(id));
+  if (_pendingNativeAccepts[id]?['nativeAcceptEvent'] == true &&
+      extra['nativeAcceptEvent'] != true) return;
   _pendingNativeAccepts[id] = Map<String, dynamic>.from(extra);
   debugPrint('[RA] native accept queued');
   _flushNativeAccepts();
@@ -74,10 +159,22 @@ void _flushNativeAccepts() {
       _pendingNativeAccepts.remove(entry.key);
       if (_handledNativeAccepts.contains(entry.key)) return;
       _nativeAcceptPageId = entry.key;
-      debugPrint('[RA] opening confirmation page from native accept');
+      final uid = FirebaseAuth.instance.currentUser!.uid;
+      final inApp = entry.value['inAppInvitation'] == true;
+      final nativeEvent = entry.value['nativeAcceptEvent'] == true;
+      final direct = !inApp && nativeEvent &&
+          RoleAgreementNativeCalls.isPricedNativeAccept(entry.value);
+      if (nativeEvent && !inApp) unawaited(_holdNativeAccept(entry.value, uid));
+      debugPrint('[RA] opening incoming route; direct=$direct');
       await nav.push(MaterialPageRoute<void>(builder: (_) =>
           RoleAgreementIncomingPage(characterId: '${entry.value['characterId']}',
-              agreementId: entry.key)));
+              agreementId: entry.key, inAppInvitation: inApp,
+              nativeAcceptedWithPrice: direct, expectedUid: uid,
+               previewName: '${entry.value['characterName'] ?? ''}',
+               previewAvatarUrl: RoleAgreementNativeCalls.safeAvatarUrl(
+                   entry.value['characterAvatarUrl'] ?? entry.value['characterAvatarPath']),
+              onMissed: inApp ? (reason) => _queueNativeDecline(
+                  {...entry.value, 'action': reason}) : null)));
       _handledNativeAccepts.add(entry.key);
     } catch (error) {
       debugPrint('[RA] native accept navigation failed: $error');
@@ -90,8 +187,23 @@ void _flushNativeAccepts() {
   WidgetsBinding.instance.ensureVisualUpdate();
 }
 
+Future<void> _holdNativeAccept(Map<String, dynamic> extra, String uid) async {
+  for (var i = 0; i < 3; i++) {
+    if (FirebaseAuth.instance.currentUser?.uid != uid) return;
+    try {
+      await RoleAgreementNativeCalls.reportDecline(
+          {...extra, 'action': 'nativeAccepted'}, expectedUid: uid);
+      return;
+    } on FirebaseFunctionsException catch (e) {
+      if (const {'not-found','permission-denied','invalid-argument'}.contains(e.code)) return;
+    } catch (_) {}
+    await Future<void>.delayed(const Duration(seconds: 1));
+  }
+}
+
 Future<void> _recoverNativeAccepts() async {
   await RoleAgreementNativeCalls.recoverAcceptedCalls(_queueNativeAccept);
+  unawaited(_flushNativeDeclines());
   _flushNativeAccepts();
 }
 
@@ -248,12 +360,7 @@ Future<void> main() async {
   if (RoleAgreementNativeCalls.supported) {
     _earlyRoleAgreementSubscription = RoleAgreementNativeCalls.listen(
       onAccept: _queueNativeAccept,
-      onDecline: (extra) {
-        final id = '${extra['agreementId']}';
-        _pendingNativeAccepts.remove(id);
-        _handledNativeAccepts.add(id);
-        debugPrint('[RA] native decline');
-      },
+      onDecline: _queueNativeDecline,
     );
   }
 
@@ -1072,7 +1179,7 @@ void _handleNotificationClick(RemoteMessage message) {
     if (!RegExp(r'^[A-Za-z0-9_-]{1,160}$').hasMatch(characterId) ||
         !RegExp(r'^[a-f0-9]{64}$').hasMatch(agreementId)) return;
     if (type == 'role_agreement_call') {
-      _queueNativeAccept(Map<String, dynamic>.from(data));
+      _queueNativeAccept({...data, 'nativeAcceptedWithPrice': false, 'nativeAcceptEvent': false, 'inAppInvitation': true});
     } else {
       navigatorKey.currentState?.pushNamed('/chat',arguments:{
         'characterId':characterId,'sessionId':(data['sessionId']??'').toString(),
@@ -1217,10 +1324,20 @@ Future<void> setupPushNotifications() async {
       // invitation instead of silently swallowing scheduled calls/reminders.
       final type=(message.data['type']??'').toString();
       if (type!='role_agreement_call' && type!='role_agreement_reminder') return;
-      if (type == 'role_agreement_call' && RoleAgreementNativeCalls.supported &&
-          defaultTargetPlatform == TargetPlatform.android) {
-        unawaited(RoleAgreementNativeCalls.showFromRemoteMessage(message));
-        return;
+      if (type == 'role_agreement_call' && RoleAgreementNativeCalls.supported) {
+        if (WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed &&
+            navigatorKey.currentState != null && FirebaseAuth.instance.currentUser != null) {
+          if (!RoleAgreementNativeCalls.validData(message.data)) return;
+          // Do not interrupt an existing paid call or stack invitations.
+          if (globalActiveCharacterId != null || _nativeAcceptOpening ||
+              _pendingNativeAccepts.isNotEmpty) return;
+          _queueNativeAccept({...message.data, 'inAppInvitation': true, 'nativeAcceptedWithPrice': false, 'nativeAcceptEvent': false});
+          return;
+        }
+        if (defaultTargetPlatform == TargetPlatform.android) {
+          unawaited(RoleAgreementNativeCalls.showFromRemoteMessage(message));
+          return;
+        }
       }
       final context=navigatorKey.currentContext;
       if (context==null) return;

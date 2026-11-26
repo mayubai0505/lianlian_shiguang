@@ -12848,7 +12848,23 @@ class _ChatPageState extends State<ChatPage> {
         Widget finalMessageWidget; // 用來裝這整列訊息 (包含頭像、氣泡、時間)
 
         // ✨ 系統故事開頭
-        if (sender == 'system') {
+        if (type == 'roleAgreementCall') {
+          final missed = message.text.startsWith('未接來電');
+          final failed = message.text.startsWith('通話連線失敗');
+          final color = missed || failed ? theme.colorScheme.error : theme.colorScheme.primary;
+          finalMessageWidget = Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 8),
+            child: Center(child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(color: color.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(14), border: Border.all(color: color.withValues(alpha: 0.18))),
+              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                Icon(missed || failed ? Icons.phone_missed : Icons.phone_in_talk, color: color, size: 20),
+                const SizedBox(width: 8),
+                Flexible(child: Text(message.text, style: theme.textTheme.bodyMedium?.copyWith(color: color))),
+              ]),
+            )),
+          );
+        } else if (sender == 'system') {
           finalMessageWidget = Container(
             padding:
             const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
