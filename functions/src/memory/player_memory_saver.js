@@ -30,19 +30,21 @@ async function savePlayerMemoryIfNeeded({
   // account nickname replace the selected custom-profile identity.
   const safeAppId = String(appId || APP_ID).trim() || APP_ID;
   const safeSessionId = String(sessionId || '').trim();
+  const ownerSnapshot = await db.collection('users').doc(userId).get();
+  if (!ownerSnapshot.exists) return null;
+  const ownerData = ownerSnapshot.data() || {};
   const safeProfileId = await resolveEffectivePlayerProfileId({
     appId: safeAppId, userId, characterId, sessionId: safeSessionId,
-    requestedProfileId: playerProfileId,
+    requestedProfileId: playerProfileId, userData: ownerData, requireStableBinding: true,
   });
-  const ownerSnapshot = await db.collection('users').doc(userId).get();
-  const ownerData = ownerSnapshot.data() || {};
+  if (!safeProfileId) return null;
   const knownProfiles = Array.isArray(ownerData.profiles) ? ownerData.profiles : [];
   const boundProfile = knownProfiles.find(item => item &&
     String(item.id || '').trim() === String(safeProfileId || '').trim());
   const boundName = String(boundProfile?.name || '').trim();
   const isDefault = isDefaultProfile(safeProfileId);
   const canonicalPlayerName = isDefault
-    ? String(ownerData.nickname || playerName || '').trim()
+    ? String(ownerData.nickname || ownerData.displayName || ownerData.name || '你').trim()
     : boundName;
   if (!canonicalPlayerName || (!isDefault && !boundProfile)) {
     console.warn('MEMORY_PROFILE_NAME_UNRESOLVED_SKIP', {
@@ -211,10 +213,20 @@ async function savePlayerMemoryIfNeeded({
       sourceHash: String(sourceHashes[sourceRole] || ''),
       sourceTimestamp: nowSource,
     };
-    const primaryRef = memoriesRef.doc('fact_' + crypto.createHash('sha256').update(factKey).digest('hex').slice(0, 40));
+    const storageKey = memoryScope === 'session' ? JSON.stringify([safeProfileId, factKey]) : factKey;
+    const primaryRef = memoriesRef.doc('fact_' + crypto.createHash('sha256').update(storageKey).digest('hex').slice(0, 40));
     const millis = value => typeof value?.toMillis === 'function' ? value.toMillis() :
       value instanceof Date ? value.getTime() : typeof value === 'number' ? value : 0;
     return await db.runTransaction(async transaction => {
+      const roomRef = db.collection('artifacts').doc(safeAppId).collection('chat_sessions').doc(safeSessionId);
+      const [roomNow, ownerNow] = await Promise.all([transaction.get(roomRef), transaction.get(ownerSnapshot.ref)]);
+      const room = roomNow.data() || {}, owner = ownerNow.data() || {};
+      const mirror = String(room.playerProfileId || '').trim();
+      const selected = String(owner.roomProfiles?.[safeSessionId] || '').trim();
+      const nowName = isDefault ? String(owner.nickname || owner.displayName || owner.name || '你').trim() :
+        String((Array.isArray(owner.profiles) ? owner.profiles : []).find(x => String(x?.id || '').trim() === safeProfileId)?.name || '').trim();
+      if (!roomNow.exists || !ownerNow.exists || room.userId !== userId || String(room.characterId || '') !== characterId ||
+          !(mirror || selected) || (mirror && mirror !== safeProfileId) || (selected && selected !== safeProfileId) || nowName !== canonicalPlayerName) return null;
       const exact = await transaction.get(memoriesRef.where('factKey', '==', factKey).limit(100));
       // Compatibility: include older free-key aliases in a recent bounded window.
       const recent = await transaction.get(memoriesRef.orderBy('timestamp', 'desc').limit(60));
@@ -222,6 +234,7 @@ async function savePlayerMemoryIfNeeded({
       const byId = new Map([...exact.docs, ...recent.docs].map(doc => [doc.id, doc]));
       if (primarySnapshot.exists) byId.set(primarySnapshot.id, primarySnapshot);
       const conflicts = [...byId.values()].filter(doc => doc.data()?.active !== false &&
+         (memoryScope !== 'session' || String(doc.data()?.playerProfileId || '') === safeProfileId) &&
         canonicalizeMemoryFactKey(doc.data()?.factKey, {category: doc.data()?.category}) === factKey);
       const latest = conflicts.sort((a,b) => millis(b.data()?.sourceTimestamp || b.data()?.timestamp) - millis(a.data()?.sourceTimestamp || a.data()?.timestamp))[0];
       if (latest && millis(sourceTimestamp) && millis(latest.data()?.sourceTimestamp || latest.data()?.timestamp) > millis(sourceTimestamp)) return null;
@@ -229,7 +242,7 @@ async function savePlayerMemoryIfNeeded({
       const same = latest && normalizeMemoryFactValue(old.factValue) === normalizeMemoryFactValue(factValue);
       transaction.set(primaryRef, {
         text: memoryText.slice(0, 900), scope: memoryScope,
-        playerProfileId: safeProfileId || null, characterId, sessionId: safeSessionId || null,
+        playerProfileId: safeProfileId, playerNameSnapshot: canonicalPlayerName, characterId, sessionId: safeSessionId || null,
         category: extracted.category || 'personal', factKey, factValue: factValue || null,
         confidence, source: 'auto', sourceMessage: String(userMessage || '').slice(0, 500),
         isFavorite: old.isFavorite === true, important: /^(relationship\.|worldline\.|important_event\.)/.test(factKey),

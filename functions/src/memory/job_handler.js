@@ -89,7 +89,7 @@ function createMemoryJobHandler({FieldValue, db, savePlayerMemoryIfNeeded}) {
         // ==========================================
         if (
             !userId ||
-            !characterId ||
+            !characterId || !sessionId || !playerProfileId ||
             (!userMessage && !String(jobData.assistantMessage || '').trim())
         ) {
             console.warn(
@@ -110,7 +110,7 @@ function createMemoryJobHandler({FieldValue, db, savePlayerMemoryIfNeeded}) {
                         "INVALID_MEMORY_JOB",
 
                     errorMessage:
-                        "缺少 userId、characterId 或 userMessage。",
+                        "缺少玩家、角色、聊天室、拾光檔案或訊息。",
 
                     completedAt:
                         FieldValue.serverTimestamp(),

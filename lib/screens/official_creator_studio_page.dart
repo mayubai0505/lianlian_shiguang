@@ -963,6 +963,8 @@ class _CreatorFlowerGiftPageState extends State<_CreatorFlowerGiftPage> {
   final List<_CreatorGiftRecipient> _fanResults = [];
   String? _fanCursor;
   bool _fanLoading = false;
+  bool _fanLoadFailed = false;
+  bool _fanRetryReset = true;
   bool _fanHasMore = true;
   String _fanAppliedKeyword = '';
   int _fanSearchGeneration = 0;
@@ -975,7 +977,9 @@ class _CreatorFlowerGiftPageState extends State<_CreatorFlowerGiftPage> {
   @override
   void initState() {
     super.initState();
-    _loadFans(reset: true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _loadFans(reset: true);
+    });
   }
 
   @override
@@ -996,12 +1000,14 @@ class _CreatorFlowerGiftPageState extends State<_CreatorFlowerGiftPage> {
   }
 
   Future<void> _loadFans({bool reset = false}) async {
+    if (!reset && _fanSearchController.text.trim() != _fanAppliedKeyword) reset = true;
     if (_fanLoading && !reset) return;
     if (!reset && !_fanHasMore) return;
     final generation = reset ? ++_fanSearchGeneration : _fanSearchGeneration;
     final keyword = _fanSearchController.text.trim();
     setState(() {
       _fanLoading = true;
+      _fanLoadFailed = false;
       if (reset) {
         _fanAppliedKeyword = keyword;
         _fanResults.clear();
@@ -1010,6 +1016,7 @@ class _CreatorFlowerGiftPageState extends State<_CreatorFlowerGiftPage> {
       }
     });
     try {
+      debugPrint('[CREATOR_GIFT_SEARCH] calling us-central1/searchCreatorGiftFollowersUs');
       final response = await _giftFunctions.httpsCallable(
         'searchCreatorGiftFollowersUs',
         options: HttpsCallableOptions(timeout: const Duration(seconds: 60)),
@@ -1020,7 +1027,9 @@ class _CreatorFlowerGiftPageState extends State<_CreatorFlowerGiftPage> {
       });
       if (!mounted || generation != _fanSearchGeneration) return;
       final payload = Map<String, dynamic>.from(response.data as Map);
-      final rows = (payload['items'] as List? ?? const []);
+      final rawRows = payload['items'];
+      if (rawRows is! List) throw const FormatException('Invalid follower list response');
+      final rows = rawRows;
       final page = rows.whereType<Map>().map((item) {
         final data = Map<String, dynamic>.from(item);
         return _CreatorGiftRecipient(
@@ -1036,10 +1045,16 @@ class _CreatorFlowerGiftPageState extends State<_CreatorFlowerGiftPage> {
         _fanCursor = next != null && next.isNotEmpty ? next : null;
         _fanHasMore = _fanCursor != null;
       });
-    } catch (error) {
+    } on FirebaseFunctionsException catch (error) {
+      debugPrint('[CREATOR_GIFT_SEARCH] callable failed code=${error.code}');
       if (!mounted || generation != _fanSearchGeneration) return;
+      setState(() { _fanLoadFailed = true; _fanRetryReset = reset; });
       ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.official_studio_text_1111, isError: true);
-      debugPrint('查詢送花粉絲失敗：$error');
+    } catch (error) {
+      debugPrint('[CREATOR_GIFT_SEARCH] client failed type=${error.runtimeType}');
+      if (!mounted || generation != _fanSearchGeneration) return;
+      setState(() { _fanLoadFailed = true; _fanRetryReset = reset; });
+      ToastUtils.showCenterToast(context, AppLocalizations.of(context)!.official_studio_text_1111, isError: true);
     } finally {
       if (mounted && generation == _fanSearchGeneration) {
         setState(() => _fanLoading = false);
@@ -1169,7 +1184,7 @@ class _CreatorFlowerGiftPageState extends State<_CreatorFlowerGiftPage> {
             const SizedBox(height:8),
             if (_fanLoading && _fanResults.isEmpty)
               const Padding(padding: EdgeInsets.all(18), child: Center(child: CircularProgressIndicator())),
-            if (!_fanLoading && _fanResults.isEmpty)
+            if (!_fanLoading && !_fanLoadFailed && _fanResults.isEmpty)
               Padding(padding: const EdgeInsets.all(18), child: Text(
                   _fanAppliedKeyword.isEmpty ? AppLocalizations.of(context)!.official_studio_text_1311 :
                   (_fanHasMore ? AppLocalizations.of(context)!.official_studio_text_1321 : AppLocalizations.of(context)!.official_studio_text_1331))),
@@ -1195,7 +1210,16 @@ class _CreatorFlowerGiftPageState extends State<_CreatorFlowerGiftPage> {
                 },
                 title: Text(person.name, maxLines: 1, overflow: TextOverflow.ellipsis),
               ),
-            if (_fanHasMore)
+            if (_fanLoadFailed && !_fanLoading)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: OutlinedButton.icon(
+                  onPressed: _submitting ? null : () => _loadFans(reset: _fanRetryReset),
+                  icon: const Icon(Icons.refresh_rounded),
+                  label: Text(AppLocalizations.of(context)!.official_studio_text_1111),
+                ),
+              ),
+            if (_fanHasMore && !_fanLoadFailed)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: OutlinedButton(

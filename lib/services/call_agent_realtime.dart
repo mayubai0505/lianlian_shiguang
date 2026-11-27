@@ -84,7 +84,7 @@ class CallAgentRealtime {
   Timer? _quietTimer;
   bool _closed = false, _connected = false, _failed = false;
   bool _opened = false, _streamStarted = false, _draining = false;
-  bool _recording = false, _muted = false, _speaker = true;
+  bool _recording = false, _muted = false, _speaker = false;
   bool _speaking = false, _oneShotUsed = false, _firstAudioPlayed = false;
   int _queuedBytes = 0, _generation = 0;
   int? _interruptedEventId;

@@ -103,7 +103,9 @@ function createLegacyMemoryExtractionHandler({
                     sessionId,
                     requestedProfileId,
                     userData,
+                    requireStableBinding: true,
                 });
+            if (!effectiveProfileId) return res.status(200).json({status:"success",saved:false,reason:"profile_binding_unresolved"});
 
             const playerIdentity =
                 resolvePlayerIdentityFromUserData(

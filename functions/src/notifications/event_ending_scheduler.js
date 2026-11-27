@@ -34,6 +34,8 @@ function createEventEndingScheduler({db, APP_ID, FieldValue, sendEventEndingNoti
                 const eventData =
                     eventDoc.data() || {};
 
+                if (eventData.audience === "admin_only") continue;
+
                 const endAt =
                     eventData.endAt
                         ?.toDate?.();
@@ -87,6 +89,7 @@ function createEventEndingScheduler({db, APP_ID, FieldValue, sendEventEndingNoti
                     const fresh = await tx.get(eventDoc.ref);
                     if (!fresh.exists) return false;
                     const freshData = fresh.data() || {};
+                    if (freshData.audience === "admin_only" || freshData.isActive !== true) return false;
                     const state = freshData.notificationState || {};
                     if (state[sentField] || state[dispatchField]) return false;
                     tx.update(eventDoc.ref, {

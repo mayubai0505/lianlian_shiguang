@@ -24,58 +24,75 @@ handlers.searchCreatorGiftFollowers = onCall({
   concurrency: 1,
   maxInstances: 3,
 }, async (request) => {
-  const creatorUid = request.auth?.uid;
-  if (!creatorUid) throw new HttpsError('unauthenticated', '請先登入');
-  const data = request.data || {};
-  const keyword = String(data.keyword || '').trim().toLocaleLowerCase('zh-Hant');
-  if (keyword.length > 80) throw new HttpsError('invalid-argument', '搜尋文字過長');
-  const pageSize = Number(data.pageSize || 20);
-  if (!Number.isSafeInteger(pageSize) || pageSize < 1 || pageSize > 30) {
-    throw new HttpsError('invalid-argument', '每頁筆數不正確');
-  }
-  const cursor = data.cursor == null ? '' : String(data.cursor);
-  if (cursor && (cursor.length > 128 || cursor.includes('/'))) {
-    throw new HttpsError('invalid-argument', '分頁游標無效');
-  }
-  const creatorSnap = await db.collection('users').doc(creatorUid).get();
-  if (!creatorSnap.exists || !creatorFanMailVerified(creatorSnap.data() || {})) {
-    throw new HttpsError('permission-denied', '目前沒有合作創作者資格');
-  }
-  const followers = db.collection('users').doc(creatorUid).collection('followers');
-  const scanLimit = keyword ? 150 : pageSize;
-  let query = followers.orderBy(FieldPath.documentId()).limit(scanLimit + 1);
-  if (cursor) query = query.startAfter(cursor);
-  const snapshot = await query.get();
-  const scannedDocs = snapshot.docs.slice(0, scanLimit);
-  const hasMore = snapshot.docs.length > scanLimit;
-  const items = [];
-  let lastProcessedId = null;
-  let processedCount = 0;
-  // 取得滿 pageSize 位符合者就停止；下一次從最後處理的 UID 接續。
-  for (let i = 0; i < scannedDocs.length && items.length < pageSize;) {
-    const batch = scannedDocs.slice(i, i + Math.min(30, pageSize - items.length));
-    i += batch.length;
-    const profiles = await db.getAll(...batch.map(doc => db.collection('users').doc(doc.id)));
-    for (let j = 0; j < batch.length; j++) {
-      lastProcessedId = batch[j].id;
-      processedCount++;
-      const u = profiles[j];
-      if (!u.exists) continue;
-      const profile = u.data() || {};
-      const name = String(profile.nickname || profile.displayName || profile.name || '').trim() || '未設定暱稱的玩家';
-      const avatar = String(profile.avatarPath || profile.photoURL || profile.photoUrl || profile.avatarUrl || '').trim();
-      const uid = batch[j].id;
-      if (!keyword || name.toLocaleLowerCase('zh-Hant').includes(keyword) || uid.toLowerCase().includes(keyword)) {
-        items.push({uid, name: name.slice(0, 120), avatar: avatar.slice(0, 2048)});
+  const diagnostic = 'searchCreatorGiftFollowers';
+  let stage = 'auth';
+  console.info('[CREATOR_GIFT_SEARCH] start', {functionName: diagnostic, authenticated: !!request.auth?.uid});
+  try {
+    const creatorUid = request.auth?.uid;
+    if (!creatorUid) throw new HttpsError('unauthenticated', '請先登入');
+    stage = 'validate';
+    const data = request.data || {};
+    const keyword = String(data.keyword || '').trim().toLocaleLowerCase('zh-Hant');
+    if (keyword.length > 80) throw new HttpsError('invalid-argument', '搜尋文字過長');
+    const pageSize = Number(data.pageSize || 20);
+    if (!Number.isSafeInteger(pageSize) || pageSize < 1 || pageSize > 30) {
+      throw new HttpsError('invalid-argument', '每頁筆數不正確');
+    }
+    const cursor = data.cursor == null ? '' : String(data.cursor);
+    if (cursor && (cursor.length > 128 || cursor.includes('/'))) {
+      throw new HttpsError('invalid-argument', '分頁游標無效');
+    }
+    stage = 'creator_access';
+    const creatorSnap = await db.collection('users').doc(creatorUid).get();
+    if (!creatorSnap.exists || !creatorFanMailVerified(creatorSnap.data() || {})) {
+      throw new HttpsError('permission-denied', '目前沒有合作創作者資格');
+    }
+    stage = 'followers_query';
+    const followers = db.collection('users').doc(creatorUid).collection('followers');
+    const scanLimit = keyword ? 150 : pageSize;
+    let query = followers.orderBy(FieldPath.documentId()).limit(scanLimit + 1);
+    if (cursor) query = query.startAfter(cursor);
+    const snapshot = await query.get();
+    const scannedDocs = snapshot.docs.slice(0, scanLimit);
+    const hasMore = snapshot.docs.length > scanLimit;
+    stage = 'profile_lookup';
+    const items = [];
+    let lastProcessedId = null;
+    let processedCount = 0;
+    // 取得滿 pageSize 位符合者就停止；下一次從最後處理的 UID 接續。
+    for (let i = 0; i < scannedDocs.length && items.length < pageSize;) {
+      const batch = scannedDocs.slice(i, i + Math.min(30, pageSize - items.length));
+      i += batch.length;
+      const profiles = await db.getAll(...batch.map(doc => db.collection('users').doc(doc.id)));
+      for (let j = 0; j < batch.length; j++) {
+        lastProcessedId = batch[j].id;
+        processedCount++;
+        const u = profiles[j];
+        if (!u.exists) continue;
+        const profile = u.data() || {};
+        const name = String(profile.nickname || profile.displayName || profile.name || '').trim() || '未設定暱稱的玩家';
+        const avatar = String(profile.avatarPath || profile.photoURL || profile.photoUrl || profile.avatarUrl || '').trim();
+        const uid = batch[j].id;
+        if (!keyword || name.toLocaleLowerCase('zh-Hant').includes(keyword) || uid.toLowerCase().includes(keyword)) {
+          items.push({uid, name: name.slice(0, 120), avatar: avatar.slice(0, 2048)});
+        }
       }
     }
+    const more = !!lastProcessedId && (hasMore || processedCount < scannedDocs.length);
+    console.info('[CREATOR_GIFT_SEARCH] success', {functionName: diagnostic, count: items.length, scanned: processedCount, hasMore: more});
+    return {
+      items,
+      nextCursor: more ? lastProcessedId : null,
+      scanned: processedCount,
+    };
+  } catch (error) {
+    // Do not log follower IDs, names, search text or credentials.
+    console.error('[CREATOR_GIFT_SEARCH] failure', {
+      functionName: diagnostic, stage, code: String(error?.code || 'unknown'),
+      errorType: String(error?.name || 'Error'),
+    });
+    throw error;
   }
-  const more = !!lastProcessedId && (hasMore || processedCount < scannedDocs.length);
-  return {
-    items,
-    nextCursor: more ? lastProcessedId : null,
-    scanned: processedCount,
-  };
 });
 
 handlers.giftCreatorFlowers = onCall({
@@ -235,58 +252,75 @@ handlers.searchCreatorGiftFollowersUs = onCall({
   concurrency: 1,
   maxInstances: 3,
 }, async (request) => {
-  const creatorUid = request.auth?.uid;
-  if (!creatorUid) throw new HttpsError('unauthenticated', '請先登入');
-  const data = request.data || {};
-  const keyword = String(data.keyword || '').trim().toLocaleLowerCase('zh-Hant');
-  if (keyword.length > 80) throw new HttpsError('invalid-argument', '搜尋文字過長');
-  const pageSize = Number(data.pageSize || 20);
-  if (!Number.isSafeInteger(pageSize) || pageSize < 1 || pageSize > 30) {
-    throw new HttpsError('invalid-argument', '每頁筆數不正確');
-  }
-  const cursor = data.cursor == null ? '' : String(data.cursor);
-  if (cursor && (cursor.length > 128 || cursor.includes('/'))) {
-    throw new HttpsError('invalid-argument', '分頁游標無效');
-  }
-  const creatorSnap = await db.collection('users').doc(creatorUid).get();
-  if (!creatorSnap.exists || !creatorFanMailVerified(creatorSnap.data() || {})) {
-    throw new HttpsError('permission-denied', '目前沒有合作創作者資格');
-  }
-  const followers = db.collection('users').doc(creatorUid).collection('followers');
-  const scanLimit = keyword ? 150 : pageSize;
-  let query = followers.orderBy(FieldPath.documentId()).limit(scanLimit + 1);
-  if (cursor) query = query.startAfter(cursor);
-  const snapshot = await query.get();
-  const scannedDocs = snapshot.docs.slice(0, scanLimit);
-  const hasMore = snapshot.docs.length > scanLimit;
-  const items = [];
-  let lastProcessedId = null;
-  let processedCount = 0;
-  // 取得滿 pageSize 位符合者就停止；下一次從最後處理的 UID 接續。
-  for (let i = 0; i < scannedDocs.length && items.length < pageSize;) {
-    const batch = scannedDocs.slice(i, i + Math.min(30, pageSize - items.length));
-    i += batch.length;
-    const profiles = await db.getAll(...batch.map(doc => db.collection('users').doc(doc.id)));
-    for (let j = 0; j < batch.length; j++) {
-      lastProcessedId = batch[j].id;
-      processedCount++;
-      const u = profiles[j];
-      if (!u.exists) continue;
-      const profile = u.data() || {};
-      const name = String(profile.nickname || profile.displayName || profile.name || '').trim() || '未設定暱稱的玩家';
-      const avatar = String(profile.avatarPath || profile.photoURL || profile.photoUrl || profile.avatarUrl || '').trim();
-      const uid = batch[j].id;
-      if (!keyword || name.toLocaleLowerCase('zh-Hant').includes(keyword) || uid.toLowerCase().includes(keyword)) {
-        items.push({uid, name: name.slice(0, 120), avatar: avatar.slice(0, 2048)});
+  const diagnostic = 'searchCreatorGiftFollowersUs';
+  let stage = 'auth';
+  console.info('[CREATOR_GIFT_SEARCH] start', {functionName: diagnostic, authenticated: !!request.auth?.uid});
+  try {
+    const creatorUid = request.auth?.uid;
+    if (!creatorUid) throw new HttpsError('unauthenticated', '請先登入');
+    stage = 'validate';
+    const data = request.data || {};
+    const keyword = String(data.keyword || '').trim().toLocaleLowerCase('zh-Hant');
+    if (keyword.length > 80) throw new HttpsError('invalid-argument', '搜尋文字過長');
+    const pageSize = Number(data.pageSize || 20);
+    if (!Number.isSafeInteger(pageSize) || pageSize < 1 || pageSize > 30) {
+      throw new HttpsError('invalid-argument', '每頁筆數不正確');
+    }
+    const cursor = data.cursor == null ? '' : String(data.cursor);
+    if (cursor && (cursor.length > 128 || cursor.includes('/'))) {
+      throw new HttpsError('invalid-argument', '分頁游標無效');
+    }
+    stage = 'creator_access';
+    const creatorSnap = await db.collection('users').doc(creatorUid).get();
+    if (!creatorSnap.exists || !creatorFanMailVerified(creatorSnap.data() || {})) {
+      throw new HttpsError('permission-denied', '目前沒有合作創作者資格');
+    }
+    stage = 'followers_query';
+    const followers = db.collection('users').doc(creatorUid).collection('followers');
+    const scanLimit = keyword ? 150 : pageSize;
+    let query = followers.orderBy(FieldPath.documentId()).limit(scanLimit + 1);
+    if (cursor) query = query.startAfter(cursor);
+    const snapshot = await query.get();
+    const scannedDocs = snapshot.docs.slice(0, scanLimit);
+    const hasMore = snapshot.docs.length > scanLimit;
+    stage = 'profile_lookup';
+    const items = [];
+    let lastProcessedId = null;
+    let processedCount = 0;
+    // 取得滿 pageSize 位符合者就停止；下一次從最後處理的 UID 接續。
+    for (let i = 0; i < scannedDocs.length && items.length < pageSize;) {
+      const batch = scannedDocs.slice(i, i + Math.min(30, pageSize - items.length));
+      i += batch.length;
+      const profiles = await db.getAll(...batch.map(doc => db.collection('users').doc(doc.id)));
+      for (let j = 0; j < batch.length; j++) {
+        lastProcessedId = batch[j].id;
+        processedCount++;
+        const u = profiles[j];
+        if (!u.exists) continue;
+        const profile = u.data() || {};
+        const name = String(profile.nickname || profile.displayName || profile.name || '').trim() || '未設定暱稱的玩家';
+        const avatar = String(profile.avatarPath || profile.photoURL || profile.photoUrl || profile.avatarUrl || '').trim();
+        const uid = batch[j].id;
+        if (!keyword || name.toLocaleLowerCase('zh-Hant').includes(keyword) || uid.toLowerCase().includes(keyword)) {
+          items.push({uid, name: name.slice(0, 120), avatar: avatar.slice(0, 2048)});
+        }
       }
     }
+    const more = !!lastProcessedId && (hasMore || processedCount < scannedDocs.length);
+    console.info('[CREATOR_GIFT_SEARCH] success', {functionName: diagnostic, count: items.length, scanned: processedCount, hasMore: more});
+    return {
+      items,
+      nextCursor: more ? lastProcessedId : null,
+      scanned: processedCount,
+    };
+  } catch (error) {
+    // Do not log follower IDs, names, search text or credentials.
+    console.error('[CREATOR_GIFT_SEARCH] failure', {
+      functionName: diagnostic, stage, code: String(error?.code || 'unknown'),
+      errorType: String(error?.name || 'Error'),
+    });
+    throw error;
   }
-  const more = !!lastProcessedId && (hasMore || processedCount < scannedDocs.length);
-  return {
-    items,
-    nextCursor: more ? lastProcessedId : null,
-    scanned: processedCount,
-  };
 });
 
 handlers.giftCreatorFlowersUs = onCall({

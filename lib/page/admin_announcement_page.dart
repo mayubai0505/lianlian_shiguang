@@ -1,3 +1,6 @@
+import '../screens/event_page.dart';
+import '../services/event_access.dart';
+import 'admin_limited_memory_preview_page.dart';
 import 'admin_environment_sound_page.dart';
 import 'admin_social_promotion_page.dart';
 import 'admin_voice_bank_page.dart';
@@ -178,6 +181,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   DateTime _eventEndAt = DateTime.now().add(const Duration(days: 14));
 
   bool _eventIsActive = true;
+  bool _eventAdminOnly = true;
   bool _eventHasTasks = true;
   bool _eventHasCheckIn = false;
   String _eventCheckInRewardType = 'eventCurrency';
@@ -4701,7 +4705,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     return FirebaseFirestore.instance
         .collection('artifacts')
         .doc(AppConfig.appId)
-        .collection('events');
+        .collection(_eventAdminOnly ? 'admin_test_events' : 'events');
   }
 
   String _eventSlugify(String value) {
@@ -6507,6 +6511,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       QueryDocumentSnapshot<Map<String, dynamic>> doc,
       ) async {
     if (_isSavingEvent) return;
+    if (doc.reference.parent.id != (_eventAdminOnly ? 'admin_test_events' : 'events')) return;
 
     try {
       final eventRef = doc.reference;
@@ -6558,6 +6563,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
 
       if (!mounted) return;
       setState(() {
+        _eventAdminOnly = doc.reference.parent.id == 'admin_test_events';
         _editingReusableEventId = doc.id;
         _eventIdController.text = doc.id;
         _eventNameController.text = data['name']?.toString() ?? '';
@@ -6652,6 +6658,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
   void _resetReusableEventEditor() {
     setState(() {
       _editingReusableEventId = null;
+      _eventAdminOnly = true;
       _eventIdController.clear();
       _eventNameController.clear();
       _eventSubtitleController.clear();
@@ -6860,6 +6867,12 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       eventId = 'event_${DateTime.now().millisecondsSinceEpoch}';
     }
 
+    if (_eventAdminOnly && !isAdminTestEvent(eventId)) eventId = '$eventTestPrefix$eventId';
+    if (!_eventAdminOnly && isAdminTestEvent(eventId)) {
+      ToastUtils.showCenterToast(context, '公開活動不可使用管理員測試 ID', isError: true);
+      return;
+    }
+
     if (name.isEmpty) {
       ToastUtils.showCenterToast(context, '請輸入活動名稱', isError: true);
       return;
@@ -6893,6 +6906,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         content: Text(
           '活動：$name\n'
               '活動 ID：$eventId\n'
+              '開放對象：${_eventAdminOnly ? '僅管理員' : '全體玩家'}\n'
               '開始：${_formatRewardDateTime(_eventStartAt)}\n'
               '結束：${_formatRewardDateTime(_eventEndAt)}\n'
               '任務：${_eventTaskDrafts.length} 個\n'
@@ -6932,6 +6946,9 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
       final eventRef = _eventAdminCollection().doc(eventId);
 
       final existing = await eventRef.get();
+      if (_editingReusableEventId == null && existing.exists) {
+        throw StateError('活動 ID 已存在，請使用新 ID 或載入原活動編輯');
+      }
       final existingChildren = await Future.wait([
         eventRef.collection('tasks').get(),
         eventRef.collection('milestones').get(),
@@ -6980,6 +6997,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
             ),
           },
           'isActive': _eventIsActive,
+          'audience': _eventAdminOnly ? 'admin_only' : 'all',
           'startAt': Timestamp.fromDate(_eventStartAt),
           'endAt': Timestamp.fromDate(_eventEndAt),
           'bannerImageUrl': _eventBannerUrlController.text.trim(),
@@ -7863,6 +7881,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     final colors = theme.colorScheme;
 
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      key: ValueKey(_eventAdminOnly),
       stream: _eventAdminCollection()
           .orderBy('startAt', descending: true)
           .limit(30)
@@ -7894,7 +7913,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                         ),
                         if (_editingReusableEventId != null)
                           TextButton.icon(
-                            onPressed: _resetReusableEventEditor,
+                            onPressed: _isSavingEvent ? null : _resetReusableEventEditor,
                             icon: const Icon(Icons.add_rounded),
                             label: const Text('新增活動'),
                           ),
@@ -7902,13 +7921,38 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                     ),
                     const SizedBox(height: 7),
                     Text(
-                      '儲存後會寫入 events/{eventId}。App 會依啟用狀態與開始／結束時間自動顯示。',
+                      '測試活動獨立儲存，只有管理員能讀取；公開活動依啟用狀態與時間顯示。',
                       style: GoogleFonts.notoSerifTc(
                         fontSize: 12,
                         height: 1.55,
                         color: colors.onSurface.withValues(alpha: 0.58),
                       ),
                     ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<bool>(
+                      value: _eventAdminOnly,
+                      decoration: const InputDecoration(labelText: '活動開放對象', border: OutlineInputBorder()),
+                      items: const [
+                        DropdownMenuItem(value: true, child: Text('僅管理員（測試）')),
+                        DropdownMenuItem(value: false, child: Text('全體玩家')),
+                      ],
+                      onChanged: _isSavingEvent || _editingReusableEventId != null ? null : (value) {
+                        if (value != null) setState(() => _eventAdminOnly = value);
+                      },
+                    ),
+                    if (_eventAdminOnly && _editingReusableEventId != null)
+                      OutlinedButton.icon(
+                        onPressed: _isSavingEvent ? null : () {
+                          setState(() {
+                            _editingReusableEventId = null;
+                            _eventAdminOnly = false;
+                            _eventIdController.clear();
+                            _eventIsActive = false;
+                          });
+                        },
+                        icon: const Icon(Icons.copy_outlined),
+                        label: const Text('複製為公開活動草稿（預設停用）'),
+                      ),
                     const SizedBox(height: 18),
                     TextField(
                       controller: _eventIdController,
@@ -8298,7 +8342,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
               children: [
                 Expanded(
                   child: Text(
-                    '已建立的活動頁',
+                    _eventAdminOnly ? '已建立的測試活動' : '已建立的公開活動',
                     style: GoogleFonts.notoSerifTc(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
@@ -8429,6 +8473,12 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                             child: Wrap(
                               spacing: 6,
                               children: [
+                                if (_eventAdminOnly)
+                                  TextButton.icon(
+                                    onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => EventPage(eventId: doc.id))),
+                                    icon: const Icon(Icons.visibility_outlined),
+                                    label: const Text('進入測試活動'),
+                                  ),
                                 TextButton.icon(
                                   onPressed: () => _loadReusableEventForEditing(doc),
                                   icon: const Icon(Icons.edit_rounded),
@@ -9996,6 +10046,13 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
               ],
             ),
             actions: [
+              if (FirebaseAuth.instance.currentUser?.uid == 'B71k2kyooubYsOtIO1nkiBwyBXt2')
+              IconButton(
+                tooltip: '限定回憶生圖測試',
+                icon: const Icon(Icons.auto_awesome_outlined),
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                  builder: (_) => Theme(data: adminTheme, child: const AdminLimitedMemoryPreviewPage()))),
+              ),
               IconButton(
                 tooltip: '創作者宣傳申請',
                 icon: const Icon(Icons.campaign_outlined),

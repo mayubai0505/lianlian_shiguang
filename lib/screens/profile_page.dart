@@ -43,10 +43,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/moment_model.dart';
 import 'moment_card.dart';
+import 'moment_detail_page.dart';
+import 'creator_profile_page.dart';
+import 'profile_connections_page.dart';
+import '../services/profile_cache_service.dart';
 import 'edit_moment_page.dart';
 import 'create_moment_page.dart';
 import '../services/daily_task_service.dart';
 import '../widgets/creator_verified_badge.dart';
+import '../widgets/user_avatar_with_frame.dart' show avatarFrameDisplayScale;
 //個人主頁
 
 class ProfilePage extends StatefulWidget {
@@ -83,7 +88,9 @@ class _ProfilePageState extends State<ProfilePage>
   bool _profileMomentsLoaded = false;
   Object? _profileMomentsError;
 
-  StreamSubscription? _pointsSubscription;
+  StreamSubscription<User?>? _profileAuthSubscription;
+  String? _momentsViewer;
+  Stream<QuerySnapshot<Map<String, dynamic>>>? _ownWorldsStream;
   StreamSubscription? _userDocSubscription;
   StreamSubscription<QuerySnapshot>? _profileMomentsSubscription;
   StreamSubscription<QuerySnapshot<Map<String, dynamic>>>?
@@ -138,11 +145,16 @@ class _ProfilePageState extends State<ProfilePage>
     _playerIDController = TextEditingController();
 
     // 第二步：監聽登入狀態
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+    _profileAuthSubscription = FirebaseAuth.instance.authStateChanges().listen((User? user) {
       if (user != null) {
         if (mounted && _userId != user.uid) {
           setState(() {
             _userId = user.uid;
+            _ownWorldsStream = _db.collection('artifacts').doc(_appId)
+                .collection('worlds').where('createdBy', isEqualTo: user.uid).snapshots();
+            _cachedProfileMoments = <Moment>[];
+            _profileMomentsLoaded = false;
+            _profileMomentsError = null;
           });
 
           // 先用本機快取立即顯示頭像框，再由 Firestore 背景校正。
@@ -152,7 +164,7 @@ class _ProfilePageState extends State<ProfilePage>
           _loadUserPIDData();
           _loadInitialData();
           _listenToMyCharactersRealtime();
-          _listenToFlowerPoints();
+          // _listenToUserDocument already updates flowerPoints.
           _checkDailyCheckInStatus();
           _loadDailyTaskProgress();
           _listenToUserDocument();
@@ -164,6 +176,8 @@ class _ProfilePageState extends State<ProfilePage>
           _refreshFacebookAvatar(user);
         }
       } else if (mounted) {
+        _userDocSubscription?.cancel();
+        _userDocSubscription = null;
         _profileMomentsSubscription?.cancel();
         _profileMomentsSubscription = null;
         _myPrivateCharactersSubscription?.cancel();
@@ -174,6 +188,9 @@ class _ProfilePageState extends State<ProfilePage>
         _realtimePublicCharacters = <Character>[];
 
         setState(() {
+          _userId = null;
+          _momentsViewer = null;
+          _ownWorldsStream = null;
           _isLoading = false;
           _cachedProfileMoments = <Moment>[];
           _profileMomentsLoaded = false;
@@ -313,7 +330,7 @@ class _ProfilePageState extends State<ProfilePage>
   void dispose() {
     _playerIDController.dispose(); // 釋放記憶體
     _inviteCodeController.dispose(); // ✨ 新增：釋放邀請碼控制器的記憶體，避免漏水！
-    _pointsSubscription?.cancel();
+    _profileAuthSubscription?.cancel();
     _userDocSubscription?.cancel();
     _profileMomentsSubscription?.cancel();
     _myPrivateCharactersSubscription?.cancel();
@@ -393,8 +410,9 @@ class _ProfilePageState extends State<ProfilePage>
     _userDocSubscription?.cancel();
     if (_userId == null) return;
 
-    _userDocSubscription = _db.collection('users').doc(_userId).snapshots().listen((snapshot) {
-      if (!snapshot.exists || !mounted) return;
+    final uid = _userId!;
+    _userDocSubscription = _db.collection('users').doc(uid).snapshots().listen((snapshot) {
+      if (!snapshot.exists || !mounted || FirebaseAuth.instance.currentUser?.uid != uid) return;
 
       final data = snapshot.data()!;
 
@@ -440,7 +458,7 @@ class _ProfilePageState extends State<ProfilePage>
       });
 
       // ✨ 同步回本地快取，下次打開 App 速度會更快
-      _updateLocalCache(data, _userId!);
+      _updateLocalCache(data, uid);
     });
   }
 
@@ -1119,7 +1137,8 @@ class _ProfilePageState extends State<ProfilePage>
 
     // 如果是換帳號，先清掉上一個帳號的快取；
     // 同帳號重建 listener 時則保留舊畫面，不讓 UI 閃圈圈。
-    if (_userId != user.uid) {
+    if (_momentsViewer != user.uid) {
+      _momentsViewer = user.uid;
       _cachedProfileMoments = <Moment>[];
       _profileMomentsLoaded = false;
       _profileMomentsError = null;
@@ -1138,7 +1157,7 @@ class _ProfilePageState extends State<ProfilePage>
             .map((doc) => Moment.fromFirestore(doc))
             .toList();
 
-        if (!mounted) return;
+        if (!mounted || FirebaseAuth.instance.currentUser?.uid != user.uid) return;
 
         setState(() {
           _cachedProfileMoments = updatedMoments;
@@ -1149,31 +1168,17 @@ class _ProfilePageState extends State<ProfilePage>
       onError: (error) {
         debugPrint('❌ 個人動態背景同步失敗：$error');
 
-        if (!mounted) return;
+        if (!mounted || FirebaseAuth.instance.currentUser?.uid != user.uid) return;
 
         setState(() {
           _profileMomentsLoaded = true;
           _profileMomentsError = error;
+          if (error is FirebaseException && (error.code == 'permission-denied' || error.code == 'unauthenticated')) {
+            _cachedProfileMoments = <Moment>[];
+          }
         });
       },
     );
-  }
-
-  void _listenToFlowerPoints() {
-    _pointsSubscription?.cancel();
-    if (_userId == null) return;
-
-    _pointsSubscription = _db.collection('users').doc(_userId).snapshots().listen((snapshot) {
-      if (snapshot.exists && snapshot.data()!.containsKey('flowerPoints')) {
-        if (mounted) {
-          setState(() {
-            _flowerPoints = snapshot.data()!['flowerPoints'];
-          });
-        }
-      }
-    }, onError: (error) {
-      print('監聽花花點數失敗: $error');
-    });
   }
 
   Future<void> _loadInitialData() async {
@@ -1187,7 +1192,8 @@ class _ProfilePageState extends State<ProfilePage>
 
   Future<void> _refreshData() async {
     if (!mounted) return;
-
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid != null) ProfileCacheService.instance.refreshConnections(uid);
     await _fetchAllCharacterData();
   }
 
@@ -2866,10 +2872,6 @@ class _ProfilePageState extends State<ProfilePage>
     final textColor = theme.colorScheme.onSurface;
     final secondaryColor = textColor.withValues(alpha: 0.52);
     final localeIsChinese = Localizations.localeOf(context).languageCode == 'zh';
-    final totalLikes = _myCharacters.fold<int>(
-      0,
-          (total, character) => total + character.likesCount,
-    );
 
     return Stack(
       clipBehavior: Clip.none,
@@ -2968,6 +2970,7 @@ class _ProfilePageState extends State<ProfilePage>
                   dimension: 120,
                   child: Stack(
                     alignment: Alignment.center,
+                    clipBehavior: Clip.none,
                     children: [
                       CircleAvatar(
                         radius: 47,
@@ -2988,7 +2991,10 @@ class _ProfilePageState extends State<ProfilePage>
                         Positioned.fill(
                           child: IgnorePointer(
                             child: Transform.scale(
-                              scale: _equippedAvatarFrameName.trim() == '秋日南瓜' ? 1.08 : 1.0,
+                              scale: avatarFrameDisplayScale(
+                                baseScale: 0.88,
+                                frameName: _equippedAvatarFrameName,
+                              ),
                               child: Image(
                                 image: getAvatarImageProvider(
                                   _equippedAvatarFrameImageUrl,
@@ -3211,24 +3217,27 @@ class _ProfilePageState extends State<ProfilePage>
                 children: [
                   Expanded(
                     child: _buildProfileStatItem(
-                      value: _myCharacters.length,
-                      label: l10n.profilePageTabCharacters,
-                      onTap: () => _profileTabController.animateTo(0),
-                    ),
-                  ),
-                  Expanded(
-                    child: _buildProfileStatItem(
-                      value: _cachedProfileMoments.length,
+                      value: _profileMomentsLoaded &&
+                              (_profileMomentsError == null || _cachedProfileMoments.isNotEmpty)
+                          ? _cachedProfileMoments.length : null,
                       label: l10n.profilePageTabMoments,
                       onTap: () => _profileTabController.animateTo(2),
                     ),
                   ),
-                  Expanded(
-                    child: _buildProfileStatItem(
-                      value: totalLikes,
-                      label: localeIsChinese ? l10n.profile_likes_label : 'Likes',
-                    ),
-                  ),
+                  _buildStatDivider(theme),
+                  Expanded(child: ProfileConnectionStat(
+                    key: ValueKey('own_following_${currentUser?.uid}'),
+                    ownerId: currentUser?.uid ?? '',
+                    kind: ProfileConnectionKind.following,
+                    onOpenProfile: _openConnectionProfile,
+                  )),
+                  _buildStatDivider(theme),
+                  Expanded(child: ProfileConnectionStat(
+                    key: ValueKey('own_followers_${currentUser?.uid}'),
+                    ownerId: currentUser?.uid ?? '',
+                    kind: ProfileConnectionKind.followers,
+                    onOpenProfile: _openConnectionProfile,
+                  )),
                 ],
               ),
               const SizedBox(height: 15),
@@ -3493,7 +3502,7 @@ class _ProfilePageState extends State<ProfilePage>
   }
 
   Widget _buildProfileStatItem({
-    required int value,
+    required int? value,
     required String label,
     VoidCallback? onTap,
   }) {
@@ -3509,7 +3518,7 @@ class _ProfilePageState extends State<ProfilePage>
         child: Column(
           children: [
             Text(
-              _formatPoints(value),
+              value == null ? '—' : _formatPoints(value),
               style: GoogleFonts.notoSerifTc(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -3520,11 +3529,13 @@ class _ProfilePageState extends State<ProfilePage>
             const SizedBox(height: 3),
             Text(
               label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: GoogleFonts.notoSerifTc(
                 fontSize: 12,
                 color: theme
                     .colorScheme.onSurface
-                    .withValues(alpha: 0.55),
+                    .withValues(alpha: 0.75),
               ),
             ),
           ],
@@ -3762,9 +3773,9 @@ class _ProfilePageState extends State<ProfilePage>
     final theme = Theme.of(context);
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return Center(child: Text(AppLocalizations.of(context)!.profile_page_login_required1));
-    final worlds = _db.collection('artifacts').doc(_appId).collection('worlds');
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-      stream: worlds.where('createdBy', isEqualTo: uid).snapshots(),
+      key: ValueKey('own_worlds:$uid'),
+      stream: _ownWorldsStream,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(child: Padding(
@@ -4920,7 +4931,12 @@ class _ProfilePageState extends State<ProfilePage>
                       return Column(
                         key: ValueKey(moment.id),
                         children: [
-                          MomentCard(
+                          InkWell(
+                            borderRadius: BorderRadius.circular(12),
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute<void>(builder: (_) => MomentDetailPage(postId: moment.id)),
+                            ),
+                            child: MomentCard(
                             moment: moment,
                             currentUserId: currentUser.uid,
                             showFeatureTips: false,
@@ -4940,6 +4956,7 @@ class _ProfilePageState extends State<ProfilePage>
                             onAvatarTapped: () {
                               _openProfileMomentAuthor(moment);
                             },
+                          ),
                           ),
                           Padding(
                             padding: const EdgeInsets.symmetric(
@@ -5202,6 +5219,12 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
+  void _openConnectionProfile(BuildContext context, String uid, String name) {
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => CreatorProfilePage(creatorId: uid, creatorName: name),
+    ));
+  }
+
   void _showAllFriends() {
     Navigator.push(
       context,
@@ -5284,7 +5307,8 @@ class _ProfilePageState extends State<ProfilePage>
           );
 
           if (!mounted ||
-              snapshotVersion != _privateCharactersSnapshotVersion) {
+              snapshotVersion != _privateCharactersSnapshotVersion ||
+              FirebaseAuth.instance.currentUser?.uid != userId) {
             return;
           }
 
@@ -5310,7 +5334,8 @@ class _ProfilePageState extends State<ProfilePage>
                 .toList(),
           );
 
-          if (!mounted || snapshotVersion != _publicCharactersSnapshotVersion) {
+          if (!mounted || snapshotVersion != _publicCharactersSnapshotVersion ||
+              FirebaseAuth.instance.currentUser?.uid != userId) {
             return;
           }
 
@@ -5394,7 +5419,7 @@ class _ProfilePageState extends State<ProfilePage>
             (a, b) => b.createdAt.compareTo(a.createdAt),
       );
 
-      if (!mounted) return;
+      if (!mounted || FirebaseAuth.instance.currentUser?.uid != userId) return;
 
       setState(() {
         _myCharacters = combined;
@@ -5501,7 +5526,7 @@ class _ProfilePageState extends State<ProfilePage>
               (a, b) => b.playCount.compareTo(a.playCount),
         );
 
-      if (!mounted) return;
+      if (!mounted || FirebaseAuth.instance.currentUser?.uid != userId) return;
 
       setState(() {
         _friendsList = updatedFriends;

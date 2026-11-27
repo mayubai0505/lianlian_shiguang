@@ -1,4 +1,5 @@
 'use strict';
+const {ADMIN_UID}=require('./event_access');
 
 // V81: Original task progress writer, with Firebase dependencies injected.
 function createTaskProgressRecorder({db,APP_ID,FieldValue,reusableEventIsRunning,normalizeReusableEventTaskDefinition,reusableEventTaskMatchesAction,reusableEventProgressRef}) {
@@ -37,7 +38,13 @@ async function recordReusableEventTaskProgress({
         .limit(10)
         .get();
 
-    for (const eventDoc of eventsSnapshot.docs) {
+    const eventDocs = [...eventsSnapshot.docs];
+    if (userId === ADMIN_UID) {
+        const tests = await db.collection('artifacts').doc(APP_ID)
+            .collection('admin_test_events').where('isActive','==',true).limit(10).get();
+        eventDocs.push(...tests.docs);
+    }
+    for (const eventDoc of eventDocs) {
         const eventData = eventDoc.data() || {};
         if (!reusableEventIsRunning(eventData, now)) continue;
         if (eventData.hasTasks === false) continue;

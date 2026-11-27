@@ -33,6 +33,15 @@ async function getUserFcmTokens(userId) {
 }
 
 async function sendToUserDevices(userId, messageBase) {
+    // Account-level chat preference applies to both ordinary and world replies.
+    // Do not suppress agreement invitations, silent badge sync, or system mail.
+    const type = messageBase.data?.type;
+    if (type === 'chat' || type === 'world_chat') {
+        const user = await db.collection('users').doc(userId).get();
+        if (user.data()?.notificationPreferences?.chat === false) {
+            return { successCount: 0, failureCount: 0, tokenCount: 0, suppressed: true };
+        }
+    }
     const tokens = await getUserFcmTokens(userId);
 
     if (tokens.length === 0) {

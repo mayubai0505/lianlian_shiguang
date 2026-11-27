@@ -37,6 +37,10 @@ function resolvePlayerIdentityFromUserData(userData = {}, playerProfileId = "def
         ) || null
       : null;
 
+  if (safeProfileId !== "default" && (!matchedProfile || !String(matchedProfile.name || "").trim())) {
+    return {id: safeProfileId, name: "你", gender: "未設定", birthday: "未設定", profile: null, resolved: false};
+  }
+
   if (!matchedProfile) {
     return {
       id: "default",
@@ -50,10 +54,10 @@ function resolvePlayerIdentityFromUserData(userData = {}, playerProfileId = "def
   return {
     id: safeProfileId,
     name:
-      String(matchedProfile.name || accountName).trim() || accountName,
-    // 自訂拾光檔案的明確性別優先；舊檔案無性別時仍沿用帳號。
+      String(matchedProfile.name).trim(),
+    // 自訂檔案未設定性別時保持未知，不能繼承帳號性別。
     gender:
-      canonicalPlayerGender(matchedProfile.gender) || accountGender,
+      canonicalPlayerGender(matchedProfile.gender) || "未設定",
     birthday:
       String(matchedProfile.birthday || "未設定").trim() || "未設定",
     profile: matchedProfile,
@@ -67,6 +71,7 @@ async function resolveEffectivePlayerProfileId({
   sessionId = "",
   requestedProfileId = "",
   userData = null,
+  requireStableBinding = false,
 }) {
   const safeAppId = String(appId || APP_ID).trim() || APP_ID;
   const safeUserId = String(userId || "").trim();
@@ -76,6 +81,7 @@ async function resolveEffectivePlayerProfileId({
 
   let resolvedUserData = userData;
   let roomData = null;
+  let roomReadFailed = false;
 
   if (safeSessionId && safeUserId) {
     try {
@@ -93,7 +99,7 @@ async function resolveEffectivePlayerProfileId({
 
         if (
           roomOwner === safeUserId &&
-          (!safeCharacterId || !roomCharacterId || roomCharacterId === safeCharacterId)
+          (!safeCharacterId || roomCharacterId === safeCharacterId)
         ) {
           roomData = candidateRoomData;
           const roomProfileId =
@@ -104,6 +110,7 @@ async function resolveEffectivePlayerProfileId({
         }
       }
     } catch (error) {
+      roomReadFailed = true;
       console.warn(
         "⚠️ resolveEffectivePlayerProfileId 讀取聊天室失敗：",
         error?.message || error
@@ -128,52 +135,45 @@ async function resolveEffectivePlayerProfileId({
   }
 
   const safeUserData = resolvedUserData || {};
-  // The profile picker writes the explicit room selection to user.roomProfiles.
-  // It may arrive before the session mirror is updated. Never use a draft or
-  // global activeProfileId for an existing room.
-  if (roomData && safeSessionId) {
-    const selected = String(safeUserData.roomProfiles?.[safeSessionId] ?? '').trim();
-    if (selected) effectiveProfileId = selected;
+  const requested = String(requestedProfileId || "").trim();
+  const mirror = String(roomData?.playerProfileId || "").trim();
+  const selected = safeSessionId && roomData
+    ? String(safeUserData.roomProfiles?.[safeSessionId] ?? '').trim() : '';
+  // The explicit room selection normally wins. Never replace a known custom
+  // request with an account nickname during a transient default/mirror conflict.
+  effectiveProfileId = selected || mirror || requested || "default";
+  if (effectiveProfileId === "default" && requested && requested !== "default") {
+    effectiveProfileId = requested;
   }
-
-  if (!roomData && safeSessionId) {
-    const roomProfiles =
-      safeUserData.roomProfiles && typeof safeUserData.roomProfiles === "object"
-        ? safeUserData.roomProfiles
-        : {};
-
-    effectiveProfileId =
-      String(roomProfiles[safeSessionId] || "").trim() || effectiveProfileId;
+  // A default mapping conflicting with a custom room mirror is ambiguous.
+  // Do not expose the account nickname while the room selection is syncing.
+  if (effectiveProfileId === 'default' && mirror && mirror !== 'default') {
+    effectiveProfileId = '__unresolved__';
   }
-
-  // 舊房間若完全沒有紀錄，視為基礎檔案，避免再落回角色共用記憶路徑。
-  if (!effectiveProfileId) {
-    effectiveProfileId = "default";
+  if (safeSessionId && !roomData && (roomReadFailed || !requested)) {
+    effectiveProfileId = requested && requested !== 'default' ? requested : '__unresolved__';
   }
-
-  if (effectiveProfileId !== "default") {
-    const profiles = Array.isArray(safeUserData.profiles)
-      ? safeUserData.profiles
-      : [];
-    const profileExists = profiles.some(
-      (profile) =>
-        String(profile?.id || "").trim() === effectiveProfileId
-    );
-
-    if (!profileExists) {
-      console.warn(
-        "⚠️ 找不到指定 playerProfileId，退回基礎檔案：",
-        effectiveProfileId
-      );
-      effectiveProfileId = "default";
-    }
+  const profiles = Array.isArray(safeUserData.profiles) ? safeUserData.profiles : [];
+  const profileExists = effectiveProfileId === 'default' || profiles.some(profile =>
+    String(profile?.id || '').trim() === effectiveProfileId && String(profile?.name || '').trim());
+  // A delayed background job must never be re-bound to another persona.
+  // Conflicting or missing authoritative room bindings are skipped, not guessed.
+  if (requireStableBinding && (!safeSessionId || !roomData || !requested ||
+      !(mirror || selected) || (mirror && mirror !== requested) ||
+      (selected && selected !== requested) || effectiveProfileId !== requested || !profileExists)) {
+    console.warn('MEMORY_PROFILE_BINDING_UNRESOLVED_SKIP', {sessionId:safeSessionId});
+    return null;
+  }
+  if (!profileExists) {
+    console.warn('PLAYER_PROFILE_UNRESOLVED_NO_ACCOUNT_FALLBACK', {sessionId:safeSessionId});
   }
 
   // 可以安全補回舊房間，之後每次都以 room 綁定為準。
   if (
     safeSessionId &&
     safeUserId &&
-    roomData &&
+    roomData && profileExists &&
+    (!selected || selected === effectiveProfileId) &&
     !String(roomData.playerProfileId || "").trim()
   ) {
     try {

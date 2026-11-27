@@ -137,12 +137,14 @@ const {dedupeStatusHeading,missingStatusRows,mergeMissingStatus,markUnresolvedSt
 const {literalCreatorStatus} = require('./chat/literal_creator_status');
 const {extractMigratableFooter,protectInitialReset} = require('./chat/status_template_continuity');
 const {createCustomStatusGuard} = require('./chat/custom_status_guard');
+const {createStatusPresencePlan,statusPresenceFallback,filterStatusPresenceRepair} = require('./chat/status_presence_recovery');
 const {resolveCreatorIdentityMacros} = require('./chat/creator_macro_compat');
 const {describeCreatorAdvancedStatus} = require('./chat/creator_advanced_status');
 const {detectPlayerInstructions, enforcePlayerInstructions} = require('./chat/player_instruction_guard');
 const {buildEntityAddressDirective} = require('./chat/entity_addressing');
 const {buildRelationshipGuard} = require('./chat/relationship_guard');
 const {protectGroupKinship} = require('./chat/kinship_output_guard');
+const {eventCollection, assertEventAccess} = require('./events/event_access');
 const {createEventTaskUtils} = require('./events/task_utils');
 const {createCharacterLikeHandler} = require('./characters/like_handler');
 const {createWorldLikeHandler, syncCharacterLikeIndex} = require('./characters/work_engagement');
@@ -423,10 +425,11 @@ const _claimEventTaskRewardHandler = async (request) => {
             );
         }
 
+        assertEventAccess(eventId, userId, HttpsError);
         const eventRef = db
             .collection("artifacts")
             .doc(APP_ID)
-            .collection("events")
+            .collection(eventCollection(eventId))
             .doc(eventId);
 
         const taskRef = eventRef
@@ -672,10 +675,11 @@ const _redeemEventShopItemHandler = async (request) => {
             );
         }
 
+        assertEventAccess(eventId, userId, HttpsError);
         const eventRef = db
             .collection("artifacts")
             .doc(APP_ID)
-            .collection("events")
+            .collection(eventCollection(eventId))
             .doc(eventId);
 
         const itemRef = eventRef
@@ -1434,10 +1438,11 @@ const _markEventMemoryViewedHandler = async (request) => {
             );
         }
 
+        assertEventAccess(eventId, userId, HttpsError);
         const memoryRef =
             db.collection("artifacts")
                 .doc(APP_ID)
-                .collection("events")
+                .collection(eventCollection(eventId))
                 .doc(eventId)
                 .collection("memories")
                 .doc(memoryId);
@@ -1586,6 +1591,7 @@ exports.getAiResponse = onRequest({
     secrets: [openRouterApiKey, geminiApiKey, xaiApiKey, anthropicApiKey],
 }, (req, res) => {
     return cors(req, res, async () => {
+        const regularStatusRequestStartedAt = Date.now();
         let finishChatHealth = async () => {};
         let healthChatMode = "unknown";
         let healthHasSessionId = false;
@@ -2999,6 +3005,18 @@ function extractPreviousCustomStatus(history, template) {
 const previousCustomStatus = supportsCustomStatusBar
     ? customStatusGuard.clean(extractPreviousCustomStatus(chatHistory, customOutputFormat))
     : "";
+// Older room status is reference-only for status repair. Do not hand it to
+// deterministic carryForward/salvage as though it were the immediately prior turn.
+const olderCustomStatusForRepair = supportsCustomStatusBar && !previousCustomStatus
+    ? (() => {
+        const assistants = (Array.isArray(chatHistory) ? chatHistory : [])
+            .filter(message => message?.role === 'assistant').slice(-6,-1).reverse();
+        for (const message of assistants) {
+            const status = customStatusGuard.clean(extractPreviousCustomStatus([message], customOutputFormat));
+            if (status.trim()) return status;
+        }
+        return '';
+    })() : '';
 const customStatusContinuityDirective = `
 【狀態欄的角色歸屬與連續性】
 - 你就是正在演繹的角色。未另行指定對象的穿著、內心話、情緒、身體與動作欄位，全部屬於角色本人；先確認每個欄位的主人，再填寫內容。
@@ -3647,7 +3665,7 @@ const effectiveProfileId = resolvedPlayerIdentity.id;
 try {
 const safeSessionId = String(sessionId || "").trim();
 
-                                                                                                    if (supportsScopedMemory && uid && charId && effectiveProfileId && safeSessionId) {
+                                                                                                    if (resolvedPlayerIdentity.resolved !== false && supportsScopedMemory && uid && charId && effectiveProfileId && safeSessionId) {
                                                                                                         // 新版三層記憶：Profile / Character / Session
                                                                                                         // 只有 memoryScopeVersion >= 1 的新版 App 才會進入此路徑。
                                                                                                         await prepareDefaultCharacterMemory({db, userId:uid, characterId:charId, playerProfileId:effectiveProfileId});
@@ -3680,6 +3698,13 @@ const profileMemoriesRef = isDefaultProfile(effectiveProfileId)
                                                                                                         const appendScopedMemories = (snapshot, scope) => {
                                                                                                             snapshot.forEach((doc) => {
                                                                                                                 const memory = doc.data() || {};
+                                                                                                                const memoryProfileId = String(memory.playerProfileId || '').trim();
+                                                                                                                if (scope === 'session' ? memoryProfileId !== effectiveProfileId : (memoryProfileId && memoryProfileId !== effectiveProfileId)) return;
+                                                                                                                if (memory.source === 'auto' && effectiveProfileId !== 'default') {
+                                                                                                                    const accountName = String(userData.nickname || userData.displayName || userData.name || '').trim();
+                                                                                                                    const rawText = String(memory.text || memory.content || '').trim();
+                                                                                                                    if (accountName && accountName !== playerName && rawText.startsWith(accountName) && !rawText.startsWith(playerName)) return;
+                                                                                                                }
                                                                                                                 const text = limitMemoryText(memory.text || memory.content, ["immersive", "resonance"].includes(chatMode) ? 350 : 320);
                                                                                                                 if (!text) return;
 
@@ -3707,7 +3732,7 @@ const profileMemoriesRef = isDefaultProfile(effectiveProfileId)
                                                                                                         appendScopedMemories(sessionSnapshot, "session");
                                                                                                         appendScopedMemories(characterSnapshot, "character");
                                                                                                         appendScopedMemories(profileSnapshot, isDefaultProfile(effectiveProfileId) ? "character" : "profile");
-                                                                                                    } else if (uid && charId) {
+                                                                                                    } else if (!supportsScopedMemory && resolvedPlayerIdentity.resolved !== false && resolvedPlayerIdentity.id === "default" && uid && charId) {
                                                                                                         // 舊版 App / memoryScopeVersion < 1：
                                                                                                         // 保留既有角色共用回憶，不啟用新版三層記憶。
                                                                                                         const sharedMemoriesSnapshot = await db
@@ -7047,6 +7072,38 @@ if (sessionId) {
         if (rendered !== null && body.trim()) cleanDisplayText = body.trimEnd() + "\n\n" + rendered;
       }
     }
+    // Whole-footer recovery for free-form public layouts. Scalar/named layouts
+    // already have their own bounded value repair below. Never regenerate prose.
+    const regularStatusPresencePlan = supportsCustomStatusBar && !hasConfidentialLeak
+      ? createStatusPresencePlan(customOutputFormat,customStatusGuard) : null;
+    if (regularStatusPresencePlan && cleanDisplayText.trim()) {
+      const body = customStatusGuard.bodyOnly(cleanDisplayText);
+      const footer = cleanDisplayText.slice(body.length).trim();
+      const budget = Math.min(12000, 150000 - (Date.now() - regularStatusRequestStartedAt));
+      if (!footer && body.trim() && literalCreatorStatus(customOutputFormat, '') === null && budget >= 3000 && !abortController?.signal?.aborted) {
+        try {
+          const repaired = await callAiWithRetry({modelId:'deepseek/deepseek-v4-flash',retryPrimary:false,
+            timeoutMs:budget,abortController,requestBody:{messages:[
+              {role:'system',content:completionInstruction+'\n整個狀態欄缺失：只依明確固定顯示的欄位生成本輪完整狀態欄；不得輸出條件欄、範例、幕後資料或故事正文。olderStatusReference 是較早回合，只供參考；不得當成本輪事件或直接沿用過時狀態。'},
+              {role:'user',content:JSON.stringify({template:regularStatusPresencePlan.template,missing:regularStatusPresencePlan.guard.missing(''),
+                previousStatus:regularStatusPresencePlan.mixed ? '' : previousCustomStatus,olderStatusReference:regularStatusPresencePlan.mixed ? '' : olderCustomStatusForRepair,player:userMessage,scene:body})}
+            ],temperature:0.2,max_tokens:statusRepairTokens(regularStatusPresencePlan.template,regularStatusPresencePlan.fields)}});
+          const answer = repaired?.choices?.[0]?.message?.content;
+          if (typeof answer === 'string' && !isAiContentFiltered(repaired) && !isRoleplayInternalLeak(answer) &&
+              !internalLeakPatterns.some(pattern=>pattern.test(answer)) &&
+              !confidentialSources.some(source=>containsCopiedConfidentialChunk(answer,source)) &&
+              !/(?:內部提示詞|隱藏篇章|reasoning_content|userRequestSummary)/iu.test(answer)) {
+            const repairGuard=regularStatusPresencePlan.guard;
+            const candidate = repairGuard.mergeRepair('',repairGuard.clean(filterStatusPresenceRepair(regularStatusPresencePlan,normalizeAiResponseScript(answer,playerLanguage)))).text;
+            const merged = customStatusGuard.mergeRepair(body,body.trimEnd()+'\n\n'+candidate);
+            if (customStatusGuard.bodyOnly(merged.text).trim() === body.trim() &&
+                merged.text.trim().length > body.trim().length && merged.missing.length < customStatusGuard.missing(body).length) {
+              cleanDisplayText = merged.text;
+            }
+          }
+        } catch (_) { console.warn('REGULAR WHOLE STATUS REPAIR UNAVAILABLE',{chatMode}); }
+      }
+    }
     // Validate after final layout: formatting itself may expose absent values.
     // Only supported unconditional scalar/named templates enter this repair.
     if (supportsCustomStatusBar && cleanDisplayText.trim()) {
@@ -7071,6 +7128,7 @@ if (sessionId) {
                     .filter(m => m?.role === 'assistant').slice(-3)
                     .map(m => {const t=String(m.text || m.content || ''); const b=customStatusGuard.bodyOnly(t); return t.slice(b.length).trim();})
                     .filter(Boolean),
+                  olderStatusReference:olderCustomStatusForRepair ? '較早回合，僅供參考，不可直接沿用過時狀態：\n'+olderCustomStatusForRepair : '',
                   player:userMessage, scene:body})}
               ],temperature:0.25,max_tokens:statusRepairTokens(customOutputFormat, missing)}
             });
@@ -7112,6 +7170,23 @@ if (sessionId) {
             corrected: playerInstructionCheck.corrected,
             unclassifiedQuotes: playerInstructionCheck.uncertainQuotes
         });
+    }
+    if (supportsCustomStatusBar) {
+      const finalBody = customStatusGuard.bodyOnly(cleanDisplayText);
+      const finalFooter = cleanDisplayText.slice(finalBody.length).trim();
+      if (!finalFooter && finalBody.trim() && regularStatusPresencePlan) {
+        // Display-only unresolved rows; do not invent scores, thoughts or events.
+        // For ambiguous free-form layouts retain the existing fail-soft behavior.
+        const fallback = statusPresenceFallback(regularStatusPresencePlan,
+          {time:regularStoryTimeDisplay(finalStoryTime),location:finalStoryLocation});
+        if (fallback && customStatusGuard.bodyOnly(finalBody.trimEnd()+'\n\n'+fallback).trim() === finalBody.trim()) {
+          cleanDisplayText = finalBody.trimEnd()+'\n\n'+fallback;
+        }
+      }
+      console.info('REGULAR FINAL STATUS PRESENCE',{chatMode,
+        expected:customStatusGuard.fields.some(f=>!f.optional),
+        displayed:Boolean(cleanDisplayText.slice(customStatusGuard.bodyOnly(cleanDisplayText).length).trim()),
+        missingCount:customStatusGuard.missing(cleanDisplayText).length});
     }
     finalResponseText = cleanDisplayText;
     finalVoiceText = cleanVoiceText;
@@ -7934,7 +8009,7 @@ const sessionData =
 
             // 沒有玩家原始訊息時，不需要建立記憶工作
             if (
-                supportsScopedMemory &&
+                supportsScopedMemory && resolvedPlayerIdentity.resolved !== false &&
                 !isTestChat &&
                 !isQixiOpeningRequest &&
                 finalCharacterId &&
@@ -8131,6 +8206,11 @@ const sessionData =
                                    }
                                    if (["story", "immersive", "resonance"].includes(chatMode)) {
                                        cleanDisplayText = normalizeRegularStoryTimeHeaders(cleanDisplayText);
+                                   }
+                                   if (supportsCustomStatusBar) {
+                                       console.info('REGULAR HTTP STATUS PRESENCE',{chatMode,
+                                           displayed:Boolean(cleanDisplayText.slice(customStatusGuard.bodyOnly(cleanDisplayText).length).trim()),
+                                           missingCount:customStatusGuard.missing(cleanDisplayText).length});
                                    }
                                    finalResponseText = cleanDisplayText;
                                    finalVoiceText = cleanVoiceText;
@@ -11250,6 +11330,11 @@ exports.adminSocialPromotionUs = onCall({region:'us-central1',memory:'256MiB',ti
 
 // AI limited event memory, US region only.
 const limitedMemoryKey = defineSecret('LIMITED_MEMORY_GEMINI_KEY');
-const eventMemoryAI = require('./limited_memory/event_memory_handler').createEventMemoryHandlers({db,admin,APP_ID,FieldValue,HttpsError,reusableEventIsRunning,geminiApiKey:limitedMemoryKey});
-exports.generateEventMemoryUs = onCall({region:'us-central1',timeoutSeconds:240,memory:'512MiB',maxInstances:3,concurrency:2,secrets:[limitedMemoryKey]},eventMemoryAI.handle);
+const limitedMemoryOpenAIKey=defineSecret('LIMITED_MEMORY_OPENAI_KEY');
+const eventMemoryAI = require('./limited_memory/event_memory_handler').createEventMemoryHandlers({db,admin,APP_ID,FieldValue,HttpsError,reusableEventIsRunning,openaiKey:limitedMemoryOpenAIKey});
+exports.generateEventMemoryUs = onCall({region:'us-central1',timeoutSeconds:360,memory:'1GiB',maxInstances:3,concurrency:1,secrets:[limitedMemoryOpenAIKey]},eventMemoryAI.handle);
 exports.recoverEventMemoryJobsUs = onSchedule({region:'us-central1',schedule:'every 5 minutes',timeoutSeconds:120,memory:'256MiB',maxInstances:1,cpu:'gcf_gen1',concurrency:1,minInstances:0},eventMemoryAI.recover);
+
+// Administrator-only image preview: no public event or flower balance writes.
+const {createAdminMemoryPreview}=require('./limited_memory/admin_preview');
+exports.generateEventMemoryAdminPreviewUs=onCall({region:'us-central1',timeoutSeconds:360,memory:'1GiB',maxInstances:1,concurrency:1,secrets:[limitedMemoryKey,limitedMemoryOpenAIKey]},createAdminMemoryPreview({db,APP_ID,FieldValue,HttpsError,requireAdmin:requireRewardCampaignAdmin,getBucket:()=>require('firebase-admin/storage').getStorage().bucket(),apiKey:limitedMemoryKey,openaiKey:limitedMemoryOpenAIKey}));

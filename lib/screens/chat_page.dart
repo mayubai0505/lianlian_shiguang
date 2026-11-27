@@ -1569,10 +1569,9 @@ class _ChatPageState extends State<ChatPage> {
       final userDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
-          .get();
+          .get(const GetOptions(source: fs.Source.server));
 
       final data = userDoc.data() ?? <String, dynamic>{};
-      final profiles = data['profiles'];
       final rawRoomProfiles = data['roomProfiles'];
 
       final Map<String, dynamic> roomProfiles = rawRoomProfiles is Map
@@ -1586,19 +1585,11 @@ class _ChatPageState extends State<ChatPage> {
               .trim() ??
               '';
 
-      if (candidateId.isEmpty || profiles is! List) {
-        return 'default';
-      }
-
-      final bool exists = profiles.any((profile) {
-        if (profile is! Map) return false;
-        return profile['id']?.toString().trim() == candidateId;
-      });
-
-      return exists ? candidateId : 'default';
+      // Preserve an explicit custom selection even if its document is temporarily missing.
+      return candidateId.isEmpty ? 'default' : candidateId;
     } catch (e) {
       debugPrint('⚠️ 解析聊天室玩家檔案 ID 失敗：$e');
-      return 'default';
+      rethrow;
     }
   }
 
@@ -7255,7 +7246,7 @@ class _ChatPageState extends State<ChatPage> {
       final doc = await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
-          .get();
+          .get(const GetOptions(source: fs.Source.server));
       final data = doc.data() ?? {};
       if (!mounted || revision != _profileCheckRevision || (_sessionDocRef != null && _sessionDocRef!.id != roomId)) return;
 
@@ -7312,22 +7303,21 @@ class _ChatPageState extends State<ChatPage> {
           targetProfileId = _activePlayerProfileId;
         }
 
-        String resolvedProfileId = 'default';
-        if (targetProfileId != null && targetProfileId != 'default') {
+        final selectedId = targetProfileId?.trim() ?? '';
+        final String resolvedProfileId = selectedId.isEmpty ? 'default' : selectedId;
+        if (resolvedProfileId != 'default') {
           // ✨ 總裁級魔法：用 where().firstOrNull 取代笨重的 try-catch
           activeProfile = allProfiles
               .whereType<Map<String, dynamic>>()
-              .where((p) => p['id']?.toString() == targetProfileId)
+              .where((p) => p['id']?.toString().trim() == resolvedProfileId)
               .firstOrNull;
-          if (activeProfile != null) {
-            resolvedProfileId = targetProfileId.toString();
-          }
         }
         // ✨ 虛擬組裝：沒有指定人設的房間，一律用最原始的名字跟生日！
+        final hasResolvedProfile = resolvedProfileId == 'default' || (activeProfile != null && (activeProfile!['name'] ?? '').toString().trim().isNotEmpty);
         activeProfile ??= {
-          'profileName': '基礎檔案',
-          'name': nickname,
-          'birthday': birthday,
+          'profileName': resolvedProfileId == 'default' ? '基礎檔案' : l10n.profile_unnamed_file,
+          'name': resolvedProfileId == 'default' ? nickname : '你',
+          'birthday': resolvedProfileId == 'default' ? birthday : '未設定',
           'height': '尚未填寫',
           'appearance': '尚未填寫',
           'occupation': '尚未填寫',
@@ -7340,7 +7330,7 @@ class _ChatPageState extends State<ChatPage> {
             _playerNickname =
             activeProfile!['name']?.toString().trim().isNotEmpty == true
                 ? activeProfile!['name']
-                : nickname;
+                : (resolvedProfileId == 'default' ? nickname : '你');
 
             _activePlayerProfileId = resolvedProfileId;
 
@@ -7355,7 +7345,7 @@ class _ChatPageState extends State<ChatPage> {
               'appearance': activeProfile!['appearance'],
               'occupation': activeProfile!['occupation'],
               'intro': activeProfile!['intro'],
-              'gender': activeProfile!['gender'] ?? data['gender'] ?? '未填寫',
+              'gender': resolvedProfileId == 'default' ? (data['gender'] ?? '未填寫') : (activeProfile!['gender'] ?? '未設定'),
               'birthday': resolvedProfileId == 'default' ? birthday : (activeProfile!['birthday'] ?? '未設定'),
               'age': activeProfile!['age'],
             };
@@ -7374,7 +7364,7 @@ class _ChatPageState extends State<ChatPage> {
 
           // 將目前選中的玩家檔案同步寫回聊天室，讓後端 RAG 後續能直接依 session 分流。
           final sessionRef = _sessionDocRef;
-          if (sessionRef != null && sessionRef.id == roomId && !widget.isTestMode) {
+          if (hasResolvedProfile && sessionRef != null && sessionRef.id == roomId && !widget.isTestMode) {
             await sessionRef.set(
               {'playerProfileId': resolvedProfileId},
               SetOptions(merge: true),
@@ -7389,20 +7379,41 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  int _turnsSinceStorySummary = 0;
-  bool _storySummaryInFlight = false;
+  // Same-account, same-room pending turns survive leaving/re-entering the
+  // page during this app process. Never share counters between rooms/accounts.
+  static final Map<String, int> _pendingStorySummaryTurns = <String, int>{};
+  static final Set<String> _storySummaryInFlightRooms = <String>{};
+  static final Map<String, DateTime> _storySummaryRetryAfter = <String, DateTime>{};
+
+  String? _storySummaryRoomKey() {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    final sid = (_sessionId ?? widget.sessionId ?? '').trim();
+    if (uid == null || uid != _userId || sid.isEmpty ||
+        _sessionDocRef?.id != sid) return null;
+    return '$uid/$sid';
+  }
 
   void _scheduleStorySummary() {
     if (widget.isTestMode) return;
-    _turnsSinceStorySummary++;
-    if (_turnsSinceStorySummary >= 5) {
+    final key = _storySummaryRoomKey();
+    if (key == null) return;
+    final pending = (_pendingStorySummaryTurns[key] ?? 0) + 1;
+    _pendingStorySummaryTurns[key] = pending;
+    if (pending >= 5) {
       unawaited(_triggerStorySummary());
     }
   }
 
   Future<void> _triggerStorySummary() async {
-    if (widget.isTestMode || _storySummaryInFlight) return;
+    if (widget.isTestMode) return;
     final user = FirebaseAuth.instance.currentUser;
+    final roomKey = _storySummaryRoomKey();
+    if (roomKey == null || _storySummaryInFlightRooms.contains(roomKey)) return;
+    final turnsAtStart = _pendingStorySummaryTurns[roomKey] ?? 0;
+    if (turnsAtStart <= 0) return;
+    final now = DateTime.now();
+    _storySummaryRetryAfter.removeWhere((_, until) => !until.isAfter(now));
+    if (_storySummaryRetryAfter.containsKey(roomKey)) return;
 
     // 確保使用者及訊息資料庫已準備完成
     if (user == null || _messagesCollection == null) {
@@ -7425,11 +7436,14 @@ class _ChatPageState extends State<ChatPage> {
       return;
     }
 
-    _storySummaryInFlight = true;
-    final turnsAtStart = _turnsSinceStorySummary;
+    final messages = _messagesCollection!;
+    final summaryCharacterId = widget.characterId;
+    final summaryCharacterName = _currentCharacter.name;
+    final summaryPlayerName = _playerNickname;
+    _storySummaryInFlightRooms.add(roomKey);
     try {
       // 定期以最近 40 則訊息更新摘要，與近期歷史重疊以免漏接。
-      final querySnapshot = await _messagesCollection!
+      final querySnapshot = await messages
           .orderBy(
         'timestamp',
         descending: true,
@@ -7481,6 +7495,8 @@ class _ChatPageState extends State<ChatPage> {
         return;
       }
 
+      // Do not send an old account's pending request after sign-out/switch.
+      if (FirebaseAuth.instance.currentUser?.uid != user.uid) return;
       final idToken = await user.getIdToken();
 
       if (idToken == null || idToken.isEmpty) {
@@ -7502,9 +7518,9 @@ class _ChatPageState extends State<ChatPage> {
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'characterId': widget.characterId,
-          'characterName': _currentCharacter.name,
-          'playerName': _playerNickname,
+          'characterId': summaryCharacterId,
+          'characterName': summaryCharacterName,
+          'playerName': summaryPlayerName,
           'chatHistory': recentHistory,
           'completedTurns': turnsAtStart,
           'sourceThroughMillis': docs.isNotEmpty &&
@@ -7517,19 +7533,34 @@ class _ChatPageState extends State<ChatPage> {
           'sessionId': summarySessionId,
         }),
       ).timeout(const Duration(seconds: 130));
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        _turnsSinceStorySummary =
-            max(0, _turnsSinceStorySummary - turnsAtStart);
+      Map<String, dynamic> result = <String, dynamic>{};
+      try {
+        final decoded = jsonDecode(response.body);
+        if (decoded is Map) result = Map<String, dynamic>.from(decoded);
+      } catch (_) {
+        // A non-JSON proxy response is a failed summary, not a success.
+      }
+      if (response.statusCode >= 200 && response.statusCode < 300 &&
+          result['success'] == true) {
+        final remaining = max(0, (_pendingStorySummaryTurns[roomKey] ?? 0) - turnsAtStart);
+        if (remaining == 0) {
+          _pendingStorySummaryTurns.remove(roomKey);
+        } else {
+          _pendingStorySummaryTurns[roomKey] = remaining;
+        }
+        _storySummaryRetryAfter.remove(roomKey);
         debugPrint('📖 劇情摘要已更新：$summarySessionId');
       } else {
-        debugPrint('⚠️ 劇情摘要失敗：${response.statusCode}');
+        final filtered = result['error'] == 'SUMMARY_CONTENT_FILTERED';
+        final seconds = filtered || result['retryAfterSeconds'] == 120 ? 120 : 60;
+        _storySummaryRetryAfter[roomKey] = DateTime.now().add(Duration(seconds: seconds));
+        debugPrint('⚠️ 劇情摘要失敗：${response.statusCode}，保留待處理輪數，${seconds}秒後才允許再試');
       }
     } catch (e) {
-      debugPrint(
-        '⚠️ 劇情摘要發送失敗：$e',
-      );
+      _storySummaryRetryAfter[roomKey] = DateTime.now().add(const Duration(seconds: 60));
+      debugPrint('⚠️ 劇情摘要發送失敗，保留待處理輪數：${e.runtimeType}');
     } finally {
-      _storySummaryInFlight = false;
+      _storySummaryInFlightRooms.remove(roomKey);
     }
   }
 
@@ -10473,7 +10504,7 @@ class _ChatPageState extends State<ChatPage> {
         final selectedId = roomProfiles[roomId]?.toString().trim() ?? '';
         if (selectedId.isNotEmpty) profileId = selectedId;
       }
-      String resolvedName = accountName;
+      String resolvedName = profileId == 'default' ? accountName : '你';
       if (profileId != 'default' && profiles is List) {
         for (final profile in profiles) {
           if (profile is Map && profile['id']?.toString() == profileId) {

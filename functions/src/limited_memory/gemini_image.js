@@ -16,8 +16,23 @@ async function generateImage({apiKey, input, prompt, fetchImpl = fetch}) {
     signal:AbortSignal.timeout(150000),
     body:JSON.stringify({contents:[{role:'user',parts:[{inlineData:{mimeType,data:input.toString('base64')}},{text:prompt}]}],generationConfig:{responseModalities:['IMAGE'],imageConfig:{aspectRatio:'9:16',imageSize:'1K'}}})
   });
-  const data = await response.json();
-  if (!response.ok) throw new Error(`Gemini HTTP ${response.status}: ${String(data.error?.status || 'UNKNOWN').slice(0,80)}`);
+  let data;
+  try { data = await response.json(); } catch (_) {
+    console.warn('[LM_GEMINI_HTTP]', {httpStatus:response.status, model:MODEL, inputMime:mimeType, inputBytes:input.length, promptLength:prompt.length, responseFormat:'non-json'});
+    throw new Error(`Gemini HTTP ${response.status}: non-JSON response`);
+  }
+  if (!response.ok) {
+    const err=data?.error||{};
+    // Provider descriptions may echo request content. Log only known diagnostic
+    // categories and schema field names, never arbitrary provider message text.
+    const message=typeof err.message==='string'?err.message:'';
+    const rules={image_decode:/decode|corrupt|invalid image|image format|unsupported image/i,image_dimensions:/dimension|resolution|pixel|image size/i,aspect_ratio:/aspect.?ratio/i,image_size:/image.?size/i,model:/model|not supported/i,modality:/modalit/i,inline_data:/inline.?data|mime.?type|base64/i,request_schema:/unknown (?:name|field)|invalid json|invalid value|field violation/i,safety:/safety|prohibited|blocked/i,token_limit:/token|too long|payload.*large/i,api_key:/api.?key|credential/i,quota:/quota|billing|credit/i};
+    const categories=Object.entries(rules).filter(([,re])=>re.test(message)).map(([name])=>name);
+    const fields=(Array.isArray(err.details)?err.details:[]).flatMap(d=>Array.isArray(d?.fieldViolations)?d.fieldViolations:[]).map(v=>v?.field).filter(v=>typeof v==='string'&&/^(?:contents|generationConfig|generation_config|model)(?:[.\[\]0-9A-Za-z_]{0,120})$/.test(v)).slice(0,10);
+    const status=typeof err.status==='string'&&/^[A-Z_]{1,80}$/.test(err.status)?err.status:'UNKNOWN';
+    console.warn('[LM_GEMINI_HTTP]', {httpStatus:response.status, status, model:MODEL,inputMime:mimeType,inputBytes:input.length,promptLength:prompt.length,categories,fields,aspectRatio:'9:16',imageSize:'1K'});
+    throw new Error(`Gemini HTTP ${response.status}: ${status}${categories.length?' ['+categories.join(',')+']':''}`);
+  }
   const candidate = data.candidates?.[0];
   const part = candidate?.content?.parts?.find(p=>!p.thought && p.inlineData?.data && p.inlineData?.mimeType?.startsWith('image/'));
   if (!part) throw new Error(`No image: ${candidate?.finishReason || data.promptFeedback?.blockReason || 'UNKNOWN'}`);

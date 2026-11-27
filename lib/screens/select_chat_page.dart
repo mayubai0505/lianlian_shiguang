@@ -584,11 +584,18 @@ class SelectChatPageState extends State<SelectChatPage> {
                 description: _savedWorksGuideText(context),
                 child: IconButton(
                   tooltip: SavedWorksPage.title(context),
+                  // 保留原書籤圖案，補足深色主題對比及可見尺寸。
+                  iconSize: 40,
+                  padding: const EdgeInsets.all(4),
                   icon: Image.asset(
                     'assets/images/chat/chat_pin_bookmark.webp',
-                    width: 32,
-                    height: 32,
+                    width: 40,
+                    height: 40,
                     fit: BoxFit.contain,
+                    color: theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : theme.colorScheme.onSurface,
+                    colorBlendMode: BlendMode.srcIn,
                   ),
                   onPressed: () => Navigator.push(
                     context,

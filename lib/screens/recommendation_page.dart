@@ -1,3 +1,4 @@
+import '../services/event_access.dart';
 import 'dart:math';
 import 'dart:async';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -1048,12 +1049,17 @@ class _ActiveEventEntry extends StatefulWidget {
 
 class _ActiveEventEntryState extends State<_ActiveEventEntry> {
   late final Stream<QuerySnapshot<Map<String, dynamic>>> _eventsStream;
+  Stream<QuerySnapshot<Map<String, dynamic>>>? _testEventsStream;
   Timer? _clockRefresh;
 
   @override
   void initState() {
     super.initState();
     _eventsStream = _eventsRef().limit(20).snapshots();
+    if (FirebaseAuth.instance.currentUser?.uid == eventAdminUid) {
+      _testEventsStream = FirebaseFirestore.instance.collection('artifacts')
+          .doc(AppConfig.appId).collection('admin_test_events').limit(20).snapshots();
+    }
     // 活動即使沒有 Firestore 更新，開始／結束時間到達也要切換入口。
     _clockRefresh = Timer.periodic(const Duration(minutes: 1), (_) {
       if (mounted) setState(() {});
@@ -1095,9 +1101,20 @@ class _ActiveEventEntryState extends State<_ActiveEventEntry> {
 
   @override
   Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: FirebaseAuth.instance.currentUser?.uid == eventAdminUid ? _testEventsStream : null,
+      builder: (context, tests) {
+        final testDocs = FirebaseAuth.instance.currentUser?.uid == eventAdminUid
+            ? (tests.data?.docs ?? <QueryDocumentSnapshot<Map<String, dynamic>>>[])
+            : <QueryDocumentSnapshot<Map<String, dynamic>>>[];
+        return _buildEventEntry(context, testDocs);
+      },
+    );
+  }
+
+  Widget _buildEventEntry(BuildContext context, List<QueryDocumentSnapshot<Map<String, dynamic>>> testDocs) {
     final colors = Theme.of(context).colorScheme;
     final onSurface = colors.onSurface;
-
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       // 測試階段先不要在 query 層加 isActive 條件。
       // 直接讀 events 後由前端判斷，可同時避開資料型別/欄位異常造成完全查不到，
@@ -1132,8 +1149,9 @@ class _ActiveEventEntryState extends State<_ActiveEventEntry> {
           );
         }
 
-        final docs = snapshot.data!.docs
-            .where((d) => _isRunning(d.data()))
+        final runningTests = testDocs.where((d) => _isRunning(d.data())).toList();
+        final docs = runningTests.isNotEmpty ? runningTests : snapshot.data!.docs
+            .where((d) => _isRunning(d.data()) && d.data()['audience'] != 'admin_only')
             .toList();
 
         if (docs.isEmpty) {

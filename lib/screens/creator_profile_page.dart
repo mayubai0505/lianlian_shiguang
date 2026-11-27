@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -13,6 +14,8 @@ import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import '../models/moment_model.dart';
 import 'moment_card.dart';
+import 'moment_detail_page.dart';
+import 'profile_connections_page.dart';
 import 'edit_moment_page.dart';
 import '../services/toast_utils.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -22,9 +25,10 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'world_discovery_page.dart';
 import '../widgets/user_avatar_with_frame.dart';
 import '../utils/image_utils.dart';
+import '../services/profile_cache_service.dart';
 
 //創作者公開頁面
-class CreatorProfilePage extends StatelessWidget {
+class CreatorProfilePage extends StatefulWidget {
   final String creatorId;
   final String creatorName;
   final String APP_ID = AppConfig.appId;
@@ -36,6 +40,61 @@ class CreatorProfilePage extends StatelessWidget {
   });
 
   @override
+  State<CreatorProfilePage> createState() => _CreatorProfilePageState();
+}
+
+class _CreatorProfilePageState extends State<CreatorProfilePage> {
+  String get creatorId => widget.creatorId;
+  String get creatorName => widget.creatorName;
+  String get APP_ID => widget.APP_ID;
+  String? _viewer;
+  StreamSubscription<User?>? _authSubscription;
+  late Stream<DocumentSnapshot<Map<String, dynamic>>> _profileStream;
+  Stream<QuerySnapshot<Map<String, dynamic>>>? _blockedStream;
+  Stream<DocumentSnapshot<Map<String, dynamic>>>? _followStream;
+  late Stream<List<Character>> _charactersStream;
+  late Stream<QuerySnapshot<Map<String, dynamic>>> _momentsStream;
+  String _selectedMomentFilter = 'all';
+
+  void _bindStreams() {
+    final db = FirebaseFirestore.instance;
+    final artifact = db.collection('artifacts').doc(AppConfig.appId);
+    final target = creatorId;
+    final viewer = _viewer;
+    _profileStream = db.collection('users').doc(target).snapshots();
+    _blockedStream = viewer == null ? null : db.collection('users')
+        .doc(viewer).collection('blockedCharacters').snapshots();
+    _followStream = viewer == null ? null : db.collection('users')
+        .doc(viewer).collection('following').doc(target).snapshots();
+    _charactersStream = artifact.collection('public_characters')
+        .where('createdBy', isEqualTo: target).snapshots().asyncMap((snapshot) =>
+            Future.wait(snapshot.docs.map((doc) => Character.fromFirestoreAsync(doc))));
+    _momentsStream = artifact.collection('moments').where('createdBy', isEqualTo: target)
+        .orderBy('createdAt', descending: true).snapshots();
+    _selectedMomentFilter = 'all';
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _viewer = FirebaseAuth.instance.currentUser?.uid;
+    _bindStreams();
+    _authSubscription = FirebaseAuth.instance.authStateChanges().listen((user) {
+      if (!mounted || user?.uid == _viewer) return;
+      setState(() { _viewer = user?.uid; _bindStreams(); });
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant CreatorProfilePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.creatorId != creatorId) _bindStreams();
+  }
+
+  @override
+  void dispose() { _authSubscription?.cancel(); super.dispose(); }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
@@ -43,15 +102,15 @@ class CreatorProfilePage extends StatelessWidget {
     final String? currentUserId =
         FirebaseAuth.instance.currentUser?.uid;
 
-    final bool isOwner =
-        currentUserId == creatorId;
+    if (currentUserId != _viewer) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    final bool isOwner = currentUserId == creatorId;
 
     // 1. 先讀取創作者本人的公開資料
-    return FutureBuilder<DocumentSnapshot>(
-      future: FirebaseFirestore.instance
-          .collection('users')
-          .doc(creatorId)
-          .get(),
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      key: ValueKey('profile:$creatorId:$_viewer'),
+      stream: _profileStream,
       builder: (
           context,
           userSnapshot,
@@ -161,15 +220,7 @@ class CreatorProfilePage extends StatelessWidget {
         // 2. 監聽目前玩家封鎖的角色
         // =================================================
         return StreamBuilder<QuerySnapshot>(
-          stream: currentUserId == null
-              ? null
-              : FirebaseFirestore.instance
-              .collection('users')
-              .doc(currentUserId)
-              .collection(
-            'blockedCharacters',
-          )
-              .snapshots(),
+          stream: _blockedStream,
           builder: (
               context,
               blockedSnapshot,
@@ -188,33 +239,7 @@ class CreatorProfilePage extends StatelessWidget {
             // =================================================
             return StreamBuilder<
                 List<Character>>(
-              stream: FirebaseFirestore
-                  .instance
-                  .collection('artifacts')
-                  .doc(AppConfig.appId)
-                  .collection(
-                'public_characters',
-              )
-                  .where(
-                'createdBy',
-                isEqualTo: creatorId,
-              )
-                  .snapshots()
-                  .asyncMap(
-                    (snapshot) async {
-                  return Future.wait(
-                    snapshot.docs
-                        .map(
-                          (doc) =>
-                          Character
-                              .fromFirestoreAsync(
-                            doc,
-                          ),
-                    )
-                        .toList(),
-                  );
-                },
-              ),
+              stream: _charactersStream,
               builder: (
                   context,
                   characterSnapshot,
@@ -227,8 +252,8 @@ class CreatorProfilePage extends StatelessWidget {
 
                 // 玩家實際可見角色
                 final List<Character>
-                characters =
-                allCharacters
+                characters = currentUserId != null && (!blockedSnapshot.hasData || blockedSnapshot.hasError)
+                    ? <Character>[] : allCharacters
                     .where(
                       (character) =>
                   !blockedCharacterIds
@@ -238,18 +263,10 @@ class CreatorProfilePage extends StatelessWidget {
                 )
                     .toList();
 
-                final int totalLikes =
-                characters.fold<int>(
-                  0,
-                      (
-                      sum,
-                      character,
-                      ) =>
-                  sum +
-                      character.likesCount,
-                );
-
-                return Scaffold(
+                return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                  stream: _momentsStream,
+                  builder: (context, momentSnapshot) {
+                    return Scaffold(
                   backgroundColor: theme.scaffoldBackgroundColor,
                   appBar: AppBar(
                     backgroundColor: theme.scaffoldBackgroundColor,
@@ -397,8 +414,10 @@ class CreatorProfilePage extends StatelessWidget {
                                 creatorBio: creatorBio,
                                 imageProvider: imageProvider,
                                 isOwner: isOwner,
-                                workCount: characters.length,
-                                totalLikes: totalLikes,
+                                visibleCharacterIds: characters.map((c) => c.id).toSet(),
+                                charactersLoaded: characterSnapshot.hasData && !characterSnapshot.hasError &&
+                                    (currentUserId == null || (blockedSnapshot.hasData && !blockedSnapshot.hasError)),
+                                momentSnapshot: momentSnapshot,
                               ),
                             ),
                             SliverPersistentHeader(
@@ -417,7 +436,7 @@ class CreatorProfilePage extends StatelessWidget {
                                 characterSnapshot,
                               ),
                               _buildCreatorMomentsTab(
-                                context, theme, creatorId, characters,
+                                context, theme, creatorId, characters, momentSnapshot,
                               ),
                               _CreatorOpenWorldsTab(creatorId: creatorId),
                             ],
@@ -426,6 +445,8 @@ class CreatorProfilePage extends StatelessWidget {
                       ),
                     ],
                   ),
+                    );
+                  },
                 );
               },
             );
@@ -1062,18 +1083,13 @@ class CreatorProfilePage extends StatelessWidget {
       ThemeData theme,
       String creatorId,
       List<Character> characters,
+      AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot,
       ) {
     final String currentUserId =
         FirebaseAuth.instance.currentUser?.uid ?? '';
     final l10n = AppLocalizations.of(context)!;
-    String selectedFilter = 'all';
-
-    return StatefulBuilder(
-      builder: (
-          context,
-          setFilterState,
-          ) {
-        return Column(
+    final selectedFilter = _selectedMomentFilter;
+    return Column(
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(
@@ -1091,8 +1107,8 @@ class CreatorProfilePage extends StatelessWidget {
                       value: 'all',
                       selectedValue: selectedFilter,
                       onSelected: (value) {
-                        setFilterState(() {
-                          selectedFilter = value;
+                        setState(() {
+                          _selectedMomentFilter = value;
                         });
                       },
                     ),
@@ -1105,8 +1121,8 @@ class CreatorProfilePage extends StatelessWidget {
                       value: 'creator',
                       selectedValue: selectedFilter,
                       onSelected: (value) {
-                        setFilterState(() {
-                          selectedFilter = value;
+                        setState(() {
+                          _selectedMomentFilter = value;
                         });
                       },
                     ),
@@ -1119,8 +1135,8 @@ class CreatorProfilePage extends StatelessWidget {
                       value: 'character',
                       selectedValue: selectedFilter,
                       onSelected: (value) {
-                        setFilterState(() {
-                          selectedFilter = value;
+                        setState(() {
+                          _selectedMomentFilter = value;
                         });
                       },
                     ),
@@ -1130,23 +1146,8 @@ class CreatorProfilePage extends StatelessWidget {
             ),
 
             Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('artifacts')
-                    .doc(AppConfig.appId)
-                    .collection('moments')
-                    .where(
-                  'createdBy',
-                  isEqualTo: creatorId,
-                )
-                    .orderBy(
-                  'createdAt',
-                  descending: true,
-                )
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState ==
-                      ConnectionState.waiting) {
+              child: Builder(builder: (context) {
+                  if (!snapshot.hasData && !snapshot.hasError) {
                     return const Center(
                       child: CircularProgressIndicator(),
                     );
@@ -1269,7 +1270,12 @@ class CreatorProfilePage extends StatelessWidget {
                         constraints: BoxConstraints(maxWidth:
                           kIsWeb && MediaQuery.sizeOf(context).width >= 850
                               ? 760 : double.infinity),
-                        child: MomentCard(
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(12),
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(builder: (_) => MomentDetailPage(postId: moment.id)),
+                          ),
+                          child: MomentCard(
                         key: ValueKey(moment.id),
                         moment: moment,
                         currentUserId:
@@ -1318,16 +1324,14 @@ class CreatorProfilePage extends StatelessWidget {
                           );
                         },
                       ),
+                      ),
                       ));
                     },
                   );
-                },
-              ),
+                }),
             ),
           ],
         );
-      },
-    );
   }
   Widget _buildCreatorMomentFilter({
     required BuildContext context,
@@ -1554,8 +1558,9 @@ class CreatorProfilePage extends StatelessWidget {
         required String creatorBio,
         required ImageProvider? imageProvider,
         required bool isOwner,
-        required int workCount,
-        required int totalLikes,
+        required Set<String> visibleCharacterIds,
+        required bool charactersLoaded,
+        required AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> momentSnapshot,
       }) {
     final l10n = AppLocalizations.of(context)!;
     final primaryColor = theme.colorScheme.primary;
@@ -1613,6 +1618,7 @@ class CreatorProfilePage extends StatelessWidget {
                           avatarImage: imageProvider,
                           size: desktop ? 124 : 104,
                           avatarRadius: desktop ? 55 : 46,
+                          frameScale: 1.15,
                           backgroundColor:
                           primaryColor.withValues(alpha: 0.08),
                           fallbackChild: Icon(
@@ -1759,40 +1765,27 @@ class CreatorProfilePage extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: _buildCreatorStat(
-                    theme,
-                    value: '$workCount',
-                    label: l10n.creatorProfilePublicWorks,
+                  child: _PublicProfileMomentStat(
+                    key: ValueKey('public_moments_$creatorId'),
+                    snapshot: momentSnapshot,
+                    visibleCharacterIds: visibleCharacterIds,
+                    charactersLoaded: charactersLoaded,
                   ),
                 ),
                 _buildCreatorStatDivider(theme),
-                Expanded(
-                  child: _buildCreatorStat(
-                    theme,
-                    value: '$totalLikes',
-                    label: l10n.creatorProfileLikesReceived,
-                  ),
-                ),
+                Expanded(child: ProfileConnectionStat(
+                  key: ValueKey('public_following_$creatorId'),
+                  ownerId: creatorId,
+                  kind: ProfileConnectionKind.following,
+                  onOpenProfile: _openConnectionProfile,
+                )),
                 _buildCreatorStatDivider(theme),
-                Expanded(
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection('users')
-                        .doc(creatorId)
-                        .collection('followers')
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      final int followerCount =
-                          snapshot.data?.docs.length ?? 0;
-
-                      return _buildCreatorStat(
-                        theme,
-                        value: _formatCreatorCount(followerCount),
-                        label: l10n.profilePageFollowers,
-                      );
-                    },
-                  ),
-                ),
+                Expanded(child: ProfileConnectionStat(
+                  key: ValueKey('public_followers_$creatorId'),
+                  ownerId: creatorId,
+                  kind: ProfileConnectionKind.followers,
+                  onOpenProfile: _openConnectionProfile,
+                )),
               ],
             ),
           ),
@@ -1802,6 +1795,16 @@ class CreatorProfilePage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _openConnectionProfile(BuildContext context, String uid, String name) {
+    if (uid == creatorId) {
+      Navigator.of(context).pop(); // Return to the profile already open underneath.
+      return;
+    }
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => CreatorProfilePage(creatorId: uid, creatorName: name),
+    ));
   }
 
   Widget _buildCreatorStatDivider(
@@ -1814,19 +1817,7 @@ class CreatorProfilePage extends StatelessWidget {
           .withValues(alpha: 0.10),
     );
   }
-  String _formatCreatorCount(
-      int value,
-      ) {
-    if (value >= 1000000) {
-      return '${(value / 1000000).toStringAsFixed(1)}M';
-    }
 
-    if (value >= 1000) {
-      return '${(value / 1000).toStringAsFixed(1)}K';
-    }
-
-    return '$value';
-  }
   Widget _buildCreatorFollowButton({
     required BuildContext context,
     required String creatorId,
@@ -1847,22 +1838,14 @@ class CreatorProfilePage extends StatelessWidget {
       );
     }
 
-    final followingRef =
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(currentUser.uid)
-        .collection('following')
-        .doc(creatorId);
-
     return StreamBuilder<DocumentSnapshot>(
-      stream: followingRef.snapshots(),
+      stream: _followStream,
       builder: (context, snapshot) {
         final bool isFollowing =
             snapshot.data?.exists == true;
 
         return OutlinedButton.icon(
-          onPressed: snapshot.connectionState ==
-              ConnectionState.waiting
+          onPressed: !snapshot.hasData || snapshot.hasError
               ? null
               : () {
             _toggleCreatorFollow(
@@ -1975,6 +1958,9 @@ class CreatorProfilePage extends StatelessWidget {
       }
 
       await batch.commit();
+      if (FirebaseAuth.instance.currentUser?.uid == currentUser.uid) {
+        ProfileCacheService.instance.refreshAfterFollow(currentUser.uid, creatorId);
+      }
 
       if (!context.mounted) return;
 
@@ -2000,33 +1986,6 @@ class CreatorProfilePage extends StatelessWidget {
         isError: true,
       );
     }
-  }
-  Widget _buildCreatorStat(
-      ThemeData theme, {
-        required String value,
-        required String label,
-      }) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          value,
-          style: GoogleFonts.notoSerifTc(
-            color: theme.colorScheme.onSurface,
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 3),
-        Text(
-          label,
-          style: GoogleFonts.notoSerifTc(
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.50),
-            fontSize: 11.5,
-          ),
-        ),
-      ],
-    );
   }
   // 創作者公開頁沒有聊天室 ID；點角色卡片時先帶入玩家已累積的好感度。
   // 只讀取資料，不改動總帳或聊天房間分數。
@@ -2348,22 +2307,34 @@ class _CreatorOpenWorldsTab extends StatefulWidget {
 }
 
 class _CreatorOpenWorldsTabState extends State<_CreatorOpenWorldsTab> {
+  final _cache = ProfileCacheService.instance;
   late Future<List<Map<String, dynamic>>> _worldsFuture = _fetch();
+  static const _cacheKey = 'public-world-catalog';
+  List<Map<String, dynamic>> _forCreator(List<Map<String, dynamic>> worlds) =>
+      worlds.where((world) => (world['creatorId'] ?? '').toString() == widget.creatorId).toList();
 
-  Future<List<Map<String, dynamic>>> _fetch() async {
+  @override
+  void didUpdateWidget(covariant _CreatorOpenWorldsTab oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.creatorId != widget.creatorId) _worldsFuture = _fetch();
+  }
+
+  Future<List<Map<String, dynamic>>> _fetch({bool force = false}) {
+    return _cache.load<List<Map<String, dynamic>>>(_cacheKey, ProfileCacheService.worldsTtl, () async {
     final result = await FirebaseFunctions.instanceFor(region: 'asia-east1')
         .httpsCallable('worldPublicCatalog').call();
     final raw = result.data;
-    if (raw is! Map) return <Map<String, dynamic>>[];
-    final entries = raw['worlds'];
-    if (entries is! List) return <Map<String, dynamic>>[];
+    if (raw is! Map || raw['worlds'] is! List) throw StateError('Invalid public catalog');
+    final entries = raw['worlds'] as List;
     return entries.whereType<Map>().map((e) => Map<String, dynamic>.from(e))
-        .where((world) => (world['creatorId'] ?? '').toString() == widget.creatorId)
-        .toList();
+        .map((world) => <String, dynamic>{
+          for (final key in ['id', 'name', 'coverImage', 'shortPitch', 'tags', 'creatorId']) key: world[key],
+        }).toList();
+    }, force: force);
   }
 
   Future<void> _refresh() async {
-    final updated = _fetch();
+    final updated = _fetch(force: true);
     setState(() => _worldsFuture = updated);
     try { await updated; } catch (_) { /* 顯示於 FutureBuilder */ }
   }
@@ -2374,20 +2345,28 @@ class _CreatorOpenWorldsTabState extends State<_CreatorOpenWorldsTab> {
     final l10n = AppLocalizations.of(context)!;
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: _worldsFuture,
+      initialData: _cache.read<List<Map<String, dynamic>>>(_cacheKey),
       builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
+        if (!snapshot.hasData && !snapshot.hasError) {
           return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
+          final error = snapshot.error;
+          if (error is FirebaseFunctionsException && (error.code == 'permission-denied' || error.code == 'unauthenticated')) {
+            _cache.invalidate(_cacheKey);
+          }
           return Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
             Text(l10n.creator_profile_generic_error, style: TextStyle(color: theme.colorScheme.onSurface)),
             TextButton(onPressed: _refresh, child: Text(l10n.creator_profile_refresh)),
           ]));
         }
-        final worlds = snapshot.data ?? <Map<String, dynamic>>[];
+        final worlds = _forCreator(snapshot.data ?? <Map<String, dynamic>>[]);
         if (worlds.isEmpty) {
-          return Center(child: Text(l10n.creator_profile_no_open_worlds,
-              style: TextStyle(color: theme.colorScheme.onSurfaceVariant)));
+          return RefreshIndicator(onRefresh: _refresh, child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: [const SizedBox(height: 40), Center(child: Text(l10n.creator_profile_no_open_worlds,
+              style: TextStyle(color: theme.colorScheme.onSurfaceVariant)))],
+          ));
         }
         return RefreshIndicator(
           onRefresh: _refresh,
@@ -2504,4 +2483,46 @@ class _CreatorPinnedTabsDelegate extends SliverPersistentHeaderDelegate {
   @override
   bool shouldRebuild(covariant _CreatorPinnedTabsDelegate oldDelegate) =>
       oldDelegate.child != child || oldDelegate.backgroundColor != backgroundColor;
+}
+// Count only the same public moments displayed by the public profile tab.
+// Keep a stable subscription across theme/header rebuilds.
+class _PublicProfileMomentStat extends StatelessWidget {
+  const _PublicProfileMomentStat({super.key, required this.snapshot,
+    required this.visibleCharacterIds, required this.charactersLoaded});
+  final AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot;
+  final Set<String> visibleCharacterIds;
+  final bool charactersLoaded;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+        int? count;
+        if (snapshot.hasData && !snapshot.hasError && charactersLoaded) {
+          count = snapshot.data!.docs.map((doc) => Moment.fromFirestore(doc))
+              .where((moment) => moment.isPublic == true &&
+                  (moment.isCreatorPost || visibleCharacterIds.contains(moment.authorId)))
+              .length;
+        }
+        final value = count == null ? '—' : count >= 1000000
+            ? '${(count / 1000000).toStringAsFixed(1)}M'
+            : count >= 1000 ? '${(count / 1000).toStringAsFixed(1)}K' : '$count';
+        return InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () => DefaultTabController.of(context).animateTo(2),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              Text(value, style: GoogleFonts.notoSerifTc(
+                color: theme.colorScheme.onSurface, fontSize: 18,
+                fontWeight: FontWeight.w700)),
+              const SizedBox(height: 3),
+              Text(l10n.profilePageTabMoments, maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.notoSerifTc(fontSize: 12,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.75))),
+            ]),
+          ),
+        );
+  }
 }

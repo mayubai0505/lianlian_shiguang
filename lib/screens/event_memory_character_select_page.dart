@@ -1,3 +1,4 @@
+import '../services/event_access.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -29,16 +30,31 @@ class EventMemoryCharacterSelectPage extends StatefulWidget {
 class _EventMemoryCharacterSelectPageState
     extends State<EventMemoryCharacterSelectPage> {
   bool _loading = true;
+  bool _scanning = false;
+  int _loadSerial = 0;
+  int _checkedCount = 0;
+  int _totalCount = 0;
   String? _error;
   _CharacterSelectVisual _visual = const _CharacterSelectVisual();
   final List<_SelectableMemoryCharacter> _myCharacters = [];
   final List<_SelectableMemoryCharacter> _friendCharacters = [];
   String? _selectedId;
 
+  bool _didStartInitialLoad = false;
+
   @override
   void initState() {
     super.initState();
     _loadEventVisual();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Localizations.of(context) is only safe after initState completes.
+    // Start once, even if the inherited dependencies change later.
+    if (_didStartInitialLoad) return;
+    _didStartInitialLoad = true;
     _loadCharacters();
   }
 
@@ -47,7 +63,7 @@ class _EventMemoryCharacterSelectPageState
       final doc = await FirebaseFirestore.instance
           .collection('artifacts')
           .doc(AppConfig.appId)
-          .collection('events')
+          .collection(eventDefinitionCollection(widget.eventId))
           .doc(widget.eventId)
           .get();
       if (!mounted || !doc.exists) return;
@@ -99,104 +115,96 @@ class _EventMemoryCharacterSelectPageState
       return;
     }
 
+    final serial = ++_loadSerial;
+    bool current() => mounted && serial == _loadSerial &&
+        FirebaseAuth.instance.currentUser?.uid == user.uid;
+    setState(() {
+      _loading = true;
+      _scanning = true;
+      _error = null;
+      _checkedCount = 0;
+      _totalCount = 0;
+      _myCharacters.clear();
+      _friendCharacters.clear();
+      _selectedId = null;
+    });
     try {
-      final db = FirebaseFirestore.instance;
-      final Map<String, _SelectableMemoryCharacter> mine = {};
-      final Map<String, _SelectableMemoryCharacter> friends = {};
-
-      // 1. 自己建立的公開角色
-      final publicSnapshot = await db
-          .collection('artifacts')
-          .doc(AppConfig.appId)
-          .collection('public_characters')
-          .where('createdBy', isEqualTo: user.uid)
-          .get();
-
-      for (final doc in publicSnapshot.docs) {
-        final data = doc.data();
-        mine[doc.id] = _SelectableMemoryCharacter(
-          id: doc.id,
-          name: (data['name'] ?? l10n.event_memory_unnamed_character1).toString(),
-          avatarPath: _avatarFromData(data),
-          source: _CharacterSource.mine,
-          isPrivate: false,
-        );
+      final root = FirebaseFirestore.instance.collection('artifacts').doc(AppConfig.appId);
+      final rooms = await root.collection('chat_sessions')
+          .where('userId', isEqualTo: user.uid).get();
+      if (!current()) return;
+      final grouped = <String, List<QueryDocumentSnapshot<Map<String, dynamic>>>>{};
+      for (final room in rooms.docs) {
+        final id = room.data()['characterId'];
+        if (id is String && id.isNotEmpty && !id.contains('/')) {
+          grouped.putIfAbsent(id, () => []).add(room);
+        }
       }
-
-      // 2. 自己建立的私人角色
-      final privateSnapshot = await db
-          .collection('artifacts')
-          .doc(AppConfig.appId)
-          .collection('users')
-          .doc(user.uid)
-          .collection('private_characters')
-          .get();
-
-      for (final doc in privateSnapshot.docs) {
-        final data = doc.data();
-        mine[doc.id] = _SelectableMemoryCharacter(
-          id: doc.id,
-          name: (data['name'] ?? l10n.event_memory_unnamed_character1).toString(),
-          avatarPath: _avatarFromData(data),
-          source: _CharacterSource.mine,
-          isPrivate: true,
-        );
+      final entries = grouped.entries.toList();
+      final unnamed = l10n.event_memory_unnamed_character1;
+      setState(() { _loading = false; _totalCount = entries.length; });
+      var next = 0;
+      var failed = 0;
+      // A rolling worker pool: no slow character blocks the next batch.
+      Future<void> worker() async {
+        while (current() && next < entries.length) {
+          final entry = entries[next++];
+          try {
+            var chatted = false;
+            for (final room in entry.value) {
+              if (!current()) return;
+              final sent = await room.reference.collection('messages')
+                  .where('sender', isEqualTo: 'user').limit(1).get();
+              if (sent.docs.isNotEmpty) { chatted = true; break; }
+            }
+            if (!chatted || !current()) continue;
+            var doc = await root.collection('public_characters').doc(entry.key).get();
+            var isPrivate = false;
+            if (!doc.exists) {
+              doc = await root.collection('users').doc(user.uid)
+                  .collection('private_characters').doc(entry.key).get();
+              isPrivate = true;
+            }
+            if (!doc.exists || !current()) continue;
+            final data = doc.data() ?? <String, dynamic>{};
+            final owned = isPrivate || data['createdBy'] == user.uid;
+            final character = _SelectableMemoryCharacter(
+              id: entry.key, name: (data['name'] ?? unnamed).toString(),
+              avatarPath: _avatarFromData(data),
+              source: owned ? _CharacterSource.mine : _CharacterSource.friend,
+              isPrivate: isPrivate,
+            );
+            setState(() {
+              final list = owned ? _myCharacters : _friendCharacters;
+              list.add(character);
+              // Do not reorder existing tiles while the player is choosing.
+            });
+          } catch (e) {
+            failed++;
+            debugPrint('讀取限定回憶角色失敗：${entry.key} / $e');
+          } finally {
+            if (current()) setState(() => _checkedCount++);
+          }
+        }
       }
-
-      // 3. 已加好友角色。friends 文件 ID 就是角色 ID。
-      final friendSnapshot = await db
-          .collection('users')
-          .doc(user.uid)
-          .collection('friends')
-          .get();
-
-      for (final friendDoc in friendSnapshot.docs) {
-        final characterId = friendDoc.id.trim();
-        if (characterId.isEmpty || mine.containsKey(characterId)) continue;
-
-        // 好友角色以目前公開角色文件為準；已刪除 / 已轉私人就略過。
-        final publicDoc = await db
-            .collection('artifacts')
-            .doc(AppConfig.appId)
-            .collection('public_characters')
-            .doc(characterId)
-            .get();
-
-        if (!publicDoc.exists) continue;
-
-        final data = publicDoc.data() ?? <String, dynamic>{};
-        final friendData = friendDoc.data();
-        friends[characterId] = _SelectableMemoryCharacter(
-          id: characterId,
-          name: (data['name'] ?? friendData['name'] ?? l10n.event_memory_unnamed_character1)
-              .toString(),
-          avatarPath: _avatarFromData(data).isNotEmpty
-              ? _avatarFromData(data)
-              : (friendData['avatarPath'] ?? '').toString().trim(),
-          source: _CharacterSource.friend,
-          isPrivate: false,
-        );
-      }
-
-      final myList = mine.values.toList()
-        ..sort((a, b) => a.name.compareTo(b.name));
-      final friendList = friends.values.toList()
-        ..sort((a, b) => a.name.compareTo(b.name));
-
-      if (!mounted) return;
+      await Future.wait(List.generate(entries.length < 12 ? entries.length : 12, (_) => worker()));
+      if (!current()) return;
       setState(() {
-        _myCharacters
-          ..clear()
-          ..addAll(myList);
-        _friendCharacters
-          ..clear()
-          ..addAll(friendList);
-        _loading = false;
+        _scanning = false;
+        if (failed > 0 && _myCharacters.isEmpty && _friendCharacters.isEmpty) {
+          _error = l10n.event_memory_generic_error1;
+        }
       });
+      if (failed > 0 && _error == null && current()) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('部分角色讀取失敗，可下拉重新整理。'),
+        ));
+      }
     } catch (e) {
-      if (!mounted) return;
+      if (!current()) return;
       setState(() {
         _loading = false;
+        _scanning = false;
         _error = l10n.event_memory_generic_error1;
         debugPrint('讀取活動記憶角色失敗：$e');
       });
@@ -293,7 +301,7 @@ class _EventMemoryCharacterSelectPageState
                             ),
                             const SizedBox(height: 6),
                             Text(
-                              appL10n.event_memory_character_center_message_character_friend_add,
+                              '選擇曾經聊過的角色，留下本次活動的專屬回憶。',
                               style: GoogleFonts.notoSerifTc(
                                 fontSize: 12,
                                 height: 1.55,
@@ -327,6 +335,17 @@ class _EventMemoryCharacterSelectPageState
                         ),
                       ),
                     ),
+                    if (_scanning)
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(18, 12, 18, 12),
+                          child: Column(children: [
+                            LinearProgressIndicator(value: _totalCount == 0 ? null : _checkedCount / _totalCount),
+                            const SizedBox(height: 8),
+                            Text('正在尋找聊過的角色… $_checkedCount / $_totalCount'),
+                          ]),
+                        ),
+                      ),
                     if (_myCharacters.isNotEmpty) ...[
                       _SectionHeader(
                         title: l10n.event_memory_my_characters1,
@@ -344,7 +363,7 @@ class _EventMemoryCharacterSelectPageState
                     ],
                     if (_friendCharacters.isNotEmpty) ...[
                       _SectionHeader(
-                        title: l10n.event_memory_friend_characters1,
+                        title: '聊過的公開角色',
                         count: _friendCharacters.length,
                         visual: visual,
                       ),
@@ -357,7 +376,7 @@ class _EventMemoryCharacterSelectPageState
                         },
                       ),
                     ],
-                    if (_myCharacters.isEmpty &&
+                    if (!_scanning && _myCharacters.isEmpty &&
                         _friendCharacters.isEmpty)
                       SliverFillRemaining(
                         hasScrollBody: false,
@@ -377,7 +396,7 @@ class _EventMemoryCharacterSelectPageState
                                 ),
                                 const SizedBox(height: 6),
                                 Text(
-                                  appL10n.event_memory_character_center_message_public_character_character_friend_add,
+                                  '先與喜歡的角色聊聊天，再來生成限定回憶吧。',
                                   textAlign: TextAlign.center,
                                   style: GoogleFonts.notoSerifTc(
                                     fontSize: 12,
@@ -686,7 +705,7 @@ class _CharacterCard extends StatelessWidget {
                 ),
                 child: Text(
                   character.source == _CharacterSource.friend
-                      ? l10n.event_memory_friend_badge1
+                      ? '聊過的角色'
                       : character.isPrivate
                       ? appL10n.event_memory_character_card_message_private
                       : l10n.event_memory_my_characters1,

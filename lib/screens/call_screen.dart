@@ -131,7 +131,7 @@ class _CallOverlayState extends State<CallOverlay> with WidgetsBindingObserver {
   bool _speechReady = false;
   bool _speechUnavailable = false;
   bool _isMuted = false;
-  bool _speakerEnabled = true;
+  bool _speakerEnabled = false;
   bool _routeChanging = false;
   bool _isChatMode = false;
   int _recognitionId = 0;

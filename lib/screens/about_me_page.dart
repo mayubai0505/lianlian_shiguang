@@ -75,20 +75,33 @@ class _AboutMePageState extends State<AboutMePage> {
     final userRef = FirebaseFirestore.instance.collection('users').doc(uid);
     final roomId = widget.sessionId?.trim() ?? '';
     final sources = <String, CollectionReference<Map<String, dynamic>>>{};
+    String? boundProfileId;
 
     if (roomId.isNotEmpty) {
       final session = FirebaseFirestore.instance
           .collection('artifacts').doc('lianlianshiguang')
           .collection('chat_sessions').doc(roomId);
-      final snap = await session.get();
+      final snap = await session.get(const GetOptions(source: Source.server));
       final data = snap.data();
       if (!snap.exists || data == null || data['userId'] != uid ||
           data['characterId']?.toString() != widget.character.id) {
         throw StateError('聊天室與目前玩家／角色不相符，無法讀取記憶。');
       }
-      final profileId = (data['playerProfileId'] ?? '').toString().trim();
+      final userData = (await userRef.get(const GetOptions(source: Source.server))).data() ?? <String, dynamic>{};
+      final roomProfiles = userData['roomProfiles'];
+      final selected = roomProfiles is Map ? (roomProfiles[roomId] ?? '').toString().trim() : '';
+      final mirror = (data['playerProfileId'] ?? '').toString().trim();
+      if (selected.isNotEmpty && mirror.isNotEmpty && selected != mirror) {
+        throw StateError('拾光檔案同步中，請返回聊天室後重新開啟。');
+      }
+      final profileId = selected.isNotEmpty ? selected : mirror;
+      boundProfileId = profileId;
       if (profileId.isEmpty) {
         throw StateError('聊天室尚未綁定拾光檔案，無法確認記憶範圍。');
+      }
+      final profiles = userData['profiles'];
+      if (profileId != 'default' && (profiles is! List || !profiles.any((p) => p is Map && p['id']?.toString().trim() == profileId && (p['name'] ?? '').toString().trim().isNotEmpty))) {
+        throw StateError('無法確認目前拾光檔案，請返回聊天室重新選擇。');
       }
       // Session facts include scene-specific appointments/relationship events.
       sources['session'] = session.collection('memories');
@@ -131,6 +144,11 @@ class _AboutMePageState extends State<AboutMePage> {
       final sub = entry.value.orderBy('timestamp', descending: true)
           .snapshots().listen((snapshot) {
         latest[entry.key] = snapshot.docs
+            .where((doc) {
+              final recordId = (doc.data()['playerProfileId'] ?? '').toString().trim();
+              return entry.key == 'session' ? recordId == boundProfileId :
+                  (boundProfileId == null || recordId.isEmpty || recordId == boundProfileId);
+            })
             .where((doc) => doc.data()['active'] != false &&
                 doc.data()['deletedByUser'] != true &&
                 (doc.data()['text'] ?? '').toString().trim().isNotEmpty)

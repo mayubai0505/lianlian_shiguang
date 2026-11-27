@@ -4739,6 +4739,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                                     avatarImage: imageProvider,
                                     size: 58,
                                     avatarRadius: 25,
+                                    frameScale: 1.20,
                                     backgroundColor: theme.colorScheme.primary
                                         .withValues(alpha: 0.08),
                                     fallbackChild: Icon(

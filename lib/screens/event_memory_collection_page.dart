@@ -1076,15 +1076,15 @@ class _EventMemoryCollectionDetailPageState
   }
 
   Future<void> _deleteCollection() async {
-    if (_deleting) return;
+    if (_deleting || _saving) return;
 
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: Text(appL10n.event_memory_collection_delete_collection_title_collection_cancel),
+          title: Text(widget.memory.isAi ? '刪除限定回憶？' : appL10n.event_memory_collection_delete_collection_title_collection_cancel),
           content: Text(
-            appL10n.event_memory_collection_delete_collection_message_collection_cancel_memory,
+            widget.memory.isAi ? '刪除後將無法復原，已消耗的花花不會退還。活動期間仍可重新付費生成，其他收藏不受影響。' : appL10n.event_memory_collection_delete_collection_message_collection_cancel_memory,
             textAlign: TextAlign.center,
           ),
           actionsAlignment: MainAxisAlignment.center,
@@ -1095,7 +1095,7 @@ class _EventMemoryCollectionDetailPageState
             ),
             FilledButton(
               onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: Text(AppLocalizations.of(dialogContext)!.memory_collection_remove_favorite1),
+              child: Text(widget.memory.isAi ? '確認刪除' : AppLocalizations.of(dialogContext)!.memory_collection_remove_favorite1),
             ),
           ],
         );
@@ -1107,7 +1107,25 @@ class _EventMemoryCollectionDetailPageState
     setState(() => _deleting = true);
 
     try {
-      await widget.memory.reference.delete();
+      if (widget.memory.isAi) {
+        final result = await FirebaseFunctions.instanceFor(region: 'us-central1')
+            .httpsCallable('generateEventMemoryUs')
+            .call(<String, dynamic>{'action': 'deleteCollection', 'collectionId': widget.memory.reference.id});
+        if (result.data is! Map || (result.data as Map)['status'] != 'deleted') {
+          throw StateError('Delete not confirmed');
+        }
+        // Best-effort local image cache cleanup; gallery exports are not affected.
+        final url = widget.memory.characterImageSnapshot;
+        _collectionPrecacheRequested.remove(url);
+        try {
+          await _safeImageProvider(url)?.evict();
+          if (url.startsWith('https://') || url.startsWith('http://')) {
+            await CachedNetworkImage.evictFromCache(url);
+          }
+        } catch (_) {}
+      } else {
+        await widget.memory.reference.delete();
+      }
 
       if (!mounted) return;
       ToastUtils.showCenterToast(
@@ -1175,7 +1193,7 @@ class _EventMemoryCollectionDetailPageState
             ),
             const SizedBox(height: 10),
             OutlinedButton.icon(
-              onPressed: _saving ? null : _saveToGallery,
+              onPressed: _saving || _deleting ? null : _saveToGallery,
               icon: _saving
                   ? const SizedBox(
                 width: 18,
@@ -1189,8 +1207,8 @@ class _EventMemoryCollectionDetailPageState
               ),
             ),
             const SizedBox(height: 8),
-            if (!memory.isAi) TextButton.icon(
-              onPressed: _deleting ? null : _deleteCollection,
+            TextButton.icon(
+              onPressed: _deleting || _saving ? null : _deleteCollection,
               icon: _deleting
                   ? const SizedBox(
                 width: 16,
@@ -1198,7 +1216,7 @@ class _EventMemoryCollectionDetailPageState
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
                   : const Icon(Icons.bookmark_remove_outlined),
-              label: Text(AppLocalizations.of(context)!.memory_collection_remove_favorite1),
+              label: Text(memory.isAi ? '刪除限定回憶' : AppLocalizations.of(context)!.memory_collection_remove_favorite1),
               style: TextButton.styleFrom(
                 foregroundColor: theme.colorScheme.error,
                 minimumSize: const Size.fromHeight(46),

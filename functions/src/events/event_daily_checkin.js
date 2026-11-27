@@ -1,4 +1,5 @@
 'use strict';
+const {eventCollection,assertEventAccess}=require('./event_access');
 
 function createEventDailyCheckInHandler({db, APP_ID, FieldValue, HttpsError, reusableEventIsRunning}) {
   return async (request) => {
@@ -10,7 +11,8 @@ function createEventDailyCheckInHandler({db, APP_ID, FieldValue, HttpsError, reu
       throw new HttpsError('invalid-argument', '活動編號無效');
     }
 
-    const eventRef = db.collection('artifacts').doc(APP_ID).collection('events').doc(eventId);
+    assertEventAccess(eventId,userId,HttpsError);
+    const eventRef = db.collection('artifacts').doc(APP_ID).collection(eventCollection(eventId)).doc(eventId);
     const progressRef = db.collection('artifacts').doc(APP_ID)
       .collection('event_progress').doc(userId).collection('events').doc(eventId);
     const userRef = db.collection('users').doc(userId);

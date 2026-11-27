@@ -6,6 +6,7 @@ const {findRepeatedNarrative} = require('../src/chat/reply_duplicates');
 const {creatorStatusTokenReserve} = require('../src/chat/separate_output_budget');
 'use strict';
 const {isCancelled: isWriterCancelled, isSafetyFailure: isWriterSafetyFailure, classifyWorldProviderFailure} = require('../src/ai/provider_failure_policy');
+const {isAiContentFiltered} = require('../src/ai/response_checks');
 const {publicChatCount, recordPublicChatSend} = require('./chat_count');
 const {createWorldChatAudit} = require('./chat_count_audit');
 const storyClock = require('./story_clock');
@@ -23,10 +24,13 @@ const {createWorldReplyNotificationHandler} = require('./world_reply_notificatio
 const {createWorldMemoryTools, EMBEDDING_VERSION} = require('./world_memory_worker');
 const {dedupeStatusHeading,trimWorldStatusBoundary,missingStatusRows,mergeMissingStatus,markUnresolvedStatus,completionInstruction,statusRepairTokens} = require('../src/chat/status_value_completion');
 const {literalCreatorStatus} = require('../src/chat/literal_creator_status');
+const {createCustomStatusGuard} = require('../src/chat/custom_status_guard');
+const {createStatusPresencePlan,statusPresenceFallback,filterStatusPresenceRepair} = require('../src/chat/status_presence_recovery');
 const {inspectCreatorStatusCompleteness, parseFields, lockCreatorStatus, describeCreatorTemplate, isCreatorGuidance, enforceModernStatusTime, protectCreatorCalendarDisplay} = require('./status_template');
 const creatorThought = require('./creator_thought');
 const {migrateStatus,protectInitialReset} = require('../src/chat/status_template_continuity');
 const {protectWorldFinancialStatus} = require('./world_status_finance_guard');
+const {protectCreatorContinuity,priorRegenerationStatus,publicCreatorSnapshot} = require('./status_continuity_guard');
 const {resolveWorldPlayerIdentity} = require('./world_player_identity');
 
 // V1 conditional creator status display: enforce only unambiguous, explicitly
@@ -1761,6 +1765,14 @@ exports.worldPrivateTest = onCall({
       // Never fall back to the unfiltered old layout after an incompatible edit.
       const previousCreatorStatus = persistedCreatorStatus || (creatorTemplateChanged
         ? migrateStatus(customStatusTemplate,latestStatusText) : latestStatusText);
+      // Regenerate uses the previous *visible* turn for persistent display fields;
+      // the existing server clock/finance/countdown still use committed room state.
+      const wholeStatusGuard = createCustomStatusGuard(customStatusTemplate);
+      const worldStatusPresencePlan = customStatusTemplate ? createStatusPresencePlan(customStatusTemplate,wholeStatusGuard) : null;
+      const continuityPublicLabels = worldStatusPresencePlan?.fields.map(f=>f.label)||[];
+      const continuityPreviousStatus = action === 'regenerate'
+        ? (creatorTemplateChanged ? '' : priorRegenerationStatus(chronologicalDocs,regenerateTargetId,creatorStatusTemplateHash,continuityPublicLabels,Object.values(statusLabels)))
+        : previousCreatorStatus;
       if(creatorTemplateChanged)logger.info('WORLD CREATOR TEMPLATE MIGRATION',{
         retainedRows:persistedCreatorStatus.split('\n').filter(Boolean).length});
       const hasCustomStatusBar = Boolean(customStatusTemplate);
@@ -1768,7 +1780,7 @@ exports.worldPrivateTest = onCall({
       // Never read status from another room, restore a mismatched template, or
       // turn a previously hidden/conditional field into a mandatory visible row.
       // Bound the extra context; this does not alter Firestore state or billing.
-      const previousCreatorStatusContext = hasCustomStatusBar && previousCreatorStatus.trim()
+      const previousCreatorStatusContext = hasCustomStatusBar && continuityPreviousStatus.trim()
         ? [
           '【本房間上一輪已保存的創作者狀態｜只供連續性比較，不直接輸出】',
           '下列內容來自這位玩家、這個世界、這個聊天室已確認且與最新欄位可對應的上一輪狀態，不是新的故事事件。',
@@ -1778,7 +1790,7 @@ exports.worldPrivateTest = onCall({
           '上一輪狀態僅是比較基準，不是所有 NPC 都知道的情報；不得讓未在場 NPC 因此知道玩家秘密、心聲或私訊。',
           '上一輪曾顯示的條件欄位不代表本輪也符合顯示條件；創作者設定的隱藏、指定指令與查詢限定仍須重新判定，不得直接照貼。',
           '日期／時間以後端故事時鐘為準；上一輪狀態只協助維持自訂欄位一致，不能覆蓋後端時間。',
-          `上一輪狀態（動態心聲已遮蔽，僅供持續欄位比較）：\n${maskPreviousWorldPrimaryThought(previousCreatorStatus).slice(0,3500)}`,
+          `上一輪狀態（動態心聲已遮蔽，僅供持續欄位比較）：\n${maskPreviousWorldPrimaryThought(continuityPreviousStatus).slice(0,3500)}`,
         ].join('\n') : '';
       const statusCommand = action === 'send' || action === 'regenerate'
         ? findCreatorStatusCommand([customStatusTemplate,String(world.worldSetting||'')].join('\n'), rawMessage)
@@ -1797,6 +1809,7 @@ exports.worldPrivateTest = onCall({
         '創作者在模板中對欄位內容、分行、固定文字、顯示條件的指示是 statusBar 專用的有效格式規則；在不違反玩家自主權、NPC 知情界線與安全規則的前提下逐項遵守。',
         '創作者更新模板並非劇情事件；同一欄位已有值就不得套用新初始值。',
         '請同時參考本輪玩家輸入、最新劇情和上一輪已保存狀態；沒有新事件依據時持續性數值及已取得線索保持不變，確實發生變化的數值、位置、想法則依本輪更新。',
+        '【狀態差異更新】逐欄比較既有狀態；只有本輪實際發生、且與該欄位直接相關的事件，或創作者明確指定的自動更新規則，才可變更持續欄位。小動作、閒聊、回憶與假設不能導致其他欄位重算；時間跳躍也不代表無關數值全部重置。地點及居所僅依實際移動或搬遷更新；當下情緒、心聲仍須隨劇情更新。不要為了讓狀態變更而虛構事件或替玩家決定。',
         '【金錢／背包防重複】再次提及、回憶、詢問、展示、試穿或討論過往商品，不代表本輪又付款或取得同一件商品。只有玩家在本輪明確進行一筆新的交易，才可考慮調整金錢；不要因為 NPC 台詞、舊紀錄或模型自編購買動作而扣款。狀態欄金額不是遊戲花花扣款紀錄。',
         ...(previousCreatorStatusContext ? [previousCreatorStatusContext] : []),
         '創作者能自由使用 Emoji、顏文字、符號、換行、縮排、表格、｜分隔、無冒號欄位與自訂文字。不要依固定標籤重新排列，不要因為欄位沒有冒號就省略。',
@@ -2715,7 +2728,7 @@ exports.worldPrivateTest = onCall({
       let finalFictionalClock = newFictionalClock;
       if (hasCustomStatusBar) {
         const rawStatus = typeof parsed.statusBar === 'string' ? parsed.statusBar.slice(0,10000) : '';
-        const renderedStatus = sanitizeStatusBar(normalizeAiResponseScript(rawStatus,'台灣繁體中文'));
+        let renderedStatus = sanitizeStatusBar(normalizeAiResponseScript(rawStatus,'台灣繁體中文'));
         // Preserve free-form status layout; filter only clearly leaked author instructions.
         // Only bootstrap an uninitialized fictional clock from the 📅 value.
         // Once persisted, subsequent replies are based on the previous server state.
@@ -2818,6 +2831,34 @@ exports.worldPrivateTest = onCall({
           ),
           // Do not log world or player text, date, user ID, or precise clock.
         });
+        // The existing scalar repair covers literal/named layouts, including
+        // empty input. A missing free-form public footer needs its own attempt.
+        if (worldStatusPresencePlan && !lockCreatorStatus(customStatusTemplate,renderedStatus).trim() &&
+            literalCreatorStatus(customStatusTemplate,'') === null) {
+          const budget = Math.min(12000,180000-(Date.now()-functionStartedAt)-20000);
+          if (budget >= 3000) {
+            try {
+              const modelId='google/gemini-3-flash-preview';
+              const repair=await callAiWithRetry({modelId,retryPrimary:false,timeoutMs:budget,
+                requestBody:{messages:[
+                  {role:'system',content:completionInstruction+'\n本輪整個狀態欄缺失，只輸出創作者明確固定顯示的完整狀態欄，不重寫正文，不輸出條件欄、範例或幕後資料。'},
+                  {role:'user',content:JSON.stringify({template:worldStatusPresencePlan.template,previousStatus:worldStatusPresencePlan.mixed ? '' : maskPreviousWorldPrimaryThought(previousCreatorStatus),
+                    player:rawMessage,scene:segments.map(x=>({name:x.name,text:x.text})).slice(-8),authoritativeTime:serverTimeText})}
+                ],temperature:0.2,max_tokens:statusRepairTokens(worldStatusPresencePlan.template,worldStatusPresencePlan.fields)}});
+              recordWorldWriterCost(repair,modelId,'creator_whole_status_repair',1);
+              const answer=repair?.choices?.[0]?.message?.content;
+              if(typeof answer==='string' && !leakedInternal.test(answer) && !isAiContentFiltered(repair)) {
+                const safe=lockCreatorStatus(customStatusTemplate,sanitizeStatusBar(normalizeAiResponseScript(answer,'台灣繁體中文')),{timeText:serverTimeText});
+                // Keep only recognized creator status blocks; never accept a second
+                // copy of the story as the status or arbitrary unrecognized fields.
+                const repairGuard=worldStatusPresencePlan.guard;
+                const merged=repairGuard.mergeRepair('',filterStatusPresenceRepair(worldStatusPresencePlan,safe));
+                if(merged.text.trim() && merged.missing.length < repairGuard.missing('').length &&
+                    !repairGuard.bodyOnly(merged.text).trim()) renderedStatus=merged.text;
+              }
+            } catch (_) {logger.warn('WORLD WHOLE STATUS REPAIR UNAVAILABLE',{mode:worldMode});}
+          }
+        }
         const alignedStatus = literalCreatorStatus(customStatusTemplate, renderedStatus, {time:serverTimeText});
         const lockedStatus = lockCreatorStatus(customStatusTemplate, alignedStatus ?? renderedStatus,
           {timeText: serverTimeText});
@@ -3023,15 +3064,48 @@ exports.worldPrivateTest = onCall({
           });
           newCreatorStatusForPersistence = financialGuard.status;
           const initialResetGuard=protectInitialReset({template:customStatusTemplate,
-            current:newCreatorStatusForPersistence,previous:previousCreatorStatus,
-            evidence:[rawMessage,...segments.map(x=>x.text||'')].join('\n'),regenerate:action==='regenerate'});
+            current:newCreatorStatusForPersistence,
+            previous:action==='regenerate' && continuityPreviousStatus ? continuityPreviousStatus : previousCreatorStatus,
+            evidence:[rawMessage,...segments.map(x=>x.text||'')].join('\n'),
+            regenerate:action==='regenerate' && !continuityPreviousStatus});
           newCreatorStatusForPersistence=initialResetGuard.status;
+          // Regeneration changes the reply, not a committed transaction. Keep
+          // the existing financial baseline even if a pre-turn reset guard ran.
+          if(action==='regenerate')newCreatorStatusForPersistence=protectWorldFinancialStatus({
+            current:newCreatorStatusForPersistence,previous:previousStatusForEraDate,
+            playerMessage:'',action}).status;
           if(initialResetGuard.restored)logger.info('WORLD STATUS INITIAL RESET GUARD',{restored:initialResetGuard.restored});
           if(financialGuard.restoredRows)logger.info('WORLD CREATOR FINANCIAL STATUS GUARD', {
             mode:worldMode,restoredRows:financialGuard.restoredRows,
             recoveredPrevious:reusedPriorStatusBar,
           });
+          // Conservative delta guard: only current, explicitly public rows are
+          // touched. Never insert hidden/absent fields or override time/finance.
+          const continuityGuard=protectCreatorContinuity({template:customStatusTemplate,
+            publicLabels:continuityPublicLabels,
+            current:newCreatorStatusForPersistence,
+            previous:sanitizeStatusBar(continuityPreviousStatus),
+            playerMessage:action==='continue'?'':rawMessage,
+            segments});
+          newCreatorStatusForPersistence=continuityGuard.status;
+          if(continuityGuard.eligible)logger.info('WORLD CREATOR STATUS CONTINUITY GUARD',{
+            mode:worldMode,action,eligible:continuityGuard.eligible,
+            restored:continuityGuard.restored,allowed:continuityGuard.allowed});
+          // Reapply current-turn visibility after all recovery and time guards.
+          newCreatorStatusForPersistence=enforceCreatorQueryOnlyVisibleStatus(customStatusTemplate,
+            enforceCreatorConditionalStatus(customStatusTemplate,newCreatorStatusForPersistence,rawMessage).status).trim();
           if(newCreatorStatusForPersistence)statusParts.push(newCreatorStatusForPersistence);
+        }
+        if (!newCreatorStatusForPersistence && worldStatusPresencePlan) {
+          const fallback=statusPresenceFallback(worldStatusPresencePlan,{time:serverTimeText});
+          // Do not replace last confirmed room state with an unresolved display.
+          const continuityFallback=protectCreatorContinuity({template:customStatusTemplate,
+            publicLabels:continuityPublicLabels,
+            current:lockCreatorStatus(customStatusTemplate,sanitizeStatusBar(fallback)),
+            previous:sanitizeStatusBar(continuityPreviousStatus),playerMessage:action==='continue'?'':rawMessage,segments});
+          const visibleFallback=enforceCreatorQueryOnlyVisibleStatus(customStatusTemplate,
+            enforceCreatorConditionalStatus(customStatusTemplate,continuityFallback.status,rawMessage).status).trim();
+          if(visibleFallback)statusParts.push(visibleFallback);
         }
       }
       if (hasCustomStatusBar) {
@@ -3040,7 +3114,7 @@ exports.worldPrivateTest = onCall({
           templateChars:customStatusTemplate.length,
           modelReturnedStatus:typeof parsed.statusBar === 'string' && parsed.statusBar.trim().length > 0,
           recoveredPrevious:reusedPriorStatusBar,
-          displayedCreatorStatus:Boolean(newCreatorStatusForPersistence || reusedPriorStatusBar),
+          displayedCreatorStatus:statusParts.some(part=>Boolean(String(part||'').trim())),
           // Aggregates only; do not log author rules, player text, or status values.
         });
       }
@@ -3051,7 +3125,7 @@ exports.worldPrivateTest = onCall({
       // 玩家勾選的欄位只由白名單組裝，不顯示模型擅自新增的鍵或原始 JSON。
       const playerStatus = parsed.playerStatus && typeof parsed.playerStatus === 'object' &&
         !Array.isArray(parsed.playerStatus) ? parsed.playerStatus : {};
-      if (wantsPlayerStatus && !reusedPriorStatusBar) {
+      if (wantsPlayerStatus && (!reusedPriorStatusBar || Boolean(persistedCreatorStatus) || !newCreatorStatusForPersistence)) {
         const statusRows = enabledStatusKeys.map(key => {
           const candidate = typeof playerStatus[key] === 'string' ? playerStatus[key] : '';
           let safe = cleanProfileLeak(normalizeAiResponseScript(candidate, '台灣繁體中文'))
@@ -3159,6 +3233,9 @@ exports.worldPrivateTest = onCall({
         relationship:approvedRelationships.get(id) || null,
         ref:room.collection('character_affinities').doc(id),
       }));
+      // Snapshot contains only already-visible creator scalar fields, never
+      // raw template, hidden fields, or the combined player/query status.
+      const creatorStatusContinuity=publicCreatorSnapshot(newCreatorStatusForPersistence,continuityPublicLabels);
       // 只有 AI 成功生成及通過格式驗證後才在同一筆 Firestore 交易扣花花、寫聊天與好感度。
       // Firestore 交易讀到即時餘額；扣款不足時整筆不會寫入。
       const regenDate = new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
@@ -3206,7 +3283,7 @@ exports.worldPrivateTest = onCall({
           tx.set(usageRef,{userId:uid,worldId,sessionId,chatMode:worldMode,billingType:'regenerate',
             chargedFlowers:effectiveCost,createdAt:now});
           tx.update(msgs.doc(regenerateTargetId),{segments,regeneratedAt:now,chatMode:worldMode,
-            regenerationRequestId:requestId});
+            creatorStatusTemplateHash,creatorStatusContinuity,regenerationRequestId:requestId});
           // 只建立防重 marker；不扣花花、不修改好感度、不新增 AI 泡泡。
           tx.create(msgs.doc(requestId),{sender:'control',operation:'regenerate',targetId:regenerateTargetId,timestamp:now,chargedFlowers:effectiveCost});
           tx.update(room,{lastMessage:(segments.findLast(s => !s.isStatusBar)?.text || segments[segments.length-1].text).slice(0,180),
@@ -3225,7 +3302,7 @@ exports.worldPrivateTest = onCall({
           operation:action === 'continue' ? 'continue' : null,text:action === 'continue' ? '' : rawMessage,timestamp:now,
           chatMode:worldMode,billingType,interactionNpcId,interactionType,giftType,chargedFlowers:chargeCost});
         tx.create(msgs.doc(`ai_${requestId}`),{sender:'ai',segments,timestamp:now,
-          chatMode:worldMode,modelId:actualWriterModelId});
+          chatMode:worldMode,modelId:actualWriterModelId,creatorStatusTemplateHash,creatorStatusContinuity});
         // 事件與成功回覆在同一交易提交；取消/失敗/重試不會產生幽靈記憶。
         memoryEvents.forEach((event,index) => {
           tx.create(room.collection('world_memory_events').doc(`${requestId}_${index}`),{

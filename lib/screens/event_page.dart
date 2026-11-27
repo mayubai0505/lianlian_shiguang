@@ -1,3 +1,4 @@
+import '../services/event_access.dart';
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -33,7 +34,7 @@ class EventPage extends StatelessWidget {
     return FirebaseFirestore.instance
         .collection('artifacts')
         .doc(AppConfig.appId)
-        .collection('events')
+        .collection(eventDefinitionCollection(eventId))
         .doc(eventId);
   }
 
@@ -213,7 +214,7 @@ class _EventContent extends StatelessWidget {
     return FirebaseFirestore.instance
         .collection('artifacts')
         .doc(AppConfig.appId)
-        .collection('events')
+        .collection(eventDefinitionCollection(eventId))
         .doc(eventId)
         .collection(name);
   }
@@ -1803,7 +1804,7 @@ class _EventShopPageState extends State<EventShopPage> {
     return FirebaseFirestore.instance
         .collection('artifacts')
         .doc(AppConfig.appId)
-        .collection('events')
+        .collection(eventDefinitionCollection(widget.eventId))
         .doc(widget.eventId)
         .collection('shop_items');
   }
